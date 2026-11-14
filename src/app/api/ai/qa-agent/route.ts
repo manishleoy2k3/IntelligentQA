@@ -48,6 +48,14 @@ export async function POST(req: NextRequest) {
           systemPrompt = `You are IntelligentQA's Test Case Generator Agent. Ingest the requirements (from user story, PRD, or imported document) and synthesize a comprehensive test matrix categorized by Positive, Negative, Boundary Value Analysis (BVA), Security, and Concurrency tests. Include preconditions, steps, expected results, and priority (P0-P2).`;
         } else if (action === 'automation_code') {
           systemPrompt = `You are IntelligentQA's Automation Code Generator Agent. Generate production-ready, clean code for tech stack: ${techStack}. For Playwright, use POM and getByRole. For Selenium, use pure POM with WebDriverWait. For REST Assured, use given/when/then with POJOs.`;
+        } else if (action === 'code_snippet') {
+          systemPrompt = `You are IntelligentQA's Autonomous SDET Code Generator.
+Generate a concise, 100% correct, production-grade test automation code snippet for tech stack: ${techStack}.
+CRITICAL INSTRUCTIONS:
+1. Output ONLY the raw executable code snippet.
+2. Do NOT include ANY explanations, intro text, markdown headers, summary, or commentary before or after the code block.
+3. Keep the snippet short, focused, and directly addressing the user's prompt.
+4. Output clean code that can be run directly in an automation framework.`;
         } else if (action === 'code_review') {
           systemPrompt = `You are IntelligentQA's Code Reviewer & Quality Auditor Agent. Analyze the automation code for flakiness, hardcoded waits (Thread.sleep/waitForTimeout), brittle locators, and memory leaks. Provide detailed line-by-line review and refactored code.`;
         } else {
@@ -85,8 +93,15 @@ export async function POST(req: NextRequest) {
 
             if (res.ok) {
               const data = await res.json();
-              const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+              let generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
               if (generatedText) {
+                if (action === 'code_snippet') {
+                  // Strip markdown code fences if Gemini added them to guarantee pure code snippet without descriptions
+                  generatedText = generatedText
+                    .replace(/^```[a-zA-Z0-9_-]*\n?/, '')
+                    .replace(/\n?```\s*$/, '')
+                    .trim();
+                }
                 return NextResponse.json({
                   action,
                   output: generatedText,
@@ -122,6 +137,9 @@ export async function POST(req: NextRequest) {
         break;
       case 'code_review':
         generatedOutput = reviewAutomationCode(cleanInput, techStack);
+        break;
+      case 'code_snippet':
+        generatedOutput = generateCodeSnippetOnly(cleanInput, techStack);
         break;
       case 'chat':
       default:
@@ -431,4 +449,26 @@ test('optimized robust execution', async ({ page }) => {
 - **Maintainability**: 92 / 100
 - **CI Reliability**: 95 / 100
 - **Best Practice Adherence**: High`;
+}
+
+// 5. Code Snippet Only Generator (Direct, Short, Clean - No Markdown Description)
+function generateCodeSnippetOnly(input: string, techStack: string): string {
+  if (techStack === 'selenium-java' || techStack === 'java') {
+    return `// Selenium WebDriver (Java) Snippet
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+WebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
+submitBtn.click();
+WebElement alert = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[role='alert'], .toast")));
+Assert.assertTrue(alert.isDisplayed(), "Verification alert should be visible");`;
+  }
+  if (techStack === 'playwright-python' || techStack === 'python') {
+    return `# Playwright (Python) Snippet
+page.get_by_role("button", name="Submit").click()
+expect(page.get_by_role("alert")).to_be_visible(timeout=5000)
+expect(page.get_by_role("heading", level=1)).to_have_text("Success")`;
+  }
+  return `// Playwright (TypeScript) Snippet
+await page.getByRole('button', { name: 'Submit' }).click();
+await expect(page.getByRole('alert')).toBeVisible({ timeout: 5000 });
+await expect(page.getByRole('heading', { level: 1 })).toHaveText('Success');`;
 }

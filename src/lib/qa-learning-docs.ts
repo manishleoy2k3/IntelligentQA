@@ -1006,3 +1006,412 @@ export function getLessonDoc(lessonId: string, trackId: string, lessonTitle?: st
     },
   };
 }
+
+// Concept Code Generator for Java, TypeScript, and Python that strictly maps to the Concept Guide
+export function getConceptCodeSnippet(
+  lessonId: string,
+  trackId: string,
+  lang: 'java' | 'typescript' | 'python',
+  lessonTitle: string = 'Automation Concept'
+): string {
+  // 1. Core Java OOPs Framework
+  if (lessonId === 'java-oops-framework') {
+    if (lang === 'java') {
+      return `// ==========================================
+// 1. ENCAPSULATION: Page Object Class with Private Locators
+// ==========================================
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class LoginPage {
+    private final WebDriver driver;
+
+    // Encapsulated locators: hidden from test classes
+    private final By usernameField = By.id("username");
+    private final By passwordField = By.id("password");
+    private final By loginButton = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public DashboardPage loginAs(String username, String password) {
+        driver.findElement(usernameField).sendKeys(username);
+        driver.findElement(passwordField).sendKeys(password);
+        driver.findElement(loginButton).click();
+        return new DashboardPage(driver);
+    }
+}
+
+// ==========================================
+// 2. INHERITANCE: BaseTest for Browser Lifecycle
+// ==========================================
+package com.intelligentqa.base;
+
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+
+public abstract class BaseTest {
+    protected WebDriver driver;
+
+    @BeforeMethod
+    public void setUp() {
+        driver = DriverFactory.createDriver("chrome");
+        driver.manage().window().maximize();
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) driver.quit(); // Always quit to prevent zombie processes
+    }
+}`;
+    }
+    if (lang === 'python') {
+      return `# ==========================================
+# 1. ENCAPSULATION: Python Page Object with Private Members
+# ==========================================
+from playwright.sync_api import Page, expect
+
+class LoginPage:
+    def __init__(self, page: Page):
+        self.page = page
+        # Encapsulated semantic locators
+        self._username_input = page.get_by_label("Username")
+        self._password_input = page.get_by_label("Password")
+        self._login_button = page.get_by_role("button", name="Sign In")
+
+    def login_as(self, username: str, password: str):
+        self._username_input.fill(username)
+        self._password_input.fill(password)
+        self._login_button.click()
+
+# ==========================================
+# 2. INHERITANCE / FIXTURE: Clean Lifecycle
+# ==========================================
+import pytest
+
+@pytest.fixture
+def auth_session(page: Page):
+    login_page = LoginPage(page)
+    login_page.login_as("standard_user", "secret_pass")
+    yield page
+    page.close()`;
+    }
+    return `// ==========================================
+// 1. ENCAPSULATION: Modern TypeScript Page Object
+// ==========================================
+import { Page, Locator, expect } from '@playwright/test';
+
+export class LoginPage {
+  // Private encapsulated locators
+  private readonly usernameInput: Locator;
+  private readonly passwordInput: Locator;
+  private readonly submitButton: Locator;
+
+  constructor(private readonly page: Page) {
+    this.usernameInput = page.getByLabel('Username');
+    this.passwordInput = page.getByLabel('Password');
+    this.submitButton = page.getByRole('button', { name: 'Sign In' });
+  }
+
+  async loginAs(username: string, pass: string): Promise<void> {
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(pass);
+    await this.submitButton.click();
+  }
+}
+
+// ==========================================
+// 2. INHERITANCE: Extending Base Test Fixtures
+// ==========================================
+import { test as base } from '@playwright/test';
+
+export const test = base.extend<{ loginPage: LoginPage }>({
+  loginPage: async ({ page }, use) => {
+    const loginPage = new LoginPage(page);
+    await use(loginPage);
+  },
+});`;
+  }
+
+  // 2. Auto-Waiting & Synchronization
+  if (lessonId === 'pw-auto-waiting' || lessonId === 'sel-sync-waits') {
+    if (lang === 'typescript') {
+      return `import { test, expect } from '@playwright/test';
+
+test('auto-waiting and web-first assertions', async ({ page }) => {
+  await page.goto('/sandbox/web');
+
+  // Auto-waiting: automatically checks attached, visible, stable, enabled
+  const triggerBtn = page.getByRole('button', { name: 'Simulate AJAX Delay' });
+  await triggerBtn.click();
+
+  // Web-First assertion: continuously polls DOM until visible (up to 5s)
+  const resultBanner = page.getByTestId('dynamic-result-banner');
+  await expect(resultBanner).toBeVisible({ timeout: 5000 });
+  await expect(resultBanner).toContainText('Data Loaded Successfully');
+
+  // Inverted state verification: wait for loading spinner to disappear
+  await expect(page.getByTestId('loading-spinner')).toBeHidden();
+});`;
+    }
+    if (lang === 'java') {
+      return `package com.intelligentqa.sync;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class SynchronizationStrategy {
+    public static void verifyDynamicWait(WebDriver driver) {
+        driver.get("http://localhost:3000/sandbox/web");
+
+        // Explicit Wait: Avoid Thread.sleep at all costs!
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // 1. Wait for element to be clickable
+        WebElement triggerBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("ajax-trigger")));
+        triggerBtn.click();
+
+        // 2. Wait for result text to be present in DOM
+        WebElement banner = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("result-banner")));
+        wait.until(ExpectedConditions.textToBePresentInElement(banner, "Data Loaded"));
+
+        // 3. Wait for spinner invisibility
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading-spinner")));
+    }
+}`;
+    }
+    return `from playwright.sync_api import Page, expect
+
+def test_auto_waiting(page: Page):
+    page.goto("http://localhost:3000/sandbox/web")
+
+    # Playwright checks 5 actionability criteria before clicking
+    page.get_by_role("button", name="Simulate AJAX Delay").click()
+
+    # Web-first retrying assertions in Python
+    result_banner = page.get_by_test_id("dynamic-result-banner")
+    expect(result_banner).to_be_visible(timeout=5000)
+    expect(result_banner).to_contain_text("Data Loaded")
+
+    # Inverted check: wait for loading spinner to disappear
+    expect(page.get_by_test_id("loading-spinner")).to_be_hidden()`;
+  }
+
+  // 3. Resilient Locators & User-Facing Roles
+  if (lessonId === 'pw-resilient-locators' || lessonId === 'sel-locators-xpath') {
+    if (lang === 'typescript') {
+      return `import { test, expect } from '@playwright/test';
+
+test('resilient user-facing locators strategy', async ({ page }) => {
+  await page.goto('/sandbox/web');
+
+  // Priority 1: getByRole (accessibility tree)
+  await page.getByRole('button', { name: 'Submit' }).click();
+
+  // Priority 2: getByLabel & getByPlaceholder
+  await page.getByLabel('Work Email').fill('sdet@intelligentqa.com');
+  await page.getByPlaceholder('Search lessons...').fill('Locators');
+
+  // Priority 3: Scoped row filtering on dynamic tables
+  const userRow = page.getByRole('row').filter({ hasText: 'Sarah Connor' });
+  await expect(userRow.getByText('Active')).toBeVisible();
+  await userRow.getByRole('button', { name: 'Edit' }).click();
+});`;
+    }
+    if (lang === 'java') {
+      return `package com.intelligentqa.locators;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+public class AdvancedDynamicLocators {
+    private final WebDriver driver;
+
+    // Resilient CSS Attribute & Dynamic XPath Selectors
+    private final By submitButton = By.xpath("//button[normalize-space()='Submit' or @type='submit']");
+    private final By searchInput = By.cssSelector("input[placeholder*='Search']");
+
+    // Dynamic XPath Axes: Finding an active row's action button
+    public By getEditButtonForUser(String userName) {
+        return By.xpath("//tr[contains(., '" + userName + "')]//button[contains(@class, 'edit-btn')]");
+    }
+
+    public AdvancedDynamicLocators(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void clickSubmit() {
+        driver.findElement(submitButton).click();
+    }
+}`;
+    }
+    return `from playwright.sync_api import Page, expect
+
+def test_resilient_locators(page: Page):
+    page.goto("http://localhost:3000/sandbox/web")
+
+    # Semantic User-Facing Locators
+    page.get_by_role("button", name="Submit").click()
+    page.get_by_label("Work Email").fill("sdet@intelligentqa.com")
+    page.get_by_placeholder("Search lessons...").fill("Locators")
+
+    # Filtering rows by text content without fragile XPath indexes
+    user_row = page.get_by_role("row").filter(has_text="Sarah Connor")
+    expect(user_row.get_by_text("Active")).to_be_visible()
+    user_row.get_by_role("button", name="Edit").click()`;
+  }
+
+  // 4. API Testing & REST Assured BDD
+  if (trackId === 'api-testing') {
+    if (lang === 'java') {
+      return `package com.intelligentqa.api;
+
+import io.restassured.http.ContentType;
+import org.testng.annotations.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class RestAssuredBddTest {
+
+    @Test(description = "Verify API Contract using Given-When-Then BDD Syntax")
+    public void testUserEndpointContract() {
+        given()
+            .baseUri("http://localhost:3000/api/sandbox/v1")
+            .header("Authorization", "Bearer valid_sdet_token")
+            .contentType(ContentType.JSON)
+        .when()
+            .get("/users")
+        .then()
+            .statusCode(200)
+            .contentType(ContentType.JSON)
+            .body("users.size()", greaterThan(0))
+            .body("users[0].role", notNullValue())
+            .time(lessThan(1500L)); // Performance SLA verification
+    }
+}`;
+    }
+    if (lang === 'typescript') {
+      return `import { test, expect } from '@playwright/test';
+
+test('API contract validation with Playwright request fixture', async ({ request }) => {
+  // GIVEN: Request context and auth headers
+  const headers = {
+    'Authorization': 'Bearer valid_sdet_token',
+    'Content-Type': 'application/json',
+  };
+
+  // WHEN: HTTP request dispatched
+  const response = await request.get('/api/sandbox/v1/users', { headers });
+
+  // THEN: Status code and body contract assertions
+  expect(response.status()).toBe(200);
+  const data = await response.json();
+  expect(Array.isArray(data.users)).toBe(true);
+  expect(data.users.length).toBeGreaterThan(0);
+  expect(data.users[0]).toHaveProperty('role');
+});`;
+    }
+    return `import requests
+import pytest
+
+BASE_URL = "http://localhost:3000/api/sandbox/v1"
+
+def test_api_contract_verification():
+    headers = {
+        "Authorization": "Bearer valid_sdet_token",
+        "Content-Type": "application/json"
+    }
+
+    # Execute HTTP GET
+    response = requests.get(f"{BASE_URL}/users", headers=headers, timeout=5)
+
+    # Contract assertions
+    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+    data = response.json()
+    assert "users" in data, "Payload missing 'users' key"
+    assert len(data["users"]) > 0, "Users list should not be empty"
+    assert "role" in data["users"][0], "User record missing 'role' field"`;
+  }
+
+  // 5. Generic Concept Matcher
+  if (lang === 'java') {
+    return `// ==========================================
+// JAVA ENTERPRISE AUTOMATION: ${lessonTitle}
+// ==========================================
+package com.intelligentqa.concepts;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class ${lessonId.replace(/[^a-zA-Z0-9]/g, '')}Example {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    public ${lessonId.replace(/[^a-zA-Z0-9]/g, '')}Example(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public void executeScenario() {
+        // Concept: ${lessonTitle}
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button.action-btn")));
+        element.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("success-toast")));
+    }
+}`;
+  }
+
+  if (lang === 'python') {
+    return `# ==========================================
+# PYTHON AUTOMATION: ${lessonTitle}
+# ==========================================
+from playwright.sync_api import Page, expect
+
+def test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}(page: Page):
+    """
+    Concept: ${lessonTitle}
+    Demonstrating resilient locators and web-first assertions.
+    """
+    page.goto("http://localhost:3000/sandbox/web")
+
+    # Target element using accessible role
+    action_button = page.get_by_role("button", name="Submit").first
+    if action_button.is_visible():
+        action_button.click()
+
+    # Web-first auto-retrying assertion
+    expect(page.get_by_role("status")).to_be_visible(timeout=5000)`;
+  }
+
+  return `// ==========================================
+// PLAYWRIGHT (TYPESCRIPT): ${lessonTitle}
+// ==========================================
+import { test, expect } from '@playwright/test';
+
+test.describe('${lessonTitle}', () => {
+  test('execute scenario with modern best practices', async ({ page }) => {
+    await page.goto('/sandbox/web');
+
+    // User-facing locator
+    const submitBtn = page.getByRole('button', { name: 'Submit' });
+    await submitBtn.click();
+
+    // Auto-retrying web-first assertion
+    await expect(page.getByRole('alert')).toBeVisible({ timeout: 5000 });
+  });
+});`;
+}
+

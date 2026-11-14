@@ -21,12 +21,27 @@ test('Item 2: Left Navigation sidebar is resizable on the right border', () => {
   assert.ok(sidebarFile.includes('onDoubleClick'), 'Double-click resets to default width');
 });
 
-test('Item 3: Concept Code Lab is renamed to Code Examples', () => {
+test('Item 3: CODE EXAMPLES: label removed in favor of clean Java, TypeScript, and Python toggle buttons', () => {
   const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
 
-  // Verify header label is renamed to Code Examples
-  assert.ok(workspaceFile.includes('Code Examples:'), 'Header renamed to Code Examples:');
+  // Verify CODE EXAMPLES: label is removed as requested
+  assert.ok(!workspaceFile.includes('Code Examples:'), 'Code Examples: label removed');
   assert.ok(!workspaceFile.includes('Concept Code Lab:'), 'Old Concept Code Lab: header removed');
+
+  // Verify clean language toggle buttons are present
+  assert.ok(workspaceFile.includes("handleLanguageChange('java')"), 'Has Java toggle button');
+  assert.ok(workspaceFile.includes("handleLanguageChange('typescript')"), 'Has TypeScript toggle button');
+  assert.ok(workspaceFile.includes("handleLanguageChange('python')"), 'Has Python toggle button');
+});
+
+test('Item 3b: Try it with AI in AI in Action tab with Gemini background integration', () => {
+  const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
+
+  // Verify Try it with AI button and handlers
+  assert.ok(workspaceFile.includes('Try it with AI'), 'Has Try it with AI button');
+  assert.ok(workspaceFile.includes('handleTryWithAi'), 'Has handleTryWithAi handler');
+  assert.ok(workspaceFile.includes("action: 'code_snippet'"), 'Calls qa-agent with code_snippet action');
+  assert.ok(workspaceFile.includes('Apply to Editor'), 'Has Apply to Editor button for generated snippet');
 });
 
 test('Items 4 & 5: Language tabs include Java, TypeScript, and Python with dynamic code switching', () => {

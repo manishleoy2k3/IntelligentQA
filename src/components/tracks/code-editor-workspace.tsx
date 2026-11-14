@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
-import { getLessonDoc } from '@/lib/qa-learning-docs';
+import { getLessonDoc, getConceptCodeSnippet } from '@/lib/qa-learning-docs';
 
 export type SupportedLang = 'java' | 'typescript' | 'python';
 
@@ -193,6 +193,12 @@ test('${lesson.title}', async ({ page }) => {
 }
 
 function getCodeForLanguage(lang: SupportedLang, lesson: Lesson, trackId: string): string {
+  // 1. First retrieve high-fidelity code strictly mapped to the Concept Guide
+  const conceptCode = getConceptCodeSnippet(lesson.id, trackId, lang, lesson.title);
+  if (conceptCode) {
+    return conceptCode;
+  }
+  // 2. Fallbacks for challenge-specific code
   if (lang === 'java') return getJavaCodeExample(lesson, trackId);
   if (lang === 'python') return getPythonCodeExample(lesson, trackId);
   return getTypeScriptCodeExample(lesson, trackId);
@@ -241,6 +247,63 @@ export default function CodeEditorWorkspace({
   const [splitPercent, setSplitPercent] = useState<number>(55);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // AI in Action State
+  const [promptInput, setPromptInput] = useState<string>(lesson.aiAugmentation.promptExample);
+  const [aiSnippetLang, setAiSnippetLang] = useState<SupportedLang>(
+    track.id === 'selenium-java' ? 'java' : 'typescript'
+  );
+  const [aiSnippet, setAiSnippet] = useState<string>('');
+  const [isGeneratingSnippet, setIsGeneratingSnippet] = useState<boolean>(false);
+  const [aiSnippetError, setAiSnippetError] = useState<string | null>(null);
+  const [copyFeedback, setCopyFeedback] = useState<boolean>(false);
+  const [appliedFeedback, setAppliedFeedback] = useState<boolean>(false);
+
+  // Sync prompt input when lesson changes
+  useEffect(() => {
+    setPromptInput(lesson.aiAugmentation.promptExample);
+    setAiSnippet('');
+    setAiSnippetError(null);
+  }, [lesson.id, lesson.aiAugmentation.promptExample]);
+
+  const handleTryWithAi = async () => {
+    setIsGeneratingSnippet(true);
+    setAiSnippetError(null);
+    try {
+      const storedKey =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('intelligentqa_gemini_api_key') || ''
+          : '';
+      const techStackKey =
+        aiSnippetLang === 'java'
+          ? (track.id === 'api-testing' ? 'rest-assured' : 'selenium-java')
+          : aiSnippetLang === 'python'
+          ? 'playwright-python'
+          : 'playwright-ts';
+
+      const res = await fetch('/api/ai/qa-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'code_snippet',
+          input: promptInput,
+          techStack: techStackKey,
+          apiKey: storedKey,
+        }),
+      });
+
+      const data = await res.json();
+      if (data?.output) {
+        setAiSnippet(data.output);
+      } else {
+        setAiSnippetError('Unable to generate snippet. Please try again.');
+      }
+    } catch (err: any) {
+      setAiSnippetError(err.message || 'Error communicating with AI service');
+    } finally {
+      setIsGeneratingSnippet(false);
+    }
+  };
 
   // Mouse drag handlers for resizable panels
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -770,17 +833,122 @@ export default function CodeEditorWorkspace({
           )}
 
           {activeTab === 'ai-action' && (
-            <div className="space-y-4">
-              <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-2.5">
-                <div className="font-bold text-amber-900 dark:text-amber-300 text-sm sm:text-base flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Prompt Engineering for this Scenario
+            <div className="space-y-5">
+              {/* Prompt Engineering Card with Interactive Try with AI */}
+              <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="font-bold text-amber-900 dark:text-amber-300 text-sm sm:text-base flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    Autonomous Prompt for this Scenario
+                  </div>
+                  <div className="flex items-center gap-1 bg-white/80 dark:bg-slate-900/80 p-1 rounded-lg border border-amber-200 dark:border-amber-900 text-xs">
+                    {(['java', 'typescript', 'python'] as SupportedLang[]).map((l) => (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => setAiSnippetLang(l)}
+                        className={`px-2.5 py-0.5 rounded-md font-semibold capitalize transition-all cursor-pointer ${
+                          aiSnippetLang === l
+                            ? 'bg-amber-500 text-white shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        {l === 'typescript' ? 'TS' : l}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-sm font-mono bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-amber-200 dark:border-amber-900 leading-relaxed">
-                  {lesson.aiAugmentation.promptExample}
-                </p>
+
+                <textarea
+                  value={promptInput}
+                  onChange={(e) => setPromptInput(e.target.value)}
+                  rows={3}
+                  className="w-full text-xs sm:text-sm font-mono bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-amber-200 dark:border-amber-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-y"
+                  placeholder="Enter automation scenario prompt for Gemini SDET Agent..."
+                />
+
+                <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
+                  <p className="text-[11px] text-amber-700/80 dark:text-amber-400/80">
+                    ⚡ Ephemeral live test: AI generates code in the background without storing or cluttering your history.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleTryWithAi}
+                    disabled={isGeneratingSnippet || !promptInput.trim()}
+                    className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {isGeneratingSnippet ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Generating Snippet...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-white" />
+                        <span>Try it with AI</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
+              {/* Generated AI Snippet Display (Short, clean code snippet, no description) */}
+              {aiSnippet && (
+                <div className="p-5 rounded-2xl bg-slate-900 border border-emerald-500/30 shadow-lg space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                      <Terminal className="w-4 h-4" />
+                      <span>AI-Generated Code Snippet ({aiSnippetLang.toUpperCase()})</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 font-normal">
+                        Raw Code Only · No Commentary
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(aiSnippet);
+                          setCopyFeedback(true);
+                          setTimeout(() => setCopyFeedback(false), 2000);
+                        }}
+                        className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        {copyFeedback ? <Check className="w-3 h-3 text-emerald-400" /> : <Code className="w-3 h-3" />}
+                        <span>{copyFeedback ? 'Copied!' : 'Copy Code'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedLang(aiSnippetLang);
+                          setCode(aiSnippet);
+                          setAppliedFeedback(true);
+                          setTimeout(() => setAppliedFeedback(false), 2000);
+                        }}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Load this AI snippet directly into the code editor on the right"
+                      >
+                        {appliedFeedback ? <Check className="w-3 h-3" /> : <Play className="w-3 h-3 fill-current" />}
+                        <span>{appliedFeedback ? 'Applied to Editor!' : 'Apply to Editor'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <pre className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-emerald-300 overflow-x-auto leading-relaxed whitespace-pre-wrap">
+                    <code>{aiSnippet}</code>
+                  </pre>
+                </div>
+              )}
+
+              {aiSnippetError && (
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{aiSnippetError}</span>
+                </div>
+              )}
+
+              {/* Agent Workflow & Self Healing Tip */}
               <div className="p-5 rounded-2xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 space-y-2.5">
                 <h4 className="font-bold text-cyan-900 dark:text-cyan-300 text-sm sm:text-base">
                   Autonomous Agent Workflow:
@@ -818,12 +986,9 @@ export default function CodeEditorWorkspace({
         style={{ width: `${100 - splitPercent}%` }}
         className="w-full flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative transition-[width] duration-75"
       >
-          {/* Editor Toolbar - Code Examples across Java, TypeScript, and Python */}
+          {/* Editor Toolbar - Language toggles and Sandbox Lab link */}
           <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs flex-wrap gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:inline mr-1">
-                Code Examples:
-              </span>
               <button
                 onClick={() => handleLanguageChange('java')}
                 className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer text-xs ${
