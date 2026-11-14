@@ -545,11 +545,11 @@ export default function CodeEditorWorkspace({
 
             // In-line language toggle matching user uploaded design (media_1794676396352_462a4599.png)
             const renderLanguageToggle = () => (
-              <div className="inline-flex items-center gap-1 bg-slate-900/95 dark:bg-slate-950 p-1 rounded-xl border border-slate-700/80 text-xs shadow-xs shrink-0">
+              <div className="inline-flex items-center gap-1 bg-slate-900/95 dark:bg-[#111928] p-1 rounded-2xl border border-slate-700/90 text-xs shadow-xs shrink-0">
                 <button
                   type="button"
                   onClick={() => setGuideLang('java')}
-                  className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  className={`px-3.5 py-1 rounded-xl font-bold transition-all cursor-pointer ${
                     guideLang === 'java'
                       ? 'bg-amber-500 text-white shadow-xs'
                       : 'text-slate-400 hover:text-white font-medium'
@@ -561,7 +561,7 @@ export default function CodeEditorWorkspace({
                 <button
                   type="button"
                   onClick={() => setGuideLang('python')}
-                  className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  className={`px-3.5 py-1 rounded-xl font-bold transition-all cursor-pointer ${
                     guideLang === 'python'
                       ? 'bg-amber-500 text-white shadow-xs'
                       : 'text-slate-400 hover:text-white font-medium'

@@ -13,10 +13,10 @@ import {
   CheckCircle2,
   AlertCircle,
   Trash2,
-  Code2,
+  ChevronDown,
 } from 'lucide-react';
 
-export type SupportedLang = 'java' | 'python' | 'typescript';
+export type SupportedLang = 'java' | 'python' | 'typescript' | 'javascript' | 'csharp';
 
 const STARTER_CODES: Record<SupportedLang, string> = {
   java: `/******************************************************************************
@@ -52,18 +52,47 @@ print("Hello World")
 const message: string = "Hello World";
 console.log(message);
 `,
+  javascript: `/**
+ * Online JavaScript Runner.
+ * Code and Execute JavaScript online.
+ */
+
+const message = "Hello World";
+console.log(message);
+`,
+  csharp: `/******************************************************************************
+
+                            Online C# Compiler.
+                Code, Compile, Run and Debug C# program online.
+Write your code in this editor and run it to execute it.
+
+*******************************************************************************/
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Hello World");
+    }
+}
+`,
 };
 
 const FILE_NAMES: Record<SupportedLang, string> = {
   java: 'Main.java',
   python: 'main.py',
   typescript: 'index.ts',
+  javascript: 'index.js',
+  csharp: 'Program.cs',
 };
 
 const LANG_LABELS: Record<SupportedLang, string> = {
   java: 'Java (OpenJDK)',
   python: 'Python 3',
   typescript: 'TypeScript',
+  javascript: 'JavaScript',
+  csharp: 'C# (.NET)',
 };
 
 export default function OnlineCompilerPage() {
@@ -215,7 +244,7 @@ export default function OnlineCompilerPage() {
                 </span>
               </h1>
               <p className="text-[11px] text-slate-400">
-                Write, compile, and execute pure Java, Python, and TypeScript programs online.
+                Write, compile, and execute Java, Python, TypeScript, JavaScript, and C# programs online.
               </p>
             </div>
           </div>
@@ -244,44 +273,29 @@ export default function OnlineCompilerPage() {
         </div>
       </div>
 
-      {/* OnlineGDB Style Main Action Toolbar */}
+      {/* OnlineGDB Style Main Action Toolbar with Language Dropdown */}
       <div className="bg-slate-900 border-b border-slate-800 px-4 py-2 shrink-0">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          {/* Language Selector Tabs */}
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => handleLanguageChange('java')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                language === 'java'
-                  ? 'bg-amber-500 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Java
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLanguageChange('python')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                language === 'python'
-                  ? 'bg-emerald-500 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Python 3
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLanguageChange('typescript')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                language === 'typescript'
-                  ? 'bg-sky-500 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              TypeScript
-            </button>
+          {/* Language Selector Dropdown (Java, Python, TypeScript, JavaScript, C#) */}
+          <div className="flex items-center gap-2.5">
+            <label htmlFor="language-select" className="text-xs font-semibold text-slate-300">
+              Language:
+            </label>
+            <div className="relative">
+              <select
+                id="language-select"
+                value={language}
+                onChange={(e) => handleLanguageChange(e.target.value as SupportedLang)}
+                className="bg-slate-950 border border-slate-700 hover:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs pr-8 transition-colors appearance-none"
+              >
+                <option value="java">Java (OpenJDK)</option>
+                <option value="python">Python 3</option>
+                <option value="typescript">TypeScript</option>
+                <option value="javascript">JavaScript</option>
+                <option value="csharp">C# (.NET)</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
 
           {/* Action Buttons: Run, Reset, Clear, Copy, Stdin */}
@@ -316,7 +330,7 @@ export default function OnlineCompilerPage() {
               type="button"
               onClick={handleReset}
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
-              title="Reset code to default Hello World starter"
+              title="Reset code to default starter program"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
@@ -507,11 +521,13 @@ export default function OnlineCompilerPage() {
 
           {/* Terminal Footer Specs */}
           <div className="p-3 bg-slate-900 border-t border-slate-800 text-xs text-slate-400 flex items-center justify-between">
-            <span className="text-slate-500">Compiler:</span>
+            <span className="text-slate-500">Compiler / Runtime:</span>
             <span className="text-slate-300 font-mono text-[11px]">
               {language === 'java' && 'OpenJDK 17 / JVM'}
               {language === 'python' && 'Python 3.13'}
-              {language === 'typescript' && 'TypeScript 5.x / Node.js v20'}
+              {language === 'typescript' && 'TypeScript 5.x / Node.js'}
+              {language === 'javascript' && 'Node.js v20 (V8)'}
+              {language === 'csharp' && '.NET 8 / C# Compiler'}
             </span>
           </div>
         </div>

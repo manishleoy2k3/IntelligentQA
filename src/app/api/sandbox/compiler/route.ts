@@ -80,6 +80,11 @@ async function executeWithCloudCompiler(
     java: { lang: 'java', file: 'Main.java' },
     python: { lang: 'python', file: 'main.py' },
     typescript: { lang: 'typescript', file: 'index.ts' },
+    javascript: { lang: 'javascript', file: 'index.js' },
+    js: { lang: 'javascript', file: 'index.js' },
+    csharp: { lang: 'csharp', file: 'Program.cs' },
+    'c#': { lang: 'csharp', file: 'Program.cs' },
+    cs: { lang: 'csharp', file: 'Program.cs' },
   };
 
   const target = pistonLangMap[language.toLowerCase()];
@@ -188,13 +193,27 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 2. TYPESCRIPT / JAVASCRIPT RUNNER
-    if (
-      normalizedLang === 'typescript' ||
-      normalizedLang === 'ts' ||
-      normalizedLang === 'javascript' ||
-      normalizedLang === 'js'
-    ) {
+    // 2. JAVASCRIPT RUNNER
+    if (normalizedLang === 'javascript' || normalizedLang === 'js') {
+      const result = await runSubprocess('node', ['-e', code], {
+        timeout: 5000,
+        stdin,
+      });
+      const durationMs = Date.now() - startTime;
+
+      return NextResponse.json({
+        language: 'javascript',
+        success: result.code === 0,
+        status: result.code === 0 ? 'success' : 'runtime_error',
+        stdout: result.stdout,
+        stderr: result.stderr,
+        executionTimeMs: durationMs,
+        exitCode: result.code,
+      });
+    }
+
+    // 3. TYPESCRIPT RUNNER
+    if (normalizedLang === 'typescript' || normalizedLang === 'ts') {
       try {
         let jsCode = code;
         try {
@@ -343,6 +362,36 @@ export async function POST(req: NextRequest) {
         stderr: 'JDK compiler (javac) not located in system environment, and cloud compilation was unreachable.',
         executionTimeMs: Date.now() - startTime,
         exitCode: 1,
+      });
+    }
+
+    // 5. C# (CSharp / .NET) RUNNER
+    if (normalizedLang === 'csharp' || normalizedLang === 'c#' || normalizedLang === 'cs') {
+      const cloudResult = await executeWithCloudCompiler('csharp', code, stdin);
+      const durationMs = Date.now() - startTime;
+
+      if (cloudResult) {
+        return NextResponse.json({
+          language: 'csharp',
+          success: cloudResult.code === 0,
+          status: cloudResult.code === 0 ? 'success' : 'runtime_error',
+          stdout: cloudResult.stdout,
+          stderr: cloudResult.stderr,
+          executionTimeMs: durationMs,
+          exitCode: cloudResult.code,
+        });
+      }
+
+      // If cloud unreachable, attempt local dotnet runner if installed
+      const result = await runSubprocess('dotnet', ['run'], { timeout: 6000, stdin });
+      return NextResponse.json({
+        language: 'csharp',
+        success: result.code === 0,
+        status: result.code === 0 ? 'success' : 'runtime_error',
+        stdout: result.stdout,
+        stderr: result.stderr,
+        executionTimeMs: durationMs,
+        exitCode: result.code,
       });
     }
 
