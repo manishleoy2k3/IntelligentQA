@@ -95,18 +95,26 @@ test('Item 9: Redundant horizontal tabs removed from QA AI Agents page', () => {
   assert.ok(!workspaceFile.includes('<div className="flex border-b">'), 'No horizontal agent tab bar');
 });
 
-test('Item 10: Selenium Learning Content removes redundant code snippet editor section & provides in-guide Java/Python toggle', () => {
+test('Item 10: Selenium Learning Content provides in-guide inline Java/Python toggle and removes duration mentions', () => {
   const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
   const docsFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-learning-docs.ts'), 'utf8');
+  const trackIdPage = fs.readFileSync(path.join(__dirname, '../src/app/tracks/[trackId]/page.tsx'), 'utf8');
 
   // Right-side code editor panel is excluded for Selenium courses to prevent duplicate snippet confusion
   assert.ok(workspaceFile.includes('!isSelenium && ('), 'Right editor panel is conditionally hidden for Selenium');
   assert.ok(workspaceFile.includes('isSelenium ? \'100%\' : `${splitPercent}%`'), 'Left panel expands to 100% full width for Selenium');
 
-  // Java & Python language switcher under Concept Guide
+  // Top banner removed so user does not need to scroll to top to change language
+  assert.ok(!workspaceFile.includes('Code Examples Language:'), 'Code Examples Language banner removed from top');
+
+  // Inline Java & Python language switcher directly on each code section
+  assert.ok(workspaceFile.includes('renderLanguageToggle()'), 'Renders inline language toggle directly on code blocks');
   assert.ok(workspaceFile.includes('setGuideLang(\'java\')'), 'Has in-guide Java switch button');
   assert.ok(workspaceFile.includes('setGuideLang(\'python\')'), 'Has in-guide Python switch button');
-  assert.ok(workspaceFile.includes('Code Examples Language:'), 'Has Code Examples Language section in Concept Guide');
+
+  // All time/duration mentions removed from learning sections
+  assert.ok(!workspaceFile.includes('{lesson.durationMinutes} mins'), 'Time minutes removed from lesson workspace header');
+  assert.ok(!trackIdPage.includes('{lesson.durationMinutes} mins'), 'Time minutes removed from track lessons list');
 
   // Verify Selenium learning docs use pure Selenium (zero Playwright TypeScript in Selenium course)
   assert.ok(docsFile.includes('SELENIUM WEBDRIVER (PYTHON)'), 'Has dedicated Selenium Python generator');
@@ -125,4 +133,36 @@ test('Item 11: Try it with AI keeps only Java and Python for Selenium & handles 
   assert.ok(routeFile.includes("if (action === 'code_snippet')"), 'Route handles code_snippet action seamlessly');
   assert.ok(routeFile.includes("generateCodeSnippetOnly(cleanInput, techStack)"), 'Falls back to deterministic generator for code_snippet');
   assert.ok(routeFile.includes('selenium-python'), 'Generates pure Selenium Python code for selenium-python techStack');
+});
+
+test('Item 12: Dynamic Java and Python code across all Selenium lessons, clean toggle placement, and time removed from Left Navigation', () => {
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
+  const docsFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-learning-docs.ts'), 'utf8');
+
+  // Request 1: Dedicated Selenium Generator supports all 10 lessons in both Java & Python
+  const seleniumLessons = [
+    'java-oops-framework',
+    'sel-webdriver-setup',
+    'sel-locators-xpath',
+    'sel-webelement-actions',
+    'sel-sync-waits',
+    'sel-actions-api',
+    'sel-frames-windows-shadow',
+    'sel-pom-pagefactory',
+    'sel-testng-parallel',
+    'sel-listeners-reports-cicd'
+  ];
+
+  for (const id of seleniumLessons) {
+    assert.ok(docsFile.includes(`lessonId === '${id}'`), `qa-learning-docs explicitly provides code for ${id}`);
+  }
+
+  // Request 2: Language toggle button is only placed on code boxes, never on title/heading text
+  assert.ok(!workspaceFile.includes('{doc.productionCodeExample.title}</h4>\n                      {isSelenium && renderLanguageToggle()}'), 'Toggle is not placed on title heading');
+  assert.ok(!workspaceFile.includes('{doc.productionCodeExample.title}\n                      </h4>\n                      {isSelenium && renderLanguageToggle()}'), 'Toggle is not on title row');
+
+  // Request 3: Time/duration removed from Left Navigation
+  assert.ok(!sidebarFile.includes('{track.totalHours} · {track.lessons.length}L'), 'Total hours removed from track header badge in Left Nav');
+  assert.ok(!sidebarFile.includes('{hours}\n                                </span>'), 'Individual lesson hours badge removed from Left Nav lesson links');
 });

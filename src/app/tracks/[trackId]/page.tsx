@@ -31,7 +31,7 @@ export default async function TrackOverviewPage({
             {track.title}
           </span>
           <span className="text-xs text-slate-500 font-medium">
-            {track.estimatedHours} Hours · {track.totalLessons} Lessons
+            {track.totalLessons} Lessons · Self-Paced Learning
           </span>
         </div>
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -99,7 +99,7 @@ export default async function TrackOverviewPage({
                           {lesson.title}
                         </span>
                         <span className="px-2.5 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
-                          {lesson.durationMinutes} mins
+                          {lesson.level}
                         </span>
                         {isPreview ? (
                           <span className="px-2.5 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-semibold">

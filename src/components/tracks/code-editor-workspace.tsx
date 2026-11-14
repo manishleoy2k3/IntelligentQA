@@ -467,7 +467,7 @@ export default function CodeEditorWorkspace({
                 </span>
               )}
               <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-medium">
-                {lesson.level} · {lesson.durationMinutes} mins
+                {lesson.level}
               </span>
             </div>
           </div>
@@ -530,43 +530,39 @@ export default function CodeEditorWorkspace({
               lesson.description,
               isSelenium ? guideLang : 'java'
             );
+
+            // In-line language toggle matching user uploaded design (media_1794676396352_462a4599.png)
+            const renderLanguageToggle = () => (
+              <div className="inline-flex items-center gap-1 bg-slate-900/95 dark:bg-slate-950 p-1 rounded-xl border border-slate-700/80 text-xs shadow-xs shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setGuideLang('java')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                    guideLang === 'java'
+                      ? 'bg-amber-500 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white font-medium'
+                  }`}
+                  title="Switch code example to Java"
+                >
+                  Java
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGuideLang('python')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                    guideLang === 'python'
+                      ? 'bg-amber-500 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white font-medium'
+                  }`}
+                  title="Switch code example to Python"
+                >
+                  Python
+                </button>
+              </div>
+            );
+
             return (
               <div className="space-y-6">
-                {/* Selenium Course Language Switcher: Java vs Python */}
-                {isSelenium && (
-                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-xs flex-wrap gap-2">
-                    <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">
-                      <Code className="w-4 h-4 text-emerald-500" />
-                      <span>Code Examples Language:</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
-                      <button
-                        type="button"
-                        onClick={() => setGuideLang('java')}
-                        className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                          guideLang === 'java'
-                            ? 'bg-amber-500 text-white shadow-xs'
-                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                        title="Display Java (Selenium) Code Examples"
-                      >
-                        Java
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setGuideLang('python')}
-                        className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                          guideLang === 'python'
-                            ? 'bg-emerald-600 text-white shadow-xs'
-                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                        title="Display Python (Selenium) Code Examples"
-                      >
-                        Python
-                      </button>
-                    </div>
-                  </div>
-                )}
                 {/* 1. Header Overview & Playwright-Docs Style Introduction */}
                 <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/40 dark:from-slate-900 dark:to-indigo-950/20 border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-xs">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -723,13 +719,17 @@ export default function CodeEditorWorkspace({
                         </p>
 
                         {step.codeSnippet && (
-                          <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 text-xs font-mono">
-                            {step.codeSnippet.caption && (
-                              <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-                                <span>{step.codeSnippet.caption}</span>
+                          <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 text-xs font-mono shadow-xs">
+                            <div className="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 text-[11px] text-slate-400 flex items-center justify-between gap-2 flex-wrap">
+                              <span className="font-semibold text-slate-300 truncate">
+                                {step.codeSnippet.caption || 'Implementation Snippet'}
+                              </span>
+                              {isSelenium ? (
+                                renderLanguageToggle()
+                              ) : (
                                 <span className="uppercase text-[10px] text-emerald-400 font-bold">{step.codeSnippet.language}</span>
-                              </div>
-                            )}
+                              )}
+                            </div>
                             <pre className="p-3.5 overflow-x-auto leading-relaxed text-emerald-300">
                               <code>{step.codeSnippet.code}</code>
                             </pre>
@@ -786,7 +786,7 @@ export default function CodeEditorWorkspace({
                 {/* 6. Production Code Example & Line-by-Line Breakdown */}
                 {doc.productionCodeExample && (
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
                         <Code className="w-5 h-5 text-indigo-500" />
                         {doc.productionCodeExample.title}
@@ -795,15 +795,19 @@ export default function CodeEditorWorkspace({
                     <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
                       {doc.productionCodeExample.description}
                     </p>
-                    <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 font-mono text-xs">
-                      <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                    <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 font-mono text-xs shadow-xs">
+                      <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400 flex-wrap gap-2">
                         <span className="flex items-center gap-2">
                           <Terminal className="w-3.5 h-3.5 text-emerald-400" />
                           Production Blueprint
                         </span>
-                        <span className="uppercase text-[11px] font-bold text-sky-400">
-                          {doc.productionCodeExample.language}
-                        </span>
+                        {isSelenium ? (
+                          renderLanguageToggle()
+                        ) : (
+                          <span className="uppercase text-[11px] font-bold text-sky-400">
+                            {doc.productionCodeExample.language}
+                          </span>
+                        )}
                       </div>
                       <pre className="p-4 overflow-x-auto leading-relaxed text-emerald-300">
                         <code>{doc.productionCodeExample.code}</code>

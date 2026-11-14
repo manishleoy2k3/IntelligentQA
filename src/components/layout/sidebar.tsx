@@ -346,7 +346,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                       >
                         <div
                           className="flex items-center gap-2 truncate flex-1 min-w-0"
-                          title={`${track.displayTitle} (${track.totalHours} · ${track.lessons.length} Lessons)`}
+                          title={`${track.displayTitle} (${track.lessons.length} Lessons)`}
                         >
                           <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
                           <span className="truncate text-slate-800 dark:text-neutral-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-semibold">
@@ -358,7 +358,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0"
                           title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
                         >
-                          <span>{track.totalHours} · {track.lessons.length}L</span>
+                          <span>{track.lessons.length} Lessons</span>
                           <ChevronDown
                             className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
                               isExpanded ? 'rotate-180' : ''
@@ -392,9 +392,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                 title={lesson.title}
                               >
                                 <span className="truncate pr-1.5">{lesson.title}</span>
-                                <span className="text-[9px] font-mono shrink-0 px-1 py-0.2 rounded bg-slate-100/80 dark:bg-neutral-800/80 text-slate-400 dark:text-neutral-400 group-hover:text-slate-700 dark:group-hover:text-neutral-300">
-                                  {hours}
-                                </span>
                               </Link>
                             );
                           })}

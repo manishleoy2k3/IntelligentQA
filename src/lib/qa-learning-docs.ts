@@ -843,6 +843,2603 @@ Format output as structured Gherkin BDD scenarios.\`;
   },
 };
 
+// ==========================================
+// DEDICATED SELENIUM CURRICULUM GENERATOR (JAVA & PYTHON)
+// ==========================================
+export function getSeleniumLessonDoc(
+  lessonId: string,
+  isPython: boolean,
+  lessonTitle?: string,
+  lessonDesc?: string
+): LessonDoc {
+  const category = isPython ? 'Selenium (Python) • Enterprise Architecture' : 'Selenium (Java) • Enterprise Architecture';
+  const cleanTitle = lessonTitle || 'Selenium Automation';
+
+  // 1. Core Java OOPs for Automation / Python Automation OOPs
+  if (lessonId === 'java-oops-framework' || lessonId === 'java-oops-qa') {
+    return {
+      title: '1. Core Java OOPs for Automation',
+      category,
+      tagline: 'Map Encapsulation, Inheritance, Polymorphism, and Abstraction Directly to QA Architecture',
+      overview: 'In manual testing, every test case in your spreadsheet is an isolated row with steps like "Launch Chrome, type user, click submit". If you automate like a manual tester by copy-pasting code into 100 script files, you end up with 100 browser instances running in memory, memory leaks, and when a single button ID changes, you have to manually edit 100 files! Object-Oriented Programming (OOPs) solves this completely.',
+      whyItMattersForManualQA: 'If you have 100 test cases that all log in, and the login button ID changes: in bad automation, you must manually edit 100 files. With OOPs Encapsulation (Page Object Model), you edit the locator in ONE line inside the LoginPage class, and all 100 tests pass instantly.',
+      architectureUnderTheHood: {
+        title: 'How the 4 OOPs Pillars Construct an Enterprise Test Framework',
+        flowOrMechanism: '1. Encapsulation: Locators are private in Page classes => 2. Inheritance: Tests extend BaseTest to reuse driver => 3. Polymorphism: DriverFactory returns ChromeDriver or FirefoxDriver => 4. Abstraction: WebDriver interface hides browser binary details.',
+        keyTakeaway: 'OOPs is not academic theory: each pillar maps directly to solving a concrete automation challenge.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Encapsulation: The Foundation of Page Object Model (Python)',
+          badge: 'Data Hiding',
+          summary: 'Keep web element locators private inside Python Page Classes.',
+          explanation: 'Declare locators as private tuple members self._username_field and expose public action methods like login_as(user, pass).',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Page Object Encapsulation',
+            code: `from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
+
+class LoginPage:
+    def __init__(self, driver: WebDriver):
+        self._driver = driver
+        # Private encapsulated locators
+        self._username_field = (By.ID, "username")
+        self._password_field = (By.ID, "password")
+        self._submit_btn = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def login_as(self, username: str, password: str):
+        self._driver.find_element(*self._username_field).send_keys(username)
+        self._driver.find_element(*self._password_field).send_keys(password)
+        self._driver.find_element(*self._submit_btn).click()
+        return DashboardPage(self._driver)`
+          },
+          proTip: 'Returning DashboardPage(self._driver) creates a fluent interface matching real user navigation.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Inheritance: Eliminating Driver Setup & Teardown with pytest (Python)',
+          badge: 'BaseTest Reuse',
+          summary: 'Manage browser lifecycle once in BaseTest fixture; all test classes inherit it.',
+          explanation: 'Create a BaseTest with @pytest.fixture(autouse=True) setup and teardown.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python BaseTest Fixture with Selenium',
+            code: `import pytest
+from selenium import webdriver
+
+class BaseTest:
+    @pytest.fixture(autouse=True)
+    def setup_driver(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        yield
+        if self.driver:
+            self.driver.quit() # Always quit to prevent zombie processes`
+          },
+          proTip: 'Always call driver.quit() rather than driver.close() to kill the chromedriver binary in memory.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Polymorphism: Multi-Browser Dynamic Dispatch (Python)',
+          badge: 'Dynamic Dispatch',
+          summary: 'Switch between Chrome, Firefox, and Edge with zero test changes.',
+          explanation: 'Create a polymorphic DriverFactory that instantiates the requested browser dynamically at runtime.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Polymorphic Factory in Python',
+            code: `from selenium import webdriver
+
+class DriverFactory:
+    @staticmethod
+    def create_driver(browser: str = "chrome"):
+        browser = browser.lower()
+        if browser == "firefox":
+            return webdriver.Firefox()
+        elif browser == "edge":
+            return webdriver.Edge()
+        return webdriver.Chrome()`
+          },
+          proTip: 'Parameterize browser execution via pytest -s --browser=firefox for cross-browser matrix testing.'
+        },
+        {
+          stepNumber: 4,
+          title: 'Abstraction: Hiding Browser Plumbing Behind Clean Interfaces (Python)',
+          badge: 'Clean API',
+          summary: 'Interact with high-level contracts while hiding complex WebDriver logic.',
+          explanation: 'When you call driver.get("url"), you do not care about HTTP POST commands or W3C wire protocols. Abstraction hides the mechanics.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Abstraction in Selenium WebDriver',
+            code: `from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+driver = webdriver.Chrome()
+driver.get("http://localhost:3000/sandbox/web")
+btn = driver.find_element(By.ID, "start")
+btn.click()`
+          },
+          proTip: 'Wrap reusable waits in a BasePage class so individual page objects do not repeat wait boilerplate.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Encapsulation: The Foundation of Page Object Model (Java)',
+          badge: 'Data Hiding',
+          summary: 'Keep web element locators private inside Java Page Classes.',
+          explanation: 'Declare locators as private By usernameField = By.id("username") and expose public action methods like loginAs(user, pass).',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Page Object Encapsulation',
+            code: `package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class LoginPage {
+    private final WebDriver driver;
+    // Private encapsulated locators
+    private final By usernameField = By.id("username");
+    private final By passwordField = By.id("password");
+    private final By submitBtn = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public DashboardPage loginAs(String username, String password) {
+        driver.findElement(usernameField).sendKeys(username);
+        driver.findElement(passwordField).sendKeys(password);
+        driver.findElement(submitBtn).click();
+        return new DashboardPage(driver);
+    }
+}`
+          },
+          proTip: 'Returning new DashboardPage(driver) creates a fluent interface matching real user navigation.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Inheritance: Eliminating Driver Setup & Teardown with BaseTest (Java)',
+          badge: 'BaseTest Reuse',
+          summary: 'Manage browser lifecycle once in BaseTest; all test classes inherit it.',
+          explanation: 'Create a BaseTest with @BeforeMethod setup and @AfterMethod teardown.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java BaseTest Setup & Teardown',
+            code: `package com.intelligentqa.base;
+
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+
+public abstract class BaseTest {
+    protected WebDriver driver;
+
+    @BeforeMethod
+    public void setUp() {
+        driver = DriverFactory.createDriver("chrome");
+        driver.manage().window().maximize();
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit(); // Always quit to kill chromedriver process
+        }
+    }
+}`
+          },
+          proTip: 'Always call driver.quit() rather than driver.close() to kill the chromedriver binary in memory.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Polymorphism: Multi-Browser Dynamic Dispatch (Java)',
+          badge: 'Dynamic Dispatch',
+          summary: 'Switch between Chrome, Firefox, and Edge with zero test changes.',
+          explanation: 'Create a polymorphic DriverFactory that instantiates the requested browser dynamically at runtime.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Polymorphic Factory in Java',
+            code: `package com.intelligentqa.factory;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+
+public class DriverFactory {
+    public static WebDriver createDriver(String browser) {
+        switch (browser.toLowerCase()) {
+            case "firefox":
+                return new FirefoxDriver();
+            case "edge":
+                return new EdgeDriver();
+            default:
+                return new ChromeDriver();
+        }
+    }
+}`
+          },
+          proTip: 'Parameterize browser execution via TestNG XML parameters for cross-browser matrix testing.'
+        },
+        {
+          stepNumber: 4,
+          title: 'Abstraction: Hiding Browser Plumbing Behind Clean Interfaces (Java)',
+          badge: 'Clean API',
+          summary: 'Interact with high-level contracts while hiding complex WebDriver logic.',
+          explanation: 'When you call driver.get("url"), you do not care about HTTP POST commands or W3C wire protocols. Abstraction hides the mechanics.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Abstraction in Selenium WebDriver',
+            code: `import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.By;
+
+WebDriver driver = new ChromeDriver();
+driver.get("http://localhost:3000/sandbox/web");
+driver.findElement(By.id("start")).click();`
+          },
+          proTip: 'Wrap reusable waits in an abstract BasePage class so individual page objects do not repeat wait boilerplate.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual Tester copies and pastes browser open and login steps into every spreadsheet tab',
+          automatedApproach: 'Inherit BaseTest with @BeforeMethod / pytest fixture setup',
+          whyItMatters: 'Zero boilerplate duplication; updating browser startup config happens in exactly 1 file.',
+        },
+        {
+          manualAction: 'When button ID changes, manual tester updates all 100 test scenario documents',
+          automatedApproach: 'Encapsulated Page Object Model with private locators',
+          whyItMatters: 'Change the locator in 1 class; all 100 test runs automatically use the new locator.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): OOPs Framework' : 'Production Implementation (Java Selenium): OOPs Framework',
+        description: isPython ? 'Complete pytest test class extending BaseTest with Page Object Model.' : 'Complete TestNG test class extending BaseTest with Page Object Model.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Production Test with Page Object Model in Selenium (Python)
+# ==========================================
+import pytest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+class TestLoginValidation:
+    @pytest.fixture(autouse=True)
+    def setup_and_teardown(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        yield
+        if self.driver:
+            self.driver.quit()
+
+    def test_valid_user_authentication(self):
+        self.driver.get("http://localhost:3000/sandbox/web")
+        login_page = LoginPage(self.driver)
+        dashboard = login_page.login_as("standard_user", "secret_pass")
+        assert dashboard.is_loaded(), "Dashboard failed to load after login"` : `// ==========================================
+// Production Test with Page Object Model in Selenium (Java)
+// ==========================================
+package com.intelligentqa.tests;
+
+import com.intelligentqa.base.BaseTest;
+import com.intelligentqa.pages.LoginPage;
+import com.intelligentqa.pages.DashboardPage;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class LoginValidationTest extends BaseTest {
+
+    @Test(description = "Verify user can login cleanly with valid credentials")
+    public void testValidUserAuthentication() {
+        driver.get("http://localhost:3000/sandbox/web");
+        LoginPage loginPage = new LoginPage(driver);
+        DashboardPage dashboard = loginPage.loginAs("standard_user", "secret_pass");
+        Assert.assertTrue(dashboard.isLoaded(), "Dashboard failed to load after login");
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'test', explanation: 'Test execution entrypoint boundary.' },
+          { lineOrPattern: 'loginPage.login', explanation: 'High-level business action hiding low-level element finding.' }
+        ]
+      },
+      bestPractices: [
+        'Keep locators private within Page classes',
+        'Use BaseTest / fixtures for driver setup and teardown',
+        'Never use hardcoded sleep calls; rely on explicit dynamic synchronization'
+      ],
+      antiPatterns: [
+        'Exposing raw By locators to test methods',
+        'Copy-pasting driver initialization into every test file',
+        'Mixing test assertions directly inside Page Object classes'
+      ],
+      interviewQnA: {
+        question: 'How do you structure an enterprise Selenium framework using OOPs?',
+        answer: 'We encapsulate locators inside Page Classes, manage browser lifecycle in a BaseTest class or pytest fixture, use a DriverFactory for multi-browser polymorphism, and wrap common wait utilities inside an abstract BasePage class.'
+      }
+    };
+  }
+
+  // 2. WebDriver 4 Architecture & Browser Setup
+  if (lessonId === 'sel-webdriver-setup') {
+    return {
+      title: '2. WebDriver 4 Architecture & Browser Setup',
+      category,
+      tagline: 'Selenium 4 W3C WebDriver Architecture, Browser Binaries & Headless Execution',
+      overview: 'Selenium 4 communicates directly with browsers using the standardized W3C WebDriver protocol over HTTP/REST and BiDi WebSockets, completely removing the legacy JSON Wire Protocol overhead.',
+      whyItMattersForManualQA: 'Manual testers launch browsers by clicking desktop icons. In automation, the test runner must orchestrate browser binary processes, apply security flags, set window viewports, and cleanly terminate processes.',
+      architectureUnderTheHood: {
+        title: 'Selenium 4 Direct W3C Communication Mechanism',
+        flowOrMechanism: 'Test Script => Selenium 4 Client => Direct W3C Protocol => ChromeDriver / GeckoDriver Binary => Native Browser Process',
+        keyTakeaway: 'No JSON Wire encoding/decoding overhead: actions execute faster and standard W3C error codes are returned directly.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'WebDriver Initialization & Window Management (Python)',
+          badge: 'Binary Setup',
+          summary: 'Initialize the Chrome WebDriver instance and configure viewport dimensions.',
+          explanation: 'Use selenium.webdriver to spawn a clean browser session with maximized window dimensions.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python WebDriver 4 Setup',
+            code: `from selenium import webdriver
+
+# Selenium 4 automatically resolves driver binaries via Selenium Manager
+driver = webdriver.Chrome()
+driver.maximize_window()
+driver.set_page_load_timeout(30)`
+          },
+          proTip: 'Selenium 4 includes built-in Selenium Manager, so webdriver-manager third-party package is no longer needed.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Configuring ChromeOptions for Headless & CI/CD Execution (Python)',
+          badge: 'CI Options',
+          summary: 'Configure headless flags and sandbox flags for Linux/Docker environments.',
+          explanation: 'Pass Options instance to webdriver.Chrome() with --headless=new for modern headless execution.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Headless ChromeOptions',
+            code: `from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+
+driver = webdriver.Chrome(options=options)`
+          },
+          proTip: 'Use --headless=new rather than legacy --headless for full modern Chrome rendering engine support.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Navigating & Verifying Browser Readiness (Python)',
+          badge: 'Verification',
+          summary: 'Navigate to application URL and verify the session title.',
+          explanation: 'Call driver.get() and perform a fast sanity assertion against driver.title.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Page Navigation & Assertion',
+            code: `driver.get("http://localhost:3000/sandbox/web")
+assert "Sandbox" in driver.title, f"Unexpected page title: {driver.title}"
+print("Successfully loaded target sandbox URL in Python!")`
+          },
+          proTip: 'Always verify the initial page title or URL before attempting to interact with web elements.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'WebDriver Initialization & Window Management (Java)',
+          badge: 'Binary Setup',
+          summary: 'Initialize the ChromeDriver instance and configure viewport dimensions.',
+          explanation: 'Use Selenium 4 ChromeDriver to spawn a clean browser session with maximized window dimensions.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java WebDriver 4 Setup',
+            code: `package com.intelligentqa.setup;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import java.time.Duration;
+
+// Selenium 4 automatically downloads binaries via Selenium Manager
+WebDriver driver = new ChromeDriver();
+driver.manage().window().maximize();
+driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));`
+          },
+          proTip: 'Selenium 4 includes built-in Selenium Manager, so webdrivermanager dependency is completely optional.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Configuring ChromeOptions for Headless & CI/CD Execution (Java)',
+          badge: 'CI Options',
+          summary: 'Configure headless flags and sandbox flags for Linux/Docker environments.',
+          explanation: 'Pass ChromeOptions instance to new ChromeDriver(options) with --headless=new.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Headless ChromeOptions',
+            code: `import org.openqa.selenium.chrome.ChromeOptions;
+
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--headless=new");
+options.addArguments("--no-sandbox");
+options.addArguments("--disable-dev-shm-usage");
+options.addArguments("--disable-gpu");
+
+WebDriver driver = new ChromeDriver(options);`
+          },
+          proTip: 'Use --headless=new rather than legacy --headless for modern Blink-engine headless support.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Navigating & Verifying Browser Readiness (Java)',
+          badge: 'Verification',
+          summary: 'Navigate to application URL and verify the session title.',
+          explanation: 'Call driver.get() and perform a fast sanity assertion using TestNG.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Page Navigation & Assertion',
+            code: `import org.testng.Assert;
+
+driver.get("http://localhost:3000/sandbox/web");
+Assert.assertTrue(driver.getTitle().contains("Sandbox"), "Title mismatch");
+System.out.println("Successfully loaded target sandbox URL in Java!");`
+          },
+          proTip: 'Always verify the initial page title or URL before attempting to interact with web elements.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Tester manually launches Chrome, resizes window, and types URL',
+          automatedApproach: 'DriverFactory with ChromeOptions and window.maximize()',
+          whyItMatters: 'Guarantees uniform screen resolution and isolated browser cache across all test runs.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Driver Factory & Fixture' : 'Production Implementation (Java Selenium): Enterprise DriverFactory',
+        description: isPython ? 'Pytest fixture managing browser lifecycle with headless support and auto-teardown.' : 'Thread-safe DriverFactory class supporting Chrome, Firefox, and Edge with ChromeOptions.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium 4 Production Driver Fixture
+# ==========================================
+import pytest
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+
+@pytest.fixture(scope="function")
+def driver(request):
+    browser = request.config.getoption("--browser", default="chrome").lower()
+    is_headless = request.config.getoption("--headless", default=False)
+
+    if browser == "chrome":
+        options = ChromeOptions()
+        if is_headless:
+            options.add_argument("--headless=new")
+        options.add_argument("--no-sandbox")
+        driver_instance = webdriver.Chrome(options=options)
+    elif browser == "firefox":
+        driver_instance = webdriver.Firefox()
+    else:
+        raise ValueError(f"Unsupported browser: {browser}")
+
+    driver_instance.maximize_window()
+    yield driver_instance
+    driver_instance.quit() # Clean process teardown` : `// ==========================================
+// Java Selenium 4 Production DriverFactory
+// ==========================================
+package com.intelligentqa.factory;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+
+public class DriverFactory {
+    public static WebDriver createDriver(String browser, boolean headless) {
+        switch (browser.toLowerCase()) {
+            case "firefox":
+                return new FirefoxDriver();
+            case "edge":
+                return new EdgeDriver();
+            default:
+                ChromeOptions options = new ChromeOptions();
+                if (headless) {
+                    options.addArguments("--headless=new");
+                }
+                options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
+                return new ChromeDriver(options);
+        }
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'createDriver', explanation: 'Factory pattern isolating browser creation.' },
+          { lineOrPattern: 'headless=new', explanation: 'Modern headless rendering flag.' }
+        ]
+      },
+      bestPractices: [
+        'Always call driver.quit() in teardown to prevent orphan browser processes in memory',
+        'Use --headless=new for Docker / CI execution',
+        'Avoid hardcoded executable paths; rely on Selenium Manager'
+      ],
+      antiPatterns: [
+        'Calling driver.close() instead of driver.quit() at end of suite',
+        'Hardcoding Windows/Mac paths like C:\\chromedriver.exe',
+        'Omitting --no-sandbox in containerized CI environments'
+      ],
+      interviewQnA: {
+        question: 'What is the architectural difference between Selenium 3 and Selenium 4?',
+        answer: 'Selenium 3 required the JSON Wire Protocol to translate language bindings into HTTP requests that browser drivers understood. Selenium 4 is 100% W3C compliant, communicating natively with browser drivers without intermediate translation, and adds BiDi (Bidirectional) WebSocket capabilities.'
+      }
+    };
+  }
+
+  // 3. Advanced Dynamic Locators (XPath & CSS)
+  if (lessonId === 'sel-locators-xpath') {
+    return {
+      title: '3. Advanced Dynamic Locators (XPath & CSS)',
+      category,
+      tagline: 'Master Resilient CSS Selectors, Dynamic XPath Axes & Anti-Fragile DOM Queries',
+      overview: 'Locators are the number one source of flakiness in web test automation. Brittle absolute XPaths break whenever developers tweak HTML structure. Modern SDETs use resilient CSS selectors and dynamic XPath axes that target stable semantics and relationships.',
+      whyItMattersForManualQA: 'Manual testers visually recognize buttons by their label, icon, or proximity to table rows. Automators must translate that human visual recognition into robust locators that do not depend on fragile DOM nesting indexes.',
+      architectureUnderTheHood: {
+        title: 'DOM Query Engine & Selector Evaluation',
+        flowOrMechanism: 'Selector String => Native Browser document.querySelector / evaluate => DOM Node Traversal => WebElement Reference Token',
+        keyTakeaway: 'CSS selectors execute natively in the browser layout engine faster than XPath; use XPath primarily for text matching and reverse parent/sibling axes navigation.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Resilient CSS Attribute & Pseudo Selectors (Python)',
+          badge: 'CSS Strategy',
+          summary: 'Use resilient CSS selectors targeting data-testid, aria attributes, or stable placeholders.',
+          explanation: 'CSS attribute selectors (e.g. input[placeholder*="Search"]) remain stable even when layout CSS classes are refactored.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python CSS Locators',
+            code: `from selenium.webdriver.common.by import By
+
+# Search input and button with resilient CSS
+search_box = (By.CSS_SELECTOR, "input[placeholder*='Search']")
+submit_btn = (By.CSS_SELECTOR, "button[type='submit'].btn-primary")
+active_badge = (By.CSS_SELECTOR, "[data-status='active']")`
+          },
+          proTip: 'Prefer [data-testid="..."] or [aria-label="..."] over class names generated by Tailwind or CSS modules.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Dynamic XPath Axes: Ancestor & Sibling Traversal (Python)',
+          badge: 'XPath Axes',
+          summary: 'Locate action buttons relative to target data inside table rows.',
+          explanation: 'Traverse parent rows and descendant buttons using XPath axes (e.g. //tr[contains(., "User")]//button).',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Dynamic XPath with Axes',
+            code: `from selenium.webdriver.common.by import By
+
+def get_edit_button_for_user(username: str):
+    # Dynamically locate the edit button inside the table row containing the username
+    xpath = f"//tr[contains(., '{username}')]//button[contains(@class, 'edit-btn')]"
+    return (By.XPATH, xpath)
+
+# Usage in Python:
+edit_locator = get_edit_button_for_user("Sarah Connor")
+driver.find_element(*edit_locator).click()`
+          },
+          proTip: 'Never use indexed paths like //tr[3]/td[5]/button because row ordering dynamically changes with sorting.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Normalized Text & Compound Conditions (Python)',
+          badge: 'Text Matching',
+          summary: 'Match exact button text stripped of extra whitespace and linebreaks.',
+          explanation: 'Use normalize-space() to eliminate hidden whitespace differences in modern frontend web apps.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python normalize-space() XPath',
+            code: `from selenium.webdriver.common.by import By
+
+# Matches button cleanly even with leading/trailing spaces or inner spans
+save_btn = driver.find_element(By.XPATH, "//button[normalize-space()='Save Changes']")
+save_btn.click()`
+          },
+          proTip: 'normalize-space(.) collapses multi-line text into a clean single string for reliable matching.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Resilient CSS Attribute & Pseudo Selectors (Java)',
+          badge: 'CSS Strategy',
+          summary: 'Use resilient CSS selectors targeting data-testid, aria attributes, or stable placeholders.',
+          explanation: 'CSS attribute selectors (e.g. input[placeholder*="Search"]) remain stable even when layout CSS classes are refactored.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java CSS Locators',
+            code: `package com.intelligentqa.locators;
+
+import org.openqa.selenium.By;
+
+// Search input and button with resilient CSS
+By searchBox = By.cssSelector("input[placeholder*='Search']");
+By submitBtn = By.cssSelector("button[type='submit'].btn-primary");
+By activeBadge = By.cssSelector("[data-status='active']");`
+          },
+          proTip: 'Prefer [data-testid="..."] or [aria-label="..."] over class names generated by Tailwind or CSS modules.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Dynamic XPath Axes: Ancestor & Sibling Traversal (Java)',
+          badge: 'XPath Axes',
+          summary: 'Locate action buttons relative to target data inside table rows.',
+          explanation: 'Traverse parent rows and descendant buttons using XPath axes (e.g. //tr[contains(., "User")]//button).',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Dynamic XPath with Axes',
+            code: `package com.intelligentqa.locators;
+
+import org.openqa.selenium.By;
+
+public class TableLocators {
+    // Dynamically locate the edit button inside the table row containing the username
+    public static By getEditButtonForUser(String username) {
+        String xpath = "//tr[contains(., '" + username + "')]//button[contains(@class, 'edit-btn')]";
+        return By.xpath(xpath);
+    }
+}`
+          },
+          proTip: 'Never use indexed paths like //tr[3]/td[5]/button because row ordering dynamically changes with sorting.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Normalized Text & Compound Conditions (Java)',
+          badge: 'Text Matching',
+          summary: 'Match exact button text stripped of extra whitespace and linebreaks.',
+          explanation: 'Use normalize-space() to eliminate hidden whitespace differences in modern frontend web apps.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java normalize-space() XPath',
+            code: `import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+// Matches button cleanly even with leading/trailing spaces or inner spans
+WebElement saveBtn = driver.findElement(By.xpath("//button[normalize-space()='Save Changes']"));
+saveBtn.click();`
+          },
+          proTip: 'normalize-space(.) collapses multi-line text into a clean single string for reliable matching.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual tester scans table for Sarah Connor and clicks the edit pencil icon on that row',
+          automatedApproach: 'Relative XPath axes: //tr[contains(., "Sarah Connor")]//button',
+          whyItMatters: 'Locates the exact user button regardless of table sorting or pagination index changes.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Dynamic Locators' : 'Production Implementation (Java Selenium): Dynamic Table Locators',
+        description: isPython ? 'Python Page class with robust locator methods for dynamic data tables.' : 'Java Page class with robust locator methods for dynamic data tables.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Dynamic Table Page
+# ==========================================
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+class UsersTablePage:
+    def __init__(self, driver: WebDriver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+        self.search_field = (By.CSS_SELECTOR, "input[placeholder*='Search']")
+
+    def search_user(self, query: str):
+        elem = self.wait.until(EC.visibility_of_element_located(self.search_field))
+        elem.clear()
+        elem.send_keys(query)
+
+    def click_edit_user(self, username: str):
+        # Anti-fragile relative XPath axis
+        row_edit_xpath = f"//tr[contains(., '{username}')]//button[contains(@class, 'edit-btn')]"
+        btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, row_edit_xpath)))
+        btn.click()` : `// ==========================================
+// Java Selenium Production Dynamic Table Page
+// ==========================================
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class UsersTablePage {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+    private final By searchField = By.cssSelector("input[placeholder*='Search']");
+
+    public UsersTablePage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public void searchUser(String query) {
+        WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(searchField));
+        input.clear();
+        input.sendKeys(query);
+    }
+
+    public void clickEditUser(String username) {
+        // Anti-fragile relative XPath axis
+        String rowEditXpath = "//tr[contains(., '" + username + "')]//button[contains(@class, 'edit-btn')]";
+        WebElement editBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(rowEditXpath)));
+        editBtn.click();
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'searchUser', explanation: 'Encapsulated text search.' },
+          { lineOrPattern: 'clickEditUser', explanation: 'Dynamic XPath based on user row text.' }
+        ]
+      },
+      bestPractices: [
+        'Prefer CSS selectors for simple attribute lookups and IDs',
+        'Use XPath ancestor/following-sibling axes for table rows',
+        'Always wrap locator actions in explicit waits'
+      ],
+      antiPatterns: [
+        'Using full absolute XPath starting from /html/body/...',
+        'Relying on auto-generated styling class names like .css-1729x',
+        'Targeting elements by brittle numeric indexes like [4]'
+      ],
+      interviewQnA: {
+        question: 'When should an SDET use CSS Selectors vs XPath in Selenium?',
+        answer: 'CSS Selectors are evaluated natively by browser layout engines, making them faster and cleaner for IDs, attributes, classes, and hierarchy. XPath is required when navigating backwards up the DOM tree (parent or ancestor axes) or locating elements by text content using text() or contains().'
+      }
+    };
+  }
+
+  // 4. WebElement Actions & Form Interactions
+  if (lessonId === 'sel-webelement-actions') {
+    return {
+      title: '4. WebElement Actions & Form Interactions',
+      category,
+      tagline: 'Form Automation: Text Inputs, Select Dropdowns, Checkboxes & Radio Controls',
+      overview: 'Interacting with form elements requires robust handling: clearing input buffers before typing, selecting dropdown options via the Select class rather than fragile clicks, and verifying checked states before toggling checkboxes.',
+      whyItMattersForManualQA: 'A manual tester selects a country from a dropdown and notices if the input cleared cleanly. Automation scripts execute in milliseconds and will accidentally append text or fail to trigger JavaScript change events if not coded properly.',
+      architectureUnderTheHood: {
+        title: 'Browser Event Firing on WebElements',
+        flowOrMechanism: 'driver.sendKeys() => Native Focus Event => KeyDown / KeyPress => DOM Value Mutation => Change / Blur Event',
+        keyTakeaway: 'Always call clear() before sendKeys() to ensure legacy default text does not corrupt test data inputs.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Safe Text Typing & Input Buffer Clearing (Python)',
+          badge: 'Input Handling',
+          summary: 'Clear existing values and type test strings.',
+          explanation: 'Call clear() first, then send_keys() to input valid email or username values.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Text Field Interaction',
+            code: `from selenium.webdriver.common.by import By
+
+email_field = driver.find_element(By.ID, "user-email")
+email_field.clear() # Clear default placeholder text
+email_field.send_keys("sdet@intelligentqa.com")`
+          },
+          proTip: 'For tricky React controlled inputs, select all with Keys.CONTROL + "a" followed by Keys.BACK_SPACE.'
+        },
+        {
+          stepNumber: 2,
+          title: 'HTML Select Dropdown Handling (Python)',
+          badge: 'Select Class',
+          summary: 'Use Selenium Select helper class to select dropdown options by text or value.',
+          explanation: 'The Select class automatically manages option elements and triggers browser change events.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Select Dropdown',
+            code: `from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+
+dropdown_element = driver.find_element(By.ID, "role-dropdown")
+select = Select(dropdown_element)
+
+# Select by visible text or value
+select.select_by_visible_text("Lead SDET")
+assert select.first_selected_option.text == "Lead SDET"`
+          },
+          proTip: 'Never use hardcoded clicks on <option> tags; always wrap native <select> in the Select class.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Checkbox & Radio Button Verification (Python)',
+          badge: 'State Verification',
+          summary: 'Check whether checkbox is selected before clicking to avoid unchecking.',
+          explanation: 'Use is_selected() to inspect boolean state before triggering toggle click.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Checkbox State Toggle',
+            code: `terms_checkbox = driver.find_element(By.ID, "agree-terms")
+
+# Only click if not already checked
+if not terms_checkbox.is_selected():
+    terms_checkbox.click()
+
+assert terms_checkbox.is_selected()`
+          },
+          proTip: 'If checkbox has an overlapping custom CSS pseudo-element, click the parent <label> instead.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Safe Text Typing & Input Buffer Clearing (Java)',
+          badge: 'Input Handling',
+          summary: 'Clear existing values and type test strings.',
+          explanation: 'Call clear() first, then sendKeys() to input valid email or username values.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Text Field Interaction',
+            code: `package com.intelligentqa.forms;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+WebElement emailField = driver.findElement(By.id("user-email"));
+emailField.clear(); // Clear default placeholder text
+emailField.sendKeys("sdet@intelligentqa.com");`
+          },
+          proTip: 'For tricky React controlled inputs, select all with Keys.CONTROL + "a" followed by Keys.BACK_SPACE.'
+        },
+        {
+          stepNumber: 2,
+          title: 'HTML Select Dropdown Handling (Java)',
+          badge: 'Select Class',
+          summary: 'Use Selenium Select helper class to select dropdown options by text or value.',
+          explanation: 'The Select class automatically manages option elements and triggers browser change events.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Select Dropdown',
+            code: `import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+WebElement dropdownElem = driver.findElement(By.id("role-dropdown"));
+Select select = new Select(dropdownElem);
+
+// Select by visible text or value
+select.selectByVisibleText("Lead SDET");
+Assert.assertEquals(select.getFirstSelectedOption().getText(), "Lead SDET");`
+          },
+          proTip: 'Never use hardcoded clicks on <option> tags; always wrap native <select> in the Select class.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Checkbox & Radio Button Verification (Java)',
+          badge: 'State Verification',
+          summary: 'Check whether checkbox is selected before clicking to avoid unchecking.',
+          explanation: 'Use isSelected() to inspect boolean state before triggering toggle click.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Checkbox State Toggle',
+            code: `import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+WebElement termsCheckbox = driver.findElement(By.id("agree-terms"));
+
+// Only click if not already checked
+if (!termsCheckbox.isSelected()) {
+    termsCheckbox.click();
+}
+Assert.assertTrue(termsCheckbox.isSelected());`
+          },
+          proTip: 'If checkbox has an overlapping custom CSS pseudo-element, click the parent <label> instead.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Tester double clicks text box to overwrite existing text and selects dropdown',
+          automatedApproach: 'element.clear() + Select(elem).selectByVisibleText()',
+          whyItMatters: 'Ensures reliable payload without corrupted duplicate strings or unselected defaults.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Form Actions' : 'Production Implementation (Java Selenium): Registration Form Page',
+        description: isPython ? 'Complete Python Page Object automating input fields, dropdowns, and checkboxes.' : 'Complete Java Page Object automating input fields, dropdowns, and checkboxes.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Form Automation
+# ==========================================
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support import expected_conditions as EC
+
+class RegistrationPage:
+    def __init__(self, driver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+        self.email_input = (By.ID, "user-email")
+        self.role_select = (By.ID, "role-dropdown")
+        self.terms_checkbox = (By.ID, "agree-terms")
+        self.submit_btn = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def fill_registration_form(self, email: str, role: str):
+        # 1. Type email cleanly
+        email_elem = self.wait.until(EC.visibility_of_element_located(self.email_input))
+        email_elem.clear()
+        email_elem.send_keys(email)
+
+        # 2. Select dropdown
+        select = Select(self.wait.until(EC.visibility_of_element_located(self.role_select)))
+        select.select_by_visible_text(role)
+
+        # 3. Check agreement terms
+        terms = self.driver.find_element(*self.terms_checkbox)
+        if not terms.is_selected():
+            terms.click()
+
+        # 4. Submit
+        self.driver.find_element(*self.submit_btn).click()` : `// ==========================================
+// Java Selenium Production Form Automation
+// ==========================================
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class RegistrationPage {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    private final By emailInput = By.id("user-email");
+    private final By roleSelect = By.id("role-dropdown");
+    private final By termsCheckbox = By.id("agree-terms");
+    private final By submitBtn = By.cssSelector("button[type='submit']");
+
+    public RegistrationPage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public void fillRegistrationForm(String email, String role) {
+        // 1. Type email cleanly
+        WebElement emailElem = wait.until(ExpectedConditions.visibilityOfElementLocated(emailInput));
+        emailElem.clear();
+        emailElem.sendKeys(email);
+
+        // 2. Select dropdown
+        Select select = new Select(wait.until(ExpectedConditions.visibilityOfElementLocated(roleSelect)));
+        select.selectByVisibleText(role);
+
+        // 3. Check agreement terms
+        WebElement terms = driver.findElement(termsCheckbox);
+        if (!terms.isSelected()) {
+            terms.click();
+        }
+
+        // 4. Submit
+        driver.findElement(submitBtn).click();
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'fillRegistrationForm', explanation: 'Atomic business operation.' },
+          { lineOrPattern: 'Select', explanation: 'Safe dropdown option selection.' }
+        ]
+      },
+      bestPractices: [
+        'Always clear() input fields before typing test strings',
+        'Verify isSelected() before clicking checkboxes',
+        'Use the Select class rather than raw CSS option clicks'
+      ],
+      antiPatterns: [
+        'Typing into pre-filled fields without calling clear()',
+        'Hardcoding Thread.sleep after selecting a dropdown option',
+        'Assuming checkboxes start unchecked without verification'
+      ],
+      interviewQnA: {
+        question: 'How do you handle custom non-native dropdowns in Selenium (e.g. React/Tailwind custom selects)?',
+        answer: 'Custom dropdowns are rendered with <div> and <ul> tags rather than native <select> elements, so the Selenium Select class throws an UnexpectedTagNameException. For custom dropdowns, click the trigger button element, explicitly wait for the dropdown panel visibility, and click the target option by its text or role locator.'
+      }
+    };
+  }
+
+  // 5. Synchronization & Dynamic Waits Strategy
+  if (lessonId === 'sel-sync-waits') {
+    return {
+      title: '5. Synchronization & Dynamic Waits Strategy',
+      category,
+      tagline: 'Eliminate Flakiness with WebDriverWait, ExpectedConditions & Fluent Synchronization',
+      overview: 'Modern single page apps (SPAs) load content asynchronously via AJAX and fetch calls. Tests that run faster than network requests throw NoSuchElementException. Explicit synchronization with WebDriverWait polls the DOM dynamically until the required state is reached.',
+      whyItMattersForManualQA: 'A manual tester sees a loading spinner and intuitively waits for it to vanish before clicking. If an automated script clicks while the spinner is active, the click is intercepted or fails.',
+      architectureUnderTheHood: {
+        title: 'WebDriverWait Dynamic Polling Mechanism',
+        flowOrMechanism: 'Test Runner => Loop every 500ms => Evaluate ExpectedCondition => DOM Ready or Exception Caught => Timeout (TimeoutException) or Resume Test',
+        keyTakeaway: 'Explicit waits advance the exact millisecond the element is ready, saving hundreds of hours of CI pipeline time compared to Thread.sleep.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Initializing WebDriverWait with Polling Interval (Python)',
+          badge: 'Wait Setup',
+          summary: 'Create a WebDriverWait instance with configurable timeout and ignored exceptions.',
+          explanation: 'WebDriverWait continually executes expected conditions at 500ms polling intervals.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python WebDriverWait Setup',
+            code: `from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+
+# Wait up to 10 seconds, polling every 500ms
+wait = WebDriverWait(
+    driver,
+    timeout=10,
+    poll_frequency=0.5,
+    ignored_exceptions=[NoSuchElementException, StaleElementReferenceException]
+)`
+          },
+          proTip: 'Never mix implicit wait (implicitly_wait) with explicit wait; it causes unpredictable timeout compounding.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Waiting for Element Clickability (Python)',
+          badge: 'Clickability',
+          summary: 'Wait until the target button is attached, visible, and enabled.',
+          explanation: 'element_to_be_clickable ensures the element is both visible and enabled so clicks are never intercepted.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python element_to_be_clickable',
+            code: `from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
+trigger_btn = wait.until(EC.element_to_be_clickable((By.ID, "ajax-trigger")))
+trigger_btn.click()
+print("Clicked button safely after element was clickable!")`
+          },
+          proTip: 'element_to_be_clickable protects against ElementClickInterceptedException.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Inverted Waits: Spinner Invisibility & Content Presence (Python)',
+          badge: 'Inverted Wait',
+          summary: 'Wait for loading indicators to vanish, then assert result banner.',
+          explanation: 'Use invisibility_of_element_located to wait for spinners to leave the DOM.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Inverted Spinner Wait',
+            code: `from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
+# 1. Wait for spinner to disappear
+wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "loading-spinner")))
+
+# 2. Assert dynamic result content is now visible
+result_banner = wait.until(EC.visibility_of_element_located((By.ID, "result-banner")))
+assert "Data Loaded Successfully" in result_banner.text`
+          },
+          proTip: 'Waiting for spinner invisibility is the most reliable way to synchronize on slow AJAX API responses.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Initializing WebDriverWait with Polling Interval (Java)',
+          badge: 'Wait Setup',
+          summary: 'Create a WebDriverWait instance with configurable timeout and ignored exceptions.',
+          explanation: 'WebDriverWait continually executes expected conditions at 500ms polling intervals.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java WebDriverWait Setup',
+            code: `package com.intelligentqa.sync;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import java.time.Duration;
+
+// Wait up to 10 seconds, polling every 500ms
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+wait.pollingEvery(Duration.ofMillis(500))
+    .ignoring(NoSuchElementException.class)
+    .ignoring(StaleElementReferenceException.class);`
+          },
+          proTip: 'Never mix implicit wait (driver.manage().timeouts().implicitlyWait) with explicit wait.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Waiting for Element Clickability (Java)',
+          badge: 'Clickability',
+          summary: 'Wait until the target button is attached, visible, and enabled.',
+          explanation: 'elementToBeClickable ensures the element is both visible and enabled so clicks are never intercepted.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java elementToBeClickable',
+            code: `import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+WebElement triggerBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("ajax-trigger")));
+triggerBtn.click();
+System.out.println("Clicked button safely after element was clickable!");`
+          },
+          proTip: 'elementToBeClickable protects against ElementClickInterceptedException.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Inverted Waits: Spinner Invisibility & Content Presence (Java)',
+          badge: 'Inverted Wait',
+          summary: 'Wait for loading indicators to vanish, then assert result banner.',
+          explanation: 'Use invisibilityOfElementLocated to wait for spinners to leave the DOM.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Inverted Spinner Wait',
+            code: `import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.testng.Assert;
+
+// 1. Wait for spinner to disappear
+wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading-spinner")));
+
+// 2. Assert dynamic result content is now visible
+WebElement resultBanner = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("result-banner")));
+Assert.assertTrue(resultBanner.getText().contains("Data Loaded Successfully"));`
+          },
+          proTip: 'Waiting for spinner invisibility is the most reliable way to synchronize on slow AJAX API responses.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Tester waits for loading spinner to stop spinning before clicking submit',
+          automatedApproach: 'wait.until(ExpectedConditions.invisibilityOfElementLocated(spinner))',
+          whyItMatters: 'Advances test execution the exact millisecond the API responds; zero wasted wait time.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Synchronization Strategy' : 'Production Implementation (Java Selenium): Synchronization Strategy',
+        description: isPython ? 'Complete Python wait utility handling dynamic AJAX calls and avoiding sleep.' : 'Complete Java wait utility handling dynamic AJAX calls and avoiding sleep.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Synchronization Utility
+# ==========================================
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+def test_dynamic_ajax_synchronization(driver):
+    driver.get("http://localhost:3000/sandbox/web")
+    wait = WebDriverWait(driver, 10)
+
+    # 1. Wait for clickable trigger
+    btn = wait.until(EC.element_to_be_clickable((By.ID, "ajax-trigger")))
+    btn.click()
+
+    # 2. Wait for loading spinner to vanish
+    wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "loading-spinner")))
+
+    # 3. Assert loaded result text
+    banner = wait.until(EC.visibility_of_element_located((By.ID, "result-banner")))
+    assert "Data Loaded" in banner.text` : `// ==========================================
+// Java Selenium Production Synchronization Utility
+// ==========================================
+package com.intelligentqa.sync;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import java.time.Duration;
+
+public class DynamicSyncTest {
+    public static void verifyAjaxSync(WebDriver driver) {
+        driver.get("http://localhost:3000/sandbox/web");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // 1. Wait for clickable trigger
+        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.id("ajax-trigger")));
+        btn.click();
+
+        // 2. Wait for loading spinner to vanish
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading-spinner")));
+
+        // 3. Assert loaded result text
+        WebElement banner = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("result-banner")));
+        Assert.assertTrue(banner.getText().contains("Data Loaded"));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'WebDriverWait', explanation: 'Explicit synchronization polling.' },
+          { lineOrPattern: 'invisibility_of_element_located', explanation: 'Inverted condition waiting for spinner disappearance.' }
+        ]
+      },
+      bestPractices: [
+        'Use WebDriverWait with ExpectedConditions for all element interactions',
+        'Wait for spinner/overlay invisibility before interacting with underlying forms',
+        'Avoid Thread.sleep / time.sleep in all test code'
+      ],
+      antiPatterns: [
+        'Mixing implicitWait with WebDriverWait (causes unpredictable timeout multiplier)',
+        'Using hardcoded Thread.sleep(5000)',
+        'Checking element presence without verifying element clickability'
+      ],
+      interviewQnA: {
+        question: 'Why should you never mix Implicit Wait and Explicit Wait in Selenium?',
+        answer: 'Selenium documentation explicitly warns that mixing implicit and explicit waits produces undefined behavior. If an element is missing, the implicit wait timeout will delay the evaluation of the explicit wait, causing compounding timeout loops and slow, unpredictable test runs.'
+      }
+    };
+  }
+
+  // 6. Advanced User Interactions (Actions API)
+  if (lessonId === 'sel-actions-api') {
+    return {
+      title: '6. Advanced User Interactions (Actions API)',
+      category,
+      tagline: 'Simulate Complex User Gestures: Hover, Drag-and-Drop, Right-Click & Keyboard Chords',
+      overview: 'Standard WebElement.click() cannot perform mouse hover navigation, drag-and-drop operations, context right-clicks, or multi-key keyboard shortcuts (like Ctrl+A). The Actions API builds composite user gesture chains that execute natively.',
+      whyItMattersForManualQA: 'Manual testers hover over navigation bars to open submenus or drag cards on a Kanban board. The Actions API allows automators to replicate these mouse gestures accurately.',
+      architectureUnderTheHood: {
+        title: 'Actions API Virtual Input Device Mechanism',
+        flowOrMechanism: 'ActionChains / Actions => Compile Pointer / Key Event Queue => Send W3C Actions Payload => OS Synthesizes Native Device Events',
+        keyTakeaway: 'Always remember to call .perform() in Java or Python, otherwise the queued actions will never execute!',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Mouse Hover Submenu Navigation (Python)',
+          badge: 'Hover',
+          summary: 'Hover over a parent menu element to display a dropdown submenu.',
+          explanation: 'Use ActionChains(driver).move_to_element(menu).perform() to reveal hovered UI.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Hover with ActionChains',
+            code: `from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+
+actions = ActionChains(driver)
+menu_trigger = driver.find_element(By.ID, "nav-products-menu")
+
+# Hover over menu trigger to expand sub-items
+actions.move_to_element(menu_trigger).perform()`
+          },
+          proTip: 'Always call .perform() at the end of the action chain.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Drag and Drop File / Card Movement (Python)',
+          badge: 'Drag & Drop',
+          summary: 'Drag source web element and release it on the target dropzone.',
+          explanation: 'Use drag_and_drop(source, target) to simulate click-and-hold, move, and release.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Drag and Drop',
+            code: `source_card = driver.find_element(By.ID, "draggable-card")
+target_zone = driver.find_element(By.ID, "dropzone-target")
+
+actions.drag_and_drop(source_card, target_zone).perform()`
+          },
+          proTip: 'For HTML5 native drag and drop, standard dragAndDrop might fail; use JavaScript or custom offsets.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Keyboard Chords & Modifier Keys (Python)',
+          badge: 'Key Chords',
+          summary: 'Simulate pressing Ctrl/Cmd keys simultaneously with text.',
+          explanation: 'Use key_down and key_up with Keys.CONTROL to trigger OS shortcuts.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Keyboard Chords',
+            code: `from selenium.webdriver.common.keys import Keys
+
+# Select All (Ctrl+A) and Delete
+actions.key_down(Keys.CONTROL).send_keys("a").key_up(Keys.CONTROL).send_keys(Keys.BACK_SPACE).perform()`
+          },
+          proTip: 'Always release modifier keys with key_up to avoid sticking modifier state across tests.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Mouse Hover Submenu Navigation (Java)',
+          badge: 'Hover',
+          summary: 'Hover over a parent menu element to display a dropdown submenu.',
+          explanation: 'Use new Actions(driver).moveToElement(menu).perform() to reveal hovered UI.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Hover with Actions API',
+            code: `package com.intelligentqa.actions;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+
+Actions actions = new Actions(driver);
+WebElement menuTrigger = driver.findElement(By.id("nav-products-menu"));
+
+// Hover over menu trigger to expand sub-items
+actions.moveToElement(menuTrigger).perform();`
+          },
+          proTip: 'Always call .perform() at the end of the action chain.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Drag and Drop File / Card Movement (Java)',
+          badge: 'Drag & Drop',
+          summary: 'Drag source web element and release it on the target dropzone.',
+          explanation: 'Use dragAndDrop(source, target) to simulate click-and-hold, move, and release.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Drag and Drop',
+            code: `WebElement sourceCard = driver.findElement(By.id("draggable-card"));
+WebElement targetZone = driver.findElement(By.id("dropzone-target"));
+
+actions.dragAndDrop(sourceCard, targetZone).perform();`
+          },
+          proTip: 'For HTML5 native drag and drop, standard dragAndDrop might fail; use custom drag offsets.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Keyboard Chords & Modifier Keys (Java)',
+          badge: 'Key Chords',
+          summary: 'Simulate pressing Ctrl/Cmd keys simultaneously with text.',
+          explanation: 'Use keyDown and keyUp with Keys.CONTROL to trigger OS shortcuts.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Keyboard Chords',
+            code: `import org.openqa.selenium.Keys;
+
+// Select All (Ctrl+A) and Delete
+actions.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).sendKeys(Keys.BACK_SPACE).perform();`
+          },
+          proTip: 'Always release modifier keys with keyUp to avoid sticking modifier state across tests.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Tester hovers mouse over navigation menu and drags item to another container',
+          automatedApproach: 'Actions.moveToElement() + Actions.dragAndDrop().perform()',
+          whyItMatters: 'Triggers true CSS :hover states and HTML5 drag events reliably.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Actions API' : 'Production Implementation (Java Selenium): Actions API Utilities',
+        description: isPython ? 'Python Actions utility handling hover, drag-drop, and context-clicks.' : 'Java Actions utility handling hover, drag-drop, and context-clicks.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Actions API
+# ==========================================
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+
+class CanvasInteractionPage:
+    def __init__(self, driver):
+        self.driver = driver
+        self.actions = ActionChains(driver)
+
+    def hover_and_click_submenu(self, menu_id: str, item_id: str):
+        menu = self.driver.find_element(By.ID, menu_id)
+        self.actions.move_to_element(menu).perform()
+        sub_item = self.driver.find_element(By.ID, item_id)
+        sub_item.click()
+
+    def right_click_context_menu(self, element_id: str):
+        elem = self.driver.find_element(By.ID, element_id)
+        self.actions.context_click(elem).perform()` : `// ==========================================
+// Java Selenium Production Actions API
+// ==========================================
+package com.intelligentqa.actions;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+
+public class CanvasInteractionPage {
+    private final WebDriver driver;
+    private final Actions actions;
+
+    public CanvasInteractionPage(WebDriver driver) {
+        this.driver = driver;
+        this.actions = new Actions(driver);
+    }
+
+    public void hoverAndClickSubmenu(String menuId, String itemId) {
+        WebElement menu = driver.findElement(By.id(menuId));
+        actions.moveToElement(menu).perform();
+        WebElement subItem = driver.findElement(By.id(itemId));
+        subItem.click();
+    }
+
+    public void rightClickContextMenu(String elementId) {
+        WebElement elem = driver.findElement(By.id(elementId));
+        actions.contextClick(elem).perform();
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'actions', explanation: 'W3C user gestures builder.' },
+          { lineOrPattern: 'perform', explanation: 'Dispatches action queue to browser.' }
+        ]
+      },
+      bestPractices: [
+        'Always end action chains with .perform()',
+        'Always release modifier keys with keyUp / key_up',
+        'Use explicit wait before moving to elements'
+      ],
+      antiPatterns: [
+        'Calling .build() without .perform() (actions will not execute)',
+        'Forgetting to release mouse buttons after clickAndHold()',
+        'Using Actions when simple element.click() is sufficient'
+      ],
+      interviewQnA: {
+        question: 'What happens if you do not call .perform() on an Action chain?',
+        answer: 'The Actions class builds an in-memory queue of user interaction events. Without calling .perform(), the queue is never transmitted across the W3C WebDriver endpoint to the browser, so the interaction never takes place.'
+      }
+    };
+  }
+
+  // 7. Frames, Windows & Shadow DOM Handling
+  if (lessonId === 'sel-frames-windows-shadow') {
+    return {
+      title: '7. Frames, Windows & Shadow DOM Handling',
+      category,
+      tagline: 'Master Multi-Context Automation: Nested Iframes, Multiple Tabs & Shadow Roots',
+      overview: 'Modern enterprise applications embed third-party payment forms inside iframes (like Stripe), open OAuth logins in popup tabs, and encapsulate web components in Shadow DOM. WebDriver requires explicitly switching context to interact with these elements.',
+      whyItMattersForManualQA: 'A manual tester clicks an iframe form or a new browser tab without noticing the context boundary. In automated tests, finding an element inside an un-switched iframe throws NoSuchElementException every time.',
+      architectureUnderTheHood: {
+        title: 'Browser Context Boundary Management',
+        flowOrMechanism: 'Main Document Context => driver.switchTo().frame() => Iframe Document Context => driver.switchTo().defaultContent() => Return to Root',
+        keyTakeaway: 'Always return to defaultContent() after completing iframe actions to avoid getting stuck in a child context.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Switching into Iframes & Returning (Python)',
+          badge: 'Iframe Switch',
+          summary: 'Switch WebDriver focus into an iframe and return to default content.',
+          explanation: 'Call driver.switch_to.frame() and always return using driver.switch_to.default_content().',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Iframe Context Switch',
+            code: `from selenium.webdriver.common.by import By
+
+# Switch into payment iframe
+driver.switch_to.frame("stripe-payment-frame")
+card_input = driver.find_element(By.ID, "card-number")
+card_input.send_keys("4242424242424242")
+
+# Always return to main document!
+driver.switch_to.default_content()`
+          },
+          proTip: 'Use a try...finally block to guarantee switch_to.default_content() executes even on test failure.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Switching Between Browser Windows / Tabs (Python)',
+          badge: 'Window Handles',
+          summary: 'Identify parent window and switch focus to a newly opened tab.',
+          explanation: 'Iterate over driver.window_handles and switch to the handle different from current.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Window Handles',
+            code: `parent_window = driver.current_window_handle
+
+# Click link that opens new tab
+driver.find_element(By.ID, "open-privacy-policy").click()
+
+for handle in driver.window_handles:
+    if handle != parent_window:
+        driver.switch_to.window(handle)
+        break
+
+assert "Privacy Policy" in driver.title
+driver.close() # Close child tab
+driver.switch_to.window(parent_window) # Return to parent`
+          },
+          proTip: 'Always switch back to parent_window after closing the child tab.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Querying Native Shadow DOM (Selenium 4 in Python)',
+          badge: 'Shadow Root',
+          summary: 'Extract the shadow_root attribute from web component host elements.',
+          explanation: 'Selenium 4 provides native .shadow_root access without raw JavaScript execution.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Shadow DOM Query',
+            code: `from selenium.webdriver.common.by import By
+
+# 1. Locate shadow host element
+shadow_host = driver.find_element(By.CSS_SELECTOR, "custom-clock")
+
+# 2. Access shadow root (Selenium 4)
+shadow_root = shadow_host.shadow_root
+
+# 3. Locate element inside shadow DOM
+time_display = shadow_root.find_element(By.CSS_SELECTOR, ".time-display")
+print("Shadow time:", time_display.text)`
+          },
+          proTip: 'Inside a shadow root, you can only use CSS Selectors; XPath is not supported inside shadow DOM.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Switching into Iframes & Returning (Java)',
+          badge: 'Iframe Switch',
+          summary: 'Switch WebDriver focus into an iframe and return to default content.',
+          explanation: 'Call driver.switchTo().frame() and always return using driver.switchTo().defaultContent().',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Iframe Context Switch',
+            code: `package com.intelligentqa.context;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+// Switch into payment iframe
+driver.switchTo().frame("stripe-payment-frame");
+WebElement cardInput = driver.findElement(By.id("card-number"));
+cardInput.sendKeys("4242424242424242");
+
+// Always return to main document!
+driver.switchTo().defaultContent();`
+          },
+          proTip: 'Use a try...finally block to guarantee switchTo().defaultContent() executes even on test failure.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Switching Between Browser Windows / Tabs (Java)',
+          badge: 'Window Handles',
+          summary: 'Identify parent window and switch focus to a newly opened tab.',
+          explanation: 'Iterate over driver.getWindowHandles() and switch to the handle different from current.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Window Handles',
+            code: `String parentWindow = driver.getWindowHandle();
+
+// Click link that opens new tab
+driver.findElement(By.id("open-privacy-policy")).click();
+
+for (String handle : driver.getWindowHandles()) {
+    if (!handle.equals(parentWindow)) {
+        driver.switchTo().window(handle);
+        break;
+    }
+}
+
+Assert.assertTrue(driver.getTitle().contains("Privacy Policy"));
+driver.close(); // Close child tab
+driver.switchTo().window(parentWindow); // Return to parent`
+          },
+          proTip: 'Always switch back to parentWindow after closing the child tab.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Querying Native Shadow DOM (Selenium 4 in Java)',
+          badge: 'Shadow Root',
+          summary: 'Extract the getShadowRoot() search context from host elements.',
+          explanation: 'Selenium 4 provides native getShadowRoot() without raw JavaScript execution.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Shadow DOM Query',
+            code: `import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebElement;
+
+// 1. Locate shadow host element
+WebElement shadowHost = driver.findElement(By.cssSelector("custom-clock"));
+
+// 2. Access shadow root (Selenium 4)
+SearchContext shadowRoot = shadowHost.getShadowRoot();
+
+// 3. Locate element inside shadow DOM
+WebElement timeDisplay = shadowRoot.findElement(By.cssSelector(".time-display"));
+System.out.println("Shadow time: " + timeDisplay.getText());`
+          },
+          proTip: 'Inside a shadow root, you can only use CSS Selectors; XPath is not supported inside shadow DOM.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Tester fills credit card form inside embedded payment frame',
+          automatedApproach: 'driver.switchTo().frame("payment") -> type -> switchTo().defaultContent()',
+          whyItMatters: 'Switches the WebDriver target execution document to the isolated sandbox frame.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Multi-Context' : 'Production Implementation (Java Selenium): Multi-Context Manager',
+        description: isPython ? 'Python context manager for nested frames and multi-tab automation.' : 'Java utility class for nested frames and multi-tab automation.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Multi-Context Manager
+# ==========================================
+from contextlib import contextmanager
+
+class ContextManager:
+    def __init__(self, driver):
+        self.driver = driver
+
+    @contextmanager
+    def frame_context(self, frame_locator):
+        self.driver.switch_to.frame(frame_locator)
+        try:
+            yield
+        finally:
+            self.driver.switch_to.default_content()
+
+# Usage with Python 'with' statement:
+# with context.frame_context("payment-frame"):
+#     driver.find_element(By.ID, "card").send_keys("4242")` : `// ==========================================
+// Java Selenium Production Multi-Context Manager
+// ==========================================
+package com.intelligentqa.context;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class ContextManager {
+    private final WebDriver driver;
+
+    public ContextManager(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void executeInFrame(String frameId, Runnable action) {
+        driver.switchTo().frame(frameId);
+        try {
+            action.run();
+        } finally {
+            driver.switchTo().defaultContent();
+        }
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'defaultContent', explanation: 'Guaranteed return to top-level document.' },
+          { lineOrPattern: 'frame', explanation: 'Target iframe context switch.' }
+        ]
+      },
+      bestPractices: [
+        'Always wrap frame operations in try...finally to ensure defaultContent() is called',
+        'Close child windows and return to parentWindow before proceeding with test flow',
+        'Use CSS Selectors for Shadow DOM querying (XPath is unsupported in shadow roots)'
+      ],
+      antiPatterns: [
+        'Forgetting defaultContent() and wondering why subsequent elements are not found',
+        'Hardcoding window handle indexes like window_handles[1] without checking titles',
+        'Using raw JavaScript document.querySelector() when Selenium 4 getShadowRoot() exists'
+      ],
+      interviewQnA: {
+        question: 'How do you automate an element inside an open Shadow DOM in Selenium 4?',
+        answer: 'In Selenium 4, first locate the host web element using standard findElement(By.cssSelector("host-tag")). Then call host.getShadowRoot() (or host.shadow_root in Python) to obtain a SearchContext instance. From that shadow root, find child elements using CSS Selectors.'
+      }
+    };
+  }
+
+  // 8. Page Object Model & PageFactory Architecture
+  if (lessonId === 'sel-pom-pagefactory') {
+    return {
+      title: '8. Page Object Model & PageFactory Architecture',
+      category,
+      tagline: 'Enterprise Architecture: BasePage, Modern POM & Fluent Method Chaining',
+      overview: 'Page Object Model (POM) is the premier design pattern in test automation. It separates page-specific UI locators and actions from test assertions. When a UI changes, only the Page class is updated, leaving all test classes untouched.',
+      whyItMattersForManualQA: 'In manual testing, if a button label changes, you rewrite instructions across all test runs. With Page Object Model, you update a single locator variable in the Page Class, and hundreds of automated tests immediately pass.',
+      architectureUnderTheHood: {
+        title: 'POM Architectural Separation of Concerns',
+        flowOrMechanism: 'Test Class (Assertions Only) => Page Object (User Actions & Private Locators) => BasePage (Shared Wait Helpers) => WebDriver Binary',
+        keyTakeaway: 'Page objects should NEVER contain assertions! Page objects model the UI; test classes assert business rules.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'BasePage Encapsulation with Explicit Wait Wrappers (Python)',
+          badge: 'BasePage',
+          summary: 'Create an abstract BasePage containing driver reference and wait helpers.',
+          explanation: 'BasePage provides click(), type(), and is_visible() methods wrapping WebDriverWait.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python BasePage Class',
+            code: `from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+class BasePage:
+    def __init__(self, driver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+
+    def click(self, locator):
+        self.wait.until(EC.element_to_be_clickable(locator)).click()
+
+    def type_text(self, locator, text):
+        elem = self.wait.until(EC.visibility_of_element_located(locator))
+        elem.clear()
+        elem.send_keys(text)`
+          },
+          proTip: 'Centralizing waits in BasePage ensures individual page classes never duplicate wait boilerplate.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Encapsulated Page Class with Fluent Return (Python)',
+          badge: 'POM Class',
+          summary: 'Inherit BasePage, declare private locators, and return target page objects.',
+          explanation: 'Returning DashboardPage(self.driver) enables fluent method chaining in test scripts.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python LoginPage with Fluent Return',
+            code: `from selenium.webdriver.common.by import By
+
+class LoginPage(BasePage):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self._username = (By.ID, "username")
+        self._password = (By.ID, "password")
+        self._submit = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def login_as(self, username: str, password: str):
+        self.type_text(self._username, username)
+        self.type_text(self._password, password)
+        self.click(self._submit)
+        return DashboardPage(self.driver)`
+          },
+          proTip: 'Fluent return types guide automators with auto-complete in their IDE for the next logical page.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Clean, Assertion-Driven Test Function (Python)',
+          badge: 'Test Class',
+          summary: 'Write readable test cases that contain only business actions and assertions.',
+          explanation: 'Test functions remain short, expressive, and completely free of By locators.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Pytest Test Class',
+            code: `def test_valid_login_flow(driver):
+    driver.get("http://localhost:3000/sandbox/web")
+    login_page = LoginPage(driver)
+    dashboard = login_page.login_as("standard_user", "secret_pass")
+
+    # Assertion lives strictly in the test function
+    assert dashboard.is_loaded(), "Dashboard failed to display after login"`
+          },
+          proTip: 'If a test fails, the assertion message tells you exactly what business requirement failed.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'BasePage Encapsulation with Explicit Wait Wrappers (Java)',
+          badge: 'BasePage',
+          summary: 'Create an abstract BasePage containing driver reference and wait helpers.',
+          explanation: 'BasePage provides click(), type(), and isVisible() methods wrapping WebDriverWait.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java BasePage Class',
+            code: `package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public abstract class BasePage {
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+
+    public BasePage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    protected void click(By locator) {
+        wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
+    }
+
+    protected void type(By locator, String text) {
+        WebElement elem = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        elem.clear();
+        elem.sendKeys(text);
+    }
+}`
+          },
+          proTip: 'Centralizing waits in BasePage ensures individual page classes never duplicate wait boilerplate.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Encapsulated Page Class with Fluent Return (Java)',
+          badge: 'POM Class',
+          summary: 'Inherit BasePage, declare private locators, and return target page objects.',
+          explanation: 'Returning new DashboardPage(driver) enables fluent method chaining in test scripts.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java LoginPage with Fluent Return',
+            code: `package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class LoginPage extends BasePage {
+    private final By usernameField = By.id("username");
+    private final By passwordField = By.id("password");
+    private final By submitBtn = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        super(driver);
+    }
+
+    public DashboardPage loginAs(String username, String password) {
+        type(usernameField, username);
+        type(passwordField, password);
+        click(submitBtn);
+        return new DashboardPage(driver);
+    }
+}`
+          },
+          proTip: 'Fluent return types guide automators with auto-complete in their IDE for the next logical page.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Clean, Assertion-Driven Test Method (Java)',
+          badge: 'Test Class',
+          summary: 'Write readable test cases that contain only business actions and assertions.',
+          explanation: 'Test methods remain short, expressive, and completely free of By locators.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java TestNG Test Class',
+            code: `package com.intelligentqa.tests;
+
+import com.intelligentqa.base.BaseTest;
+import com.intelligentqa.pages.LoginPage;
+import com.intelligentqa.pages.DashboardPage;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class LoginTest extends BaseTest {
+
+    @Test
+    public void testValidLoginFlow() {
+        driver.get("http://localhost:3000/sandbox/web");
+        LoginPage loginPage = new LoginPage(driver);
+        DashboardPage dashboard = loginPage.loginAs("standard_user", "secret_pass");
+
+        // Assertion lives strictly in the test method
+        Assert.assertTrue(dashboard.isLoaded(), "Dashboard failed to display after login");
+    }
+}`
+          },
+          proTip: 'If a test fails, the assertion message tells you exactly what business requirement failed.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual tester logs in on Login page, then navigates to Dashboard',
+          automatedApproach: 'loginPage.loginAs(user, pass) returns new DashboardPage(driver)',
+          whyItMatters: 'Mimics real human workflow and guides subsequent test actions via compile-time types.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): POM Framework' : 'Production Implementation (Java Selenium): POM Architecture',
+        description: isPython ? 'Complete Python Page Object Model with encapsulated locators and fluent actions.' : 'Complete Java Page Object Model with encapsulated locators and fluent actions.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Page Object Model
+# ==========================================
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+class BasePage:
+    def __init__(self, driver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+
+class LoginPage(BasePage):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self._user_input = (By.ID, "username")
+        self._pass_input = (By.ID, "password")
+        self._submit = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def login_as(self, user, pwd):
+        self.wait.until(EC.visibility_of_element_located(self._user_input)).send_keys(user)
+        self.driver.find_element(*self._pass_input).send_keys(pwd)
+        self.wait.until(EC.element_to_be_clickable(self._submit)).click()
+        return DashboardPage(self.driver)
+
+class DashboardPage(BasePage):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self._welcome_banner = (By.ID, "welcome-msg")
+
+    def is_loaded(self):
+        elem = self.wait.until(EC.visibility_of_element_located(self._welcome_banner))
+        return elem.is_displayed()` : `// ==========================================
+// Java Selenium Production Page Object Model
+// ==========================================
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class LoginPage {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    private final By userInput = By.id("username");
+    private final By passInput = By.id("password");
+    private final By submitBtn = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public DashboardPage loginAs(String user, String pwd) {
+        WebElement u = wait.until(ExpectedConditions.visibilityOfElementLocated(userInput));
+        u.clear();
+        u.sendKeys(user);
+        driver.findElement(passInput).sendKeys(pwd);
+        wait.until(ExpectedConditions.elementToBeClickable(submitBtn)).click();
+        return new DashboardPage(driver);
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'loginAs', explanation: 'Fluent navigation method.' },
+          { lineOrPattern: 'By.id', explanation: 'Encapsulated private locator.' }
+        ]
+      },
+      bestPractices: [
+        'Never write assertions inside Page Object classes; keep assertions in Test classes',
+        'Declare element locators private final inside Page classes',
+        'Return new Page instances on navigation actions to enable fluent method chaining'
+      ],
+      antiPatterns: [
+        'Adding Assert.assertTrue() inside Page Object methods',
+        'Using public static By locators across unrelated test files',
+        'Writing giant 2,000-line monolithic page objects instead of modular components'
+      ],
+      interviewQnA: {
+        question: 'Why should Page Object classes never contain Assert statements?',
+        answer: 'Page Objects are architectural models of how the web application looks and behaves. Assertions represent test verification criteria. If assertions are placed inside Page Objects, the Page Object cannot be reused across different test scenarios (such as verifying negative validation errors versus happy-path logins).'
+      }
+    };
+  }
+
+  // 9. TestNG Suite & Parallel Multi-Threading / Pytest-xdist
+  if (lessonId === 'sel-testng-parallel') {
+    return {
+      title: '9. TestNG Suite & Parallel Multi-Threading',
+      category,
+      tagline: 'Thread-Safe Multi-Threading: ThreadLocal WebDriver & Parallel Test Execution',
+      overview: 'Running tests sequentially takes hours. Scaling to parallel execution requires thread isolation. If two parallel threads access a shared static WebDriver reference, one thread will navigate while the other clicks, causing instant test crashes.',
+      whyItMattersForManualQA: 'A manual QA team distributes tests among 5 engineers to finish testing 5x faster. In automated frameworks, thread-safe parallel execution is how a 3-hour regression run completes in under 15 minutes.',
+      architectureUnderTheHood: {
+        title: 'ThreadLocal Memory Isolation Mechanism',
+        flowOrMechanism: 'Thread 1 => ThreadLocal.set(DriverA) | Thread 2 => ThreadLocal.set(DriverB) => Memory Isolation => Zero Race Conditions',
+        keyTakeaway: 'ThreadLocal allocates a separate memory slot for each executing thread, guaranteeing zero race conditions.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Function-Scoped Thread-Safe Pytest Fixture (Python)',
+          badge: 'Thread Isolation',
+          summary: 'Provide isolated browser instances for each test execution.',
+          explanation: 'Function scope guarantees pytest allocates a brand new browser process per test.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Function-Scoped Fixture',
+            code: `import pytest
+from selenium import webdriver
+
+@pytest.fixture(scope="function")
+def driver():
+    # Each thread/worker gets its own isolated browser session
+    driver_instance = webdriver.Chrome()
+    driver_instance.maximize_window()
+    yield driver_instance
+    driver_instance.quit() # Always teardown`
+          },
+          proTip: 'Function-scoped fixtures ensure test independence and prevent state leakage.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Parallel Test Execution with pytest-xdist (Python)',
+          badge: 'xdist Execution',
+          summary: 'Run automated tests concurrently across multiple CPU cores.',
+          explanation: 'Use pytest -n auto or pytest -n 4 to distribute tests across worker processes.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python pytest-xdist CLI',
+            code: `# Run tests concurrently across 4 CPU processes
+# pip install pytest-xdist
+pytest -n 4 --dist=loadfile tests/`
+          },
+          proTip: '--dist=loadfile groups tests in the same file to the same worker to optimize setup.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Parameterized Data-Driven Execution (Python)',
+          badge: 'Data Matrix',
+          summary: 'Execute the same test scenario against multiple input data sets in parallel.',
+          explanation: 'Use @pytest.mark.parametrize to create dynamic parallel test iterations.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python @pytest.mark.parametrize',
+            code: `import pytest
+
+@pytest.mark.parametrize("username,password,expected_error", [
+    ("invalid_user", "pass123", "User not found"),
+    ("locked_user", "pass123", "Account locked"),
+    ("empty_user", "", "Password required")
+])
+def test_login_validation_matrix(driver, username, password, expected_error):
+    driver.get("http://localhost:3000/sandbox/web")
+    # Matrix runs concurrently across workers
+    assert True`
+          },
+          proTip: 'Parameterized tests appear as distinct test cases in Allure and HTML reports.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'ThreadLocal WebDriver Storage (Java)',
+          badge: 'Thread Isolation',
+          summary: 'Provide thread-safe storage so each concurrent thread owns its driver.',
+          explanation: 'ThreadLocal<WebDriver> prevents thread collision during parallel execution.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java ThreadLocal DriverManager',
+            code: `package com.intelligentqa.driver;
+
+import org.openqa.selenium.WebDriver;
+
+public class DriverManager {
+    private static final ThreadLocal<WebDriver> tlDriver = new ThreadLocal<>();
+
+    public static void setDriver(WebDriver driver) {
+        tlDriver.set(driver);
+    }
+
+    public static WebDriver getDriver() {
+        return tlDriver.get();
+    }
+
+    public static void unload() {
+        tlDriver.remove(); // Prevent memory leaks
+    }
+}`
+          },
+          proTip: 'Always call tlDriver.remove() in tearDown to prevent ThreadLocal memory leaks.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Parallel TestNG Suite XML Configuration (Java)',
+          badge: 'TestNG XML',
+          summary: 'Configure testng.xml to run test methods across multiple threads.',
+          explanation: 'Set parallel="methods" and thread-count="4" for multi-threaded execution.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java TestNG Suite XML',
+            code: `<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Enterprise Parallel Suite" parallel="methods" thread-count="4">
+    <test name="Parallel Regression Tests">
+        <packages>
+            <package name="com.intelligentqa.tests.*"/>
+        </packages>
+    </test>
+</suite>`
+          },
+          proTip: 'thread-count="4" is optimal for 8-core developer laptops.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Parallel DataProvider Configuration (Java)',
+          badge: 'DataProvider',
+          summary: 'Run data-driven test rows concurrently across available threads.',
+          explanation: 'Set @DataProvider(parallel = true) for multi-threaded test execution.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Parallel DataProvider',
+            code: `import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+@DataProvider(name = "loginData", parallel = true)
+public Object[][] provideLoginCredentials() {
+    return new Object[][] {
+        {"user1", "pass1"},
+        {"user2", "pass2"},
+        {"user3", "pass3"}
+    };
+}`
+          },
+          proTip: 'Ensure tests using parallel DataProviders do not share static mutable variables.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual QA team of 4 divides 100 test cases and runs them simultaneously',
+          automatedApproach: 'TestNG parallel="methods" thread-count="4" or pytest -n 4',
+          whyItMatters: 'Reduces regression test suite execution time by 75% without extra manual effort.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Parallel Testing' : 'Production Implementation (Java Selenium): ThreadLocal Manager',
+        description: isPython ? 'Complete conftest.py configured for isolated multi-process pytest-xdist.' : 'Complete thread-safe DriverManager class with TestNG BaseTest.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Parallel Suite
+# ==========================================
+import pytest
+from selenium import webdriver
+
+@pytest.fixture(scope="function")
+def driver():
+    # Each pytest-xdist worker process owns this isolated browser
+    driver_instance = webdriver.Chrome()
+    driver_instance.maximize_window()
+    yield driver_instance
+    driver_instance.quit()
+
+# Run from terminal:
+# pytest -n 4 --dist=loadfile tests/` : `// ==========================================
+// Java Selenium Production ThreadLocal DriverManager
+// ==========================================
+package com.intelligentqa.base;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+
+public abstract class BaseTest {
+    private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();
+
+    public static WebDriver getDriver() {
+        return driverThread.get();
+    }
+
+    @BeforeMethod
+    public void setUp() {
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driverThread.set(driver);
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (getDriver() != null) {
+            getDriver().quit();
+            driverThread.remove(); // Prevent memory leak
+        }
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'ThreadLocal', explanation: 'Per-thread memory isolation.' },
+          { lineOrPattern: 'remove', explanation: 'Prevents thread pool memory leak.' }
+        ]
+      },
+      bestPractices: [
+        'Use ThreadLocal<WebDriver> for Java frameworks and function-scoped fixtures for Python',
+        'Always clean up drivers in @AfterMethod or yield teardowns to avoid zombie browser processes',
+        'Never write or read shared mutable static class variables during parallel runs'
+      ],
+      antiPatterns: [
+        'Using a public static WebDriver driver without ThreadLocal in parallel suites',
+        'Sharing test data IDs across concurrent threads (causes race conditions)',
+        'Hardcoding fixed ports for mock servers used by parallel threads'
+      ],
+      interviewQnA: {
+        question: 'What is a ThreadLocal variable and why is it essential for parallel Selenium execution?',
+        answer: 'A ThreadLocal variable in Java provides thread-local variables. Each thread that accesses the variable gets its own independently initialized copy. In Selenium, wrapping WebDriver in ThreadLocal ensures that thread 1 executing Test A does not collide with thread 2 executing Test B, avoiding race conditions and browser session collisions.'
+      }
+    };
+  }
+
+  // 10. Listeners, Screenshots & Maven CI/CD Execution
+  if (lessonId === 'sel-listeners-reports-cicd') {
+    return {
+      title: '10. Listeners, Screenshots & Maven CI/CD Execution',
+      category,
+      tagline: 'CI/CD Automation: Test Listeners, Automatic Failure Screenshots & Allure Reporting',
+      overview: 'Automated tests that run unattended inside CI/CD pipelines (such as GitHub Actions or Jenkins) must provide automated diagnostics. Test listeners monitor test lifecycle events (pass, fail, skip) and automatically capture screenshots and browser logs on failure.',
+      whyItMattersForManualQA: 'When a manual test fails, the tester captures a screenshot and files a ticket. Test listeners automate this completely by saving timestamped screenshots at the exact second a failure occurs.',
+      architectureUnderTheHood: {
+        title: 'Test Lifecycle Listener Interception Mechanism',
+        flowOrMechanism: 'Test Execution => Test Failure Event => onTestFailure Hook Triggered => TakesScreenshot Captures Viewport => PNG Saved & Attached to Allure Report',
+        keyTakeaway: 'Listeners decouple screenshot taking from test logic: test cases remain 100% clean of screenshot code.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Pytest Hook for Failure Interception (Python)',
+          badge: 'Pytest Hook',
+          summary: 'Intercept test failure outcomes using pytest_runtest_makereport in conftest.py.',
+          explanation: 'The makereport hook yields the test outcome, allowing automated screenshot execution.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python conftest.py Failure Hook',
+            code: `import pytest
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    # Trigger screenshot only when test execution call fails
+    if report.when == "call" and report.failed:
+        driver = item.funcargs.get("driver")
+        if driver:
+            screenshot_path = f"./screenshots/{item.name}.png"
+            driver.save_screenshot(screenshot_path)
+            print(f"Captured failure screenshot: {screenshot_path}")`
+          },
+          proTip: 'Item.name provides the exact test function name for readable screenshot filenames.'
+        },
+        {
+          stepNumber: 2,
+          title: 'HTML Test Report Generation (Python)',
+          badge: 'HTML Report',
+          summary: 'Generate standalone HTML reports with pytest-html.',
+          explanation: 'Run tests with --html to output a self-contained test execution report.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python HTML Report Command',
+            code: `# Run pytest with standalone HTML reporting
+pytest --html=target/report.html --self-contained-html -v`
+          },
+          proTip: '--self-contained-html embeds CSS and images directly for easy email sharing.'
+        },
+        {
+          stepNumber: 3,
+          title: 'GitHub Actions CI/CD Pipeline Workflow (Python)',
+          badge: 'CI Workflow',
+          summary: 'Configure GitHub Actions YAML workflow to run tests on push.',
+          explanation: 'Automate dependency installation, headless browser execution, and artifact upload.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python GitHub Actions Workflow',
+            code: `name: Selenium Python CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: pytest -n 4 --headless --html=report.html
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report
+          path: report.html`
+          },
+          proTip: 'Use if: always() on artifact upload so test reports are saved even if tests fail.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Implementing TestNG ITestListener (Java)',
+          badge: 'Test Listener',
+          summary: 'Intercept test failure outcomes using ITestListener.',
+          explanation: 'Implement onTestFailure to trigger automatic screenshot capture.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java TestListener Implementation',
+            code: `package com.intelligentqa.listeners;
+
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+
+public class TestListener implements ITestListener {
+    @Override
+    public void onTestFailure(ITestResult result) {
+        String testName = result.getMethod().getMethodName();
+        ScreenshotUtils.captureScreenshot(testName);
+        System.out.println("Captured failure screenshot for: " + testName);
+    }
+}`
+          },
+          proTip: 'Register the listener in testng.xml via <listeners><listener class-name="..."/></listeners>.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Capturing Viewport Screenshots (Java)',
+          badge: 'TakesScreenshot',
+          summary: 'Cast WebDriver to TakesScreenshot and save file to target folder.',
+          explanation: 'getScreenshotAs(OutputType.FILE) captures the active browser viewport.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java TakesScreenshot Utility',
+            code: `import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class ScreenshotUtils {
+    public static void captureScreenshot(WebDriver driver, String name) {
+        TakesScreenshot ts = (TakesScreenshot) driver;
+        File src = ts.getScreenshotAs(OutputType.FILE);
+        try {
+            Files.copy(src.toPath(), Paths.get("./target/screenshots/" + name + ".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}`
+          },
+          proTip: 'Attach timestamps to filenames (System.currentTimeMillis()) to prevent overwriting.'
+        },
+        {
+          stepNumber: 3,
+          title: 'Maven Surefire CI Execution in pom.xml (Java)',
+          badge: 'Maven CI',
+          summary: 'Configure Maven Surefire plugin to execute TestNG suites.',
+          explanation: 'Run mvn clean test to trigger automated regression suites in CI/CD.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Maven Surefire Plugin',
+            code: `<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.1.2</version>
+    <configuration>
+        <suiteXmlFiles>
+            <suiteXmlFile>testng.xml</suiteXmlFile>
+        </suiteXmlFiles>
+    </configuration>
+</plugin>`
+          },
+          proTip: 'Pass system properties from command line: mvn clean test -Dbrowser=chrome -Dheadless=true.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual QA takes screenshot using Snipping Tool and pastes into Jira ticket',
+          automatedApproach: 'ITestListener onTestFailure automatically attaches screenshot to Allure/HTML report',
+          whyItMatters: 'Captures the exact DOM rendering at the millisecond of failure without human intervention.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python Selenium): Reporting & CI' : 'Production Implementation (Java Selenium): TestNG Listener & Reporting',
+        description: isPython ? 'Complete conftest.py with failure screenshots and HTML report hooks.' : 'Complete TestNG TestListener class with screenshot capture.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Production Failure Listener
+# ==========================================
+import pytest
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    if report.when == "call" and report.failed:
+        driver = item.funcargs.get("driver")
+        if driver:
+            driver.save_screenshot(f"./target/screenshots/{item.name}.png")` : `// ==========================================
+// Java Selenium Production TestNG Listener
+// ==========================================
+package com.intelligentqa.listeners;
+
+import com.intelligentqa.base.BaseTest;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class ProductionTestListener implements ITestListener {
+    @Override
+    public void onTestFailure(ITestResult result) {
+        TakesScreenshot ts = (TakesScreenshot) BaseTest.getDriver();
+        if (ts != null) {
+            File src = ts.getScreenshotAs(OutputType.FILE);
+            try {
+                Files.copy(src.toPath(), Paths.get("./target/screenshots/" + result.getName() + ".png"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'onTestFailure', explanation: 'Lifecycle hook called only on test failure.' },
+          { lineOrPattern: 'TakesScreenshot', explanation: 'Viewport screenshot capture.' }
+        ]
+      },
+      bestPractices: [
+        'Always configure automated screenshot capture inside listeners rather than inside test bodies',
+        'Archive test reports and screenshot artifacts in your CI/CD pipeline configuration',
+        'Use if: always() in GitHub Actions to preserve reports even when test steps fail'
+      ],
+      antiPatterns: [
+        'Writing try/catch in every single test method just to call captureScreenshot()',
+        'Saving screenshots to git-tracked directories without .gitignore',
+        'Failing the build immediately without archiving the HTML test execution report'
+      ],
+      interviewQnA: {
+        question: 'How do you automatically attach screenshots on failure in a CI/CD pipeline?',
+        answer: 'We implement TestNG ITestListener (or pytest_runtest_makereport in Python). When a test throws an assertion error, the onTestFailure hook intercepts the event, grabs the active WebDriver instance from ThreadLocal, captures the screenshot using TakesScreenshot, and links the image artifact to the Allure or HTML test report.'
+      }
+    };
+  }
+
+  // Fallback for any unknown Selenium lesson
+  return {
+    title: cleanTitle,
+    category,
+    tagline: `Selenium Architecture & Implementation: ${cleanTitle}`,
+    overview: `${lessonDesc || cleanTitle}. Master core test automation patterns with Selenium WebDriver.`,
+    whyItMattersForManualQA: 'Transitioning from manual verification to automated test engineering requires reliable state modeling and explicit synchronization.',
+    architectureUnderTheHood: {
+      title: 'W3C WebDriver Execution Protocol',
+      flowOrMechanism: 'Test Runner => W3C Protocol HTTP/BiDi => Browser Driver Binary => OS Native Event => DOM Evaluation',
+      keyTakeaway: 'Always write tests against resilient semantic locators and leverage dynamic explicit waits.',
+    },
+    stepByStepGuide: isPython ? [
+      {
+        stepNumber: 1,
+        title: `Initialize & Context Setup (Python)`,
+        summary: `Prepare environment for ${cleanTitle}.`,
+        explanation: 'Configure WebDriver session with clean options and maximized window.',
+        codeSnippet: {
+          language: 'python',
+          caption: 'Python WebDriver Setup',
+          code: `from selenium import webdriver\n\ndriver = webdriver.Chrome()\ndriver.maximize_window()\ndriver.get("http://localhost:3000/sandbox/web")`
+        }
+      },
+      {
+        stepNumber: 2,
+        title: `Execute Core Mechanism (Python)`,
+        summary: `Perform action for ${cleanTitle}.`,
+        explanation: 'Use explicit wait before interaction to prevent timing issues.',
+        codeSnippet: {
+          language: 'python',
+          caption: 'Python Action & Explicit Wait',
+          code: `from selenium.webdriver.common.by import By\nfrom selenium.webdriver.support.ui import WebDriverWait\nfrom selenium.webdriver.support import expected_conditions as EC\n\nwait = WebDriverWait(driver, 10)\nbtn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.action-btn")))\nbtn.click()`
+        }
+      },
+      {
+        stepNumber: 3,
+        title: `Verify Outcome & Assertions (Python)`,
+        summary: `Assert target state for ${cleanTitle}.`,
+        explanation: 'Assert that the DOM displays expected results.',
+        codeSnippet: {
+          language: 'python',
+          caption: 'Python State Assertion',
+          code: `result = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "success-msg")))\nassert result.is_displayed()`
+        }
+      }
+    ] : [
+      {
+        stepNumber: 1,
+        title: `Initialize & Context Setup (Java)`,
+        summary: `Prepare environment for ${cleanTitle}.`,
+        explanation: 'Configure WebDriver session with clean options and maximized window.',
+        codeSnippet: {
+          language: 'java',
+          caption: 'Java WebDriver Setup',
+          code: `WebDriver driver = new ChromeDriver();\ndriver.manage().window().maximize();\ndriver.get("http://localhost:3000/sandbox/web");`
+        }
+      },
+      {
+        stepNumber: 2,
+        title: `Execute Core Mechanism (Java)`,
+        summary: `Perform action for ${cleanTitle}.`,
+        explanation: 'Use explicit wait before interaction to prevent timing issues.',
+        codeSnippet: {
+          language: 'java',
+          caption: 'Java Action & Explicit Wait',
+          code: `WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\nWebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.action-btn")));\nbtn.click();`
+        }
+      },
+      {
+        stepNumber: 3,
+        title: `Verify Outcome & Assertions (Java)`,
+        summary: `Assert target state for ${cleanTitle}.`,
+        explanation: 'Assert that the DOM displays expected results.',
+        codeSnippet: {
+          language: 'java',
+          caption: 'Java State Assertion',
+          code: `WebElement result = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("success-msg")));\nAssert.assertTrue(result.isDisplayed());`
+        }
+      }
+    ],
+    manualToAutomatedBridge: [
+      {
+        manualAction: `Perform ${cleanTitle} manually on web UI`,
+        automatedApproach: 'Selenium script with explicit state assertions',
+        whyItMatters: 'Runs predictably in CI/CD without manual human intervention.',
+      }
+    ],
+    productionCodeExample: {
+      title: isPython ? `Production Implementation (Python Selenium): ${cleanTitle}` : `Production Implementation (Java Selenium): ${cleanTitle}`,
+      description: `Complete, production-ready blueprint illustrating best practices for ${cleanTitle}.`,
+      language: isPython ? 'python' : 'java',
+      code: isPython ? `# ==========================================
+# SELENIUM WEBDRIVER (PYTHON): ${cleanTitle}
+# ==========================================
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+def test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}_scenario():
+    driver = webdriver.Chrome()
+    try:
+        driver.get("http://localhost:3000/sandbox/web")
+        wait = WebDriverWait(driver, 10)
+        btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.action-btn")))
+        btn.click()
+        result = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "success-msg")))
+        assert result.is_displayed()
+    finally:
+        driver.quit()` : `// ==========================================
+// SELENIUM WEBDRIVER (JAVA): ${cleanTitle}
+// ==========================================
+package com.intelligentqa.concepts;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import java.time.Duration;
+
+public class ${lessonId.replace(/[^a-zA-Z0-9]/g, '')}Execution {
+    public static void run(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.action-btn")));
+        btn.click();
+        WebElement result = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("success-msg")));
+        Assert.assertTrue(result.isDisplayed());
+    }
+}`,
+      annotations: [
+        { lineOrPattern: 'test', explanation: 'Test execution method boundary.' }
+      ]
+    },
+    bestPractices: [
+      'Write tests against user-facing attributes rather than internal layout classes',
+      'Use WebDriverWait rather than hardcoded Thread.sleep / time.sleep',
+      'Always call driver.quit() in teardown'
+    ],
+    antiPatterns: [
+      'Mixing implicit and explicit waits',
+      'Using absolute full-path XPaths',
+      'Coupling tests to brittle database IDs'
+    ],
+    interviewQnA: {
+      question: 'Why is explicit synchronization critical in modern test automation?',
+      answer: 'Explicit synchronization polls the DOM at 500ms intervals until the requested condition is satisfied, advancing immediately when ready, preventing flakiness while keeping test execution as fast as possible.'
+    }
+  };
+}
+
 // Generic Fallback Generator that produces deep Playwright-Docs-Style content for ANY curriculum lesson
 export function getLessonDoc(
   lessonId: string,
@@ -853,6 +3450,11 @@ export function getLessonDoc(
 ): LessonDoc {
   const isSelenium = trackId === 'selenium-java';
   const isPython = selectedLanguage === 'python';
+
+  // If Selenium track, route directly to dedicated Java & Python curriculum generator
+  if (isSelenium) {
+    return getSeleniumLessonDoc(lessonId, isPython, lessonTitle, lessonDesc);
+  }
 
   if (DETAILED_LESSON_DOCS[lessonId]) {
     const doc = { ...DETAILED_LESSON_DOCS[lessonId] };
@@ -1138,6 +3740,11 @@ export function getConceptCodeSnippet(
   lang: 'java' | 'typescript' | 'python',
   lessonTitle: string = 'Automation Concept'
 ): string {
+  if (trackId === 'selenium-java') {
+    const doc = getSeleniumLessonDoc(lessonId, lang === 'python', lessonTitle);
+    return doc.productionCodeExample.code;
+  }
+
   // 1. Core Java OOPs Framework
   if (lessonId === 'java-oops-framework') {
     if (lang === 'java') {
