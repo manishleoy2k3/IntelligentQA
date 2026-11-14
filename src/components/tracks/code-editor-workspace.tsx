@@ -19,15 +19,18 @@ import {
   LogIn,
   ShieldCheck,
   GripVertical,
-  Maximize2,
-  Minimize2,
-  Columns,
   Layers,
   Compass,
   Check,
+  Cpu,
+  Lightbulb,
+  Target,
+  ArrowRightCircle,
+  Terminal,
 } from 'lucide-react';
 import Link from 'next/link';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
+import { getLessonDoc } from '@/lib/qa-learning-docs';
 
 export type SupportedLang = 'java' | 'typescript' | 'python';
 
@@ -442,35 +445,76 @@ export default function CodeEditorWorkspace({
 
         {/* Tab Content */}
         <div className="p-4 md:p-6 space-y-6 flex-1 text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-          {activeTab === 'guide' && (
-            <div className="space-y-6">
-              {/* Comprehensive Concept Breakdown for Manual Testers */}
-              {lesson.id === 'java-oops-framework' ? (
-                <div className="space-y-5">
-                  <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/80 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                        Why Manual Testers Need OOPs for Automation
-                      </h3>
-                    </div>
-                    <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                      In manual testing, every test case in your spreadsheet is an isolated row with steps like &quot;Launch Chrome, type user, click submit&quot;. If you automate like a manual tester by copy-pasting code into 100 script files, you end up with 100 browser instances running in memory, memory leaks, and when a single button ID changes, you have to manually edit 100 files!
-                    </p>
-                    <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                      <strong>Object-Oriented Programming (OOPs)</strong> solves this completely. A <em>Class</em> is your page blueprint, an <em>Object</em> is a live browser session, and the 4 pillars ensure you write code once and reuse it across thousands of test executions.
-                    </p>
+          {activeTab === 'guide' && (() => {
+            const doc = getLessonDoc(lesson.id, track.id, lesson.title, lesson.description);
+            return (
+              <div className="space-y-6">
+                {/* 1. Header Overview & Playwright-Docs Style Introduction */}
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/40 dark:from-slate-900 dark:to-indigo-950/20 border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-xs">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-xs border border-emerald-500/20">
+                      {doc.category}
+                    </span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      Documentation &amp; Core Architecture
+                    </span>
                   </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                    {doc.tagline}
+                  </h3>
+                  <p className="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+                    {doc.overview}
+                  </p>
+                  <div className="p-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-xs md:text-sm text-sky-900 dark:text-sky-200 flex items-start gap-2.5">
+                    <Flame className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="font-semibold block mb-0.5">Why This Matters for Manual Testers:</strong>
+                      <span>{doc.whyItMattersForManualQA}</span>
+                    </div>
+                  </div>
+                </div>
 
-                  {/* The 4 Pillars Breakdown */}
+                {/* 2. Architecture & Underlying Mechanism */}
+                <div className="p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 space-y-3 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <Cpu className="w-5 h-5 text-indigo-400" />
+                    <h4 className="font-bold text-base md:text-lg text-white">
+                      {doc.architectureUnderTheHood.title}
+                    </h4>
+                  </div>
+                  <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 font-mono text-xs text-indigo-300 overflow-x-auto leading-relaxed">
+                    {doc.architectureUnderTheHood.flowOrMechanism}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs md:text-sm text-slate-300 pt-1">
+                    <Lightbulb className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span><strong>Key Architectural Takeaway:</strong> {doc.architectureUnderTheHood.keyTakeaway}</span>
+                  </div>
+                </div>
+
+                {/* 3. If java-oops-framework, retain in-depth OOPs 4 Pillars breakdown */}
+                {lesson.id === 'java-oops-framework' && (
                   <div className="space-y-4">
+                    <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/80 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                          Why Manual Testers Need OOPs for Automation
+                        </h3>
+                      </div>
+                      <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                        In manual testing, every test case in your spreadsheet is an isolated row with steps like &quot;Launch Chrome, type user, click submit&quot;. If you automate like a manual tester by copy-pasting code into 100 script files, you end up with 100 browser instances running in memory, memory leaks, and when a single button ID changes, you have to manually edit 100 files!
+                      </p>
+                      <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                        <strong>Object-Oriented Programming (OOPs)</strong> solves this completely. A <em>Class</em> is your page blueprint, an <em>Object</em> is a live browser session, and the 4 pillars ensure you write code once and reuse it across thousands of test executions.
+                      </p>
+                    </div>
+
                     <h4 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
                       <Layers className="w-4 h-4 text-emerald-500" />
                       The 4 Pillars of OOPs Mapped Directly to Automation:
                     </h4>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* 1. Encapsulation */}
                       <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
                         <div className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
                           1. Encapsulation (Data Hiding in POM)
@@ -483,7 +527,6 @@ export default function CodeEditorWorkspace({
                         </p>
                       </div>
 
-                      {/* 2. Inheritance */}
                       <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
                         <div className="font-bold text-sky-600 dark:text-sky-400 text-sm">
                           2. Inheritance (BaseTest Code Reuse)
@@ -496,10 +539,9 @@ export default function CodeEditorWorkspace({
                         </p>
                       </div>
 
-                      {/* 3. Polymorphism */}
                       <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
                         <div className="font-bold text-purple-600 dark:text-purple-400 text-sm">
-                          3. Polymorphism (Multi-Browser & Overloading)
+                          {'3. Polymorphism (Multi-Browser & Overloading)'}
                         </div>
                         <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                           <strong>Concept:</strong> Method Overloading (<code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">click(By)</code> vs <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">click(By, timeout)</code>) + Dynamic Dispatch (<code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">WebDriver driver = new ChromeDriver()</code>).
@@ -509,7 +551,6 @@ export default function CodeEditorWorkspace({
                         </p>
                       </div>
 
-                      {/* 4. Abstraction */}
                       <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
                         <div className="font-bold text-amber-600 dark:text-amber-400 text-sm">
                           4. Abstraction (Hiding Browser Complexity)
@@ -523,86 +564,184 @@ export default function CodeEditorWorkspace({
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg flex items-center gap-2">
-                    <Flame className="w-5 h-5 text-emerald-500" />
-                    Core Architecture &amp; Conceptual Foundation
-                  </h4>
-                  <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {lesson.automationContext.explanation}
-                  </p>
-                </div>
-              )}
+                )}
 
-              {/* Best Practices & Anti-patterns */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2.5">
-                  <div className="font-bold text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                    SDET Best Practices
+                {/* 4. Step-by-Step Implementation Guide (Playwright-Docs Style) */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
+                      <Target className="w-5 h-5 text-emerald-500" />
+                      Step-by-Step Practical Implementation Guide
+                    </h4>
+                    <span className="text-xs text-slate-400 font-mono">
+                      {doc.stepByStepGuide.length} Sequenced Steps
+                    </span>
                   </div>
-                  <ul className="space-y-2 text-sm text-emerald-900 dark:text-emerald-200">
-                    {lesson.automationContext.bestPractices.map((bp, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-emerald-500 font-bold">✔</span>
-                        <span>{bp}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
 
-                <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 space-y-2.5">
-                  <div className="font-bold text-rose-800 dark:text-rose-300 text-sm flex items-center gap-1.5">
-                    <AlertCircle className="w-4 h-4" />
-                    Manual/Flaky Anti-Patterns
+                  <div className="space-y-4">
+                    {doc.stepByStepGuide.map((step, idx) => (
+                      <div
+                        key={idx}
+                        className="p-4 md:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs"
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2.5">
+                            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                              {step.stepNumber}
+                            </span>
+                            <h5 className="font-bold text-slate-900 dark:text-white text-sm md:text-base">
+                              {step.title}
+                            </h5>
+                          </div>
+                          {step.badge && (
+                            <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                              {step.badge}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                          {step.explanation}
+                        </p>
+
+                        {step.codeSnippet && (
+                          <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 text-xs font-mono">
+                            {step.codeSnippet.caption && (
+                              <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+                                <span>{step.codeSnippet.caption}</span>
+                                <span className="uppercase text-[10px] text-emerald-400 font-bold">{step.codeSnippet.language}</span>
+                              </div>
+                            )}
+                            <pre className="p-3.5 overflow-x-auto leading-relaxed text-emerald-300">
+                              <code>{step.codeSnippet.code}</code>
+                            </pre>
+                          </div>
+                        )}
+
+                        {step.proTip && (
+                          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
+                            <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                            <span><strong>ProTip:</strong> {step.proTip}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  <ul className="space-y-2 text-sm text-rose-900 dark:text-rose-200">
-                    {lesson.automationContext.antiPatterns.map((ap, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-rose-500 font-bold">✖</span>
-                        <span>{ap}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </div>
 
-              {/* DEDICATED PRACTICE LABS CALLOUT: Separating Concept from Hands-On Practice */}
-              <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-slate-900 to-indigo-950 border border-emerald-500/40 text-white space-y-3 shadow-md">
-                <div className="flex items-center gap-2">
-                  <Compass className="w-5 h-5 text-emerald-400" />
-                  <h4 className="font-bold text-base text-white">
-                    Ready to Practice on Live Elements?
-                  </h4>
+                {/* 5. Manual QA to SDET Transition Bridge (Comparative Table) */}
+                {doc.manualToAutomatedBridge.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
+                      <ArrowRightCircle className="w-5 h-5 text-sky-500" />
+                      Manual QA to Modern SDET Transition Bridge
+                    </h4>
+                    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                      <table className="w-full text-left border-collapse text-xs md:text-sm">
+                        <thead>
+                          <tr className="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
+                            <th className="p-3 font-bold">Manual Testing Action</th>
+                            <th className="p-3 font-bold">Modern Automated SDET Code</th>
+                            <th className="p-3 font-bold">Why This Eliminates Flakiness</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
+                          {doc.manualToAutomatedBridge.map((row, i) => (
+                            <tr key={i} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                              <td className="p-3 text-slate-600 dark:text-slate-400 font-medium">
+                                {row.manualAction}
+                              </td>
+                              <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                                {row.automatedApproach}
+                              </td>
+                              <td className="p-3 text-slate-500 dark:text-slate-400">
+                                {row.whyItMatters}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 6. Production Code Example & Line-by-Line Breakdown */}
+                {doc.productionCodeExample && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
+                        <Code className="w-5 h-5 text-indigo-500" />
+                        {doc.productionCodeExample.title}
+                      </h4>
+                    </div>
+                    <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                      {doc.productionCodeExample.description}
+                    </p>
+                    <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 font-mono text-xs">
+                      <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span className="flex items-center gap-2">
+                          <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                          Production Blueprint
+                        </span>
+                        <span className="uppercase text-[11px] font-bold text-sky-400">
+                          {doc.productionCodeExample.language}
+                        </span>
+                      </div>
+                      <pre className="p-4 overflow-x-auto leading-relaxed text-emerald-300">
+                        <code>{doc.productionCodeExample.code}</code>
+                      </pre>
+                    </div>
+                  </div>
+                )}
+
+                {/* 7. Best Practices & Flaky Anti-patterns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2.5">
+                    <div className="font-bold text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                      SDET Best Practices (Do This)
+                    </div>
+                    <ul className="space-y-2 text-xs md:text-sm text-emerald-900 dark:text-emerald-200">
+                      {doc.bestPractices.map((bp, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-emerald-500 font-bold">✔</span>
+                          <span>{bp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 space-y-2.5">
+                    <div className="font-bold text-rose-800 dark:text-rose-300 text-sm flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4" />
+                      Flaky Anti-Patterns (Avoid This)
+                    </div>
+                    <ul className="space-y-2 text-xs md:text-sm text-rose-900 dark:text-rose-200">
+                      {doc.antiPatterns.map((ap, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-rose-500 font-bold">✖</span>
+                          <span>{ap}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  You have learned the core concepts! To practice automating against real-world dynamic delays, Shadow DOM, OTP fields, data tables, and REST APIs, visit the dedicated <strong>PRACTICE LABS</strong> section in the Left Navigation.
-                </p>
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <Link
-                    href={
-                      track.id === 'api-testing'
-                        ? '/sandbox/api'
-                        : track.id === 'ai-qa'
-                        ? '/qa-agents'
-                        : track.id === 'playwright-ts'
-                        ? '/sandbox/web?stack=playwright'
-                        : '/sandbox/web?stack=selenium'
-                    }
-                    className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    Open {track.id === 'api-testing' ? 'API Testing Lab' : track.id === 'ai-qa' ? 'QA AI Agents Lab' : track.id === 'playwright-ts' ? 'Playwright Web Lab' : 'Selenium Web Lab'} →
-                  </Link>
-                  <span className="text-xs text-slate-400">
-                    Located in Left Navigation under Practice Labs
-                  </span>
-                </div>
+
+                {/* 8. Technical Interview Question & Architectural Model Answer */}
+                {doc.interviewQnA && (
+                  <div className="p-5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 space-y-2.5">
+                    <div className="font-bold text-indigo-900 dark:text-indigo-300 text-sm md:text-base flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      Technical Interview Question: &ldquo;{doc.interviewQnA.question}&rdquo;
+                    </div>
+                    <p className="text-xs md:text-sm text-indigo-950 dark:text-indigo-200 leading-relaxed pl-6 border-l-2 border-indigo-400 dark:border-indigo-600">
+                      <strong>Model Architectural Answer:</strong> {doc.interviewQnA.answer}
+                    </p>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {activeTab === 'manual-vs-code' && (
             <div className="space-y-4">

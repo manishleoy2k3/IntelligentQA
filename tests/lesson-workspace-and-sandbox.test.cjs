@@ -42,9 +42,11 @@ test('Points 4 & 5: Course text explains concepts (OOPs pillars) and directs to 
   assert.ok(workspaceFile.includes('3. Polymorphism (Multi-Browser & Overloading)'), 'Explains Polymorphism & dynamic dispatch');
   assert.ok(workspaceFile.includes('4. Abstraction (Hiding Browser Complexity)'), 'Explains Abstraction & WebDriver interface');
 
-  // Verify explicit CTA directing users to dedicated Practice Labs in left nav
-  assert.ok(workspaceFile.includes('Ready to Practice on Live Elements?'), 'Has dedicated Practice Labs callout');
-  assert.ok(workspaceFile.includes('Located in Left Navigation under Practice Labs'), 'Directs user to Left Navigation Practice Labs');
+  // Verify redundant "Ready to Practice on Live Elements?" is removed in favor of top toolbar link
+  assert.ok(!workspaceFile.includes('Ready to Practice on Live Elements?'), 'Redundant Ready to Practice callout removed');
+  assert.ok(workspaceFile.includes('Practice Lab'), 'Toolbar provides direct Practice Lab access at top');
+  assert.ok(workspaceFile.includes('Step-by-Step Practical Implementation Guide'), 'Has Playwright-docs style implementation guide');
+  assert.ok(workspaceFile.includes('Manual QA to Modern SDET Transition Bridge'), 'Has manual-to-SDET transition comparative bridge');
 });
 
 test('Point 1: Web Playground Sandbox is expanded with rich, working automation challenges', () => {
