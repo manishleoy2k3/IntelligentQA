@@ -234,10 +234,9 @@ export default function CodeEditorWorkspace({
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
 
-  // Draggable Splitter & Visible Text Layout state
+  // Draggable Splitter state (user can resize freely as needed)
   const [splitPercent, setSplitPercent] = useState<number>(55);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [fullWidthReading, setFullWidthReading] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mouse drag handlers for resizable panels
@@ -365,7 +364,7 @@ export default function CodeEditorWorkspace({
     >
       {/* LEFT PANEL: Interactive Guide & Concepts */}
       <div
-        style={fullWidthReading ? { width: '100%' } : { width: `${splitPercent}%` }}
+        style={{ width: `${splitPercent}%` }}
         className="w-full flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto h-auto lg:h-[calc(100vh-65px)] transition-[width] duration-75"
       >
         {/* Navigation & Header */}
@@ -393,63 +392,10 @@ export default function CodeEditorWorkspace({
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {lesson.title}
             </h2>
-
-            {/* Quick Layout Controls to make text fully visible & customizable */}
-            <div className="hidden lg:flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-[11px] font-medium text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
-              <button
-                type="button"
-                onClick={() => { setFullWidthReading(false); setSplitPercent(70); }}
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                  !fullWidthReading && splitPercent === 70
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
-                    : 'hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="Widen Course Text Panel (70% text / 30% code)"
-              >
-                Reading (70%)
-              </button>
-              <button
-                type="button"
-                onClick={() => { setFullWidthReading(false); setSplitPercent(50); }}
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                  !fullWidthReading && splitPercent === 50
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
-                    : 'hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="Balanced 50/50 split"
-              >
-                Balanced (50%)
-              </button>
-              <button
-                type="button"
-                onClick={() => { setFullWidthReading(false); setSplitPercent(30); }}
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                  !fullWidthReading && splitPercent === 30
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
-                    : 'hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="Code Editor Focus (30% text / 70% code)"
-              >
-                Code (30%)
-              </button>
-              <button
-                type="button"
-                onClick={() => setFullWidthReading(!fullWidthReading)}
-                className={`px-2 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
-                  fullWidthReading
-                    ? 'bg-emerald-600 text-white font-bold shadow-xs'
-                    : 'hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title={fullWidthReading ? 'Restore Code Panel' : 'Maximize text to 100% full width'}
-              >
-                {fullWidthReading ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
-                {fullWidthReading ? 'Restore Code' : 'Full Text'}
-              </button>
-            </div>
           </div>
 
           <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -713,28 +659,26 @@ export default function CodeEditorWorkspace({
       </div>
 
       {/* Draggable Divider Bar (Desktop Splitter) */}
-      {!fullWidthReading && (
-        <div
-          onMouseDown={handleMouseDown}
-          className={`hidden lg:flex w-2 hover:w-2.5 bg-slate-200 dark:border-x dark:border-neutral-800 dark:bg-neutral-900 hover:bg-emerald-500/80 cursor-col-resize select-none items-center justify-center transition-all group relative z-10 shrink-0 ${
-            isDragging ? 'bg-emerald-500 w-2.5 shadow-lg' : ''
-          }`}
-          title="Drag to resize panels (or use layout buttons at top)"
-        >
-          <div className="w-1 h-8 rounded-full bg-slate-400 dark:bg-slate-600 group-hover:bg-white flex flex-col justify-around py-1">
-            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
-            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
-            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
-          </div>
+      <div
+        onMouseDown={handleMouseDown}
+        onDoubleClick={() => setSplitPercent(55)}
+        className={`hidden lg:flex w-2 hover:w-2.5 bg-slate-200 dark:border-x dark:border-neutral-800 dark:bg-neutral-900 hover:bg-emerald-500/80 cursor-col-resize select-none items-center justify-center transition-all group relative z-10 shrink-0 ${
+          isDragging ? 'bg-emerald-500 w-2.5 shadow-lg' : ''
+        }`}
+        title="Drag to resize panels (Double-click to reset)"
+      >
+        <div className="w-1 h-8 rounded-full bg-slate-400 dark:bg-slate-600 group-hover:bg-white flex flex-col justify-around py-1">
+          <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+          <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+          <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
         </div>
-      )}
+      </div>
 
       {/* RIGHT PANEL: Interactive Concept Code Lab */}
-      {!fullWidthReading && (
-        <div
-          style={{ width: `${100 - splitPercent}%` }}
-          className="w-full flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative transition-[width] duration-75"
-        >
+      <div
+        style={{ width: `${100 - splitPercent}%` }}
+        className="w-full flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative transition-[width] duration-75"
+      >
           {/* Editor Toolbar - Code Examples across Java, TypeScript, and Python */}
           <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs flex-wrap gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -909,7 +853,6 @@ export default function CodeEditorWorkspace({
           </div>
         </div>
       </div>
-      )}
     </div>
   );
 }

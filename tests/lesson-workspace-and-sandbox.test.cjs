@@ -16,7 +16,7 @@ test('Point 2: Sidebar tracks are collapsed by default to prevent heavy scrollin
   assert.ok(sidebarFile.includes('onClick={() => toggleTrack(track.id)}'), 'Track row toggles expand/collapse');
 });
 
-test('Point 3: Code Editor Workspace has draggable resizable panel & layout controls', () => {
+test('Point 3: Code Editor Workspace has pure draggable resizable splitter with redundant preset buttons removed', () => {
   const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
 
   // Verify draggable state and mouse events
@@ -25,11 +25,11 @@ test('Point 3: Code Editor Workspace has draggable resizable panel & layout cont
   assert.ok(workspaceFile.includes('cursor-col-resize'), 'Has cursor-col-resize splitter divider');
   assert.ok(workspaceFile.includes('handleMouseDown'), 'Has handleMouseDown for drag handle');
 
-  // Verify quick layout buttons to make course text completely visible
-  assert.ok(workspaceFile.includes('Reading (70%)'), 'Has Reading Focus layout preset');
-  assert.ok(workspaceFile.includes('Balanced (50%)'), 'Has Balanced layout preset');
-  assert.ok(workspaceFile.includes('Code (30%)'), 'Has Code Focus layout preset');
-  assert.ok(workspaceFile.includes('Full Text'), 'Has Full-width Text toggle');
+  // Verify redundant preset layout buttons are removed to free space for learning text
+  assert.ok(!workspaceFile.includes('Reading (70%)'), 'Reading preset button removed to free space');
+  assert.ok(!workspaceFile.includes('Balanced (50%)'), 'Balanced preset button removed to free space');
+  assert.ok(!workspaceFile.includes('Code (30%)'), 'Code preset button removed to free space');
+  assert.ok(!workspaceFile.includes('Full Text'), 'Full Text button removed');
 });
 
 test('Points 4 & 5: Course text explains concepts (OOPs pillars) and directs to Practice Labs', () => {
