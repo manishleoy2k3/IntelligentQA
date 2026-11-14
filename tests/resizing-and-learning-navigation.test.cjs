@@ -94,3 +94,35 @@ test('Item 9: Redundant horizontal tabs removed from QA AI Agents page', () => {
   assert.ok(workspaceFile.includes('{currentAgent.title}'), 'Renders active agent title directly');
   assert.ok(!workspaceFile.includes('<div className="flex border-b">'), 'No horizontal agent tab bar');
 });
+
+test('Item 10: Selenium Learning Content removes redundant code snippet editor section & provides in-guide Java/Python toggle', () => {
+  const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
+  const docsFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-learning-docs.ts'), 'utf8');
+
+  // Right-side code editor panel is excluded for Selenium courses to prevent duplicate snippet confusion
+  assert.ok(workspaceFile.includes('!isSelenium && ('), 'Right editor panel is conditionally hidden for Selenium');
+  assert.ok(workspaceFile.includes('isSelenium ? \'100%\' : `${splitPercent}%`'), 'Left panel expands to 100% full width for Selenium');
+
+  // Java & Python language switcher under Concept Guide
+  assert.ok(workspaceFile.includes('setGuideLang(\'java\')'), 'Has in-guide Java switch button');
+  assert.ok(workspaceFile.includes('setGuideLang(\'python\')'), 'Has in-guide Python switch button');
+  assert.ok(workspaceFile.includes('Code Examples Language:'), 'Has Code Examples Language section in Concept Guide');
+
+  // Verify Selenium learning docs use pure Selenium (zero Playwright TypeScript in Selenium course)
+  assert.ok(docsFile.includes('SELENIUM WEBDRIVER (PYTHON)'), 'Has dedicated Selenium Python generator');
+  assert.ok(docsFile.includes('from selenium import webdriver'), 'Uses selenium library for Python');
+  assert.ok(docsFile.includes('WebDriverWait'), 'Uses WebDriverWait for Selenium synchronization');
+});
+
+test('Item 11: Try it with AI keeps only Java and Python for Selenium & handles fallback seamlessly without errors', () => {
+  const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
+  const routeFile = fs.readFileSync(path.join(__dirname, '../src/app/api/ai/qa-agent/route.ts'), 'utf8');
+
+  // Try it with AI language selector restricts to Java and Python when on Selenium track
+  assert.ok(workspaceFile.includes("isSelenium ? (['java', 'python'] as SupportedLang[])"), 'Restricts language options to Java and Python in Selenium');
+
+  // API route handles code_snippet action without requiring user API key
+  assert.ok(routeFile.includes("if (action === 'code_snippet')"), 'Route handles code_snippet action seamlessly');
+  assert.ok(routeFile.includes("generateCodeSnippetOnly(cleanInput, techStack)"), 'Falls back to deterministic generator for code_snippet');
+  assert.ok(routeFile.includes('selenium-python'), 'Generates pure Selenium Python code for selenium-python techStack');
+});

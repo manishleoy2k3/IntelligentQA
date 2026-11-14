@@ -844,12 +844,137 @@ Format output as structured Gherkin BDD scenarios.\`;
 };
 
 // Generic Fallback Generator that produces deep Playwright-Docs-Style content for ANY curriculum lesson
-export function getLessonDoc(lessonId: string, trackId: string, lessonTitle?: string, lessonDesc?: string): LessonDoc {
+export function getLessonDoc(
+  lessonId: string,
+  trackId: string,
+  lessonTitle?: string,
+  lessonDesc?: string,
+  selectedLanguage: 'java' | 'python' | 'typescript' = 'java'
+): LessonDoc {
+  const isSelenium = trackId === 'selenium-java';
+  const isPython = selectedLanguage === 'python';
+
   if (DETAILED_LESSON_DOCS[lessonId]) {
-    const doc = DETAILED_LESSON_DOCS[lessonId];
+    const doc = { ...DETAILED_LESSON_DOCS[lessonId] };
+
+    // For Selenium OOPs lesson, adapt code examples dynamically to selected language (Java vs Python)
+    if (isSelenium && isPython && lessonId === 'java-oops-framework') {
+      return {
+        title: doc.title || lessonTitle || 'Core Java OOPs for Automation',
+        category: 'Selenium (Python) • Enterprise Architecture',
+        tagline: doc.tagline || 'Map Encapsulation, Inheritance, Polymorphism, and Abstraction Directly to QA Architecture',
+        overview: doc.overview || lessonDesc || 'Detailed conceptual foundation and architectural walkthrough.',
+        whyItMattersForManualQA: doc.whyItMattersForManualQA || '',
+        architectureUnderTheHood: doc.architectureUnderTheHood || {
+          title: 'How the 4 OOPs Pillars Construct an Enterprise Test Framework',
+          flowOrMechanism: '1. Encapsulation: Locators are private in Page classes => 2. Inheritance: Tests extend BaseTest to reuse driver => 3. Polymorphism: DriverFactory returns ChromeDriver or FirefoxDriver => 4. Abstraction: WebDriver interface hides browser binary details.',
+          keyTakeaway: 'OOPs is not academic theory: each pillar maps directly to solving a concrete automation challenge.',
+        },
+        stepByStepGuide: [
+          {
+            stepNumber: 1,
+            title: 'Encapsulation: The Foundation of Page Object Model (Python)',
+            badge: 'Data Hiding',
+            summary: 'Keep web element locators private inside Python Page Classes.',
+            explanation: 'Declare locators as private tuple members self._username_field and expose public action methods like login_as(user, pass).',
+            codeSnippet: {
+              language: 'python',
+              code: 'from selenium.webdriver.common.by import By\nfrom selenium.webdriver.remote.webdriver import WebDriver\n\nclass LoginPage:\n    def __init__(self, driver: WebDriver):\n        self._driver = driver\n        # Private encapsulated locators\n        self._username_field = (By.ID, "username")\n        self._password_field = (By.ID, "password")\n        self._submit_btn = (By.CSS_SELECTOR, "button[type=\'submit\']")\n\n    def login_as(self, username: str, password: str):\n        self._driver.find_element(*self._username_field).send_keys(username)\n        self._driver.find_element(*self._password_field).send_keys(password)\n        self._driver.find_element(*self._submit_btn).click()\n        return DashboardPage(self._driver)',
+              caption: 'Python Page Object Encapsulation',
+            },
+            proTip: 'Returning DashboardPage(self._driver) creates a fluent interface matching real user navigation.',
+          },
+          {
+            stepNumber: 2,
+            title: 'Inheritance: Eliminating Driver Setup & Teardown with pytest (Python)',
+            badge: 'BaseTest Reuse',
+            summary: 'Manage browser lifecycle once in BaseTest fixture; all test classes inherit it.',
+            explanation: 'Create a BaseTest with @pytest.fixture(autouse=True) setup and teardown.',
+            codeSnippet: {
+              language: 'python',
+              code: 'import pytest\nfrom selenium import webdriver\n\nclass BaseTest:\n    @pytest.fixture(autouse=True)\n    def setup_driver(self):\n        self.driver = webdriver.Chrome()\n        self.driver.maximize_window()\n        yield\n        if self.driver:\n            self.driver.quit() # Always quit to prevent zombie processes',
+              caption: 'Python BaseTest Fixture with Selenium',
+            },
+            proTip: 'Always call driver.quit() rather than driver.close() to kill the chromedriver binary in memory.',
+          },
+          {
+            stepNumber: 3,
+            title: 'Polymorphism: Multi-Browser Dynamic Dispatch (Python)',
+            badge: 'Dynamic Dispatch',
+            summary: 'Switch between Chrome, Firefox, and Edge with zero test changes.',
+            explanation: 'Create a polymorphic DriverFactory that instantiates the requested browser dynamically at runtime.',
+            codeSnippet: {
+              language: 'python',
+              code: 'from selenium import webdriver\n\nclass DriverFactory:\n    @staticmethod\n    def create_driver(browser: str = "chrome"):\n        browser = browser.lower()\n        if browser == "firefox":\n            return webdriver.Firefox()\n        elif browser == "edge":\n            return webdriver.Edge()\n        return webdriver.Chrome()',
+              caption: 'Polymorphic Factory in Python',
+            },
+            proTip: 'Parameterize browser execution via pytest -s --browser=firefox for cross-browser matrix testing.',
+          },
+          {
+            stepNumber: 4,
+            title: 'Abstraction: Hiding Browser Plumbing Behind Clean Interfaces (Python)',
+            badge: 'Clean API',
+            summary: 'Interact with high-level contracts while hiding complex WebDriver logic.',
+            explanation: 'When you call driver.get("url"), you do not care about HTTP POST commands or W3C wire protocols. Abstraction hides the mechanics.',
+            codeSnippet: {
+              language: 'python',
+              code: 'from selenium import webdriver\nfrom selenium.webdriver.common.by import By\n\ndriver = webdriver.Chrome()\ndriver.get("https://intelligentqa.com")\nbtn = driver.find_element(By.ID, "start")\nbtn.click()',
+              caption: 'Abstraction in Selenium WebDriver',
+            },
+            proTip: 'Wrap reusable waits in a BasePage class so individual page objects do not repeat wait boilerplate.',
+          },
+        ],
+        manualToAutomatedBridge: doc.manualToAutomatedBridge || [],
+        productionCodeExample: {
+          title: 'Production Test Class (Python Selenium): Extending BaseTest with POM',
+          description: 'Clean pytest test class containing zero raw locators and zero driver management code.',
+          language: 'python',
+          code: `# ==========================================
+# Production Test with Page Object Model in Selenium (Python)
+# ==========================================
+import pytest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+class TestLoginValidation:
+    @pytest.fixture(autouse=True)
+    def setup_and_teardown(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        yield
+        if self.driver:
+            self.driver.quit()
+
+    def test_valid_user_authentication(self):
+        self.driver.get("http://localhost:3000/sandbox/web")
+        login_page = LoginPage(self.driver)
+        dashboard = login_page.login_as("standard_user", "secret_pass")
+        assert dashboard.is_loaded(), "Dashboard failed to load after login"`,
+          annotations: [
+            { lineOrPattern: 'test_valid_user_authentication', explanation: 'Pytest test function boundary.' },
+            { lineOrPattern: 'assert dashboard.is_loaded()', explanation: 'Clean assertion verifying business outcome.' },
+          ],
+        },
+        bestPractices: [
+          'Use Page Object Model with private locators',
+          'Use autouse pytest fixtures for clean setup and teardown',
+          'Never use time.sleep(); always use WebDriverWait',
+        ],
+        antiPatterns: [
+          'Using hardcoded time.sleep(5)',
+          'Copy-pasting webdriver.Chrome() into every single test file',
+          'Using brittle absolute full-path XPaths',
+        ],
+        interviewQnA: doc.interviewQnA || {
+          question: 'How do you structure an enterprise Python Selenium framework using OOPs?',
+          answer: 'We encapsulate locators inside Page Classes, manage browser lifecycle in a BaseTest pytest fixture, use a DriverFactory for multi-browser polymorphism, and wrap common wait utilities inside a BasePage class.',
+        },
+      };
+    }
+
     return {
       title: doc.title || lessonTitle || 'Concept Guide',
-      category: doc.category || trackId,
+      category: isSelenium ? (isPython ? 'Selenium (Python) • Enterprise Architecture' : 'Selenium (Java) • Enterprise Architecture') : (doc.category || trackId),
       tagline: doc.tagline || 'Master Enterprise SDET & Modern Quality Engineering Concepts',
       overview: doc.overview || lessonDesc || 'Detailed conceptual foundation and architectural walkthrough.',
       whyItMattersForManualQA: doc.whyItMattersForManualQA || 'Essential knowledge for manual testers transitioning to automated SDET roles.',
@@ -861,10 +986,10 @@ export function getLessonDoc(lessonId: string, trackId: string, lessonTitle?: st
       stepByStepGuide: doc.stepByStepGuide || [],
       manualToAutomatedBridge: doc.manualToAutomatedBridge || [],
       productionCodeExample: doc.productionCodeExample || {
-        title: 'Production Code Example',
+        title: isSelenium ? `Production Implementation (Java Selenium): ${doc.title}` : 'Production Code Example',
         description: 'Clean, production-ready implementation of this concept.',
-        code: '// Production automation blueprint',
-        language: 'typescript',
+        code: isSelenium ? getConceptCodeSnippet(lessonId, trackId, isPython ? 'python' : 'java', doc.title || lessonTitle) : '// Production automation blueprint',
+        language: isSelenium ? (isPython ? 'python' : 'java') : 'typescript',
         annotations: [],
       },
       bestPractices: doc.bestPractices || ['Write resilient user-facing tests', 'Avoid hardcoded timeouts'],
@@ -878,7 +1003,6 @@ export function getLessonDoc(lessonId: string, trackId: string, lessonTitle?: st
 
   // Dynamic Generator tailored by track type
   const isPlaywright = trackId === 'playwright-ts';
-  const isSelenium = trackId === 'selenium-java';
   const isApi = trackId === 'api-testing';
   const cleanTitle = lessonTitle || 'Automation Concept';
 
@@ -1071,34 +1195,39 @@ public abstract class BaseTest {
     }
     if (lang === 'python') {
       return `# ==========================================
-# 1. ENCAPSULATION: Python Page Object with Private Members
+# 1. ENCAPSULATION: Python Page Object Model (Selenium)
 # ==========================================
-from playwright.sync_api import Page, expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 
 class LoginPage:
-    def __init__(self, page: Page):
-        self.page = page
-        # Encapsulated semantic locators
-        self._username_input = page.get_by_label("Username")
-        self._password_input = page.get_by_label("Password")
-        self._login_button = page.get_by_role("button", name="Sign In")
+    def __init__(self, driver: WebDriver):
+        self._driver = driver
+        # Encapsulated locators: private to the page class
+        self._username_field = (By.ID, "username")
+        self._password_field = (By.ID, "password")
+        self._submit_btn = (By.CSS_SELECTOR, "button[type='submit']")
 
     def login_as(self, username: str, password: str):
-        self._username_input.fill(username)
-        self._password_input.fill(password)
-        self._login_button.click()
+        self._driver.find_element(*self._username_field).send_keys(username)
+        self._driver.find_element(*self._password_field).send_keys(password)
+        self._driver.find_element(*self._submit_btn).click()
+        return DashboardPage(self._driver)
 
 # ==========================================
-# 2. INHERITANCE / FIXTURE: Clean Lifecycle
+# 2. INHERITANCE: BaseTest Fixture (Selenium)
 # ==========================================
 import pytest
+from selenium import webdriver
 
-@pytest.fixture
-def auth_session(page: Page):
-    login_page = LoginPage(page)
-    login_page.login_as("standard_user", "secret_pass")
-    yield page
-    page.close()`;
+class BaseTest:
+    @pytest.fixture(autouse=True)
+    def setup_driver(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        yield
+        if self.driver:
+            self.driver.quit()`;
     }
     return `// ==========================================
 // 1. ENCAPSULATION: Modern TypeScript Page Object
@@ -1188,6 +1317,30 @@ public class SynchronizationStrategy {
     }
 }`;
     }
+    if (trackId === 'selenium-java' || lessonId === 'sel-sync-waits') {
+      return `# ==========================================
+# SELENIUM WEBDRIVER (PYTHON): Explicit Wait
+# ==========================================
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+def test_dynamic_wait(driver):
+    driver.get("http://localhost:3000/sandbox/web")
+    wait = WebDriverWait(driver, 10)
+
+    # 1. Wait for element to be clickable
+    btn = wait.until(EC.element_to_be_clickable((By.ID, "ajax-trigger")))
+    btn.click()
+
+    # 2. Wait for dynamic content visibility
+    banner = wait.until(EC.visibility_of_element_located((By.ID, "result-banner")))
+    assert "Data Loaded" in banner.text
+
+    # 3. Wait for loading spinner to disappear
+    wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "loading-spinner")))`;
+    }
     return `from playwright.sync_api import Page, expect
 
 def test_auto_waiting(page: Page):
@@ -1253,6 +1406,25 @@ public class AdvancedDynamicLocators {
         driver.findElement(submitButton).click();
     }
 }`;
+    }
+    if (trackId === 'selenium-java' || lessonId === 'sel-locators-xpath') {
+      return `from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
+
+class UserTablePage:
+    def __init__(self, driver: WebDriver):
+        self.driver = driver
+        self.submit_btn = (By.XPATH, "//button[normalize-space()='Submit' or @type='submit']")
+        self.search_input = (By.CSS_SELECTOR, "input[placeholder*='Search']")
+
+    def get_edit_button_for_user(self, username: str):
+        # Dynamic XPath axes traversal without fragile index numbers
+        xpath = f"//tr[contains(., '{username}')]//button[contains(@class, 'edit-btn')]"
+        return (By.XPATH, xpath)
+
+    def edit_user(self, username: str):
+        locator = self.get_edit_button_for_user(username)
+        self.driver.find_element(*locator).click()`;
     }
     return `from playwright.sync_api import Page, expect
 
@@ -1375,6 +1547,30 @@ public class ${lessonId.replace(/[^a-zA-Z0-9]/g, '')}Example {
   }
 
   if (lang === 'python') {
+    if (trackId === 'selenium-java') {
+      return `# ==========================================
+# SELENIUM WEBDRIVER (PYTHON): ${lessonTitle}
+# ==========================================
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+def test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}_selenium():
+    driver = webdriver.Chrome()
+    try:
+        driver.get("http://localhost:3000/sandbox/web")
+        wait = WebDriverWait(driver, 10)
+        
+        # Concept: ${lessonTitle}
+        element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.action-btn")))
+        element.click()
+        
+        alert = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "success-toast")))
+        assert alert.is_displayed(), "Action should complete successfully"
+    finally:
+        driver.quit()`;
+    }
     return `# ==========================================
 # PYTHON AUTOMATION: ${lessonTitle}
 # ==========================================
@@ -1394,6 +1590,11 @@ def test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}(page: Page):
 
     # Web-first auto-retrying assertion
     expect(page.get_by_role("status")).to_be_visible(timeout=5000)`;
+  }
+
+  // Never return Playwright TypeScript for Selenium track
+  if (trackId === 'selenium-java') {
+    return getConceptCodeSnippet(lessonId, trackId, 'java', lessonTitle);
   }
 
   return `// ==========================================

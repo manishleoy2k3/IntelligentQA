@@ -15,6 +15,18 @@ export async function POST(req: NextRequest) {
     const effectiveApiKey = sanitizeGeminiKey(rawApiKey || '');
 
     if (!effectiveApiKey) {
+      if (action === 'code_snippet') {
+        // For learning workspace "Try it with AI", provide instant deterministic code snippet fallback without blocking
+        const cleanInput = input.trim();
+        const generatedOutput = generateCodeSnippetOnly(cleanInput, techStack);
+        return NextResponse.json({
+          action,
+          output: generatedOutput,
+          techStack,
+          isLiveAI: false,
+        });
+      }
+
       return NextResponse.json(
         {
           error: 'GEMINI_KEY_REQUIRED',
@@ -28,6 +40,17 @@ export async function POST(req: NextRequest) {
     // Reject garbage / malformed keys immediately
     const syntaxCheck = validateGeminiKeySyntax(effectiveApiKey);
     if (!syntaxCheck.valid) {
+      if (action === 'code_snippet') {
+        const cleanInput = input.trim();
+        const generatedOutput = generateCodeSnippetOnly(cleanInput, techStack);
+        return NextResponse.json({
+          action,
+          output: generatedOutput,
+          techStack,
+          isLiveAI: false,
+        });
+      }
+
       return NextResponse.json(
         {
           error: 'INVALID_GEMINI_KEY',
@@ -453,7 +476,112 @@ test('optimized robust execution', async ({ page }) => {
 
 // 5. Code Snippet Only Generator (Direct, Short, Clean - No Markdown Description)
 function generateCodeSnippetOnly(input: string, techStack: string): string {
+  const lowerInput = input.toLowerCase();
+
+  // SELENIUM (PYTHON)
+  if (techStack === 'selenium-python' || (techStack === 'python' && (lowerInput.includes('selenium') || lowerInput.includes('basetest') || lowerInput.includes('webdriver')))) {
+    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('fixture')) {
+      return `# Selenium WebDriver (Python) BaseTest Fixture
+import pytest
+from selenium import webdriver
+
+class BaseTest:
+    @pytest.fixture(autouse=True)
+    def setup_driver(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        yield
+        if self.driver:
+            self.driver.quit()`;
+    }
+    if (lowerInput.includes('page object') || lowerInput.includes('pom') || lowerInput.includes('login')) {
+      return `# Selenium WebDriver (Python) Page Object
+from selenium.webdriver.common.by import By
+
+class LoginPage:
+    def __init__(self, driver):
+        self.driver = driver
+        self._username = (By.ID, "username")
+        self._password = (By.ID, "password")
+        self._login_btn = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def login_as(self, username, password):
+        self.driver.find_element(*self._username).send_keys(username)
+        self.driver.find_element(*self._password).send_keys(password)
+        self.driver.find_element(*self._login_btn).click()`;
+    }
+    if (lowerInput.includes('wait') || lowerInput.includes('sync')) {
+      return `# Selenium WebDriver (Python) Explicit Wait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+wait = WebDriverWait(driver, 10)
+btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']")))
+btn.click()
+alert = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[role='alert'], .toast")))
+assert alert.is_displayed(), "Alert banner must be visible"`;
+    }
+    return `# Selenium WebDriver (Python) Snippet
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+wait = WebDriverWait(driver, 10)
+btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']")))
+btn.click()
+alert = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[role='alert'], .toast")))
+assert alert.is_displayed(), "Verification alert should be visible"`;
+  }
+
+  // SELENIUM (JAVA)
   if (techStack === 'selenium-java' || techStack === 'java') {
+    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('testng')) {
+      return `// Selenium WebDriver (Java) BaseTest
+package com.intelligentqa.base;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+
+public abstract class BaseTest {
+    protected WebDriver driver;
+
+    @BeforeMethod
+    public void setUp() {
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) driver.quit();
+    }
+}`;
+    }
+    if (lowerInput.includes('page object') || lowerInput.includes('pom') || lowerInput.includes('login')) {
+      return `// Selenium WebDriver (Java) Page Object
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class LoginPage {
+    private final WebDriver driver;
+    private final By usernameField = By.id("username");
+    private final By passwordField = By.id("password");
+    private final By submitBtn = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) { this.driver = driver; }
+
+    public void loginAs(String username, String password) {
+        driver.findElement(usernameField).sendKeys(username);
+        driver.findElement(passwordField).sendKeys(password);
+        driver.findElement(submitBtn).click();
+    }
+}`;
+    }
     return `// Selenium WebDriver (Java) Snippet
 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 WebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
@@ -461,12 +589,16 @@ submitBtn.click();
 WebElement alert = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[role='alert'], .toast")));
 Assert.assertTrue(alert.isDisplayed(), "Verification alert should be visible");`;
   }
+
+  // PLAYWRIGHT (PYTHON)
   if (techStack === 'playwright-python' || techStack === 'python') {
     return `# Playwright (Python) Snippet
 page.get_by_role("button", name="Submit").click()
 expect(page.get_by_role("alert")).to_be_visible(timeout=5000)
 expect(page.get_by_role("heading", level=1)).to_have_text("Success")`;
   }
+
+  // PLAYWRIGHT (TYPESCRIPT)
   return `// Playwright (TypeScript) Snippet
 await page.getByRole('button', { name: 'Submit' }).click();
 await expect(page.getByRole('alert')).toBeVisible({ timeout: 5000 });

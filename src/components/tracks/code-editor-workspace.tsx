@@ -168,6 +168,9 @@ public class ConceptDemo {
 }
 
 function getTypeScriptCodeExample(lesson: Lesson, trackId: string): string {
+  if (trackId === 'selenium-java') {
+    return getJavaCodeExample(lesson, trackId);
+  }
   if (lesson.challenge?.starterCode?.typescript) {
     return lesson.challenge.starterCode.typescript;
   }
@@ -193,14 +196,17 @@ test('${lesson.title}', async ({ page }) => {
 }
 
 function getCodeForLanguage(lang: SupportedLang, lesson: Lesson, trackId: string): string {
+  // Never expose TypeScript code in Selenium track
+  const effectiveLang = trackId === 'selenium-java' && lang === 'typescript' ? 'java' : lang;
+
   // 1. First retrieve high-fidelity code strictly mapped to the Concept Guide
-  const conceptCode = getConceptCodeSnippet(lesson.id, trackId, lang, lesson.title);
+  const conceptCode = getConceptCodeSnippet(lesson.id, trackId, effectiveLang, lesson.title);
   if (conceptCode) {
     return conceptCode;
   }
   // 2. Fallbacks for challenge-specific code
-  if (lang === 'java') return getJavaCodeExample(lesson, trackId);
-  if (lang === 'python') return getPythonCodeExample(lesson, trackId);
+  if (effectiveLang === 'java') return getJavaCodeExample(lesson, trackId);
+  if (effectiveLang === 'python') return getPythonCodeExample(lesson, trackId);
   return getTypeScriptCodeExample(lesson, trackId);
 }
 
@@ -212,13 +218,15 @@ export default function CodeEditorWorkspace({
   lessonIndex = 1,
   totalLessons = 1,
 }: WorkspaceProps) {
+  const isSelenium = track.id === 'selenium-java';
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [guideLang, setGuideLang] = useState<'java' | 'python'>('java');
   const [selectedLang, setSelectedLang] = useState<SupportedLang>(
-    track.id === 'selenium-java' ? 'java' : 'typescript'
+    isSelenium ? 'java' : 'typescript'
   );
   const [code, setCode] = useState<string>(() =>
     getCodeForLanguage(
-      track.id === 'selenium-java' ? 'java' : 'typescript',
+      isSelenium ? 'java' : 'typescript',
       lesson,
       track.id
     )
@@ -251,7 +259,7 @@ export default function CodeEditorWorkspace({
   // AI in Action State
   const [promptInput, setPromptInput] = useState<string>(lesson.aiAugmentation.promptExample);
   const [aiSnippetLang, setAiSnippetLang] = useState<SupportedLang>(
-    track.id === 'selenium-java' ? 'java' : 'typescript'
+    isSelenium ? 'java' : 'typescript'
   );
   const [aiSnippet, setAiSnippet] = useState<string>('');
   const [isGeneratingSnippet, setIsGeneratingSnippet] = useState<boolean>(false);
@@ -264,7 +272,10 @@ export default function CodeEditorWorkspace({
     setPromptInput(lesson.aiAugmentation.promptExample);
     setAiSnippet('');
     setAiSnippetError(null);
-  }, [lesson.id, lesson.aiAugmentation.promptExample]);
+    if (isSelenium) {
+      setAiSnippetLang('java');
+    }
+  }, [lesson.id, lesson.aiAugmentation.promptExample, isSelenium]);
 
   const handleTryWithAi = async () => {
     setIsGeneratingSnippet(true);
@@ -275,7 +286,9 @@ export default function CodeEditorWorkspace({
           ? localStorage.getItem('intelligentqa_gemini_api_key') || ''
           : '';
       const techStackKey =
-        aiSnippetLang === 'java'
+        isSelenium
+          ? (aiSnippetLang === 'python' ? 'selenium-python' : 'selenium-java')
+          : aiSnippetLang === 'java'
           ? (track.id === 'api-testing' ? 'rest-assured' : 'selenium-java')
           : aiSnippetLang === 'python'
           ? 'playwright-python'
@@ -295,8 +308,9 @@ export default function CodeEditorWorkspace({
       const data = await res.json();
       if (data?.output) {
         setAiSnippet(data.output);
+        setAiSnippetError(null);
       } else {
-        setAiSnippetError('Unable to generate snippet. Please try again.');
+        setAiSnippetError(data?.message || data?.error || 'Unable to generate snippet. Please try again.');
       }
     } catch (err: any) {
       setAiSnippetError(err.message || 'Error communicating with AI service');
@@ -430,8 +444,8 @@ export default function CodeEditorWorkspace({
     >
       {/* LEFT PANEL: Interactive Guide & Concepts */}
       <div
-        style={{ width: `${splitPercent}%` }}
-        className="w-full flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto h-auto lg:h-[calc(100vh-65px)] transition-[width] duration-75"
+        style={{ width: isSelenium ? '100%' : `${splitPercent}%` }}
+        className={`w-full flex flex-col border-b lg:border-b-0 ${isSelenium ? 'lg:border-r-0' : 'lg:border-r'} border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto h-auto lg:h-[calc(100vh-65px)] transition-[width] duration-75`}
       >
         {/* Navigation & Header */}
         <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-800 space-y-3">
@@ -509,9 +523,50 @@ export default function CodeEditorWorkspace({
         {/* Tab Content */}
         <div className="p-4 md:p-6 space-y-6 flex-1 text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
           {activeTab === 'guide' && (() => {
-            const doc = getLessonDoc(lesson.id, track.id, lesson.title, lesson.description);
+            const doc = getLessonDoc(
+              lesson.id,
+              track.id,
+              lesson.title,
+              lesson.description,
+              isSelenium ? guideLang : 'java'
+            );
             return (
               <div className="space-y-6">
+                {/* Selenium Course Language Switcher: Java vs Python */}
+                {isSelenium && (
+                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-xs flex-wrap gap-2">
+                    <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">
+                      <Code className="w-4 h-4 text-emerald-500" />
+                      <span>Code Examples Language:</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setGuideLang('java')}
+                        className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                          guideLang === 'java'
+                            ? 'bg-amber-500 text-white shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                        title="Display Java (Selenium) Code Examples"
+                      >
+                        Java
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setGuideLang('python')}
+                        className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                          guideLang === 'python'
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                        title="Display Python (Selenium) Code Examples"
+                      >
+                        Python
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {/* 1. Header Overview & Playwright-Docs Style Introduction */}
                 <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/40 dark:from-slate-900 dark:to-indigo-950/20 border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-xs">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -842,7 +897,7 @@ export default function CodeEditorWorkspace({
                     Autonomous Prompt for this Scenario
                   </div>
                   <div className="flex items-center gap-1 bg-white/80 dark:bg-slate-900/80 p-1 rounded-lg border border-amber-200 dark:border-amber-900 text-xs">
-                    {(['java', 'typescript', 'python'] as SupportedLang[]).map((l) => (
+                    {(isSelenium ? (['java', 'python'] as SupportedLang[]) : (['java', 'typescript', 'python'] as SupportedLang[])).map((l) => (
                       <button
                         key={l}
                         type="button"
@@ -963,29 +1018,97 @@ export default function CodeEditorWorkspace({
             </div>
           )}
         </div>
+
+        {/* Selenium Course Navigation Footer at bottom of full-width guide */}
+        {isSelenium && (
+          <div className="p-3.5 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">
+                Lesson {lessonIndex} of {totalLessons}
+              </span>
+              <span className="hidden sm:inline text-slate-500">•</span>
+              <span className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline" title={lesson.title}>
+                {lesson.title}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              {prevLessonHref ? (
+                <Link
+                  href={prevLessonHref}
+                  className="py-2 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold rounded-xl text-xs sm:text-sm transition-colors flex items-center gap-1.5 border border-slate-700"
+                  title="Go back to previously learned concept"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Previous</span>
+                </Link>
+              ) : (
+                <button
+                  disabled
+                  className="py-2 px-3.5 bg-slate-900 text-slate-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-slate-800/80 cursor-not-allowed opacity-50"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Previous</span>
+                </button>
+              )}
+
+              {nextLessonHref ? (
+                <Link
+                  href={nextLessonHref}
+                  className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md shadow-emerald-950/40"
+                  title="Advance to next concept"
+                >
+                  <span>Next</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <Link
+                  href="/sandbox/web?stack=selenium"
+                  className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md"
+                >
+                  <span>Track Completed! Practice in Labs</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
+
+              <Link
+                href="/sandbox/web?stack=selenium"
+                target="_blank"
+                className="py-2 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-semibold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 border border-emerald-500/30"
+                title="Practice these concepts on live DOM elements in the Sandbox Lab"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Practice Lab</span>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Draggable Divider Bar (Desktop Splitter) */}
-      <div
-        onMouseDown={handleMouseDown}
-        onDoubleClick={() => setSplitPercent(55)}
-        className={`hidden lg:flex w-2 hover:w-2.5 bg-slate-200 dark:border-x dark:border-neutral-800 dark:bg-neutral-900 hover:bg-emerald-500/80 cursor-col-resize select-none items-center justify-center transition-all group relative z-10 shrink-0 ${
-          isDragging ? 'bg-emerald-500 w-2.5 shadow-lg' : ''
-        }`}
-        title="Drag to resize panels (Double-click to reset)"
-      >
-        <div className="w-1 h-8 rounded-full bg-slate-400 dark:bg-slate-600 group-hover:bg-white flex flex-col justify-around py-1">
-          <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
-          <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
-          <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+      {/* Draggable Divider Bar (Desktop Splitter) - Only shown for tracks with side editor */}
+      {!isSelenium && (
+        <div
+          onMouseDown={handleMouseDown}
+          onDoubleClick={() => setSplitPercent(55)}
+          className={`hidden lg:flex w-2 hover:w-2.5 bg-slate-200 dark:border-x dark:border-neutral-800 dark:bg-neutral-900 hover:bg-emerald-500/80 cursor-col-resize select-none items-center justify-center transition-all group relative z-10 shrink-0 ${
+            isDragging ? 'bg-emerald-500 w-2.5 shadow-lg' : ''
+          }`}
+          title="Drag to resize panels (Double-click to reset)"
+        >
+          <div className="w-1 h-8 rounded-full bg-slate-400 dark:bg-slate-600 group-hover:bg-white flex flex-col justify-around py-1">
+            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* RIGHT PANEL: Interactive Concept Code Lab */}
-      <div
-        style={{ width: `${100 - splitPercent}%` }}
-        className="w-full flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative transition-[width] duration-75"
-      >
+      {/* RIGHT PANEL: Interactive Concept Code Lab - Excluded on Selenium courses to keep clean full-width guide with in-guide Java/Python code examples */}
+      {!isSelenium && (
+        <div
+          style={{ width: `${100 - splitPercent}%` }}
+          className="w-full flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative transition-[width] duration-75"
+        >
           {/* Editor Toolbar - Language toggles and Sandbox Lab link */}
           <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs flex-wrap gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -1043,120 +1166,119 @@ export default function CodeEditorWorkspace({
             </div>
           </div>
 
-        {/* Code Input Area */}
-        <div className="flex-1 p-4 font-mono text-xs sm:text-sm overflow-y-auto relative">
-          <textarea
-            value={code}
-            onChange={e => !isLocked && setCode(e.target.value)}
-            disabled={isLocked}
-            spellCheck={false}
-            className={`w-full h-full bg-transparent text-emerald-300 focus:outline-none resize-none leading-relaxed font-mono ${
-              isLocked ? 'opacity-30 select-none' : ''
-            }`}
-            placeholder="Type or edit your automation test code here..."
-          />
+          {/* Code Input Area */}
+          <div className="flex-1 p-4 font-mono text-xs sm:text-sm overflow-y-auto relative">
+            <textarea
+              value={code}
+              onChange={e => !isLocked && setCode(e.target.value)}
+              disabled={isLocked}
+              spellCheck={false}
+              className={`w-full h-full bg-transparent text-emerald-300 focus:outline-none resize-none leading-relaxed font-mono ${
+                isLocked ? 'opacity-30 select-none' : ''
+              }`}
+              placeholder="Type or edit your automation test code here..."
+            />
 
-          {/* Locked Lesson Overlay */}
-          {isLocked && (
-            <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center space-y-4">
-              <div className="p-3.5 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                <Lock className="w-7 h-7" />
-              </div>
+            {/* Locked Lesson Overlay */}
+            {isLocked && (
+              <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center space-y-4">
+                <div className="p-3.5 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  <Lock className="w-7 h-7" />
+                </div>
 
-              <div className="max-w-md space-y-2">
-                <h3 className="text-lg sm:text-xl font-bold text-white">
-                  Lesson 2+ Unlocks With Free Account
-                </h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Lesson 1 of every track is a free guest preview. To access subsequent lessons, write &amp; run code in our live sandbox, and save your progress, create your free IntelligentQA account.
-                </p>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  100% Free Forever · No Credit Card Required
+                <div className="max-w-md space-y-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-white">
+                    Lesson 2+ Unlocks With Free Account
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Lesson 1 of every track is a free guest preview. To access subsequent lessons, write &amp; run code in our live sandbox, and save your progress, create your free IntelligentQA account.
+                  </p>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    100% Free Forever · No Credit Card Required
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <Link
+                    href="/signup"
+                    className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg flex items-center gap-1.5"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    Sign Up Free
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs sm:text-sm transition-colors border border-slate-700 flex items-center gap-1.5"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Log In
+                  </Link>
                 </div>
               </div>
+            )}
+          </div>
 
-              <div className="flex items-center gap-3 pt-2">
-                <Link
-                  href="/signup"
-                  className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg flex items-center gap-1.5"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Sign Up Free
-                </Link>
-                <Link
-                  href="/login"
-                  className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs sm:text-sm transition-colors border border-slate-700 flex items-center gap-1.5"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Log In
-                </Link>
-              </div>
+          {/* Concept Navigation Footer (Previous / Next concept navigation) */}
+          <div className="p-3.5 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">
+                Lesson {lessonIndex} of {totalLessons}
+              </span>
+              <span className="hidden sm:inline text-slate-500">•</span>
+              <span className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline" title={lesson.title}>
+                {lesson.title}
+              </span>
             </div>
-          )}
-        </div>
 
-        {/* Concept Navigation Footer (Previous / Next concept navigation) */}
-        <div className="p-3.5 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 flex-wrap">
-          {/* Progress / Lesson Indicator */}
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">
-              Lesson {lessonIndex} of {totalLessons}
-            </span>
-            <span className="hidden sm:inline text-slate-500">•</span>
-            <span className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline" title={lesson.title}>
-              {lesson.title}
-            </span>
-          </div>
+            <div className="flex items-center gap-2.5">
+              {prevLessonHref ? (
+                <Link
+                  href={prevLessonHref}
+                  className="py-2 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold rounded-xl text-xs sm:text-sm transition-colors flex items-center gap-1.5 border border-slate-700"
+                  title="Go back to previously learned concept"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Previous</span>
+                </Link>
+              ) : (
+                <button
+                  disabled
+                  className="py-2 px-3.5 bg-slate-900 text-slate-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-slate-800/80 cursor-not-allowed opacity-50"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Previous</span>
+                </button>
+              )}
 
-          {/* Navigation Controls: Previous, Next, and Labs */}
-          <div className="flex items-center gap-2.5">
-            {prevLessonHref ? (
-              <Link
-                href={prevLessonHref}
-                className="py-2 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold rounded-xl text-xs sm:text-sm transition-colors flex items-center gap-1.5 border border-slate-700"
-                title="Go back to previously learned concept"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Previous</span>
-              </Link>
-            ) : (
-              <button
-                disabled
-                className="py-2 px-3.5 bg-slate-900 text-slate-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-slate-800/80 cursor-not-allowed opacity-50"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Previous</span>
-              </button>
-            )}
-
-            {nextLessonHref ? (
-              <Link
-                href={nextLessonHref}
-                className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md shadow-emerald-950/40"
-                title="Advance to next concept"
-              >
-                <span>Next</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            ) : (
-              <Link
-                href={
-                  track.id === 'api-testing'
-                    ? '/sandbox/api'
-                    : track.id === 'playwright-ts'
-                    ? '/sandbox/web?stack=playwright'
-                    : '/sandbox/web?stack=selenium'
-                }
-                className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md"
-              >
-                <span>Track Completed! Practice in Labs</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            )}
+              {nextLessonHref ? (
+                <Link
+                  href={nextLessonHref}
+                  className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md shadow-emerald-950/40"
+                  title="Advance to next concept"
+                >
+                  <span>Next</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <Link
+                  href={
+                    track.id === 'api-testing'
+                      ? '/sandbox/api'
+                      : track.id === 'playwright-ts'
+                      ? '/sandbox/web?stack=playwright'
+                      : '/sandbox/web?stack=selenium'
+                  }
+                  className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md"
+                >
+                  <span>Track Completed! Practice in Labs</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
