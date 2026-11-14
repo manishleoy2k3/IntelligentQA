@@ -1,0 +1,44 @@
+import { notFound } from 'next/navigation';
+import { getLessonById, QA_TRACKS } from '@/lib/qa-curriculum';
+import CodeEditorWorkspace from '@/components/tracks/code-editor-workspace';
+
+export function generateStaticParams() {
+  const params: { trackId: string; lessonId: string }[] = [];
+  for (const track of QA_TRACKS) {
+    for (const module of track.modules) {
+      for (const lesson of module.lessons) {
+        params.push({ trackId: track.id, lessonId: lesson.id });
+      }
+    }
+  }
+  return params;
+}
+
+export default async function LessonWorkspacePage({
+  params,
+}: {
+  params: Promise<{ trackId: string; lessonId: string }>;
+}) {
+  const { trackId, lessonId } = await params;
+  const data = getLessonById(trackId, lessonId);
+
+  if (!data) {
+    notFound();
+  }
+
+  const { track, lesson } = data;
+
+  // Find next lesson href if any
+  const allLessons = track.modules.flatMap(m => m.lessons);
+  const currentIndex = allLessons.findIndex(l => l.id === lessonId);
+  const nextLesson = currentIndex >= 0 && currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+  const nextLessonHref = nextLesson ? `/tracks/${track.id}/${nextLesson.id}` : undefined;
+
+  return (
+    <CodeEditorWorkspace
+      track={track}
+      lesson={lesson}
+      nextLessonHref={nextLessonHref}
+    />
+  );
+}

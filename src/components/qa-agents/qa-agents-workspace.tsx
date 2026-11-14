@@ -1,0 +1,972 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import {
+  FileText,
+  ListChecks,
+  Code2,
+  ShieldCheck,
+  MessageSquare,
+  Copy,
+  Check,
+  Send,
+  Download,
+  Sparkles,
+  RefreshCw,
+  Terminal,
+  Key,
+  Lock,
+  UserPlus,
+  LogIn,
+  Zap,
+  BookOpen,
+  UploadCloud,
+  FileSpreadsheet,
+  X,
+  FileCheck,
+  Layers,
+} from 'lucide-react';
+import { QADatabase, DEMO_USER } from '@/lib/qa-db';
+import GeminiKeyModal from '@/components/auth/gemini-key-modal';
+import { exportRequirementsToExcel, exportTestMatrixToExcel } from '@/lib/excel-export';
+import { parseRequirementsFile, ParsedRequirementFile } from '@/lib/file-parser';
+
+export type AgentTab = 'requirements' | 'test_cases' | 'automation_code' | 'code_review' | 'chat';
+
+const tabDefaultPrompts: Record<AgentTab, string> = {
+  requirements:
+    'As a customer, I want to transfer money between my accounts with 2FA verification so that my funds are secure.',
+  test_cases:
+    'User Account Transfer Workflow with 2FA Verification, Daily Limits ($10,000 max), and Idempotent Transaction Submissions.',
+  automation_code:
+    'Feature: Transfer Money between Savings and Checking accounts. Implement Page Object Model with web-first assertions.',
+  code_review: `test("checkout", async ({ page }) => {\n  await page.click("#checkout");\n  await page.waitForTimeout(5000);\n  await page.click("#confirm");\n});`,
+  chat: '',
+};
+
+export const AGENT_CONFIGS: Record<
+  AgentTab,
+  {
+    num: string;
+    tabName: string;
+    title: string;
+    badgeText: string;
+    description: string;
+    icon: any;
+    color: string;
+  }
+> = {
+  requirements: {
+    num: '1',
+    tabName: '1. Requirement Generator',
+    title: 'Requirement Generator',
+    badgeText: 'Autonomous SDET Suite • Agent 1',
+    description:
+      'Generate production-ready user stories, Gherkin acceptance criteria (Given-When-Then), and comprehensive edge-case specifications from raw concepts.',
+    icon: FileText,
+    color: 'text-cyan-500',
+  },
+  test_cases: {
+    num: '2',
+    tabName: '2. Test Case Generator',
+    title: 'Test Case Generator',
+    badgeText: 'Autonomous SDET Suite • Agent 2',
+    description:
+      'Synthesize positive, negative, security, and edge-case test matrices with priority and preconditions from requirements or imported Word (.docx), Excel (.xlsx), and PDF documents.',
+    icon: ListChecks,
+    color: 'text-emerald-500',
+  },
+  automation_code: {
+    num: '3',
+    tabName: '3. Automation Generator',
+    title: 'Automation Code Generator',
+    badgeText: 'Autonomous SDET Suite • Agent 3',
+    description:
+      'Scaffold modular, production-ready Page Object Model code with resilient locators, assertions, and test scripts in Playwright, Selenium Java, or REST Assured.',
+    icon: Code2,
+    color: 'text-indigo-500',
+  },
+  code_review: {
+    num: '4',
+    tabName: '4. Code Auditor & Flakiness Review',
+    title: 'Code Auditor & Flakiness Review',
+    badgeText: 'Autonomous SDET Suite • Agent 4',
+    description:
+      'Deeply analyze test automation code, detect brittle XPath locators, identify hardcoded waits and race conditions, and recommend SDET optimizations.',
+    icon: ShieldCheck,
+    color: 'text-amber-500',
+  },
+  chat: {
+    num: '5',
+    tabName: '5. Senior SDET Mentor Chat',
+    title: 'Senior SDET Mentor Chat',
+    badgeText: 'Autonomous SDET Suite • Agent 5',
+    description:
+      'Interactive technical coaching with an expert SDET mentor on framework architecture, CI/CD pipelines, flakiness triage, and interview mastery.',
+    icon: MessageSquare,
+    color: 'text-purple-500',
+  },
+};
+
+export default function QAAgentsWorkspace() {
+  const [activeTab, setActiveTab] = useState<AgentTab>('requirements');
+  const [techStack, setTechStack] = useState<'playwright-ts' | 'selenium-java' | 'restassured'>('playwright-ts');
+  const [inputPrompt, setInputPrompt] = useState<string>(tabDefaultPrompts.requirements);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [outputResult, setOutputResult] = useState<string>('');
+  const [usedEngine, setUsedEngine] = useState<string>('');
+  const [copied, setCopied] = useState<boolean>(false);
+  const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+  const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
+
+  // File Import state for Test Case Generator
+  const [importedFile, setImportedFile] = useState<ParsedRequirementFile | null>(null);
+  const [isParsingFile, setIsParsingFile] = useState<boolean>(false);
+  const [fileParseError, setFileParseError] = useState<string>('');
+
+  // Coverage filters for Test Case Generator
+  const [coverageFilters, setCoverageFilters] = useState({
+    positive: true,
+    negative: true,
+    bva: true,
+    security: true,
+    edgeCases: true,
+  });
+
+  // Auth and Key state
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [geminiKey, setGeminiKey] = useState<string>('');
+  const [aiPref, setAiPref] = useState<'enabled' | 'opted_out' | 'unset'>('unset');
+
+  const syncState = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      const user = QADatabase.getCurrentUser();
+      setCurrentUser(user);
+      const key = QADatabase.getUserGeminiKey(user?.id);
+      setGeminiKey(key);
+      const pref = QADatabase.getAiPreference(user?.id);
+      setAiPref(pref);
+    }
+  }, []);
+
+  useEffect(() => {
+    syncState();
+    const handleAuth = () => syncState();
+    const handleKey = () => syncState();
+    const handleAiPref = () => syncState();
+    window.addEventListener('intelligentqa_auth_changed', handleAuth);
+    window.addEventListener('intelligentqa_key_changed', handleKey);
+    window.addEventListener('intelligentqa_ai_pref_changed', handleAiPref);
+
+    // Support query parameter tab and sidebar custom events
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab') as AgentTab;
+    if (tabParam && ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(tabParam)) {
+      handleTabSwitch(tabParam);
+    }
+
+    const handleSwitch = (e: any) => {
+      if (e.detail?.tab && ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(e.detail.tab)) {
+        handleTabSwitch(e.detail.tab);
+      }
+    };
+    window.addEventListener('intelligentqa_switch_agent_tab', handleSwitch);
+
+    return () => {
+      window.removeEventListener('intelligentqa_auth_changed', handleAuth);
+      window.removeEventListener('intelligentqa_key_changed', handleKey);
+      window.removeEventListener('intelligentqa_ai_pref_changed', handleAiPref);
+      window.removeEventListener('intelligentqa_switch_agent_tab', handleSwitch);
+    };
+  }, [syncState]);
+
+  const handleTabSwitch = (newTab: AgentTab) => {
+    setActiveTab(newTab);
+    setOutputResult('');
+    setSavedSuccess(false);
+
+    // If prompt is empty or one of defaults, switch to the new tab default
+    const isDefault = Object.values(tabDefaultPrompts).some(p => p === inputPrompt);
+    if (!inputPrompt.trim() || isDefault) {
+      setInputPrompt(tabDefaultPrompts[newTab] || '');
+    }
+  };
+
+  // Handle file import for Test Case Generator
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsParsingFile(true);
+    setFileParseError('');
+
+    try {
+      const parsed = await parseRequirementsFile(file);
+      setImportedFile(parsed);
+      if (parsed.extractedText) {
+        setInputPrompt(parsed.extractedText);
+      } else {
+        setFileParseError('Could not extract readable text from this file. Please paste requirements directly.');
+      }
+    } catch (err: any) {
+      console.error('File parsing error:', err);
+      setFileParseError(`Failed to parse file: ${err?.message || 'Unsupported format'}`);
+    } finally {
+      setIsParsingFile(false);
+      // Reset input value so re-selecting same file triggers change
+      e.target.value = '';
+    }
+  };
+
+  // Chat agent specific state
+  const [chatMessages, setChatMessages] = useState<
+    { role: 'user' | 'assistant'; text: string; code?: string }[]
+  >([
+    {
+      role: 'assistant',
+      text: 'Hello! I am your IntelligentQA Senior SDET Mentor. Ask me anything about test architecture, fixing flakiness, designing CI/CD pipelines, or preparing for SDET technical interviews.',
+    },
+  ]);
+  const [chatInput, setChatInput] = useState('');
+
+  const handleGenerate = async () => {
+    if (!inputPrompt.trim()) return;
+
+    // Strictly protect server quota: require user's Gemini key
+    if (!geminiKey) {
+      setOutputResult(
+        'Error: Personal Gemini API Key is required to run AI agents. Please configure your free Google AI Studio key under AI Tools and Agents in the left navigation.'
+      );
+      return;
+    }
+
+    setIsGenerating(true);
+    setOutputResult('');
+    setSavedSuccess(false);
+
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (geminiKey) {
+        headers['x-gemini-api-key'] = geminiKey;
+      }
+
+      const res = await fetch('/api/ai/qa-agent', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          action: activeTab,
+          input: inputPrompt,
+          techStack,
+          apiKey: geminiKey,
+          options: {
+            coverage: coverageFilters,
+            sourceFile: importedFile?.fileName,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (data.output) {
+        setOutputResult(data.output);
+        setUsedEngine(data.engine || 'intelligent-local');
+
+        // Persist to local database automatically
+        const userId = currentUser?.id || DEMO_USER.id;
+        await QADatabase.saveArtifact(userId, {
+          agentType: activeTab,
+          title: inputPrompt.slice(0, 40) + '...',
+          techStack,
+          inputPrompt,
+          outputContent: data.output,
+        });
+        setSavedSuccess(true);
+      }
+    } catch (err) {
+      console.error('Generation failed:', err);
+      setOutputResult('Error generating agent response. Please check your network or try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSendChat = async () => {
+    if (!chatInput.trim()) return;
+    const userMsg = chatInput.trim();
+    setChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setChatInput('');
+    setIsGenerating(true);
+
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (geminiKey) {
+        headers['x-gemini-api-key'] = geminiKey;
+      }
+
+      const res = await fetch('/api/ai/qa-chat', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          message: userMsg,
+          apiKey: geminiKey,
+        }),
+      });
+      const data = await res.json();
+      setChatMessages(prev => [
+        ...prev,
+        { role: 'assistant', text: data.reply || 'Advisory response received.' },
+      ]);
+    } catch (err) {
+      setChatMessages(prev => [
+        ...prev,
+        { role: 'assistant', text: 'Sorry, unable to contact the SDET AI service right now.' },
+      ]);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (!outputResult) return;
+    navigator.clipboard.writeText(outputResult);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadMarkdown = () => {
+    if (!outputResult) return;
+    const blob = new Blob([outputResult], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `intelligentqa-${activeTab}-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const currentAgent = AGENT_CONFIGS[activeTab] || AGENT_CONFIGS.requirements;
+  const AgentIcon = currentAgent.icon;
+
+  return (
+    <div className="w-full max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+      {/* Header - Dynamically customized to the chosen QA Agent */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400 mb-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            {currentAgent.badgeText}
+          </div>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+            <AgentIcon className={`w-7 h-7 ${currentAgent.color}`} />
+            {currentAgent.title}
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-3xl">
+            {currentAgent.description}
+          </p>
+        </div>
+
+        {/* Right Controls: Gemini Key status & Tech Stack (Only on code/audit tabs) */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            onClick={() => setShowKeyModal(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+              geminiKey
+                ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
+                : 'bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300'
+            }`}
+            title="Configure your personal free Google AI Studio key"
+          >
+            <Key className="w-3.5 h-3.5" />
+            <span>{geminiKey ? 'Gemini 2.0 Key Active' : 'Configure Gemini Key'}</span>
+          </button>
+
+          {/* Tech Stack Selector: STRICTLY visible only for Automation Generator and Code Auditor */}
+          {(activeTab === 'automation_code' || activeTab === 'code_review') && (
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs">
+              <span className="text-slate-500 font-medium px-2">Stack:</span>
+              <button
+                onClick={() => setTechStack('playwright-ts')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
+                  techStack === 'playwright-ts'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                Playwright TS
+              </button>
+              <button
+                onClick={() => setTechStack('selenium-java')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
+                  techStack === 'selenium-java'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                Selenium Java
+              </button>
+              <button
+                onClick={() => setTechStack('restassured')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
+                  techStack === 'restassured'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                REST Assured
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Guidance Banners */}
+      {!currentUser ? (
+        <div className="p-3.5 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 rounded-2xl flex items-center justify-between flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-2 text-sky-900 dark:text-sky-200">
+            <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0" />
+            <span>
+              <strong>Guest Preview Mode:</strong> Test any QA Agent below. Create a free account to persist generated test plans, code, and test matrices permanently.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/signup"
+              className="py-1 px-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs transition-colors"
+            >
+              Sign Up Free
+            </Link>
+            <Link
+              href="/login"
+              className="py-1 px-3 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-lg text-xs"
+            >
+              Log In
+            </Link>
+          </div>
+        </div>
+      ) : !geminiKey && aiPref === 'opted_out' ? (
+        <div className="p-3.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 rounded-2xl flex items-center justify-between flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-2 text-indigo-900 dark:text-indigo-200">
+            <BookOpen className="w-4 h-4 text-indigo-600 shrink-0" />
+            <span>
+              <strong>Core Automation Mode Active:</strong> You chose to learn core automation first. Whenever you want to activate Autonomous AI Agents, connect your personal free Google AI Studio key at $0.00 cost.
+            </span>
+          </div>
+          <button
+            onClick={() => setShowKeyModal(true)}
+            className="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Activate Free AI Features
+          </button>
+        </div>
+      ) : !geminiKey ? (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-2xl flex items-center justify-between flex-wrap gap-3 text-xs">
+          <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200">
+            <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>
+              <strong>AI Agents Disabled:</strong> All automated test generation and quality audits are disabled until you configure your personal free Gemini key under <strong>AI Tools and Agents</strong> in the left navigation to prevent shared server token burn.
+            </span>
+          </div>
+          <button
+            onClick={() => setShowKeyModal(true)}
+            className="py-1.5 px-3.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs transition-colors shrink-0 cursor-pointer"
+          >
+            Configure Key →
+          </button>
+        </div>
+      ) : null}
+
+      {/* Main Workspace Area */}
+      {activeTab !== 'chat' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* LEFT COLUMN: Tailored Input Prompt, File Import, & Triggers */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between">
+            <div className="space-y-3.5">
+              {/* Header Label: Strict target visibility */}
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                  {activeTab === 'requirements' && (
+                    <>
+                      <FileText className="w-4 h-4 text-cyan-500" />
+                      <span>Feature Spec / User Story</span>
+                    </>
+                  )}
+                  {activeTab === 'test_cases' && (
+                    <>
+                      <ListChecks className="w-4 h-4 text-emerald-500" />
+                      <span>Requirements Specification &amp; Import</span>
+                    </>
+                  )}
+                  {activeTab === 'automation_code' && (
+                    <>
+                      <Code2 className="w-4 h-4 text-indigo-500" />
+                      <span>Test Scenario to Automate</span>
+                    </>
+                  )}
+                  {activeTab === 'code_review' && (
+                    <>
+                      <ShieldCheck className="w-4 h-4 text-amber-500" />
+                      <span>Automation Code to Audit</span>
+                    </>
+                  )}
+                </label>
+
+                {/* Target is STRICTLY HIDDEN on Requirement Generator and Test Case Generator */}
+                {activeTab === 'automation_code' || activeTab === 'code_review' ? (
+                  <span className="text-[11px] text-slate-400">
+                    Target: <strong className="text-emerald-600 font-semibold">{techStack}</strong>
+                  </span>
+                ) : activeTab === 'requirements' ? (
+                  <span className="text-[11px] text-slate-400">
+                    Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD &amp; Criteria</strong>
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-slate-400">
+                    Output: <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">QA Test Matrix</strong>
+                  </span>
+                )}
+              </div>
+
+              {/* SPECIALIZED FEATURE: File Import (Word, Excel, PDF) for Test Case Generator */}
+              {activeTab === 'test_cases' && (
+                <div className="bg-slate-50 dark:bg-slate-950/70 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500/70 dark:hover:border-emerald-500/70 rounded-xl p-3.5 space-y-2 transition-colors">
+                  {!importedFile ? (
+                    <div>
+                      <input
+                        type="file"
+                        id="test-case-file-import"
+                        accept=".docx,.xlsx,.xls,.csv,.pdf,.txt,.md"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="test-case-file-import"
+                        className="cursor-pointer flex flex-col items-center justify-center gap-1.5 py-1.5"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          Import Requirements Document
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center max-w-sm">
+                          Upload your requirements file (<strong>Excel .xlsx / .csv</strong>, <strong>Word .docx</strong>, <strong>PDF .pdf</strong>, or text) to generate test cases automatically.
+                        </p>
+                      </label>
+
+                      {isParsingFile && (
+                        <div className="flex items-center justify-center gap-2 text-xs text-emerald-600 py-1 font-semibold">
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Extracting requirements from document...</span>
+                        </div>
+                      )}
+                      {fileParseError && (
+                        <div className="text-xs text-rose-500 font-medium py-1 text-center">
+                          {fileParseError}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-lg text-left">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FileSpreadsheet className="w-5 h-5 text-emerald-600 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {importedFile.fileName}
+                          </div>
+                          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                            {importedFile.summary} · {(importedFile.fileSize / 1024).toFixed(1)} KB
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImportedFile(null);
+                          setInputPrompt(tabDefaultPrompts.test_cases);
+                        }}
+                        className="p-1 hover:bg-emerald-200 dark:hover:bg-emerald-900 rounded text-slate-500 hover:text-slate-800 dark:hover:text-white text-xs shrink-0 cursor-pointer"
+                        title="Remove file"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Textarea Input */}
+              <textarea
+                value={inputPrompt}
+                onChange={e => setInputPrompt(e.target.value)}
+                rows={activeTab === 'test_cases' ? 8 : 11}
+                className="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none leading-relaxed"
+                placeholder={
+                  activeTab === 'requirements'
+                    ? 'Paste your user story, PRD feature draft, or high-level business requirement here (e.g., "As a customer, I want to transfer money between my accounts with 2FA verification...")'
+                    : activeTab === 'test_cases'
+                    ? 'Paste requirement text or import an Excel/Word/PDF document above to synthesize positive, negative, and boundary test cases...'
+                    : activeTab === 'code_review'
+                    ? 'Paste your test automation code to inspect for flakiness, hardcoded waits (Thread.sleep/waitForTimeout), and brittle XPaths...'
+                    : 'Describe the feature or workflow to generate Page Object Model code for...'
+                }
+              />
+
+              {/* Quick Presets tailored to active agent */}
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-semibold text-slate-400">
+                  {activeTab === 'requirements'
+                    ? 'Sample Feature Specs:'
+                    : activeTab === 'test_cases'
+                    ? 'Sample Test Case Requirements:'
+                    : activeTab === 'code_review'
+                    ? 'Sample Flaky Scripts:'
+                    : 'Sample Automation Workflows:'}
+                </span>
+                <div className="flex flex-wrap gap-1.5 text-[11px]">
+                  {activeTab === 'requirements' && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'As a customer, I want to transfer money between my accounts with 2FA SMS verification and daily limit validation ($10,000 max) so that my funds are secure.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        2FA Account Transfer
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'As an online shopper, I want to apply promotional coupon codes during cart checkout with instant price recalculation and error handling for expired codes.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Coupon &amp; Checkout Rules
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'As an admin, I want to assign role-based permissions (Admin, QA, Viewer) with mandatory password expiration every 90 days and audit logging.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        RBAC &amp; Audit Logs
+                      </button>
+                    </>
+                  )}
+
+                  {activeTab === 'test_cases' && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'User Account Transfer Workflow with 2FA Verification, Daily Limits ($10,000 max), and Idempotent Transaction Submissions.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Payment Gateway Matrix
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'User Registration Workflow: Email verification with 6-digit OTP (expires in 5 mins), password strength validation (8+ chars, symbol, number), and terms checkbox.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Registration &amp; OTP
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'Search & Filter Product Catalog: Filter by Category, Price Range Slider ($0 - $500), Rating (1-5 stars), and Sort by (Price Asc/Desc, Newest).'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Filter &amp; Pagination
+                      </button>
+                    </>
+                  )}
+
+                  {activeTab === 'automation_code' && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'Feature: User Login Workflow with email and password inputs, submit button, and welcome message verification. Write Page Object Model with web-first assertions.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Web POM Login
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'REST API: POST /api/v1/auth/login with valid credentials, verify 200 OK, extract JWT bearer token, and send authenticated GET /api/v1/users/profile.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        API Chained Auth
+                      </button>
+                    </>
+                  )}
+
+                  {activeTab === 'code_review' && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'test("checkout", async ({ page }) => {\n  await page.click("#checkout");\n  await page.waitForTimeout(5000);\n  await page.click("#confirm");\n});'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Thread.sleep / waitForTimeout
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'WebElement btn = driver.findElement(By.xpath("/html/body/div[2]/div[1]/form/div[4]/button"));\nbtn.click();\nThread.sleep(3000);'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Fragile Absolute XPath
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Action Trigger Button */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-xs text-slate-400">
+                {geminiKey ? '● Real-time Gemini Flash' : '● AI Disabled (Key Required)'}
+              </span>
+              <button
+                onClick={handleGenerate}
+                disabled={!geminiKey || isGenerating || !inputPrompt.trim()}
+                className="py-3 px-6 bg-gradient-to-r from-emerald-600 to-indigo-600 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
+              >
+                {!geminiKey ? (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    Gemini Key Required (Disabled)
+                  </>
+                ) : isGenerating ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    {activeTab === 'requirements'
+                      ? 'Generating Requirements...'
+                      : activeTab === 'test_cases'
+                      ? 'Generating Test Cases...'
+                      : activeTab === 'automation_code'
+                      ? 'Generating Code...'
+                      : 'Auditing Code...'}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    {/* Rename button specifically for Requirement Generator (Req 2) and Test Case Generator (Req 4) */}
+                    {activeTab === 'requirements'
+                      ? 'Generate Requirements'
+                      : activeTab === 'test_cases'
+                      ? 'Generate Test Cases'
+                      : activeTab === 'automation_code'
+                      ? 'Generate Automation Code'
+                      : 'Audit & Refactor Code'}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Tailored Output Artifact with Excel Export */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between">
+            <div className="space-y-3 flex-1">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                  <span>
+                    {activeTab === 'requirements'
+                      ? 'Generated Requirements & Criteria'
+                      : activeTab === 'test_cases'
+                      ? 'Synthesized QA Test Matrix'
+                      : activeTab === 'automation_code'
+                      ? 'Scaffolded Automation Code'
+                      : 'Quality Audit & Refactoring Report'}
+                  </span>
+                  {usedEngine && (
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
+                      via {usedEngine}
+                    </span>
+                  )}
+                </label>
+
+                {outputResult && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {/* Copy button */}
+                    <button
+                      onClick={copyToClipboard}
+                      className="p-1.5 px-2.5 text-slate-600 dark:text-slate-300 hover:text-emerald-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+                      title="Copy to clipboard"
+                    >
+                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span className="text-[11px] font-medium">{copied ? 'Copied' : 'Copy'}</span>
+                    </button>
+
+                    {/* EXCEL EXPORT (Req 3): Primary export option for Requirements & Test Cases */}
+                    {activeTab === 'requirements' && (
+                      <button
+                        onClick={() => exportRequirementsToExcel(outputResult)}
+                        className="p-1.5 px-2.5 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs flex items-center gap-1.5 transition-colors font-semibold cursor-pointer shadow-sm"
+                        title="Export generated requirements into an Excel spreadsheet (.xls / .xlsx)"
+                      >
+                        <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-[11px]">Export in Excel</span>
+                      </button>
+                    )}
+
+                    {activeTab === 'test_cases' && (
+                      <button
+                        onClick={() => exportTestMatrixToExcel(outputResult)}
+                        className="p-1.5 px-2.5 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs flex items-center gap-1.5 transition-colors font-semibold cursor-pointer shadow-sm"
+                        title="Export synthesized test matrix into an Excel spreadsheet (.xls / .xlsx)"
+                      >
+                        <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-[11px]">Export in Excel</span>
+                      </button>
+                    )}
+
+                    {/* Secondary Markdown export */}
+                    <button
+                      onClick={downloadMarkdown}
+                      className="p-1.5 px-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+                      title="Download raw Markdown (.md)"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span className="text-[11px]">.md</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Output Content Container */}
+              <div className="min-h-[340px] max-h-[500px] overflow-y-auto p-4 bg-slate-950 text-slate-200 rounded-xl font-mono text-xs leading-relaxed whitespace-pre-wrap border border-slate-800">
+                {outputResult ? (
+                  outputResult
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-2 py-16">
+                    <Terminal className="w-8 h-8 opacity-40" />
+                    <p className="text-xs">
+                      {activeTab === 'requirements'
+                        ? 'Generated Gherkin Acceptance Criteria and requirements matrix will appear here.'
+                        : activeTab === 'test_cases'
+                        ? 'Synthesized QA Test Matrix will appear here after clicking Generate Test Cases.'
+                        : activeTab === 'automation_code'
+                        ? 'Scaffolded Page Object Model code will appear here.'
+                        : 'Code quality score and refactored script will appear here.'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {savedSuccess && (
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl text-emerald-700 dark:text-emerald-300 text-xs flex items-center justify-between gap-2 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <span className="font-semibold">Artifact saved to your personal dashboard and history.</span>
+                </div>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-1 font-bold text-emerald-800 dark:text-emerald-200 hover:underline px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/60 rounded-lg text-xs"
+                >
+                  View on Dashboard →
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* 5. Senior SDET Chat Mentor View */
+        <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[600px]">
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+            {chatMessages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                {msg.role === 'assistant' && (
+                  <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-xs">
+                    QA
+                  </div>
+                )}
+                <div
+                  className={`max-w-[80%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
+                    msg.role === 'user'
+                      ? 'bg-indigo-600 text-white rounded-br-none'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-none border border-slate-200/50 dark:border-slate-700/50'
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {isGenerating && (
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-500" />
+                Senior SDET AI is formulating advice...
+              </div>
+            )}
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3">
+            <input
+              type="text"
+              disabled={!geminiKey}
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSendChat()}
+              placeholder={
+                !geminiKey
+                  ? 'Gemini API Key required in Left Navigation under AI Tools & Agents to chat...'
+                  : 'Ask about locators, framework architecture, or debugging a stack trace...'
+              }
+              className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <button
+              onClick={handleSendChat}
+              disabled={!geminiKey || isGenerating || !chatInput.trim()}
+              className="py-3 px-5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+            >
+              {!geminiKey ? <Lock className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+              {!geminiKey ? 'Locked' : 'Send'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Gemini Key Modal */}
+      <GeminiKeyModal
+        isOpen={showKeyModal}
+        onClose={() => setShowKeyModal(false)}
+        onSaved={() => {
+          syncState();
+          setShowKeyModal(false);
+        }}
+        reason="Connect your personal free Google AI Studio key (15 RPM / 1,500 requests/day at zero cost) so all IntelligentQA autonomous agents execute in real-time with zero platform quota limits."
+      />
+    </div>
+  );
+}
