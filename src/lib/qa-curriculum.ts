@@ -461,113 +461,156 @@ export const QA_TRACKS: Track[] = [
   {
     id: 'playwright-ts',
     title: 'Playwright + TypeScript',
-    tagline: 'Modern High-Speed Web & Component Automation',
-    description: 'Master fast, reliable end-to-end automation with TypeScript, modern locators, auto-waiting, Page Object Models, and CI/CD pipelines.',
+    tagline: 'Modern High-Speed Web, Component & Distributed Automation',
+    description: 'Master fast, reliable end-to-end automation with TypeScript: BrowserContext isolation, resilient locators, custom fixtures, storageState, API mocking, and multi-machine sharding.',
     color: 'emerald',
     badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800',
     iconName: 'PlayCircle',
-    totalLessons: 12,
-    estimatedHours: 24,
+    totalLessons: 15,
+    estimatedHours: 30,
     modules: [
       {
-        id: 'pw-fundamentals',
+        id: 'pw-foundations',
         trackId: 'playwright-ts',
-        title: 'TypeScript Foundations & Playwright Core Architecture',
-        description: 'From async/await to resilient locators, auto-waiting, fixtures, and network mocking.',
+        title: 'Level 1: Core Architecture & Resilient Locators (Beginner -> Intermediate)',
+        description: 'Browser Context isolation, locator() vs page.$(), getByRole() vs data-testid, and auto-waiting mechanics.',
         order: 1,
         lessons: [
           {
             id: 'pw-ts-basics',
-            moduleId: 'pw-fundamentals',
+            moduleId: 'pw-foundations',
             trackId: 'playwright-ts',
-            title: "1. TypeScript Essentials & Async/Await",
-            description: "Understand promises, asynchronous execution, and why UI automation demands async/await.",
+            title: "1. Browser Context in Playwright & Multi-Page Architecture",
+            description: "Understand Browser vs BrowserContext vs Page, why BrowserContext provides 10ms incognito isolation, and why never to open multiple pages in the same context.",
             durationMinutes: 120,
             badge: 'playwright',
             level: 'Beginner',
             manualContext: {
-              title: "Manual Verification Flow",
-              steps: ["Open login page, wait for spinner to disappear, enter credentials, press enter, confirm dashboard."],
-              painPoints: ["Manual testing is sequential; code executes in microseconds. Without 'await', code races ahead before page responds!"]
+              title: "Multi-Role Session Testing",
+              steps: ["Opening two separate browser profiles to test interactions between an Admin and a Customer concurrently."],
+              painPoints: ["In manual testing, testing two user roles requires opening Chrome and Firefox or separate incognito profiles so sessions don't clash."]
             },
             automationContext: {
-              playwrightTs: "import { test, expect } from '@playwright/test';\ntest('login', async ({ page }) => {\n  await page.goto('/login');\n  await page.locator('#email').fill('sdet@tech.io');\n  await page.locator('button[type=\"submit\"]').click();\n  await expect(page).toHaveURL(/.*dashboard/);\n});",
-              seleniumJava: "driver.get(\"https://intelligentqa.io/login\");",
-              explanation: "Every browser action returns a Promise. Prepending await pauses JavaScript execution until the promise settles.",
-              bestPractices: ["Always await page actions and expect() assertions", "Use TypeScript interfaces for typed test data"],
-              antiPatterns: ["Forgetting await leading to unhandled promise rejections"]
+              playwrightTs: "const adminContext = await browser.newContext();\nconst userContext = await browser.newContext();\nconst adminPage = await adminContext.newPage();\nconst userPage = await userContext.newPage();",
+              seleniumJava: "// Requires starting separate ChromeDriver OS processes in Selenium",
+              explanation: "Playwright BrowserContexts run inside a single browser process with 100% cookie and storage isolation, starting in under 10ms with zero state bleed.",
+              bestPractices: ["Always create separate BrowserContexts for multi-user tests", "Never open multiple independent tests inside the same BrowserContext"],
+              antiPatterns: ["Reusing a single BrowserContext across multiple tests causing auth session contamination"]
             },
             aiAugmentation: {
-              promptExample: "Convert this synchronous test into Playwright TypeScript async/await.",
-              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
-              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+              promptExample: "Generate a multi-context Playwright test that verifies admin approval reflects instantly on customer page.",
+              agenticWorkflow: 'QA AI Agent assists with multi-persona generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators across multiple contexts.'
             },
             challenge: {
-              instruction: "Write an asynchronous Playwright test that navigates to '/login' and clicks submit.",
+              instruction: "Create two isolated browser contexts (adminContext and userContext) and launch a page in each.",
               starterCode: {
-                typescript: "import { test } from '@playwright/test';\ntest('nav', async ({ page }) => {\n  // Navigate and click\n});",
+                typescript: "async function testMultiUser(browser) {\n  // Create adminContext and userContext\n}",
               },
               solutionCode: {
-                typescript: "import { test } from '@playwright/test';\ntest('nav', async ({ page }) => {\n  await page.goto('/login');\n  await page.click('button[type=\"submit\"]');\n});",
+                typescript: "async function testMultiUser(browser) {\n  const adminContext = await browser.newContext();\n  const userContext = await browser.newContext();\n  const adminPage = await adminContext.newPage();\n  const userPage = await userContext.newPage();\n}",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["await page.goto", "await page.click"],
+                  requiredPatterns: ["browser.newContext", "adminContext.newPage", "userContext.newPage"],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates multi-context setup'
                 }
               ]
             }
           },
           {
-            id: 'pw-setup-arch',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-locator-vs-elementhandle',
+            moduleId: 'pw-foundations',
             trackId: 'playwright-ts',
-            title: "2. Playwright Architecture & Project Scaffold",
-            description: "Understand browser processes, isolated browser contexts, workers, and playwright.config.ts tuning.",
-            durationMinutes: 90,
+            title: "2. Modern Locators vs page.$() & ElementHandle",
+            description: "Why modern SDETs never use page.$() or ElementHandle: lazy evaluation, auto-waiting, strict mode, and eliminating StaleElementReference errors.",
+            durationMinutes: 120,
             badge: 'playwright',
             level: 'Beginner',
             manualContext: {
-              title: "Multi-Context Verification",
-              steps: ["Testing multiple user roles (Admin vs Guest) in isolated incognito sessions."],
-              painPoints: ["Launching full browser processes for every test adds 5 seconds per test in Selenium."]
+              title: "Dynamic Element Timing",
+              steps: ["Clicking a button that renders or re-renders dynamically after an AJAX call."],
+              painPoints: ["If you query an element too early in manual automation with page.$(), it returns null or throws StaleElementReferenceException!"]
             },
             automationContext: {
-              playwrightTs: "import { defineConfig, devices } from '@playwright/test';\nexport default defineConfig({\n  fullyParallel: true,\n  use: { trace: 'retain-on-failure' },\n});",
-              seleniumJava: "// Requires separate browser processes in Selenium",
-              explanation: "Playwright uses a single browser process with lightweight isolated BrowserContexts created in under 10ms.",
-              bestPractices: ["Set fullyParallel: true for ultra-fast multi-core runs", "Configure trace: 'retain-on-failure' in CI"],
-              antiPatterns: ["Manually managing browser processes instead of worker fixtures"]
+              playwrightTs: "// BAD (Legacy): const btn = await page.$('.btn'); await btn.click();\n// GOOD (Modern): await page.locator('.btn').click(); // Auto-waits and checks actionability",
+              seleniumJava: "WebElement btn = driver.findElement(By.className(\"btn\")); // Eager and fragile",
+              explanation: "page.locator() is a lazy pointer. It evaluates the DOM only when actions occur, performing 5 actionability checks and enforcing strict mode.",
+              bestPractices: ["Always use page.locator() instead of page.$()", "Rely on strict mode to catch ambiguous element locators"],
+              antiPatterns: ["Using page.$() or page.$$() in modern Playwright suites", "Storing ElementHandle references in variables"]
             },
             aiAugmentation: {
-              promptExample: "Generate an enterprise playwright.config.ts with retry policies and trace recording.",
+              promptExample: "Refactor legacy page.$() and page.$$() calls into resilient Playwright locators.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Define a Playwright config with fullyParallel set to true and trace set to 'retain-on-failure'.",
+              instruction: "Replace legacy page.$() with modern page.locator() and execute a click.",
               starterCode: {
-                typescript: "import { defineConfig } from '@playwright/test';\nexport default defineConfig({\n  // Add config\n});",
+                typescript: "async function clickButton(page) {\n  // Use page.locator to click #submit-btn\n}",
               },
               solutionCode: {
-                typescript: "import { defineConfig } from '@playwright/test';\nexport default defineConfig({\n  fullyParallel: true,\n  use: { trace: 'retain-on-failure' }\n});",
+                typescript: "async function clickButton(page) {\n  await page.locator('#submit-btn').click();\n}",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["fullyParallel: true", "trace: 'retain-on-failure'"],
+                  requiredPatterns: ["page.locator('#submit-btn').click()"],
+                  forbiddenPatterns: ['page.$'],
+                  description: 'Uses modern page.locator'
+                }
+              ]
+            }
+          },
+          {
+            id: 'pw-getbyrole-vs-testid',
+            moduleId: 'pw-foundations',
+            trackId: 'playwright-ts',
+            title: "3. Locator Strategy: getByRole() vs data-testid",
+            description: "Master user-facing accessible locators via getByRole, understand the Accessibility Tree, and learn when data-testid is strictly necessary.",
+            durationMinutes: 120,
+            badge: 'playwright',
+            level: 'Beginner',
+            manualContext: {
+              title: "User Accessibility Verification",
+              steps: ["Locating a button labeled 'Submit Order' on screen."],
+              painPoints: ["Brittle CSS/XPath selectors break when frontend developers change CSS styling classes. User-facing roles stay resilient."]
+            },
+            automationContext: {
+              playwrightTs: "// Priority 1: Accessible role\nawait page.getByRole('button', { name: 'Submit Order' }).click();\n// Fallback: data-testid for canvas/SVG\nawait page.getByTestId('revenue-chart').click();",
+              seleniumJava: "driver.findElement(By.xpath(\"//button[contains(text(), 'Submit Order')]\")).click();",
+              explanation: "getByRole tests elements the way users and assistive screen readers perceive them. Use data-testid when elements lack semantic roles.",
+              bestPractices: ["Default to getByRole(role, { name }) for all user interactions", "Use data-testid only for canvas, SVG, or repeated table cells"],
+              antiPatterns: ["Using data-testid on every single button when getByRole is readily available", "Using brittle CSS class selectors"]
+            },
+            aiAugmentation: {
+              promptExample: "Inspect this React component and recommend getByRole vs data-testid locator strategy.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Locate a button with accessible name 'Sign In' using getByRole and click it.",
+              starterCode: {
+                typescript: "async function submit(page) {\n  // Locate button 'Sign In' using getByRole\n}",
+              },
+              solutionCode: {
+                typescript: "async function submit(page) {\n  await page.getByRole('button', { name: 'Sign In' }).click();\n}",
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["page.getByRole", "'button'", "Sign In", "click()"],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates getByRole usage'
                 }
               ]
             }
           },
           {
             id: 'pw-auto-waiting',
-            moduleId: 'pw-fundamentals',
+            moduleId: 'pw-foundations',
             trackId: 'playwright-ts',
-            title: "3. Auto-Waiting & Web-First Assertions",
-            description: "Why Playwright tests never need sleep: actionability checks (visible, stable, enabled) and expect() polling.",
+            title: "4. Auto-Waiting Mechanics & Web-First Assertions",
+            description: "Why Playwright tests never need sleep: 5 actionability checks (visible, stable, enabled, editable, receiving pointer events) and expect() polling.",
             durationMinutes: 120,
             badge: 'playwright',
             level: 'Beginner',
@@ -604,396 +647,509 @@ export const QA_TRACKS: Track[] = [
                 }
               ]
             }
-          },
+          }
+        ]
+      },
+      {
+        id: 'pw-framework',
+        trackId: 'playwright-ts',
+        title: 'Level 2: Framework Architecture & Advanced Fixtures (Intermediate -> Advanced)',
+        description: 'Config management, fixture scopes (test vs worker), storageState auth reuse, and designing enterprise frameworks from scratch.',
+        order: 2,
+        lessons: [
           {
-            id: 'pw-resilient-locators',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-config-management',
+            moduleId: 'pw-framework',
             trackId: 'playwright-ts',
-            title: "4. Resilient Locators & User-Facing Roles",
-            description: "Master getByRole, getByText, getByLabel, getByTestId, and CSS chaining for rock-solid element targeting.",
+            title: "5. Enterprise Config Management (playwright.config.ts)",
+            description: "Architect enterprise configuration: multi-environment dotenv (.env.staging, .env.prod), timeouts hierarchy, project browser matrices, and reporters.",
             durationMinutes: 120,
             badge: 'playwright',
             level: 'Intermediate',
             manualContext: {
-              title: "User Perception Testing",
-              steps: ["Find input labeled 'Work Email', click button 'Log In', verify 'Welcome' banner."],
-              painPoints: ["If frontend changes div.col-4 > input to flexbox, CSS/XPath locators break instantly."]
+              title: "Multi-Environment Deployment",
+              steps: ["Switching test environments between QA, Staging, and Production."],
+              painPoints: ["Hardcoding URLs in test scripts requires manual file edits for every test cycle."]
             },
             automationContext: {
-              playwrightTs: "await page.getByRole('button', { name: 'Log In' }).click();\nawait page.getByLabel('Work Email').fill('sdet@qa.io');\nawait expect(page.getByText('Welcome back')).toBeVisible();",
-              seleniumJava: "driver.findElement(By.xpath(\"//button[contains(text(), 'Log In')]\")).click();",
-              explanation: "Playwright prioritizes accessible roles and user-facing text, ensuring tests remain stable across CSS refactorings.",
-              bestPractices: ["Default to getByRole(role, { name }) first", "Use getByLabel for forms"],
-              antiPatterns: ["Using hashed CSS classes like .css-1a7bc8e", "Writing deep fragile CSS paths"]
+              playwrightTs: "import { defineConfig, devices } from '@playwright/test';\nimport dotenv from 'dotenv';\ndotenv.config({ path: `.env.${process.env.TEST_ENV || 'staging'}` });\n\nexport default defineConfig({\n  timeout: 30000,\n  expect: { timeout: 7000 },\n  use: { baseURL: process.env.BASE_URL, trace: 'on-first-retry' },\n});",
+              seleniumJava: "// Loaded via pom.xml profiles or System.getProperty in Selenium",
+              explanation: "playwright.config.ts centralizes environment settings, parallel workers, timeouts, and reporter pipelines into a single source of truth.",
+              bestPractices: ["Use dotenv for environment-variable loading", "Configure expect timeout separately from action timeout"],
+              antiPatterns: ["Hardcoding base URLs inside test files", "Setting global timeout too high, masking slow regressions"]
             },
             aiAugmentation: {
-              promptExample: "Inspect this React component and generate resilient Playwright locators using getByRole.",
+              promptExample: "Generate an enterprise playwright.config.ts with multi-browser projects and dotenv environment loading.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Use getByRole to locate a button with accessible name 'Sign In' and click it.",
+              instruction: "Configure baseURL and trace on-first-retry in playwright.config.ts.",
               starterCode: {
-                typescript: "async function submit(page) {\n  // Click 'Sign In' button using getByRole\n}",
+                typescript: "import { defineConfig } from '@playwright/test';\nexport default defineConfig({\n  // Add use config\n});",
               },
               solutionCode: {
-                typescript: "async function submit(page) {\n  await page.getByRole('button', { name: 'Sign In' }).click();\n}",
+                typescript: "import { defineConfig } from '@playwright/test';\nexport default defineConfig({\n  use: {\n    baseURL: 'http://localhost:3000',\n    trace: 'on-first-retry'\n  }\n});",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["page.getByRole", "'button'", "Sign In", "click()"],
+                  requiredPatterns: ["baseURL:", "trace: 'on-first-retry'"],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates config setup'
                 }
               ]
             }
           },
           {
-            id: 'pw-shadow-iframes',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-fixtures-architecture',
+            moduleId: 'pw-framework',
             trackId: 'playwright-ts',
-            title: "5. Shadow DOM Piercing & Nested Iframes",
-            description: "Automatic shadow root piercing without JavaScript hacks, frameLocator for secure payment widgets, and cross-origin handling.",
+            title: "6. Test Fixtures vs Worker Fixtures vs Custom Fixtures",
+            description: "Understand fixture scopes, worker-scoped resource pooling (DB/API connections), test-scoped isolation, and custom fixture extensions with yield.",
             durationMinutes: 120,
             badge: 'playwright',
             level: 'Intermediate',
             manualContext: {
-              title: "Embedded Widgets",
-              steps: ["Interacting with Stripe credit card iframes or web components in shadow roots."],
-              painPoints: ["In Selenium, developers had to write custom JavaScript to penetrate shadow roots."]
+              title: "Precondition Setup",
+              steps: ["Connecting to database, generating test accounts, and cleaning up records after execution."],
+              painPoints: ["Copy-pasting setup and teardown into every test creates huge maintenance overhead and leaks database connections."]
             },
             automationContext: {
-              playwrightTs: "// Playwright automatically pierces shadow DOM!\nawait page.locator('#shadow-toggle').click();\n// frameLocator for nested iframes:\nawait page.frameLocator('iframe.stripe').getByPlaceholder('Card Number').fill('424242424242');",
-              seleniumJava: "driver.switchTo().frame(driver.findElement(By.cssSelector(\"iframe.stripe\")));",
-              explanation: "Playwright pierces open shadow roots automatically. For iframes, frameLocator() provides seamless targeting without focus switching.",
-              bestPractices: ["Chain frameLocator instances for deeply nested iframes", "Avoid switching global browser focus"],
-              antiPatterns: ["Executing manual querySelector scripts to reach shadow roots"]
+              playwrightTs: "import { test as base } from '@playwright/test';\nexport const test = base.extend<{\n  userPage: UserPage;\n}, { dbClient: DatabaseClient }>({\n  dbClient: [async ({}, use) => {\n    const db = await connectDB();\n    await use(db);\n    await db.disconnect();\n  }, { scope: 'worker' }],\n  userPage: async ({ page }, use) => {\n    await use(new UserPage(page));\n  }\n});",
+              seleniumJava: "// Managed via TestNG @BeforeSuite (worker) and @BeforeMethod (test)",
+              explanation: "Test fixtures provide fresh state per test. Worker fixtures initialize heavy resources once per worker, eliminating repeated connection overhead.",
+              bestPractices: ["Use worker scope for heavy database connections or mock servers", "Use yield / use for automatic teardown"],
+              antiPatterns: ["Storing test-specific state inside worker-scoped fixtures", "Manually calling setup and teardown methods inside tests"]
             },
             aiAugmentation: {
-              promptExample: "Write a Playwright test filling credit card inputs inside an iframe using frameLocator.",
+              promptExample: "Generate a custom Playwright test extension with Page Object dependency injection and worker-scoped DB fixture.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Use frameLocator to target '#payment-frame' and fill input 'card-cvv'.",
+              instruction: "Extend Playwright base test with a custom fixture named loginPage.",
               starterCode: {
-                typescript: "async function fill(page) {\n  // Use frameLocator on #payment-frame\n}",
+                typescript: "import { test as base } from '@playwright/test';\nexport const test = base.extend({\n  // Add loginPage fixture\n});",
               },
               solutionCode: {
-                typescript: "async function fill(page) {\n  await page.frameLocator('#payment-frame').locator('input[name=\"card-cvv\"]').fill('123');\n}",
+                typescript: "import { test as base } from '@playwright/test';\nexport const test = base.extend({\n  loginPage: async ({ page }, use) => {\n    await use(new LoginPage(page));\n  }\n});",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["page.frameLocator('#payment-frame')", "fill"],
+                  requiredPatterns: ["base.extend", "loginPage:", "await use("],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates custom fixture definition'
                 }
               ]
             }
           },
           {
-            id: 'pw-pom-design',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-storagestate-auth',
+            moduleId: 'pw-framework',
             trackId: 'playwright-ts',
-            title: "6. Modern Page Object Model (POM)",
-            description: "Class-based Page Objects with readonly locators, atomic action methods, and TypeScript return type guarantees.",
-            durationMinutes: 150,
+            title: "7. Authentication & storageState Implementation",
+            description: "Capture login cookies and localStorage once into .auth/user.json, bypassing login UI across hundreds of regression tests for 10x execution speed.",
+            durationMinutes: 120,
             badge: 'playwright',
             level: 'Intermediate',
             manualContext: {
-              title: "Reusable Workflows",
-              steps: ["Executing multi-step checkout: Login -> Catalog -> Cart -> Payment."],
-              painPoints: ["Writing raw page.click() calls in 100 test files creates a maintenance disaster when URLs change."]
+              title: "Repetitive Login Steps",
+              steps: ["Typing username, password, submitting, and waiting for OTP or 2FA for every single test case."],
+              painPoints: ["Logging in through UI for 300 tests adds 20 minutes to CI runs and creates 300 opportunities for login flakiness."]
             },
             automationContext: {
-              playwrightTs: "export class TransferPage {\n  readonly fromSelect: Locator;\n  readonly amountInput: Locator;\n  constructor(private readonly page: Page) {\n    this.fromSelect = page.getByLabel('Transfer From');\n    this.amountInput = page.getByLabel('Amount ($)');\n  }\n  async transfer(from: string, amount: string) {\n    await this.fromSelect.selectOption(from);\n    await this.amountInput.fill(amount);\n  }\n}",
-              seleniumJava: "// Class-based POM in Java",
-              explanation: "Playwright Page Objects store lazy Locator declarations. No network requests are made until an action is called.",
-              bestPractices: ["Declare locators as readonly Locator properties in constructor", "Keep assertions inside test files"],
-              antiPatterns: ["Calling await inside Page Object constructors", "Returning raw element handles"]
+              playwrightTs: "// auth.setup.ts\nimport { test as setup } from '@playwright/test';\nsetup('authenticate', async ({ page }) => {\n  await page.goto('/login');\n  await page.getByLabel('Email').fill('admin@qa.io');\n  await page.getByLabel('Password').fill('SecurePass123!');\n  await page.getByRole('button', { name: 'Log In' }).click();\n  await page.waitForURL('/dashboard');\n  await page.context().storageState({ path: '.auth/admin.json' });\n});",
+              seleniumJava: "// Handled by serializing cookies via driver.manage().getCookies()",
+              explanation: "storageState snapshots browser storage (cookies & localStorage) to disk, allowing regression suites to start directly in authenticated states.",
+              bestPractices: ["Run auth setup as a dependent project in playwright.config.ts", "Save distinct storageState files for Admin, Member, and Guest personas"],
+              antiPatterns: ["Running full UI login in beforeEach for every single test", "Committing .auth/*.json credential files into Git repositories"]
             },
             aiAugmentation: {
-              promptExample: "Generate a TypeScript Page Object class for this user settings page with readonly Locators.",
+              promptExample: "Generate a Playwright global auth setup script and configure storageState in playwright.config.ts.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Create a SearchPage class with searchInput locator, submitBtn locator, and search(query) method.",
+              instruction: "Save the current browser context storage state to '.auth/user.json'.",
               starterCode: {
-                typescript: "import { Page, Locator } from '@playwright/test';\nexport class SearchPage {\n  // Implement class\n}",
+                typescript: "async function saveAuth(context) {\n  // Save storageState\n}",
               },
               solutionCode: {
-                typescript: "import { Page, Locator } from '@playwright/test';\nexport class SearchPage {\n  readonly page: Page;\n  readonly searchInput: Locator;\n  readonly submitBtn: Locator;\n  constructor(page: Page) {\n    this.page = page;\n    this.searchInput = page.locator('#search');\n    this.submitBtn = page.getByRole('button', { name: 'Search' });\n  }\n  async search(query: string) {\n    await this.searchInput.fill(query);\n    await this.submitBtn.click();\n  }\n}",
+                typescript: "async function saveAuth(context) {\n  await context.storageState({ path: '.auth/user.json' });\n}",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["readonly searchInput", "constructor(page: Page)", "async search(query: string)"],
+                  requiredPatterns: ["context.storageState", ".auth/user.json"],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates storageState call'
                 }
               ]
             }
           },
           {
-            id: 'pw-fixtures',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-framework-from-scratch',
+            moduleId: 'pw-framework',
             trackId: 'playwright-ts',
-            title: "7. Custom Test Fixtures & Page Setup Hooks",
-            description: "Leverage test.extend() for dependency injection: auto-instantiated Page Objects, logged-in user fixtures, and zero-boilerplate tests.",
+            title: "8. Designing an Enterprise Playwright Framework from Scratch",
+            description: "Full architectural blueprint: directory structure, Page Object Model + Fixtures Dependency Injection, BasePage utilities, and typed test data.",
+            durationMinutes: 120,
+            badge: 'playwright',
+            level: 'Intermediate',
+            manualContext: {
+              title: "Scalable Test Architecture",
+              steps: ["Structuring a test repository to support 50+ engineers contributing tests across 10 scrum teams."],
+              painPoints: ["Ad-hoc scripts with copy-pasted selectors and inline data turn into unmaintainable legacy code within 3 months."]
+            },
+            automationContext: {
+              playwrightTs: "// Enterprise Framework Layout:\n// src/pages/ -> Page Object classes extending BasePage\n// src/fixtures/ -> Custom fixture dependency injection\n// src/tests/ -> Clean, expressive test specifications\n// src/data/ -> Typed interfaces and factory methods\n// playwright.config.ts -> Centralized multi-environment runner config",
+              seleniumJava: "// Standard Maven/Gradle POM project with BaseTest and PageFactory",
+              explanation: "A robust Playwright framework combines Page Objects with Fixtures, providing zero-boilerplate tests where pages are injected on demand.",
+              bestPractices: ["Inject Page Objects via custom fixtures rather than instantiating them manually", "Use BasePage for shared navigation and wait utilities"],
+              antiPatterns: ["Hardcoding test data directly inside Page Object classes", "Exposing raw Locator handles to test spec files"]
+            },
+            aiAugmentation: {
+              promptExample: "Design an enterprise Playwright TypeScript framework architecture with Page Objects, fixtures, and GitHub Actions CI.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Export a BasePage class with a protected page property and a navigate method.",
+              starterCode: {
+                typescript: "export class BasePage {\n  // Implement constructor and navigate\n}",
+              },
+              solutionCode: {
+                typescript: "export class BasePage {\n  constructor(protected page: any) {}\n  async navigate(path: string) {\n    await this.page.goto(path);\n  }\n}",
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["export class BasePage", "constructor", "goto(path)"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates BasePage implementation'
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        id: 'pw-api-data',
+        trackId: 'playwright-ts',
+        title: 'Level 3: API Integration, Mocking & Concurrency (Advanced)',
+        description: 'Network interception, API mocking, designing 100% independent tests with REST fixtures, and parallel test data isolation.',
+        order: 3,
+        lessons: [
+          {
+            id: 'pw-api-mocking-framework',
+            moduleId: 'pw-api-data',
+            trackId: 'playwright-ts',
+            title: "9. API Mocking & Network Interception in Framework Code",
+            description: "Intercept network traffic with page.route(), implement a reusable NetworkMockManager, simulate 500 errors, network latency, and replay HAR files.",
             durationMinutes: 120,
             badge: 'playwright',
             level: 'Advanced',
             manualContext: {
-              title: "Setup Boilerplate",
-              steps: ["Every test in admin suite requires logging in and navigating to settings."],
-              painPoints: ["Repeating beforeEach boilerplate across dozens of spec files causes copy-paste errors."]
+              title: "Simulating Server Outages",
+              steps: ["Verifying UI error state when the backend payment gateway returns HTTP 500 or times out."],
+              painPoints: ["In manual testing, you cannot easily bring down production or staging microservices to verify error toasts."]
             },
             automationContext: {
-              playwrightTs: "import { test as base } from '@playwright/test';\nimport { TransferPage } from './TransferPage';\n\nexport const test = base.extend<{ transferPage: TransferPage }>({\n  transferPage: async ({ page }, use) => {\n    const transferPage = new TransferPage(page);\n    await page.goto('/transfer');\n    await use(transferPage);\n  },\n});",
-              seleniumJava: "// Implemented via BaseTest in Java",
-              explanation: "Fixtures provide lazy, isolated dependency injection for tests, handling setup and teardown automatically.",
-              bestPractices: ["Create fixtures for frequently used Page Objects and API clients", "Use fixtures for authentication setups"],
-              antiPatterns: ["Overloading beforeEach with sequential steps that could be modular fixtures"]
+              playwrightTs: "// Mocking 500 error\nawait page.route('**/api/v1/payments', route => {\n  route.fulfill({\n    status: 500,\n    contentType: 'application/json',\n    body: JSON.stringify({ error: 'Payment gateway timeout' }),\n  });\n});\nawait page.getByRole('button', { name: 'Pay Now' }).click();\nawait expect(page.getByRole('alert')).toContainText('Payment gateway timeout');",
+              seleniumJava: "// Requires Selenium 4 CDP executeCdpCommand or proxy tools like BrowserMobProxy",
+              explanation: "page.route() intercepts network requests at the browser protocol level, enabling instant simulation of backend errors, latency, and payloads.",
+              bestPractices: ["Use network mocks to test edge cases (404, 500, network timeouts)", "Record and replay network traffic using page.routeFromHAR() for offline runs"],
+              antiPatterns: ["Mocking all backend APIs in E2E tests, which destroys true end-to-end integration confidence"]
             },
             aiAugmentation: {
-              promptExample: "Write a Playwright test.extend fixture that auto-authenticates an admin user.",
+              promptExample: "Write a Playwright NetworkMockManager class in TypeScript that intercepts checkout APIs and simulates failure scenarios.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Extend base test with a custom fixture named 'dashboardPage'.",
+              instruction: "Intercept requests to '**/api/users' and fulfill with a status code 500 and error message.",
               starterCode: {
-                typescript: "import { test as base } from '@playwright/test';\nexport const test = base.extend({\n  // Add dashboardPage fixture\n});",
+                typescript: "async function mockError(page) {\n  // Route **/api/users and fulfill with 500\n}",
               },
               solutionCode: {
-                typescript: "import { test as base } from '@playwright/test';\nexport const test = base.extend({\n  dashboardPage: async ({ page }, use) => {\n    await page.goto('/dashboard');\n    await use(page);\n  }\n});",
+                typescript: "async function mockError(page) {\n  await page.route('**/api/users', route => {\n    route.fulfill({ status: 500, body: JSON.stringify({ error: 'Server error' }) });\n  });\n}",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["base.extend", "dashboardPage", "await use("],
+                  requiredPatterns: ["page.route('**/api/users'", "route.fulfill", "status: 500"],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates network mocking'
                 }
               ]
             }
           },
           {
-            id: 'pw-network-mocking',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-independent-tests-apis',
+            moduleId: 'pw-api-data',
             trackId: 'playwright-ts',
-            title: "8. Network Interception & Route Mocking",
-            description: "Master page.route() to mock API responses, simulate 500 server errors, test slow 3G networks, and abort heavy third-party assets.",
-            durationMinutes: 150,
-            badge: 'playwright',
-            level: 'Advanced',
-            manualContext: {
-              title: "Edge-Case Simulation",
-              steps: ["Testing how frontend behaves when payment gateway returns 503 or network drops."],
-              painPoints: ["You cannot take down production payment servers just to test negative frontend states."]
-            },
-            automationContext: {
-              playwrightTs: "await page.route('**/api/v1/profile', async (route) => {\n  await route.fulfill({\n    status: 200,\n    body: JSON.stringify({ name: 'Alex', role: 'ADMIN' }),\n  });\n});\n// Abort heavy trackers:\nawait page.route('**/{google-analytics}/**', route => route.abort());",
-              seleniumJava: "// Requires complex proxy tools (BrowserMob) in Selenium",
-              explanation: "page.route() intercepts network requests at the browser layer, enabling deterministic API response mocking.",
-              bestPractices: ["Mock flaky third-party APIs during frontend regression", "Abort ads and analytics to speed up execution by 3x"],
-              antiPatterns: ["Mocking internal APIs when the actual test goal is end-to-end integration"]
-            },
-            aiAugmentation: {
-              promptExample: "Write a Playwright page.route mock that returns an empty results list to test zero-state UI.",
-              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
-              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
-            },
-            challenge: {
-              instruction: "Use page.route to intercept '**/api/transactions' and return status 500.",
-              starterCode: {
-                typescript: "async function mockError(page) {\n  // Intercept and return 500\n}",
-              },
-              solutionCode: {
-                typescript: "async function mockError(page) {\n  await page.route('**/api/transactions', async (route) => {\n    await route.fulfill({ status: 500, body: JSON.stringify({ error: 'Down' }) });\n  });\n}",
-              },
-              validationRules: [
-                {
-                  requiredPatterns: ["page.route", "**/api/transactions", "route.fulfill", "status: 500"],
-                  forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
-                }
-              ]
-            }
-          },
-          {
-            id: 'pw-auth-storage-state',
-            moduleId: 'pw-fundamentals',
-            trackId: 'playwright-ts',
-            title: "9. Auth State Sharing (StorageState)",
-            description: "Log in once during global setup, save cookies and localStorage to storageState.json, and reuse across 1,000 parallel tests.",
+            title: "10. Designing 100% Independent Tests Using Fixtures and APIs",
+            description: "Eliminate test inter-dependencies: UI for target feature verification, fast REST API fixtures for instant preconditions and deterministic teardown.",
             durationMinutes: 120,
             badge: 'playwright',
             level: 'Advanced',
             manualContext: {
-              title: "Session Reuse",
-              steps: ["Logging into an application once and navigating directly to deep protected routes."],
-              painPoints: ["Logging in via UI 500 times in a test suite adds 25 minutes of unnecessary execution."]
+              title: "Sequential Test Chaining",
+              steps: ["Test 1 creates customer, Test 2 edits customer, Test 3 deletes customer."],
+              painPoints: ["If Test 1 fails, Tests 2 and 3 fail automatically as false alarms, wasting hours of engineering investigation."]
             },
             automationContext: {
-              playwrightTs: "// auth.setup.ts\nawait page.goto('/login');\nawait page.getByLabel('Email').fill('user@qa.io');\nawait page.getByRole('button', { name: 'Log in' }).click();\nawait page.context().storageState({ path: 'playwright/.auth/user.json' });",
-              seleniumJava: "// Managing session cookies manually in Selenium",
-              explanation: "storageState saves cookies and localStorage to a JSON file. Worker contexts load it in 1ms, bypassing UI login.",
-              bestPractices: ["Add auth JSON files to .gitignore to avoid committing tokens", "Create separate storageState for different user roles"],
-              antiPatterns: ["Testing login UI inside tests that require authenticated state"]
+              playwrightTs: "// Custom fixture that creates test data via API in 50ms\nexport const test = base.extend<{\n  orderId: string;\n}>({\n  orderId: async ({ request }, use) => {\n    const res = await request.post('/api/orders', { data: { item: 'Laptop' } });\n    const { id } = await res.json();\n    await use(id); // Run UI test\n    await request.delete(`/api/orders/${id}`); // Clean teardown\n  }\n});",
+              seleniumJava: "// Implemented with REST Assured inside @BeforeMethod and @AfterMethod",
+              explanation: "Independent tests use fast REST API calls to set up prerequisites and clean up data, leaving the UI only to test the feature under test.",
+              bestPractices: ["Never chain tests where Test B relies on Test A's outcome", "Use Playwright's built-in request fixture for fast API pre-seeding"],
+              antiPatterns: ["Navigating through 10 UI screens just to set up data for a single assertion", "Leaving orphan test records in staging databases"]
             },
             aiAugmentation: {
-              promptExample: "Configure Playwright storageState setup project for automated multi-role authentication.",
+              promptExample: "Refactor a chained multi-test suite into independent tests using API precondition fixtures.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Save context storageState to 'auth.json'.",
+              instruction: "Create an item via request.post in fixture setup and delete it in teardown.",
               starterCode: {
-                typescript: "async function save(context) {\n  // Save storageState to 'auth.json'\n}",
+                typescript: "async function setupItem(request, use) {\n  // Post to /api/items, use id, delete item\n}",
               },
               solutionCode: {
-                typescript: "async function save(context) {\n  await context.storageState({ path: 'auth.json' });\n}",
+                typescript: "async function setupItem(request, use) {\n  const res = await request.post('/api/items', { data: { name: 'Item' } });\n  const { id } = await res.json();\n  await use(id);\n  await request.delete(`/api/items/${id}`);\n}",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["context.storageState", "path: 'auth.json'"],
+                  requiredPatterns: ["request.post('/api/items'", "await use(id)", "request.delete"],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates API setup and teardown'
                 }
               ]
             }
           },
           {
-            id: 'pw-multi-browser-mobile',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-parallel-test-data',
+            moduleId: 'pw-api-data',
             trackId: 'playwright-ts',
-            title: "10. Multi-Browser & Mobile Emulation Testing",
-            description: "Run automated suites across Chromium, Firefox, WebKit (Safari), and mobile devices (iPhone 14, Pixel 7) with touch emulation.",
-            durationMinutes: 90,
-            badge: 'playwright',
-            level: 'Intermediate',
-            manualContext: {
-              title: "Responsive & Safari Checks",
-              steps: ["Opening Safari on macOS and resizing viewport to test hamburger menus on mobile."],
-              painPoints: ["Cross-browser testing triples execution time if done manually."]
-            },
-            automationContext: {
-              playwrightTs: "// In playwright.config.ts:\nimport { devices } from '@playwright/test';\nexport default {\n  projects: [\n    { name: 'Mobile Safari', use: { ...devices['iPhone 14 Pro'], isMobile: true } },\n    { name: 'Desktop Firefox', use: { ...devices['Desktop Firefox'] } },\n  ],\n};",
-              seleniumJava: "// Selenium grid setup with DesiredCapabilities",
-              explanation: "Playwright bundles real open-source Chromium, Firefox, and WebKit binaries. Emulation simulates screen dimensions and touch.",
-              bestPractices: ["Use isMobile fixture to assert mobile-specific UI like drawer menus", "Run WebKit tests in CI to catch Safari layout bugs"],
-              antiPatterns: ["Testing only in Chrome and assuming it works in Safari"]
-            },
-            aiAugmentation: {
-              promptExample: "Generate Playwright device emulation profiles for iPad tablet and Android devices.",
-              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
-              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
-            },
-            challenge: {
-              instruction: "Conditionally assert visibility of #mobile-drawer if isMobile is true.",
-              starterCode: {
-                typescript: "async function check(page, isMobile) {\n  // Assert visibility of #mobile-drawer if isMobile\n}",
-              },
-              solutionCode: {
-                typescript: "async function check(page, isMobile) {\n  if (isMobile) {\n    await expect(page.locator('#mobile-drawer')).toBeVisible();\n  }\n}",
-              },
-              validationRules: [
-                {
-                  requiredPatterns: ["if (isMobile)", "await expect", "#mobile-drawer", "toBeVisible()"],
-                  forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
-                }
-              ]
-            }
-          },
-          {
-            id: 'pw-trace-viewer',
-            moduleId: 'pw-fundamentals',
-            trackId: 'playwright-ts',
-            title: "11. Playwright Trace Viewer & Video Debugging",
-            description: "Time-travel debugging: inspect exact DOM snapshots before and after every action, review network requests, console logs, and videos.",
+            title: "11. Managing Test Data in High-Concurrency Parallel Execution",
+            description: "Prevent shared data collisions: worker-partitioned datasets using workerIndex, dynamic UUID data factories, and immutable seed strategies.",
             durationMinutes: 120,
             badge: 'playwright',
-            level: 'Senior',
+            level: 'Advanced',
             manualContext: {
-              title: "Bug Reproduction",
-              steps: ["Investigating why a test failed on CI by replaying the exact steps leading to failure."],
-              painPoints: ["CI test failures with only console logs are notoriously difficult to debug."]
+              title: "Concurrency Race Conditions",
+              steps: ["Two testers simultaneously modifying the same user profile in staging."],
+              painPoints: ["Tester A overwrites Tester B's changes, leading to confusion and invalid test results."]
             },
             automationContext: {
-              playwrightTs: "// Open trace via CLI:\n// npx playwright show-trace trace.zip\nawait context.tracing.start({ screenshots: true, snapshots: true });\n// ... run steps ...\nawait context.tracing.stop({ path: 'trace.zip' });",
-              seleniumJava: "// Requires custom screenshot and network logging listeners in Selenium",
-              explanation: "Trace Viewer records DOM snapshots, network waterfalls, action timelines, and console output for time-travel debugging.",
-              bestPractices: ["Configure trace: 'retain-on-failure' to save disk space while debugging all failures", "Upload trace.zip as CI artifact"],
-              antiPatterns: ["Recording traces on every passed test in production"]
+              playwrightTs: "import { test } from '@playwright/test';\nimport crypto from 'crypto';\n\ntest('parallel safe user creation', async ({ page }, testInfo) => {\n  const workerId = testInfo.workerIndex;\n  const uniqueEmail = `user_w${workerId}_${Date.now()}_${crypto.randomUUID().slice(0, 8)}@test.com`;\n  await page.goto('/register');\n  await page.getByLabel('Email').fill(uniqueEmail);\n});",
+              seleniumJava: "// Requires ThreadLocal data managers or unique UUID generators in Java",
+              explanation: "In parallel execution, workers run simultaneously on separate CPU threads. Partitioning data by workerIndex or UUID guarantees zero collisions.",
+              bestPractices: ["Use testInfo.workerIndex to assign dedicated user accounts per worker", "Generate dynamic unique strings using UUIDs and timestamps"],
+              antiPatterns: ["Hardcoding static user emails like 'testuser@qa.com' in parallel suites", "Allowing parallel tests to mutate the same shared database row"]
             },
             aiAugmentation: {
-              promptExample: "Analyze this Playwright trace error log to diagnose why the locator click timed out.",
+              promptExample: "Generate a parallel-safe test data factory that produces unique entities with worker partitioning.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Start tracing on a browser context with screenshots and snapshots enabled.",
+              instruction: "Generate a unique email incorporating testInfo.workerIndex and Date.now().",
               starterCode: {
-                typescript: "async function record(context) {\n  // Start tracing\n}",
+                typescript: "function getUniqueEmail(testInfo) {\n  return '';\n}",
               },
               solutionCode: {
-                typescript: "async function record(context) {\n  await context.tracing.start({ screenshots: true, snapshots: true });\n}",
+                typescript: "function getUniqueEmail(testInfo) {\n  return `user_w${testInfo.workerIndex}_${Date.now()}@test.com`;\n}",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["context.tracing.start", "screenshots: true", "snapshots: true"],
+                  requiredPatterns: ["testInfo.workerIndex", "Date.now()"],
                   forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  description: 'Validates worker-safe email generation'
                 }
               ]
             }
-          },
+          }
+        ]
+      },
+      {
+        id: 'pw-ci-infrastructure',
+        trackId: 'playwright-ts',
+        title: 'Level 4: Enterprise CI/CD, Reliability & Infrastructure (Test Architect)',
+        description: 'Playwright retry philosophy, trace retention on-first-retry, multi-machine sharding, and solving real-time CI sharding challenges.',
+        order: 4,
+        lessons: [
           {
-            id: 'pw-ci-sharding',
-            moduleId: 'pw-fundamentals',
+            id: 'pw-retry-philosophy',
+            moduleId: 'pw-ci-infrastructure',
             trackId: 'playwright-ts',
-            title: "12. Parallel Sharding & GitHub Actions CI/CD",
-            description: "Run 500 tests in 4 minutes using test sharding (--shard=1/4), matrix builds, artifact merging, and automated Slack notifications.",
+            title: "12. Playwright Retry Philosophy & Flakiness Elimination",
+            description: "Why 0 retries locally and 2 in CI: worker process termination on failure, root-cause flakiness analysis, and flaky test quarantine strategies.",
             durationMinutes: 120,
             badge: 'playwright',
             level: 'Architect',
             manualContext: {
-              title: "Release Velocity",
-              steps: ["Waiting for full regression suite to pass before deploying to production."],
-              painPoints: ["Running 500 tests on a single machine takes 40 minutes, delaying deployments."]
+              title: "Pipeline Flakiness",
+              steps: ["Rerunning an entire 1-hour test suite because a single network hiccup failed one test."],
+              painPoints: ["Re-running full test suites wastes CI compute hours and delays deployments."]
             },
             automationContext: {
-              playwrightTs: "# In GitHub Actions matrix:\n# run: npx playwright test --shard=\\${{ matrix.shardIndex }}/\\${{ matrix.shardTotal }}",
-              seleniumJava: "// Selenium grid with distributed Hub and Nodes",
-              explanation: "Playwright sharding divides test suites evenly across multiple cloud VM runners. 4 shards run 4x faster.",
-              bestPractices: ["Use GitHub Actions matrix strategy for horizontal scaling", "Merge blob reports from all shards using merge-reports"],
-              antiPatterns: ["Setting fail-fast: true in test matrix (cancels other shards before full results gather)"]
+              playwrightTs: "// playwright.config.ts\nexport default defineConfig({\n  retries: process.env.CI ? 2 : 0, // Zero retries locally!\n  // When a test fails in CI, Playwright discards the entire worker process\n  // and launches a fresh worker to prevent state contamination.\n});",
+              seleniumJava: "// Managed via TestNG IRetryAnalyzer and IAnnotationTransformer",
+              explanation: "Playwright retries terminate the failing worker process completely, launching a fresh worker with clean memory and browser context.",
+              bestPractices: ["Keep retries at 0 during local development to fix root causes quickly", "Quarantine tests with failure rates exceeding 5% in CI"],
+              antiPatterns: ["Setting retries: 5 to mask race conditions and poor synchronization", "Enabling retries on local developer machines"]
             },
             aiAugmentation: {
-              promptExample: "Generate a GitHub Actions workflow that shards Playwright tests across 4 runners.",
+              promptExample: "Analyze this flaky Playwright test run and identify whether flakiness is caused by network, DOM timing, or shared state.",
               agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
               selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
             },
             challenge: {
-              instruction: "Return the Playwright CLI flag for shard 1 of 4.",
+              instruction: "Configure retries to 2 when process.env.CI is truthy, otherwise 0.",
               starterCode: {
-                typescript: "function getShard(): string {\n  return '';\n}",
+                typescript: "const config = {\n  retries: 0\n};",
               },
               solutionCode: {
-                typescript: "function getShard(): string {\n  return '--shard=1/4';\n}",
+                typescript: "const config = {\n  retries: process.env.CI ? 2 : 0\n};",
               },
               validationRules: [
                 {
-                  requiredPatterns: ["--shard=1/4"],
-                  forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
+                  requiredPatterns: ["process.env.CI ? 2 : 0"],
+                  forbiddenPatterns: ['retries: 5'],
+                  description: 'Validates retry policy'
                 }
               ]
             }
           },
+          {
+            id: 'pw-trace-retention',
+            moduleId: 'pw-ci-infrastructure',
+            trackId: 'playwright-ts',
+            title: "13. Trace Retention Strategy & Production Debugging",
+            description: "Zero storage overhead for passing tests: configuring trace: 'on-first-retry', S3/blob artifact upload pipelines, and deep debugging in Trace Viewer.",
+            durationMinutes: 120,
+            badge: 'playwright',
+            level: 'Architect',
+            manualContext: {
+              title: "Debugging Test Failures",
+              steps: ["Reproducing an intermittent failure that happened only on the headless Linux CI server at 3 AM."],
+              painPoints: ["Screenshots only show the final broken state; they don't show what actions or network calls happened before the crash."]
+            },
+            automationContext: {
+              playwrightTs: "// playwright.config.ts\nexport default defineConfig({\n  use: {\n    trace: 'on-first-retry', // Zero disk space on pass, full trace on failure!\n  }\n});\n// Open with: npx playwright show-trace trace.zip",
+              seleniumJava: "// Requires custom AOP interceptors, video recording containers, or HAR loggers",
+              explanation: "Playwright Trace records DOM snapshots, console logs, network activity, and filmstrip screenshots with zero overhead on successful runs.",
+              bestPractices: ["Use trace: 'on-first-retry' to save GBs of CI artifact storage", "Use the Trace Viewer timeline to inspect DOM state before and after actions"],
+              antiPatterns: ["Setting trace: 'on' for every passing test, filling disk storage", "Relying solely on static screenshots for complex timing bugs"]
+            },
+            aiAugmentation: {
+              promptExample: "Configure Playwright trace retention and GitHub Actions artifact upload for failed runs.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Configure trace retention to 'on-first-retry' in use config.",
+              starterCode: {
+                typescript: "const useConfig = {\n  // Add trace\n};",
+              },
+              solutionCode: {
+                typescript: "const useConfig = {\n  trace: 'on-first-retry'\n};",
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["trace: 'on-first-retry'"],
+                  forbiddenPatterns: ['trace: "on"'],
+                  description: 'Validates on-first-retry trace retention'
+                }
+              ]
+            }
+          },
+          {
+            id: 'pw-sharding-architecture',
+            moduleId: 'pw-ci-infrastructure',
+            trackId: 'playwright-ts',
+            title: "14. Playwright Test Sharding Architecture",
+            description: "Divide test suites horizontally across cloud runners with --shard=x/y and GitHub Actions matrix strategy for linear pipeline acceleration.",
+            durationMinutes: 120,
+            badge: 'playwright',
+            level: 'Architect',
+            manualContext: {
+              title: "CI Pipeline Duration",
+              steps: ["Waiting for 1,000 regression tests to execute on a single CI machine."],
+              painPoints: ["Running 1,000 tests sequentially takes 60 minutes, blocking pull request approvals and release velocity."]
+            },
+            automationContext: {
+              playwrightTs: "# GitHub Actions matrix workflow:\n# strategy:\n#   matrix:\n#     shardIndex: [1, 2, 3, 4]\n#     shardTotal: [4]\n# run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}\n# Report merging: npx playwright merge-reports --reporter=html ./blob-reports",
+              seleniumJava: "// Selenium Grid distributed execution across Hub and remote Nodes",
+              explanation: "Playwright sharding divides test files deterministically across multiple CI runners, reducing execution time linearly with shard count.",
+              bestPractices: ["Use blob reporter in individual shards and merge reports in a final job", "Run 4-8 shards on pull requests to keep build times under 5 minutes"],
+              antiPatterns: ["Forgetting to merge blob reports, resulting in fractured test reporting", "Setting fail-fast: true in GitHub Actions matrix"]
+            },
+            aiAugmentation: {
+              promptExample: "Write a GitHub Actions CI workflow that shards Playwright tests across 4 runners and merges blob reports.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Write the command to execute shard 2 of 4 with the blob reporter.",
+              starterCode: {
+                typescript: "function getCommand(): string {\n  return '';\n}",
+              },
+              solutionCode: {
+                typescript: "function getCommand(): string {\n  return 'npx playwright test --shard=2/4 --reporter=blob';\n}",
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["--shard=2/4", "--reporter=blob"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates sharding command'
+                }
+              ]
+            }
+          },
+          {
+            id: 'pw-sharding-realtime-challenges',
+            moduleId: 'pw-ci-infrastructure',
+            trackId: 'playwright-ts',
+            title: "15. Real-Time Challenges in Test Sharding & Architectural Solutions",
+            description: "Solve uneven shard runtimes (stragglers), shared database bottlenecks, matrix fail-fast cancellations, and merging blob reports with merge-reports.",
+            durationMinutes: 120,
+            badge: 'playwright',
+            level: 'Architect',
+            manualContext: {
+              title: "CI Distributed Failures",
+              steps: ["Investigating why Shard 1 took 18 minutes while Shards 2, 3, and 4 finished in 3 minutes."],
+              painPoints: ["Uneven shard durations negate the benefits of sharding, forcing teams to wait for the slowest runner."]
+            },
+            automationContext: {
+              playwrightTs: "// Solutions to Sharding Challenges:\n// 1. Stragglers: Split large test files into smaller spec files (sharding operates at file level)\n// 2. Database bottlenecks: Assign dedicated tenant IDs or mock backend rate limits\n// 3. Matrix Fail-Fast: Set fail-fast: false in GitHub Actions matrix to collect full suite results\n// 4. Report Merging: Use merge-multiple: true in actions/upload-artifact to combine all blob zips",
+              seleniumJava: "// Addressed by dynamic Selenium Grid queue balancing and Docker Swarm autoscaling",
+              explanation: "Real-time sharding challenges stem from file-level granularity, shared backend resource contention, and matrix cancelation policies.",
+              bestPractices: ["Keep test spec files small and evenly balanced in execution duration", "Set matrix fail-fast to false so all shards complete and record failures"],
+              antiPatterns: ["Packing 50 slow tests into a single spec file, creating a straggler shard", "Having shards compete for the same static staging user account"]
+            },
+            aiAugmentation: {
+              promptExample: "Diagnose an uneven Playwright shard distribution in GitHub Actions and propose spec file rebalancing.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Return the command to merge blob reports from './all-blob-reports' into an HTML report.",
+              starterCode: {
+                typescript: "function getMergeCmd(): string {\n  return '';\n}",
+              },
+              solutionCode: {
+                typescript: "function getMergeCmd(): string {\n  return 'npx playwright merge-reports --reporter=html ./all-blob-reports';\n}",
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["playwright merge-reports", "--reporter=html"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates merge-reports command'
+                }
+              ]
+            }
+          }
         ]
-      },
+      }
     ]
   },
   {

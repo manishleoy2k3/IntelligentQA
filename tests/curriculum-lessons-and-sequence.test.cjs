@@ -11,10 +11,10 @@ test('Requirement 1 & 2: Curriculum tracks have exact lesson counts and hours ma
   assert.ok(curriculumFile.includes('estimatedHours: 26'), 'Selenium has 26 estimated hours');
   assert.ok(curriculumFile.includes('totalLessons: 10'), 'Selenium has 10 total lessons');
 
-  // Playwright (TS): 12 lessons summing to 24 Hours
+  // Playwright (TS): 15 comprehensive lessons summing to 30 Hours
   assert.ok(curriculumFile.includes("id: 'playwright-ts'"), 'Contains playwright-ts track');
-  assert.ok(curriculumFile.includes('estimatedHours: 24'), 'Playwright has 24 estimated hours');
-  assert.ok(curriculumFile.includes('totalLessons: 12'), 'Playwright has 12 total lessons');
+  assert.ok(curriculumFile.includes('estimatedHours: 30'), 'Playwright has 30 estimated hours');
+  assert.ok(curriculumFile.includes('totalLessons: 15'), 'Playwright has 15 total lessons');
 
   // Rest Assured (API): 8 lessons summing to 18 Hours
   assert.ok(curriculumFile.includes("id: 'api-testing'"), 'Contains api-testing track');

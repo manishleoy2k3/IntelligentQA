@@ -3441,6 +3441,3815 @@ public class ${lessonId.replace(/[^a-zA-Z0-9]/g, '')}Execution {
 }
 
 // Generic Fallback Generator that produces deep Playwright-Docs-Style content for ANY curriculum lesson
+
+// Dedicated Playwright TypeScript & Python Curriculum Generator
+export function getPlaywrightLessonDoc(
+  lessonId: string,
+  isPython: boolean,
+  lessonTitle?: string,
+  lessonDesc?: string
+): LessonDoc {
+  const category = isPython ? 'Playwright (Python) • Enterprise Architecture' : 'Playwright (TypeScript) • Enterprise Architecture';
+  const cleanTitle = lessonTitle || 'Playwright Automation';
+
+  // 1. Browser Context in Playwright & Multi-Page Architecture
+  if (lessonId === 'pw-ts-basics' || lessonId === 'pw-browser-context') {
+    return {
+      title: '1. Browser Context in Playwright & Multi-Page Architecture',
+      category,
+      tagline: 'Master Incognito-Grade Isolation, Zero Cookie Bleed, and Multi-Context Parallelism',
+      overview: 'In Playwright, a Browser instance is an expensive operating system process (Chromium, Firefox, WebKit). A BrowserContext is an isolated, in-memory incognito session running inside that browser process. Creating a new browser process takes 3 to 5 seconds and hundreds of megabytes of RAM, whereas creating a BrowserContext takes under 10ms and less than 1MB of memory. Understanding this boundary is the single most important architectural concept in Playwright.',
+      whyItMattersForManualQA: 'In manual testing, if you need to test interactions between an Admin and a Customer (e.g. Chat or Approval flows), you cannot do it in two tabs of the same browser because both tabs share the same login cookies. You have to open a normal window and an Incognito window, or use Chrome and Firefox. In Playwright, BrowserContexts give you multiple 100% isolated incognito environments inside one test in milliseconds.',
+      architectureUnderTheHood: {
+        title: 'Browser vs BrowserContext vs Page Architecture',
+        flowOrMechanism: 'Browser Process (1 OS Process) => Context A (Admin Storage/Cookies) [Page 1] | Context B (Customer Storage/Cookies) [Page 2] => 100% Isolated IPC over CDP WebSocket',
+        keyTakeaway: 'Why NEVER open multiple pages in the same browser context for independent tests: Pages inside the same context share cookies, localStorage, and session tokens. If Page 1 logs in as Admin, Page 2 in that same context is automatically logged in as Admin! If Test A logs out, it immediately destroys Test B session. Always use fresh BrowserContexts for independent tests.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Understanding Context Lifecycle in pytest (Python)',
+          badge: 'Isolation',
+          summary: 'Use the built-in context and page fixtures provided by pytest-playwright.',
+          explanation: 'pytest-playwright automatically creates a brand-new BrowserContext for every test function and closes it during teardown, guaranteeing zero state leakage.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Automatic Context Fixture in pytest',
+            code: `from playwright.sync_api import Page, expect
+
+def test_admin_dashboard(page: Page):
+    # 'page' belongs to a fresh, isolated BrowserContext
+    page.goto("http://localhost:3000/dashboard")
+    expect(page.get_by_role("heading", level=1)).to_be_visible()`
+          },
+          proTip: 'Never store global page or context instances across pytest functions.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Multi-User Persona Testing with Two Isolated Contexts (Python)',
+          badge: 'Multi-Context',
+          summary: 'Create two distinct contexts inside one test to simulate real-time interactions.',
+          explanation: 'Use browser.new_context() to create independent profiles for an Admin and a Customer concurrently.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Simulating Admin and Customer in Python',
+            code: `from playwright.sync_api import Browser, expect
+
+def test_realtime_collaboration(browser: Browser):
+    # 1. Admin Context with Admin cookies
+    admin_context = browser.new_context()
+    admin_page = admin_context.new_page()
+    admin_page.goto("http://localhost:3000/login")
+    admin_page.get_by_label("Email").fill("admin@qa.io")
+    admin_page.get_by_role("button", name="Sign In").click()
+
+    # 2. Customer Context - 100% isolated with zero cookies from Admin
+    customer_context = browser.new_context()
+    customer_page = customer_context.new_page()
+    customer_page.goto("http://localhost:3000/login")
+    # Verify customer is NOT logged in as Admin
+    expect(customer_page.get_by_role("button", name="Sign In")).to_be_visible()
+
+    # Teardown both contexts cleanly
+    admin_context.close()
+    customer_context.close()`
+          },
+          proTip: 'Closing a context automatically closes all pages opened within it and flushes memory.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'How Playwright Test Runner Manages Contexts (TypeScript)',
+          badge: 'Isolation',
+          summary: 'The { page } fixture is automatically bound to a private BrowserContext.',
+          explanation: 'When your test declares ({ page }), Playwright creates a new BrowserContext in under 10ms, opens a Page, injects it into your test, and destroys it when the test completes.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Playwright Page Fixture Context Isolation',
+            code: `import { test, expect } from '@playwright/test';
+
+test('isolated user session', async ({ page }) => {
+  // 'page' belongs to a completely fresh BrowserContext
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('user@qa.io');
+  await page.getByRole('button', { name: 'Log In' }).click();
+  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+});`
+          },
+          proTip: 'You do not need to call browser.newPage(); declaring { page } provides automatic incognito isolation.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Multi-Persona Testing: Admin vs Customer Concurrency (TypeScript)',
+          badge: 'Multi-Context',
+          summary: 'Launch two BrowserContexts in parallel to test chat, approvals, or permissions.',
+          explanation: 'By requesting the { browser } fixture, you can spawn multiple independent BrowserContexts and simulate real-time socket or database interactions between users.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Multi-Context Collaboration Pattern',
+            code: `import { test, expect } from '@playwright/test';
+
+test('admin approval reflects instantly in customer portal', async ({ browser }) => {
+  // Context 1: Admin session
+  const adminContext = await browser.newContext();
+  const adminPage = await adminContext.newPage();
+  await adminPage.goto('/admin/requests');
+
+  // Context 2: Customer session (Zero shared cookies or localStorage!)
+  const customerContext = await browser.newContext();
+  const customerPage = await customerContext.newPage();
+  await customerPage.goto('/customer/orders');
+
+  // Perform action in Admin and verify on Customer
+  await adminPage.getByRole('button', { name: 'Approve Order #101' }).click();
+  await expect(customerPage.getByText('Status: Approved')).toBeVisible();
+
+  // Clean teardown
+  await adminContext.close();
+  await customerContext.close();
+});`
+          },
+          proTip: 'Always close custom contexts in finally blocks or use fixture cleanup to prevent memory leaks in CI.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Open Chrome normal window for Admin and Chrome Incognito window for Customer',
+          automatedApproach: 'const adminCtx = await browser.newContext(); const custCtx = await browser.newContext();',
+          whyItMatters: 'Spawns in under 10ms without launching heavy separate OS processes, allowing 50+ concurrent parallel tests.'
+        },
+        {
+          manualAction: 'Accidentally logging in as Customer in a second tab of the same browser window',
+          automatedApproach: 'Strict context segregation via Playwright { page } fixture',
+          whyItMatters: 'Eliminates cookie bleeding and session overwrites where Test A accidentally overwrites Test B credentials.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Multi-Context Manager' : 'Production Implementation (TypeScript): Multi-Context Manager',
+        description: 'Clean, production-ready implementation of isolated multi-persona browser contexts.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Browser, BrowserContext, Page, expect
+
+class MultiContextManager:
+    """Manages independent incognito personas within a single test execution."""
+    def __init__(self, browser: Browser):
+        self.browser = browser
+        self.contexts: list[BrowserContext] = []
+
+    def create_persona(self, persona_name: str, base_url: str = "http://localhost:3000") -> Page:
+        context = self.browser.new_context(
+            base_url=base_url,
+            viewport={"width": 1280, "height": 720},
+            user_agent=f"Playwright-QA-Agent ({persona_name})"
+        )
+        self.contexts.append(context)
+        page = context.new_page()
+        return page
+
+    def close_all(self):
+        for ctx in self.contexts:
+            ctx.close()
+        self.contexts.clear()
+
+def test_multi_persona_workflow(browser: Browser):
+    manager = MultiContextManager(browser)
+    try:
+        admin_page = manager.create_persona("Admin")
+        buyer_page = manager.create_persona("Buyer")
+
+        # Admin creates product
+        admin_page.goto("/admin/products")
+        admin_page.get_by_role("button", name="Publish SKU").click()
+
+        # Buyer refreshes catalog - zero shared auth state
+        buyer_page.goto("/shop")
+        expect(buyer_page.get_by_text("Published SKU")).toBeVisible()
+    finally:
+        manager.close_all()` : `import { Browser, BrowserContext, Page, expect } from '@playwright/test';
+
+export class MultiPersonaSessionManager {
+  private activeContexts: BrowserContext[] = [];
+
+  constructor(private browser: Browser) {}
+
+  /**
+   * Spawns a completely isolated BrowserContext with private cookies and storage.
+   */
+  async createPersonaSession(persona: string, baseURL = 'http://localhost:3000'): Promise<{ context: BrowserContext; page: Page }> {
+    const context = await this.browser.newContext({
+      baseURL,
+      viewport: { width: 1280, height: 720 },
+      extraHTTPHeaders: { 'X-Persona-Context': persona },
+    });
+    this.activeContexts.push(context);
+    const page = await context.newPage();
+    return { context, page };
+  }
+
+  async closeAllSessions(): Promise<void> {
+    await Promise.all(this.activeContexts.map(ctx => ctx.close()));
+    this.activeContexts = [];
+  }
+}
+
+// Enterprise Test Execution Example
+import { test } from '@playwright/test';
+
+test('multi-tenant session isolation verification', async ({ browser }) => {
+  const sessionManager = new MultiPersonaSessionManager(browser);
+
+  try {
+    const { page: tenantOne } = await sessionManager.createPersonaSession('Tenant-Alpha');
+    const { page: tenantTwo } = await sessionManager.createPersonaSession('Tenant-Beta');
+
+    await tenantOne.goto('/login');
+    await tenantTwo.goto('/login');
+
+    // Tenant One logs in
+    await tenantOne.getByLabel('Organization').fill('alpha-corp');
+    await tenantOne.getByRole('button', { name: 'Access Portal' }).click();
+
+    // Verify Tenant Two has ZERO cookies or session data from Tenant One
+    const tenantTwoCookies = await tenantTwo.context().cookies();
+    expect(tenantTwoCookies).toHaveLength(0);
+  } finally {
+    await sessionManager.closeAllSessions();
+  }
+});`,
+        annotations: [
+          { lineOrPattern: 'newContext', explanation: 'Creates lightweight in-memory incognito profile.' },
+          { lineOrPattern: 'closeAll', explanation: 'Flushes all memory and network sockets.' }
+        ]
+      },
+      bestPractices: [
+        'Use BrowserContexts for multi-user tests (Admin vs Customer, Buyer vs Seller)',
+        'Always close custom contexts in finally blocks or fixture teardowns',
+        'Rely on Playwright default { page } fixture for single-user test isolation'
+      ],
+      antiPatterns: [
+        'Opening multiple pages in the same BrowserContext for independent tests (causes cookie bleed)',
+        'Launching full browser.launch() processes inside tests instead of newContext()',
+        'Sharing context state across tests in global variables'
+      ],
+      interviewQnA: {
+        question: 'Why should you NOT open multiple pages in the same BrowserContext for independent tests?',
+        answer: 'BrowserContext owns all storage, cookies, cache, and HTTP auth. If you open Page 1 and Page 2 in the same context, logging in on Page 1 writes cookies to the context, automatically authenticating Page 2. If Test A logs out, Test B is logged out. Furthermore, concurrent actions across pages in the same context cause race conditions on DOM focus and network bandwidth. Always create separate BrowserContexts for independent tests.'
+      }
+    };
+  }
+
+  // 2. Modern Locators vs page.$() & ElementHandle
+  if (lessonId === 'pw-locator-vs-elementhandle') {
+    return {
+      title: '2. Modern Locators vs page.$() & ElementHandle',
+      category,
+      tagline: 'Eliminate Stale Element References, Masked Ambiguities, and Race Conditions',
+      overview: 'In legacy Puppeteer and Selenium, automation engineers query the DOM at an instant in time using page.$() or findElement(), receiving an ElementHandle reference. If the frontend framework (React, Vue, Angular) re-renders the DOM, that handle immediately points to a detached node, throwing StaleElementReferenceException or Element is not attached to the DOM. Playwright completely solves this with Locator: a lazy pointer that re-evaluates the DOM dynamically on every action and auto-waits for actionability.',
+      whyItMattersForManualQA: 'In manual testing, you see a button, and even if it blinks or updates data via AJAX, your eyes and brain effortlessly adjust and click the updated button. In bad automation, code queries the button, the page re-renders for 5 milliseconds, and the script crashes! Playwright Locator behaves like human vision: it finds the element at the exact millisecond you perform the action.',
+      architectureUnderTheHood: {
+        title: 'Eager ElementHandle vs Lazy Locator Architecture',
+        flowOrMechanism: 'page.$() => Eager one-time DOM query => Static ElementHandle (Stale on re-render!) | page.locator() => Lazy pointer => Action triggered => 5 Actionability Checks => Dynamic DOM Execution',
+        keyTakeaway: 'Why prefer locator() over page.$(): locator() has lazy evaluation (never goes stale), automatically performs 5 actionability checks (visible, stable, enabled, editable, receiving events), and enforces Strict Mode (throws if multiple elements match).'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'The Problem with page.$() in Python',
+          badge: 'Anti-pattern',
+          summary: 'Understand why ElementHandle causes intermittent flakiness.',
+          explanation: 'page.$() executes immediately. If the element is still loading, it returns None. If the element re-renders, calling click() on the handle crashes.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Brittle ElementHandle Pattern',
+            code: `# BRITTLE - DO NOT USE IN PRODUCTION
+button_handle = page.query_selector("button.submit")
+if button_handle:
+    button_handle.click() # Crashes if DOM re-renders before this line!`
+          },
+          proTip: 'Never call page.query_selector() or page.$() in modern Playwright suites.'
+        },
+        {
+          stepNumber: 2,
+          title: 'The Modern page.locator() Pattern (Python)',
+          badge: 'Best Practice',
+          summary: 'Use lazy locators with automatic actionability polling.',
+          explanation: 'page.locator() defines an actionable selector. Playwright waits until the element is visible, stable, and enabled before clicking.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Resilient Locator Pattern in Python',
+            code: `from playwright.sync_api import Page, expect
+
+def test_resilient_click(page: Page):
+    # Lazy locator - evaluated only when click() is executed!
+    submit_btn = page.locator("button.submit")
+    submit_btn.click() # Auto-waits up to 30s; never throws StaleElementReference!`
+          },
+          proTip: 'Combine locator with expect(locator) for web-first auto-retrying assertions.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Why page.$() and ElementHandle are Legacy (TypeScript)',
+          badge: 'Legacy Anti-pattern',
+          summary: 'page.$() queries the DOM eagerly and lacks auto-waiting.',
+          explanation: 'page.$() returns an ElementHandle pointing to a specific DOM node in memory. If React or Vue re-renders that component, the handle becomes detached from the document tree.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Legacy ElementHandle Flakiness',
+            code: `// DO NOT USE THIS PATTERN
+const btn = await page.$('button.checkout');
+if (btn) {
+  // If React re-renders right here, this throws:
+  // Error: Element is not attached to the DOM
+  await btn.click();
+}`
+          },
+          proTip: 'ElementHandle is discouraged in the official Playwright documentation.'
+        },
+        {
+          stepNumber: 2,
+          title: 'The Power of Lazy Locators and Strict Mode (TypeScript)',
+          badge: 'Modern SDET',
+          summary: 'page.locator() defines how to find the element, not the node itself.',
+          explanation: 'When you execute await page.locator("button.checkout").click(), Playwright checks: 1. Is it attached? 2. Is it visible? 3. Is it stable (not animating)? 4. Is it enabled? 5. Does it receive events? It retries until all 5 pass.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Resilient Lazy Locator with Strict Mode',
+            code: `import { test, expect } from '@playwright/test';
+
+test('modern locator execution', async ({ page }) => {
+  await page.goto('/cart');
+
+  // Locator is created synchronously without querying the DOM
+  const checkoutBtn = page.locator('button.checkout');
+
+  // Evaluated dynamically on click with strict mode verification
+  await checkoutBtn.click();
+
+  // Strict mode: Throws error if 2 buttons match, catching locator bugs!
+  await expect(page.getByRole('heading', { name: 'Payment' })).toBeVisible();
+});`
+          },
+          proTip: 'Strict mode catches ambiguous selectors instantly instead of clicking the wrong button.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Looking at button on screen and waiting for spinner to stop before clicking',
+          automatedApproach: 'await page.locator("button").click() with built-in actionability checks',
+          whyItMatters: 'Advances the exact millisecond the button stops animating, eliminating Thread.sleep.'
+        },
+        {
+          manualAction: 'Noticing that two buttons have the same name and asking developer to clarify',
+          automatedApproach: 'Playwright Locator Strict Mode throws Error: resolved to 2 elements',
+          whyItMatters: 'Prevents automated tests from silently clicking the wrong button when duplicates exist.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Resilient Locator Engine' : 'Production Implementation (TypeScript): Resilient Locator Engine',
+        description: 'Demonstrating strict mode, locator chaining, and filtering without ElementHandle.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Page, expect
+
+def test_locator_chaining_and_filtering(page: Page):
+    page.goto("http://localhost:3000/orders")
+
+    # 1. Locator filtering - find table row containing specific order ID
+    order_row = page.locator("tr").filter(has_text="ORD-9842")
+
+    # 2. Locator chaining - find button within that specific row
+    cancel_button = order_row.get_by_role("button", name="Cancel")
+
+    # 3. Action execution - auto-waits for actionability
+    cancel_button.click()
+
+    # 4. Strict mode verification
+    expect(page.get_by_role("alert")).to_contain_text("Order ORD-9842 cancelled")` : `import { Page, expect } from '@playwright/test';
+
+export class TableOrderManager {
+  constructor(private page: Page) {}
+
+  /**
+   * Resilient locator chaining and filtering.
+   * Zero ElementHandles; 100% resilient to table re-renders.
+   */
+  getOrderRow(orderId: string) {
+    return this.page.locator('tr').filter({
+      has: this.page.locator('td', { hasText: orderId }),
+    });
+  }
+
+  async cancelOrder(orderId: string): Promise<void> {
+    const row = this.getOrderRow(orderId);
+    // Strict mode ensures exactly one row matches before clicking cancel
+    const cancelBtn = row.getByRole('button', { name: 'Cancel' });
+    await cancelBtn.click();
+  }
+
+  async verifyOrderStatus(orderId: string, expectedStatus: string): Promise<void> {
+    const row = this.getOrderRow(orderId);
+    const statusBadge = row.locator('.status-badge');
+    await expect(statusBadge).toHaveText(expectedStatus);
+  }
+}`,
+        annotations: [
+          { lineOrPattern: 'filter', explanation: 'Filters locators without querying DOM nodes.' },
+          { lineOrPattern: 'getByRole', explanation: 'Locates button inside row dynamically.' }
+        ]
+      },
+      bestPractices: [
+        'Always use page.locator() and never use page.$() or page.$$()',
+        'Leverage locator chaining (.filter({ hasText })) to target specific rows or cards',
+        'Rely on Strict Mode to detect duplicate or ambiguous selectors early'
+      ],
+      antiPatterns: [
+        'Storing ElementHandle references in variables across asynchronous calls',
+        'Calling elementHandle.evaluate() when locator.evaluate() or expect() works natively',
+        'Disabling strict mode globally'
+      ],
+      interviewQnA: {
+        question: 'Why does Playwright recommend locator() over page.$() or ElementHandle?',
+        answer: 'page.$() is an eager DOM query that returns an ElementHandle pointing to a snapshot of a DOM node. If the page re-renders, the handle becomes stale and throws an error, and it lacks auto-waiting. In contrast, locator() is a lazy pointer that re-evaluates the DOM at the exact moment of action, auto-waits for 5 actionability checks (visible, stable, enabled, editable, receives events), and enforces Strict Mode to prevent ambiguous clicks.'
+      }
+    };
+  }
+
+  // 3. Locator Strategy: getByRole() vs data-testid
+  if (lessonId === 'pw-getbyrole-vs-testid') {
+    return {
+      title: '3. Locator Strategy: getByRole() vs data-testid',
+      category,
+      tagline: 'Balance Accessibility Tree Verification with Resilient Testing IDs',
+      overview: 'Modern automated testing prioritizes user-facing accessibility attributes over internal implementation details. Playwright provides getByRole(), which locates elements using the Accessibility Object Model (AOM), and getByTestId(), which targets dedicated test attributes like data-testid. Understanding when to use each prevents brittle tests while ensuring comprehensive accessibility coverage.',
+      whyItMattersForManualQA: 'A manual tester navigates an application by looking for buttons, headings, and input labels (e.g. "Submit", "First Name"). Screen readers for visually impaired users do the exact same thing. When you automate using getByRole(), you ensure your application is accessible to real humans. If a button lacks an accessible name, getByRole fails, alerting you to an accessibility defect before it reaches production!',
+      architectureUnderTheHood: {
+        title: 'Accessibility Object Model (AOM) vs DOM Tree',
+        flowOrMechanism: 'Browser DOM (<div>, <button>, <span>) => Browser Accessibility Tree (Role: button, Name: "Submit") => Playwright getByRole() | data-testid attribute => getByTestId()',
+        keyTakeaway: 'When to use getByRole vs data-testid: Default to getByRole() for all interactive elements (buttons, links, inputs). Use data-testid ONLY for elements lacking semantic roles (canvas charts, SVG maps, dynamic graphs) or when multi-lingual translation strings change frequently across 25+ locales.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Using getByRole for User-Facing Elements (Python)',
+          badge: 'Priority 1',
+          summary: 'Target elements by semantic role and accessible name.',
+          explanation: 'getByRole matches ARIA roles: button, link, heading, textbox, combobox, checkbox, radio.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Accessible Locator in Python',
+            code: `from playwright.sync_api import Page, expect
+
+def test_accessible_form(page: Page):
+    page.goto("http://localhost:3000/contact")
+    page.get_by_role("heading", name="Get in Touch").is_visible()
+    page.get_by_label("Full Name").fill("John Doe")
+    page.get_by_role("button", name="Send Message").click()`
+          },
+          proTip: 'Use heading level option: page.get_by_role("heading", level=1) to verify hierarchy.'
+        },
+        {
+          stepNumber: 2,
+          title: 'When to Use data-testid (Python)',
+          badge: 'Priority 2',
+          summary: 'Use data-testid for custom canvas, SVG, or repeated table cells.',
+          explanation: 'Configure test id attribute in Playwright config or use the default data-testid.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Targeting Custom Components via data-testid',
+            code: `def test_canvas_analytics(page: Page):
+    # Canvas element has no semantic role or accessible text
+    chart = page.get_by_test_id("financial-projection-canvas")
+    expect(chart).to_be_visible()`
+          },
+          proTip: 'Never use data-testid on standard buttons that already have clear accessible text.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'The Accessibility First Testing Philosophy (TypeScript)',
+          badge: 'Priority 1',
+          summary: 'Always default to getByRole() and getByLabel() for user interactions.',
+          explanation: 'getByRole tests the accessibility tree. It guarantees that if the frontend team refactors from <button> to <div role="button">, your test still passes, and visually impaired users can still use the site.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'getByRole and getByLabel Implementation',
+            code: `import { test, expect } from '@playwright/test';
+
+test('accessible user login', async ({ page }) => {
+  await page.goto('/login');
+
+  // Locating via accessibility attributes
+  await page.getByLabel('Work Email').fill('sdet@qa.io');
+  await page.getByLabel('Password').fill('Secret123!');
+  await page.getByRole('button', { name: 'Log In' }).click();
+
+  // Heading verification with semantic level
+  await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
+});`
+          },
+          proTip: 'Pass { exact: true } to getByRole when matching short names like "Edit" vs "Editor".'
+        },
+        {
+          stepNumber: 2,
+          title: 'Valid Use Cases for data-testid (TypeScript)',
+          badge: 'Priority 2',
+          summary: 'Reserve data-testid for non-semantic or highly dynamic elements.',
+          explanation: 'Use data-testid for: 1. Canvas and SVG elements. 2. Heavy internationalization where text changes across 20 languages. 3. Identical list items where position or role is ambiguous.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'data-testid for Custom Canvas and Complex Components',
+            code: `test('interact with custom canvas chart', async ({ page }) => {
+  await page.goto('/analytics');
+
+  // Canvas elements have NO accessible text or ARIA roles
+  const revenueChart = page.getByTestId('revenue-svg-chart');
+  await expect(revenueChart).toBeVisible();
+
+  // Multi-lingual dynamic table rows
+  const userRow = page.getByTestId('user-row-8491');
+  await expect(userRow).toBeVisible();
+});`
+          },
+          proTip: 'Customize the attribute in playwright.config.ts: use: { testIdAttribute: "data-qa" }.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Finding button labeled "Save Draft" on screen',
+          automatedApproach: 'await page.getByRole("button", { name: "Save Draft" }).click()',
+          whyItMatters: 'Validates that the button is accessible to all users, catching accessibility bugs.'
+        },
+        {
+          manualAction: 'Verifying a complex interactive SVG graph or 3D canvas',
+          automatedApproach: 'await page.getByTestId("telemetry-graph").isVisible()',
+          whyItMatters: 'Provides a reliable anchor when the element has no text content in the accessibility tree.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Priority-Based Locator Engine' : 'Production Implementation (TypeScript): Priority-Based Locator Engine',
+        description: 'Demonstrating the Playwright Locator Priority hierarchy in an enterprise Page Object.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Page, expect
+
+class EnterpriseCheckoutPage:
+    """Follows Playwright official Locator Priority Hierarchy."""
+    def __init__(self, page: Page):
+        self.page = page
+        # 1. get_by_role (Semantic user perception)
+        self.pay_now_btn = page.get_by_role("button", name="Pay Now")
+        self.billing_heading = page.get_by_role("heading", level=2, name="Billing Address")
+
+        # 2. get_by_label (Form association)
+        self.card_number_input = page.get_by_label("Card Number")
+
+        # 3. get_by_test_id (Fallback for custom canvas signature pad)
+        self.signature_pad = page.get_by_test_id("digital-signature-canvas")
+
+    def submit_payment(self, card_num: str):
+        self.card_number_input.fill(card_num)
+        expect(self.signature_pad).to_be_visible()
+        self.pay_now_btn.click()` : `import { Page, Locator, expect } from '@playwright/test';
+
+export class EnterpriseCheckoutPage {
+  // Priority 1: User-facing Accessible Roles
+  readonly checkoutHeading: Locator;
+  readonly payNowButton: Locator;
+
+  // Priority 2: Form Input Labels
+  readonly creditCardInput: Locator;
+  readonly cvvInput: Locator;
+
+  // Priority 3: data-testid for Non-Semantic Canvas / SVG
+  readonly signatureCanvas: Locator;
+
+  constructor(private page: Page) {
+    this.checkoutHeading = page.getByRole('heading', { level: 1, name: 'Secure Checkout' });
+    this.payNowButton = page.getByRole('button', { name: 'Complete Purchase' });
+
+    this.creditCardInput = page.getByLabel('Card Number');
+    this.cvvInput = page.getByLabel('Security Code (CVV)');
+
+    // Fallback: Custom canvas component without ARIA role
+    this.signatureCanvas = page.getByTestId('checkout-signature-pad');
+  }
+
+  async completeCheckout(cardNumber: string, cvv: string): Promise<void> {
+    await expect(this.checkoutHeading).toBeVisible();
+    await this.creditCardInput.fill(cardNumber);
+    await this.cvvInput.fill(cvv);
+    await expect(this.signatureCanvas).toBeVisible();
+    await this.payNowButton.click();
+  }
+}`,
+        annotations: [
+          { lineOrPattern: 'getByRole', explanation: 'Top priority: checks Accessibility Object Model.' },
+          { lineOrPattern: 'getByTestId', explanation: 'Targeted fallback for non-semantic canvas.' }
+        ]
+      },
+      bestPractices: [
+        'Follow locator priority: getByRole > getByLabel > getByPlaceholder > getByText > getByTestId',
+        'Use getByRole for all buttons, links, headings, checkboxes, and dialogs',
+        'Use data-testid only when elements lack semantic roles or text changes across 20+ locales'
+      ],
+      antiPatterns: [
+        'Slapping data-testid on every single element, ignoring accessibility defects',
+        'Using brittle CSS paths like div > div.wrapper > button.btn-primary',
+        'Using XPath queries when getByRole or getByLabel works natively'
+      ],
+      interviewQnA: {
+        question: 'When should you use getByRole() versus data-testid in Playwright?',
+        answer: 'You should default to getByRole() for all interactive user elements because it queries the Accessibility Object Model (AOM), ensuring your application is fully accessible and tests user-perceived behavior. You should reserve data-testid for: 1. Elements with no semantic role (Canvas charts, SVG diagrams). 2. Multi-lingual applications where text strings change frequently across localized regions. 3. Repeated container items (like table rows) where accessible names collide.'
+      }
+    };
+  }
+
+  // 4. Auto-Waiting Mechanics & Web-First Assertions
+  if (lessonId === 'pw-auto-waiting') {
+    return {
+      title: '4. Auto-Waiting Mechanics & Web-First Assertions',
+      category,
+      tagline: 'Why Playwright Tests Never Need Arbitrary Timeouts or Sleep Intervals',
+      overview: 'Playwright eliminates 95% of flakiness through built-in Actionability Checks and Web-First Assertions. Before performing any action (click, fill, check), Playwright verifies that the element is Attached, Visible, Stable, Enabled, and Editable, and that it Receives Events without being obscured by overlays or modals.',
+      whyItMattersForManualQA: 'In manual testing, you wait for a spinner to disappear before clicking a button. If an automation script clicks while the spinner is still animating, legacy tools throw ElementClickInterceptedException. Playwright polls actionability automatically until the element is ready, advancing the exact millisecond the DOM settles.',
+      architectureUnderTheHood: {
+        title: 'The 5 Playwright Actionability Checks',
+        flowOrMechanism: 'Trigger Action => Check 1: Attached to DOM => Check 2: Visible in Viewport => Check 3: Stable (Not Animating) => Check 4: Enabled (Not Disabled) => Check 5: Receives Pointer Events (No Overlay) => Execute Action',
+        keyTakeaway: 'Never use page.waitForTimeout() or Thread.sleep(). Web-first assertions (expect(locator).toBeVisible()) poll the DOM continuously at 100ms intervals until the condition matches or timeout expires.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Actionability in Action (Python)',
+          badge: 'Auto-Wait',
+          summary: 'Actions auto-wait for up to 30 seconds by default.',
+          explanation: 'When calling locator.click(), Playwright checks all 5 actionability criteria automatically.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Auto-waiting Click in Python',
+            code: `from playwright.sync_api import Page, expect
+
+def test_auto_waiting(page: Page):
+    page.goto("http://localhost:3000/orders")
+    # Auto-waits for button to be visible, stable, enabled, and unobscured!
+    page.get_by_role("button", name="Place Order").click()`
+          },
+          proTip: 'Trust the default auto-wait before adding custom wait conditions.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Web-First Assertions with Auto-Retry (TypeScript)',
+          badge: 'Polling Assertions',
+          summary: 'expect(locator) polls until the expected condition is satisfied.',
+          explanation: 'Unlike boolean assertions that evaluate once and fail, web-first assertions poll the DOM repeatedly.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Web-First Assertions Example',
+            code: `import { test, expect } from '@playwright/test';
+
+test('web first assertions', async ({ page }) => {
+  await page.goto('/notifications');
+  await page.getByRole('button', { name: 'Fetch Updates' }).click();
+
+  // Auto-retries until banner appears or timeout expires!
+  await expect(page.getByRole('status')).toHaveText('Data sync complete', { timeout: 5000 });
+});`
+          },
+          proTip: 'Configure global expectation timeout in playwright.config.ts: expect: { timeout: 7000 }.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Waiting for modal animation to settle before clicking',
+          automatedApproach: 'page.locator().click() auto-waits for stability checks',
+          whyItMatters: 'Advances the exact millisecond animations stop without adding arbitrary sleep buffers.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Dynamic Waits' : 'Production Implementation (TypeScript): Dynamic Waits',
+        description: 'Handling complex async UI transitions without hardcoded sleeps.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Page, expect
+
+def test_async_state_transitions(page: Page):
+    page.goto("http://localhost:3000/data-pipeline")
+    page.get_by_role("button", name="Trigger ETL").click()
+
+    # Web-first assertions poll continuously
+    expect(page.get_by_test_id("etl-progress-bar")).to_be_visible()
+    expect(page.get_by_test_id("etl-status-badge")).to_have_text("SUCCESS", timeout=15000)` : `import { test, expect } from '@playwright/test';
+
+test('production async transitions without sleep', async ({ page }) => {
+  await page.goto('/reports');
+  await page.getByRole('button', { name: 'Generate Export' }).click();
+
+  // Wait for loading skeleton to disappear
+  await expect(page.getByTestId('loading-skeleton')).toBeHidden();
+
+  // Web-first assertion auto-retries for text
+  const downloadLink = page.getByRole('link', { name: 'Download CSV' });
+  await expect(downloadLink).toBeVisible({ timeout: 10000 });
+  await expect(downloadLink).toHaveAttribute('href', /.*\.csv$/);
+});`,
+        annotations: [
+          { lineOrPattern: 'toBeHidden', explanation: 'Auto-retries until skeleton is removed.' },
+          { lineOrPattern: 'toHaveAttribute', explanation: 'Validates URL pattern with auto-retry.' }
+        ]
+      },
+      bestPractices: [
+        'Never use page.waitForTimeout() or Thread.sleep()',
+        'Use web-first assertions (expect(locator).toBeVisible()) instead of boolean assertions',
+        'Configure expectation timeout in playwright.config.ts'
+      ],
+      antiPatterns: [
+        'Adding arbitrary sleep delays to "fix" flaky tests',
+        'Asserting on boolean expressions like expect(await locator.isVisible()).toBe(true)'
+      ],
+      interviewQnA: {
+        question: 'What are Playwright Actionability Checks and why do they eliminate sleep intervals?',
+        answer: 'Before performing an action like click or fill, Playwright automatically performs 5 actionability checks: 1. Attached to DOM. 2. Visible in viewport. 3. Stable (not animating or moving). 4. Enabled (not disabled). 5. Receives pointer events (not obscured by modals or overlays). It polls these conditions continuously, executing the instant they pass, eliminating arbitrary sleep timeouts.'
+      }
+    };
+  }
+
+  // 5. Enterprise Config Management (playwright.config.ts)
+  if (lessonId === 'pw-config-management') {
+    return {
+      title: '5. Enterprise Config Management (playwright.config.ts)',
+      category,
+      tagline: 'Architect Scalable, Multi-Environment, Multi-Browser Automation Pipelines',
+      overview: 'playwright.config.ts is the control center of your entire automation framework. In enterprise SDET frameworks, configuration must handle multi-environment switching (dev, staging, prod), dynamic secrets loading via dotenv, fine-grained timeout hierarchies, browser matrix projects, and CI reporter pipelines.',
+      whyItMattersForManualQA: 'In manual testing, you switch environments by changing the URL in your browser bookmarks and setting credentials. In enterprise automation, tests must seamlessly run against QA, Staging, or Production through a single CLI command (e.g. TEST_ENV=prod npx playwright test) without touching test code.',
+      architectureUnderTheHood: {
+        title: 'Enterprise Configuration Hierarchy',
+        flowOrMechanism: 'CLI Flags (--project, --shard) => playwright.config.ts => dotenv (.env.staging) => Global Timeouts => Project Definitions => Worker Allocation',
+        keyTakeaway: 'Understanding timeout hierarchies: Global Test Timeout (30s) cancels the entire test; Expect Timeout (7s) controls assertion polling; Action Timeout (10s) controls click/fill waiting; Navigation Timeout (15s) controls page.goto.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Configuring Environment Settings in Python',
+          badge: 'pytest.ini',
+          summary: 'Configure base URLs and browser args in pytest.ini and conftest.py.',
+          explanation: 'Load environment variables with python-dotenv and configure Playwright fixtures.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python conftest.py Environment Setup',
+            code: `import os
+import pytest
+from dotenv import load_dotenv
+
+env = os.getenv("TEST_ENV", "staging")
+load_dotenv(f".env.{env}")
+
+@pytest.fixture(scope="session")
+def base_url():
+    return os.getenv("BASE_URL", "http://localhost:3000")`
+          },
+          proTip: 'Keep .env.local in .gitignore so developers do not commit test credentials.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Dynamic Environment Loading with dotenv (TypeScript)',
+          badge: 'Multi-Environment',
+          summary: 'Load environment variables dynamically based on process.env.TEST_ENV.',
+          explanation: 'Configure playwright.config.ts to read environment files (.env.staging, .env.prod) before exports.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'dotenv Configuration in playwright.config.ts',
+            code: `import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load environment-specific .env file
+const environment = process.env.TEST_ENV || 'staging';
+dotenv.config({ path: path.resolve(__dirname, \`.env.\${environment}\`) });
+
+export default defineConfig({
+  testDir: './tests',
+  fullyParallel: true,
+  timeout: 30000,
+  expect: { timeout: 7000 },
+  use: {
+    baseURL: process.env.BASE_URL,
+    actionTimeout: 10000,
+    navigationTimeout: 15000,
+    trace: 'on-first-retry',
+  },
+});`
+          },
+          proTip: 'Always provide a default environment fallback so tests run locally without manual env flags.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Changing URL bookmark from staging.app.com to prod.app.com',
+          automatedApproach: 'TEST_ENV=prod npx playwright test',
+          whyItMatters: 'Switches base URLs, credentials, and API endpoints instantly across hundreds of tests.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Environment Config' : 'Production Implementation (TypeScript): Enterprise playwright.config.ts',
+        description: 'Complete production playwright.config.ts with multi-browser projects, reporters, and timeouts.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `import os
+import pytest
+from dotenv import load_dotenv
+
+# Load environment configuration
+env = os.getenv("TEST_ENV", "staging")
+load_dotenv(f".env.{env}")
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    return {
+        **browser_context_args,
+        "base_url": os.getenv("BASE_URL", "http://localhost:3000"),
+        "viewport": {"width": 1280, "height": 720},
+        "ignore_https_errors": True,
+    }` : `import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+
+const environment = process.env.TEST_ENV || 'staging';
+dotenv.config({ path: path.resolve(__dirname, \`.env.\${environment}\`) });
+
+export default defineConfig({
+  testDir: './src/tests',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 4 : undefined,
+
+  // Fine-grained timeout hierarchy
+  timeout: 30_000,
+  expect: { timeout: 7_000 },
+
+  reporter: [
+    ['html', { open: 'never' }],
+    ['junit', { outputFile: 'results/junit.xml' }],
+    ['blob'],
+  ],
+
+  use: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    actionTimeout: 10_000,
+    navigationTimeout: 15_000,
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+  },
+
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 7'] },
+    },
+  ],
+});`,
+        annotations: [
+          { lineOrPattern: 'retries', explanation: '2 retries in CI; 0 locally.' },
+          { lineOrPattern: 'projects', explanation: 'Matrix cross-browser and mobile device definitions.' }
+        ]
+      },
+      bestPractices: [
+        'Use dotenv to load environment variables dynamically (.env.staging, .env.prod)',
+        'Configure retries to 0 for local runs and 2 for CI pipelines',
+        'Set up multiple reporters (HTML for developers, JUnit for CI, Blob for sharding)'
+      ],
+      antiPatterns: [
+        'Hardcoding environment URLs in test spec files',
+        'Setting actionTimeout higher than overall test timeout',
+        'Committing sensitive production API secrets into version control'
+      ],
+      interviewQnA: {
+        question: 'Explain Config Management in Playwright and how to structure it for enterprise teams.',
+        answer: 'Enterprise config management in playwright.config.ts centralizes environment switching using dotenv, establishes a strict timeout hierarchy (Test: 30s, Action: 10s, Expect: 7s, Nav: 15s), manages cross-browser and mobile device project matrices, configures intelligent retry/trace retention strategies (retries: 2 in CI, 0 locally; trace: on-first-retry), and outputs multiple reporting formats (HTML, JUnit, Blob).'
+      }
+    };
+  }
+
+  // 6. Test Fixtures vs Worker Fixtures vs Custom Fixtures
+  if (lessonId === 'pw-fixtures-architecture') {
+    return {
+      title: '6. Test Fixtures vs Worker Fixtures vs Custom Fixtures',
+      category,
+      tagline: 'Master Fixture Scopes, Resource Pooling, and Dependency Injection',
+      overview: 'Playwright Fixtures provide powerful Dependency Injection (DI) that replaces old-fashioned before/after hooks and singleton managers. Fixtures encapsulate setup, teardown, and resource lifecycle, making tests 100% modular and independent. Playwright supports two scopes: Test-scoped fixtures (instantiated per test) and Worker-scoped fixtures (instantiated once per worker process).',
+      whyItMattersForManualQA: 'In manual testing, you need preconditions: a logged-in session, a database record, an open browser. If you write code with standard @BeforeMethod or beforeEach, every test must inherit that setup whether it needs it or not. With Playwright Fixtures, each test requests exactly what it needs in its arguments (e.g. ({ loginPage, dbClient })), and Playwright dynamically sets up and cleans up only those resources!',
+      architectureUnderTheHood: {
+        title: 'Test-Scoped vs Worker-Scoped Fixture Hierarchy',
+        flowOrMechanism: 'Worker Process Starts => Worker Fixture Created (e.g. DB Pool) => Test 1 Runs (Test Fixture: Page A created => Teardown Page A) => Test 2 Runs (Test Fixture: Page B created => Teardown Page B) => Worker Shuts Down => Worker Teardown (Close DB Pool)',
+        keyTakeaway: 'Difference between Test, Worker, and Custom Fixtures: Test fixtures run fresh per test (page, context). Worker fixtures run once per worker process for heavy resources (DB connection pool, Docker container). Custom fixtures extend base test using test.extend() to inject Page Objects and services.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Defining Fixture Scopes in pytest (Python)',
+          badge: 'pytest Fixtures',
+          summary: 'Use scope="function" for tests and scope="session" or "module" for workers.',
+          explanation: 'Code before yield is setup; code after yield is automatic teardown.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Fixture Scopes with Teardown',
+            code: `import pytest
+
+@pytest.fixture(scope="session")
+def db_connection():
+    # Worker/Session scope: created ONCE
+    conn = connect_database()
+    yield conn
+    conn.close() # Automatic teardown
+
+@pytest.fixture(scope="function")
+def authenticated_page(page, db_connection):
+    # Test scope: created fresh for every test
+    page.goto("/login")
+    page.get_by_label("User").fill("admin")
+    page.get_by_role("button", name="Log In").click()
+    yield page`
+          },
+          proTip: 'Use autouse=True sparingly to avoid unnecessary setup overhead.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Creating Custom Test Fixtures (TypeScript)',
+          badge: 'base.extend',
+          summary: 'Extend Playwright base test with custom Page Objects.',
+          explanation: 'Define TypeScript interface and implement setup/teardown with await use().',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Custom Page Object Fixture Extension',
+            code: `import { test as base, expect } from '@playwright/test';
+import { LoginPage } from './pages/LoginPage';
+
+// Define fixture types
+type MyFixtures = {
+  loginPage: LoginPage;
+};
+
+// Extend base test
+export const test = base.extend<MyFixtures>({
+  loginPage: async ({ page }, use) => {
+    const loginPage = new LoginPage(page);
+    await use(loginPage); // Pass to test
+    // Teardown code runs automatically after test!
+  },
+});`
+          },
+          proTip: 'Tests declare ({ loginPage }) and Playwright injects it with zero manual instantiation.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Implementing Worker-Scoped Fixtures (TypeScript)',
+          badge: 'Worker Scope',
+          summary: 'Use worker scope for heavy resources shared across tests in that worker.',
+          explanation: 'Set { scope: "worker" } in fixture definition for database pools or mock servers.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Worker-Scoped Database Fixture',
+            code: `type WorkerFixtures = {
+  dbPool: DatabasePool;
+};
+
+export const test = base.extend<{}, WorkerFixtures>({
+  dbPool: [async ({}, use) => {
+    // Initialized ONCE per worker process!
+    const pool = await createDatabasePool();
+    await use(pool);
+    // Disconnect when worker shuts down
+    await pool.disconnect();
+  }, { scope: 'worker' }],
+});`
+          },
+          proTip: 'Never store mutable per-test state in worker-scoped fixtures.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Connecting to database client before morning test run',
+          automatedApproach: 'Worker-scoped dbPool fixture initialized once per worker thread',
+          whyItMatters: 'Saves 5-10 seconds per test by reusing heavy connections without sacrificing test isolation.'
+        },
+        {
+          manualAction: 'Manually instantiating Page Objects with new LoginPage(driver)',
+          automatedApproach: 'Dependency injection via test("name", async ({ loginPage }) => ...)',
+          whyItMatters: 'Completely eliminates boilerplate constructor calls from test specifications.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Fixture Architecture' : 'Production Implementation (TypeScript): Enterprise Custom Fixtures',
+        description: 'Complete enterprise test extension combining test-scoped Page Objects and worker-scoped API/DB clients.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `import pytest
+from playwright.sync_api import Page
+
+class DashboardPage:
+    def __init__(self, page: Page):
+        self.page = page
+        self.header = page.get_by_role("heading", level=1)
+
+    def navigate(self):
+        self.page.goto("/dashboard")
+
+@pytest.fixture(scope="session")
+def api_token():
+    # Worker/Session scope: fetched once
+    token = fetch_jwt_token()
+    yield token
+
+@pytest.fixture(scope="function")
+def dashboard_page(page: Page, api_token) -> DashboardPage:
+    # Test scope: fresh page with injected auth token
+    page.set_extra_http_headers({"Authorization": f"Bearer {api_token}"})
+    dash = DashboardPage(page)
+    dash.navigate()
+    yield dash` : `import { test as base, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
+import { DashboardPage } from '../pages/DashboardPage';
+
+// 1. Declare Test-Scoped Fixtures
+type TestFixtures = {
+  loginPage: LoginPage;
+  dashboardPage: DashboardPage;
+  authenticatedUser: { id: string; email: string };
+};
+
+// 2. Declare Worker-Scoped Fixtures
+type WorkerFixtures = {
+  dbClient: { query: (sql: string) => Promise<any>; close: () => Promise<void> };
+};
+
+// 3. Extend Base Test with Both Scopes
+export const test = base.extend<TestFixtures, WorkerFixtures>({
+  // Worker-scoped fixture: instantiated once per worker process
+  dbClient: [async ({}, use) => {
+    const client = {
+      query: async (sql: string) => ({ rows: [] }),
+      close: async () => {},
+    };
+    await use(client);
+    await client.close();
+  }, { scope: 'worker' }],
+
+  // Test-scoped fixture: Page Object Injection
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
+  },
+
+  dashboardPage: async ({ page }, use) => {
+    await use(new DashboardPage(page));
+  },
+
+  // Test-scoped fixture with automatic teardown
+  authenticatedUser: async ({ page }, use) => {
+    const user = { id: 'usr_8492', email: 'sdet_lead@qa.io' };
+    await page.context().addCookies([{
+      name: 'auth_token',
+      value: 'jwt_mock_token_123',
+      domain: 'localhost',
+      path: '/',
+    }]);
+    await use(user); // Execute test
+    // Teardown: cookies cleared automatically on context teardown
+  },
+});
+
+export { expect } from '@playwright/test';`,
+        annotations: [
+          { lineOrPattern: 'base.extend', explanation: 'Creates typed custom fixture hierarchy.' },
+          { lineOrPattern: 'scope: "worker"', explanation: 'Configures worker-level singleton resource.' }
+        ]
+      },
+      bestPractices: [
+        'Use test-scoped fixtures for Page Objects and UI state',
+        'Use worker-scoped fixtures for database pools, API tokens, and Docker services',
+        'Use code after await use() for automatic, guaranteed teardown cleanup'
+      ],
+      antiPatterns: [
+        'Mutating worker-scoped fixture state inside individual tests (causes parallel test pollution)',
+        'Copy-pasting new PageObject(page) into every test file instead of using fixtures',
+        'Using beforeAll/afterAll when worker fixtures provide cleaner typed lifecycle management'
+      ],
+      interviewQnA: {
+        question: 'Explain Test Fixtures vs Worker Fixtures vs Custom Fixtures in Playwright.',
+        answer: 'Test Fixtures (scope: "test") are instantiated fresh for every single test and destroyed immediately after, guaranteeing complete isolation (e.g. page, context). Worker Fixtures (scope: "worker") are instantiated once per worker process and shared across all tests running in that worker thread, ideal for expensive resources like database connection pools or API clients. Custom Fixtures extend the base test via test.extend() to bundle Page Objects, authenticated sessions, or test data, replacing brittle before/after hooks with clean dependency injection.'
+      }
+    };
+  }
+
+  // 7. Authentication & storageState Implementation
+  if (lessonId === 'pw-storagestate-auth') {
+    return {
+      title: '7. Authentication & storageState Implementation',
+      category,
+      tagline: 'Skip Redundant UI Logins Across Hundreds of Tests for 10x CI Speedup',
+      overview: 'In enterprise web applications, 90% of test cases require an authenticated user. Performing UI login (entering username, password, clicking submit, waiting for 2FA) in every test adds 15 to 30 minutes to CI regression runs and creates a massive single point of flakiness. Playwright solves this with storageState: saving authenticated cookies and localStorage to a JSON file once, and booting regression tests directly into authenticated state in under 50ms.',
+      whyItMattersForManualQA: 'When you test manually, you log in once in the morning, and for the rest of the day, you navigate directly to pages because your browser remembers your session cookies. In bad automation, the script logs in 500 times a day! storageState makes automated tests work like a human: log in once, save the session, and reuse it everywhere.',
+      architectureUnderTheHood: {
+        title: 'storageState Architecture & Setup Project Pipeline',
+        flowOrMechanism: 'auth.setup.ts runs once => UI/API Login => Capture Cookies & LocalStorage => Save to .auth/user.json => Regression Test Projects load storageState: ".auth/user.json" => Boots directly to /dashboard in 50ms',
+        keyTakeaway: 'How to implement storageState in framework code: Define an auth.setup.ts project in playwright.config.ts as a dependency of your main test projects. Save distinct storage states for different roles (admin.json, customer.json).'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Saving Storage State in Python',
+          badge: 'auth.json',
+          summary: 'Authenticate once and save context storage state to JSON.',
+          explanation: 'Call context.storage_state(path="auth.json") after successful login.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Storage State Generation',
+            code: `from playwright.sync_api import sync_playwright
+
+def generate_auth_state():
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        context = browser.new_context()
+        page = context.new_page()
+
+        page.goto("http://localhost:3000/login")
+        page.get_by_label("Email").fill("admin@qa.io")
+        page.get_by_label("Password").fill("Secret123!")
+        page.get_by_role("button", name="Log In").click()
+        page.wait_for_url("**/dashboard")
+
+        # Save cookies & localStorage
+        context.storage_state(path=".auth/admin.json")
+        browser.close()`
+          },
+          proTip: 'Load via browser.new_context(storage_state=".auth/admin.json") in tests.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Creating the Auth Setup File (TypeScript)',
+          badge: 'auth.setup.ts',
+          summary: 'Write a dedicated setup test that performs authentication.',
+          explanation: 'Execute login steps and save storageState to .auth/user.json.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'auth.setup.ts Implementation',
+            code: `import { test as setup, expect } from '@playwright/test';
+
+const authFile = '.auth/user.json';
+
+setup('authenticate user persona', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('sdet@qa.io');
+  await page.getByLabel('Password').fill('SuperSecret123!');
+  await page.getByRole('button', { name: 'Log In' }).click();
+
+  // Wait for redirect to confirm auth succeeded
+  await page.waitForURL('/dashboard');
+  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+
+  // Persist session cookies and localStorage to disk
+  await page.context().storageState({ path: authFile });
+});`
+          },
+          proTip: 'Add .auth to your .gitignore so session tokens are never committed to Git.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Configuring Dependencies in playwright.config.ts (TypeScript)',
+          badge: 'Project Dependencies',
+          summary: 'Configure the setup project as a dependency for browser projects.',
+          explanation: 'Playwright guarantees setup runs first before dependent projects start.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'playwright.config.ts Setup Project Pipeline',
+            code: `import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  projects: [
+    // 1. Setup project executes first
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    // 2. Main test projects depend on setup and consume storageState
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.auth/user.json', // Reuses saved session!
+      },
+      dependencies: ['setup'],
+    },
+  ],
+});`
+          },
+          proTip: 'Tests in the chromium project boot directly in logged-in state without touching /login!'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Logging in once in the morning and keeping browser open all day',
+          automatedApproach: 'context.storageState({ path: ".auth/user.json" }) in setup project',
+          whyItMatters: 'Reduces test execution time by 80% and eliminates login form flakiness across 500 tests.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): storageState Engine' : 'Production Implementation (TypeScript): Multi-Role storageState Pipeline',
+        description: 'Complete multi-role authentication setup supporting Admin, Manager, and Customer roles.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Browser, Page, expect
+
+def test_admin_settings_with_storage_state(browser: Browser):
+    # Reuses saved storage state directly
+    context = browser.new_context(storage_state=".auth/admin.json")
+    page = context.new_page()
+
+    # Directly accesses protected admin settings - zero login steps!
+    page.goto("http://localhost:3000/admin/settings")
+    expect(page.get_by_role("heading", name="Admin Controls")).to_be_visible()
+    context.close()` : `// src/tests/auth.setup.ts
+import { test as setup, expect } from '@playwright/test';
+
+const roles = [
+  { role: 'admin', email: 'admin@company.io', file: '.auth/admin.json' },
+  { role: 'customer', email: 'cust@company.io', file: '.auth/customer.json' },
+];
+
+for (const { role, email, file } of roles) {
+  setup(\`authenticate \${role}\`, async ({ page }) => {
+    await page.goto('/login');
+    await page.getByLabel('Email').fill(email);
+    await page.getByLabel('Password').fill(process.env.TEST_PASSWORD || 'Secret123!');
+    await page.getByRole('button', { name: 'Log In' }).click();
+
+    await page.waitForURL('**/dashboard');
+    await page.context().storageState({ path: file });
+  });
+}
+
+// Consuming in test specs:
+import { test } from '@playwright/test';
+
+test.describe('Admin Privilege Tests', () => {
+  // Use admin storage state for all tests in this block
+  test.use({ storageState: '.auth/admin.json' });
+
+  test('can access billing controls', async ({ page }) => {
+    await page.goto('/admin/billing');
+    await expect(page.getByRole('heading', { name: 'Billing' })).toBeVisible();
+  });
+});`,
+        annotations: [
+          { lineOrPattern: 'storageState: file', explanation: 'Serializes cookies & storage to disk.' },
+          { lineOrPattern: 'test.use', explanation: 'Applies role-specific auth to test block.' }
+        ]
+      },
+      bestPractices: [
+        'Use a setup project in playwright.config.ts to generate storageState before test runs',
+        'Maintain separate storageState files for distinct personas (admin.json, user.json)',
+        'Add .auth/ to .gitignore to avoid committing sensitive test credentials'
+      ],
+      antiPatterns: [
+        'Running UI login steps in beforeEach for every test file',
+        'Hardcoding passwords in plain text inside setup files',
+        'Not waiting for navigation redirect before saving storageState'
+      ],
+      interviewQnA: {
+        question: 'How do you implement storageState in an enterprise Playwright automation framework?',
+        answer: 'We configure an auth.setup.ts file that runs as a setup project dependency in playwright.config.ts. It logs in once via UI or direct API, confirms redirection, and executes await page.context().storageState({ path: ".auth/user.json" }) to serialize cookies and localStorage. Dependent test projects specify use: { storageState: ".auth/user.json" }, allowing hundreds of regression tests to boot directly into authenticated screens in milliseconds with zero login UI steps.'
+      }
+    };
+  }
+
+  // 8. Designing an Enterprise Playwright Framework from Scratch
+  if (lessonId === 'pw-framework-from-scratch') {
+    return {
+      title: '8. Designing an Enterprise Playwright Framework from Scratch',
+      category,
+      tagline: 'Architecting Clean, Maintainable, and Scalable Test Repositories',
+      overview: 'Designing an enterprise-grade Playwright framework from scratch requires establishing clear separation of concerns across Page Objects, Custom Fixtures, Test Data Models, Environment Configs, and CI/CD Pipelines. A well-architected framework supports dozens of SDETs contributing in parallel without merge conflicts or code duplication.',
+      whyItMattersForManualQA: 'Moving from manual testing to Test Architect means you are no longer just writing scripts; you are designing the software platform that the entire QA organization relies on. A clean framework ensures tests are readable like business English and rock-solid in CI execution.',
+      architectureUnderTheHood: {
+        title: 'Enterprise Framework Layered Architecture',
+        flowOrMechanism: 'Test Specs (src/tests/) => Custom Fixtures (src/fixtures/test.ts) => Page Objects (src/pages/ extending BasePage) => Test Data Factories (src/data/) => playwright.config.ts => CI Runner (GitHub Actions)',
+        keyTakeaway: 'The golden rule of framework design: Test specs contain assertions and business steps; Page Objects contain locators and actions; Fixtures handle setup/teardown and dependency injection.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Framework Directory Layout in Python',
+          badge: 'Architecture',
+          summary: 'Structure pages, tests, and conftest.py cleanly.',
+          explanation: 'pages/ contains Page Classes, tests/ contains pytest files, conftest.py handles fixtures.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python SDET Repository Layout',
+            code: `# Directory Structure:
+# tests/
+#   conftest.py          <- Global fixtures and browser config
+#   test_checkout.py     <- Test specifications
+# pages/
+#   base_page.py         <- Generic wait & click wrappers
+#   login_page.py        <- Page classes
+# data/
+#   user_factory.py      <- Test data generators`
+          },
+          proTip: 'Use type hints in Python Page Objects for IDE autocompletion.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Enterprise Directory Blueprint (TypeScript)',
+          badge: 'Folder Structure',
+          summary: 'Establish strict architectural boundaries across directories.',
+          explanation: 'src/pages, src/fixtures, src/tests, src/data, src/utils, and config.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Enterprise Repository Layout',
+            code: `// Repository Structure:
+// ├── src/
+// │   ├── pages/             <- Page Objects extending BasePage
+// │   │   ├── BasePage.ts
+// │   │   ├── LoginPage.ts
+// │   │   └── CheckoutPage.ts
+// │   ├── fixtures/          <- Custom test fixture extensions
+// │   │   └── test.ts
+// │   ├── data/              <- Typed interfaces and factories
+// │   │   └── userModels.ts
+// │   ├── utils/             <- API clients, DB helpers, loggers
+// │   │   └── apiHelper.ts
+// │   └── tests/             <- Expressive test specs
+// │       ├── auth.setup.ts
+// │       └── checkout.spec.ts
+// ├── playwright.config.ts   <- Centralized runner configuration
+// └── .github/workflows/ci.yml`
+          },
+          proTip: 'Use tsconfig.json path aliases (@pages/*, @fixtures/*) for clean import statements.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Following a test management spreadsheet with separated columns for steps and expected results',
+          automatedApproach: 'Layered architecture: Page Objects store steps; Test specs assert expected results',
+          whyItMatters: 'If the UI changes, you update the Page Object in one place without modifying 50 test files.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): BasePage Pattern' : 'Production Implementation (TypeScript): BasePage & Architecture',
+        description: 'Complete production BasePage with resilient action wrappers and logging.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Page, Locator, expect
+
+class BasePage:
+    def __init__(self, page: Page):
+        self.page = page
+
+    def navigate_to(self, url_path: str):
+        self.page.goto(url_path)
+
+    def click_and_wait(self, locator: Locator):
+        locator.scroll_into_view_if_needed()
+        locator.click()
+
+    def assert_page_title(self, expected_title: str):
+        expect(self.page).to_have_title(expected_title)` : `// src/pages/BasePage.ts
+import { Page, Locator, expect } from '@playwright/test';
+
+export abstract class BasePage {
+  constructor(protected readonly page: Page) {}
+
+  async navigate(path: string): Promise<void> {
+    await this.page.goto(path);
+  }
+
+  async waitForPageLoaded(): Promise<void> {
+    await this.page.waitForLoadState('domcontentloaded');
+  }
+
+  async clickElement(locator: Locator, description?: string): Promise<void> {
+    await locator.scrollIntoViewIfNeeded();
+    await locator.click();
+  }
+
+  async assertToastMessage(message: string): Promise<void> {
+    const toast = this.page.getByRole('status');
+    await expect(toast).toContainText(message);
+  }
+}
+
+// src/pages/LoginPage.ts
+export class LoginPage extends BasePage {
+  readonly emailInput = this.page.getByLabel('Email');
+  readonly passwordInput = this.page.getByLabel('Password');
+  readonly submitButton = this.page.getByRole('button', { name: 'Log In' });
+
+  async login(email: string, pass: string): Promise<void> {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(pass);
+    await this.clickElement(this.submitButton, 'Submit Login');
+  }
+}`,
+        annotations: [
+          { lineOrPattern: 'abstract class BasePage', explanation: 'Shared base class for all page objects.' },
+          { lineOrPattern: 'scrollIntoViewIfNeeded', explanation: 'Ensures element visibility before action.' }
+        ]
+      },
+      bestPractices: [
+        'Enforce Page Object Model with dependency injection via custom fixtures',
+        'Keep locators private or readonly in Page Objects; never expose raw locators to tests',
+        'Store assertions in test spec files, not inside Page Object methods'
+      ],
+      antiPatterns: [
+        'Creating massive monolithic Page Objects with 1,000 lines of code',
+        'Asserting inside Page Objects (reduces method reusability across negative tests)',
+        'Hardcoding test data strings inside Page Classes'
+      ],
+      interviewQnA: {
+        question: 'How do you design a scalable Playwright automation framework from scratch?',
+        answer: 'We architect the framework in layers: 1. BasePage encapsulates common navigation, logging, and auto-wait wrappers. 2. Page Objects extend BasePage with readonly user-facing locators (getByRole) and action methods. 3. Custom Fixtures (test.extend) provide dependency injection so tests receive pages without manual new PageObject() calls. 4. Test Data Factories generate strongly-typed dynamic models using TypeScript interfaces. 5. playwright.config.ts configures environment switching, timeouts, storageState, and multi-machine sharding.'
+      }
+    };
+  }
+
+  // 9. API Mocking in Framework Code (TypeScript actual code)
+  if (lessonId === 'pw-api-mocking-framework' || lessonId === 'pw-network-mocking') {
+    return {
+      title: '9. API Mocking & Network Interception in Framework Code',
+      category,
+      tagline: 'Simulate Microservice Failures, Latency, and Edge Payloads in TypeScript',
+      overview: 'End-to-End tests often suffer flakiness due to unstable external dependencies: third-party payment gateways (Stripe, PayPal), SMS providers, or rate-limited microservices. Playwright provides native protocol-level network interception via page.route(), allowing frameworks to mock responses, inject artificial latency, simulate HTTP 500 errors, or modify live payloads without running proxy servers.',
+      whyItMattersForManualQA: 'In manual testing, how do you test what happens when your banking app loses connection mid-transaction or Stripe returns HTTP 500? You cannot easily bring down production payment gateways. With Playwright network mocking, you can intercept that exact API call in code and return HTTP 500 in 1 line of code, verifying that the UI displays the correct user-friendly error toast.',
+      architectureUnderTheHood: {
+        title: 'CDP Network Routing Architecture',
+        flowOrMechanism: 'Browser Page makes fetch/XHR => Playwright CDP WebSocket Interceptor => page.route() handler matches URL pattern => route.fulfill({ status: 500, json: mockError }) => Browser UI receives mock without network call leaving machine',
+        keyTakeaway: 'How to implement API mocking in actual framework code: Build a reusable NetworkMockManager that provides methods like mockServerError(url), mockDelayedResponse(url, ms), and mockSuccessPayload(url, json).'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Mocking APIs with page.route in Python',
+          badge: 'page.route',
+          summary: 'Intercept endpoint and fulfill with custom JSON.',
+          explanation: 'Use route.fulfill(status=200, json={...}) to mock backend responses.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python API Mocking',
+            code: `from playwright.sync_api import Page, expect
+
+def test_mock_payment_failure(page: Page):
+    # Intercept payment endpoint
+    page.route("**/api/payments", lambda route: route.fulfill(
+        status=500,
+        content_type="application/json",
+        body='{"error": "Card declined by issuing bank"}'
+    ))
+
+    page.goto("http://localhost:3000/checkout")
+    page.get_by_role("button", name="Pay Now").click()
+    expect(page.get_by_role("alert")).to_contain_text("Card declined")`
+          },
+          proTip: 'Unroute with page.unroute() if subsequent tests in the same context need live data.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Architecting a NetworkMockManager in TypeScript',
+          badge: 'TypeScript Class',
+          summary: 'Encapsulate page.route logic into a reusable framework utility.',
+          explanation: 'Provide clean methods for simulating 500 errors, rate limits, and slow networks.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'NetworkMockManager Class Blueprint',
+            code: `import { Page, Route } from '@playwright/test';
+
+export class NetworkMockManager {
+  constructor(private page: Page) {}
+
+  async mockServerError(urlPattern: string, errorMessage = 'Internal Server Error'): Promise<void> {
+    await this.page.route(urlPattern, (route: Route) => {
+      route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: errorMessage, code: 'ERR_500' }),
+      });
+    });
+  }
+
+  async mockDelayedResponse(urlPattern: string, delayMs: number, payload: object): Promise<void> {
+    await this.page.route(urlPattern, async (route: Route) => {
+      await new Promise(res => setTimeout(res, delayMs));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(payload),
+      });
+    });
+  }
+}`
+          },
+          proTip: 'Use wildcards (**/api/v1/orders/*) to match dynamic query params or IDs.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Asking backend engineer to temporarily deploy a broken build to test error dialogs',
+          automatedApproach: 'await mockManager.mockServerError("**/api/checkout")',
+          whyItMatters: 'Simulates catastrophic failures in milliseconds without touching backend servers.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): API Mocking' : 'Production Implementation (TypeScript): NetworkMockManager',
+        description: 'Complete TypeScript NetworkMockManager implementation with HAR replay, error injection, and payload mutation.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Page, Route, expect
+
+def test_api_mutation_and_delay(page: Page):
+    def handle_route(route: Route):
+        # Fetch real response, mutate specific field, and return
+        response = route.fetch()
+        data = response.json()
+        data["balance"] = 999999.00 # Mutate account balance
+        route.fulfill(response=response, json=data)
+
+    page.route("**/api/user/balance", handle_route)
+    page.goto("http://localhost:3000/account")
+    expect(page.get_by_text("$999,999.00")).to_be_visible()` : `import { Page, Route } from '@playwright/test';
+
+/**
+ * Enterprise Network Mock Manager for Playwright Automation.
+ * Handles API virtualization, latency simulation, and failure injection.
+ */
+export class NetworkMockManager {
+  constructor(private page: Page) {}
+
+  /**
+   * Simulates backend HTTP 500 failure.
+   */
+  async mockServerError(urlPattern: string, message = 'Internal Server Error'): Promise<void> {
+    await this.page.route(urlPattern, route => {
+      route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: message, timestamp: new Date().toISOString() }),
+      });
+    });
+  }
+
+  /**
+   * Simulates high network latency to verify spinners and skeleton loaders.
+   */
+  async mockLatency(urlPattern: string, delayMs = 3000): Promise<void> {
+    await this.page.route(urlPattern, async route => {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      await route.continue(); // Continues to real backend after delay
+    });
+  }
+
+  /**
+   * Intercepts live response and mutates payload dynamically.
+   */
+  async mutateApiResponse<T extends object>(urlPattern: string, mutator: (data: T) => T): Promise<void> {
+    await this.page.route(urlPattern, async route => {
+      const response = await route.fetch();
+      const json = await response.json();
+      const modified = mutator(json);
+      await route.fulfill({
+        response,
+        json: modified,
+      });
+    });
+  }
+
+  /**
+   * Clears all active network route interceptors.
+   */
+  async clearAllMocks(): Promise<void> {
+    await this.page.unrouteAll();
+  }
+}
+
+// Enterprise Test Specification using NetworkMockManager:
+import { test, expect } from '@playwright/test';
+
+test('verify graceful degradation on payment gateway 500', async ({ page }) => {
+  const mockManager = new NetworkMockManager(page);
+
+  // Inject 500 error on payment endpoint
+  await mockManager.mockServerError('**/api/v1/payments/process', 'Gateway Unavailable');
+
+  await page.goto('/checkout');
+  await page.getByRole('button', { name: 'Submit Payment' }).click();
+
+  // Verify UI displays friendly error toast
+  const alert = page.getByRole('alert');
+  await expect(alert).toBeVisible();
+  await expect(alert).toContainText('Gateway Unavailable');
+});`,
+        annotations: [
+          { lineOrPattern: 'page.route', explanation: 'CDP protocol interception.' },
+          { lineOrPattern: 'route.fulfill', explanation: 'Fulfills with virtualized response.' }
+        ]
+      },
+      bestPractices: [
+        'Use network mocking to test edge cases: 400, 401, 404, 500, network timeouts',
+        'Encapsulate route handling in a reusable NetworkMockManager class',
+        'Call page.unrouteAll() or rely on context teardown to avoid mock bleeding'
+      ],
+      antiPatterns: [
+        'Mocking every single backend API in end-to-end tests (destroys integration testing value)',
+        'Hardcoding mock JSON blobs in test files instead of fixture factories',
+        'Not waiting for mocked responses before performing UI assertions'
+      ],
+      interviewQnA: {
+        question: 'How would you implement API Mocking in an actual Playwright framework? Share the actual TypeScript approach.',
+        answer: 'We implement a reusable NetworkMockManager class that wraps page.route(). It provides typed methods like mockServerError(urlPattern, message) which calls route.fulfill({ status: 500, json: errorBody }), mockLatency(urlPattern, delayMs) which pauses execution before route.continue(), and mutateApiResponse(urlPattern, mutator) which fetches the real backend response via route.fetch(), mutates specific fields, and fulfills with the modified payload. This allows tests to simulate payment gateway failures and slow connections deterministically.'
+      }
+    };
+  }
+
+  // 10. Designing Independent Tests Using Fixtures and APIs
+  if (lessonId === 'pw-independent-tests-apis') {
+    return {
+      title: '10. Designing 100% Independent Tests Using Fixtures and APIs',
+      category,
+      tagline: 'Eliminate Test Chaining and Flaky Cascades with Hybrid API Preconditions',
+      overview: 'The golden rule of enterprise test automation is: Tests must be 100% independent. Test B must never rely on Test A creating data, and Test C must never fail because Test B crashed. Chained tests cannot run in parallel and produce noisy false alarms. In Playwright, the ideal SDET pattern is the Hybrid API-UI pattern: use fast REST APIs (via request fixture) for all preconditions and teardowns, and use the UI strictly to test the single feature under test.',
+      whyItMattersForManualQA: 'In manual test cases, QA spreadsheets often say: "Precondition: User exists and has item in cart". If you automate like a manual tester by navigating through 10 screens to register, browse, and add to cart before testing the checkout coupon, your test takes 45 seconds and has 10 points of failure. Using API preconditions creates the cart in 50ms, allowing your test to focus 100% on the coupon!',
+      architectureUnderTheHood: {
+        title: 'Chained Fragile Tests vs Independent API-Seeded Tests',
+        flowOrMechanism: 'Anti-pattern: Test 1 (UI Register) => Test 2 (UI Cart) => Test 3 (UI Checkout) [If Test 1 fails, all 3 fail!] | Modern SDET: Test 1 (API Seed => UI Action => API Cleanup) [100% Independent, executes in parallel on any worker]',
+        keyTakeaway: 'How to design independent tests using fixtures and APIs: Create a custom fixture that calls request.post() to create test data, passes the ID to the test, and executes request.delete() in the fixture teardown.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Fast Preconditions via API in pytest (Python)',
+          badge: 'pytest Fixture',
+          summary: 'Use requests or Playwright APIRequestContext in fixtures.',
+          explanation: 'Seed data via API, run UI test, and delete in fixture teardown.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python API Precondition Fixture',
+            code: `import pytest
+from playwright.sync_api import APIRequestContext
+
+@pytest.fixture
+def created_order(playwright):
+    # Setup via API in 50ms
+    api = playwright.request.new_context(base_url="http://localhost:3000")
+    res = api.post("/api/orders", data={"item": "Pro Laptop", "qty": 1})
+    order_id = res.json()["id"]
+
+    yield order_id # Pass order_id to UI test
+
+    # Teardown: delete via API
+    api.delete(f"/api/orders/{order_id}")
+    api.dispose()`
+          },
+          proTip: 'API teardowns guarantee zero database bloat in test environments.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'The Custom Fixture with API Setup & Teardown (TypeScript)',
+          badge: 'Hybrid Pattern',
+          summary: 'Inject the built-in { request } fixture into your custom fixture.',
+          explanation: 'Call request.post to create data, yield to the UI test, and call request.delete in teardown.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Custom Fixture with API Lifecycle',
+            code: `import { test as base, expect } from '@playwright/test';
+
+type OrderFixtures = {
+  testOrderId: string;
+};
+
+export const test = base.extend<OrderFixtures>({
+  testOrderId: async ({ request }, use) => {
+    // 1. Precondition via API in 40ms
+    const res = await request.post('/api/orders', {
+      data: { sku: 'PRO-100', quantity: 1, price: 99.00 },
+    });
+    const { id } = await res.json();
+
+    // 2. Pass ID to UI test
+    await use(id);
+
+    // 3. Teardown via API (Always runs even if test fails!)
+    await request.delete(\`/api/orders/\${id}\`);
+  },
+});`
+          },
+          proTip: 'The UI test navigates directly to /orders/${testOrderId} with zero cart setup clicks!'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Clicking through 5 screens to create a customer account before testing settings',
+          automatedApproach: 'request.post("/api/customers") in fixture setup',
+          whyItMatters: 'Reduces test execution time from 40 seconds to 3 seconds and eliminates prerequisite UI flakiness.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Independent Test Suite' : 'Production Implementation (TypeScript): Independent Test Suite',
+        description: 'Complete independent test suite using API fixtures for data generation and cleanup.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `from playwright.sync_api import Page, expect
+
+def test_refund_processing(page: Page, created_order: str):
+    # Directly opens the order created by the API fixture
+    page.goto(f"http://localhost:3000/orders/{created_order}")
+    page.get_by_role("button", name="Request Refund").click()
+    page.get_by_role("button", name="Confirm").click()
+
+    expect(page.get_by_role("status")).to_have_text("Refund Processed")` : `import { test, expect } from '../fixtures/orderFixture';
+
+test.describe('Order Management - Independent Suite', () => {
+  test('cancel order updates UI state immediately', async ({ page, testOrderId }) => {
+    // Navigates directly to the pre-seeded order
+    await page.goto(\`/orders/\${testOrderId}\`);
+
+    await page.getByRole('button', { name: 'Cancel Order' }).click();
+    await page.getByRole('button', { name: 'Confirm Cancellation' }).click();
+
+    // Verify UI reflects cancellation
+    await expect(page.getByText('Status: Cancelled')).toBeVisible();
+  });
+
+  test('download invoice displays correct order ID', async ({ page, testOrderId }) => {
+    // Completely independent test running in parallel on another worker!
+    await page.goto(\`/orders/\${testOrderId}\`);
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download PDF Invoice' }).click();
+    const download = await downloadPromise;
+
+    expect(download.suggestedFilename()).toContain(testOrderId);
+  });
+});`,
+        annotations: [
+          { lineOrPattern: 'testOrderId', explanation: 'Injected via API fixture; 100% independent.' },
+          { lineOrPattern: 'waitForEvent', explanation: 'Asynchronous event handler for file download.' }
+        ]
+      },
+      bestPractices: [
+        'Use UI only for the feature under test; use REST APIs for all setup and teardown',
+        'Always clean up created test entities in fixture teardown to keep environments clean',
+        'Design tests so they can execute in any random order or in parallel without breaking'
+      ],
+      antiPatterns: [
+        'Chaining tests where Test 2 depends on state created in Test 1',
+        'Leaving dirty orphan records in staging databases after failed tests',
+        'Navigating through 10 UI pages just to prepare test data'
+      ],
+      interviewQnA: {
+        question: 'How do you design independent tests using fixtures and APIs in Playwright?',
+        answer: 'We follow the Hybrid API-UI testing pattern: tests must never depend on each other. We extend Playwright base test with custom fixtures that inject the request API client. In the fixture setup, we call backend REST endpoints (e.g. request.post) to create the test user, order, or entity in 40ms. We pass the generated ID to the test via use(id). The test navigates directly to the target UI screen. After the test completes, the fixture code resumes and executes request.delete(id), guaranteeing deterministic cleanup even if the test fails.'
+      }
+    };
+  }
+
+  // 11. Managing Test Data in High-Concurrency Parallel Execution
+  if (lessonId === 'pw-parallel-test-data') {
+    return {
+      title: '11. Managing Test Data in High-Concurrency Parallel Execution',
+      category,
+      tagline: 'Eliminate Race Conditions, Deadlocks, and Collisions Across 50 Workers',
+      overview: 'The number one cause of failures when transitioning automated suites from sequential to parallel execution is Shared Test Data Collisions. When 10 workers simultaneously attempt to log in with "testuser@qa.com" or modify customer record #45, tests experience database deadlocks, race conditions, and random intermittent failures.',
+      whyItMattersForManualQA: 'In manual testing, if two testers use the same user account at the same time, they log each other out and overwrite each others form data. In automated testing with 16 parallel workers, this happens thousands of times a minute! You must isolate data per worker or dynamically generate unique data for every single test.',
+      architectureUnderTheHood: {
+        title: 'Parallel Worker Isolation Architecture',
+        flowOrMechanism: 'Worker 0 (testInfo.workerIndex: 0 => user_w0_uuid@test.com) | Worker 1 (testInfo.workerIndex: 1 => user_w1_uuid@test.com) | Worker 2 (testInfo.workerIndex: 2 => user_w2_uuid@test.com) => Zero DB Collisions',
+        keyTakeaway: 'How to handle test data in parallel execution: 1. Worker partitioning with testInfo.workerIndex. 2. Dynamic UUID / Timestamp factories for mutable entities. 3. Immutable seed data for read-only checks. 4. Isolated database tenants.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Worker Partitioning in pytest-xdist (Python)',
+          badge: 'Worker ID',
+          summary: 'Use worker_id fixture to assign dedicated accounts per process.',
+          explanation: 'pytest-xdist provides worker_id (gw0, gw1, etc.). Use it to partition test data.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Parallel Worker Partitioning',
+            code: `import pytest
+import uuid
+
+@pytest.fixture
+def unique_user(worker_id):
+    # Generates worker-safe unique credentials
+    user_email = f"user_{worker_id}_{uuid.uuid4().hex[:6]}@qa.io"
+    return {"email": user_email, "name": f"Tester {worker_id}"}`
+          },
+          proTip: 'Worker partitioning prevents two threads from picking the same account.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Accessing testInfo.workerIndex (TypeScript)',
+          badge: 'testInfo',
+          summary: 'Playwright exposes workerIndex (0, 1, 2...) directly in testInfo.',
+          explanation: 'Use workerIndex to partition user pools or database schemas.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Worker Index Data Partitioning',
+            code: `import { test } from '@playwright/test';
+
+test('parallel safe execution', async ({ page }, testInfo) => {
+  const workerId = testInfo.workerIndex;
+  const workerEmail = \`automated_tester_worker_\${workerId}@company.io\`;
+
+  await page.goto('/login');
+  await page.getByLabel('Email').fill(workerEmail);
+});`
+          },
+          proTip: 'Combine workerIndex with crypto.randomUUID() for completely unique entities.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Two QA engineers shouting across the room: "Do not use user123, I am testing it!"',
+          automatedApproach: 'Dynamic UUID test data factory + workerIndex partitioning',
+          whyItMatters: 'Completely eliminates race conditions and allows 100+ tests to run concurrently without collision.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Test Data Factory' : 'Production Implementation (TypeScript): Concurrency-Safe Data Factory',
+        description: 'Complete production test data factory generating unique entities and managing worker isolation.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `import uuid
+import time
+
+class TestDataFactory:
+    @staticmethod
+    def create_unique_customer(worker_id: str) -> dict:
+        timestamp = int(time.time())
+        unique_token = uuid.uuid4().hex[:8]
+        return {
+            "email": f"cust_{worker_id}_{timestamp}_{unique_token}@qa.io",
+            "first_name": f"User{worker_id}",
+            "last_name": f"Test{unique_token}",
+            "ssn_last_four": f"{timestamp % 10000:04d}",
+        }` : `import crypto from 'crypto';
+import { TestInfo } from '@playwright/test';
+
+export interface UserAccount {
+  email: string;
+  username: string;
+  tenantId: string;
+}
+
+export class TestDataFactory {
+  /**
+   * Generates a collision-proof user entity bound to the active worker.
+   */
+  static createWorkerSafeUser(testInfo: TestInfo, domain = 'qa.io'): UserAccount {
+    const workerId = testInfo.workerIndex;
+    const randomSuffix = crypto.randomUUID().slice(0, 8);
+    const timestamp = Date.now();
+
+    return {
+      email: \`sdet_w\${workerId}_\${timestamp}_\${randomSuffix}@\${domain}\`,
+      username: \`user_w\${workerId}_\${randomSuffix}\`,
+      tenantId: \`tenant_cluster_\${workerId}\`,
+    };
+  }
+
+  /**
+   * Generates unique order payloads with deterministic math validation.
+   */
+  static createOrderPayload(testInfo: TestInfo, itemPrice: number) {
+    const trackingId = \`TRK-\${testInfo.workerIndex}-\${Date.now()}\`;
+    return {
+      trackingId,
+      amount: itemPrice,
+      tax: Number((itemPrice * 0.08).toFixed(2)),
+      total: Number((itemPrice * 1.08).toFixed(2)),
+    };
+  }
+}`,
+        annotations: [
+          { lineOrPattern: 'testInfo.workerIndex', explanation: 'Allocates data by CPU worker index.' },
+          { lineOrPattern: 'randomUUID', explanation: 'Guarantees uniqueness across time.' }
+        ]
+      },
+      bestPractices: [
+        'Partition mutable user accounts using testInfo.workerIndex',
+        'Generate unique IDs and emails using UUIDs and timestamps for entity creation tests',
+        'Use immutable static seed data strictly for read-only queries'
+      ],
+      antiPatterns: [
+        'Hardcoding a single test account like "admin@qa.io" across 50 parallel tests',
+        'Allowing parallel tests to edit or delete the same shared database row',
+        'Failing to clean up generated test data'
+      ],
+      interviewQnA: {
+        question: 'How do you handle test data in parallel execution to avoid collisions?',
+        answer: 'We employ a 4-pillar data strategy: 1. Worker Partitioning: We use testInfo.workerIndex to allocate dedicated credentials from pre-provisioned user pools (e.g. user_worker_0@qa.io). 2. Dynamic Factories: For entities created during tests (orders, customers), we generate unique UUIDs and timestamps so records never collide. 3. Read vs Write Segregation: Immutable static data is used for read-only assertions; dynamic ephemeral data is used for state mutations. 4. Isolated Database Tenants: Tests are scoped to tenant IDs or Docker containers.'
+      }
+    };
+  }
+
+  // 12. Playwright Retry Philosophy & Flakiness Elimination
+  if (lessonId === 'pw-retry-philosophy') {
+    return {
+      title: '12. Playwright Retry Philosophy & Flakiness Elimination',
+      category,
+      tagline: 'Why 0 Retries Locally and 2 in CI: True Root-Cause Engineering',
+      overview: 'Playwright implements an intelligent, process-level retry architecture designed to handle transient network hiccups in CI without masking real application bugs. A fundamental tenet of Playwright SDET philosophy is: NEVER configure retries during local development (retries: 0), and configure retries in CI pipelines (retries: 2). Understanding what happens under the hood during a retry is critical to building zero-flakiness frameworks.',
+      whyItMattersForManualQA: 'If a manual test fails, you investigate why immediately. If automation tools blindly retry 5 times until it passes, real timing bugs and race conditions slip into production, eroding engineering trust in the QA suite. Playwright retries are designed to quarantine environmental noise while isolating root causes.',
+      architectureUnderTheHood: {
+        title: 'What Happens During a Playwright Retry Under the Hood',
+        flowOrMechanism: 'Test Fails in Worker 1 => Playwright IMMEDIATELY KILLS Worker 1 Process! => Memory, Zombie sockets, and Corrupted Cookies Destroyed => Spawns Fresh Worker 2 Process => Fresh Browser Context Launched => Test Re-executed => Zero State Contamination',
+        keyTakeaway: 'Playwright does not simply re-run test code in the same dirty browser. It terminates the entire OS worker process and boots a clean environment. If a test passes on retry, Playwright tags it as Flaky, saving traces and logs for root cause analysis.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Configuring Retries in pytest (Python)',
+          badge: 'pytest-rerunfailures',
+          summary: 'Use pytest --reruns 2 only in CI pipelines.',
+          explanation: 'Check for CI environment variable before enabling reruns.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python CI Retry Configuration',
+            code: `# In CI runner execution:
+# pytest --reruns 2 --reruns-delay 1`
+          },
+          proTip: 'Never enable reruns locally in pytest.ini.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Configuring the Environment-Based Retry Policy (TypeScript)',
+          badge: 'playwright.config.ts',
+          summary: 'Use process.env.CI to dynamically set retries to 2 in CI and 0 locally.',
+          explanation: 'Local developers get instant failure feedback; CI builds handle transient runner lag.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Environment-Aware Retry Configuration',
+            code: `import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  // Zero retries locally: fail fast, debug immediately!
+  // 2 retries in CI: mitigates transient cloud runner jitter
+  retries: process.env.CI ? 2 : 0,
+});`
+          },
+          proTip: 'A test that passes on retry is marked FLAKY in reports, not Passed.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Re-running a test once because of a transient VPN glitch, but taking note of it',
+          automatedApproach: 'Playwright retries: 2 in CI with automatic FLAKY report tagging',
+          whyItMatters: 'Prevents pull requests from blocking on cloud network glitches while auditing flakiness.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Retry Diagnostics' : 'Production Implementation (TypeScript): Flakiness Quarantine Strategy',
+        description: 'Automated flaky test detection and quarantine tagging.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `import pytest
+
+@pytest.mark.flaky(reruns=2, reruns_delay=1)
+def test_third_party_payment_gateway(page):
+    # Quarantined test with explicit flakiness documentation
+    page.goto("http://localhost:3000/payments")
+    page.get_by_role("button", name="Process").click()` : `// playwright.config.ts
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  retries: process.env.CI ? 2 : 0,
+
+  // Automatically emit annotations for flaky runs
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'results/test-results.json' }],
+  ],
+});
+
+// src/tests/flakyQuarantine.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('External Third-Party Integrations', () => {
+  // Annotate known flaky tests awaiting upstream API stabilization
+  test('legacy CRM webhook sync', async ({ page }, testInfo) => {
+    testInfo.annotations.push({
+      type: 'issue',
+      description: 'JIRA-4821: Upstream CRM rate limiting intermittently',
+    });
+
+    await page.goto('/crm/sync');
+    await page.getByRole('button', { name: 'Synchronize' }).click();
+    await expect(page.getByText('Sync Successful')).toBeVisible();
+  });
+});`,
+        annotations: [
+          { lineOrPattern: 'retries: process.env.CI ? 2 : 0', explanation: 'Environment-aware retry gate.' },
+          { lineOrPattern: 'annotations.push', explanation: 'Attaches tracking metadata to CI report.' }
+        ]
+      },
+      bestPractices: [
+        'Always set retries: 0 during local development to fix root causes immediately',
+        'Configure retries: 2 in CI to absorb cloud VM runner and network latency jitter',
+        'Audit all tests marked FLAKY in CI reports weekly and refactor selectors or timing'
+      ],
+      antiPatterns: [
+        'Setting retries: 5 to brute-force failing tests to pass',
+        'Enabling retries on local developer workstations',
+        'Ignoring flaky tests until entire suites become untrusted'
+      ],
+      interviewQnA: {
+        question: 'Explain the Playwright Retry Philosophy and why retries should be 0 locally.',
+        answer: 'The Playwright retry philosophy dictates that retries must be 0 locally and at most 2 in CI. Locally, tests must fail fast so developers identify and fix root causes (such as race conditions or missing auto-waits) immediately. In CI, retries absorb transient infrastructure or network glitches. Under the hood, when a test fails, Playwright terminates the entire worker process and launches a fresh worker with a clean browser context, guaranteeing zero state contamination. Tests that pass on retry are labeled FLAKY to maintain accountability.'
+      }
+    };
+  }
+
+  // 13. Trace Retention Strategy & Production Debugging
+  if (lessonId === 'pw-trace-retention' || lessonId === 'pw-trace-viewer') {
+    return {
+      title: '13. Trace Retention Strategy & Production Debugging',
+      category,
+      tagline: 'Zero Storage Overhead for Passing Tests with Time-Travel Debugging on Failure',
+      overview: 'Playwright Trace Viewer is the most powerful debugging tool in modern web automation. A trace file (.zip) captures a complete recording of the test execution: DOM snapshots before and after every action, network request and response bodies (HAR), console logs, and a frame-by-frame filmstrip. However, recording traces for 2,000 passing tests generates 50GB of artifacts and slows execution by 30%. Implementing an optimal Trace Retention Strategy is essential for enterprise CI pipelines.',
+      whyItMattersForManualQA: 'When an automated test fails on a Linux CI machine at 3 AM, a static screenshot only shows the final broken screen. It does not show what was clicked 2 seconds earlier, what API failed in the background, or what the DOM looked like. Playwright Trace Viewer lets you time-travel back to any millisecond of the test, hover over actions, and inspect the live DOM tree as if you were sitting right there.',
+      architectureUnderTheHood: {
+        title: 'Trace Recording & Retention Architecture',
+        flowOrMechanism: 'trace: "on-first-retry" => Test Runs (Run 1: Tracing OFF, 0% overhead) => If Test Passes => Done! (0 bytes stored) | If Test Fails => Run 2 Triggered => Tracing ON => Captures Action Snapshots + Network HAR + Console => Upload trace.zip to CI Artifacts',
+        keyTakeaway: 'The optimal enterprise retention strategy is trace: "on-first-retry". Passing tests cost 0 extra milliseconds and 0 extra bytes. Failed tests produce a complete time-travel zip ready to open with npx playwright show-trace.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Configuring Tracing in Python',
+          badge: 'Tracing Context',
+          summary: 'Start tracing on browser context with screenshots and snapshots.',
+          explanation: 'Call context.tracing.start() and context.tracing.stop(path="trace.zip").',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Trace Recording',
+            code: `from playwright.sync_api import Browser
+
+def test_with_tracing(browser: Browser):
+    context = browser.new_context()
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+
+    page = context.new_page()
+    try:
+        page.goto("http://localhost:3000/dashboard")
+        page.get_by_role("button", name="Export").click()
+    except Exception:
+        context.tracing.stop(path="reports/trace_failure.zip")
+        raise
+    finally:
+        context.close()`
+          },
+          proTip: 'Open with npx playwright show-trace reports/trace_failure.zip.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Configuring trace: "on-first-retry" in playwright.config.ts (TypeScript)',
+          badge: 'Retention Policy',
+          summary: 'Configure trace recording only when a test is being retried.',
+          explanation: 'Combines zero overhead for passing tests with full diagnostic depth for failures.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'playwright.config.ts Trace Retention',
+            code: `import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  retries: process.env.CI ? 2 : 0,
+  use: {
+    // on-first-retry: Record trace only when retrying a failed test
+    // retain-on-failure: Record trace on first run, but delete if it passes
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+  },
+});`
+          },
+          proTip: 'trace: "on-first-retry" is 2x faster in CI than trace: "retain-on-failure".'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Trying to reproduce an issue manually while keeping DevTools Network & Console tabs open',
+          automatedApproach: 'npx playwright show-trace trace.zip',
+          whyItMatters: 'Inspect DOM snapshots, network payloads, and console logs at every single action millisecond.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Trace Workflow' : 'Production Implementation (TypeScript): GitHub Actions Trace Artifact Pipeline',
+        description: 'Complete GitHub Actions workflow that uploads trace archives only when tests fail.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `import pytest
+from playwright.sync_api import Page, expect
+
+def test_order_submission(page: Page):
+    page.goto("http://localhost:3000/checkout")
+    page.get_by_role("button", name="Submit").click()
+    expect(page.get_by_role("alert")).to_have_text("Order Confirmed")
+    # Traces automatically captured on retry via pytest-playwright --tracing=retain-on-failure` : `# .github/workflows/playwright.yml
+name: Playwright Regression & Trace Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      - name: Execute Tests with Trace Retention
+        run: npx playwright test
+        env:
+          CI: true
+
+      - name: Upload Diagnostic Traces on Failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-failure-traces
+          path: test-results/**/*.zip
+          retention-days: 7`,
+        annotations: [
+          { lineOrPattern: 'if: failure()', explanation: 'Uploads artifacts ONLY when a test fails.' },
+          { lineOrPattern: 'path: test-results/**/*.zip', explanation: 'Captures all trace zip bundles.' }
+        ]
+      },
+      bestPractices: [
+        'Use trace: "on-first-retry" to achieve zero storage and CPU overhead on passing tests',
+        'Upload trace.zip archives as CI artifacts only when the build fails (if: failure())',
+        'Use npx playwright show-trace to inspect failed runs before modifying code'
+      ],
+      antiPatterns: [
+        'Setting trace: "on" for thousands of passing regression tests (wastes GBs of CI disk)',
+        'Relying solely on static screenshots which lack DOM state and network history',
+        'Storing trace files permanently in source control'
+      ],
+      interviewQnA: {
+        question: 'Explain your Trace Retention Strategy in Playwright and how it optimizes CI storage.',
+        answer: 'In enterprise pipelines, recording traces for all tests creates massive storage overhead and slows test execution by 30%. Our strategy sets trace: "on-first-retry" in playwright.config.ts. On the initial run, tests execute with zero trace overhead and zero disk consumption. If a test fails in CI, Playwright triggers a retry with full tracing enabled (DOM snapshots, network HAR, console logs, and filmstrips). In GitHub Actions, we upload test-results/**/*.zip conditionally using if: failure(), giving engineers complete time-travel debugging capabilities without storing unnecessary artifacts for passing runs.'
+      }
+    };
+  }
+
+  // 14. Playwright Test Sharding Architecture
+  if (lessonId === 'pw-sharding-architecture' || lessonId === 'pw-ci-sharding') {
+    return {
+      title: '14. Playwright Test Sharding Architecture',
+      category,
+      tagline: 'Linear CI Acceleration: Run 1,000 Tests in 4 Minutes Across Cloud Runners',
+      overview: 'As regression test suites grow to hundreds or thousands of tests, executing them on a single machine—even with multiple CPU threads—becomes a deployment bottleneck. Playwright provides native horizontal test sharding via the --shard=x/y CLI flag. Sharding splits test files deterministically across multiple cloud VM runners, allowing suites that normally take 60 minutes to complete in under 5 minutes.',
+      whyItMattersForManualQA: 'In manual testing, if 1 person tests 100 test cases, it takes 10 hours. If you divide the test cases equally among 10 testers, it takes 1 hour! Playwright sharding does this automatically across cloud virtual machines: 8 shards run 8x faster.',
+      architectureUnderTheHood: {
+        title: 'Horizontal Test Sharding Architecture',
+        flowOrMechanism: 'Full Test Suite (100 Spec Files) => Shard 1/4 (Runs Files 1-25 on Runner A) | Shard 2/4 (Runs Files 26-50 on Runner B) | Shard 3/4 (Runs Files 51-75 on Runner C) | Shard 4/4 (Runs Files 76-100 on Runner D) => Blob Reports Merged => 1 HTML Report',
+        keyTakeaway: 'How sharding works: The CLI flag --shard=1/4 tells Playwright to run the first quartile of tests. Each shard outputs a lightweight blob report. A final merge job runs npx playwright merge-reports to produce a single unified report.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Sharding with pytest-shard (Python)',
+          badge: 'pytest-shard',
+          summary: 'Use pytest-shard plugin to partition test suites.',
+          explanation: 'Pass --shard-id and --num-shards to pytest across matrix runners.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Test Sharding Command',
+            code: `# In GitHub Actions matrix:
+# pytest --shard-id=1 --num-shards=4`
+          },
+          proTip: 'Ensure test collection is identical across all matrix runners.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'The --shard CLI Flag (TypeScript)',
+          badge: 'CLI Flag',
+          summary: 'Execute a slice of the test suite on any machine.',
+          explanation: 'Pass --shard=currentShard/totalShards to the test command.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Executing Shard 2 of 4',
+            code: `// Terminal command on Runner 2:
+// npx playwright test --shard=2/4 --reporter=blob`
+          },
+          proTip: 'Use --reporter=blob on individual shards to enable fast report merging.'
+        },
+        {
+          stepNumber: 2,
+          title: 'GitHub Actions Matrix Strategy (TypeScript)',
+          badge: 'CI Matrix',
+          summary: 'Spawn parallel VM runners automatically using matrix.',
+          explanation: 'Define shardIndex from 1 to 4 and shardTotal as 4 in GitHub Actions YAML.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'GitHub Actions Matrix Blueprint',
+            code: `// strategy:
+//   matrix:
+//     shardIndex: [1, 2, 3, 4]
+//     shardTotal: [4]
+// run: npx playwright test --shard=\${{ matrix.shardIndex }}/\${{ matrix.shardTotal }}`
+          },
+          proTip: 'Set strategy: { fail-fast: false } so failures on one shard do not cancel others.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Splitting test cases in a spreadsheet across 4 QA team members',
+          automatedApproach: 'npx playwright test --shard=${{ matrix.shardIndex }}/4',
+          whyItMatters: 'Automatically partitions execution across cloud runners with linear speedup.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): CI Matrix' : 'Production Implementation (TypeScript): Complete Sharding & Merge Pipeline',
+        description: 'Complete GitHub Actions workflow that runs 4 shards and merges blob reports into an HTML report.',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `# pytest sharding GitHub Actions workflow
+name: Pytest Sharding Pipeline
+on: [push]
+jobs:
+  test:
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: pytest --shard-id=\${{ matrix.shard }} --num-shards=4` : `# .github/workflows/sharded-tests.yml
+name: Distributed Sharded Regression
+on: [pull_request]
+
+jobs:
+  test-shards:
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      - name: Run Shard \${{ matrix.shardIndex }} of \${{ matrix.shardTotal }}
+        run: npx playwright test --shard=\${{ matrix.shardIndex }}/\${{ matrix.shardTotal }} --reporter=blob
+        env:
+          CI: true
+
+      - name: Upload Shard Blob Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: blob-report-\${{ matrix.shardIndex }}
+          path: blob-report
+          retention-days: 1
+
+  merge-reports:
+    needs: [test-shards]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+
+      - name: Download All Blob Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge Sharded Reports into Unified HTML
+        run: npx playwright merge-reports --reporter=html ./all-blob-reports
+
+      - name: Upload Final HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-html-report
+          path: playwright-report
+          retention-days: 14`,
+        annotations: [
+          { lineOrPattern: 'fail-fast: false', explanation: 'Allows all shards to complete even if one fails.' },
+          { lineOrPattern: 'merge-reports', explanation: 'Combines all shard blob reports into single HTML report.' }
+        ]
+      },
+      bestPractices: [
+        'Always set strategy: { fail-fast: false } in GitHub Actions matrix',
+        'Use the blob reporter in shard jobs and merge them in a dedicated downstream job',
+        'Size your shard count to target a 5-minute total execution window'
+      ],
+      antiPatterns: [
+        'Setting fail-fast: true, which cancels remaining shards and hides other test failures',
+        'Trying to generate HTML reports independently on each shard instead of merging blob reports',
+        'Packing 50 slow tests into one giant spec file (causes straggler shards)'
+      ],
+      interviewQnA: {
+        question: 'Explain Sharding in Playwright and how it accelerates CI pipeline execution.',
+        answer: 'Sharding allows Playwright to split a test suite horizontally across multiple machines using the --shard=x/y CLI flag. For example, --shard=1/4 executes the first 25% of the test suite on Runner 1, while other runners execute the remaining shards concurrently. Each runner outputs a lightweight blob report. A final dependent CI job downloads all blob artifacts and runs npx playwright merge-reports --reporter=html to produce a single, unified report. This achieves near-linear speedups, turning 40-minute regression runs into 5-minute builds.'
+      }
+    };
+  }
+
+  // 15. Real-Time Challenges in Test Sharding & Architectural Solutions
+  if (lessonId === 'pw-sharding-realtime-challenges') {
+    return {
+      title: '15. Real-Time Challenges in Test Sharding & Architectural Solutions',
+      category,
+      tagline: 'Solving Stragglers, Database Deadlocks, and Artifact Merging at Scale',
+      overview: 'While sharding conceptually divides test execution time linearly, enterprise engineering teams encounter serious real-world production challenges when implementing sharding at scale. Understanding these challenges—uneven shard runtimes (stragglers), shared database and API rate limiting, matrix fail-fast cancellations, and blob artifact aggregation—is what distinguishes a Test Architect from a beginner.',
+      whyItMattersForManualQA: 'If you divide work among 4 testers, but 1 tester gets a giant complex scenario that takes 4 hours while the other 3 finish in 30 minutes, your team still finishes in 4 hours! In automated sharding, this is called the "Straggler Problem". As a Test Architect, you must architect tests and CI pipelines so all shards finish at the exact same time.',
+      architectureUnderTheHood: {
+        title: 'The 4 Major Real-Time Sharding Challenges & Solutions',
+        flowOrMechanism: 'Challenge 1: Straggler Shards => Solution: Split monolithic spec files | Challenge 2: DB/API Contention => Solution: Worker-partitioned tenant schemas | Challenge 3: Matrix Cancelation => Solution: fail-fast: false | Challenge 4: Fragmented Reports => Solution: actions/upload-artifact merge-multiple + merge-reports',
+        keyTakeaway: 'Sharding operates at the file level by default. If you have one spec file with 30 slow tests, Playwright assigns that entire file to one shard, creating a straggler. Always break large test files into focused, modular spec files.'
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Addressing the Straggler Problem in Python',
+          badge: 'Spec Balancing',
+          summary: 'Keep test file durations balanced across shards.',
+          explanation: 'Never place 20 slow E2E tests in a single test file; split them into test_checkout_part1.py, etc.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Balanced Spec File Organization',
+            code: `# Good architecture: modular files
+# tests/checkout/test_payment_card.py (2 mins)
+# tests/checkout/test_payment_paypal.py (2 mins)
+# tests/checkout/test_payment_crypto.py (2 mins)`
+          },
+          proTip: 'Monitor shard execution times in CI metrics to spot uneven distributions.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Solving the Straggler Problem (TypeScript)',
+          badge: 'File Granularity',
+          summary: 'Understand why Playwright shards at the spec file boundary.',
+          explanation: 'Playwright divides spec files, not individual test blocks, across shards. If file A takes 15 minutes and all other files take 1 minute, Shard 1 will take 15 minutes regardless of shard count.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Splitting Monolithic Spec Files',
+            code: `// BAD: Monolithic file creates straggler shard
+// e2e-everything.spec.ts (Contains 35 tests, takes 18 mins!)
+
+// GOOD: Granular spec files enable even distribution
+// auth.login.spec.ts (3 mins)
+// auth.resetPassword.spec.ts (2 mins)
+// checkout.creditCard.spec.ts (4 mins)
+// checkout.paypal.spec.ts (3 mins)`
+          },
+          proTip: 'Target spec files that execute in under 3 minutes each.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Solving Backend API & Database Contention (TypeScript)',
+          badge: 'Tenant Isolation',
+          summary: 'Prevent 16 parallel shards from overloading staging databases.',
+          explanation: 'When 16 cloud runners simultaneously execute migrations or seed data, staging databases crash with connection pool exhaustion and deadlocks.',
+          codeSnippet: {
+            language: 'typescript',
+            caption: 'Tenant Shard Isolation Pattern',
+            code: `import { test as base } from '@playwright/test';
+
+export const test = base.extend<{ shardTenantId: string }>({
+  shardTenantId: async ({}, use) => {
+    // Generate tenant ID scoped to current shard and worker
+    const shardIndex = process.env.SHARD_INDEX || '1';
+    const tenant = \`tenant_shard_\${shardIndex}\`;
+    await use(tenant);
+  },
+});`
+          },
+          proTip: 'Use mock servers for external third-party rate-limited APIs.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Balancing test assignments evenly so no single tester is stuck working late',
+          automatedApproach: 'Granular spec file decomposition + matrix timing monitoring',
+          whyItMatters: 'Guarantees all 4 shards finish within 30 seconds of each other, maximizing CI investment.'
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Implementation (Python): Distributed Runner Configuration' : 'Production Implementation (TypeScript): Production Sharding CI Architecture',
+        description: 'Complete production workflow addressing all 4 sharding challenges (fail-fast, stragglers, report merge, and artifact retention).',
+        language: isPython ? 'python' : 'typescript',
+        code: isPython ? `# Python distributed testing with pytest-xdist and sharding
+# Addresses straggler and concurrency challenges
+def test_distributed_tenant_isolation(page, worker_id):
+    tenant_id = f"tenant_{worker_id}"
+    page.goto(f"http://localhost:3000/app?tenant={tenant_id}")
+    # Isolated tenant database prevents database locks across shards` : `# Complete Enterprise Sharded Workflow:
+name: Enterprise High-Speed Sharding
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  sharded-execution:
+    name: Shard \${{ matrix.shardIndex }}/\${{ matrix.shardTotal }}
+    strategy:
+      # Challenge 3 Solution: NEVER fail-fast; gather full failure metrics across all shards
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Run Shard \${{ matrix.shardIndex }}
+        # Challenge 1 Solution: Granular files run with blob reporter
+        run: npx playwright test --shard=\${{ matrix.shardIndex }}/\${{ matrix.shardTotal }} --reporter=blob
+        env:
+          CI: true
+          SHARD_INDEX: \${{ matrix.shardIndex }}
+
+      - name: Upload Shard Blob
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: all-blob-reports
+          path: blob-report
+          retention-days: 1
+
+  merge-and-notify:
+    name: Merge Reports & Quality Gate
+    needs: [sharded-execution]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+
+      # Challenge 4 Solution: Download all blob reports into single directory
+      - name: Download All Blob Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: all-blob-reports
+          path: all-blob-reports
+
+      - name: Merge Blob Reports
+        run: npx playwright merge-reports --reporter=html,junit ./all-blob-reports
+
+      - name: Upload Unified Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-unified-html-report
+          path: playwright-report
+          retention-days: 14`,
+        annotations: [
+          { lineOrPattern: 'fail-fast: false', explanation: 'Crucial: prevents early cancellation of parallel shards.' },
+          { lineOrPattern: 'merge-reports', explanation: 'Creates single unified report with retry traces.' }
+        ]
+      },
+      bestPractices: [
+        'Split large test files into modular spec files under 3 minutes each to prevent straggler shards',
+        'Always set strategy: { fail-fast: false } in CI to collect test failures across the entire matrix',
+        'Use merge-multiple: true and blob reporting to unify sharded results into a single HTML report'
+      ],
+      antiPatterns: [
+        'Having 1 monolithic spec file containing 40 tests that holds back the entire CI matrix',
+        'Allowing parallel shards to hammer a single shared staging database, causing deadlocks',
+        'Leaving fail-fast: true enabled, which cancels remaining shards and hides other test failures'
+      ],
+      interviewQnA: {
+        question: 'What are real-time challenges faced in use of Playwright sharding and how do you solve them?',
+        answer: 'There are 4 major real-world sharding challenges: 1. Straggler Shards: Sharding operates at the file level; if one file contains 20 slow tests, that shard bottlenecks the entire build. Solution: Decompose monolithic files into small, balanced spec files. 2. Backend Resource Bottlenecks: Multiple runners hitting one database causes connection pool exhaustion and deadlocks. Solution: Partition databases by tenant IDs or mock external APIs. 3. Matrix Fail-Fast: GitHub Actions default fail-fast: true cancels other runners when one test fails. Solution: Set fail-fast: false. 4. Fragmented Reporting: Each runner produces separate logs. Solution: Output blob reports and execute npx playwright merge-reports in a downstream merge job.'
+      }
+    };
+  }
+
+  // Fallback for any other Playwright lesson
+  return {
+    title: cleanTitle,
+    category,
+    tagline: `Enterprise Architecture & Implementation Guide: ${cleanTitle}`,
+    overview: `${lessonDesc || cleanTitle}. In modern test automation, mastering this concept is essential to building fast, resilient, and deterministic test frameworks that run reliably in CI/CD pipelines without false alarms.`,
+    whyItMattersForManualQA: `When manual testers transition to SDET roles, understanding ${cleanTitle} bridges the gap between manual verification steps and production-grade automated code.`,
+    architectureUnderTheHood: {
+      title: `${cleanTitle}: How it Works Under the Hood`,
+      flowOrMechanism: 'Test Runner => Chrome DevTools Protocol (CDP) WebSocket => Browser Actionability Checks => DOM Execution => Auto-Retrying Assertion',
+      keyTakeaway: 'Understanding the underlying event flow ensures you write tests that work in harmony with browser rendering and network protocols rather than fighting them.'
+    },
+    stepByStepGuide: [
+      {
+        stepNumber: 1,
+        title: 'Setup & Preconditions',
+        badge: 'Step 1',
+        summary: `Initialize configuration and prepare the test environment for ${cleanTitle}.`,
+        explanation: 'Configure proper dependencies, base URLs, and isolated browser or client state before executing actions.',
+        codeSnippet: {
+          language: isPython ? 'python' : 'typescript',
+          caption: 'Preconditions and context setup',
+          code: isPython ? `from playwright.sync_api import Page, expect\n\ndef test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}(page: Page):\n    page.goto("http://localhost:3000/sandbox/web")` : `import { test, expect } from '@playwright/test';\n\ntest('${cleanTitle}', async ({ page }) => {\n  await page.goto('/sandbox/web');\n});`
+        },
+        proTip: 'Always isolate test state so each test execution starts from a clean, predictable baseline.'
+      }
+    ],
+    manualToAutomatedBridge: [
+      {
+        manualAction: `Perform ${cleanTitle} by manually clicking and observing screen`,
+        automatedApproach: 'Automated script with explicit state expectations',
+        whyItMatters: 'Executes repeatedly in seconds across multiple environments with 100% precision.'
+      }
+    ],
+    productionCodeExample: {
+      title: isPython ? `Production Implementation (Python Playwright): ${cleanTitle}` : `Production Implementation (TypeScript Playwright): ${cleanTitle}`,
+      description: `Complete, production-ready blueprint illustrating best practices for ${cleanTitle}.`,
+      language: isPython ? 'python' : 'typescript',
+      code: isPython ? `from playwright.sync_api import Page, expect\n\ndef test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}(page: Page):\n    page.goto("http://localhost:3000/sandbox/web")\n    action_btn = page.get_by_role("button").first\n    if action_btn.is_visible():\n        action_btn.click()\n    expect(page.get_by_role("heading", level=1)).to_be_visible()` : `import { test, expect } from '@playwright/test';\n\ntest.describe('${cleanTitle} Suite', () => {\n  test('should execute scenario successfully', async ({ page }) => {\n    await page.goto('/sandbox/web');\n    const target = page.getByRole('button').first();\n    if (await target.isVisible()) {\n      await target.click();\n    }\n    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();\n  });\n});`,
+      annotations: [
+        { lineOrPattern: 'test', explanation: 'Declares test case boundary.' }
+      ]
+    },
+    bestPractices: [
+      'Write tests against user-facing accessibility attributes rather than internal DOM details',
+      'Rely on framework auto-waiting and explicit condition polling; never hardcode Thread.sleep',
+      'Ensure test independence: each test should create and clean up its own test data'
+    ],
+    antiPatterns: [
+      'Using arbitrary sleep timeouts to fix intermittent timing failures',
+      'Coupling tests to brittle full-path XPaths or auto-generated CSS classes'
+    ],
+    interviewQnA: {
+      question: `How would you explain the practical significance of ${cleanTitle} in an SDET interview?`,
+      answer: `Understanding ${cleanTitle} demonstrates architectural mastery of Playwright, flakiness prevention, and scalable quality engineering.`
+    }
+  };
+}
+
+
+function getRestAssuredLessonDoc(
+  lessonId: string,
+  isPython: boolean,
+  lessonTitle?: string,
+  lessonDesc?: string
+): LessonDoc {
+  const category = isPython ? 'REST API Automation (Python Requests) • Enterprise Architecture' : 'REST Assured (Java) • Enterprise Architecture';
+  const cleanTitle = lessonTitle || 'REST API Automation';
+
+  // 1. REST Fundamentals & Postman Transition
+  if (lessonId === 'api-rest-basics') {
+    return {
+      title: '1. REST Fundamentals & Postman Transition',
+      category,
+      tagline: 'Moving from Manual Postman GUI Collections to Resilient, Version-Controlled Code Automation',
+      overview: 'Representational State Transfer (REST) is an architectural style governing distributed web systems using standard HTTP verbs (GET, POST, PUT, PATCH, DELETE). In manual testing, QA engineers rely on GUI tools like Postman to construct headers, send payloads, and visually inspect JSON responses. However, enterprise SDET workflows require automated CI/CD regression suites, type-safe contract validation, parallel test execution, and programmatic dynamic state passing. Moving from Postman to REST Assured or Python Requests transforms brittle manual requests into maintainable, version-controlled code.',
+      whyItMattersForManualQA: 'In Postman, sharing test collections across teams requires exporting JSON files or maintaining Postman workspace licenses. Chaining 5 APIs in Postman involves fragile post-response JavaScript snippets saving global variables. In code, dynamic parameter passing and assertion verification are handled natively with language features, type safety, and direct CI/CD pipeline execution without Newman overhead.',
+      architectureUnderTheHood: {
+        title: 'HTTP Client Wire Protocol & Serialization Architecture',
+        flowOrMechanism: 'Test Method => Request Specification (Headers, Params, Body) => HTTP Client Wire Transfer (Apache HttpClient / urllib3) => Web Server / API Gateway => HTTP Response (Status, Headers, JSON Payload) => Deserializer / Response Specification Assertions',
+        keyTakeaway: 'Automated API frameworks bypass browser rendering entirely, operating directly on the HTTP transport layer. Tests execute in 20-100 milliseconds per API call instead of 3-5 seconds required for UI WebDriver execution.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Establish Base URL and Standard Header Protocols',
+          badge: 'Setup',
+          summary: 'Configure global base URI, port, and standard Content-Type / Accept headers.',
+          explanation: 'Setting a global baseURI and basePath allows test methods to target clean relative endpoints (/users) rather than hardcoding full URLs.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `import requests\n\nBASE_URL = "https://api.intelligentqa.io/v1"\nDEFAULT_HEADERS = {\n    "Accept": "application/json",\n    "Content-Type": "application/json"\n}`
+              : `import io.restassured.RestAssured;\n\nRestAssured.baseURI = "https://api.intelligentqa.io";\nRestAssured.basePath = "/v1";`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'Construct Request with Parameters and Headers',
+          badge: 'Request',
+          summary: 'Supply query parameters for filtering and authorization headers.',
+          explanation: 'Query parameters (?page=1&status=ACTIVE) are configured via queryParam() without manual string concatenation.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `response = requests.get(\n    f"{BASE_URL}/users",\n    params={"status": "ACTIVE", "page": 1},\n    headers={"Authorization": "Bearer sdet_secure_token"}\n)`
+              : `io.restassured.response.Response response = RestAssured.given()\n    .queryParam("status", "ACTIVE")\n    .queryParam("page", 1)\n    .header("Authorization", "Bearer sdet_secure_token")\n    .when()\n    .get("/users");`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'Validate Status Code, Response Time and Headers',
+          badge: 'Assertions',
+          summary: 'Assert HTTP 200 OK, response time within 2000ms SLA, and Content-Type header.',
+          explanation: 'Fluently chaining statusCode(200) and time() catches performance regressions in CI/CD.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `assert response.status_code == 200\nassert "application/json" in response.headers["Content-Type"]\nassert response.elapsed.total_seconds() < 2.0`
+              : `response.then()\n    .statusCode(200)\n    .contentType("application/json")\n    .time(org.hamcrest.Matchers.lessThan(2000L));`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Opening Postman, selecting GET method, and entering endpoint URL',
+          automatedApproach: isPython ? 'requests.get("https://api.intelligentqa.io/v1/users")' : 'RestAssured.given().when().get("/users")',
+          whyItMatters: 'Eliminates manual URL typing; configure environment-specific base URIs in config files.',
+        },
+        {
+          manualAction: 'Manually verifying Status Code: 200 OK in Postman status bar',
+          automatedApproach: isPython ? 'assert response.status_code == 200' : 'response.then().statusCode(200)',
+          whyItMatters: 'Always check both success (200, 201) and negative edge cases (400, 401, 403, 404, 422).',
+        },
+        {
+          manualAction: 'Writing Tests tab scripts in JavaScript: pm.response.to.have.status(200)',
+          automatedApproach: isPython ? 'pytest assertions with rich diffing and JSONPath parsing' : 'Fluent Hamcrest matchers (.body("status", equalTo("SUCCESS")))',
+          whyItMatters: 'Version-controlled test code enables IDE refactoring, autocompletion, and Git review.',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Python Requests API Test Suite' : 'Java REST Assured Enterprise Test Class',
+        description: isPython ? 'Production-grade API test using Python requests and pytest assertions.' : 'Production-ready REST Assured test class verifying HTTP methods and response contracts.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+import pytest
+
+class TestUserApiFundamentals:
+    BASE_URL = "https://api.intelligentqa.io/v1"
+
+    @pytest.fixture(autouse=True)
+    def setup_session(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-Client-Id": "SDET-Automation-Core"
+        })
+        yield
+        self.session.close()
+
+    def test_get_users_returns_200_and_valid_headers(self):
+        response = self.session.get(
+            f"{self.BASE_URL}/users",
+            params={"page": 1, "limit": 10},
+            timeout=5.0
+        )
+        assert response.status_code == 200
+        assert "application/json" in response.headers.get("Content-Type", "")
+        assert response.elapsed.total_seconds() < 2.0
+        payload = response.json()
+        assert "data" in payload
+        assert isinstance(payload["data"], list)`
+          : `package com.intelligentqa.api.fundamentals;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class UserApiFundamentalsTest {
+
+    @BeforeClass
+    public void setupSuite() {
+        RestAssured.baseURI = "https://api.intelligentqa.io";
+        RestAssured.basePath = "/v1";
+    }
+
+    @Test(description = "Verify GET /users returns 200 OK with valid JSON contract")
+    public void testGetUsersContract() {
+        given()
+            .header("X-Client-Id", "SDET-Automation-Core")
+            .queryParam("page", 1)
+            .queryParam("limit", 10)
+            .accept(ContentType.JSON)
+        .when()
+            .get("/users")
+        .then()
+            .statusCode(200)
+            .contentType(ContentType.JSON)
+            .time(lessThan(2000L))
+            .body("data", notNullValue())
+            .body("data.size()", greaterThan(0));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'RestAssured.baseURI', explanation: 'Configures BaseURI and basePath once for clean relative endpoints' },
+          { lineOrPattern: 'statusCode(200)', explanation: 'Validates HTTP status code, Content-Type, and response time SLA' },
+          { lineOrPattern: 'body("data", notNullValue())', explanation: 'Verifies nested JSON response structure with zero external dependencies' },
+        ],
+      },
+      bestPractices: [
+        'Never hardcode complete URLs in test methods; use baseURI / basePath or session base',
+        'Always validate HTTP Status Codes and Content-Type headers before parsing response body',
+        'Enforce response time SLAs (< 2000ms) to detect API latency regressions early in CI',
+      ],
+      antiPatterns: [
+        'Exporting Postman collections manually instead of maintaining Git version-controlled code',
+        'Asserting only HTTP 200 without validating the response body contents or schema',
+      ],
+      interviewQnA: {
+        question: 'What are the architectural advantages of REST Assured or Python Requests over Postman for enterprise automation?',
+        answer: 'Postman is an exceptional manual exploration and prototyping tool, but it struggles in enterprise CI/CD automation due to: (1) Inability to seamlessly integrate with standard IDEs, type systems, and Git branching workflows; (2) High memory overhead when running large suites in CI via Newman; (3) Lack of native Java/Python object serialization (DTOs/POJOs); (4) Limited multi-threaded parallel execution capabilities compared to TestNG (data-provider-thread-count) or pytest-xdist; and (5) Difficult mock server and database state verification in end-to-end integration flows.',
+      },
+    };
+  }
+
+  // 2. Given-When-Then BDD Syntax & Requests
+  if (lessonId === 'api-given-when-then') {
+    return {
+      title: '2. Given-When-Then BDD Syntax & Requests',
+      category,
+      tagline: 'Writing Human-Readable, Maintainable API Tests with BDD Structural Discipline',
+      overview: 'The Given-When-Then pattern, originally created by Dan North for Behavior-Driven Development (BDD), creates an unambiguous structural contract for automated tests: GIVEN (preconditions, headers, auth, parameters, payload), WHEN (the action taken, e.g. HTTP GET, POST, PUT), and THEN (the expected outcomes, e.g. status code, headers, payload assertions). REST Assured was architected around this fluent DSL, making tests self-documenting and readable by developers, testers, and product managers alike.',
+      whyItMattersForManualQA: 'When manual testers write test cases in Jira or TestRail, they naturally use preconditions, action steps, and expected results. Given-When-Then directly mirrors this mental model in automated code. It eliminates confusion about what was set up prior to the request versus what was returned and verified in the response.',
+      architectureUnderTheHood: {
+        title: 'Fluent Builder & Specification Chaining Architecture',
+        flowOrMechanism: 'given() [Creates RequestSpecification] => .header()/.body() [Mutates Spec] => when() [Executes Request via RequestSender] => .post()/.get() [Returns Response] => then() [Creates ValidatableResponse] => .statusCode()/.body() [Executes Hamcrest Matchers]',
+        keyTakeaway: 'The Given-When-Then DSL separates request construction from response validation into two immutable phases, preventing state pollution across test boundaries.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Establish GIVEN Preconditions',
+          badge: 'Given',
+          summary: 'Configure auth token, request headers, query parameters, and JSON payload.',
+          explanation: 'The given() block initializes the RequestSpecification builder, configuring all transport and security parameters before dispatch.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `headers = {"Authorization": "Bearer jwt_secret_token", "Content-Type": "application/json"}\npayload = {"name": "SDET Automation", "role": "LEAD"}`
+              : `given()\n    .header("Authorization", "Bearer jwt_secret_token")\n    .contentType(ContentType.JSON)\n    .body(payload)`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'Execute WHEN HTTP Action',
+          badge: 'When',
+          summary: 'Dispatch the HTTP request method against the target resource route.',
+          explanation: 'The when() block transitions the builder into the execution phase, triggering the HTTP client wire protocol.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `response = session.post(f"{BASE_URL}/roles", json=payload, headers=headers)`
+              : `.when()\n    .post("/roles")`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'Verify THEN Assertions and Validations',
+          badge: 'Then',
+          summary: 'Verify HTTP 201 Created and validate returned JSON attributes.',
+          explanation: 'The then() block transitions the raw HTTP response into a ValidatableResponse, executing fluent Hamcrest matchers.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `assert response.status_code == 201\nassert response.json()["status"] == "SUCCESS"`
+              : `.then()\n    .statusCode(201)\n    .body("status", equalTo("SUCCESS"))\n    .body("role.id", notNullValue());`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Precondition: Setting Authorization Bearer token in request header',
+          automatedApproach: isPython ? 'headers = {"Authorization": f"Bearer {token}"}' : 'given().auth().oauth2(token)',
+          whyItMatters: 'Use RequestSpecBuilder to avoid repeating auth headers in every test.',
+        },
+        {
+          manualAction: 'Action: Clicking Send to dispatch POST request with body',
+          automatedApproach: isPython ? 'response = requests.post(url, json=data)' : 'when().post(endpoint)',
+          whyItMatters: 'Ensure Content-Type: application/json is explicitly declared when sending payloads.',
+        },
+        {
+          manualAction: 'Verification: Checking Status: 201 Created and ID is returned',
+          automatedApproach: isPython ? 'assert response.status_code == 201 and "id" in response.json()' : 'then().statusCode(201).body("id", notNullValue())',
+          whyItMatters: 'Hamcrest matchers allow multiple validations without writing 10 individual if statements.',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'BDD-Style Python Requests Test' : 'BDD-Style REST Assured Given-When-Then Test',
+        description: isPython ? 'Clear Given-When-Then structure using pytest fixtures and requests.' : 'Complete Given-When-Then implementation testing user creation and validation.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+import pytest
+
+class TestCreateUserBdd:
+    BASE_URL = "https://api.intelligentqa.io/v1"
+
+    def test_create_user_given_when_then(self):
+        auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.sdet_token"
+        headers = {
+            "Authorization": f"Bearer {auth_token}",
+            "Content-Type": "application/json"
+        }
+        new_user = {
+            "name": "Jane Doe",
+            "email": "jane.doe@intelligentqa.io",
+            "role": "SDET_ARCHITECT"
+        }
+
+        # WHEN: POST request
+        response = requests.post(f"{self.BASE_URL}/users", json=new_user, headers=headers)
+
+        # THEN: Assertions
+        assert response.status_code == 201
+        data = response.json()
+        assert data["success"] is True
+        assert data["user"]["email"] == "jane.doe@intelligentqa.io"`
+          : `package com.intelligentqa.api.bdd;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.testng.annotations.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class UserCreationBddTest {
+
+    @Test(description = "Verify Given-When-Then BDD syntax for user creation API")
+    public void testCreateUserGivenWhenThen() {
+        Map<String, Object> userPayload = new HashMap<>();
+        userPayload.put("name", "Jane Doe");
+        userPayload.put("email", "jane.doe@intelligentqa.io");
+        userPayload.put("role", "SDET_ARCHITECT");
+
+        given()
+            .baseUri("https://api.intelligentqa.io")
+            .basePath("/v1")
+            .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.sdet_token")
+            .contentType(ContentType.JSON)
+            .body(userPayload)
+        .when()
+            .post("/users")
+        .then()
+            .statusCode(201)
+            .contentType(ContentType.JSON)
+            .body("success", equalTo(true))
+            .body("user.id", notNullValue())
+            .body("user.email", equalTo("jane.doe@intelligentqa.io"));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'given()', explanation: 'GIVEN encapsulates all request configurations, headers, and body payloads' },
+          { lineOrPattern: 'when().post', explanation: 'WHEN triggers the exact HTTP method and relative endpoint path' },
+          { lineOrPattern: 'then().statusCode(201)', explanation: 'THEN validates status codes, header values, and body JSON attributes fluently' },
+        ],
+      },
+      bestPractices: [
+        'Keep GIVEN, WHEN, and THEN formatted on separate indented lines for readability',
+        'Use Map<String, Object> or POJO classes for request bodies instead of raw concatenated strings',
+      ],
+      antiPatterns: [
+        'Mixing verification statements inside the when() block',
+        'Writing giant monolithic tests that test 10 unrelated API endpoints in one method',
+      ],
+      interviewQnA: {
+        question: 'Explain the Given-When-Then pattern in REST Assured and why it is preferred.',
+        answer: 'Given-When-Then is a BDD syntax pattern implemented via a fluent builder interface in REST Assured. "Given" configures the request specifications (base URL, headers, cookies, query/path parameters, and body). "When" performs the HTTP request action (GET, POST, PUT, DELETE, PATCH). "Then" validates the response (status code, status line, response headers, response cookies, and JSON/XML body matchers). It is preferred because it cleanly decouples test configuration from action and assertions, dramatically improving code readability and maintainability.',
+      },
+    };
+  }
+
+  // 3. CRUD Operations & Status Code Assertions
+  if (lessonId === 'api-rest-crud') {
+    return {
+      title: '3. CRUD Operations & Status Code Assertions',
+      category,
+      tagline: 'End-to-End State Verification: Create (POST), Read (GET), Update (PUT/PATCH), and Delete (DELETE)',
+      overview: 'CRUD (Create, Read, Update, Delete) forms the bedrock of database-backed RESTful microservices. A professional SDET does not test endpoints in complete isolation; they test complete resource lifecycles: creating an entity (POST 201), retrieving it to verify database persistence (GET 200), modifying attributes (PUT/PATCH 200), removing the resource (DELETE 204 or 200), and confirming subsequent retrieval returns HTTP 404 Not Found. This end-to-end chaining guarantees backend integrity.',
+      whyItMattersForManualQA: 'In manual testing, if a tester creates a user in Postman, they must copy the generated "id" from the response, paste it into the URL of a GET request, verify it exists, paste it into a PUT request, update it, and finally delete it. Automating this lifecycle in code chains the ID dynamically in memory, executing the entire 5-step test in under 300 milliseconds.',
+      architectureUnderTheHood: {
+        title: 'RESTful Resource Lifecycle & State Machine Architecture',
+        flowOrMechanism: 'POST /v1/users (Creates Resource => returns ID: 101, Status 201) => GET /v1/users/101 (Verifies State => Status 200) => PUT /v1/users/101 (Full Update => Status 200) => DELETE /v1/users/101 (Soft/Hard Delete => Status 204) => GET /v1/users/101 (Verification => Status 404)',
+        keyTakeaway: 'Always verify the negative state: after deleting an entity, an immediate GET must return 404 Not Found or 410 Gone, proving the resource was truly deleted.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'POST: Create Resource & Extract Entity Identifier',
+          badge: 'Create',
+          summary: 'Submit POST request, verify 201 Created, and extract the generated ID.',
+          explanation: 'Extracting the generated primary key using .extract().path("id") enables chaining into subsequent test steps.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `res = session.post(f"{BASE_URL}/products", json={"name": "SDET Pro", "price": 99})\nassert res.status_code == 201\nproduct_id = res.json()["id"]`
+              : `int productId = given().body(payload).when().post("/products")\n    .then().statusCode(201).extract().path("id");`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'GET: Verify Created State & PUT/PATCH: Update Attributes',
+          badge: 'Read & Update',
+          summary: 'Retrieve resource using extracted ID, then perform PUT full replacement or PATCH partial update.',
+          explanation: 'Using .pathParam("id", productId) injects dynamic identifiers cleanly into URL templates.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `res = session.get(f"{BASE_URL}/products/{product_id}")\nassert res.status_code == 200\nres = session.put(f"{BASE_URL}/products/{product_id}", json={"name": "SDET Pro v2", "price": 149})\nassert res.status_code == 200`
+              : `given().pathParam("id", productId).when().get("/products/{id}").then().statusCode(200);\ngiven().pathParam("id", productId).body(updatedPayload).when().put("/products/{id}").then().statusCode(200);`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'DELETE: Remove Resource & Verify 404 Post-Condition',
+          badge: 'Delete',
+          summary: 'Send DELETE request (204 No Content), then verify immediate GET returns 404 Not Found.',
+          explanation: 'Testing the post-deletion 404 state guarantees that the deletion actually purged the record from the database.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `del_res = session.delete(f"{BASE_URL}/products/{product_id}")\nassert del_res.status_code in [200, 204]\nget_res = session.get(f"{BASE_URL}/products/{product_id}")\nassert get_res.status_code == 404`
+              : `given().pathParam("id", productId).when().delete("/products/{id}").then().statusCode(anyOf(equalTo(200), equalTo(204)));\ngiven().pathParam("id", productId).when().get("/products/{id}").then().statusCode(404);`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Copying the returned userId from Postman POST response window',
+          automatedApproach: isPython ? 'user_id = response.json()["id"]' : 'int userId = response.then().extract().path("id");',
+          whyItMatters: 'Programmatic extraction allows zero human touch between sequential steps.',
+        },
+        {
+          manualAction: 'Opening new tab in Postman, writing DELETE URL with pasted ID, clicking Send',
+          automatedApproach: isPython ? 'requests.delete(f"{BASE_URL}/users/{user_id}")' : 'when().delete("/users/{id}")',
+          whyItMatters: 'Use path parameters .pathParam("id", userId) rather than manual string concatenation.',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Full CRUD End-to-End Test (Python)' : 'Full CRUD End-to-End Test (Java REST Assured)',
+        description: isPython ? 'Complete lifecycle test chaining POST, GET, PUT, and DELETE.' : 'Complete lifecycle test suite with dynamic entity ID passing and post-delete verification.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+import pytest
+
+class TestProductCrudLifecycle:
+    BASE_URL = "https://api.intelligentqa.io/v1"
+
+    def test_complete_crud_lifecycle(self):
+        session = requests.Session()
+        session.headers.update({"Authorization": "Bearer sdet_token", "Content-Type": "application/json"})
+
+        # 1. CREATE: POST -> 201
+        res = session.post(f"{self.BASE_URL}/products", json={"name": "SDET Masterclass", "price": 199.99})
+        assert res.status_code == 201
+        product_id = res.json()["id"]
+
+        try:
+            # 2. READ: GET -> 200
+            get_res = session.get(f"{self.BASE_URL}/products/{product_id}")
+            assert get_res.status_code == 200
+
+            # 3. UPDATE: PUT -> 200
+            put_res = session.put(f"{self.BASE_URL}/products/{product_id}", json={"name": "SDET Masterclass v2", "price": 249.99})
+            assert put_res.status_code == 200
+
+            # 4. DELETE: DELETE -> 204
+            del_res = session.delete(f"{self.BASE_URL}/products/{product_id}")
+            assert del_res.status_code in [200, 204]
+
+            # 5. VERIFY: GET -> 404
+            final_get = session.get(f"{self.BASE_URL}/products/{product_id}")
+            assert final_get.status_code == 404
+        finally:
+            session.delete(f"{self.BASE_URL}/products/{product_id}")`
+          : `package com.intelligentqa.api.crud;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class ProductCrudLifecycleTest {
+
+    @BeforeClass
+    public void setup() {
+        RestAssured.baseURI = "https://api.intelligentqa.io";
+        RestAssured.basePath = "/v1";
+    }
+
+    @Test(description = "Verify complete CRUD lifecycle: POST -> GET -> PUT -> DELETE -> GET (404)")
+    public void testCompleteProductCrudLifecycle() {
+        Map<String, Object> newProduct = new HashMap<>();
+        newProduct.put("name", "SDET Automation Masterclass");
+        newProduct.put("price", 199.99);
+
+        String productId = given()
+            .header("Authorization", "Bearer sdet_token")
+            .contentType(ContentType.JSON)
+            .body(newProduct)
+        .when()
+            .post("/products")
+        .then()
+            .statusCode(201)
+            .extract().path("id");
+
+        try {
+            given().pathParam("id", productId).when().get("/products/{id}").then().statusCode(200);
+            given().pathParam("id", productId).contentType(ContentType.JSON).body(newProduct).when().put("/products/{id}").then().statusCode(200);
+            given().pathParam("id", productId).when().delete("/products/{id}").then().statusCode(anyOf(equalTo(200), equalTo(204)));
+            given().pathParam("id", productId).when().get("/products/{id}").then().statusCode(404);
+        } finally {
+            given().pathParam("id", productId).delete("/products/{id}");
+        }
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'extract().path("id")', explanation: 'Extracts dynamic entity ID from POST response to drive subsequent steps' },
+          { lineOrPattern: 'pathParam("id", productId)', explanation: 'Path parameterization provides clean URL templating without string concatenation' },
+          { lineOrPattern: 'finally', explanation: 'Guarantees data cleanup so test suites leave zero orphan records' },
+        ],
+      },
+      bestPractices: [
+        'Always clean up created test entities in a finally block to prevent test database pollution',
+        'Use pathParam() instead of string concatenation to avoid formatting bugs and URL injection',
+      ],
+      antiPatterns: [
+        'Leaving created test data in production or staging databases without cleanup',
+        'Assuming a resource is deleted without executing a follow-up GET to confirm 404 Not Found',
+      ],
+      interviewQnA: {
+        question: 'What is the difference between PUT and PATCH in RESTful APIs, and how do you test them?',
+        answer: 'PUT is idempotent and replaces the entire resource representation: any omitted fields in a PUT request should either be cleared or reset to defaults. PATCH performs partial updates, modifying only the fields explicitly supplied in the request body while leaving all other attributes intact. To test PUT: send a payload with updated fields, then GET the resource to verify that the updated fields changed and that unspecified fields adhered to replacement rules. To test PATCH: send only one modified field, then GET the resource to assert that the status changed while name and email remained completely unaltered.',
+      },
+    };
+  }
+
+  // 4. Request & Response Specification Reusability
+  if (lessonId === 'api-request-specs') {
+    return {
+      title: '4. Request & Response Specification Reusability',
+      category,
+      tagline: 'DRY Architecture: Eliminating Boilerplate with RequestSpecBuilder, ResponseSpecBuilder, and Logging Filters',
+      overview: 'In enterprise test automation suites containing hundreds of API tests, duplicating base URIs, authorization headers, Content-Type declarations, and standard response status assertions across every test violates the DRY principle. RequestSpecification and ResponseSpecification centralize common configuration into reusable specifications, while Logging Filters (RequestLoggingFilter, ResponseLoggingFilter) automatically record wire payloads on failures without cluttering CI console logs.',
+      whyItMattersForManualQA: 'In Postman, testers use Collection Variables to inject headers globally. In code, RequestSpecification is the exact equivalent: you define the base URL, standard headers, auth tokens, and logging rules once in a BaseApiTest class, and all tests inherit them automatically.',
+      architectureUnderTheHood: {
+        title: 'Specification Layering & Filter Pipeline Architecture',
+        flowOrMechanism: 'BaseApiTest => RequestSpecBuilder (BaseURI, Auth Token, ContentType.JSON) => Filters (RequestLoggingFilter, ResponseLoggingFilter on Error) => Target RequestSpecification => Test Method => Response => ResponseSpecification (statusCode 200, contentType JSON) => Validation Engine',
+        keyTakeaway: 'Separating common infrastructural plumbing from test-specific data creates maintainable suites that scale to thousands of tests without duplication.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Build Reusable RequestSpecification with RequestSpecBuilder',
+          badge: 'RequestSpec',
+          summary: 'Configure base URI, base path, auth header, Content-Type, and failure logging filters.',
+          explanation: 'RequestSpecBuilder centralizes all connection parameters, ensuring every test dispatches identical headers and auth credentials.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `class ApiClient:\n    def __init__(self, base_url: str, token: str):\n        self.session = requests.Session()\n        self.session.headers.update({"Authorization": f"Bearer {token}", "Content-Type": "application/json"})`
+              : `RequestSpecification reqSpec = new RequestSpecBuilder()\n    .setBaseUri("https://api.intelligentqa.io")\n    .setBasePath("/v1")\n    .addHeader("Authorization", "Bearer sdet_token")\n    .setContentType(ContentType.JSON)\n    .build();`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'Build Reusable ResponseSpecification with ResponseSpecBuilder',
+          badge: 'ResponseSpec',
+          summary: 'Declare expected standard response status codes, content types, and response time limits.',
+          explanation: 'ResponseSpecification acts as an assertion template, verifying status 200 and response times under 3 seconds in a single check.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `def validate_success(resp):\n    assert resp.status_code == 200\n    assert "application/json" in resp.headers["Content-Type"]`
+              : `ResponseSpecification resSpec = new ResponseSpecBuilder()\n    .expectStatusCode(200)\n    .expectContentType(ContentType.JSON)\n    .expectResponseTime(lessThan(3000L))\n    .build();`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'Apply Specifications Fluently in Test Methods',
+          badge: 'Application',
+          summary: 'Inject the specification into given(reqSpec) and validate against then().spec(resSpec).',
+          explanation: 'Using .spec(reqSpec) reduces test bodies to just the dynamic route and payload being validated.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `resp = client.get("/users")\nvalidate_success(resp)`
+              : `given().spec(reqSpec).when().get("/users").then().spec(resSpec);`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Setting Postman Collection Variables for {{baseUrl}} and {{token}}',
+          automatedApproach: isPython ? 'Centralized requests.Session configured in pytest fixture' : 'RequestSpecBuilder setting setBaseUri and addHeader globally',
+          whyItMatters: 'Centralizing specs allows 1-line changes when testing dev, staging, or production.',
+        },
+        {
+          manualAction: 'Manually inspecting Postman Console logs to see why a request failed',
+          automatedApproach: isPython ? 'Logging hooks attached to requests.Session on HTTPError' : 'RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()',
+          whyItMatters: 'Log ONLY on failure to keep CI pipelines clean and fast without GBs of log spam.',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Modular API Client with Centralized Specs (Python)' : 'Enterprise RequestSpec & ResponseSpec Architecture (Java)',
+        description: isPython ? 'Production-grade API Client with automatic headers, retry hooks, and logging.' : 'Complete BaseTest class with reusable RequestSpec, ResponseSpec, and conditional logging filters.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+import logging
+
+class BaseApiClient:
+    def __init__(self, base_url: str, token: str):
+        self.base_url = base_url.rstrip("/")
+        self.session = requests.Session()
+        self.session.headers.update({
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        })
+
+    def get(self, endpoint: str, **kwargs):
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        res = self.session.get(url, **kwargs)
+        if res.status_code >= 400:
+            logging.error(f"Error {res.status_code}: {res.text}")
+        return res`
+          : `package com.intelligentqa.api.specs;
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.lessThan;
+
+public class ApiSpecificationReusabilityTest {
+
+    protected RequestSpecification reqSpec;
+    protected ResponseSpecification resSpec200;
+
+    @BeforeClass
+    public void setupSpecifications() {
+        reqSpec = new RequestSpecBuilder()
+            .setBaseUri("https://api.intelligentqa.io")
+            .setBasePath("/v1")
+            .addHeader("Authorization", "Bearer sdet_secure_token")
+            .setContentType(ContentType.JSON)
+            .build();
+
+        resSpec200 = new ResponseSpecBuilder()
+            .expectStatusCode(200)
+            .expectContentType(ContentType.JSON)
+            .expectResponseTime(lessThan(3000L))
+            .build();
+    }
+
+    @Test
+    public void testGetUsersWithSpecs() {
+        given().spec(reqSpec).when().get("/users").then().spec(resSpec200);
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'RequestSpecBuilder', explanation: 'Encapsulates BaseURI, standard headers, and logging filters in one object' },
+          { lineOrPattern: 'ResponseSpecBuilder', explanation: 'Verifies common assertions (200 OK, JSON content, SLA response time)' },
+          { lineOrPattern: 'given().spec(reqSpec)', explanation: 'Drastically cuts down boilerplate code across all test suites in the framework' },
+        ],
+      },
+      bestPractices: [
+        'Initialize RequestSpecification and ResponseSpecification in a common BaseApiTest class',
+        'Use RestAssured.enableLoggingOfRequestAndResponseIfValidationFails() to only log failed requests in CI',
+      ],
+      antiPatterns: [
+        'Hardcoding headers, tokens, and base URLs repeatedly in every test method',
+        'Dumping all request and response body logs in CI console when tests pass',
+      ],
+      interviewQnA: {
+        question: 'How do RequestSpecification and ResponseSpecification improve test framework design in REST Assured?',
+        answer: 'They enforce the DRY principle and separation of concerns. A RequestSpecification bundles base URIs, base paths, query parameters, authentication schemes, headers, and logging filters into an immutable or reusable object. A ResponseSpecification bundles expected status codes, content types, headers, and response time limits. This reduces test method length by 70%, ensures uniformity across test teams, and makes environment migrations a one-line configuration update.',
+      },
+    };
+  }
+
+  // 5. JSONPath Querying & Deep Payload Validation
+  if (lessonId === 'api-json-path') {
+    return {
+      title: '5. JSONPath Querying & Deep Payload Validation',
+      category,
+      tagline: 'Mastering Groovy GPath Expressions, Filtering, and Hamcrest Matchers on Complex Nested Payloads',
+      overview: 'Enterprise API responses rarely consist of simple flat key-value pairs; they return deeply nested JSON objects containing arrays, metadata, pagination blocks, and embedded relations. REST Assured integrates Groovy\'s GPath engine into its JsonPath implementation, allowing SDETs to perform powerful SQL-like queries, filter arrays dynamically (e.g. users.findAll { it.status == "ACTIVE" }.email), compute aggregations (min, max, sum), and validate contracts using expressive Hamcrest matchers.',
+      whyItMattersForManualQA: 'In manual testing, if an API returns an array of 50 orders and you need to verify that all orders with status "DELIVERED" have a non-null trackingNumber, you have to scroll through the JSON in Postman and inspect each object manually. With JSONPath and GPath queries, a single automated assertion validates all 50 objects across the entire array in 5 milliseconds.',
+      architectureUnderTheHood: {
+        title: 'Groovy GPath Expression Engine & AST Evaluation Architecture',
+        flowOrMechanism: 'Raw JSON Stream => Jackson / JSON Engine => In-Memory Node Tree => Groovy GPath Expression => Closure Evaluation against Tree => Extracted Collection / Value => Hamcrest Matcher Comparison',
+        keyTakeaway: 'GPath operates directly on parsed object graphs, providing higher-order functions like findAll (filter), collect (map), and find (first) right inside test assertions.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Extract Simple and Nested Values with Dot Notation',
+          badge: 'Extraction',
+          summary: 'Use dot notation to drill down into nested objects and index brackets for arrays.',
+          explanation: 'Dot notation navigates object hierarchies directly without manual typecasting or null checks.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `data = response.json()\nuser_name = data["user"]["profile"]["name"]`
+              : `String userName = response.jsonPath().getString("user.profile.name");`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'Filter Arrays with GPath Closures and Conditions',
+          badge: 'GPath Filter',
+          summary: 'Extract subsets of array items matching criteria using Groovy findAll.',
+          explanation: 'Groovy findAll filters array elements matching a Boolean predicate condition into a new collection.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `active_emails = [u["email"] for u in data["users"] if u["status"] == "ACTIVE"]`
+              : `List<String> activeEmails = response.jsonPath().getList("users.findAll { it.status == 'ACTIVE' }.email");`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'Assert Collections with Expressive Hamcrest Matchers',
+          badge: 'Hamcrest',
+          summary: 'Verify presence, size, ordering, and constraints without looping.',
+          explanation: 'Hamcrest matchers (hasItem, hasItems) validate set containment cleanly without writing for-loops.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `assert "admin@intelligentqa.io" in active_emails`
+              : `response.then().body("users.findAll { it.status == 'ACTIVE' }.email", hasItem("admin@intelligentqa.io"));`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Visually scrolling through an array of 50 objects in Postman response window',
+          automatedApproach: isPython ? '[item for item in response.json()["items"] if item["type"] == "PRO"]' : 'response.jsonPath().getList("items.findAll { it.type == \'PRO\' }")',
+          whyItMatters: 'GPath expressions eliminate manual inspection and loops entirely.',
+        },
+        {
+          manualAction: 'Checking that an ID appears somewhere in an array of results',
+          automatedApproach: isPython ? 'assert expected_id in [u["id"] for u in data["users"]]' : 'then().body("users.id", hasItem(expectedId))',
+          whyItMatters: 'Hamcrest hasItem(), hasItems(), and containsInAnyOrder() test set membership cleanly.',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Deep JSON Validation with Python' : 'Deep JSON Validation with REST Assured & GPath',
+        description: isPython ? 'Validating nested payloads and array filtering using Python list comprehensions and pytest.' : 'Production test demonstrating nested dot notation, GPath filtering closures, and Hamcrest collection matchers.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+
+def test_complex_json_navigation():
+    res = requests.get("https://api.intelligentqa.io/v1/departments/engineering")
+    data = res.json()
+    assert data["department"]["info"]["title"] == "Quality Engineering"
+    engineers = data["department"]["employees"]
+    senior_staff = [e["name"] for e in engineers if e["status"] == "ACTIVE" and e["salary"] >= 120000]
+    assert len(senior_staff) >= 2`
+          : `package com.intelligentqa.api.jsonpath;
+
+import io.restassured.RestAssured;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class DeepJsonPathValidationTest {
+
+    @Test
+    public void testDeepJsonPathAndGPathQueries() {
+        given()
+            .header("Authorization", "Bearer sdet_secure_token")
+        .when()
+            .get("https://api.intelligentqa.io/v1/departments/engineering")
+        .then()
+            .statusCode(200)
+            .body("department.info.title", equalTo("Quality Engineering"))
+            .body("department.employees.size()", greaterThanOrEqualTo(5))
+            .body("department.employees.findAll { it.status == 'ACTIVE' && it.salary >= 120000 }.name",
+                  hasItem("Alex Rivers"));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'department.info.title', explanation: 'Evaluates nested fields with zero boilerplate dot notation' },
+          { lineOrPattern: "findAll { it.status == 'ACTIVE' }", explanation: 'Executes Groovy closures directly against the JSON tree' },
+          { lineOrPattern: 'hasItem', explanation: 'Order-independent collection assertions' },
+        ],
+      },
+      bestPractices: [
+        'Use Groovy GPath closures instead of writing loops and conditionals in test code',
+        'Use Hamcrest collection matchers for order-agnostic array validation',
+      ],
+      antiPatterns: [
+        'Writing manual Java for-loops to search through deserialized List<Map<String, Object>> collections',
+        'Asserting array items by hardcoded index ([0], [1]) when backend order is non-deterministic',
+      ],
+      interviewQnA: {
+        question: 'What is GPath in REST Assured and how does it differ from standard JSONPath syntax?',
+        answer: 'GPath is Groovy\'s object navigation language integrated natively into REST Assured. Unlike standard JSONPath, GPath uses Groovy closure syntax: users.findAll { it.status == "ACTIVE" }.email. GPath provides direct access to Groovy collection methods like .findAll (filter), .find (first match), .collect (map transformation), .min(), .max(), and .sum(). This allows SDETs to perform powerful data filtering, structural transformations, and mathematical aggregations directly inside fluent REST Assured assertions without manual loop iterations.',
+      },
+    };
+  }
+
+  // 6. POJO Serialization & Deserialization (Jackson / Lombok)
+  if (lessonId === 'api-pojo-serialization') {
+    return {
+      title: '6. POJO Serialization & Deserialization (Jackson)',
+      category,
+      tagline: 'Type-Safe API Frameworks: Eliminating String Maps and Brittle JSON with Data Transfer Objects (DTOs)',
+      overview: 'Constructing JSON request bodies using string concatenation or generic Map<String, Object> collections is error-prone, untyped, and difficult to maintain. Serialization is the process of converting a language object into a JSON string wire representation. Deserialization is the reverse: mapping an incoming JSON HTTP response directly into strongly typed domain classes. Using Jackson with REST Assured enables compile-time type safety, IDE code completion, automated schema validation, and refactoring resistance.',
+      whyItMattersForManualQA: 'In Postman, testers have to copy-paste JSON templates into the Body tab and manually edit string values. If a field name is misspelled, you only find out when the server returns 400 Bad Request. With POJOs and DTOs, the compiler guarantees that field names and data types match the API contract before any code is even executed.',
+      architectureUnderTheHood: {
+        title: 'Jackson ObjectMapper Reflection & Wire Serialization Pipeline',
+        flowOrMechanism: 'Java DTO Object => Jackson ObjectMapper (Inspects @JsonProperty, Getters) => JSON String => HTTP Request Wire => API Server => HTTP Response JSON String => Jackson ObjectMapper => Target Java Class Instance => Strongly Typed Getters in Test',
+        keyTakeaway: 'DTOs provide a compile-time contract. If the backend changes a field type from Integer to String, the deserializer fails immediately with an explicit MismatchedInputException.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Design Strongly Typed DTO Classes with Jackson Annotations',
+          badge: 'DTO Design',
+          summary: 'Create request and response POJO classes using @JsonProperty and @JsonIgnoreProperties.',
+          explanation: '@JsonIgnoreProperties(ignoreUnknown = true) ensures new backward-compatible backend fields do not break tests.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `from pydantic import BaseModel, EmailStr\n\nclass UserCreateRequest(BaseModel):\n    name: str\n    email: EmailStr\n    role: str`
+              : `@JsonIgnoreProperties(ignoreUnknown = true)\npublic class UserCreateRequest {\n    @JsonProperty("name") private String name;\n    @JsonProperty("email") private String email;\n    @JsonProperty("role") private String role;\n}`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'Serialize Object Directly into Request Body',
+          badge: 'Serialization',
+          summary: 'Pass the POJO instance into given().body(pojoInstance); Jackson serializes automatically.',
+          explanation: 'REST Assured detects the Jackson dependency on classpath and serializes objects to JSON wire format.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `req = UserCreateRequest(name="John Doe", email="john@intelligentqa.io", role="SDET")\nresponse = session.post(f"{BASE_URL}/users", json=req.model_dump())`
+              : `UserCreateRequest req = new UserCreateRequest("John Doe", "john@intelligentqa.io", "SDET");\nResponse res = given().contentType(ContentType.JSON).body(req).when().post("/users");`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'Deserialize Response into Strongly Typed Domain Class',
+          badge: 'Deserialization',
+          summary: 'Extract response body as target class: response.as(UserResponse.class).',
+          explanation: 'Mapping the response to a class (.as(UserResponse.class)) allows IDE autocompletion for assertions.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `user_res = UserResponse.model_validate(response.json())\nassert user_res.id is not None`
+              : `UserResponse userRes = response.then().statusCode(201).extract().as(UserResponse.class);\nassertEquals(userRes.getRole(), "SDET");`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Copying raw JSON into Postman Body tab and replacing values manually',
+          automatedApproach: isPython ? 'user_dto = UserRequest(name="Jane", email="jane@qa.io")' : 'UserCreateRequest req = UserCreateRequest.builder().name("Jane").build();',
+          whyItMatters: 'Use the Builder pattern to create variations of payloads cleanly in tests.',
+        },
+        {
+          manualAction: 'Visually checking if the response returned an id, name, and createdAt date',
+          automatedApproach: isPython ? 'assert user_res.id and user_res.created_at' : 'assertNotNull(userResponse.getId());',
+          whyItMatters: 'Type-safe getters prevent typos like userResponse.get("created_att").',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Type-Safe DTO Serialization with Pydantic' : 'Enterprise POJO Serialization with Jackson & Lombok',
+        description: isPython ? 'Production implementation using Pydantic models for request serialization and response validation.' : 'Complete DTO model architecture with Lombok annotations and REST Assured .as() deserialization.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+from pydantic import BaseModel, EmailStr
+
+class CreateUserRequest(BaseModel):
+    name: str
+    email: EmailStr
+    salary: float
+
+class UserResponse(BaseModel):
+    id: str
+    name: str
+    email: EmailStr
+    salary: float
+    status: str = "ACTIVE"
+
+def test_pydantic_serialization():
+    req = CreateUserRequest(name="Morgan Reed", email="morgan@intelligentqa.io", salary=145000.0)
+    res = requests.post("https://api.intelligentqa.io/v1/users", json=req.model_dump())
+    assert res.status_code == 201
+    user_res = UserResponse.model_validate(res.json())
+    assert user_res.name == "Morgan Reed"`
+          : `package com.intelligentqa.api.pojo;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.restassured.http.ContentType;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+class UserResponse {
+    @JsonProperty("id") private String id;
+    @JsonProperty("name") private String name;
+    public String getId() { return id; }
+    public String getName() { return name; }
+}
+
+public class PojoSerializationTest {
+
+    @Test
+    public void testCreateUserSerialization() {
+        UserResponse responseDto = given()
+            .header("Authorization", "Bearer sdet_secure_token")
+            .contentType(ContentType.JSON)
+            .body("{\"name\": \"Morgan Reed\", \"email\": \"morgan@qa.io\"}")
+        .when()
+            .post("https://api.intelligentqa.io/v1/users")
+        .then()
+            .statusCode(201)
+            .extract().as(UserResponse.class);
+
+        Assert.assertNotNull(responseDto.getId());
+    }
+}`,
+        annotations: [
+          { lineOrPattern: '@JsonIgnoreProperties', explanation: 'Prevents tests from failing when non-critical fields are added' },
+          { lineOrPattern: 'extract().as(UserResponse.class)', explanation: 'Auto-deserializes JSON response body into strongly typed class' },
+        ],
+      },
+      bestPractices: [
+        'Always annotate response DTOs with @JsonIgnoreProperties(ignoreUnknown = true)',
+        'Place DTO classes in a dedicated models or dto package shared across API tests',
+      ],
+      antiPatterns: [
+        'Constructing JSON bodies using raw string concatenation',
+        'Not configuring @JsonIgnoreProperties, causing test suite to break when backend adds new fields',
+      ],
+      interviewQnA: {
+        question: 'What is the purpose of @JsonIgnoreProperties(ignoreUnknown = true) in REST Assured automation?',
+        answer: '@JsonIgnoreProperties(ignoreUnknown = true) is a Jackson annotation applied to response POJO/DTO classes. By default, Jackson throws an UnrecognizedPropertyException if the incoming JSON payload contains attributes that do not have matching fields in the target Java class. In real-world enterprise microservices, backend developers frequently add new fields or telemetry tags to responses. Adding ignoreUnknown = true ensures that your automation framework only binds the fields it explicitly cares about, making your test suites resilient against non-breaking backward-compatible backend changes.',
+      },
+    };
+  }
+
+  // 7. Auth Tokens (JWT, OAuth2 & API Keys)
+  if (lessonId === 'api-auth-tokens') {
+    return {
+      title: '7. Auth Tokens (JWT, OAuth2 & API Keys)',
+      category,
+      tagline: 'Securing API Automation: JWT Parsing, OAuth2 Client Credentials Flow, and Token Lifecycle Management',
+      overview: 'Modern enterprise APIs are guarded by robust identity and access management (IAM) mechanisms: JSON Web Tokens (JWT), OAuth2 authorization flows, API Keys, and session cookies. Automation suites must never hardcode static tokens in source code, as tokens expire within minutes or hours. An enterprise SDET architecture incorporates an automated token acquisition layer that retrieves fresh tokens via OAuth2 token endpoints, caches tokens in memory for the duration of their validity, decodes JWT payloads to verify scopes and claims, and automatically injects Authorization: Bearer <token> headers into outgoing requests.',
+      whyItMattersForManualQA: 'In manual testing, QA testers frequently copy-paste JWT tokens from Postman or browser DevTools into headers. When the token expires 15 minutes later, requests fail with 401 Unauthorized, requiring another manual login. An automated token manager generates and refreshes tokens automatically behind the scenes with zero human interruption.',
+      architectureUnderTheHood: {
+        title: 'OAuth2 Token Acquisition & JWT Claims Architecture',
+        flowOrMechanism: 'Test Request Triggered => TokenManager.getValidToken() => [If Expired/Null: POST /oauth/token (grant_type=client_credentials) => Token Server => Returns access_token, expires_in: 3600] => Cache in ThreadSafe Singleton => Decodes Base64 JWT Payload => Injects Authorization: Bearer Header => Executes Test',
+        keyTakeaway: 'Caching active tokens prevents DDOSing your authentication server during parallel runs with 50 concurrent worker threads.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Implement OAuth2 Token Acquisition Service',
+          badge: 'Token Service',
+          summary: 'Send client_id and client_secret to /oauth/token endpoint to retrieve access token.',
+          explanation: 'The token endpoint uses form-encoded client credentials to exchange service secrets for scoped bearer tokens.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `resp = requests.post("https://auth.intelligentqa.io/oauth/token", data={"grant_type": "client_credentials", "client_id": CLIENT_ID, "client_secret": CLIENT_SECRET})\ntoken = resp.json()["access_token"]`
+              : `String token = given()\n    .formParam("grant_type", "client_credentials")\n    .formParam("client_id", CLIENT_ID)\n    .formParam("client_secret", CLIENT_SECRET)\n    .post("https://auth.intelligentqa.io/oauth/token")\n    .then().statusCode(200).extract().path("access_token");`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'Cache and Manage Token Expiration Lifecycle',
+          badge: 'Caching',
+          summary: 'Store token with timestamp; only request a new token when current token approaches expiration.',
+          explanation: 'Adding a 60-second buffer before expiry prevents edge-case token expiration mid-flight during test execution.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `if not self._cached_token or time.time() > self._expiry_timestamp:\n    self._refresh_token()`
+              : `if (cachedToken == null || System.currentTimeMillis() > expirationTime) {\n    refreshToken();\n}`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'Decode and Assert JWT Header and Claims',
+          badge: 'JWT Claims',
+          summary: 'Decode Base64 payload without secret to assert roles, scopes, and expiration claims.',
+          explanation: 'Base64Url decoding the second segment of a JWT string unlocks the payload claims for RBAC testing.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `import base64, json\npayload_part = token.split(".")[1]\npayload = json.loads(base64.b64decode(payload_part + "==").decode())\nassert payload["role"] == "ROLE_ADMIN"`
+              : `String payloadJson = new String(java.util.Base64.getUrlDecoder().decode(token.split("\\.")[1]));\nAssert.assertTrue(payloadJson.contains("ROLE_ADMIN"));`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manually logging in via Login API, copying bearer token, and pasting into Postman Auth tab',
+          automatedApproach: isPython ? 'TokenManager.get_token() called automatically in pytest session fixture' : 'TokenManager.getToken() injected directly into RequestSpecification',
+          whyItMatters: 'Centralized token managers eliminate all manual copy-pasting of expiring JWT tokens.',
+        },
+        {
+          manualAction: 'Copying JWT string to jwt.io website to inspect what permissions/roles it has',
+          automatedApproach: isPython ? 'jwt.decode(token, options={"verify_signature": False})' : 'Base64.getUrlDecoder().decode(token.split(".")[1])',
+          whyItMatters: 'Validate claims (exp, iss, sub, roles) automatically in code instead of third-party websites.',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Automated JWT & OAuth2 Manager (Python)' : 'Thread-Safe Token Manager & JWT Test (Java)',
+        description: isPython ? 'Production OAuth2 token manager with auto-refresh and JWT claim validation.' : 'Thread-safe Singleton TokenManager with automatic token refresh and JWT claims validation.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+import time
+import base64
+import json
+
+class TokenManager:
+    _cached_token = None
+    _expiry_time = 0
+
+    @classmethod
+    def get_token(cls) -> str:
+        if not cls._cached_token or time.time() >= (cls._expiry_time - 60):
+            resp = requests.post("https://auth.intelligentqa.io/oauth/token", data={"grant_type": "client_credentials"})
+            cls._cached_token = resp.json()["access_token"]
+            cls._expiry_time = time.time() + 3600
+        return cls._cached_token
+
+def test_authenticated_endpoint():
+    token = TokenManager.get_token()
+    res = requests.get("https://api.intelligentqa.io/v1/secure/data", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200`
+          : `package com.intelligentqa.api.auth;
+
+import io.restassured.RestAssured;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+
+public class AuthTokensSecurityTest {
+
+    @Test
+    public void testJwtClaimsAndAuthenticatedRequest() {
+        given()
+            .header("Authorization", "Bearer sdet_secure_token")
+        .when()
+            .get("https://api.intelligentqa.io/v1/secure/financial-records")
+        .then()
+            .statusCode(200);
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'TokenManager', explanation: 'Caches token in memory with automatic expiration time checking' },
+          { lineOrPattern: 'Authorization', explanation: 'Injects Bearer token into outgoing HTTP headers' },
+        ],
+      },
+      bestPractices: [
+        'Never store client secrets or tokens in plain text in code repositories; read from environment variables',
+        'Implement thread-safe token caching to avoid hitting auth rate limits during parallel test runs',
+      ],
+      antiPatterns: [
+        'Hardcoding a static Bearer token that expires in 1 hour directly in test files',
+        'Requesting a new access token before every single API test call, overloading authentication services',
+      ],
+      interviewQnA: {
+        question: 'How do you handle OAuth2 authentication and token expiration in an enterprise REST Assured framework?',
+        answer: 'We design a centralized, thread-safe TokenManager singleton. The TokenManager implements a getValidToken() method that checks whether an in-memory cached token exists and whether current time is within 60 seconds of its expiration window. If expired or null, it dispatches an OAuth2 client credentials POST request to the identity provider, extracts the access_token and expires_in duration, and updates the cache. In our BaseApiTest class, we inject this token into the RequestSpecification via .addHeader("Authorization", "Bearer " + TokenManager.getValidToken()). This ensures 100% automated token renewal with zero static secrets or human intervention.',
+      },
+    };
+  }
+
+  // 8. JSON Schema Validation & CI/CD Regression
+  if (lessonId === 'api-schema-validation') {
+    return {
+      title: '8. JSON Schema Validation & CI/CD Regression',
+      category,
+      tagline: 'Guaranteed API Contracts: Automated Schema Validation, Data Type Constraints, and CI/CD Guardrails',
+      overview: 'Asserting individual JSON attributes only checks the specific fields you remembered to test. If a backend engineer accidentally changes an ID from an Integer to a String, removes a mandatory field, or introduces an invalid enum value, simple key-value assertions will pass while the frontend crashes in production. JSON Schema Validation validates the entire HTTP response payload against an authoritative JSON Schema or OpenAPI specification in a single assertion, verifying field types, required keys, string patterns, array item constraints, and enum boundaries.',
+      whyItMattersForManualQA: 'In manual testing, it is practically impossible for a human tester to check that all 45 fields across an e-commerce order payload match their exact data types, regex patterns, and mandatory constraints. JSON Schema validation performs a mathematical proof of contract compliance on 100% of the payload in less than 10 milliseconds.',
+      architectureUnderTheHood: {
+        title: 'JSON Schema Validation Engine & Contract Enforcement Architecture',
+        flowOrMechanism: 'Raw HTTP Response JSON => JSON Schema Validator (NetworkNT / jsonschema) => Reads Contract Schema File (user-schema.json from classpath) => Recursive AST Tree Validation (Types, Required Fields, Format RegEx, Enums) => Passes or Throws Detailed Mismatch Report',
+        keyTakeaway: 'Schema validation catches breaking API contract changes before microservices are deployed into production.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Define JSON Schema Contract File in Test Resources',
+          badge: 'Contract Schema',
+          summary: 'Place schema definition file in src/test/resources/schemas/user-schema.json.',
+          explanation: 'JSON Schema standardizes requirements for data types, mandatory keys, and value boundaries.',
+          codeSnippet: {
+            language: 'json',
+            code: `{\n  "$schema": "http://json-schema.org/draft-07/schema#",\n  "type": "object",\n  "required": ["id", "name", "email", "role"],\n  "properties": {\n    "id": { "type": "string" },\n    "name": { "type": "string", "minLength": 2 },\n    "email": { "type": "string", "format": "email" },\n    "role": { "type": "string", "enum": ["ADMIN", "SDET", "VIEWER"] }\n  }\n}`,
+          },
+        },
+        {
+          stepNumber: 2,
+          title: 'Validate Response Against Schema File in One Fluent Call',
+          badge: 'Validation',
+          summary: 'Use JsonSchemaValidator.matchesJsonSchemaInClasspath in REST Assured or jsonschema in Python.',
+          explanation: 'The schema matcher evaluates the entire response body tree against the schema in one line.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython
+              ? `import jsonschema\njsonschema.validate(instance=response.json(), schema=user_schema)`
+              : `import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;\n\nresponse.then().statusCode(200).body(matchesJsonSchemaInClasspath("schemas/user-schema.json"));`,
+          },
+        },
+        {
+          stepNumber: 3,
+          title: 'Integrate into CI/CD Pipeline as Quality Gate',
+          badge: 'CI/CD Gate',
+          summary: 'Run automated schema regression in GitHub Actions or Jenkins before deployment.',
+          explanation: 'Schema test suites running on PR checks prevent contract drift between backend and frontend teams.',
+          codeSnippet: {
+            language: 'bash',
+            code: `mvn clean test -Dtest=*SchemaValidationTest`,
+          },
+        },
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manually cross-referencing Swagger/OpenAPI docs with Postman response JSON',
+          automatedApproach: isPython ? 'jsonschema.validate(instance=resp.json(), schema=schema_dict)' : 'then().body(matchesJsonSchemaInClasspath("schemas/user-schema.json"))',
+          whyItMatters: 'Generate JSON schemas directly from OpenAPI specs to automate contract verification.',
+        },
+        {
+          manualAction: 'Trying to check if an email or date format matches regex rules across 20 fields',
+          automatedApproach: isPython ? 'Pydantic model or jsonschema format: "email"' : 'JSON schema format: "email"',
+          whyItMatters: 'JSON Schema validates format, minimums, maximums, and enums in a single line of code.',
+        },
+      ],
+      productionCodeExample: {
+        title: isPython ? 'JSON Schema Contract Validation (Python)' : 'Enterprise JSON Schema Validation (Java REST Assured)',
+        description: isPython ? 'Contract validation using the python jsonschema library with Draft-07 format checkers.' : 'Complete REST Assured test verifying classpath JSON schema contracts with detailed mismatch reporting.',
+        language: isPython ? 'python' : 'java',
+        code: isPython
+          ? `import requests
+import jsonschema
+
+USER_SCHEMA = {
+    "type": "object",
+    "required": ["id", "name", "email", "role"],
+    "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "email": {"type": "string"},
+        "role": {"type": "string"}
+    }
+}
+
+def test_schema_contract():
+    res = requests.get("https://api.intelligentqa.io/v1/users/usr_9812")
+    assert res.status_code == 200
+    jsonschema.validate(instance=res.json(), schema=USER_SCHEMA)`
+          : `package com.intelligentqa.api.schema;
+
+import io.restassured.http.ContentType;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
+public class JsonSchemaValidationTest {
+
+    @Test
+    public void testUserJsonSchemaContract() {
+        given()
+            .header("Authorization", "Bearer sdet_secure_token")
+            .accept(ContentType.JSON)
+        .when()
+            .get("https://api.intelligentqa.io/v1/users/usr_9812")
+        .then()
+            .statusCode(200)
+            .contentType(ContentType.JSON)
+            .body(matchesJsonSchemaInClasspath("schemas/user-schema.json"));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'matchesJsonSchemaInClasspath', explanation: 'Loads contract schemas directly from test resources' },
+          { lineOrPattern: 'statusCode(200)', explanation: 'Verifies both HTTP response status and complete payload structure' },
+        ],
+      },
+      bestPractices: [
+        'Maintain JSON schemas in src/test/resources/schemas/ versioned alongside test code in Git',
+        'Run schema validation tests on every pull request to catch accidental API contract regressions',
+      ],
+      antiPatterns: [
+        'Only checking 2 or 3 field values and assuming the remaining 40 fields adhere to data types',
+        'Hardcoding raw JSON schema strings inside test methods instead of using classpath schema files',
+      ],
+      interviewQnA: {
+        question: 'What is the significance of JSON Schema validation in API automation, and how do you implement it in REST Assured?',
+        answer: 'JSON Schema validation provides contract testing by verifying that an entire HTTP response adheres to a predefined JSON Schema specification. While standard assertions check specific data values (e.g. status == "ACTIVE"), schema validation ensures that every property\'s data type (string, integer, boolean, array), format (email, uri, date-time), required status, and enum constraints are strictly respected. In REST Assured, we implement it using the io.restassured:json-schema-validator module via the matchesJsonSchemaInClasspath("schemas/user-schema.json") matcher. This guarantees that backend contract regressions or unintended field deletions are detected immediately in CI/CD without manual inspection.',
+      },
+    };
+  }
+
+  // Fallback for any unanticipated lesson in API track
+  return {
+    title: cleanTitle,
+    category,
+    tagline: 'Enterprise API Testing & Quality Engineering',
+    overview: lessonDesc || 'Detailed conceptual foundation for API automation.',
+    whyItMattersForManualQA: 'Provides programmatic precision and regression safety.',
+    architectureUnderTheHood: {
+      title: 'HTTP Client Architecture',
+      flowOrMechanism: 'Test Method => Request Engine => HTTP Wire Protocol => Response Engine => Assertions',
+      keyTakeaway: 'API tests run directly at the protocol level without browser overhead.',
+    },
+    stepByStepGuide: [
+      {
+        stepNumber: 1,
+        title: 'Construct Request',
+        badge: 'Setup',
+        summary: 'Establish request parameters and headers.',
+        explanation: 'Configure endpoint routes and parameters.',
+        codeSnippet: {
+          language: isPython ? 'python' : 'java',
+          code: isPython ? 'import requests\nresponse = requests.get("https://api.intelligentqa.io/v1/health")' : 'given().when().get("/health").then().statusCode(200);',
+        },
+      },
+    ],
+    manualToAutomatedBridge: [],
+    productionCodeExample: {
+      title: isPython ? 'API Automation (Python)' : 'API Automation (Java)',
+      description: 'Production API test example.',
+      language: isPython ? 'python' : 'java',
+      code: isPython ? 'import requests\n\ndef test_api():\n    r = requests.get("https://api.intelligentqa.io/v1/health")\n    assert r.status_code == 200' : 'given().when().get("/health").then().statusCode(200);',
+      annotations: [],
+    },
+    bestPractices: ['Validate status codes and headers', 'Use reusable specifications'],
+    antiPatterns: ['Hardcoding URLs', 'Skipping assertions'],
+    interviewQnA: {
+      question: 'Why automate APIs before UI?',
+      answer: 'API tests run 50x faster than UI tests, isolate backend logic from UI rendering, and provide earlier feedback in the testing pyramid.',
+    },
+  };
+}
+
+
 export function getLessonDoc(
   lessonId: string,
   trackId: string,
@@ -3454,6 +7263,16 @@ export function getLessonDoc(
   // If Selenium track, route directly to dedicated Java & Python curriculum generator
   if (isSelenium) {
     return getSeleniumLessonDoc(lessonId, isPython, lessonTitle, lessonDesc);
+  }
+
+  // If Playwright track, route directly to dedicated TypeScript & Python curriculum generator
+  if (trackId === 'playwright-ts') {
+    return getPlaywrightLessonDoc(lessonId, isPython, lessonTitle, lessonDesc);
+  }
+
+// If REST Assured & API Testing track, route directly to dedicated Java & Python curriculum generator
+  if (trackId === 'api-testing') {
+    return getRestAssuredLessonDoc(lessonId, isPython, lessonTitle, lessonDesc);
   }
 
   if (DETAILED_LESSON_DOCS[lessonId]) {
