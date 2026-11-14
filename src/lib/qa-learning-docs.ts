@@ -3459,6 +3459,135 @@ export function getLessonDoc(
   if (DETAILED_LESSON_DOCS[lessonId]) {
     const doc = { ...DETAILED_LESSON_DOCS[lessonId] };
 
+    // For Playwright track, adapt to Python Playwright when selected
+    if (isPython && trackId === 'playwright-ts') {
+      const pySnippet = getConceptCodeSnippet(lessonId, trackId, 'python', doc.title || lessonTitle);
+      return {
+        ...doc,
+        title: doc.title || lessonTitle || 'Playwright Automation',
+        category: 'Playwright (Python) • Core Concept',
+        tagline: doc.tagline || 'Master Enterprise Playwright with Python & pytest',
+        overview: doc.overview || lessonDesc || 'Detailed conceptual foundation.',
+        whyItMattersForManualQA: doc.whyItMattersForManualQA || '',
+        architectureUnderTheHood: doc.architectureUnderTheHood || {
+          title: 'Playwright Python CDP WebSocket Mechanism',
+          flowOrMechanism: 'Python sync/async API => Playwright Driver Node Server => CDP WebSocket => Browser Actions',
+          keyTakeaway: 'Playwright Python uses the same browser automation engine as TypeScript, powered by pytest fixtures.',
+        },
+        stepByStepGuide: (doc.stepByStepGuide || []).map(step => ({
+          ...step,
+          codeSnippet: step.codeSnippet ? {
+            ...step.codeSnippet,
+            language: 'python',
+            code: step.codeSnippet.code.includes('import') || step.codeSnippet.code.includes('test')
+              ? `from playwright.sync_api import Page, expect\n\ndef test_step(page: Page):\n    page.goto('/sandbox/web')\n    action_btn = page.get_by_role("button").first\n    if action_btn.is_visible():\n        action_btn.click()\n    expect(page.get_by_role("heading", level=1)).to_be_visible()`
+              : step.codeSnippet.code,
+          } : undefined,
+        })),
+        manualToAutomatedBridge: doc.manualToAutomatedBridge || [],
+        productionCodeExample: {
+          title: `Production Implementation (Python Playwright): ${doc.title || lessonTitle}`,
+          description: 'Production-ready Python Playwright pytest script.',
+          language: 'python',
+          code: pySnippet,
+          annotations: [],
+        },
+        bestPractices: doc.bestPractices || [
+          'Use pytest fixtures for browser page context',
+          'Use resilient get_by_* locators with auto-wait',
+          'Use expect(locator) for web-first assertions',
+        ],
+        antiPatterns: doc.antiPatterns || [
+          'Using hardcoded time.sleep() instead of auto-waiting',
+          'Using brittle CSS or XPath selectors',
+        ],
+        interviewQnA: doc.interviewQnA || {
+          question: 'How do you structure Playwright tests in Python?',
+          answer: 'We use pytest-playwright with page/context fixtures, resilient user-facing get_by_* locators, and expect web-first assertions.',
+        },
+      };
+    }
+
+    // For API Testing track, adapt to Python Requests when selected
+    if (isPython && trackId === 'api-testing') {
+      return {
+        ...doc,
+        title: doc.title || lessonTitle || 'REST API Testing',
+        category: 'REST API Testing (Python Requests) • Contract Validation',
+        tagline: doc.tagline || 'Master API Test Automation with Python Requests & pytest',
+        overview: doc.overview || lessonDesc || 'Detailed conceptual foundation.',
+        whyItMattersForManualQA: doc.whyItMattersForManualQA || '',
+        architectureUnderTheHood: doc.architectureUnderTheHood || {
+          title: 'Python Requests HTTP Client Architecture',
+          flowOrMechanism: 'pytest fixture => requests.Session / requests.get() => urllib3 connection pool => HTTP wire transfer => Response validation',
+          keyTakeaway: 'Python Requests provides a lightweight, clean syntax for testing REST endpoints and validating JSON schemas.',
+        },
+        stepByStepGuide: [
+          {
+            stepNumber: 1,
+            title: 'Setup & Preconditions (Python)',
+            badge: 'Step 1',
+            summary: 'Initialize base URL and headers using requests session or pytest fixture.',
+            explanation: 'Set up authorization tokens and base configuration.',
+            codeSnippet: {
+              language: 'python',
+              caption: 'Python Requests Session Setup',
+              code: 'import requests\nimport pytest\n\nBASE_URL = "http://localhost:3000/api/sandbox/v1"\n\n@pytest.fixture\ndef api_client():\n    session = requests.Session()\n    session.headers.update({"Authorization": "Bearer sample_token", "Content-Type": "application/json"})\n    return session',
+            },
+            proTip: 'Using requests.Session() reuses TCP connections across tests for faster execution.',
+          },
+          {
+            stepNumber: 2,
+            title: 'Executing HTTP Request (Python)',
+            badge: 'Step 2',
+            summary: 'Perform GET/POST/PUT/DELETE request and verify status code.',
+            explanation: 'Send request payload and assert status code is 200/201.',
+            codeSnippet: {
+              language: 'python',
+              caption: 'Executing HTTP Call',
+              code: 'def test_get_users(api_client):\n    response = api_client.get(f"{BASE_URL}/users")\n    assert response.status_code == 200, f"Expected 200, got {response.status_code}"\n    data = response.json()\n    assert "users" in data',
+            },
+            proTip: 'Always check response.status_code before attempting to parse response.json().',
+          },
+          {
+            stepNumber: 3,
+            title: 'Schema & Field Assertions (Python)',
+            badge: 'Step 3',
+            summary: 'Validate schema types and required response fields.',
+            explanation: 'Assert that JSON fields match expected types and business rules.',
+            codeSnippet: {
+              language: 'python',
+              caption: 'JSON Schema Validation in Python',
+              code: 'def test_user_payload(api_client):\n    response = api_client.get(f"{BASE_URL}/users")\n    users = response.json().get("users", [])\n    assert len(users) > 0\n    assert all("id" in u and "email" in u for u in users)',
+            },
+            proTip: 'Use pydantic or jsonschema for full strict schema validation in production suites.',
+          },
+        ],
+        manualToAutomatedBridge: doc.manualToAutomatedBridge || [],
+        productionCodeExample: {
+          title: `Production Implementation (Python Requests): ${doc.title || lessonTitle}`,
+          description: 'Production-ready Python requests test script.',
+          language: 'python',
+          code: 'import requests\nimport pytest\n\nBASE_URL = "http://localhost:3000/api/sandbox/v1"\n\n@pytest.fixture\ndef auth_headers():\n    return {\n        "Authorization": "Bearer sdet_jwt_token_sample",\n        "Content-Type": "application/json"\n    }\n\ndef test_api_contract_and_status(auth_headers):\n    """\n    Scenario: Verify API response contract and HTTP 200 status\n    """\n    response = requests.get(f"{BASE_URL}/users", headers=auth_headers, timeout=5)\n    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"\n    data = response.json()\n    assert isinstance(data.get("users"), list), "Payload should contain \'users\' array"\n    assert len(data["users"]) > 0, "Users list should not be empty"\n    print(f"✔ API Verified: {len(data[\'users\'])} records retrieved successfully.")',
+          annotations: [],
+        },
+        bestPractices: [
+          'Use requests.Session() for connection pooling',
+          'Use pytest fixtures for auth tokens and environment URLs',
+          'Validate response schemas with Pydantic or jsonschema',
+        ],
+        antiPatterns: [
+          'Hardcoding credentials or API keys directly in test files',
+          'Ignoring HTTP status codes and only checking payload body',
+          'Not setting request timeouts, causing hanging tests',
+        ],
+        interviewQnA: {
+          question: 'How do you build an enterprise API test framework in Python?',
+          answer: 'We use pytest with requests.Session fixtures for token management, Pydantic models for JSON contract serialization/validation, and Allure for detailed HTTP request/response reporting.',
+        },
+      };
+    }
+
     // For Selenium OOPs lesson, adapt code examples dynamically to selected language (Java vs Python)
     if (isSelenium && isPython && lessonId === 'java-oops-framework') {
       return {
@@ -3610,7 +3739,13 @@ class TestLoginValidation:
 
   return {
     title: cleanTitle,
-    category: isPlaywright ? 'Playwright (TypeScript) • Core Concept' : isSelenium ? 'Selenium (Java) • Enterprise Architecture' : isApi ? 'REST Assured (API) • Contract Validation' : 'AI for QA • Autonomous Engineering',
+    category: isPlaywright
+      ? (isPython ? 'Playwright (Python) • Core Concept' : 'Playwright (TypeScript) • Core Concept')
+      : isSelenium
+      ? (isPython ? 'Selenium (Python) • Enterprise Architecture' : 'Selenium (Java) • Enterprise Architecture')
+      : isApi
+      ? (isPython ? 'REST API (Python) • Contract Validation' : 'REST Assured (API) • Contract Validation')
+      : 'AI for QA • Autonomous Engineering',
     tagline: `Enterprise Architecture & Implementation Guide: ${cleanTitle}`,
     overview: `${lessonDesc || cleanTitle}. In modern test automation, mastering this concept is essential to building fast, resilient, and deterministic test frameworks that run reliably in CI/CD pipelines without false alarms.`,
     whyItMattersForManualQA: `When manual testers transition to SDET roles, understanding ${cleanTitle} bridges the gap between manual verification steps and production-grade automated code. Instead of writing linear, brittle scripts, you learn to model the application cleanly, handle asynchronous timing, and write self-documenting tests.`,
@@ -3633,14 +3768,20 @@ class TestLoginValidation:
         summary: `Initialize configuration and prepare the test environment for ${cleanTitle}.`,
         explanation: 'Configure proper dependencies, base URLs, and isolated browser or client state before executing actions.',
         codeSnippet: {
-          language: isSelenium || isApi ? 'java' : 'typescript',
-          code: isPlaywright
-            ? `// Step 1: Initialize test context\nimport { test, expect } from '@playwright/test';\n\ntest('${cleanTitle}', async ({ page }) => {\n  await page.goto('/sandbox/web');\n});`
-            : isSelenium
-            ? `// Step 1: Setup WebDriver instance\npublic class TestConcept extends BaseTest {\n    @Test\n    public void testExecution() {\n        driver.get("http://localhost:3000/sandbox/web");\n    }\n}`
-            : isApi
-            ? `// Step 1: Configure RequestSpecification\nRequestSpecification reqSpec = new RequestSpecBuilder()\n    .setBaseUri("http://localhost:3000/api/sandbox/v1")\n    .setContentType(ContentType.JSON)\n    .build();`
-            : `// Step 1: Initialize AI Agent Context\nconst agent = new QAAgentClient({ role: "Test Architect" });`,
+          language: isPython ? 'python' : (isSelenium || isApi ? 'java' : 'typescript'),
+          code: isPython
+            ? (isPlaywright
+              ? `from playwright.sync_api import Page, expect\n\ndef test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}(page: Page):\n    page.goto('/sandbox/web')`
+              : isApi
+              ? `import requests\nimport pytest\n\nBASE_URL = "http://localhost:3000/api/sandbox/v1"\n\n@pytest.fixture\ndef auth_headers():\n    return {"Authorization": "Bearer sample_token"}`
+              : `from selenium import webdriver\n\ndef test_${lessonId.replace(/[^a-zA-Z0-9]/g, '_')}():\n    driver = webdriver.Chrome()\n    driver.get("http://localhost:3000/sandbox/web")`)
+            : (isPlaywright
+              ? `// Step 1: Initialize test context\nimport { test, expect } from '@playwright/test';\n\ntest('${cleanTitle}', async ({ page }) => {\n  await page.goto('/sandbox/web');\n});`
+              : isSelenium
+              ? `// Step 1: Setup WebDriver instance\npublic class TestConcept extends BaseTest {\n    @Test\n    public void testExecution() {\n        driver.get("http://localhost:3000/sandbox/web");\n    }\n}`
+              : isApi
+              ? `// Step 1: Configure RequestSpecification\nRequestSpecification reqSpec = new RequestSpecBuilder()\n    .setBaseUri("http://localhost:3000/api/sandbox/v1")\n    .setContentType(ContentType.JSON)\n    .build();`
+              : `// Step 1: Initialize AI Agent Context\nconst agent = new QAAgentClient({ role: "Test Architect" });`),
           caption: 'Preconditions and context setup',
         },
         proTip: 'Always isolate test state so each test execution starts from a clean, predictable baseline.',
@@ -3652,14 +3793,20 @@ class TestLoginValidation:
         summary: `Execute the target automation actions using best-practice patterns.`,
         explanation: 'Avoid hardcoded sleeps and brittle selectors. Leverage auto-waiting, explicit expectations, and resilient locators.',
         codeSnippet: {
-          language: isSelenium || isApi ? 'java' : 'typescript',
-          code: isPlaywright
-            ? `// Step 2: User-facing locator and action\nconst actionButton = page.getByRole('button', { name: 'Submit' });\nawait actionButton.click();`
-            : isSelenium
-            ? `// Step 2: Explicit wait before interaction\nWebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\nWebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.id("action-btn")));\nelement.click();`
-            : isApi
-            ? `// Step 2: Execute HTTP action\nResponse response = given().spec(reqSpec)\n    .when().get("/users")\n    .then().extract().response();`
-            : `// Step 2: Execute autonomous synthesis\nconst testMatrix = await agent.generateRequirements(userStory);`,
+          language: isPython ? 'python' : (isSelenium || isApi ? 'java' : 'typescript'),
+          code: isPython
+            ? (isPlaywright
+              ? `    submit_btn = page.get_by_role("button", name="Submit").first\n    if submit_btn.is_visible():\n        submit_btn.click()`
+              : isApi
+              ? `def test_request(auth_headers):\n    response = requests.get(f"{BASE_URL}/users", headers=auth_headers)\n    assert response.status_code == 200`
+              : `    wait = WebDriverWait(driver, 10)\n    btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.action-btn")))\n    btn.click()`)
+            : (isPlaywright
+              ? `// Step 2: User-facing locator and action\nconst actionButton = page.getByRole('button', { name: 'Submit' });\nawait actionButton.click();`
+              : isSelenium
+              ? `// Step 2: Explicit wait before interaction\nWebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\nWebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.id("action-btn")));\nelement.click();`
+              : isApi
+              ? `// Step 2: Execute HTTP action\nResponse response = given().spec(reqSpec)\n    .when().get("/users")\n    .then().extract().response();`
+              : `// Step 2: Execute autonomous synthesis\nconst testMatrix = await agent.generateRequirements(userStory);`),
           caption: 'Executing core mechanism',
         },
         proTip: 'Never mix implicit and explicit waits in Selenium, and trust Playwright auto-waiting before adding manual timeouts.',
@@ -3671,14 +3818,20 @@ class TestLoginValidation:
         summary: `Verify business outcomes with robust, auto-retrying assertions.`,
         explanation: 'Assert that the application reached the desired state (URL, banner visibility, data values, or response status).',
         codeSnippet: {
-          language: isSelenium || isApi ? 'java' : 'typescript',
-          code: isPlaywright
-            ? `// Step 3: Web-first assertion\nawait expect(page.getByRole('heading', { level: 1 })).toBeVisible();\nawait expect(page).toHaveURL(/.*success/);`
-            : isSelenium
-            ? `// Step 3: TestNG verification\nAssert.assertTrue(driver.findElement(By.id("success-msg")).isDisplayed());`
-            : isApi
-            ? `// Step 3: Validate status code and contract\nthen().statusCode(200)\n    .body("status", equalTo("SUCCESS"))\n    .body("data", notNullValue());`
-            : `// Step 3: Validate generated coverage\nexpect(testMatrix.coverage).toBeGreaterThanOrEqual(95);`,
+          language: isPython ? 'python' : (isSelenium || isApi ? 'java' : 'typescript'),
+          code: isPython
+            ? (isPlaywright
+              ? `    expect(page.get_by_role("heading", level=1)).to_be_visible(timeout=5000)`
+              : isApi
+              ? `    data = response.json()\n    assert "users" in data\n    assert len(data["users"]) > 0`
+              : `    alert = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "success-toast")))\n    assert alert.is_displayed()`)
+            : (isPlaywright
+              ? `// Step 3: Web-first assertion\nawait expect(page.getByRole('heading', { level: 1 })).toBeVisible();\nawait expect(page).toHaveURL(/.*success/);`
+              : isSelenium
+              ? `// Step 3: TestNG verification\nAssert.assertTrue(driver.findElement(By.id("success-msg")).isDisplayed());`
+              : isApi
+              ? `// Step 3: Validate status code and contract\nthen().statusCode(200)\n    .body("status", equalTo("SUCCESS"))\n    .body("data", notNullValue());`
+              : `// Step 3: Validate generated coverage\nexpect(testMatrix.coverage).toBeGreaterThanOrEqual(95);`),
           caption: 'Outcome verification and assertion',
         },
         proTip: 'Verify negative error conditions as thoroughly as happy paths to prevent silent production regressions.',
@@ -3702,14 +3855,22 @@ class TestLoginValidation:
       },
     ],
     productionCodeExample: {
-      title: `Production Implementation: ${cleanTitle}`,
+      title: isPython
+        ? `Production Implementation (Python ${isPlaywright ? 'Playwright' : isApi ? 'Requests' : 'Selenium'}): ${cleanTitle}`
+        : `Production Implementation (${isPlaywright ? 'Playwright' : isApi ? 'Java REST Assured' : 'Java Selenium'}): ${cleanTitle}`,
       description: `Complete, production-ready blueprint illustrating best practices for ${cleanTitle}.`,
-      language: isSelenium || isApi ? 'java' : 'typescript',
-      code: isPlaywright
-        ? `import { test, expect } from '@playwright/test';\n\ntest.describe('${cleanTitle} Suite', () => {\n  test('should execute scenario successfully', async ({ page }) => {\n    await page.goto('/sandbox/web');\n    const target = page.getByRole('button').first();\n    if (await target.isVisible()) {\n      await target.click();\n    }\n    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();\n  });\n});`
-        : isSelenium
-        ? `package com.intelligentqa.concepts;\n\nimport org.openqa.selenium.By;\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.support.ui.ExpectedConditions;\nimport org.openqa.selenium.support.ui.WebDriverWait;\nimport java.time.Duration;\n\npublic class ${lessonId.replace(/[^a-zA-Z0-9]/g, '')} {\n    public static void execute(WebDriver driver) {\n        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\n        wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h1")));\n    }\n}`
-        : `import static io.restassured.RestAssured.given;\nimport static org.hamcrest.Matchers.*;\n\npublic class ApiTest {\n    public static void verify() {\n        given().baseUri("http://localhost:3000/api/sandbox/v1")\n            .when().get("/users")\n            .then().statusCode(200).body("users", notNullValue());\n    }\n}`,
+      language: isPython ? 'python' : (isSelenium || isApi ? 'java' : 'typescript'),
+      code: isPython
+        ? (isPlaywright
+          ? getConceptCodeSnippet(lessonId, trackId, 'python', cleanTitle)
+          : isApi
+          ? `import requests\nimport pytest\n\nBASE_URL = "http://localhost:3000/api/sandbox/v1"\n\n@pytest.fixture\ndef auth_headers():\n    return {\n        "Authorization": "Bearer sdet_jwt_token_sample",\n        "Content-Type": "application/json"\n    }\n\ndef test_api_contract(auth_headers):\n    response = requests.get(f"{BASE_URL}/users", headers=auth_headers, timeout=5)\n    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"\n    assert "users" in response.json()`
+          : getConceptCodeSnippet(lessonId, trackId, 'python', cleanTitle))
+        : (isPlaywright
+          ? `import { test, expect } from '@playwright/test';\n\ntest.describe('${cleanTitle} Suite', () => {\n  test('should execute scenario successfully', async ({ page }) => {\n    await page.goto('/sandbox/web');\n    const target = page.getByRole('button').first();\n    if (await target.isVisible()) {\n      await target.click();\n    }\n    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();\n  });\n});`
+          : isSelenium
+          ? `package com.intelligentqa.concepts;\n\nimport org.openqa.selenium.By;\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.support.ui.ExpectedConditions;\nimport org.openqa.selenium.support.ui.WebDriverWait;\nimport java.time.Duration;\n\npublic class ${lessonId.replace(/[^a-zA-Z0-9]/g, '')} {\n    public static void execute(WebDriver driver) {\n        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\n        wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h1")));\n    }\n}`
+          : `import static io.restassured.RestAssured.given;\nimport static org.hamcrest.Matchers.*;\n\npublic class ApiTest {\n    public static void verify() {\n        given().baseUri("http://localhost:3000/api/sandbox/v1")\n            .when().get("/users")\n            .then().statusCode(200).body("users", notNullValue());\n    }\n}`),
       annotations: [
         { lineOrPattern: 'test', explanation: 'Declares test case or method boundary.' },
         { lineOrPattern: 'expect', explanation: 'Web-first or contract assertion verifying outcomes.' },

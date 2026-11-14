@@ -16,14 +16,12 @@ test('Point 2: Sidebar tracks are collapsed by default to prevent heavy scrollin
   assert.ok(sidebarFile.includes('onClick={() => toggleTrack(track.id)}'), 'Track row toggles expand/collapse');
 });
 
-test('Point 3: Code Editor Workspace has pure draggable resizable splitter with redundant preset buttons removed', () => {
+test('Point 3: Code Editor Workspace has full-width clean reading guide with right-side editor panel removed', () => {
   const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
 
-  // Verify draggable state and mouse events
-  assert.ok(workspaceFile.includes('splitPercent'), 'Has splitPercent state');
-  assert.ok(workspaceFile.includes('isDragging'), 'Has isDragging state');
-  assert.ok(workspaceFile.includes('cursor-col-resize'), 'Has cursor-col-resize splitter divider');
-  assert.ok(workspaceFile.includes('handleMouseDown'), 'Has handleMouseDown for drag handle');
+  // Verify full-width layout across all tracks
+  assert.ok(workspaceFile.includes('w-full flex flex-col'), 'Has full-width guide layout');
+  assert.ok(!workspaceFile.includes('RIGHT PANEL: Interactive Concept Code Lab'), 'Right code example panel removed across all tracks');
 
   // Verify redundant preset layout buttons are removed to free space for learning text
   assert.ok(!workspaceFile.includes('Reading (70%)'), 'Reading preset button removed to free space');

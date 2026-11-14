@@ -21,7 +21,7 @@ test('Item 2: Left Navigation sidebar is resizable on the right border', () => {
   assert.ok(sidebarFile.includes('onDoubleClick'), 'Double-click resets to default width');
 });
 
-test('Item 3: CODE EXAMPLES: label removed in favor of clean Java, TypeScript, and Python toggle buttons', () => {
+test('Item 3: CODE EXAMPLES: label removed in favor of clean language toggle buttons', () => {
   const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
 
   // Verify CODE EXAMPLES: label is removed as requested
@@ -29,9 +29,8 @@ test('Item 3: CODE EXAMPLES: label removed in favor of clean Java, TypeScript, a
   assert.ok(!workspaceFile.includes('Concept Code Lab:'), 'Old Concept Code Lab: header removed');
 
   // Verify clean language toggle buttons are present
-  assert.ok(workspaceFile.includes("handleLanguageChange('java')"), 'Has Java toggle button');
-  assert.ok(workspaceFile.includes("handleLanguageChange('typescript')"), 'Has TypeScript toggle button');
-  assert.ok(workspaceFile.includes("handleLanguageChange('python')"), 'Has Python toggle button');
+  assert.ok(workspaceFile.includes('renderLanguageToggle()'), 'Has inline language toggle on code blocks');
+  assert.ok(workspaceFile.includes('setGuideLang'), 'Has guide language switch handler');
 });
 
 test('Item 3b: Try it with AI in AI in Action tab with Gemini background integration', () => {
@@ -44,16 +43,15 @@ test('Item 3b: Try it with AI in AI in Action tab with Gemini background integra
   assert.ok(workspaceFile.includes('Apply to Editor'), 'Has Apply to Editor button for generated snippet');
 });
 
-test('Items 4 & 5: Language tabs include Java, TypeScript, and Python with dynamic code switching', () => {
+test('Items 4 & 5: Language options include Java, TypeScript, and Python with dynamic code switching', () => {
   const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
 
   // Verify SupportedLang type includes python
   assert.ok(workspaceFile.includes("'java' | 'typescript' | 'python'"), 'Supports java, typescript, python');
 
-  // Verify buttons for all 3 languages
-  assert.ok(workspaceFile.includes("handleLanguageChange('java')"), 'Has Java code switch button');
-  assert.ok(workspaceFile.includes("handleLanguageChange('typescript')"), 'Has TypeScript code switch button');
-  assert.ok(workspaceFile.includes("handleLanguageChange('python')"), 'Has Python code switch button');
+  // Verify inline language toggle handles primary languages and Python
+  assert.ok(workspaceFile.includes('primaryLang'), 'Supports primary language for track');
+  assert.ok(workspaceFile.includes("setGuideLang('python')"), 'Has Python switch button');
 
   // Verify code generator functions
   assert.ok(workspaceFile.includes('getPythonCodeExample'), 'Has getPythonCodeExample generator');
@@ -95,22 +93,22 @@ test('Item 9: Redundant horizontal tabs removed from QA AI Agents page', () => {
   assert.ok(!workspaceFile.includes('<div className="flex border-b">'), 'No horizontal agent tab bar');
 });
 
-test('Item 10: Selenium Learning Content provides in-guide inline Java/Python toggle and removes duration mentions', () => {
+test('Item 10: Learning Content provides in-guide inline language toggle across all tracks and removes duration mentions', () => {
   const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
   const docsFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-learning-docs.ts'), 'utf8');
   const trackIdPage = fs.readFileSync(path.join(__dirname, '../src/app/tracks/[trackId]/page.tsx'), 'utf8');
 
-  // Right-side code editor panel is excluded for Selenium courses to prevent duplicate snippet confusion
-  assert.ok(workspaceFile.includes('!isSelenium && ('), 'Right editor panel is conditionally hidden for Selenium');
-  assert.ok(workspaceFile.includes('isSelenium ? \'100%\' : `${splitPercent}%`'), 'Left panel expands to 100% full width for Selenium');
+  // Right-side code editor panel is excluded for all courses (Playwright, Rest Assured, AI for QA, Selenium)
+  assert.ok(!workspaceFile.includes('RIGHT PANEL: Interactive Concept Code Lab'), 'Right editor panel is removed for all tracks');
+  assert.ok(workspaceFile.includes('w-full flex flex-col'), 'Guide expands to 100% full width across all tracks');
 
   // Top banner removed so user does not need to scroll to top to change language
   assert.ok(!workspaceFile.includes('Code Examples Language:'), 'Code Examples Language banner removed from top');
 
-  // Inline Java & Python language switcher directly on each code section
+  // Inline language switcher directly on each code section
   assert.ok(workspaceFile.includes('renderLanguageToggle()'), 'Renders inline language toggle directly on code blocks');
-  assert.ok(workspaceFile.includes('setGuideLang(\'java\')'), 'Has in-guide Java switch button');
-  assert.ok(workspaceFile.includes('setGuideLang(\'python\')'), 'Has in-guide Python switch button');
+  assert.ok(workspaceFile.includes("setGuideLang(primaryLang)"), 'Has in-guide primary language switch button');
+  assert.ok(workspaceFile.includes("setGuideLang('python')"), 'Has in-guide Python switch button');
 
   // All time/duration mentions removed from learning sections
   assert.ok(!workspaceFile.includes('{lesson.durationMinutes} mins'), 'Time minutes removed from lesson workspace header');
