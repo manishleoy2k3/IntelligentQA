@@ -70,6 +70,62 @@ function getJavaBinaries(): { javac: string; java: string; available: boolean } 
   return { javac: 'javac', java: 'java', available: false };
 }
 
+// Fallback Cloud Code Execution Engine (Used when host lacks local compiler, e.g. Vercel Serverless)
+async function executeWithCloudCompiler(
+  language: string,
+  code: string,
+  stdin?: string
+): Promise<{ stdout: string; stderr: string; code: number } | null> {
+  const pistonLangMap: Record<string, { lang: string; file: string }> = {
+    java: { lang: 'java', file: 'Main.java' },
+    python: { lang: 'python', file: 'main.py' },
+    typescript: { lang: 'typescript', file: 'index.ts' },
+  };
+
+  const target = pistonLangMap[language.toLowerCase()];
+  if (!target) return null;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    const res = await fetch('https://emkc.org/api/v2/piston/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        language: target.lang,
+        version: '*',
+        files: [{ name: target.file, content: code }],
+        stdin: stdin || '',
+      }),
+    });
+
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.compile && data.compile.code !== 0) {
+        return {
+          stdout: data.compile.stdout || '',
+          stderr: data.compile.stderr || data.compile.output || 'Compilation failed.',
+          code: data.compile.code || 1,
+        };
+      }
+      if (data.run) {
+        return {
+          stdout: data.run.stdout || data.run.output || '',
+          stderr: data.run.stderr || '',
+          code: data.run.code || 0,
+        };
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function safeRequire(modName: string) {
   try {
     const dynamicRequire = eval('require');
@@ -97,6 +153,28 @@ export async function POST(req: NextRequest) {
         timeout: 5000,
         stdin,
       });
+
+      // If python3 is missing on host environment (e.g. Vercel Serverless Function), fallback to cloud execution engine
+      if (
+        result.stderr.includes('ENOENT') ||
+        result.stderr.includes('not found') ||
+        result.stderr.includes('spawn python3')
+      ) {
+        const cloudResult = await executeWithCloudCompiler('python', code, stdin);
+        if (cloudResult) {
+          return NextResponse.json({
+            language: 'python',
+            success: cloudResult.code === 0,
+            status: cloudResult.code === 0 ? 'success' : 'runtime_error',
+            stdout: cloudResult.stdout,
+            stderr: cloudResult.stderr,
+            executionTimeMs: Date.now() - startTime,
+            exitCode: cloudResult.code,
+            engine: 'cloud-runner',
+          });
+        }
+      }
+
       const durationMs = Date.now() - startTime;
 
       return NextResponse.json({
@@ -242,13 +320,27 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Fallback if JDK binary missing
+      // Fallback if JDK binary missing (e.g. Vercel Serverless Function without local JDK)
+      const cloudResult = await executeWithCloudCompiler('java', code, stdin);
+      if (cloudResult) {
+        return NextResponse.json({
+          language: 'java',
+          success: cloudResult.code === 0,
+          status: cloudResult.code === 0 ? 'success' : 'compilation_error',
+          stdout: cloudResult.stdout,
+          stderr: cloudResult.stderr,
+          executionTimeMs: Date.now() - startTime,
+          exitCode: cloudResult.code,
+          engine: 'cloud-compiler',
+        });
+      }
+
       return NextResponse.json({
         language: 'java',
         success: false,
         status: 'compilation_error',
         stdout: '',
-        stderr: 'JDK compiler (javac) not located in system environment.',
+        stderr: 'JDK compiler (javac) not located in system environment, and cloud compilation was unreachable.',
         executionTimeMs: Date.now() - startTime,
         exitCode: 1,
       });
