@@ -49,12 +49,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   // Courses Sub-Menu collapsible state (open by default so child items are immediately accessible)
   const [coursesOpen, setCoursesOpen] = useState(true);
 
-  // Individual Track collapsible states (all 4 open by default to display all 38 lessons with individual hours)
+  // Individual Track collapsible states (collapsed by default to prevent heavy scrolling)
   const [openTracks, setOpenTracks] = useState<Record<string, boolean>>({
-    'selenium-java': true,
-    'playwright-ts': true,
-    'api-testing': true,
-    'ai-qa': true,
+    'selenium-java': false,
+    'playwright-ts': false,
+    'api-testing': false,
+    'ai-qa': false,
   });
 
   const toggleTrack = (trackId: string) => {
@@ -285,9 +285,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
                   return (
                     <div key={track.id} className="space-y-0.5">
-                      {/* Track Parent Row */}
+                      {/* Track Parent Row (Collapsible on click) */}
                       <div
-                        className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group ${
+                        onClick={() => toggleTrack(track.id)}
+                        className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group cursor-pointer ${
                           isTrackActive
                             ? 'bg-slate-100/90 dark:bg-neutral-800/80 font-semibold'
                             : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40'
@@ -295,7 +296,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                       >
                         <Link
                           href={`/tracks/${track.id}`}
-                          onClick={onCloseMobile}
+                          onClick={e => {
+                            e.stopPropagation();
+                            if (onCloseMobile) onCloseMobile();
+                          }}
                           className="flex items-center gap-2 truncate flex-1 min-w-0"
                           title={`${track.displayTitle} (${track.totalHours} · ${track.lessons.length} Lessons)`}
                         >

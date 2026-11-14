@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Lesson, Track } from '@/types/qa';
 import {
   Play,
@@ -17,6 +17,13 @@ import {
   UserPlus,
   LogIn,
   ShieldCheck,
+  GripVertical,
+  Maximize2,
+  Minimize2,
+  Columns,
+  Layers,
+  Compass,
+  Check,
 } from 'lucide-react';
 import Link from 'next/link';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
@@ -46,6 +53,47 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
   } | null>(null);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
+
+  // Draggable Splitter & Visible Text Layout state
+  const [splitPercent, setSplitPercent] = useState<number>(55);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [fullWidthReading, setFullWidthReading] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Mouse drag handlers for resizable panels
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const newPercent = ((e.clientX - rect.left) / rect.width) * 100;
+      if (newPercent >= 25 && newPercent <= 80) {
+        setSplitPercent(Math.round(newPercent));
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isDragging) setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging]);
 
   // Sync auth state
   const syncAuth = useCallback(() => {
@@ -131,11 +179,17 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col lg:flex-row overflow-hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
-      {/* LEFT PANEL: Interactive Guide */}
-      <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto h-auto lg:h-[calc(100vh-65px)]">
+    <div
+      ref={containerRef}
+      className="w-full flex-1 flex flex-col lg:flex-row overflow-hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 relative"
+    >
+      {/* LEFT PANEL: Interactive Guide & Concepts */}
+      <div
+        style={fullWidthReading ? { width: '100%' } : { width: `${splitPercent}%` }}
+        className="w-full flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto h-auto lg:h-[calc(100vh-65px)] transition-[width] duration-75"
+      >
         {/* Navigation & Header */}
-        <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-800 space-y-2">
+        <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-800 space-y-3">
           <div className="flex items-center justify-between text-xs flex-wrap gap-2">
             <span className="font-semibold text-slate-500">{track.title}</span>
             <div className="flex items-center gap-2">
@@ -158,15 +212,72 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
               </span>
             </div>
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-            {lesson.title}
-          </h2>
-          <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {lesson.title}
+            </h2>
+
+            {/* Quick Layout Controls to make text fully visible & customizable */}
+            <div className="hidden lg:flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-[11px] font-medium text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
+              <button
+                type="button"
+                onClick={() => { setFullWidthReading(false); setSplitPercent(70); }}
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                  !fullWidthReading && splitPercent === 70
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
+                    : 'hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Widen Course Text Panel (70% text / 30% code)"
+              >
+                Reading (70%)
+              </button>
+              <button
+                type="button"
+                onClick={() => { setFullWidthReading(false); setSplitPercent(50); }}
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                  !fullWidthReading && splitPercent === 50
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
+                    : 'hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Balanced 50/50 split"
+              >
+                Balanced (50%)
+              </button>
+              <button
+                type="button"
+                onClick={() => { setFullWidthReading(false); setSplitPercent(30); }}
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                  !fullWidthReading && splitPercent === 30
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
+                    : 'hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Code Editor Focus (30% text / 70% code)"
+              >
+                Code (30%)
+              </button>
+              <button
+                type="button"
+                onClick={() => setFullWidthReading(!fullWidthReading)}
+                className={`px-2 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
+                  fullWidthReading
+                    ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                    : 'hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title={fullWidthReading ? 'Restore Code Panel' : 'Maximize text to 100% full width'}
+              >
+                {fullWidthReading ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+                {fullWidthReading ? 'Restore Code' : 'Full Text'}
+              </button>
+            </div>
+          </div>
+
+          <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
             {lesson.description}
           </p>
 
           {/* Subtabs */}
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
             <button
               onClick={() => setActiveTab('guide')}
               className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
@@ -176,7 +287,7 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              Lesson Guide
+              Concept Guide
             </button>
             <button
               onClick={() => setActiveTab('manual-vs-code')}
@@ -187,7 +298,7 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
               }`}
             >
               <Code className="w-4 h-4" />
-              Manual vs Code
+              Manual QA Mental Model
             </button>
             <button
               onClick={() => setActiveTab('ai-action')}
@@ -206,19 +317,101 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
         {/* Tab Content */}
         <div className="p-4 md:p-6 space-y-6 flex-1 text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
           {activeTab === 'guide' && (
-            <div className="space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2.5">
-                <h4 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg flex items-center gap-2">
-                  <Flame className="w-5 h-5 text-emerald-500" />
-                  Core Architecture Explanation
-                </h4>
-                <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-                  {lesson.automationContext.explanation}
-                </p>
-              </div>
+            <div className="space-y-6">
+              {/* Comprehensive Concept Breakdown for Manual Testers */}
+              {lesson.id === 'java-oops-framework' ? (
+                <div className="space-y-5">
+                  <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/80 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                        Why Manual Testers Need OOPs for Automation
+                      </h3>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                      In manual testing, every test case in your spreadsheet is an isolated row with steps like &quot;Launch Chrome, type user, click submit&quot;. If you automate like a manual tester by copy-pasting code into 100 script files, you end up with 100 browser instances running in memory, memory leaks, and when a single button ID changes, you have to manually edit 100 files!
+                    </p>
+                    <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                      <strong>Object-Oriented Programming (OOPs)</strong> solves this completely. A <em>Class</em> is your page blueprint, an <em>Object</em> is a live browser session, and the 4 pillars ensure you write code once and reuse it across thousands of test executions.
+                    </p>
+                  </div>
+
+                  {/* The 4 Pillars Breakdown */}
+                  <div className="space-y-4">
+                    <h4 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-emerald-500" />
+                      The 4 Pillars of OOPs Mapped Directly to Automation:
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* 1. Encapsulation */}
+                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                          1. Encapsulation (Data Hiding in POM)
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          <strong>Concept:</strong> Keep element locators <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">private By username</code> inside the Page Class. Never expose raw locators to test classes!
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          <strong>Why it matters:</strong> If the web UI changes, you update the locator in ONE line inside the Page class, and all 50 tests pass without touching test files.
+                        </p>
+                      </div>
+
+                      {/* 2. Inheritance */}
+                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div className="font-bold text-sky-600 dark:text-sky-400 text-sm">
+                          2. Inheritance (BaseTest Code Reuse)
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          <strong>Concept:</strong> <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">public class LoginTest extends BaseTest</code>. Child test classes inherit driver lifecycle automatically.
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          <strong>Why it matters:</strong> Write browser initialization, window maximize, and driver.quit() ONCE in BaseTest. 100 test classes inherit it for free.
+                        </p>
+                      </div>
+
+                      {/* 3. Polymorphism */}
+                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div className="font-bold text-purple-600 dark:text-purple-400 text-sm">
+                          3. Polymorphism (Multi-Browser & Overloading)
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          <strong>Concept:</strong> Method Overloading (<code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">click(By)</code> vs <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">click(By, timeout)</code>) + Dynamic Dispatch (<code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">WebDriver driver = new ChromeDriver()</code>).
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          <strong>Why it matters:</strong> The exact same test suite switches between Chrome, Firefox, and Edge via a single configuration parameter at runtime!
+                        </p>
+                      </div>
+
+                      {/* 4. Abstraction */}
+                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div className="font-bold text-amber-600 dark:text-amber-400 text-sm">
+                          4. Abstraction (Hiding Browser Complexity)
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          <strong>Concept:</strong> <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">WebDriver</code> is a Java Interface. <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">BasePage</code> is an Abstract Class.
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          <strong>Why it matters:</strong> You call <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">driver.get()</code> and Selenium handles millions of lines of browser C++ socket code under the hood.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg flex items-center gap-2">
+                    <Flame className="w-5 h-5 text-emerald-500" />
+                    Core Architecture &amp; Conceptual Foundation
+                  </h4>
+                  <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+                    {lesson.automationContext.explanation}
+                  </p>
+                </div>
+              )}
 
               {/* Best Practices & Anti-patterns */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2.5">
                   <div className="font-bold text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4" />
@@ -250,14 +443,37 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
                 </div>
               </div>
 
-              {/* Hands-On Sandbox Challenge */}
-              <div className="p-5 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 space-y-2.5">
-                <h4 className="font-bold text-sky-900 dark:text-sky-300 text-sm sm:text-base">
-                  Hands-On Sandbox Challenge:
-                </h4>
-                <p className="text-sm sm:text-base text-sky-950 dark:text-sky-200 leading-relaxed">
-                  {lesson.challenge.instruction}
+              {/* DEDICATED PRACTICE LABS CALLOUT: Separating Concept from Hands-On Practice */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-slate-900 to-indigo-950 border border-emerald-500/40 text-white space-y-3 shadow-md">
+                <div className="flex items-center gap-2">
+                  <Compass className="w-5 h-5 text-emerald-400" />
+                  <h4 className="font-bold text-base text-white">
+                    Ready to Practice on Live Elements?
+                  </h4>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  You have learned the core concepts! To practice automating against real-world dynamic delays, Shadow DOM, OTP fields, data tables, and REST APIs, visit the dedicated <strong>PRACTICE LABS</strong> section in the Left Navigation.
                 </p>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <Link
+                    href={
+                      track.id === 'api-testing'
+                        ? '/sandbox/api'
+                        : track.id === 'ai-qa'
+                        ? '/qa-agents'
+                        : track.id === 'playwright-ts'
+                        ? '/sandbox/web?stack=playwright'
+                        : '/sandbox/web?stack=selenium'
+                    }
+                    className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Open {track.id === 'api-testing' ? 'API Testing Lab' : track.id === 'ai-qa' ? 'QA AI Agents Lab' : track.id === 'playwright-ts' ? 'Playwright Web Lab' : 'Selenium Web Lab'} →
+                  </Link>
+                  <span className="text-xs text-slate-400">
+                    Located in Left Navigation under Practice Labs
+                  </span>
+                </div>
               </div>
             </div>
           )}
@@ -316,54 +532,85 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
         </div>
       </div>
 
-      {/* RIGHT PANEL: Code Editor & Sandbox Runner */}
-      <div className="w-full lg:w-1/2 flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative">
-        {/* Editor Toolbar */}
-        <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setSelectedLang('typescript')}
-              className={`px-3 py-1 rounded font-semibold ${
-                selectedLang === 'typescript'
-                  ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              TypeScript
-            </button>
-            <button
-              onClick={() => setSelectedLang('java')}
-              className={`px-3 py-1 rounded font-semibold ${
-                selectedLang === 'java'
-                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Java
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {!isLocked && (
-              <button
-                onClick={loadSolution}
-                className="px-2.5 py-1 text-slate-400 hover:text-amber-400 transition-colors flex items-center gap-1 text-[11px]"
-                title="Reveal Solution Code"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-                Solution
-              </button>
-            )}
-            <Link
-              href="/sandbox/web"
-              target="_blank"
-              className="px-2.5 py-1 text-slate-400 hover:text-sky-400 transition-colors flex items-center gap-1 text-[11px]"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Open Sandbox
-            </Link>
+      {/* Draggable Divider Bar (Desktop Splitter) */}
+      {!fullWidthReading && (
+        <div
+          onMouseDown={handleMouseDown}
+          className={`hidden lg:flex w-2 hover:w-2.5 bg-slate-200 dark:border-x dark:border-neutral-800 dark:bg-neutral-900 hover:bg-emerald-500/80 cursor-col-resize select-none items-center justify-center transition-all group relative z-10 shrink-0 ${
+            isDragging ? 'bg-emerald-500 w-2.5 shadow-lg' : ''
+          }`}
+          title="Drag to resize panels (or use layout buttons at top)"
+        >
+          <div className="w-1 h-8 rounded-full bg-slate-400 dark:bg-slate-600 group-hover:bg-white flex flex-col justify-around py-1">
+            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
+            <span className="w-0.5 h-0.5 rounded-full bg-current mx-auto" />
           </div>
         </div>
+      )}
+
+      {/* RIGHT PANEL: Interactive Concept Code Lab */}
+      {!fullWidthReading && (
+        <div
+          style={{ width: `${100 - splitPercent}%` }}
+          className="w-full flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative transition-[width] duration-75"
+        >
+          {/* Editor Toolbar */}
+          <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:inline">
+                Concept Code Lab:
+              </span>
+              <button
+                onClick={() => setSelectedLang('typescript')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
+                  selectedLang === 'typescript'
+                    ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                TypeScript
+              </button>
+              <button
+                onClick={() => setSelectedLang('java')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
+                  selectedLang === 'java'
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Java
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {!isLocked && (
+                <button
+                  onClick={loadSolution}
+                  className="px-2.5 py-1 text-slate-400 hover:text-amber-400 transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
+                  title="Reveal Solution Code Blueprint"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  Solution
+                </button>
+              )}
+              <Link
+                href={
+                  track.id === 'api-testing'
+                    ? '/sandbox/api'
+                    : track.id === 'playwright-ts'
+                    ? '/sandbox/web?stack=playwright'
+                    : '/sandbox/web?stack=selenium'
+                }
+                target="_blank"
+                className="px-2.5 py-1 text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1 text-[11px] font-semibold bg-emerald-500/10 rounded-md border border-emerald-500/20"
+                title="Open Live Hands-On Sandbox Practice Lab"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Practice Lab
+              </Link>
+            </div>
+          </div>
 
         {/* Code Input Area */}
         <div className="flex-1 p-4 font-mono text-xs sm:text-sm overflow-y-auto relative">
@@ -474,10 +721,10 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
               <button
                 onClick={handleValidateAndRun}
                 disabled={isRunning}
-                className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/30"
+                className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/30 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
-                {isRunning ? 'Grading Code...' : 'Run in Sandbox'}
+                {isRunning ? 'Validating Concept...' : 'Validate Concept Code'}
               </button>
             )}
 
@@ -493,6 +740,7 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
