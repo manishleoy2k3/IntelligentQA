@@ -166,3 +166,32 @@ test('Item 12: Dynamic Java and Python code across all Selenium lessons, clean t
   assert.ok(!sidebarFile.includes('{track.totalHours} · {track.lessons.length}L'), 'Total hours removed from track header badge in Left Nav');
   assert.ok(!sidebarFile.includes('{hours}\n                                </span>'), 'Individual lesson hours badge removed from Left Nav lesson links');
 });
+
+test('Item 13: Try it with AI ThreadLocal correctness & completeness, and Dedicated Hands-On Coding Lab under Practice Labs', () => {
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const routeFile = fs.readFileSync(path.join(__dirname, '../src/app/api/ai/qa-agent/route.ts'), 'utf8');
+  const compilerRouteFile = fs.readFileSync(path.join(__dirname, '../src/app/api/sandbox/compiler/route.ts'), 'utf8');
+  const codeLabPage = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/page.tsx'), 'utf8');
+
+  // Requirement 1: ThreadLocal WebDriver correctness and completeness in Try it with AI code generation
+  assert.ok(routeFile.includes("lowerInput.includes('threadlocal')"), 'Route checks for threadlocal input');
+  assert.ok(routeFile.includes('ThreadLocal<WebDriver> driverThread = new ThreadLocal<>()'), 'Generates ThreadLocal WebDriver instance');
+  assert.ok(routeFile.includes('driverThread.remove()'), 'Includes ThreadLocal cleanup to prevent memory leaks');
+  assert.ok(routeFile.includes('getDriver()'), 'Provides static getDriver() accessor for thread safety');
+  assert.ok(routeFile.includes('codeBlockMatch'), 'Strips markdown fences and explanations for clean code snippet');
+
+  // Requirement 2: Dedicated Hands-On Coding Lab under Practice Labs
+  assert.ok(sidebarFile.includes('5. Hands-On Coding Lab'), 'Left Nav includes 5. Hands-On Coding Lab');
+  assert.ok(sidebarFile.includes('/sandbox/code'), 'Links to /sandbox/code');
+
+  // Lab Page contains Java, Python, and TypeScript options
+  assert.ok(codeLabPage.includes('STARTER_TEMPLATES'), 'Has starter templates for SDET practice');
+  assert.ok(codeLabPage.includes('ThreadLocal BaseTest (TestNG)'), 'Includes ThreadLocal TestNG template');
+  assert.ok(codeLabPage.includes('fetch(\'/api/sandbox/compiler\''), 'Connects to live compiler API');
+
+  // Compiler API handles all 3 languages
+  assert.ok(compilerRouteFile.includes("normalizedLang === 'python'"), 'Compiler supports Python');
+  assert.ok(compilerRouteFile.includes("normalizedLang === 'typescript'"), 'Compiler supports TypeScript');
+  assert.ok(compilerRouteFile.includes("normalizedLang === 'java'"), 'Compiler supports Java');
+  assert.ok(compilerRouteFile.includes('analyzeJavaSyntax'), 'Performs static analysis and compilation checks for Java');
+});

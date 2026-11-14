@@ -73,11 +73,11 @@ export async function POST(req: NextRequest) {
           systemPrompt = `You are IntelligentQA's Automation Code Generator Agent. Generate production-ready, clean code for tech stack: ${techStack}. For Playwright, use POM and getByRole. For Selenium, use pure POM with WebDriverWait. For REST Assured, use given/when/then with POJOs.`;
         } else if (action === 'code_snippet') {
           systemPrompt = `You are IntelligentQA's Autonomous SDET Code Generator.
-Generate a concise, 100% correct, production-grade test automation code snippet for tech stack: ${techStack}.
+Generate a concise, 100% correct, and complete production-grade test automation code snippet for tech stack: ${techStack}.
 CRITICAL INSTRUCTIONS:
 1. Output ONLY the raw executable code snippet.
 2. Do NOT include ANY explanations, intro text, markdown headers, summary, or commentary before or after the code block.
-3. Keep the snippet short, focused, and directly addressing the user's prompt.
+3. Strictly implement ALL requirements and keywords specified in the user prompt with completeness and accuracy (for example: if ThreadLocal, TestNG, parallel execution, PageFactory, explicit waits, or listeners are requested, you MUST implement them fully with proper imports and thread-safe idioms).
 4. Output clean code that can be run directly in an automation framework.`;
         } else if (action === 'code_review') {
           systemPrompt = `You are IntelligentQA's Code Reviewer & Quality Auditor Agent. Analyze the automation code for flakiness, hardcoded waits (Thread.sleep/waitForTimeout), brittle locators, and memory leaks. Provide detailed line-by-line review and refactored code.`;
@@ -118,13 +118,18 @@ CRITICAL INSTRUCTIONS:
               const data = await res.json();
               let generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
               if (generatedText) {
-                if (action === 'code_snippet') {
-                  // Strip markdown code fences if Gemini added them to guarantee pure code snippet without descriptions
-                  generatedText = generatedText
-                    .replace(/^```[a-zA-Z0-9_-]*\n?/, '')
-                    .replace(/\n?```\s*$/, '')
-                    .trim();
-                }
+        if (action === 'code_snippet') {
+          // If response contains a markdown code block, extract ONLY the inside of the code block
+          const codeBlockMatch = generatedText.match(/```(?:[a-zA-Z0-9_-]+)?\s*([\s\S]*?)```/);
+          if (codeBlockMatch) {
+            generatedText = codeBlockMatch[1].trim();
+          } else {
+            generatedText = generatedText
+              .replace(/^```[a-zA-Z0-9_-]*\n?/, '')
+              .replace(/\n?```\s*$/, '')
+              .trim();
+          }
+        }
                 return NextResponse.json({
                   action,
                   output: generatedText,
@@ -479,7 +484,25 @@ function generateCodeSnippetOnly(input: string, techStack: string): string {
   const lowerInput = input.toLowerCase();
 
   // SELENIUM (PYTHON)
-  if (techStack === 'selenium-python' || (techStack === 'python' && (lowerInput.includes('selenium') || lowerInput.includes('basetest') || lowerInput.includes('webdriver')))) {
+  if (techStack === 'selenium-python' || (techStack === 'python' && (lowerInput.includes('selenium') || lowerInput.includes('webdriver') || lowerInput.includes('basetest')))) {
+    if (lowerInput.includes('threadlocal') || lowerInput.includes('thread-local') || lowerInput.includes('parallel') || lowerInput.includes('xdist')) {
+      return `# Selenium WebDriver (Python) Thread-Safe Fixture for Parallel Execution (pytest-xdist)
+import pytest
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+@pytest.fixture(scope="function")
+def driver():
+    """Function-scoped thread-safe WebDriver fixture for parallel execution."""
+    options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    driver_instance = webdriver.Chrome(options=options)
+    driver_instance.maximize_window()
+    yield driver_instance
+    driver_instance.quit()`;
+    }
     if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('fixture')) {
       return `# Selenium WebDriver (Python) BaseTest Fixture
 import pytest
@@ -536,27 +559,109 @@ assert alert.is_displayed(), "Verification alert should be visible"`;
 
   // SELENIUM (JAVA)
   if (techStack === 'selenium-java' || techStack === 'java') {
-    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('testng')) {
-      return `// Selenium WebDriver (Java) BaseTest
+    // Check for ThreadLocal or Parallel execution request first
+    if (lowerInput.includes('threadlocal') || lowerInput.includes('thread-local') || lowerInput.includes('parallel') || (lowerInput.includes('basetest') && lowerInput.includes('thread'))) {
+      return `// Selenium WebDriver (Java) BaseTest with ThreadLocal for Parallel TestNG Execution
 package com.intelligentqa.base;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.AfterMethod;
 
 public abstract class BaseTest {
-    protected WebDriver driver;
+    // ThreadLocal ensures isolated WebDriver instances per thread during parallel execution
+    private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();
+
+    public static WebDriver getDriver() {
+        return driverThread.get();
+    }
 
     @BeforeMethod
     public void setUp() {
-        driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new", "--disable-gpu", "--no-sandbox");
+        WebDriver driver = new ChromeDriver(options);
         driver.manage().window().maximize();
+        driverThread.set(driver);
     }
 
     @AfterMethod
     public void tearDown() {
-        if (driver != null) driver.quit();
+        if (getDriver() != null) {
+            getDriver().quit();
+            driverThread.remove(); // Prevent memory leaks in parallel thread pools
+        }
+    }
+}`;
+    }
+    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('testng')) {
+      return `// Selenium WebDriver (Java) BaseTest with TestNG
+package com.intelligentqa.base;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+
+public abstract class BaseTest {
+    // Thread-safe WebDriver reference for robust parallel execution
+    private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();
+
+    public static WebDriver getDriver() {
+        return driverThread.get();
+    }
+
+    @BeforeMethod
+    public void setUp() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new", "--disable-gpu", "--no-sandbox");
+        WebDriver driver = new ChromeDriver(options);
+        driver.manage().window().maximize();
+        driverThread.set(driver);
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (getDriver() != null) {
+            getDriver().quit();
+            driverThread.remove();
+        }
+    }
+}`;
+    }
+    if (lowerInput.includes('pagefactory') || lowerInput.includes('page factory')) {
+      return `// Selenium WebDriver (Java) PageFactory Pattern
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class LoginPage {
+    private final WebDriver driver;
+
+    @FindBy(id = "username")
+    private WebElement usernameInput;
+
+    @FindBy(id = "password")
+    private WebElement passwordInput;
+
+    @FindBy(css = "button[type='submit']")
+    private WebElement loginBtn;
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    public void loginAs(String user, String pass) {
+        usernameInput.sendKeys(user);
+        passwordInput.sendKeys(pass);
+        loginBtn.click();
     }
 }`;
     }
@@ -579,6 +684,29 @@ public class LoginPage {
         driver.findElement(usernameField).sendKeys(username);
         driver.findElement(passwordField).sendKeys(password);
         driver.findElement(submitBtn).click();
+    }
+}`;
+    }
+    if (lowerInput.includes('dataprovider') || lowerInput.includes('data-driven')) {
+      return `// TestNG Parallel DataProvider
+package com.intelligentqa.tests;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+public class DataDrivenTests {
+    @DataProvider(name = "userCredentials", parallel = true)
+    public Object[][] getUserCredentials() {
+        return new Object[][] {
+            {"standard_user", "secret_sauce", "Dashboard"},
+            {"locked_out_user", "secret_sauce", "User is locked out"},
+            {"problem_user", "secret_sauce", "Dashboard"}
+        };
+    }
+
+    @Test(dataProvider = "userCredentials")
+    public void testLoginScenarios(String username, String password, String expectedOutcome) {
+        System.out.printf("Running login test for %s on thread: %s%n", username, Thread.currentThread().getName());
     }
 }`;
     }

@@ -17,6 +17,7 @@ import {
   Terminal,
   Server,
   Sparkles,
+  Laptop,
   Layers,
   PlayCircle,
   Bot,
@@ -496,6 +497,25 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             </div>
             <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded shrink-0">
               Stage 4
+            </span>
+          </Link>
+
+          {/* 5. Hands-On Coding Lab */}
+          <Link
+            href="/sandbox/code"
+            onClick={onCloseMobile}
+            className={childItemClass(pathname === '/sandbox/code')}
+            title="Hands-On Coding Lab: Multi-Language Compiler & Runner (Java, Python, TypeScript)"
+          >
+            <div className="flex items-center gap-2 truncate">
+              <Laptop className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+              <div className="flex flex-col truncate">
+                <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">5. Hands-On Coding Lab</span>
+                <span className="text-[9px] text-slate-400 dark:text-neutral-500">Compiler &amp; Runner</span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1 py-0.2 rounded shrink-0">
+              Run
             </span>
           </Link>
         </div>
