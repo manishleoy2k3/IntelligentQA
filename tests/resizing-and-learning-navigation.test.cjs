@@ -190,14 +190,17 @@ test('Item 13: Try it with AI ThreadLocal correctness & completeness, and Dedica
   assert.ok(sidebarFile.includes('5. Hands-On Coding Lab'), 'Left Nav includes 5. Hands-On Coding Lab');
   assert.ok(sidebarFile.includes('/sandbox/code'), 'Links to /sandbox/code');
 
-  // Lab Page contains Java, Python, and TypeScript options
-  assert.ok(codeLabPage.includes('STARTER_TEMPLATES'), 'Has starter templates for SDET practice');
-  assert.ok(codeLabPage.includes('ThreadLocal BaseTest (TestNG)'), 'Includes ThreadLocal TestNG template');
+  // Lab Page is a pure online compiler like OnlineGDB without automation template dropdowns
+  assert.ok(codeLabPage.includes('STARTER_CODES'), 'Provides pure language starter code');
+  assert.ok(!codeLabPage.includes('Template:'), 'Template dropdown removed for pure language coding');
+  assert.ok(codeLabPage.includes('Main.java'), 'Uses standard Main.java filename');
+  assert.ok(codeLabPage.includes('main.py'), 'Uses standard main.py filename');
+  assert.ok(codeLabPage.includes('setCode(STARTER_CODES[language])'), 'Reset button directly restores starter code');
   assert.ok(codeLabPage.includes('fetch(\'/api/sandbox/compiler\''), 'Connects to live compiler API');
 
   // Compiler API handles all 3 languages
   assert.ok(compilerRouteFile.includes("normalizedLang === 'python'"), 'Compiler supports Python');
   assert.ok(compilerRouteFile.includes("normalizedLang === 'typescript'"), 'Compiler supports TypeScript');
   assert.ok(compilerRouteFile.includes("normalizedLang === 'java'"), 'Compiler supports Java');
-  assert.ok(compilerRouteFile.includes('analyzeJavaSyntax'), 'Performs static analysis and compilation checks for Java');
+  assert.ok(compilerRouteFile.includes('getJavaBinaries'), 'Performs real javac compilation and execution for Java');
 });

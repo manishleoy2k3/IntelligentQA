@@ -1,125 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
-const execFileAsync = promisify(execFile);
-
-// Helper to run shell command with timeout
-async function runSubprocess(
+// Helper to run shell command with spawn, timeout, and stdin support
+function runSubprocess(
   cmd: string,
   args: string[],
-  options: { timeout?: number; maxBuffer?: number; cwd?: string } = {}
+  options: { timeout?: number; cwd?: string; stdin?: string } = {}
 ): Promise<{ stdout: string; stderr: string; code: number }> {
-  try {
-    const { stdout, stderr } = await execFileAsync(cmd, args, {
-      timeout: options.timeout || 4500,
-      maxBuffer: options.maxBuffer || 1024 * 1024,
-      cwd: options.cwd || process.cwd(),
-    });
-    return { stdout, stderr, code: 0 };
-  } catch (err: any) {
-    return {
-      stdout: err.stdout || '',
-      stderr: err.stderr || err.message || 'Execution error',
-      code: typeof err.code === 'number' ? err.code : 1,
-    };
-  }
-}
+  return new Promise((resolve) => {
+    try {
+      const child = spawn(cmd, args, {
+        cwd: options.cwd || process.cwd(),
+        timeout: options.timeout || 6000,
+      });
 
-// Java Virtual Compiler & Syntax Checker
-interface JavaCheckResult {
-  valid: boolean;
-  errors: string[];
-  className?: string;
-  hasMain: boolean;
-  hasTestNG: boolean;
-}
+      let stdout = '';
+      let stderr = '';
 
-function analyzeJavaSyntax(code: string): JavaCheckResult {
-  const errors: string[] = [];
-  const lines = code.split('\n');
-
-  // Extract class name
-  const classMatch = code.match(/(?:public\s+)?(?:abstract\s+)?class\s+([A-Za-z0-9_]+)/);
-  const className = classMatch ? classMatch[1] : 'Main';
-
-  if (!classMatch && !code.includes('interface ') && !code.includes('enum ')) {
-    errors.push(`Main.java:1: error: class, interface, or enum expected`);
-  }
-
-  // Check brace and parenthesis balance
-  let braceCount = 0;
-  let parenCount = 0;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].replace(/\/\/.*$/, ''); // ignore single line comments
-    for (const char of line) {
-      if (char === '{') braceCount++;
-      if (char === '}') braceCount--;
-      if (char === '(') parenCount++;
-      if (char === ')') parenCount--;
-    }
-
-    const trimmed = line.trim();
-    if (
-      trimmed.length > 0 &&
-      !trimmed.startsWith('//') &&
-      !trimmed.startsWith('/*') &&
-      !trimmed.startsWith('*') &&
-      !trimmed.startsWith('@') &&
-      !trimmed.startsWith('package ') &&
-      !trimmed.startsWith('import ') &&
-      !trimmed.endsWith('{') &&
-      !trimmed.endsWith('}') &&
-      !trimmed.endsWith(';') &&
-      !trimmed.startsWith('if ') &&
-      !trimmed.startsWith('if(') &&
-      !trimmed.startsWith('else') &&
-      !trimmed.startsWith('for ') &&
-      !trimmed.startsWith('for(') &&
-      !trimmed.startsWith('while ') &&
-      !trimmed.startsWith('while(') &&
-      !trimmed.startsWith('public ') &&
-      !trimmed.startsWith('private ') &&
-      !trimmed.startsWith('protected ') &&
-      !trimmed.startsWith('class ') &&
-      !trimmed.startsWith('abstract ') &&
-      !trimmed.startsWith('try') &&
-      !trimmed.startsWith('catch') &&
-      !trimmed.startsWith('finally')
-    ) {
-      if (
-        trimmed.includes('=') ||
-        trimmed.includes('System.out') ||
-        trimmed.includes('return') ||
-        trimmed.includes('Assert.')
-      ) {
-        errors.push(`${className}.java:${i + 1}: error: ';' expected\n    ${trimmed}\n    ${' '.repeat(Math.max(0, trimmed.length - 1))}^`);
+      if (child.stdin) {
+        if (options.stdin) {
+          child.stdin.write(options.stdin);
+        }
+        child.stdin.end();
       }
+
+      child.stdout.on('data', (chunk) => {
+        stdout += chunk.toString();
+      });
+
+      child.stderr.on('data', (chunk) => {
+        stderr += chunk.toString();
+      });
+
+      child.on('close', (code) => {
+        resolve({ stdout, stderr, code: code === null ? 1 : code });
+      });
+
+      child.on('error', (err) => {
+        resolve({ stdout, stderr: err.message, code: 1 });
+      });
+    } catch (err: any) {
+      resolve({ stdout: '', stderr: err.message || 'Execution error', code: 1 });
+    }
+  });
+}
+
+function getJavaBinaries(): { javac: string; java: string; available: boolean } {
+  const candidateDirs = [
+    '/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin',
+    '/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home/bin',
+    '/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin',
+    '/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin',
+    process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, 'bin') : '',
+    '/usr/local/bin',
+    '/usr/bin',
+  ].filter(Boolean);
+
+  for (const dir of candidateDirs) {
+    const javacPath = path.join(dir, 'javac');
+    const javaPath = path.join(dir, 'java');
+    if (fs.existsSync(javacPath) && fs.existsSync(javaPath)) {
+      return { javac: javacPath, java: javaPath, available: true };
     }
   }
 
-  if (braceCount !== 0) {
-    errors.push(`${className}.java:${lines.length}: error: reached end of file while parsing (unmatched braces)`);
-  }
-  if (parenCount !== 0) {
-    errors.push(`${className}.java:${lines.length}: error: unmatched parentheses`);
-  }
-
-  const hasMain = code.includes('public static void main(') || code.includes('static void main(');
-  const hasTestNG = code.includes('@Test') || code.includes('@BeforeMethod') || code.includes('org.testng') || code.includes('BaseTest');
-
-  return {
-    valid: errors.length === 0,
-    errors,
-    className,
-    hasMain,
-    hasTestNG,
-  };
+  return { javac: 'javac', java: 'java', available: false };
 }
 
 function safeRequire(modName: string) {
   try {
-    // Dynamic eval prevents webpack from analyzing external build-time dependencies
     const dynamicRequire = eval('require');
     return dynamicRequire(modName);
   } catch {
@@ -139,9 +91,12 @@ export async function POST(req: NextRequest) {
     const startTime = Date.now();
     const normalizedLang = (language || 'java').toLowerCase();
 
-    // 1. PYTHON RUNNER
+    // 1. PYTHON RUNNER (Python 3)
     if (normalizedLang === 'python' || normalizedLang === 'py') {
-      const result = await runSubprocess('python3', ['-c', code], { timeout: 5000 });
+      const result = await runSubprocess('python3', ['-c', code], {
+        timeout: 5000,
+        stdin,
+      });
       const durationMs = Date.now() - startTime;
 
       return NextResponse.json({
@@ -156,11 +111,15 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. TYPESCRIPT / JAVASCRIPT RUNNER
-    if (normalizedLang === 'typescript' || normalizedLang === 'ts' || normalizedLang === 'javascript' || normalizedLang === 'js') {
+    if (
+      normalizedLang === 'typescript' ||
+      normalizedLang === 'ts' ||
+      normalizedLang === 'javascript' ||
+      normalizedLang === 'js'
+    ) {
       try {
         let jsCode = code;
         try {
-          // Use Next.js bundled SWC to transpile TypeScript to JavaScript
           const swc = safeRequire('next/dist/build/swc');
           if (swc && typeof swc.transformSync === 'function') {
             const transformed = swc.transformSync(code, {
@@ -171,12 +130,13 @@ export async function POST(req: NextRequest) {
             }
           }
         } catch {
-          // If SWC transformation not available, fallback to pure JS execution
           jsCode = code;
         }
 
-        // Execute in isolated Node subprocess
-        const result = await runSubprocess('node', ['-e', jsCode], { timeout: 5000 });
+        const result = await runSubprocess('node', ['-e', jsCode], {
+          timeout: 5000,
+          stdin,
+        });
         const durationMs = Date.now() - startTime;
 
         return NextResponse.json({
@@ -194,119 +154,103 @@ export async function POST(req: NextRequest) {
           success: false,
           status: 'compilation_error',
           stdout: '',
-          stderr: transpileErr.message || 'TypeScript transpilation error',
+          stderr: transpileErr.message || 'TypeScript compilation error',
           executionTimeMs: Date.now() - startTime,
           exitCode: 1,
         });
       }
     }
 
-    // 3. JAVA RUNNER & VIRTUAL COMPILER
+    // 3. JAVA COMPILER & RUNNER (Real OpenJDK javac & java)
     if (normalizedLang === 'java') {
-      const analysis = analyzeJavaSyntax(code);
+      const javaBins = getJavaBinaries();
 
-      if (!analysis.valid) {
-        const errorText = analysis.errors.join('\n');
-        return NextResponse.json({
-          language: 'java',
-          success: false,
-          status: 'compilation_error',
-          stdout: '',
-          stderr: `[ERROR] COMPILATION ERROR in ${analysis.className}.java:\n${errorText}\n\n[INFO] ${analysis.errors.length} error(s) found during static analysis.\n[INFO] BUILD FAILURE`,
-          executionTimeMs: Date.now() - startTime,
-          exitCode: 1,
-        });
-      }
+      // Extract class name
+      const classMatch = code.match(/(?:public\s+)?(?:abstract\s+)?class\s+([A-Za-z0-9_]+)/);
+      const className = classMatch ? classMatch[1] : 'Main';
 
-      // If syntax is valid, simulate TestNG/Selenium/JUnit automated test runner or execute standard main
-      const durationMs = Math.floor(Math.random() * 80) + 210;
+      if (javaBins.available) {
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'intelligentqa-java-'));
+        const javaFilePath = path.join(tmpDir, `${className}.java`);
 
-      // Extract System.out.println statements to execute simulated standard output
-      const printlnRegex = /System\.out\.println\s*\((.*?)\);/g;
-      const stdoutLines: string[] = [];
-      let match;
-      while ((match = printlnRegex.exec(code)) !== null) {
-        const rawArg = match[1].trim();
-        if (rawArg.startsWith('"') && rawArg.endsWith('"')) {
-          stdoutLines.push(rawArg.slice(1, -1));
-        } else {
+        try {
+          // Strip package declaration for single-file compilation if present
+          const sanitizedCode = code.replace(
+            /^\s*package\s+[^;]+;\s*/m,
+            '// package declaration removed for standalone compilation\n'
+          );
+          fs.writeFileSync(javaFilePath, sanitizedCode, 'utf8');
+
+          // 1. Compile with javac
+          const compileRes = await runSubprocess(javaBins.javac, [javaFilePath], {
+            cwd: tmpDir,
+            timeout: 6000,
+          });
+
+          if (compileRes.code !== 0) {
+            // Clean up absolute path from error messages to display clean relative filename
+            const cleanedStderr = compileRes.stderr
+              .replace(
+                new RegExp(javaFilePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+                `${className}.java`
+              )
+              .trim();
+
+            return NextResponse.json({
+              language: 'java',
+              success: false,
+              status: 'compilation_error',
+              stdout: '',
+              stderr: cleanedStderr || 'Compilation failed.',
+              executionTimeMs: Date.now() - startTime,
+              exitCode: compileRes.code,
+            });
+          }
+
+          // 2. Execute compiled class with java
+          const runRes = await runSubprocess(javaBins.java, ['-cp', tmpDir, className], {
+            cwd: tmpDir,
+            timeout: 6000,
+            stdin,
+          });
+
+          return NextResponse.json({
+            language: 'java',
+            success: runRes.code === 0,
+            status: runRes.code === 0 ? 'success' : 'runtime_error',
+            stdout: runRes.stdout,
+            stderr: runRes.stderr,
+            executionTimeMs: Date.now() - startTime,
+            exitCode: runRes.code,
+          });
+        } catch (execErr: any) {
+          return NextResponse.json({
+            language: 'java',
+            success: false,
+            status: 'runtime_error',
+            stdout: '',
+            stderr: execErr.message || 'Execution failed.',
+            executionTimeMs: Date.now() - startTime,
+            exitCode: 1,
+          });
+        } finally {
           try {
-            const evaluated = new Function(`return (${rawArg})`)();
-            stdoutLines.push(String(evaluated));
+            fs.rmSync(tmpDir, { recursive: true, force: true });
           } catch {
-            stdoutLines.push(rawArg);
+            // ignore cleanup errors
           }
         }
       }
 
-      // Check if it's an automation framework test or BaseTest
-      if (analysis.hasTestNG || code.includes('WebDriver') || code.includes('ThreadLocal')) {
-        const usesThreadLocal = code.includes('ThreadLocal');
-        const usesTestNG = code.includes('testng') || code.includes('@Test') || code.includes('@BeforeMethod');
-
-        const logs = [
-          `[INFO] Scanning for projects...`,
-          `[INFO] -------------------< com.intelligentqa:automation-core >-------------------`,
-          `[INFO] Building SDET Test Automation Framework 1.0.0`,
-          `[INFO] --------------------------------[ jar ]---------------------------------`,
-          `[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ automation-core ---`,
-          `[INFO] Changes detected - recompiling the module!`,
-          `[INFO] Compiling 1 source file with OpenJDK 17 to target/classes`,
-          `[INFO] Compilation SUCCESSFUL (0 errors, 0 warnings)`,
-          `[INFO] `,
-          `[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ automation-core ---`,
-          `[INFO] Using configured provider: ${usesTestNG ? 'surefire-testng (TestNG 7.8.0)' : 'surefire-junit5'}`,
-          `[INFO] -------------------------------------------------------`,
-          `[INFO]  T E S T S   E X E C U T I O N   (Thread-Safe Parallel Suite)`,
-          `[INFO] -------------------------------------------------------`,
-          usesThreadLocal
-            ? `[INFO] Initializing ThreadLocal<WebDriver> for thread: pool-1-thread-1 [ISOLATED]`
-            : `[INFO] Initializing standard WebDriver session ...`,
-          `[INFO] @BeforeMethod: Launching Chrome (Headless: true, Maximize: true) ... OK`,
-          `[INFO] Running com.intelligentqa.tests.${analysis.className}`,
-          ...(stdoutLines.length > 0 ? stdoutLines.map((line) => `[STDOUT] ${line}`) : []),
-          `[INFO] Executed test scenario: PASSED [Duration: ${(durationMs / 1000).toFixed(3)}s]`,
-          usesThreadLocal
-            ? `[INFO] @AfterMethod: Tearing down driver & removing ThreadLocal memory reference [SAFE]`
-            : `[INFO] @AfterMethod: Driver quit cleanly`,
-          `[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: ${(durationMs / 1000).toFixed(3)} s`,
-          `[INFO] `,
-          `[INFO] Results:`,
-          `[INFO] `,
-          `[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`,
-          `[INFO] `,
-          `[INFO] ------------------------------------------------------------------------`,
-          `[INFO] BUILD SUCCESS`,
-          `[INFO] ------------------------------------------------------------------------`,
-          `[INFO] Total time:  ${((durationMs + 150) / 1000).toFixed(3)} s`,
-          `[INFO] Finished at: ${new Date().toISOString()}`,
-          `[INFO] ------------------------------------------------------------------------`,
-        ];
-
-        return NextResponse.json({
-          language: 'java',
-          success: true,
-          status: 'success',
-          stdout: logs.join('\n'),
-          stderr: '',
-          executionTimeMs: durationMs,
-          exitCode: 0,
-        });
-      }
-
-      // Standard Java Application with main()
-      const output = stdoutLines.length > 0
-        ? stdoutLines.join('\n')
-        : `[Execution Complete] Class ${analysis.className} compiled and executed successfully with return code 0.`;
-
+      // Fallback if JDK binary missing
       return NextResponse.json({
         language: 'java',
-        success: true,
-        status: 'success',
-        stdout: output,
-        stderr: '',
-        executionTimeMs: durationMs,
-        exitCode: 0,
+        success: false,
+        status: 'compilation_error',
+        stdout: '',
+        stderr: 'JDK compiler (javac) not located in system environment.',
+        executionTimeMs: Date.now() - startTime,
+        exitCode: 1,
       });
     }
 
