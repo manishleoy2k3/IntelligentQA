@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
@@ -131,6 +131,54 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     }
   }, []);
 
+  // Track last auto-opened track to allow user to freely collapse/expand on subsequent clicks
+  const lastAutoOpenedTrackRef = useRef<string | null>(null);
+
+  // Sidebar resizable width state (min 200px, max 480px, default 260px)
+  const [sidebarWidth, setSidebarWidth] = useState<number>(260);
+  const [isSidebarResizing, setIsSidebarResizing] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('intelligentqa_sidebar_width');
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed >= 200 && parsed <= 480) {
+          setSidebarWidth(parsed);
+        }
+      }
+    }
+  }, []);
+
+  const handleSidebarResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsSidebarResizing(true);
+    const startX = e.clientX;
+    const startWidth = sidebarWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const newWidth = Math.min(Math.max(startWidth + delta, 200), 480);
+      setSidebarWidth(newWidth);
+      try {
+        localStorage.setItem('intelligentqa_sidebar_width', String(newWidth));
+      } catch (err) {}
+    };
+
+    const handleMouseUp = () => {
+      setIsSidebarResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
   const isCourseActive =
     pathname?.startsWith('/tracks') ||
     pathname?.includes('/tracks/selenium-java') ||
@@ -138,13 +186,15 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     pathname?.includes('/tracks/api-testing') ||
     pathname?.includes('/tracks/ai-qa');
 
-  // Keep active track expanded when navigating
+  // Keep active track expanded once when navigating into it, without re-opening on manual collapse
   useEffect(() => {
-    if (pathname) {
-      if (pathname.includes('/tracks/selenium-java')) setOpenTracks(p => ({ ...p, 'selenium-java': true }));
-      if (pathname.includes('/tracks/playwright-ts')) setOpenTracks(p => ({ ...p, 'playwright-ts': true }));
-      if (pathname.includes('/tracks/api-testing')) setOpenTracks(p => ({ ...p, 'api-testing': true }));
-      if (pathname.includes('/tracks/ai-qa')) setOpenTracks(p => ({ ...p, 'ai-qa': true }));
+    if (!pathname) return;
+    const matchedTrack = ['selenium-java', 'playwright-ts', 'api-testing', 'ai-qa'].find(id =>
+      pathname.includes(`/tracks/${id}`)
+    );
+    if (matchedTrack && lastAutoOpenedTrackRef.current !== matchedTrack) {
+      lastAutoOpenedTrackRef.current = matchedTrack;
+      setOpenTracks(p => ({ ...p, [matchedTrack]: true }));
     }
   }, [pathname]);
 
@@ -285,7 +335,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
                   return (
                     <div key={track.id} className="space-y-0.5">
-                      {/* Track Parent Row (Collapsible on click) */}
+                      {/* Track Parent Row (Collapsible on click - toggles on every click) */}
                       <div
                         onClick={() => toggleTrack(track.id)}
                         className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group cursor-pointer ${
@@ -294,12 +344,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                             : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40'
                         }`}
                       >
-                        <Link
-                          href={`/tracks/${track.id}`}
-                          onClick={e => {
-                            e.stopPropagation();
-                            if (onCloseMobile) onCloseMobile();
-                          }}
+                        <div
                           className="flex items-center gap-2 truncate flex-1 min-w-0"
                           title={`${track.displayTitle} (${track.totalHours} · ${track.lessons.length} Lessons)`}
                         >
@@ -307,15 +352,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           <span className="truncate text-slate-800 dark:text-neutral-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-semibold">
                             {track.displayTitle}
                           </span>
-                        </Link>
+                        </div>
 
-                        <button
-                          type="button"
-                          onClick={e => {
-                            e.stopPropagation();
-                            toggleTrack(track.id);
-                          }}
-                          className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0 cursor-pointer"
+                        <div
+                          className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0"
                           title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
                         >
                           <span>{track.totalHours} · {track.lessons.length}L</span>
@@ -324,7 +364,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                               isExpanded ? 'rotate-180' : ''
                             }`}
                           />
-                        </button>
+                        </div>
+
+                        {/* Hidden reference link for SEO and navigation: /tracks/selenium-java, /tracks/playwright-ts, /tracks/api-testing, /tracks/ai-qa */}
+                        <span className="sr-only">
+                          <Link href={`/tracks/${track.id}`}>{track.displayTitle}</Link>
+                        </span>
                       </div>
 
                       {/* All Individual Lessons with total hours of each individual lesson */}
@@ -668,9 +713,24 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   return (
     <>
-      {/* DESKTOP SIDEBAR: Fixed on Left */}
-      <aside className="hidden md:flex w-64 min-h-screen shrink-0 sticky top-0 h-screen overflow-hidden z-20">
-        {sidebarContent}
+      {/* DESKTOP SIDEBAR: Resizable on Right border */}
+      <aside
+        style={{ width: `${sidebarWidth}px` }}
+        className="hidden md:flex min-h-screen shrink-0 sticky top-0 h-screen overflow-hidden z-20 relative select-none"
+      >
+        <div className="w-full h-full overflow-hidden">
+          {sidebarContent}
+        </div>
+
+        {/* Draggable resize handle on right border */}
+        <div
+          onMouseDown={handleSidebarResizeStart}
+          onDoubleClick={() => setSidebarWidth(260)}
+          className={`absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:w-2 hover:bg-emerald-500/80 transition-all z-30 ${
+            isSidebarResizing ? 'w-2 bg-emerald-500 shadow-md' : 'bg-transparent'
+          }`}
+          title="Drag to resize sidebar width (Double click to reset)"
+        />
       </aside>
 
       {/* MOBILE DRAWER: Off-canvas overlay on mobile screens */}

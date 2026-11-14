@@ -12,6 +12,7 @@ import {
   Code,
   Flame,
   ArrowRight,
+  ArrowLeft,
   ExternalLink,
   Lock,
   UserPlus,
@@ -28,23 +29,202 @@ import {
 import Link from 'next/link';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 
+export type SupportedLang = 'java' | 'typescript' | 'python';
+
 interface WorkspaceProps {
   track: Track;
   lesson: Lesson;
+  prevLessonHref?: string;
   nextLessonHref?: string;
+  lessonIndex?: number;
+  totalLessons?: number;
 }
 
-export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: WorkspaceProps) {
+function getPythonCodeExample(lesson: Lesson, trackId: string): string {
+  const isApi = trackId === 'api-testing';
+  const isSelenium = trackId === 'selenium-java';
+
+  if (isApi) {
+    return `# Python requests + pytest Example: ${lesson.title}
+import requests
+import pytest
+
+BASE_URL = "http://localhost:3000/api/sandbox/v1"
+
+@pytest.fixture
+def auth_headers():
+    return {
+        "Authorization": "Bearer sdet_jwt_token_sample",
+        "Content-Type": "application/json"
+    }
+
+def test_api_contract_and_status(auth_headers):
+    """
+    Scenario: Verify API response contract and HTTP 200 status
+    Concept: ${lesson.title}
+    """
+    response = requests.get(f"{BASE_URL}/users", headers=auth_headers, timeout=5)
+    
+    # Assert status code & contract schema
+    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+    
+    data = response.json()
+    assert isinstance(data.get("users"), list), "Payload should contain 'users' array"
+    assert len(data["users"]) > 0, "Users list should not be empty"
+    print(f"✔ API Verified: {len(data['users'])} records retrieved successfully.")
+`;
+  }
+
+  if (isSelenium) {
+    return `# Python Selenium WebDriver + pytest Example: ${lesson.title}
+import pytest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+@pytest.fixture
+def driver():
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless=new")
+    driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(0)  # Always use explicit waits in robust SDET frameworks
+    yield driver
+    driver.quit()
+
+def test_${lesson.id.replace(/[^a-zA-Z0-9]/g, '_')}(driver):
+    """
+    Concept: ${lesson.title}
+    Demonstrating resilient element location and explicit waits in Python.
+    """
+    driver.get("http://localhost:3000/sandbox/web")
+    wait = WebDriverWait(driver, 10)
+    
+    # Wait for target element to be interactable
+    element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button, a, input")))
+    assert element.is_displayed(), "Element should be visible on page"
+    print("✔ Python Selenium concept execution validated.")
+`;
+  }
+
+  return `# Python Playwright (pytest-playwright) Example: ${lesson.title}
+import pytest
+from playwright.sync_api import Page, expect
+
+def test_${lesson.id.replace(/[^a-zA-Z0-9]/g, '_')}(page: Page):
+    """
+    Concept: ${lesson.title}
+    Demonstrating resilient locators and web-first assertions in Python.
+    """
+    page.goto("http://localhost:3000/sandbox/web")
+    
+    # Resilient user-facing locator with auto-wait
+    trigger_btn = page.get_by_role("button").first
+    if trigger_btn.is_visible():
+        trigger_btn.click()
+    
+    # Web-first auto-retrying assertion
+    expect(page.get_by_role("heading", level=1)).to_be_visible(timeout=5000)
+    print("✔ Python Playwright concept scenario passed successfully.")
+`;
+}
+
+function getJavaCodeExample(lesson: Lesson, trackId: string): string {
+  if (lesson.challenge?.starterCode?.java) {
+    return lesson.challenge.starterCode.java;
+  }
+  if (lesson.challenge?.solutionCode?.java) {
+    return lesson.challenge.solutionCode.java;
+  }
+  return `// Java SDET Concept Example: ${lesson.title}
+package com.intelligentqa.concepts;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class ConceptDemo {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    public ConceptDemo(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public void executeScenario() {
+        // Concept: ${lesson.title}
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h1")));
+        System.out.println("✔ Java concept executed successfully: " + element.getText());
+    }
+}
+`;
+}
+
+function getTypeScriptCodeExample(lesson: Lesson, trackId: string): string {
+  if (lesson.challenge?.starterCode?.typescript) {
+    return lesson.challenge.starterCode.typescript;
+  }
+  if (lesson.automationContext?.playwrightTs) {
+    return lesson.automationContext.playwrightTs;
+  }
+  if (lesson.challenge?.solutionCode?.typescript) {
+    return lesson.challenge.solutionCode.typescript;
+  }
+  return `// TypeScript Playwright Concept Example: ${lesson.title}
+import { test, expect } from '@playwright/test';
+
+test('${lesson.title}', async ({ page }) => {
+  await page.goto('/sandbox/web');
+  
+  // Concept: ${lesson.title}
+  const heading = page.getByRole('heading', { level: 1 });
+  await expect(heading).toBeVisible();
+  
+  console.log('✔ TypeScript Playwright concept executed successfully.');
+});
+`;
+}
+
+function getCodeForLanguage(lang: SupportedLang, lesson: Lesson, trackId: string): string {
+  if (lang === 'java') return getJavaCodeExample(lesson, trackId);
+  if (lang === 'python') return getPythonCodeExample(lesson, trackId);
+  return getTypeScriptCodeExample(lesson, trackId);
+}
+
+export default function CodeEditorWorkspace({
+  track,
+  lesson,
+  prevLessonHref,
+  nextLessonHref,
+  lessonIndex = 1,
+  totalLessons = 1,
+}: WorkspaceProps) {
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [selectedLang, setSelectedLang] = useState<'typescript' | 'java'>(
+  const [selectedLang, setSelectedLang] = useState<SupportedLang>(
     track.id === 'selenium-java' ? 'java' : 'typescript'
   );
-  const [code, setCode] = useState<string>(
-    (selectedLang === 'java'
-      ? lesson.challenge.starterCode.java
-      : lesson.challenge.starterCode.typescript) ||
-      lesson.automationContext.playwrightTs
+  const [code, setCode] = useState<string>(() =>
+    getCodeForLanguage(
+      track.id === 'selenium-java' ? 'java' : 'typescript',
+      lesson,
+      track.id
+    )
   );
+
+  // Switch code immediately when user selects a language tab
+  const handleLanguageChange = (lang: SupportedLang) => {
+    setSelectedLang(lang);
+    setCode(getCodeForLanguage(lang, lesson, track.id));
+  };
+
+  // Sync code whenever lesson or language changes
+  useEffect(() => {
+    setCode(getCodeForLanguage(selectedLang, lesson, track.id));
+  }, [lesson.id, selectedLang, track.id]);
   const [activeTab, setActiveTab] = useState<'guide' | 'manual-vs-code' | 'ai-action'>('guide');
   const [validationResult, setValidationResult] = useState<{
     passed: boolean;
@@ -555,45 +735,48 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
           style={{ width: `${100 - splitPercent}%` }}
           className="w-full flex flex-col bg-slate-950 text-slate-100 h-auto lg:h-[calc(100vh-65px)] relative transition-[width] duration-75"
         >
-          {/* Editor Toolbar */}
-          <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:inline">
-                Concept Code Lab:
+          {/* Editor Toolbar - Code Examples across Java, TypeScript, and Python */}
+          <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs flex-wrap gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:inline mr-1">
+                Code Examples:
               </span>
               <button
-                onClick={() => setSelectedLang('typescript')}
-                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
-                  selectedLang === 'typescript'
-                    ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
-                    : 'text-slate-400 hover:text-white'
+                onClick={() => handleLanguageChange('java')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer text-xs ${
+                  selectedLang === 'java'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
+                title="View Java automation code example"
+              >
+                Java
+              </button>
+              <button
+                onClick={() => handleLanguageChange('typescript')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer text-xs ${
+                  selectedLang === 'typescript'
+                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+                title="View TypeScript automation code example"
               >
                 TypeScript
               </button>
               <button
-                onClick={() => setSelectedLang('java')}
-                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
-                  selectedLang === 'java'
-                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                    : 'text-slate-400 hover:text-white'
+                onClick={() => handleLanguageChange('python')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer text-xs ${
+                  selectedLang === 'python'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
+                title="View Python automation code example"
               >
-                Java
+                Python
               </button>
             </div>
 
             <div className="flex items-center gap-2">
-              {!isLocked && (
-                <button
-                  onClick={loadSolution}
-                  className="px-2.5 py-1 text-slate-400 hover:text-amber-400 transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
-                  title="Reveal Solution Code Blueprint"
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  Solution
-                </button>
-              )}
               <Link
                 href={
                   track.id === 'api-testing'
@@ -604,7 +787,7 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
                 }
                 target="_blank"
                 className="px-2.5 py-1 text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1 text-[11px] font-semibold bg-emerald-500/10 rounded-md border border-emerald-500/20"
-                title="Open Live Hands-On Sandbox Practice Lab"
+                title="Practice these concepts on live DOM elements in the Sandbox Lab"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 Practice Lab
@@ -665,75 +848,61 @@ export default function CodeEditorWorkspace({ track, lesson, nextLessonHref }: W
           )}
         </div>
 
-        {/* Validation & Execution Result Bar */}
-        {validationResult && !isLocked && (
-          <div
-            className={`p-4 border-t ${
-              validationResult.passed
-                ? 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
-                : 'bg-rose-950/80 border-rose-800 text-rose-200'
-            }`}
-          >
-            <div className="flex items-center gap-2 text-xs font-bold">
-              {validationResult.passed ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-rose-400" />
-              )}
-              {validationResult.message}
-            </div>
-            {validationResult.details && (
-              <ul className="mt-2 space-y-1 text-[11px] list-disc pl-5 text-rose-300">
-                {validationResult.details.map((d, i) => (
-                  <li key={i}>{d}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-        {/* Action Footer */}
-        <div className="p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400">
-            {isLocked ? (
-              <span className="text-amber-400 font-medium flex items-center gap-1">
-                <Lock className="w-3.5 h-3.5" /> Sign in to execute code in live sandbox
-              </span>
-            ) : isCompleted ? (
-              <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Lesson Completed &amp; Persisted
-              </span>
-            ) : (
-              'Write code and verify against live criteria'
-            )}
+        {/* Concept Navigation Footer (Previous / Next concept navigation) */}
+        <div className="p-3.5 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+          {/* Progress / Lesson Indicator */}
+          <div className="flex items-center gap-2 text-xs text-slate-400">
+            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-bold text-[11px]">
+              Lesson {lessonIndex} of {totalLessons}
+            </span>
+            <span className="hidden sm:inline text-slate-500">•</span>
+            <span className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline" title={lesson.title}>
+              {lesson.title}
+            </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            {isLocked ? (
+          {/* Navigation Controls: Previous, Next, and Labs */}
+          <div className="flex items-center gap-2.5">
+            {prevLessonHref ? (
               <Link
-                href="/signup"
-                className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md"
+                href={prevLessonHref}
+                className="py-2 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold rounded-xl text-xs sm:text-sm transition-colors flex items-center gap-1.5 border border-slate-700"
+                title="Go back to previously learned concept"
               >
-                <UserPlus className="w-4 h-4" />
-                Unlock Free
+                <ArrowLeft className="w-4 h-4" />
+                <span>Previous</span>
               </Link>
             ) : (
               <button
-                onClick={handleValidateAndRun}
-                disabled={isRunning}
-                className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/30 cursor-pointer"
+                disabled
+                className="py-2 px-3.5 bg-slate-900 text-slate-600 font-semibold rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-slate-800/80 cursor-not-allowed opacity-50"
               >
-                <Play className="w-4 h-4 fill-current" />
-                {isRunning ? 'Validating Concept...' : 'Validate Concept Code'}
+                <ArrowLeft className="w-4 h-4" />
+                <span>Previous</span>
               </button>
             )}
 
-            {nextLessonHref && (
+            {nextLessonHref ? (
               <Link
                 href={nextLessonHref}
-                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs sm:text-sm transition-colors flex items-center gap-1"
+                className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md shadow-emerald-950/40"
+                title="Advance to next concept"
               >
-                Next
+                <span>Next</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <Link
+                href={
+                  track.id === 'api-testing'
+                    ? '/sandbox/api'
+                    : track.id === 'playwright-ts'
+                    ? '/sandbox/web?stack=playwright'
+                    : '/sandbox/web?stack=selenium'
+                }
+                className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 shadow-md"
+              >
+                <span>Track Completed! Practice in Labs</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             )}

@@ -113,7 +113,7 @@ export interface CodeSubmission {
   id: string;
   userId: string;
   challengeId: string;
-  language: 'typescript' | 'java';
+  language: 'typescript' | 'java' | 'python';
   codeContent: string;
   status: 'passed' | 'failed' | 'review_requested';
   testOutput?: string;
