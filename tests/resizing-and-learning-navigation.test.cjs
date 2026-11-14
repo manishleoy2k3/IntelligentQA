@@ -179,6 +179,12 @@ test('Item 13: Try it with AI ThreadLocal correctness & completeness, and Dedica
   assert.ok(routeFile.includes('driverThread.remove()'), 'Includes ThreadLocal cleanup to prevent memory leaks');
   assert.ok(routeFile.includes('getDriver()'), 'Provides static getDriver() accessor for thread safety');
   assert.ok(routeFile.includes('codeBlockMatch'), 'Strips markdown fences and explanations for clean code snippet');
+  assert.ok(routeFile.includes('ScreenshotListener implements ITestListener'), 'Generates ITestListener with failure screenshot capture');
+  assert.ok(routeFile.includes('ExtentTestManager'), 'Integrates ExtentReports in listener generation');
+
+  const workspaceFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
+  assert.ok(workspaceFile.includes('QADatabase.getUserGeminiKey'), 'Retrieves active user Gemini key from database');
+  assert.ok(workspaceFile.includes("headers['x-gemini-api-key'] = userKey"), 'Passes user Gemini key in request header');
 
   // Requirement 2: Dedicated Hands-On Coding Lab under Practice Labs
   assert.ok(sidebarFile.includes('5. Hands-On Coding Lab'), 'Left Nav includes 5. Hands-On Coding Lab');

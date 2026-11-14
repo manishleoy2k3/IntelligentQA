@@ -87,14 +87,16 @@ CRITICAL INSTRUCTIONS:
 
         const candidateModels = [
           'gemini-2.0-flash',
-          'gemini-2.0-flash-lite',
           'gemini-1.5-flash',
+          'gemini-2.5-flash',
+          'gemini-flash-lite-latest',
+          'gemini-2.0-flash-lite',
         ];
 
         for (const model of candidateModels) {
           const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${effectiveApiKey}`;
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 6500);
+          const timeoutId = setTimeout(() => controller.abort(), 8500);
 
           try {
             const res = await fetch(geminiUrl, {
@@ -503,6 +505,24 @@ def driver():
     yield driver_instance
     driver_instance.quit()`;
     }
+    if (lowerInput.includes('listener') || lowerInput.includes('screenshot') || lowerInput.includes('hook') || lowerInput.includes('report') || lowerInput.includes('extent')) {
+      return `# pytest Failure Screenshot Hook (conftest.py)
+import pytest
+import os
+from datetime import datetime
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+    if rep.when == "call" and rep.failed:
+        driver = item.funcargs.get("driver", None)
+        if driver:
+            os.makedirs("screenshots", exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            driver.save_screenshot(f"screenshots/{item.name}_{ts}.png")
+            print(f"Captured failure screenshot: screenshots/{item.name}_{ts}.png")`;
+    }
     if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('fixture')) {
       return `# Selenium WebDriver (Python) BaseTest Fixture
 import pytest
@@ -559,7 +579,76 @@ assert alert.is_displayed(), "Verification alert should be visible"`;
 
   // SELENIUM (JAVA)
   if (techStack === 'selenium-java' || techStack === 'java') {
-    // Check for ThreadLocal or Parallel execution request first
+    // 1. Check for TestNG ITestListener / ExtentReports / Screenshot
+    if (lowerInput.includes('listener') || lowerInput.includes('itestlistener') || lowerInput.includes('extent') || (lowerInput.includes('screenshot') && (lowerInput.includes('fail') || lowerInput.includes('attach')))) {
+      return `// TestNG ITestListener with ExtentReports & Failure Screenshot Capture
+package com.intelligentqa.listeners;
+
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.intelligentqa.base.BaseTest;
+
+public class ScreenshotListener implements ITestListener {
+    @Override
+    public void onTestStart(ITestResult result) {
+        System.out.println("Starting test: " + result.getMethod().getMethodName());
+    }
+
+    @Override
+    public void onTestSuccess(ITestResult result) {
+        System.out.println("Test Passed: " + result.getMethod().getMethodName());
+    }
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        try {
+            String base64Img = ((TakesScreenshot) BaseTest.getDriver()).getScreenshotAs(OutputType.BASE64);
+            ExtentTestManager.getTest().fail(
+                "Test Failed: " + result.getThrowable().getMessage(),
+                MediaEntityBuilder.createScreenCaptureFromBase64String(base64Img).build()
+            );
+        } catch (Exception e) {
+            System.err.println("Failed to capture screenshot: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onTestSkipped(ITestResult result) {
+        System.out.println("Test Skipped: " + result.getMethod().getMethodName());
+    }
+}`;
+    }
+
+    // 2. Check for TestNG RetryAnalyzer
+    if (lowerInput.includes('retry') || lowerInput.includes('iretryanalyzer')) {
+      return `// TestNG IRetryAnalyzer for Flaky Test Mitigation
+package com.intelligentqa.listeners;
+
+import org.testng.IRetryAnalyzer;
+import org.testng.ITestResult;
+
+public class RetryAnalyzer implements IRetryAnalyzer {
+    private int retryCount = 0;
+    private static final int MAX_RETRY_COUNT = 2;
+
+    @Override
+    public boolean retry(ITestResult result) {
+        if (retryCount < MAX_RETRY_COUNT) {
+            retryCount++;
+            System.out.printf("Retrying flaky test [%s], attempt %d of %d%n",
+                result.getMethod().getMethodName(), retryCount, MAX_RETRY_COUNT);
+            return true;
+        }
+        return false;
+    }
+}`;
+    }
+
+    // 3. Check for ThreadLocal or Parallel execution request
     if (lowerInput.includes('threadlocal') || lowerInput.includes('thread-local') || lowerInput.includes('parallel') || (lowerInput.includes('basetest') && lowerInput.includes('thread'))) {
       return `// Selenium WebDriver (Java) BaseTest with ThreadLocal for Parallel TestNG Execution
 package com.intelligentqa.base;
@@ -596,7 +685,9 @@ public abstract class BaseTest {
     }
 }`;
     }
-    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('testng')) {
+
+    // 4. BaseTest Setup
+    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || (lowerInput.includes('testng') && lowerInput.includes('base'))) {
       return `// Selenium WebDriver (Java) BaseTest with TestNG
 package com.intelligentqa.base;
 

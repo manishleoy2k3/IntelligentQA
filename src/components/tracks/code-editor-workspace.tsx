@@ -281,10 +281,17 @@ export default function CodeEditorWorkspace({
     setIsGeneratingSnippet(true);
     setAiSnippetError(null);
     try {
-      const storedKey =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('intelligentqa_gemini_api_key') || ''
-          : '';
+      let userKey = '';
+      if (typeof window !== 'undefined') {
+        const currentUser = QADatabase.getCurrentUser();
+        userKey =
+          QADatabase.getUserGeminiKey(currentUser?.id) ||
+          localStorage.getItem('intelligentqa_gemini_key') ||
+          (currentUser?.id ? localStorage.getItem(`intelligentqa_gemini_key_${currentUser.id}`) : '') ||
+          localStorage.getItem('intelligentqa_gemini_api_key') ||
+          '';
+      }
+
       const techStackKey =
         isSelenium
           ? (aiSnippetLang === 'python' ? 'selenium-python' : 'selenium-java')
@@ -294,14 +301,19 @@ export default function CodeEditorWorkspace({
           ? 'playwright-python'
           : 'playwright-ts';
 
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (userKey) {
+        headers['x-gemini-api-key'] = userKey;
+      }
+
       const res = await fetch('/api/ai/qa-agent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           action: 'code_snippet',
           input: promptInput,
           techStack: techStackKey,
-          apiKey: storedKey,
+          apiKey: userKey,
         }),
       });
 
