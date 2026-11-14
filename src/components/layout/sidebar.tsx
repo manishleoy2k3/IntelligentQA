@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
+import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import {
@@ -47,6 +48,22 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   // Courses Sub-Menu collapsible state (open by default so child items are immediately accessible)
   const [coursesOpen, setCoursesOpen] = useState(true);
+
+  // Individual Track collapsible states (all 4 open by default to display all 38 lessons with individual hours)
+  const [openTracks, setOpenTracks] = useState<Record<string, boolean>>({
+    'selenium-java': true,
+    'playwright-ts': true,
+    'api-testing': true,
+    'ai-qa': true,
+  });
+
+  const toggleTrack = (trackId: string) => {
+    setOpenTracks(prev => ({
+      ...prev,
+      [trackId]: !prev[trackId],
+    }));
+  };
+
   // QA AI Agents Sub-Menu collapsible state (open by default for easy access)
   const [qaAgentsOpen, setQaAgentsOpen] = useState(true);
   const [activeAgentTab, setActiveAgentTab] = useState<string>('requirements');
@@ -120,6 +137,64 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     pathname?.includes('/tracks/playwright-ts') ||
     pathname?.includes('/tracks/api-testing') ||
     pathname?.includes('/tracks/ai-qa');
+
+  // Keep active track expanded when navigating
+  useEffect(() => {
+    if (pathname) {
+      if (pathname.includes('/tracks/selenium-java')) setOpenTracks(p => ({ ...p, 'selenium-java': true }));
+      if (pathname.includes('/tracks/playwright-ts')) setOpenTracks(p => ({ ...p, 'playwright-ts': true }));
+      if (pathname.includes('/tracks/api-testing')) setOpenTracks(p => ({ ...p, 'api-testing': true }));
+      if (pathname.includes('/tracks/ai-qa')) setOpenTracks(p => ({ ...p, 'ai-qa': true }));
+    }
+  }, [pathname]);
+
+  // Core curriculum tracks sequenced for Manual QA Transition
+  const courseTracks = [
+    {
+      id: 'selenium-java',
+      displayTitle: 'Selenium (Java)',
+      stage: 'Stage 1',
+      totalHours: '26h',
+      tag: 'Java',
+      icon: Terminal,
+      iconColor: 'text-amber-500',
+      badgeClass: 'text-amber-600 dark:text-amber-400 bg-amber-500/10',
+      lessons: QA_TRACKS.find(t => t.id === 'selenium-java')?.modules.flatMap(m => m.lessons) || [],
+    },
+    {
+      id: 'playwright-ts',
+      displayTitle: 'Playwright (TS)',
+      stage: 'Stage 2',
+      totalHours: '24h',
+      tag: 'TS',
+      icon: Code2,
+      iconColor: 'text-emerald-500',
+      badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10',
+      lessons: QA_TRACKS.find(t => t.id === 'playwright-ts')?.modules.flatMap(m => m.lessons) || [],
+    },
+    {
+      id: 'api-testing',
+      displayTitle: 'Rest Assured (API)',
+      stage: 'Stage 3',
+      totalHours: '18h',
+      tag: 'API',
+      icon: Server,
+      iconColor: 'text-purple-500',
+      badgeClass: 'text-purple-600 dark:text-purple-400 bg-purple-500/10',
+      lessons: QA_TRACKS.find(t => t.id === 'api-testing')?.modules.flatMap(m => m.lessons) || [],
+    },
+    {
+      id: 'ai-qa',
+      displayTitle: 'AI for QA',
+      stage: 'Stage 4',
+      totalHours: '20h',
+      tag: 'AI',
+      icon: Sparkles,
+      iconColor: 'text-cyan-500',
+      badgeClass: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10',
+      lessons: QA_TRACKS.find(t => t.id === 'ai-qa')?.modules.flatMap(m => m.lessons) || [],
+    },
+  ];
 
   const navItemClass = (active: boolean) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group cursor-pointer ${
@@ -202,66 +277,83 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
             {/* Courses Child / Sub-Menu Items */}
             {coursesOpen && (
-              <div className="pl-4 pr-1 py-1 space-y-1 border-l-2 border-slate-200 dark:border-neutral-800 ml-4.5 my-1">
-                {/* 1. Selenium (Java) */}
-                <Link
-                  href="/tracks/selenium-java"
-                  onClick={onCloseMobile}
-                  className={childItemClass(pathname?.includes('/tracks/selenium-java') || false)}
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <Terminal className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                    <span className="truncate">Selenium (Java)</span>
-                  </div>
-                  <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded">
-                    Java
-                  </span>
-                </Link>
+              <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
+                {courseTracks.map((track, trackIdx) => {
+                  const isExpanded = openTracks[track.id];
+                  const isTrackActive = pathname?.includes(`/tracks/${track.id}`);
+                  const Icon = track.icon;
 
-                {/* 2. Playwright (TypeScript) */}
-                <Link
-                  href="/tracks/playwright-ts"
-                  onClick={onCloseMobile}
-                  className={childItemClass(pathname?.includes('/tracks/playwright-ts') || false)}
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <Code2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    <span className="truncate">Playwright (TS)</span>
-                  </div>
-                  <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded">
-                    TS
-                  </span>
-                </Link>
+                  return (
+                    <div key={track.id} className="space-y-0.5">
+                      {/* Track Parent Row */}
+                      <div
+                        className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group ${
+                          isTrackActive
+                            ? 'bg-slate-100/90 dark:bg-neutral-800/80 font-semibold'
+                            : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40'
+                        }`}
+                      >
+                        <Link
+                          href={`/tracks/${track.id}`}
+                          onClick={onCloseMobile}
+                          className="flex items-center gap-2 truncate flex-1 min-w-0"
+                          title={`${track.displayTitle} (${track.totalHours} · ${track.lessons.length} Lessons)`}
+                        >
+                          <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
+                          <span className="truncate text-slate-800 dark:text-neutral-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-semibold">
+                            {track.displayTitle}
+                          </span>
+                        </Link>
 
-                {/* 3. Rest Assured (API) */}
-                <Link
-                  href="/tracks/api-testing"
-                  onClick={onCloseMobile}
-                  className={childItemClass(pathname?.includes('/tracks/api-testing') || false)}
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <Server className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                    <span className="truncate">Rest Assured (API)</span>
-                  </div>
-                  <span className="text-[9px] font-mono font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1 py-0.2 rounded">
-                    API
-                  </span>
-                </Link>
+                        <button
+                          type="button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            toggleTrack(track.id);
+                          }}
+                          className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0 cursor-pointer"
+                          title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
+                        >
+                          <span>{track.totalHours} · {track.lessons.length}L</span>
+                          <ChevronDown
+                            className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
+                      </div>
 
-                {/* 4. AI for QA */}
-                <Link
-                  href="/tracks/ai-qa"
-                  onClick={onCloseMobile}
-                  className={childItemClass(pathname?.includes('/tracks/ai-qa') || false)}
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <Sparkles className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                    <span className="truncate">AI for QA</span>
-                  </div>
-                  <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded">
-                    AI
-                  </span>
-                </Link>
+                      {/* All Individual Lessons with total hours of each individual lesson */}
+                      {isExpanded && (
+                        <div className="pl-3 pr-0.5 py-0.5 space-y-0.5 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
+                          {track.lessons.map(lesson => {
+                            const isLessonActive = pathname === `/tracks/${track.id}/${lesson.id}`;
+                            const hours = getLessonHours(lesson.durationMinutes);
+
+                            return (
+                              <Link
+                                key={lesson.id}
+                                href={`/tracks/${track.id}/${lesson.id}`}
+                                onClick={onCloseMobile}
+                                className={`flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all group ${
+                                  isLessonActive
+                                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold shadow-xs'
+                                    : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
+                                }`}
+                                title={lesson.title}
+                              >
+                                <span className="truncate pr-1.5">{lesson.title}</span>
+                                <span className="text-[9px] font-mono shrink-0 px-1 py-0.2 rounded bg-slate-100/80 dark:bg-neutral-800/80 text-slate-400 dark:text-neutral-400 group-hover:text-slate-700 dark:group-hover:text-neutral-300">
+                                  {hours}
+                                </span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
 
                 {/* Overview / All Tracks */}
                 <Link
@@ -279,28 +371,86 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           </div>
         </div>
 
-        {/* SECTION: PRACTICE LABS */}
+        {/* SECTION: PRACTICE LABS (Aligned 1-4 Sequential Progression) */}
         <div className="space-y-1">
           <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 px-3 pb-1">
             Practice Labs
           </div>
 
+          {/* 1. Selenium Web Lab */}
           <Link
-            href="/sandbox/web"
+            href="/sandbox/web?stack=selenium"
             onClick={onCloseMobile}
-            className={navItemClass(pathname === '/sandbox/web')}
+            className={childItemClass(pathname === '/sandbox/web')}
+            title="Stage 1 Practice Lab: Selenium Web Automation Lab"
           >
-            <PlayCircle className="w-4 h-4 shrink-0 text-emerald-500" />
-            <span>Web Automation Lab</span>
+            <div className="flex items-center gap-2 truncate">
+              <Terminal className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <div className="flex flex-col truncate">
+                <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">1. Selenium Web Lab</span>
+                <span className="text-[9px] text-slate-400 dark:text-neutral-500">Web Automation Lab</span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded shrink-0">
+              Stage 1
+            </span>
           </Link>
 
+          {/* 2. Playwright Web Lab */}
+          <Link
+            href="/sandbox/web?stack=playwright"
+            onClick={onCloseMobile}
+            className={childItemClass(pathname === '/sandbox/web')}
+            title="Stage 2 Practice Lab: Playwright Web Automation Lab"
+          >
+            <div className="flex items-center gap-2 truncate">
+              <Code2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <div className="flex flex-col truncate">
+                <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">2. Playwright Web Lab</span>
+                <span className="text-[9px] text-slate-400 dark:text-neutral-500">Web Automation Lab</span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded shrink-0">
+              Stage 2
+            </span>
+          </Link>
+
+          {/* 3. Rest Assured / API Lab */}
           <Link
             href="/sandbox/api"
             onClick={onCloseMobile}
-            className={navItemClass(pathname === '/sandbox/api')}
+            className={childItemClass(pathname === '/sandbox/api')}
+            title="Stage 3 Practice Lab: Rest Assured API Testing Lab"
           >
-            <Server className="w-4 h-4 shrink-0 text-purple-500" />
-            <span>API Testing Lab</span>
+            <div className="flex items-center gap-2 truncate">
+              <Server className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+              <div className="flex flex-col truncate">
+                <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">3. Rest Assured / API Lab</span>
+                <span className="text-[9px] text-slate-400 dark:text-neutral-500">API Testing Lab</span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1 py-0.2 rounded shrink-0">
+              Stage 3
+            </span>
+          </Link>
+
+          {/* 4. AI for QA & Prompt Lab */}
+          <Link
+            href="/qa-agents"
+            onClick={onCloseMobile}
+            className={childItemClass(pathname === '/qa-agents')}
+            title="Stage 4 Practice Lab: AI for QA & Autonomous Agent Suite"
+          >
+            <div className="flex items-center gap-2 truncate">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+              <div className="flex flex-col truncate">
+                <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">4. AI for QA &amp; Prompt Lab</span>
+                <span className="text-[9px] text-slate-400 dark:text-neutral-500">Autonomous QA Agents</span>
+              </div>
+            </div>
+            <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded shrink-0">
+              Stage 4
+            </span>
           </Link>
         </div>
 

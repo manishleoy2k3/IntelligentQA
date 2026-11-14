@@ -19,6 +19,17 @@ import {
 
 export default function WebPlayground() {
   const [activeTab, setActiveTab] = useState<'all' | 'dynamic' | 'shadow' | 'table' | 'otp' | 'upload' | 'alerts'>('all');
+  const [framework, setFramework] = useState<'all' | 'selenium' | 'playwright'>('all');
+
+  // Detect ?stack=selenium or ?stack=playwright from query params
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const stack = params.get('stack');
+      if (stack === 'selenium' || stack === 'selenium-java') setFramework('selenium');
+      if (stack === 'playwright' || stack === 'playwright-ts') setFramework('playwright');
+    }
+  }, []);
 
   // 1. Dynamic Element State
   const [delaySeconds, setDelaySeconds] = useState(3);
@@ -182,6 +193,52 @@ export default function WebPlayground() {
             <div className="font-semibold">Target URL for Automation:</div>
             <code className="text-emerald-300 font-mono">http://localhost:3000/sandbox/web</code>
           </div>
+        </div>
+      </div>
+
+      {/* Framework Stack Switcher & Sequential Roadmap Badge */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-slate-500">Framework Stack:</span>
+          <div className="inline-flex rounded-xl p-1 bg-slate-200/70 dark:bg-slate-800 text-xs">
+            <button
+              onClick={() => setFramework('all')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                framework === 'all'
+                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              All Frameworks
+            </button>
+            <button
+              onClick={() => setFramework('selenium')}
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
+                framework === 'selenium'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-amber-500'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-amber-200" />
+              1. Selenium (Java)
+            </button>
+            <button
+              onClick={() => setFramework('playwright')}
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
+                framework === 'playwright'
+                  ? 'bg-emerald-500 text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-emerald-500'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-200" />
+              2. Playwright (TS)
+            </button>
+          </div>
+        </div>
+
+        <div className="text-xs text-slate-500 flex items-center gap-2">
+          <span className="font-medium">Manual QA Roadmap:</span>
+          <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">1. Selenium → 2. Playwright → 3. Rest Assured → 4. AI for QA</span>
         </div>
       </div>
 

@@ -57,6 +57,44 @@ export default function TracksDirectoryPage() {
         </Link>
       </div>
 
+      {/* Manual Tester Transition Roadmap Guide */}
+      <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 border border-slate-700/80 text-white shadow-md space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-500 text-slate-950">
+              Recommended Sequence
+            </span>
+            <h2 className="text-base sm:text-lg font-bold">Manual QA to Full-Stack SDET Progression Roadmap</h2>
+          </div>
+          <span className="text-xs text-slate-400 font-mono">Total SDET Curriculum: 88 Hours · 38 Lessons</span>
+        </div>
+        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          If you are transitioning from a manual testing background, sequence is everything. Start with Core Java &amp; Selenium to master DOM locators and OOPs architecture, level up to Playwright for modern auto-waiting, transition Postman tests to REST Assured code, and master AI agent workflows.
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
+          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-amber-500/30">
+            <div className="text-amber-400 font-bold">Stage 1 · 26h</div>
+            <div className="font-semibold text-white">Selenium (Java)</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">OOPs &amp; DOM Foundation</div>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-emerald-500/30">
+            <div className="text-emerald-400 font-bold">Stage 2 · 24h</div>
+            <div className="font-semibold text-white">Playwright (TS)</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Auto-Waiting &amp; Async Web</div>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-purple-500/30">
+            <div className="text-purple-400 font-bold">Stage 3 · 18h</div>
+            <div className="font-semibold text-white">Rest Assured (API)</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Postman to Code-Based API</div>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-cyan-500/30">
+            <div className="text-cyan-400 font-bold">Stage 4 · 20h</div>
+            <div className="font-semibold text-white">AI for QA</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Prompts &amp; Autonomous Agents</div>
+          </div>
+        </div>
+      </div>
+
       {/* Tracks Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {QA_TRACKS.map(track => {
@@ -81,6 +119,17 @@ export default function TracksDirectoryPage() {
                 </div>
 
                 <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+                    {track.id === 'selenium-java'
+                      ? 'Stage 1 · Core Foundation'
+                      : track.id === 'playwright-ts'
+                      ? 'Stage 2 · Modern Web Testing'
+                      : track.id === 'api-testing'
+                      ? 'Stage 3 · API Automation'
+                      : track.id === 'ai-qa'
+                      ? 'Stage 4 · AI Augmentation'
+                      : 'Capstone · SDET Interview Simulation'}
+                  </div>
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
                     {track.title}
                   </h3>

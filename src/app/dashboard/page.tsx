@@ -271,6 +271,17 @@ export default function UserDashboardPage() {
                 </div>
 
                 <div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-0.5">
+                    {track.id === 'selenium-java'
+                      ? 'Stage 1 · Core Foundation'
+                      : track.id === 'playwright-ts'
+                      ? 'Stage 2 · Modern Web Testing'
+                      : track.id === 'api-testing'
+                      ? 'Stage 3 · API Automation'
+                      : track.id === 'ai-qa'
+                      ? 'Stage 4 · AI Augmentation'
+                      : 'Capstone · SDET Interview'}
+                  </div>
                   <h3 className="font-bold text-slate-900 dark:text-white text-lg sm:text-xl leading-snug">
                     {track.title}
                   </h3>
