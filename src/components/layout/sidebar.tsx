@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
 import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
-import { LANGUAGE_COURSES } from '@/lib/kids-courses';
+import { LANGUAGE_COURSES, CourseConcept, LanguageCourseMeta } from '@/lib/kids-courses';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import {
@@ -101,6 +101,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     javascript: false,
     java: false,
   });
+  const [kidsCoursesMap, setKidsCoursesMap] = useState<Record<'python' | 'javascript' | 'java', LanguageCourseMeta>>(() => QADatabase.getKidsCourses());
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -153,9 +154,15 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         }
       };
 
+      const handleCoursesUpdated = () => {
+        setKidsCoursesMap(QADatabase.getKidsCourses());
+      };
+
       window.addEventListener('intelligentqa_portal_changed', handlePortalChange);
+      window.addEventListener('intelligentqa_kids_courses_updated', handleCoursesUpdated);
       return () => {
         window.removeEventListener('intelligentqa_portal_changed', handlePortalChange);
+        window.removeEventListener('intelligentqa_kids_courses_updated', handleCoursesUpdated);
         window.removeEventListener('popstate', syncKidsRoute);
         window.removeEventListener('intelligentqa_role_changed', syncAdminRole);
         window.removeEventListener('intelligentqa_auth_changed', syncAdminRole);
@@ -418,7 +425,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                     {KIDS_TRACK_LIST.map((track) => {
                       const isLangOpen = Boolean(openKidsLangs[track.id]);
                       const isLangActive = pathname === '/kids' && kidsActiveLang === track.id && !kidsActiveConcept;
-                      const courseMeta = LANGUAGE_COURSES[track.id];
+                      const courseMeta = (kidsCoursesMap && kidsCoursesMap[track.id]) || QADatabase.getKidsCourse(track.id);
                       const Icon = track.icon;
 
                       return (
@@ -464,7 +471,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           {/* Concepts List below each language */}
                           {isLangOpen && courseMeta && (
                             <div className="pl-3 pr-1 py-1 space-y-0.5 border-l-2 border-slate-700/40 ml-3.5 my-1">
-                              {courseMeta.concepts.map((concept) => {
+                              {courseMeta.concepts.map((concept: CourseConcept) => {
                                 const isConceptActive =
                                   pathname === '/kids' && kidsActiveLang === track.id && kidsActiveConcept === concept.id;
                                 return (

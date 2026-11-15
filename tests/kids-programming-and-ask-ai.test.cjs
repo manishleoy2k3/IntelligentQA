@@ -209,3 +209,67 @@ test('Requirement 12: Language Home Page, 9 Concepts in Left Navigation, and Spl
   assert.ok(kidsPageFile.includes('descriptionWidthPct'), 'Applies descriptionWidthPct dynamic width');
   assert.ok(kidsPageFile.includes('compilerHeightPct'), 'Applies compilerHeightPct dynamic height');
 });
+
+test('Requirement 13: Comprehensive Mandatory Learning Concepts stored in Database for Python, JS, Java', () => {
+  const pythonCourseFile = fs.readFileSync(path.join(__dirname, '../src/lib/courses/python-course.ts'), 'utf8');
+  const jsCourseFile = fs.readFileSync(path.join(__dirname, '../src/lib/courses/javascript-course.ts'), 'utf8');
+  const javaCourseFile = fs.readFileSync(path.join(__dirname, '../src/lib/courses/java-course.ts'), 'utf8');
+  const dbFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-db.ts'), 'utf8');
+
+  // Verify all mandatory concepts matching user's reference image for Python:
+  const mandatoryPythonConcepts = [
+    'intro', 'get-started', 'syntax', 'output', 'comments',
+    'variables', 'data-types', 'numbers', 'casting', 'strings',
+    'booleans', 'operators', 'lists', 'tuples', 'sets',
+    'dictionaries', 'if-else', 'match', 'while-loops', 'for-loops',
+    'range', 'functions', 'arrays', 'iterators', 'modules',
+    'classes-objects', 'inheritance', 'file-handling', 'try-except'
+  ];
+
+  mandatoryPythonConcepts.forEach((id) => {
+    assert.ok(
+      pythonCourseFile.includes(`id: '${id}'`),
+      `Python course must define mandatory concept: ${id}`
+    );
+  });
+
+  // Verify comprehensive JavaScript concepts:
+  const mandatoryJsConcepts = [
+    'intro', 'get-started', 'output', 'comments', 'variables',
+    'data-types', 'numbers', 'casting', 'strings', 'booleans',
+    'operators', 'arrays', 'array-iteration', 'objects', 'if-else',
+    'switch', 'while-loops', 'for-loops', 'functions', 'scope',
+    'destructuring', 'sets-maps', 'classes', 'inheritance',
+    'try-catch', 'async-await', 'modules', 'advanced'
+  ];
+
+  mandatoryJsConcepts.forEach((id) => {
+    assert.ok(
+      jsCourseFile.includes(`id: '${id}'`),
+      `JavaScript course must define mandatory concept: ${id}`
+    );
+  });
+
+  // Verify comprehensive Java concepts:
+  const mandatoryJavaConcepts = [
+    'intro', 'get-started', 'syntax', 'output', 'comments',
+    'variables', 'data-types', 'casting', 'operators', 'strings',
+    'booleans', 'numbers', 'arrays', 'if-else', 'switch',
+    'while-loops', 'for-loops', 'methods', 'scope', 'classes-objects',
+    'constructors', 'modifiers', 'inheritance', 'polymorphism',
+    'abstraction', 'arraylist', 'hashmap', 'hashset', 'iterators',
+    'exceptions', 'advanced'
+  ];
+
+  mandatoryJavaConcepts.forEach((id) => {
+    assert.ok(
+      javaCourseFile.includes(`id: '${id}'`),
+      `Java course must define mandatory concept: ${id}`
+    );
+  });
+
+  // Verify Database migration & auto-upgrade logic in qa-db.ts
+  assert.ok(dbFile.includes('getKidsCourses'), 'qa-db provides getKidsCourses()');
+  assert.ok(dbFile.includes('intelligentqa_db_kids_courses'), 'qa-db stores kids courses in persistent key');
+  assert.ok(dbFile.includes('LANGUAGE_COURSES.python.concepts.length'), 'qa-db checks curriculum length for auto-upgrade');
+});

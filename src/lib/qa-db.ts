@@ -1404,7 +1404,43 @@ export const QADatabase = {
       null
     );
     if (stored && stored.python && stored.javascript && stored.java) {
-      return stored;
+      // Auto-upgrade database if comprehensive standard curriculum expanded
+      const isUpToDate =
+        stored.python.concepts.length >= LANGUAGE_COURSES.python.concepts.length &&
+        stored.javascript.concepts.length >= LANGUAGE_COURSES.javascript.concepts.length &&
+        stored.java.concepts.length >= LANGUAGE_COURSES.java.concepts.length;
+
+      if (isUpToDate) {
+        return stored;
+      }
+
+      // Merge and preserve any custom added concepts while upgrading to comprehensive curriculum
+      const upgraded: Record<'python' | 'javascript' | 'java', LanguageCourseMeta> = {
+        python: {
+          ...LANGUAGE_COURSES.python,
+          concepts: [
+            ...LANGUAGE_COURSES.python.concepts,
+            ...stored.python.concepts.filter(c => !LANGUAGE_COURSES.python.concepts.some(def => def.id === c.id)),
+          ],
+        },
+        javascript: {
+          ...LANGUAGE_COURSES.javascript,
+          concepts: [
+            ...LANGUAGE_COURSES.javascript.concepts,
+            ...stored.javascript.concepts.filter(c => !LANGUAGE_COURSES.javascript.concepts.some(def => def.id === c.id)),
+          ],
+        },
+        java: {
+          ...LANGUAGE_COURSES.java,
+          concepts: [
+            ...LANGUAGE_COURSES.java.concepts,
+            ...stored.java.concepts.filter(c => !LANGUAGE_COURSES.java.concepts.some(def => def.id === c.id)),
+          ],
+        },
+      };
+
+      setStoredItem('intelligentqa_db_kids_courses', upgraded);
+      return upgraded;
     }
     setStoredItem('intelligentqa_db_kids_courses', LANGUAGE_COURSES);
     return LANGUAGE_COURSES;
