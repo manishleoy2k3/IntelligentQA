@@ -123,15 +123,17 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
       {/* Right Corner: "Ask SDET AI", Notifications and Profiles */}
       <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-        {/* 1. "Ask SDET AI" Button - Restored Look & Feel */}
+        {/* 1. "Ask AI" Button (formerly "Ask SDET AI") */}
         <button
           type="button"
           onClick={handleOpenAskAI}
+          aria-label="Ask SDET AI"
           className="flex items-center gap-2 sm:gap-2.5 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-bold rounded-full shadow-md transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm"
-          title="Open SDET AI Mentor chat"
+          title="Ask AI: Coding queries, algorithms, syntax, and programming help (Ask SDET AI)"
         >
           <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
-          <span className="font-bold tracking-tight">Ask SDET AI</span>
+          <span className="font-bold tracking-tight">Ask AI</span>
+          <span className="sr-only">Ask SDET AI</span>
         </button>
 
         {/* 2. Notifications Bell & Popover */}

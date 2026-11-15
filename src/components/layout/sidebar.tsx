@@ -317,6 +317,22 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             <span>Dashboard</span>
           </Link>
 
+          {/* Kids Coding Lab (Ages 10-14) (Requirement 8) */}
+          <Link
+            href="/kids"
+            onClick={onCloseMobile}
+            className={`${navItemClass(pathname === '/kids')} justify-between`}
+            title="Free Programming for Kids (Ages 10-14)"
+          >
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-4 h-4 shrink-0 text-amber-500" />
+              <span>Kids Coding (10–14)</span>
+            </div>
+            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-500 font-mono">
+              Free
+            </span>
+          </Link>
+
           {/* COURSES (Parent Menu with Child / Sub-Menu items) */}
           <div className="space-y-1 pt-1">
             <button

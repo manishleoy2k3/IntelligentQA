@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   MessageSquare,
   X,
@@ -20,9 +20,9 @@ import {
   AlertCircle,
   HelpCircle,
   BookOpen,
-} from 'lucide-react';
-import { QADatabase } from '@/lib/qa-db';
-import GeminiKeyModal from '@/components/auth/gemini-key-modal';
+} from "lucide-react";
+import { QADatabase } from "@/lib/qa-db";
+import GeminiKeyModal from "@/components/auth/gemini-key-modal";
 
 const GUEST_MAX_QUESTIONS = 3;
 
@@ -30,25 +30,32 @@ export default function AskAIWidget() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [showKeyModal, setShowKeyModal] = useState(false);
-  const [activeApiKey, setActiveApiKey] = useState('');
+  const [activeApiKey, setActiveApiKey] = useState("");
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [guestCount, setGuestCount] = useState<number>(0);
-  const [aiPref, setAiPref] = useState<'enabled' | 'opted_out' | 'unset'>('unset');
+  const [aiPref, setAiPref] = useState<"enabled" | "opted_out" | "unset">(
+    "unset",
+  );
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<
-    { role: 'user' | 'assistant'; text: string; engine?: string; isLiveAI?: boolean }[]
+    {
+      role: "user" | "assistant";
+      text: string;
+      engine?: string;
+      isLiveAI?: boolean;
+    }[]
   >([
     {
-      role: 'assistant',
-      text: 'Hello! I am your IntelligentQA SDET Mentor. Ask me any question about transitioning from Manual QA, learning Playwright/Selenium, or preparing for SDET technical interviews. I provide short, crisp, practical answers tailored directly to your situation.',
+      role: "assistant",
+      text: "Hello! I am your AI Programming & Coding Assistant. Ask me any coding query, debugging question, or concept in Python, JavaScript, TypeScript, Java",
     },
   ]);
 
   // Sync auth and key state
   const syncState = useCallback(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const user = QADatabase.getCurrentUser();
       setCurrentUser(user);
       const key = QADatabase.getUserGeminiKey(user?.id);
@@ -68,22 +75,31 @@ export default function AskAIWidget() {
     const handleAiPrefChange = () => syncState();
     const handleOpenAskAI = () => setIsOpen(true);
 
-    window.addEventListener('intelligentqa_auth_changed', handleAuthChange);
-    window.addEventListener('intelligentqa_key_changed', handleKeyChange);
-    window.addEventListener('intelligentqa_ai_pref_changed', handleAiPrefChange);
-    window.addEventListener('intelligentqa_open_ask_ai', handleOpenAskAI);
+    window.addEventListener("intelligentqa_auth_changed", handleAuthChange);
+    window.addEventListener("intelligentqa_key_changed", handleKeyChange);
+    window.addEventListener(
+      "intelligentqa_ai_pref_changed",
+      handleAiPrefChange,
+    );
+    window.addEventListener("intelligentqa_open_ask_ai", handleOpenAskAI);
 
     return () => {
-      window.removeEventListener('intelligentqa_auth_changed', handleAuthChange);
-      window.removeEventListener('intelligentqa_key_changed', handleKeyChange);
-      window.removeEventListener('intelligentqa_ai_pref_changed', handleAiPrefChange);
-      window.removeEventListener('intelligentqa_open_ask_ai', handleOpenAskAI);
+      window.removeEventListener(
+        "intelligentqa_auth_changed",
+        handleAuthChange,
+      );
+      window.removeEventListener("intelligentqa_key_changed", handleKeyChange);
+      window.removeEventListener(
+        "intelligentqa_ai_pref_changed",
+        handleAiPrefChange,
+      );
+      window.removeEventListener("intelligentqa_open_ask_ai", handleOpenAskAI);
     };
   }, [syncState]);
 
   // Strict Privacy Shield: Exclude chatbot on authentication pages
-  const excludedPaths = ['/login', '/signup', '/recovery', '/reset-password'];
-  if (excludedPaths.includes(pathname || '')) {
+  const excludedPaths = ["/login", "/signup", "/recovery", "/reset-password"];
+  if (excludedPaths.includes(pathname || "")) {
     return null;
   }
 
@@ -103,8 +119,8 @@ export default function AskAIWidget() {
       return;
     }
 
-    setMessages(prev => [...prev, { role: 'user', text: textToSend }]);
-    if (!userText) setQuery('');
+    setMessages((prev) => [...prev, { role: "user", text: textToSend }]);
+    if (!userText) setQuery("");
     setLoading(true);
 
     // If guest, increment count
@@ -114,13 +130,15 @@ export default function AskAIWidget() {
     }
 
     try {
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
       if (activeApiKey) {
-        headers['x-gemini-api-key'] = activeApiKey;
+        headers["x-gemini-api-key"] = activeApiKey;
       }
 
-      const res = await fetch('/api/ai/qa-chat', {
-        method: 'POST',
+      const res = await fetch("/api/ai/qa-chat", {
+        method: "POST",
         headers,
         body: JSON.stringify({
           message: textToSend,
@@ -129,21 +147,21 @@ export default function AskAIWidget() {
       });
 
       const data = await res.json();
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
-          role: 'assistant',
-          text: data.reply || 'Here is the SDET guidance you requested.',
+          role: "assistant",
+          text: data.reply || "Here is the SDET guidance you requested.",
           engine: data.engine,
           isLiveAI: data.isLiveAI,
         },
       ]);
     } catch {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
-          role: 'assistant',
-          text: 'Transitioning from Manual QA to an SDET is 100% achievable. Start with Playwright + TypeScript for the gentlest learning curve and zero flakiness.',
+          role: "assistant",
+          text: "Transitioning from Manual QA to an SDET is 100% achievable. Start with Playwright + TypeScript for the gentlest learning curve and zero flakiness.",
         },
       ]);
     } finally {
@@ -152,14 +170,35 @@ export default function AskAIWidget() {
   };
 
   const faqChips = [
-    { label: '0 Coding Background?', q: 'Can I become an SDET with zero coding background?' },
-    { label: 'Playwright vs Selenium?', q: 'Playwright vs Selenium in 2026: which should I learn first?' },
-    { label: 'How long to learn?', q: 'How long does it take to switch from Manual QA to an SDET?' },
-    { label: 'Will AI replace QA?', q: 'Will AI replace manual testing jobs?' },
-    { label: 'Do I need LeetCode/DSA?', q: 'Do I need to solve complex LeetCode / DSA algorithms for QA interviews?' },
-    { label: 'Python vs TypeScript?', q: 'Which programming language should a manual tester learn first? Python vs TypeScript vs Java' },
-    { label: 'What is API Testing?', q: 'What is API testing and why should I prioritize it over UI testing?' },
-    { label: 'Salary Increase?', q: 'What salary increase can a manual tester expect when becoming an SDET?' },
+    {
+      label: "0 Coding Background?",
+      q: "Can I become an SDET with zero coding background?",
+    },
+    {
+      label: "Playwright vs Selenium?",
+      q: "Playwright vs Selenium in 2026: which should I learn first?",
+    },
+    {
+      label: "How long to learn?",
+      q: "How long does it take to switch from Manual QA to an SDET?",
+    },
+    { label: "Will AI replace QA?", q: "Will AI replace manual testing jobs?" },
+    {
+      label: "Do I need LeetCode/DSA?",
+      q: "Do I need to solve complex LeetCode / DSA algorithms for QA interviews?",
+    },
+    {
+      label: "Python vs TypeScript?",
+      q: "Which programming language should a manual tester learn first? Python vs TypeScript vs Java",
+    },
+    {
+      label: "What is API Testing?",
+      q: "What is API testing and why should I prioritize it over UI testing?",
+    },
+    {
+      label: "Salary Increase?",
+      q: "What salary increase can a manual tester expect when becoming an SDET?",
+    },
   ];
 
   return (
@@ -175,7 +214,8 @@ export default function AskAIWidget() {
               </div>
               <div>
                 <h4 className="font-bold text-sm leading-tight flex items-center gap-2">
-                  Ask SDET AI Mentor
+                  Ask AI Coding Assistant
+                  <span className="sr-only">Ask SDET AI Mentor</span>
                   {activeApiKey ? (
                     <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded flex items-center gap-1">
                       <Zap className="w-3 h-3 text-emerald-400" />
@@ -187,11 +227,14 @@ export default function AskAIWidget() {
                     </span>
                   ) : (
                     <span className="text-[10px] font-semibold bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded">
-                      Free Preview ({Math.max(0, GUEST_MAX_QUESTIONS - guestCount)} left)
+                      Free Preview (
+                      {Math.max(0, GUEST_MAX_QUESTIONS - guestCount)} left)
                     </span>
                   )}
                 </h4>
-                <p className="text-[11px] text-slate-400">Short, Crisp Guidance for Manual Testers</p>
+                <p className="text-[11px] text-slate-400">
+                  Ask any programming concept, coding query, or syntax
+                </p>
               </div>
             </div>
 
@@ -227,25 +270,29 @@ export default function AskAIWidget() {
             {messages.map((m, idx) => (
               <div
                 key={idx}
-                className={`flex gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                {m.role === 'assistant' && (
+                {m.role === "assistant" && (
                   <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 text-[10px] font-bold mt-1">
                     QA
                   </div>
                 )}
                 <div
                   className={`p-3 rounded-2xl text-xs leading-relaxed max-w-[88%] whitespace-pre-wrap ${
-                    m.role === 'user'
-                      ? 'bg-indigo-600 text-white rounded-br-none'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-bl-none border border-slate-200/60 dark:border-slate-700/60'
+                    m.role === "user"
+                      ? "bg-indigo-600 text-white rounded-br-none"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-bl-none border border-slate-200/60 dark:border-slate-700/60"
                   }`}
                 >
                   {m.text}
                   {m.engine && (
                     <div className="mt-1.5 pt-1.5 border-t border-slate-200/40 dark:border-slate-700/40 text-[9px] text-slate-400 flex items-center justify-between">
                       <span>via {m.engine}</span>
-                      {m.isLiveAI && <span className="text-emerald-400 font-semibold">● Live Gemini</span>}
+                      {m.isLiveAI && (
+                        <span className="text-emerald-400 font-semibold">
+                          ● Live Gemini
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -272,7 +319,9 @@ export default function AskAIWidget() {
                     You have used your 3 free guest questions!
                   </h5>
                   <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
-                    Create a <strong>100% Free Account</strong> to continue asking unlimited SDET questions, access all courses, interactive sandboxes, and progress tracking.
+                    Create a <strong>100% Free Account</strong> to continue
+                    asking unlimited SDET questions, access all courses,
+                    interactive sandboxes, and progress tracking.
                   </p>
                 </div>
               </div>
@@ -310,7 +359,9 @@ export default function AskAIWidget() {
                   <span>AI Mentor Disabled · Gemini Key Required</span>
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                  To protect shared quota and prevent server token burn, please configure your personal free Gemini API key to activate AI chat.
+                  To protect shared quota and prevent server token burn, please
+                  configure your personal free Gemini API key to activate AI
+                  chat.
                 </p>
                 <button
                   type="button"
@@ -343,12 +394,12 @@ export default function AskAIWidget() {
                 <input
                   type="text"
                   value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSend()}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder={
                     !currentUser
                       ? `Ask anything (${GUEST_MAX_QUESTIONS - guestCount} guest questions left)...`
-                      : 'Ask anything about switching from Manual QA...'
+                      : "Ask anything about switching from Manual QA..."
                   }
                   className="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -363,8 +414,14 @@ export default function AskAIWidget() {
 
               {!currentUser && (
                 <div className="flex items-center justify-between text-[10px] text-slate-400 px-1">
-                  <span>Guest Preview: {guestCount}/{GUEST_MAX_QUESTIONS} questions used</span>
-                  <Link href="/signup" className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+                  <span>
+                    Guest Preview: {guestCount}/{GUEST_MAX_QUESTIONS} questions
+                    used
+                  </span>
+                  <Link
+                    href="/signup"
+                    className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
+                  >
                     Sign up for unlimited free chat →
                   </Link>
                 </div>

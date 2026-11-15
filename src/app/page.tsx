@@ -134,6 +134,27 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Free Programming for Kids Feature Button (Requirement 1) */}
+        <div className="pt-2 max-w-md mx-auto">
+          <Link
+            href="/kids"
+            className="w-full py-3.5 px-6 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-extrabold rounded-2xl text-sm sm:text-base transition-all shadow-md hover:shadow-orange-500/25 hover:scale-[1.02] active:scale-95 flex items-center justify-between group border border-white/20"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🚀</span>
+              <div className="text-left">
+                <div className="font-extrabold text-sm sm:text-base leading-tight">
+                  Free Programming for Kids
+                </div>
+                <div className="text-[11px] text-orange-100 font-medium">
+                  Ages 10–14 · Python, JavaScript, Java &amp; TS
+                </div>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
         {/* Reassurance Checklist */}
         <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium">
           <div className="flex items-center gap-2">

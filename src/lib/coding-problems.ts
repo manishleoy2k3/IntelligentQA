@@ -1167,6 +1167,592 @@ class Program {
 `,
     },
   },
+
+  // ==========================================
+  // KIDS CODING PROBLEMS (AGES 10-14)
+  // Python, JavaScript, TypeScript & Java
+  // ==========================================
+  {
+    id: 'kids-reverse-string',
+    title: '🚀 Secret Space Rover Code (Reverse a Word)',
+    difficulty: 'Easy',
+    category: 'Kids Coding (Ages 10-14)',
+    description: `A Mars space rover received a reversed secret message from Earth!
+Write a program to reverse the word so the astronauts on Mars can read it clearly.
+
+For example, if the rover receives "olleh", your program should output "hello".`,
+    constraints: [
+      '1 <= word.length <= 100',
+      'Words consist of English letters',
+    ],
+    examples: [
+      {
+        input: 'word = "olleh"',
+        output: '"hello"',
+        explanation: 'Reversing "olleh" gives "hello".',
+      },
+      {
+        input: 'word = "tacocat"',
+        output: '"tacocat"',
+        explanation: 'Reversing "tacocat" gives "tacocat".',
+      },
+    ],
+    starterTemplates: {
+      python: `# Kids Coding: Secret Space Rover Code
+# Reverse the word so astronauts can read it!
+
+def reverse_message(word: str) -> str:
+    # Tip: In Python you can reverse using word[::-1] or a loop
+    return word[::-1]
+
+print("Mars Message:", reverse_message("olleh"))  # Expected: hello
+print("Rocket Code:", reverse_message("tekcor"))  # Expected: rocket
+`,
+      javascript: `// Kids Coding: Secret Space Rover Code
+// Reverse the word so astronauts can read it!
+
+function reverseMessage(word) {
+    return word.split('').reverse().join('');
+}
+
+console.log("Mars Message:", reverseMessage("olleh")); // Expected: hello
+console.log("Rocket Code:", reverseMessage("tekcor")); // Expected: rocket
+`,
+      typescript: `// Kids Coding: Secret Space Rover Code
+// Reverse the word so astronauts can read it!
+
+function reverseMessage(word: string): string {
+    return word.split('').reverse().join('');
+}
+
+console.log("Mars Message:", reverseMessage("olleh")); // Expected: hello
+console.log("Rocket Code:", reverseMessage("tekcor")); // Expected: rocket
+`,
+      java: `public class Main {
+    // Kids Coding: Secret Space Rover Code
+    public static String reverseMessage(String word) {
+        return new StringBuilder(word).reverse().toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Mars Message: " + reverseMessage("olleh")); // Expected: hello
+        System.out.println("Rocket Code: " + reverseMessage("tekcor")); // Expected: rocket
+    }
+}
+`,
+      csharp: `using System;
+
+class Program {
+    public static string ReverseMessage(string word) {
+        char[] arr = word.ToCharArray();
+        Array.Reverse(arr);
+        return new string(arr);
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine("Mars Message: " + ReverseMessage("olleh"));
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'kids-magic-fruit-counter',
+    title: '🍎 Magic Fruit Basket Counter',
+    difficulty: 'Easy',
+    category: 'Kids Coding (Ages 10-14)',
+    description: `Help the friendly picnic robot count fruits in the basket!
+Given a list of fruit names and a target fruit you are looking for, return the total count of how many times that fruit appears.`,
+    constraints: [
+      '1 <= fruits.length <= 100',
+      'All fruit names are lowercase strings',
+    ],
+    examples: [
+      {
+        input: 'fruits = ["apple", "banana", "apple", "mango", "apple"], target = "apple"',
+        output: '3',
+        explanation: '"apple" appears 3 times in the basket.',
+      },
+      {
+        input: 'fruits = ["banana", "orange", "grape"], target = "strawberry"',
+        output: '0',
+        explanation: '"strawberry" is not in the basket.',
+      },
+    ],
+    starterTemplates: {
+      python: `# Kids Coding: Magic Fruit Basket Counter
+# Count how many target fruits are in the list!
+
+def count_fruits(fruits: list, target: str) -> int:
+    count = 0
+    for fruit in fruits:
+        if fruit == target:
+            count += 1
+    return count
+
+basket = ["apple", "banana", "apple", "mango", "apple"]
+print("Apple count:", count_fruits(basket, "apple"))  # Expected: 3
+`,
+      javascript: `// Kids Coding: Magic Fruit Basket Counter
+// Count how many target fruits are in the array!
+
+function countFruits(fruits, target) {
+    let count = 0;
+    for (const fruit of fruits) {
+        if (fruit === target) {
+            count++;
+        }
+    }
+    return count;
+}
+
+const basket = ["apple", "banana", "apple", "mango", "apple"];
+console.log("Apple count:", countFruits(basket, "apple")); // Expected: 3
+`,
+      typescript: `// Kids Coding: Magic Fruit Basket Counter
+// Count how many target fruits are in the array!
+
+function countFruits(fruits: string[], target: string): number {
+    return fruits.filter(f => f === target).length;
+}
+
+const basket = ["apple", "banana", "apple", "mango", "apple"];
+console.log("Apple count:", countFruits(basket, "apple")); // Expected: 3
+`,
+      java: `import java.util.*;
+
+public class Main {
+    // Kids Coding: Magic Fruit Basket Counter
+    public static int countFruits(String[] fruits, String target) {
+        int count = 0;
+        for (String f : fruits) {
+            if (f.equals(target)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static void main(String[] args) {
+        String[] basket = {"apple", "banana", "apple", "mango", "apple"};
+        System.out.println("Apple count: " + countFruits(basket, "apple")); // Expected: 3
+    }
+}
+`,
+      csharp: `using System;
+
+class Program {
+    public static int CountFruits(string[] fruits, string target) {
+        int count = 0;
+        foreach (var f in fruits) {
+            if (f == target) count++;
+        }
+        return count;
+    }
+
+    static void Main(string[] args) {
+        string[] basket = { "apple", "banana", "apple", "mango", "apple" };
+        Console.WriteLine("Apple count: " + CountFruits(basket, "apple"));
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'kids-superhero-power',
+    title: '⚡ Superhero Max Power Level Finder',
+    difficulty: 'Easy',
+    category: 'Kids Coding (Ages 10-14)',
+    description: `The Superhero Academy needs to find their strongest champion for the cosmic tournament!
+Given an array of superhero power levels (positive numbers), find and return the maximum power on the team.`,
+    constraints: [
+      '1 <= powers.length <= 100',
+      '1 <= powers[i] <= 1000',
+    ],
+    examples: [
+      {
+        input: 'powers = [45, 88, 99, 72, 105, 60]',
+        output: '105',
+        explanation: '105 is the highest power level on the team.',
+      },
+    ],
+    starterTemplates: {
+      python: `# Kids Coding: Superhero Max Power Finder
+# Find the highest number in the list!
+
+def find_highest_power(powers: list) -> int:
+    highest = powers[0]
+    for p in powers:
+        if p > highest:
+            highest = p
+    return highest
+
+team_powers = [45, 88, 99, 72, 105, 60]
+print("Champion Power:", find_highest_power(team_powers))  # Expected: 105
+`,
+      javascript: `// Kids Coding: Superhero Max Power Finder
+// Find the highest number in the array!
+
+function findHighestPower(powers) {
+    let highest = powers[0];
+    for (const p of powers) {
+        if (p > highest) {
+            highest = p;
+        }
+    }
+    return highest;
+}
+
+const teamPowers = [45, 88, 99, 72, 105, 60];
+console.log("Champion Power:", findHighestPower(teamPowers)); // Expected: 105
+`,
+      typescript: `// Kids Coding: Superhero Max Power Finder
+// Find the highest number in the array!
+
+function findHighestPower(powers: number[]): number {
+    return Math.max(...powers);
+}
+
+const teamPowers = [45, 88, 99, 72, 105, 60];
+console.log("Champion Power:", findHighestPower(teamPowers)); // Expected: 105
+`,
+      java: `public class Main {
+    // Kids Coding: Superhero Max Power Finder
+    public static int findHighestPower(int[] powers) {
+        int highest = powers[0];
+        for (int p : powers) {
+            if (p > highest) {
+                highest = p;
+            }
+        }
+        return highest;
+    }
+
+    public static void main(String[] args) {
+        int[] teamPowers = {45, 88, 99, 72, 105, 60};
+        System.out.println("Champion Power: " + findHighestPower(teamPowers)); // Expected: 105
+    }
+}
+`,
+      csharp: `using System;
+
+class Program {
+    public static int FindHighestPower(int[] powers) {
+        int highest = powers[0];
+        foreach (int p in powers) {
+            if (p > highest) highest = p;
+        }
+        return highest;
+    }
+
+    static void Main(string[] args) {
+        int[] teamPowers = { 45, 88, 99, 72, 105, 60 };
+        Console.WriteLine("Champion Power: " + FindHighestPower(teamPowers));
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'kids-buzz-boom',
+    title: '🐝 Buzz & Boom Game (Multiples of 3 and 5)',
+    difficulty: 'Easy',
+    category: 'Kids Coding (Ages 10-14)',
+    description: `Play the Buzz & Boom game from 1 to N!
+For every number from 1 to N:
+- If divisible by 3, output "Buzz"
+- If divisible by 5, output "Boom"
+- If divisible by both 3 and 5, output "BuzzBoom"
+- Otherwise output the number as a string.`,
+    constraints: [
+      '1 <= n <= 50',
+    ],
+    examples: [
+      {
+        input: 'n = 5',
+        output: '["1", "2", "Buzz", "4", "Boom"]',
+        explanation: '3 is divisible by 3 (Buzz), 5 is divisible by 5 (Boom).',
+      },
+    ],
+    starterTemplates: {
+      python: `# Kids Coding: Buzz & Boom Game
+
+def buzz_boom(n: int) -> list:
+    result = []
+    for i in range(1, n + 1):
+        if i % 3 == 0 and i % 5 == 0:
+            result.append("BuzzBoom")
+        elif i % 3 == 0:
+            result.append("Buzz")
+        elif i % 5 == 0:
+            result.append("Boom")
+        else:
+            result.append(str(i))
+    return result
+
+print(buzz_boom(15))
+`,
+      javascript: `// Kids Coding: Buzz & Boom Game
+
+function buzzBoom(n) {
+    const result = [];
+    for (let i = 1; i <= n; i++) {
+        if (i % 3 === 0 && i % 5 === 0) {
+            result.push("BuzzBoom");
+        } else if (i % 3 === 0) {
+            result.push("Buzz");
+        } else if (i % 5 === 0) {
+            result.push("Boom");
+        } else {
+            result.push(String(i));
+        }
+    }
+    return result;
+}
+
+console.log(buzzBoom(15));
+`,
+      typescript: `// Kids Coding: Buzz & Boom Game
+
+function buzzBoom(n: number): string[] {
+    const result: string[] = [];
+    for (let i = 1; i <= n; i++) {
+        if (i % 3 === 0 && i % 5 === 0) {
+            result.push("BuzzBoom");
+        } else if (i % 3 === 0) {
+            result.push("Buzz");
+        } else if (i % 5 === 0) {
+            result.push("Boom");
+        } else {
+            result.push(String(i));
+        }
+    }
+    return result;
+}
+
+console.log(buzzBoom(15));
+`,
+      java: `import java.util.*;
+
+public class Main {
+    public static List<String> buzzBoom(int n) {
+        List<String> result = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            if (i % 3 == 0 && i % 5 == 0) {
+                result.add("BuzzBoom");
+            } else if (i % 3 == 0) {
+                result.add("Buzz");
+            } else if (i % 5 == 0) {
+                result.add("Boom");
+            } else {
+                result.add(String.valueOf(i));
+            }
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(buzzBoom(15));
+    }
+}
+`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static List<string> BuzzBoom(int n) {
+        List<string> result = new List<string>();
+        for (int i = 1; i <= n; i++) {
+            if (i % 3 == 0 && i % 5 == 0) result.Add("BuzzBoom");
+            else if (i % 3 == 0) result.Add("Buzz");
+            else if (i % 5 == 0) result.Add("Boom");
+            else result.Add(i.ToString());
+        }
+        return result;
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine(string.Join(", ", BuzzBoom(15)));
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'kids-mirror-word',
+    title: '🪞 Magic Mirror Word Detective (Palindrome)',
+    difficulty: 'Easy',
+    category: 'Kids Coding (Ages 10-14)',
+    description: `A Magic Mirror word reads exactly the same forwards and backwards!
+Words like "radar", "racecar", "level", and "mom" are Magic Mirror words.
+Write a function that returns true if the word is a magic mirror word, else false.`,
+    constraints: [
+      '1 <= word.length <= 50',
+      'Only lowercase letters',
+    ],
+    examples: [
+      {
+        input: 'word = "racecar"',
+        output: 'true',
+        explanation: '"racecar" reversed is still "racecar".',
+      },
+      {
+        input: 'word = "robot"',
+        output: 'false',
+        explanation: '"robot" reversed is "tobor", not matching.',
+      },
+    ],
+    starterTemplates: {
+      python: `# Kids Coding: Magic Mirror Word Detective
+
+def is_mirror_word(word: str) -> bool:
+    return word == word[::-1]
+
+print("racecar:", is_mirror_word("racecar"))  # True
+print("robot:", is_mirror_word("robot"))      # False
+`,
+      javascript: `// Kids Coding: Magic Mirror Word Detective
+
+function isMirrorWord(word) {
+    const reversed = word.split('').reverse().join('');
+    return word === reversed;
+}
+
+console.log("racecar:", isMirrorWord("racecar")); // true
+console.log("robot:", isMirrorWord("robot"));     // false
+`,
+      typescript: `// Kids Coding: Magic Mirror Word Detective
+
+function isMirrorWord(word: string): boolean {
+    const reversed = word.split('').reverse().join('');
+    return word === reversed;
+}
+
+console.log("racecar:", isMirrorWord("racecar")); // true
+console.log("robot:", isMirrorWord("robot"));     // false
+`,
+      java: `public class Main {
+    public static boolean isMirrorWord(String word) {
+        String reversed = new StringBuilder(word).reverse().toString();
+        return word.equals(reversed);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("racecar: " + isMirrorWord("racecar")); // true
+        System.out.println("robot: " + isMirrorWord("robot"));     // false
+    }
+}
+`,
+      csharp: `using System;
+
+class Program {
+    public static bool IsMirrorWord(string word) {
+        char[] arr = word.ToCharArray();
+        Array.Reverse(arr);
+        return word == new string(arr);
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine("racecar: " + IsMirrorWord("racecar")); // true
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'kids-treasure-gold',
+    title: '🪙 Treasure Island Gold Coin Collector',
+    difficulty: 'Easy',
+    category: 'Kids Coding (Ages 10-14)',
+    description: `A young pirate explorer is exploring a treasure map!
+Along the path:
+- Positive numbers represent gold coins collected.
+- Negative numbers represent trap fees.
+Write a function to sum up only the positive gold coins collected along the trail!`,
+    constraints: [
+      '1 <= coins.length <= 50',
+      '-100 <= coins[i] <= 100',
+    ],
+    examples: [
+      {
+        input: 'coins = [10, -5, 20, -2, 5]',
+        output: '35',
+        explanation: 'Positive coins: 10 + 20 + 5 = 35.',
+      },
+    ],
+    starterTemplates: {
+      python: `# Kids Coding: Treasure Island Gold Coin Collector
+
+def collect_gold(coins: list) -> int:
+    total_gold = 0
+    for coin in coins:
+        if coin > 0:
+            total_gold += coin
+    return total_gold
+
+chest = [10, -5, 20, -2, 5]
+print("Total Gold Collected:", collect_gold(chest))  # Expected: 35
+`,
+      javascript: `// Kids Coding: Treasure Island Gold Coin Collector
+
+function collectGold(coins) {
+    let totalGold = 0;
+    for (const coin of coins) {
+        if (coin > 0) {
+            totalGold += coin;
+        }
+    }
+    return totalGold;
+}
+
+const chest = [10, -5, 20, -2, 5];
+console.log("Total Gold Collected:", collectGold(chest)); // Expected: 35
+`,
+      typescript: `// Kids Coding: Treasure Island Gold Coin Collector
+
+function collectGold(coins: number[]): number {
+    return coins.filter(c => c > 0).reduce((sum, c) => sum + c, 0);
+}
+
+const chest = [10, -5, 20, -2, 5];
+console.log("Total Gold Collected:", collectGold(chest)); // Expected: 35
+`,
+      java: `public class Main {
+    public static int collectGold(int[] coins) {
+        int totalGold = 0;
+        for (int coin : coins) {
+            if (coin > 0) {
+                totalGold += coin;
+            }
+        }
+        return totalGold;
+    }
+
+    public static void main(String[] args) {
+        int[] chest = {10, -5, 20, -2, 5};
+        System.out.println("Total Gold Collected: " + collectGold(chest)); // Expected: 35
+    }
+}
+`,
+      csharp: `using System;
+
+class Program {
+    public static int CollectGold(int[] coins) {
+        int total = 0;
+        foreach (int c in coins) {
+            if (c > 0) total += c;
+        }
+        return total;
+    }
+
+    static void Main(string[] args) {
+        int[] chest = { 10, -5, 20, -2, 5 };
+        Console.WriteLine("Total Gold: " + CollectGold(chest));
+    }
+}
+`,
+    },
+  },
 ];
 
 const LOCAL_STORAGE_KEY = 'sdet_custom_coding_problems';
