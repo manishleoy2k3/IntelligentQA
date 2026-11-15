@@ -284,10 +284,10 @@ function CodingProblemsCatalogContent() {
             <Link
               href="/sandbox/code"
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition"
-              title="Open pure freeform online compiler"
+              title="Open Online Compilers"
             >
               <Laptop className="w-3.5 h-3.5 text-blue-400" />
-              <span>Freeform Compiler</span>
+              <span>Online Compilers</span>
             </Link>
 
             <button

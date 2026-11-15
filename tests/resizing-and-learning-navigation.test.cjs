@@ -184,8 +184,8 @@ test('Item 13: Try it with AI ThreadLocal correctness & completeness, and Dedica
   assert.ok(workspaceFile.includes('QADatabase.getUserGeminiKey'), 'Retrieves active user Gemini key from database');
   assert.ok(workspaceFile.includes("headers['x-gemini-api-key'] = userKey"), 'Passes user Gemini key in request header');
 
-  // Requirement 2: Dedicated Online Compilers under Practice Labs (renamed from Hands-On Coding Lab)
-  assert.ok(sidebarFile.includes('5. Online Compilers'), 'Left Nav includes 5. Online Compilers');
+  // Requirement 2: Dedicated Online Compilers under Practice Labs (first item, without prefix numbers)
+  assert.ok(sidebarFile.includes('Online Compilers'), 'Left Nav includes Online Compilers');
   assert.ok(sidebarFile.includes('/sandbox/code'), 'Links to /sandbox/code');
 
   // Lab Page is a pure online compiler like OnlineGDB with language dropdown

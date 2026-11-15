@@ -445,7 +445,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-neutral-800 text-slate-500 dark:text-neutral-400">
-                5 Labs
+                6 Labs
               </span>
               {practiceLabsOpen ? (
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform" />
@@ -458,83 +458,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           {/* Practice Labs Child Items */}
           {practiceLabsOpen && (
             <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
-              {/* 1. Selenium Web Lab */}
-              <Link
-                href="/sandbox/web?stack=selenium"
-                onClick={onCloseMobile}
-                className={childItemClass(pathname === '/sandbox/web' && (!pathname.includes('stack=playwright') && !pathname.includes('mode=playwright')))}
-                title="Stage 1 Practice Lab: Selenium Web Automation Lab"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Terminal className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">1. Selenium Web Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Web Automation Lab</span>
-                  </div>
-                </div>
-                <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded shrink-0">
-                  Stage 1
-                </span>
-              </Link>
-
-              {/* 2. Playwright Web Lab */}
-              <Link
-                href="/sandbox/web?stack=playwright"
-                onClick={onCloseMobile}
-                className={childItemClass(pathname === '/sandbox/web' && (pathname.includes('stack=playwright') || pathname.includes('mode=playwright')))}
-                title="Stage 2 Practice Lab: Playwright Web Automation Lab"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Code2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">2. Playwright Web Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Web Automation Lab</span>
-                  </div>
-                </div>
-                <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded shrink-0">
-                  Stage 2
-                </span>
-              </Link>
-
-              {/* 3. Rest Assured / API Lab */}
-              <Link
-                href="/sandbox/api"
-                onClick={onCloseMobile}
-                className={childItemClass(pathname === '/sandbox/api')}
-                title="Stage 3 Practice Lab: Rest Assured API Testing Lab"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Server className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">3. Rest Assured / API Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">API Testing Lab</span>
-                  </div>
-                </div>
-                <span className="text-[9px] font-mono font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded shrink-0">
-                  Stage 3
-                </span>
-              </Link>
-
-              {/* 4. AI for QA & Prompt Lab */}
-              <Link
-                href="/qa-agents"
-                onClick={onCloseMobile}
-                className={childItemClass(pathname === '/qa-agents')}
-                title="Stage 4 Practice Lab: AI for QA & Autonomous Agent Suite"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">4. AI for QA &amp; Prompt Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Autonomous QA Agents</span>
-                  </div>
-                </div>
-                <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded shrink-0">
-                  Stage 4
-                </span>
-              </Link>
-
-              {/* 5. Online Compilers */}
+              {/* Online Compilers */}
               <Link
                 href="/sandbox/code"
                 onClick={onCloseMobile}
@@ -544,16 +468,13 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <div className="flex items-center gap-2 truncate">
                   <Laptop className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">5. Online Compilers</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Online Compilers</span>
                     <span className="text-[10px] text-slate-500 dark:text-neutral-400">Java, Python, TS, JS, C#</span>
                   </div>
                 </div>
-                <span className="text-[9px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded shrink-0">
-                  Run
-                </span>
               </Link>
 
-              {/* Coding Library (List of problems under hands-on coding lab) */}
+              {/* Coding Library */}
               <Link
                 href="/sandbox/code/problems"
                 onClick={onCloseMobile}
@@ -567,9 +488,70 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                     <span className="text-[10px] text-slate-500 dark:text-neutral-400">Problems by Topic &amp; Level</span>
                   </div>
                 </div>
-                <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded shrink-0">
-                  Problems
-                </span>
+              </Link>
+
+              {/* Selenium Web Lab */}
+              <Link
+                href="/sandbox/web?stack=selenium"
+                onClick={onCloseMobile}
+                className={childItemClass(pathname === '/sandbox/web' && (!pathname.includes('stack=playwright') && !pathname.includes('mode=playwright')))}
+                title="Selenium Web Automation Lab"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Terminal className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <div className="flex flex-col truncate">
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Selenium Web Lab</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Web Automation Lab</span>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Playwright Web Lab */}
+              <Link
+                href="/sandbox/web?stack=playwright"
+                onClick={onCloseMobile}
+                className={childItemClass(pathname === '/sandbox/web' && (pathname.includes('stack=playwright') || pathname.includes('mode=playwright')))}
+                title="Playwright Web Automation Lab"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Code2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <div className="flex flex-col truncate">
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Playwright Web Lab</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Web Automation Lab</span>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Rest Assured / API Lab */}
+              <Link
+                href="/sandbox/api"
+                onClick={onCloseMobile}
+                className={childItemClass(pathname === '/sandbox/api')}
+                title="Rest Assured API Testing Lab"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Server className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                  <div className="flex flex-col truncate">
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Rest Assured / API Lab</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">API Testing Lab</span>
+                  </div>
+                </div>
+              </Link>
+
+              {/* AI for QA & Prompt Lab */}
+              <Link
+                href="/qa-agents"
+                onClick={onCloseMobile}
+                className={childItemClass(pathname === '/qa-agents')}
+                title="AI for QA & Autonomous Agent Suite"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                  <div className="flex flex-col truncate">
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">AI for QA &amp; Prompt Lab</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Autonomous QA Agents</span>
+                  </div>
+                </div>
               </Link>
             </div>
           )}

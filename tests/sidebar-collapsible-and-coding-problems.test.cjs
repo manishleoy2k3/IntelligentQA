@@ -20,7 +20,7 @@ test('Request 1: PRACTICE LABS, AI TOOLS & AGENTS, and Interview Bank are collap
   assert.ok(sidebarFile.includes('onClick={() => setInterviewBankOpen(!interviewBankOpen)}'), 'Interview Bank toggleable on click');
 
   // Verify badge counts exist
-  assert.ok(sidebarFile.includes('5 Labs'), 'Practice Labs displays 5 Labs badge');
+  assert.ok(sidebarFile.includes('6 Labs'), 'Practice Labs displays 6 Labs badge');
   assert.ok(sidebarFile.includes('AI Suite'), 'AI Tools displays AI Suite badge');
   assert.ok(sidebarFile.includes('500+ Qs'), 'Interview Bank displays 500+ Qs badge');
 });
@@ -33,10 +33,14 @@ test('Request 2: Fonts are standardized and consistent across parent and child i
   assert.ok(sidebarFile.includes('navItemClass(isAiToolsActive)'), 'AI Tools parent uses navItemClass');
   assert.ok(sidebarFile.includes('navItemClass(isInterviewActive)'), 'Interview Bank parent uses navItemClass');
 
-  // Child items have clean typography & 5. Online Compilers
+  // Child items have clean typography & no stage or prefix numbering
   assert.ok(sidebarFile.includes('Web Automation Lab'), 'Renders readable subtext');
   assert.ok(sidebarFile.includes('API Testing Lab'), 'Renders readable subtext');
-  assert.ok(sidebarFile.includes('5. Online Compilers'), 'Renamed 5. Hands-On Coding Lab to 5. Online Compilers');
+  assert.ok(sidebarFile.includes('Online Compilers'), 'Online Compilers is in Practice Labs');
+  const practiceLabsSlice = sidebarFile.slice(sidebarFile.indexOf('Practice Labs Child Items'), sidebarFile.indexOf('AI AGENTS & TOOLS'));
+  assert.ok(!practiceLabsSlice.includes('5. Online Compilers'), 'Prefix numbers removed from Practice Labs');
+  assert.ok(!practiceLabsSlice.includes('1. Selenium Web Lab'), 'Prefix numbers removed from Selenium');
+  assert.ok(!practiceLabsSlice.includes('Stage 1'), 'Stage numbers removed from Practice Labs');
 });
 
 test('Coding Problems Library & Dedicated Catalog & Solver Features', () => {
