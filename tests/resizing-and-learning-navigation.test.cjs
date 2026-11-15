@@ -198,7 +198,7 @@ test('Item 13: Try it with AI ThreadLocal correctness & completeness, and Dedica
   assert.ok(codeLabPage.includes('index.js'), 'Uses standard index.js filename');
   assert.ok(codeLabPage.includes('Program.cs'), 'Uses standard Program.cs filename');
   assert.ok(codeLabPage.includes('setCode(STARTER_CODES[language])'), 'Reset button directly restores starter code');
-  assert.ok(codeLabPage.includes('fetch(\'/api/sandbox/compiler\''), 'Connects to live compiler API');
+  assert.ok(codeLabPage.includes("fetch('/api/sandbox/compiler'") || codeLabPage.includes('fetch("/api/sandbox/compiler"'), 'Connects to live compiler API');
 
   // Compiler API handles Java, Python, TypeScript, JavaScript, and C#
   assert.ok(compilerRouteFile.includes("normalizedLang === 'python'"), 'Compiler supports Python');

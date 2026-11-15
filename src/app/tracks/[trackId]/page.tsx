@@ -1,7 +1,19 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getTrackById, QA_TRACKS } from '@/lib/qa-curriculum';
-import { Sparkles, Clock, BookOpen, ArrowRight, CheckCircle2, Lock, ShieldCheck, PlayCircle } from 'lucide-react';
+import {
+  Sparkles,
+  Clock,
+  BookOpen,
+  ArrowRight,
+  CheckCircle2,
+  Lock,
+  ShieldCheck,
+  PlayCircle,
+  Upload,
+  Download,
+  FileCode2,
+} from 'lucide-react';
 
 export function generateStaticParams() {
   return QA_TRACKS.map(t => ({ trackId: t.id }));
@@ -21,6 +33,7 @@ export default async function TrackOverviewPage({
 
   const allLessons = track.modules.flatMap(m => m.lessons);
   const firstLesson = allLessons[0];
+  const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 md:p-8 space-y-8">
@@ -68,6 +81,49 @@ export default async function TrackOverviewPage({
             </Link>
           </div>
         )}
+
+        {/* Concept Guides & Import Hub */}
+        <div className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-emerald-500" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                {track.title} Concept Guides & Architecture Library
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Explore in-depth architecture explanations, code snippets, interview tips, or import custom guides.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              href={`/guides/${guideSlug}?action=template`}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 inline-flex items-center gap-1.5 transition-colors shadow-xs"
+              title="Download or preview JSON/CSV guide import template"
+            >
+              <Download className="w-3.5 h-3.5 text-blue-500" />
+              <span>Import Template</span>
+            </Link>
+
+            <Link
+              href={`/guides/${guideSlug}?action=import`}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 inline-flex items-center gap-1.5 transition-colors shadow-xs"
+              title="Import concept guides from JSON or CSV"
+            >
+              <Upload className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Import Guide</span>
+            </Link>
+
+            <Link
+              href={`/guides/${guideSlug}`}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white inline-flex items-center gap-1.5 transition-colors shadow-xs"
+            >
+              <span>Browse Guides</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Modules & Lessons List */}

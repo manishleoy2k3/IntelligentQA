@@ -223,7 +223,7 @@ export default function OnlineCompilerPage() {
     setTerminalError("");
 
     try {
-      const res = await fetch("/api/sandbox/compiler", {
+      const res = await fetch('/api/sandbox/compiler', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1315,3 +1315,59 @@ export function parseImportedProblems(content: string): { problems: CodingProble
     return { problems: [], error: `CSV parsing failed: ${e.message}` };
   }
 }
+
+// Generate standardized Coding Problem Import Template with mandatory fields
+export function getCodingProblemImportTemplate(format: 'json' | 'csv'): string {
+  if (format === 'csv') {
+    return `Title,Difficulty,Category,Description,ExampleInput,ExampleOutput,Constraints
+"Reverse Words in a String","Medium","Strings","Given an input string s, reverse the order of the words while trimming multiple spaces.","s = '  hello world  '","'world hello'","1 <= s.length <= 10^4"
+"Validate IPv4 Address","Medium","RegEx & Strings","Write an algorithm to validate whether a given string is a valid IPv4 address in dot-decimal format.","ip = '192.168.1.1'","true","Address has 4 octets between 0 and 255"`;
+  }
+
+  const sampleTemplate = [
+    {
+      title: "Count Frequency of Log Words (Mandatory)",
+      difficulty: "Easy",
+      category: "Strings & HashMaps (Mandatory)",
+      description: "Given a string of test log statements, return the occurrence count of each word. Commonly used in parsing execution failure logs.",
+      constraints: [
+        "1 <= text.length <= 10^5",
+        "Words are space-separated alphanumeric tokens"
+      ],
+      examples: [
+        {
+          input: "text = 'Pass Fail Pass Skip Pass'",
+          output: "{'Pass': 3, 'Fail': 1, 'Skip': 1}",
+          explanation: "'Pass' occurs 3 times, 'Fail' occurs 1 time, 'Skip' occurs 1 time."
+        }
+      ],
+      starterTemplates: {
+        java: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Implement your solution here\n        System.out.println(\"Solution Output\");\n    }\n}",
+        python: "# Python 3 Solution\ndef count_words(text: str):\n    pass\n\nif __name__ == '__main__':\n    print('Solution Output')",
+        typescript: "// TypeScript Solution\nfunction countWords(text: string) {\n    // Implement solution\n}\nconsole.log('Solution Output');",
+        javascript: "// JavaScript Solution\nfunction countWords(text) {\n    // Implement solution\n}\nconsole.log('Solution Output');",
+        csharp: "using System;\n\npublic class Program {\n    public static void Main() {\n        Console.WriteLine(\"Solution Output\");\n    }\n}"
+      }
+    }
+  ];
+
+  return JSON.stringify(sampleTemplate, null, 2);
+}
+
+// Download Coding Problem Template file
+export function downloadCodingProblemTemplate(format: 'json' | 'csv'): void {
+  const content = getCodingProblemImportTemplate(format);
+  const mimeType = format === 'json' ? 'application/json' : 'text/csv';
+  const extension = format === 'json' ? 'json' : 'csv';
+  const filename = `sdet_coding_problem_template.${extension}`;
+
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
