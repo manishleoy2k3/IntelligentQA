@@ -792,7 +792,227 @@ export function formatCrispChatAnswer(entry: QAKnowledgeEntry): string {
   return output.trim();
 }
 
+/**
+ * Intelligent Code Error & Exception Diagnostic Engine
+ * Analyzes compiler outputs, syntax errors, container runner issues, and runtime exceptions.
+ */
+export function diagnoseCodeError(query: string): string | null {
+  const q = query.toLowerCase();
+
+  // 1. Container / Environment / Sandbox Runner Errors (catatonit, pid1, ENOENT, javac not found, etc.)
+  if (
+    q.includes('catatonit') ||
+    q.includes('failed to exec pid1') ||
+    (q.includes('pid1') && q.includes('no such file')) ||
+    q.includes('spawn python3 enoent') ||
+    q.includes('jdk compiler (javac) not located') ||
+    q.includes('cloud compilation was unreachable') ||
+    q.includes('container_linux') ||
+    q.includes('oci runtime') ||
+    q.includes('runc did not terminate')
+  ) {
+    return `### ⚠️ Execution Sandbox & Environment Notice
+
+**Diagnosis**: This is an **environment/sandbox infrastructure notice**, NOT an issue with your code logic.
+
+• **What Happened**: The cloud execution container or backend compiler supervisor (\`catatonit\` / process runner) experienced a temporary startup timeout or missing binary path.
+• **Is Your Code Wrong?**: **No.** Your code syntax and logic did not cause this error.
+• **How to Resolve**:
+  1. Simply click **"Run Code"** again—our resilient multi-tier execution engine automatically routes around the failed runner to our fallback providers and in-process virtual VM.
+  2. If the problem persists, click **"Reset Starter"** and re-run.
+  3. Our compiler backend now automatically filters out remote container supervisor crashes and falls back seamlessly to the in-memory VM.`;
+  }
+
+  // 2. Python: SyntaxError EOL while scanning string literal
+  if (
+    q.includes('eol while scanning string literal') ||
+    (q.includes('syntaxerror') && q.includes('eol')) ||
+    (q.includes('syntaxerror') && q.includes('string literal'))
+  ) {
+    return `### 🔍 Python Error Diagnosis: SyntaxError (EOL while scanning string literal)
+
+**Diagnosis**: You opened a string quote (\`"\` or \`'\`), but reached the **End of Line (EOL)** before closing it.
+
+• **Root Cause**: In Python, single-line string literals must be closed on the very same line before the newline character.
+• **Common Bug**:
+\`\`\`python
+# ❌ Buggy: missing closing quote before the end of line
+print("Hello World
+\`\`\`
+• **The Fix**:
+\`\`\`python
+# ✅ Fixed: close the quote and parenthesis properly
+print("Hello World")
+\`\`\`
+• **Multi-line Note**: If your text spans multiple lines, wrap it in triple quotes: \`"""your text here"""\` or \`'''your text here'''\`. Check the line highlighted in red in your editor gutter!`;
+  }
+
+  // 3. Python: SyntaxError (Invalid syntax / unexpected EOF / missing colon)
+  if (
+    q.includes('invalid syntax') ||
+    q.includes('expected \':\'') ||
+    q.includes('unexpected eof while parsing') ||
+    (q.includes('syntaxerror') && !q.includes('eol'))
+  ) {
+    return `### 🔍 Python Error Diagnosis: SyntaxError (Invalid Syntax)
+
+**Diagnosis**: Python encountered a token or structure that violates language grammar rules.
+
+• **Top 3 Common Causes**:
+  1. **Missing Colon (\`:\`)**: Every \`if\`, \`elif\`, \`else\`, \`for\`, \`while\`, and \`def\` statement MUST end with a colon \`:\`.
+     \`\`\`python
+     # ❌ Bad: if x > 5
+     # ✅ Fix: if x > 5:
+     \`\`\`
+  2. **Unmatched Parentheses/Brackets**: Check that every \`(\`, \`[\`, and \`{\` has a matching \`)\`, \`]\`, and \`}\`.
+  3. **Assignment vs Equality**: Using single \`=\` inside an \`if\` condition instead of \`==\`.
+• **Editor Tip**: Look at the line number highlighted in red in your editor gutter to find the exact line!`;
+  }
+
+  // 4. Python: IndentationError
+  if (
+    q.includes('indentationerror') ||
+    q.includes('expected an indented block') ||
+    q.includes('unindent does not match')
+  ) {
+    return `### 🔍 Python Error Diagnosis: IndentationError
+
+**Diagnosis**: Python uses indentation (spaces) rather than curly braces to define code blocks.
+
+• **Root Cause**: Lines inside an \`if\`, \`for\`, \`while\`, or \`def\` block must be indented consistently.
+• **The Fix**:
+\`\`\`python
+# ❌ Bad: unindented body
+for i in range(3):
+print(i)
+
+# ✅ Fixed: indent by 4 spaces
+for i in range(3):
+    print(i)
+\`\`\`
+• **Tip**: Use 4 spaces per indentation level. Pressing the <kbd>Tab</kbd> key in our editor automatically inserts 4 spaces.`;
+  }
+
+  // 5. Python: NameError
+  if (q.includes('nameerror') || (q.includes('name ') && q.includes('is not defined'))) {
+    const varMatch = query.match(/name ['"]?([A-Za-z0-9_]+)['"]? is not defined/i);
+    const varName = varMatch ? varMatch[1] : 'identifier';
+    return `### 🔍 Python Error Diagnosis: NameError (${varName} is not defined)
+
+**Diagnosis**: Python encountered \`${varName}\`, but has no record of it in the current scope.
+
+• **Common Causes**:
+  1. **Typo / Case Sensitivity**: Python is strictly case-sensitive. \`Print\` is NOT \`print\`, \`True\` is NOT \`true\`.
+  2. **Used Before Declared**: You used \`${varName}\` before assigning a value to it.
+  3. **Missing Quotes**: If \`${varName}\` was meant to be text, wrap it in quotes: \`"${varName}"\`.
+  4. **Missing Import**: If it is a library function (e.g. \`math.sqrt\`), add \`import math\` at the top.`;
+  }
+
+  // 6. Python: TypeError
+  if (q.includes('typeerror') || q.includes('unsupported operand type')) {
+    return `### 🔍 Python Error Diagnosis: TypeError
+
+**Diagnosis**: An operation was performed on incompatible data types, or a function was called with wrong arguments.
+
+• **Common Examples**:
+  1. **Concatenating String and Number**:
+     \`\`\`python
+     # ❌ Bad: "Score: " + 95
+     # ✅ Fix: f"Score: {95}" or "Score: " + str(95)
+     \`\`\`
+  2. **Calling a non-function**: \`x = 10; x()\` triggers \`'int' object is not callable\`.
+• **Tip**: Use \`type(variable)\` or cast using \`int()\`, \`float()\`, or \`str()\` to align types.`;
+  }
+
+  // 7. Python: IndexError
+  if (q.includes('indexerror') || q.includes('list index out of range')) {
+    return `### 🔍 Python Error Diagnosis: IndexError (List index out of range)
+
+**Diagnosis**: You attempted to access an element at an index that does not exist in the list.
+
+• **Root Cause**: Python lists use **0-based indexing** (0 to \`len(list) - 1\`).
+• **Example**:
+\`\`\`python
+nums = [10, 20, 30]  # Length is 3 (valid indices: 0, 1, 2)
+print(nums[3])       # ❌ IndexError! Index 3 does not exist.
+print(nums[2])       # ✅ Output: 30
+\`\`\`
+• **Tip**: Check the length of your list with \`len(nums)\` before indexing, or iterate using \`for item in nums:\`.`;
+  }
+
+  // 8. Python: ZeroDivisionError
+  if (q.includes('zerodivisionerror') || q.includes('division by zero')) {
+    return `### 🔍 Python Error Diagnosis: ZeroDivisionError
+
+**Diagnosis**: Your code attempted to divide a number by zero (\`x / 0\` or \`x % 0\`).
+
+• **Fix**: Guard your division with a check:
+\`\`\`python
+if divisor != 0:
+    result = total / divisor
+else:
+    result = 0
+\`\`\``;
+  }
+
+  // 9. Java: cannot find symbol
+  if (q.includes('cannot find symbol') || (q.includes('symbol:') && q.includes('variable'))) {
+    return `### ☕ Java Error Diagnosis: cannot find symbol
+
+**Diagnosis**: The Java compiler (\`javac\`) cannot resolve a variable, method, or class name.
+
+• **Common Causes**:
+  1. **Typo or Case Mismatch**: Java is case-sensitive (\`system\` vs \`System\`, \`main\` vs \`Main\`).
+  2. **Undeclared Variable**: You must declare data types: \`int count = 0;\` rather than \`count = 0;\`.
+  3. **Out of Scope**: A variable declared inside a block \`{ ... }\` cannot be used outside that block.
+  4. **Missing Import**: If using \`Scanner\`, \`ArrayList\`, or \`Arrays\`, add imports:
+     \`\`\`java
+     import java.util.*;
+     \`\`\``;
+  }
+
+  // 10. Java: NullPointerException
+  if (q.includes('nullpointerexception') || q.includes('npe')) {
+    return `### ☕ Java Error Diagnosis: NullPointerException (NPE)
+
+**Diagnosis**: Your code attempted to call a method or access an attribute on an object reference that is currently \`null\`.
+
+• **The Fix**: Add a null check before calling methods:
+\`\`\`java
+if (myObject != null) {
+    myObject.doSomething();
+}
+\`\`\``;
+  }
+
+  // 11. Generic error / traceback detector
+  if (
+    q.includes('traceback (most recent call last)') ||
+    (q.includes('line ') && q.includes('error')) ||
+    q.includes('compilation error') ||
+    q.includes('runtime error')
+  ) {
+    return `### 🛠️ Code Error Debugging Assistant
+
+**Diagnosis**: Your program encountered a compiler diagnostic or runtime exception.
+
+• **How to Debug Efficiently**:
+  1. **Check the Line Number**: Look at the editor gutter—our IDE automatically highlights the error line in **red** (\`● Error on Line X\`).
+  2. **Read the Last Line**: In Python and Java, the last line of the error output always states the exact error type and reason.
+  3. **Check Syntax**: Inspect quotes, colons, brackets, and indentation around that line.
+• **Need specific help?** Paste your exact code and error message here, and I will explain the exact fix!`;
+  }
+
+  return null;
+}
+
 export function synthesizeDynamicAnswer(query: string): string {
+  // 0. First check if the user is asking about a code error, exception, or traceback
+  const errorDiagnosis = diagnoseCodeError(query);
+  if (errorDiagnosis) {
+    return errorDiagnosis;
+  }
+
   const q = query.toLowerCase();
 
   // 1. Language queries

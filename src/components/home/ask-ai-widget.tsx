@@ -170,38 +170,6 @@ export default function AskAIWidget() {
     }
   };
 
-  const faqChips = [
-    {
-      label: "0 Coding Background?",
-      q: "Can I become an SDET with zero coding background?",
-    },
-    {
-      label: "Playwright vs Selenium?",
-      q: "Playwright vs Selenium in 2026: which should I learn first?",
-    },
-    {
-      label: "How long to learn?",
-      q: "How long does it take to switch from Manual QA to an SDET?",
-    },
-    { label: "Will AI replace QA?", q: "Will AI replace manual testing jobs?" },
-    {
-      label: "Do I need LeetCode/DSA?",
-      q: "Do I need to solve complex LeetCode / DSA algorithms for QA interviews?",
-    },
-    {
-      label: "Python vs TypeScript?",
-      q: "Which programming language should a manual tester learn first? Python vs TypeScript vs Java",
-    },
-    {
-      label: "What is API Testing?",
-      q: "What is API testing and why should I prioritize it over UI testing?",
-    },
-    {
-      label: "Salary Increase?",
-      q: "What salary increase can a manual tester expect when becoming an SDET?",
-    },
-  ];
-
   return (
     <>
       {/* Floating Chat Modal (Triggered via Top Nav "Ask SDET AI") */}
@@ -249,22 +217,6 @@ export default function AskAIWidget() {
               </button>
             </div>
           </div>
-
-          {/* Quick FAQ Pills (Horizontally Scrollable) */}
-          {!isGuestLimitReached && (
-            <div className="p-2.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto text-[11px] no-scrollbar">
-              {faqChips.map((chip, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSend(chip.q)}
-                  disabled={loading}
-                  className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-slate-700 dark:text-slate-300 hover:border-emerald-500 hover:text-emerald-600 shrink-0 transition-colors disabled:opacity-50"
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-          )}
 
           {/* Messages Container */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[260px] max-h-[380px]">

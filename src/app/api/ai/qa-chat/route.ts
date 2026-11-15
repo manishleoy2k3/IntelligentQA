@@ -4,6 +4,7 @@ import {
   searchQAKnowledge,
   formatCrispChatAnswer,
   synthesizeDynamicAnswer,
+  diagnoseCodeError,
 } from '@/lib/qa-knowledge-base';
 
 interface ChatMessage {
@@ -44,16 +45,25 @@ export async function POST(req: NextRequest) {
         'gemini-flash-lite-latest',
       ];
 
-      const systemPrompt = `You are an expert AI Programming & Coding Assistant for IntelligentQA and Kids Coding Lab.
-You assist developers, SDETs, and learners/kids (ages 10-14) with any programming queries and concepts.
+      const systemPrompt = `You are an expert AI Programming & Coding Assistant and Debugging Specialist for IntelligentQA and Kids Coding Lab.
+You assist developers, SDETs, and learners/kids (ages 10-14) with any programming queries, concepts, and code debugging.
 You specialize in Python, JavaScript, TypeScript, Java, and C#, covering variables, loops, conditionals, functions, data structures, algorithms, debugging, OOP, and test automation.
+
 CRITICAL FORMATTING & CONTENT RULES:
 1. Provide a SHORT, CRISP, HIGH-VALUE, and DIRECT answer (maximum 120-160 words).
-2. Answer the user's exact coding question directly in the very first sentence without conversational filler or pleasantries.
+2. Answer the user's exact coding question or error directly in the very first sentence without conversational filler or pleasantries.
 3. Use 2-3 concise bullet points or step-by-step logic.
 4. If code or syntax is requested or helpful, include a clean, minimal 2-6 line working snippet in the requested language (Python, JavaScript, TypeScript, or Java).
-5. Explain concepts clearly and intuitively so both young coders and professionals can easily grasp them.
-6. Output in clean, scannable GitHub-flavored markdown.`;
+5. Output in clean, scannable GitHub-flavored markdown.
+
+ERROR & DEBUGGING RULES:
+- If the user asks about an error message, exception, traceback, or compiler diagnostic:
+  a. DIAGNOSIS: Clearly identify whether it is a:
+     • Code Bug / Syntax Error (e.g. unclosed string quote, bad indentation, undefined variable).
+     • Runtime Exception (e.g. division by zero, out-of-bounds index, null pointer).
+     • Environment / Sandbox Infrastructure Error (e.g. catatonit failed to exec pid1, binary missing ENOENT, compiler service unreachable). If so, explicitly state: "This is NOT an error in your code."
+  b. ROOT CAUSE: Explain in 1-2 crystal-clear sentences WHY it happens.
+  c. THE FIX: Provide the exact working fix with a before/after code snippet or immediate next steps.`;
 
       for (const model of modelsToTry) {
         try {
@@ -103,7 +113,17 @@ CRITICAL FORMATTING & CONTENT RULES:
       }
     }
 
-    // 2. Deterministic Local Knowledge Engine Response (Zero-Cost, Zero-Latency Fallback)
+    // 2. Direct Code Error & Debugging Diagnosis (Takes precedence over general career FAQs)
+    const errorDiagnosis = diagnoseCodeError(query);
+    if (errorDiagnosis) {
+      return NextResponse.json({
+        reply: errorDiagnosis,
+        engine: 'code-error-diagnostic-engine',
+        isLiveAI: false,
+      });
+    }
+
+    // 3. Deterministic Local Knowledge Engine Response (Zero-Cost, Zero-Latency Fallback)
     const localMatches = searchQAKnowledge(query);
     const bestMatch = localMatches.length > 0 ? localMatches[0] : null;
 
@@ -117,7 +137,7 @@ CRITICAL FORMATTING & CONTENT RULES:
       });
     }
 
-    // 3. Dynamic Context-Aware Semantic Synthesis (Never returns generic canned text!)
+    // 4. Dynamic Context-Aware Semantic Synthesis (Never returns generic canned text!)
     const dynamicReply = synthesizeDynamicAnswer(query);
     return NextResponse.json({
       reply: dynamicReply,
