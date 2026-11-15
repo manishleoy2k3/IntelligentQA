@@ -1019,7 +1019,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           onClose={() => setShowKeyModal(false)}
           onSaved={() => {
             setShowKeyModal(false);
-            setGeminiKey(QADatabase.getUserGeminiKey());
+            const u = QADatabase.getCurrentUser();
+            setGeminiKey(QADatabase.getUserGeminiKey(u?.id));
           }}
           reason="Please connect your free Google AI Studio key to activate AI tools and Autonomous QA Agents."
         />

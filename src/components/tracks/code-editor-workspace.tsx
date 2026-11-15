@@ -300,12 +300,7 @@ export default function CodeEditorWorkspace({
       let userKey = '';
       if (typeof window !== 'undefined') {
         const currentUser = QADatabase.getCurrentUser();
-        userKey =
-          QADatabase.getUserGeminiKey(currentUser?.id) ||
-          localStorage.getItem('intelligentqa_gemini_key') ||
-          (currentUser?.id ? localStorage.getItem(`intelligentqa_gemini_key_${currentUser.id}`) : '') ||
-          localStorage.getItem('intelligentqa_gemini_api_key') ||
-          '';
+        userKey = QADatabase.getUserGeminiKey(currentUser?.id);
       }
 
       const techStackKey =

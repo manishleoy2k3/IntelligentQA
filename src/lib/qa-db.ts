@@ -121,42 +121,82 @@ export const QADatabase = {
   },
 
   async login(email: string, displayName?: string): Promise<UserProfile> {
-    const cleanEmail = email?.trim() || 'student@intelligentqa.io';
+    const defaultEmail = email?.trim() || 'student@intelligentqa.io';
+    const cleanEmail = defaultEmail.toLowerCase();
     const cleanName =
       displayName?.trim() ||
       cleanEmail
         .split('@')[0]
         .replace(/[._]/g, ' ')
         .replace(/\b\w/g, l => l.toUpperCase());
-    const id = `usr_${Date.now()}`;
-    const user: UserProfile = {
-      id,
-      displayName: cleanName,
-      email: cleanEmail,
-      targetRole: 'Manual QA',
-      primaryTrack: 'playwright-ts',
-      experienceYears: undefined,
-      streakCount: 0,
-      profileCompleted: false,
-      lastActiveDate: new Date().toISOString().split('T')[0],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+
+    // Security check: if switching user accounts, purge any un-scoped credentials
+    const previousUser = this.getCurrentUser();
+    if (previousUser && previousUser.email.toLowerCase() !== cleanEmail) {
+      if (isBrowser()) {
+        window.localStorage.removeItem('intelligentqa_gemini_key');
+      }
+    }
+
+    const safeEmailId = cleanEmail.replace(/[^a-zA-Z0-9]/g, '_');
+    const id = `usr_${safeEmailId}`;
+
+    let user = getStoredItem<UserProfile | null>(`intelligentqa_profile_${id}`, null);
+    if (!user) {
+      user = {
+        id,
+        displayName: cleanName,
+        email: defaultEmail,
+        targetRole: 'Manual QA',
+        primaryTrack: 'playwright-ts',
+        experienceYears: undefined,
+        streakCount: 0,
+        profileCompleted: false,
+        lastActiveDate: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    } else {
+      user.updatedAt = new Date().toISOString();
+      if (displayName?.trim()) {
+        user.displayName = cleanName;
+      }
+    }
+
+    // Strict Data Isolation: Restore ONLY keys saved by this specific user
+    const userStoredKey = isBrowser()
+      ? window.localStorage.getItem(`intelligentqa_gemini_key_email_${cleanEmail}`) ||
+        window.localStorage.getItem(`intelligentqa_gemini_key_${id}`) || ''
+      : '';
+    user.geminiApiKey = userStoredKey;
+
     memoryDb.profiles.set(id, user);
     if (isBrowser()) {
+      window.localStorage.removeItem('intelligentqa_gemini_key');
       setStoredItem('intelligentqa_current_user', user);
       setStoredItem(`intelligentqa_profile_${id}`, user);
       window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+      window.dispatchEvent(new Event('intelligentqa_key_changed'));
     }
     return user;
   },
 
   async signup(displayName: string, email: string, targetRole: any = 'Manual QA'): Promise<UserProfile> {
-    const id = `usr_${Date.now()}`;
+    const cleanEmail = (email?.trim() || 'student@intelligentqa.io').toLowerCase();
+    const previousUser = this.getCurrentUser();
+    if (previousUser && previousUser.email.toLowerCase() !== cleanEmail) {
+      if (isBrowser()) {
+        window.localStorage.removeItem('intelligentqa_gemini_key');
+      }
+    }
+
+    const safeEmailId = cleanEmail.replace(/[^a-zA-Z0-9]/g, '_');
+    const id = `usr_${safeEmailId}`;
+
     const user: UserProfile = {
       id,
       displayName: displayName || 'New SDET Student',
-      email,
+      email: email?.trim() || cleanEmail,
       targetRole: targetRole || 'Manual QA',
       primaryTrack: 'playwright-ts',
       experienceYears: undefined,
@@ -168,9 +208,11 @@ export const QADatabase = {
     };
     memoryDb.profiles.set(id, user);
     if (isBrowser()) {
+      window.localStorage.removeItem('intelligentqa_gemini_key');
       setStoredItem('intelligentqa_current_user', user);
       setStoredItem(`intelligentqa_profile_${id}`, user);
       window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+      window.dispatchEvent(new Event('intelligentqa_key_changed'));
     }
     return user;
   },
@@ -204,7 +246,27 @@ export const QADatabase = {
     if (!isBrowser()) return;
     try {
       window.localStorage.setItem('intelligentqa_active_portal', mode);
+
+      // Security & Privacy Validation:
+      // Remove any un-scoped global key to ensure no cross-user key leaks
+      window.localStorage.removeItem('intelligentqa_gemini_key');
+
+      // Ensure the logged in user maintains their valid common key across both SDET and Kids
+      const currentUser = this.getCurrentUser();
+      if (currentUser && currentUser.email) {
+        const cleanEmail = currentUser.email.trim().toLowerCase();
+        const userKey = window.localStorage.getItem(`intelligentqa_gemini_key_email_${cleanEmail}`) ||
+                        window.localStorage.getItem(`intelligentqa_gemini_key_${currentUser.id}`) || '';
+        if (userKey) {
+          const check = validateGeminiKeySyntax(userKey);
+          if (!check.valid) {
+            this.setUserGeminiKey('', currentUser.id);
+          }
+        }
+      }
+
       window.dispatchEvent(new CustomEvent('intelligentqa_portal_changed', { detail: { mode } }));
+      window.dispatchEvent(new Event('intelligentqa_key_changed'));
     } catch (err) {
       console.warn('Failed to persist portal mode:', err);
     }
@@ -306,29 +368,58 @@ export const QADatabase = {
 
   async loginWithGoogle(email?: string, displayName?: string): Promise<UserProfile> {
     const defaultEmail = email?.trim() || 'google.student@intelligentqa.io';
+    const cleanEmail = defaultEmail.toLowerCase();
     const defaultName =
       displayName?.trim() ||
       defaultEmail
         .split('@')[0]
         .replace(/[._]/g, ' ')
         .replace(/\b\w/g, l => l.toUpperCase());
-    const id = `usr_g_${Date.now()}`;
-    const user: UserProfile = {
-      id,
-      displayName: defaultName,
-      email: defaultEmail,
-      targetRole: 'Manual QA',
-      primaryTrack: 'playwright-ts',
-      experienceYears: undefined,
-      streakCount: 0,
-      profileCompleted: false,
-      authProvider: 'google',
-      lastActiveDate: new Date().toISOString().split('T')[0],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+
+    // Security check: if switching user accounts, purge any un-scoped credentials
+    const previousUser = this.getCurrentUser();
+    if (previousUser && previousUser.email.toLowerCase() !== cleanEmail) {
+      if (isBrowser()) {
+        window.localStorage.removeItem('intelligentqa_gemini_key');
+      }
+    }
+
+    const safeEmailId = cleanEmail.replace(/[^a-zA-Z0-9]/g, '_');
+    const id = `usr_g_${safeEmailId}`;
+
+    let user = getStoredItem<UserProfile | null>(`intelligentqa_profile_${id}`, null);
+    if (!user) {
+      user = {
+        id,
+        displayName: defaultName,
+        email: defaultEmail,
+        targetRole: 'Manual QA',
+        primaryTrack: 'playwright-ts',
+        experienceYears: undefined,
+        streakCount: 0,
+        profileCompleted: false,
+        authProvider: 'google',
+        lastActiveDate: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    } else {
+      user.updatedAt = new Date().toISOString();
+      if (displayName?.trim()) {
+        user.displayName = defaultName;
+      }
+    }
+
+    // Strict Data Isolation: Restore ONLY keys saved by this specific user
+    const userStoredKey = isBrowser()
+      ? window.localStorage.getItem(`intelligentqa_gemini_key_email_${cleanEmail}`) ||
+        window.localStorage.getItem(`intelligentqa_gemini_key_${id}`) || ''
+      : '';
+    user.geminiApiKey = userStoredKey;
+
     memoryDb.profiles.set(id, user);
     if (isBrowser()) {
+      window.localStorage.removeItem('intelligentqa_gemini_key');
       setStoredItem('intelligentqa_current_user', user);
       setStoredItem(`intelligentqa_profile_${id}`, user);
       // Persist remembered Google accounts list
@@ -339,6 +430,7 @@ export const QADatabase = {
       ].slice(0, 5);
       setStoredItem('intelligentqa_google_accounts', updated);
       window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+      window.dispatchEvent(new Event('intelligentqa_key_changed'));
     }
     return user;
   },
@@ -371,7 +463,9 @@ export const QADatabase = {
   logout(): void {
     if (isBrowser()) {
       window.localStorage.removeItem('intelligentqa_current_user');
+      window.localStorage.removeItem('intelligentqa_gemini_key');
       window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+      window.dispatchEvent(new Event('intelligentqa_key_changed'));
     }
   },
 
@@ -379,22 +473,48 @@ export const QADatabase = {
   getUserGeminiKey(userId?: string): string {
     if (!isBrowser()) return '';
     const user = this.getCurrentUser();
-    const uid = userId || user?.id;
-    let stored = '';
-    if (uid) {
-      stored = window.localStorage.getItem(`intelligentqa_gemini_key_${uid}`) || '';
-    }
-    if (!stored) {
-      stored = window.localStorage.getItem('intelligentqa_gemini_key') || '';
-    }
 
-    if (!stored) return '';
+    // Strict User-Scoped Lookup:
+    // If a user is logged in, their key is strictly tied to their email and account ID.
+    // Different users on the same browser must NEVER see each other's keys!
+    let stored = '';
+    if (user && user.email) {
+      const email = user.email.trim().toLowerCase();
+      stored =
+        window.localStorage.getItem(`intelligentqa_gemini_key_email_${email}`) ||
+        (user.id ? window.localStorage.getItem(`intelligentqa_gemini_key_${user.id}`) : '') ||
+        (userId ? window.localStorage.getItem(`intelligentqa_gemini_key_${userId}`) : '') ||
+        user.geminiApiKey ||
+        '';
+
+      // CRITICAL SECURITY ENFORCEMENT:
+      // If no key is configured for this specific user, RETURN ''!
+      // NEVER fall back to any global or previous user's key!
+      if (!stored) {
+        return '';
+      }
+    } else if (userId) {
+      stored = window.localStorage.getItem(`intelligentqa_gemini_key_${userId}`) || '';
+      if (!stored) {
+        return '';
+      }
+    } else {
+      // Guest mode (not logged in): check guest-only key
+      stored = window.localStorage.getItem('intelligentqa_gemini_key_guest') || '';
+      if (!stored) {
+        return '';
+      }
+    }
 
     // Production-Grade Integrity Check:
     // If a garbage key was previously saved into storage, purge it automatically!
     const syntax = validateGeminiKeySyntax(stored);
     if (!syntax.valid) {
       window.localStorage.removeItem('intelligentqa_gemini_key');
+      if (user?.email) {
+        window.localStorage.removeItem(`intelligentqa_gemini_key_email_${user.email.trim().toLowerCase()}`);
+      }
+      const uid = userId || user?.id;
       if (uid) {
         window.localStorage.removeItem(`intelligentqa_gemini_key_${uid}`);
         this.updateProfile(uid, { geminiApiKey: '' });
@@ -410,10 +530,15 @@ export const QADatabase = {
     const trimmed = (key || '').trim();
     const user = this.getCurrentUser();
     const uid = userId || user?.id;
+    const email = user?.email ? user.email.trim().toLowerCase() : '';
 
     if (!trimmed) {
-      // Clear key cleanly
+      // Clear key cleanly for this user
       window.localStorage.removeItem('intelligentqa_gemini_key');
+      window.localStorage.removeItem('intelligentqa_gemini_key_guest');
+      if (email) {
+        window.localStorage.removeItem(`intelligentqa_gemini_key_email_${email}`);
+      }
       if (uid) {
         window.localStorage.removeItem(`intelligentqa_gemini_key_${uid}`);
         this.updateProfile(uid, { geminiApiKey: '' });
@@ -430,11 +555,23 @@ export const QADatabase = {
       return { success: false, error: validation.error };
     }
 
-    window.localStorage.setItem('intelligentqa_gemini_key', trimmed);
+    // Save key scoped strictly to this user's account & email
+    // This allows the SAME user to share their key between SDET and Kids,
+    // while completely preventing leakage to DIFFERENT user accounts!
+    if (email) {
+      window.localStorage.setItem(`intelligentqa_gemini_key_email_${email}`, trimmed);
+    }
     if (uid) {
       window.localStorage.setItem(`intelligentqa_gemini_key_${uid}`, trimmed);
       this.updateProfile(uid, { geminiApiKey: trimmed });
     }
+    if (!email && !uid) {
+      window.localStorage.setItem('intelligentqa_gemini_key_guest', trimmed);
+    }
+
+    // Clean up any unscoped global key to eliminate cross-user leakage
+    window.localStorage.removeItem('intelligentqa_gemini_key');
+
     window.dispatchEvent(new Event('intelligentqa_key_changed'));
     return { success: true };
   },

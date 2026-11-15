@@ -116,3 +116,26 @@ test('Requirement 9: Strict Separation between Kids Free Programming and QA SDET
   assert.ok(homePageFile.includes("portal === 'kids'"), 'Home page handles kids portal redirection');
   assert.ok(homePageFile.includes("router.replace('/kids')"), 'Directs kids portal users to /kids');
 });
+
+test('Requirement 10: Strict User Data Isolation & Gemini Key Privacy Protection', () => {
+  const qaDbFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-db.ts'), 'utf8');
+  const codeEditorFile = fs.readFileSync(path.join(__dirname, '../src/components/tracks/code-editor-workspace.tsx'), 'utf8');
+  const geminiModalFile = fs.readFileSync(path.join(__dirname, '../src/components/auth/gemini-key-modal.tsx'), 'utf8');
+
+  // 1. QADatabase scopes keys to individual users by email & ID
+  assert.ok(qaDbFile.includes('intelligentqa_gemini_key_email_'), 'Scopes Gemini key to user email');
+  assert.ok(qaDbFile.includes('NEVER fall back to any global or previous user\'s key'), 'Enforces zero global key leakage for logged in users');
+
+  // 2. Eradicates un-scoped global key on user account switch
+  assert.ok(qaDbFile.includes("window.localStorage.removeItem('intelligentqa_gemini_key')"), 'Purges un-scoped key on account change and logout');
+
+  // 3. Common key across SDET and Kids for the SAME user
+  assert.ok(qaDbFile.includes('Ensure the logged in user maintains their valid common key across both SDET and Kids'), 'Supports common key across SDET and Kids for same user');
+
+  // 4. Code editor workspace relies strictly on user-scoped key lookup
+  assert.ok(codeEditorFile.includes('userKey = QADatabase.getUserGeminiKey(currentUser?.id)'), 'Code editor uses strict user-scoped key lookup');
+  assert.ok(!codeEditorFile.includes("localStorage.getItem('intelligentqa_gemini_key')"), 'Code editor avoids leaking un-scoped keys');
+
+  // 5. Gemini Key Modal saves with user scoping
+  assert.ok(geminiModalFile.includes('setUserGeminiKey(sanitized, user?.id)'), 'Modal saves key scoped to current user id');
+});

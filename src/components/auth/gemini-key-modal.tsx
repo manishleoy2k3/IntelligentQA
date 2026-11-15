@@ -55,7 +55,8 @@ export default function GeminiKeyModal({
 
   useEffect(() => {
     if (isOpen) {
-      const current = QADatabase.getUserGeminiKey();
+      const user = QADatabase.getCurrentUser();
+      const current = QADatabase.getUserGeminiKey(user?.id);
       setExistingStoredKey(current);
       setApiKey(current);
       setIsEditing(false);
@@ -135,7 +136,8 @@ export default function GeminiKeyModal({
       }
 
       // Step 3: Verification Succeeded! Save to database & activate AI
-      const saveResult = QADatabase.setUserGeminiKey(sanitized);
+      const user = QADatabase.getCurrentUser();
+      const saveResult = QADatabase.setUserGeminiKey(sanitized, user?.id);
       if (!saveResult.success) {
         setTestResult({
           success: false,
@@ -145,7 +147,7 @@ export default function GeminiKeyModal({
         return;
       }
 
-      QADatabase.setAiPreference('enabled');
+      QADatabase.setAiPreference('enabled', user?.id);
       setExistingStoredKey(sanitized);
       setIsEditing(false);
       setIsAddingNew(false);
@@ -171,8 +173,9 @@ export default function GeminiKeyModal({
   };
 
   const handleRemoveKey = () => {
-    QADatabase.setUserGeminiKey('');
-    QADatabase.setAiPreference('opted_out');
+    const user = QADatabase.getCurrentUser();
+    QADatabase.setUserGeminiKey('', user?.id);
+    QADatabase.setAiPreference('opted_out', user?.id);
     setExistingStoredKey('');
     setApiKey('');
     setIsEditing(false);
