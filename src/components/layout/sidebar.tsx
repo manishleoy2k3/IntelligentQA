@@ -552,6 +552,25 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                   Run
                 </span>
               </Link>
+
+              {/* Coding Library (List of problems under hands-on coding lab) */}
+              <Link
+                href="/sandbox/code/problems"
+                onClick={onCloseMobile}
+                className={childItemClass(pathname?.startsWith('/sandbox/code/problems'))}
+                title="Coding Library: List of SDET Interview Problems by Group & Level"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <BookOpen className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <div className="flex flex-col truncate">
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Coding Library</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Problems by Topic &amp; Level</span>
+                  </div>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded shrink-0">
+                  Problems
+                </span>
+              </Link>
             </div>
           )}
         </div>

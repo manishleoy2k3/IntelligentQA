@@ -39,8 +39,10 @@ test('Request 2: Fonts are standardized and consistent across parent and child i
   assert.ok(sidebarFile.includes('Compiler &amp; Runner'), 'Renders readable subtext');
 });
 
-test('Request 3: Hands-On Coding Lab provides Problem Library, Add Problem, and Import/Upload options', () => {
+test('Coding Problems Library & Dedicated Catalog & Solver Features', () => {
   const codePageFile = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/page.tsx'), 'utf8');
+  const problemsCatalogFile = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/problems/page.tsx'), 'utf8');
+  const problemSolverFile = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/problems/[problemId]/problem-solver-client.tsx'), 'utf8');
   const codingProblemsFile = fs.readFileSync(path.join(__dirname, '../src/lib/coding-problems.ts'), 'utf8');
 
   // Coding problems library
@@ -50,12 +52,22 @@ test('Request 3: Hands-On Coding Lab provides Problem Library, Add Problem, and 
   assert.ok(codingProblemsFile.includes('saveCustomProblem'), 'Provides saveCustomProblem helper');
   assert.ok(codingProblemsFile.includes('parseImportedProblems'), 'Provides parseImportedProblems helper');
 
-  // Coding Lab page features
-  assert.ok(codePageFile.includes('Problem:'), 'Renders problem selection dropdown');
-  assert.ok(codePageFile.includes('Add Problem'), 'Has Add Problem button');
-  assert.ok(codePageFile.includes('Import / Upload'), 'Has Import / Upload button');
-  assert.ok(codePageFile.includes('showAddModal'), 'Has Add Problem modal state');
-  assert.ok(codePageFile.includes('showImportModal'), 'Has Import modal state');
-  assert.ok(codePageFile.includes('handleFileUpload'), 'Supports file upload for JSON/CSV');
-  assert.ok(codePageFile.includes('handleExportJSON'), 'Supports exporting library to JSON');
+  // Request 10 #1 & #2: Freeform Compiler kept clean with output below compiler
+  assert.ok(codePageFile.includes('Online Code Compiler'), 'Renders pure online compiler header');
+  assert.ok(codePageFile.includes('/sandbox/code/problems'), 'Links to Coding Library');
+  assert.ok(codePageFile.includes('Output / Result'), 'Renders Output / Result');
+
+  // Request 10 #3 & #4: Coding Library Catalog page
+  assert.ok(problemsCatalogFile.includes('Coding Problem Library'), 'Has library header');
+  assert.ok(problemsCatalogFile.includes('Add Problem'), 'Has Add Problem button');
+  assert.ok(problemsCatalogFile.includes('Import / Upload'), 'Has Import / Upload button');
+  assert.ok(problemsCatalogFile.includes('selectedGroup'), 'Has group/category filter');
+  assert.ok(problemsCatalogFile.includes('selectedLevel'), 'Has level/difficulty filter');
+  assert.ok(problemsCatalogFile.includes('showAddModal'), 'Has Add Problem modal');
+  assert.ok(problemsCatalogFile.includes('showImportModal'), 'Has Import modal');
+
+  // Request 10 #5: Detailed Problem Solver layout
+  assert.ok(problemSolverFile.includes('Problem Statement'), 'Renders problem statement on left');
+  assert.ok(problemSolverFile.includes('handleRunCode'), 'Renders compiler on right');
+  assert.ok(problemSolverFile.includes('Output / Result'), 'Renders output below compiler');
 });

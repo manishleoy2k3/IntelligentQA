@@ -1,0 +1,615 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  Play,
+  RotateCcw,
+  Copy,
+  Check,
+  Terminal,
+  FileCode,
+  Laptop,
+  CheckCircle2,
+  AlertCircle,
+  Trash2,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  BookOpen,
+  ArrowLeft,
+  Code2,
+  Tag,
+} from 'lucide-react';
+import {
+  CodingProblem,
+  DEFAULT_CODING_PROBLEMS,
+  getAllProblems,
+} from '@/lib/coding-problems';
+
+export type SupportedLang = 'java' | 'python' | 'typescript' | 'javascript' | 'csharp';
+
+const FILE_NAMES: Record<SupportedLang, string> = {
+  java: 'Main.java',
+  python: 'main.py',
+  typescript: 'index.ts',
+  javascript: 'index.js',
+  csharp: 'Program.cs',
+};
+
+const LANG_LABELS: Record<SupportedLang, string> = {
+  java: 'Java (OpenJDK)',
+  python: 'Python 3',
+  typescript: 'TypeScript',
+  javascript: 'JavaScript',
+  csharp: 'C# (.NET)',
+};
+
+export default function ProblemSolverClient({ problemId }: { problemId: string }) {
+  const router = useRouter();
+  const [allProblems, setAllProblems] = useState<CodingProblem[]>(DEFAULT_CODING_PROBLEMS);
+  const [language, setLanguage] = useState<SupportedLang>('java');
+  const [code, setCode] = useState<string>('');
+  const [stdinInput, setStdinInput] = useState<string>('');
+  const [showStdin, setShowStdin] = useState<boolean>(false);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [terminalOutput, setTerminalOutput] = useState<string>('');
+  const [terminalError, setTerminalError] = useState<string>('');
+  const [executionStats, setExecutionStats] = useState<{
+    durationMs?: number;
+    status?: string;
+    exitCode?: number;
+  } | null>(null);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load problem
+  useEffect(() => {
+    const list = getAllProblems();
+    setAllProblems(list);
+    const prob = list.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS[0];
+    if (prob) {
+      setCode(prob.starterTemplates[language] || '');
+    }
+  }, [problemId, language]);
+
+  const currentProblem = allProblems.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS[0];
+  const currentIndex = allProblems.findIndex(p => p.id === problemId);
+
+  // Language change
+  const handleLanguageChange = (newLang: SupportedLang) => {
+    setLanguage(newLang);
+    if (currentProblem) {
+      setCode(currentProblem.starterTemplates[newLang] || '');
+    }
+    setTerminalOutput('');
+    setTerminalError('');
+    setExecutionStats(null);
+  };
+
+  // Reset to starter template
+  const handleReset = () => {
+    if (currentProblem) {
+      setCode(currentProblem.starterTemplates[language] || '');
+      setFeedback('Code reset to starter problem template.');
+      setTimeout(() => setFeedback(null), 2500);
+    }
+    setTerminalOutput('');
+    setTerminalError('');
+    setExecutionStats(null);
+    setStdinInput('');
+
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleClearTerminal = () => {
+    setTerminalOutput('');
+    setTerminalError('');
+    setExecutionStats(null);
+  };
+
+  // Navigate problems
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      router.push(`/sandbox/code/problems/${allProblems[currentIndex - 1].id}`);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < allProblems.length - 1) {
+      router.push(`/sandbox/code/problems/${allProblems[currentIndex + 1].id}`);
+    }
+  };
+
+  // Keyboard shortcut: 4 spaces on Tab, Ctrl/Cmd + Enter to Run
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const spaces = '    ';
+
+      setCode(code.substring(0, start) + spaces + code.substring(end));
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + 4;
+      }, 0);
+    }
+
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleRunCode();
+    }
+  };
+
+  // Execute compiler API call
+  const handleRunCode = async () => {
+    if (isRunning) return;
+    setIsRunning(true);
+    setTerminalOutput('Compiling and executing...');
+    setTerminalError('');
+
+    try {
+      const res = await fetch('/api/sandbox/compiler', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language,
+          code,
+          stdin: stdinInput,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setTerminalOutput(
+          data.stdout || (data.success ? 'Program executed successfully with no output.' : '')
+        );
+        setTerminalError(data.stderr || '');
+        setExecutionStats({
+          durationMs: data.executionTimeMs,
+          status: data.status,
+          exitCode: data.exitCode,
+        });
+      } else {
+        setTerminalOutput('');
+        setTerminalError(data.error || 'Failed to compile and execute code.');
+        setExecutionStats({
+          status: 'error',
+          exitCode: 1,
+        });
+      }
+    } catch (err: any) {
+      setTerminalOutput('');
+      setTerminalError(err.message || 'Execution error: Could not reach compiler service.');
+      setExecutionStats({
+        status: 'network_error',
+        exitCode: 1,
+      });
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  const lineCount = code.split('\n').length;
+  const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1);
+
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans">
+      {/* Top Breadcrumb Navigation */}
+      <div className="border-b border-slate-800 bg-slate-900/90 px-4 py-2.5 shrink-0">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/sandbox/code/problems"
+              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+              title="Back to Coding Problems Library"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+            <div>
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                <Link href="/sandbox/code" className="hover:text-white transition">Hands-On Coding Lab</Link>
+                <span>/</span>
+                <Link href="/sandbox/code/problems" className="hover:text-white transition">Coding Library</Link>
+                <span>/</span>
+                <span className="text-emerald-400 font-semibold truncate max-w-[200px]">{currentProblem.title}</span>
+              </div>
+              <h1 className="text-sm md:text-base font-bold text-white flex items-center gap-2">
+                {currentProblem.title}
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    currentProblem.difficulty === 'Easy'
+                      ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                      : currentProblem.difficulty === 'Medium'
+                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                      : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                  }`}
+                >
+                  {currentProblem.difficulty}
+                </span>
+              </h1>
+            </div>
+          </div>
+
+          {/* Quick Problem Navigation */}
+          <div className="flex items-center gap-2 text-xs">
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={currentIndex <= 0}
+              className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 hover:text-white transition flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed"
+              title="Previous Problem"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Prev</span>
+            </button>
+            <span className="text-[11px] text-slate-400 font-mono">
+              {currentIndex + 1} of {allProblems.length}
+            </span>
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={currentIndex >= allProblems.length - 1}
+              className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 hover:text-white transition flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed"
+              title="Next Problem"
+            >
+              <span>Next</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main 2-Column Split View: Problem Statements on Left, Compiler & Output on Right */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden max-w-7xl w-full mx-auto p-3 md:p-4 gap-4">
+        {/* LEFT COLUMN: Problem Statements & Examples */}
+        <div className="w-full lg:w-[45%] xl:w-[42%] flex flex-col bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
+          {/* Header */}
+          <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-blue-400" />
+              <span className="text-xs font-bold text-white">Problem Statement</span>
+            </div>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+              {currentProblem.category}
+            </span>
+          </div>
+
+          {/* Body */}
+          <div className="flex-1 p-4 overflow-y-auto space-y-4 text-xs leading-relaxed">
+            <div>
+              <h2 className="text-base font-bold text-white mb-2 leading-snug">
+                {currentProblem.title}
+              </h2>
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    currentProblem.difficulty === 'Easy'
+                      ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                      : currentProblem.difficulty === 'Medium'
+                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                      : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                  }`}
+                >
+                  {currentProblem.difficulty}
+                </span>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                  {currentProblem.category}
+                </span>
+                {currentProblem.isCustom && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    Custom Question
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Description Text */}
+            <div className="text-slate-300 leading-relaxed whitespace-pre-line bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
+              {currentProblem.description}
+            </div>
+
+            {/* Test Case Examples */}
+            {currentProblem.examples.length > 0 && (
+              <div className="space-y-2.5">
+                <h3 className="font-bold text-slate-200 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                  <Code2 className="w-3.5 h-3.5 text-blue-400" />
+                  Examples
+                </h3>
+                {currentProblem.examples.map((ex, i) => (
+                  <div
+                    key={i}
+                    className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 space-y-1 font-mono text-[11px]"
+                  >
+                    <div className="text-slate-400">
+                      <strong className="text-slate-300">Input:</strong> {ex.input}
+                    </div>
+                    <div className="text-emerald-400">
+                      <strong className="text-slate-300">Output:</strong> {ex.output}
+                    </div>
+                    {ex.explanation && (
+                      <div className="text-slate-400 font-sans text-[11px] pt-1 border-t border-slate-800/60">
+                        <strong className="text-slate-300">Explanation:</strong> {ex.explanation}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Constraints */}
+            {currentProblem.constraints && currentProblem.constraints.length > 0 && (
+              <div className="space-y-1.5">
+                <h3 className="font-bold text-slate-200 text-[11px] uppercase tracking-wider">
+                  Constraints
+                </h3>
+                <ul className="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
+                  {currentProblem.constraints.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Compiler Section (Top) + Output / Result Section (Directly Below Compiler) */}
+        <div className="flex-1 flex flex-col gap-4 min-w-0">
+          {/* COMPILER SECTION */}
+          <div className="flex-1 flex flex-col min-w-0 bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-h-[360px]">
+            {/* Action Bar: Language Selector + Run / Reset Buttons */}
+            <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <label htmlFor="lang-select" className="text-xs font-semibold text-slate-300">
+                  Language:
+                </label>
+                <div className="relative">
+                  <select
+                    id="lang-select"
+                    value={language}
+                    onChange={(e) => handleLanguageChange(e.target.value as SupportedLang)}
+                    className="bg-slate-950 border border-slate-700 hover:border-slate-600 rounded-xl px-3 py-1 text-xs font-bold text-white focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs pr-7 transition-colors appearance-none"
+                  >
+                    <option value="java">Java (OpenJDK)</option>
+                    <option value="python">Python 3</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="csharp">C# (.NET)</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2">
+                {/* Run Button */}
+                <button
+                  type="button"
+                  onClick={handleRunCode}
+                  disabled={isRunning}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer ${
+                    isRunning
+                      ? 'bg-emerald-700/50 text-emerald-200 cursor-not-allowed'
+                      : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20 hover:shadow-lg'
+                  }`}
+                  title="Run and compile code (Ctrl + Enter)"
+                >
+                  {isRunning ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Running...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>Run</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Reset Button */}
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition cursor-pointer"
+                  title="Reset code to problem starter template"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset</span>
+                </button>
+
+                {/* Clear Output */}
+                <button
+                  type="button"
+                  onClick={handleClearTerminal}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition cursor-pointer"
+                  title="Clear terminal output"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Clear</span>
+                </button>
+
+                {/* Copy Code */}
+                <button
+                  type="button"
+                  onClick={handleCopyCode}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition cursor-pointer"
+                  title="Copy code to clipboard"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
+
+                {/* Stdin Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowStdin(!showStdin)}
+                  className={`px-2 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${
+                    showStdin
+                      ? 'bg-blue-600/20 border-blue-500/40 text-blue-300'
+                      : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-400 hover:text-white'
+                  }`}
+                  title="Toggle standard input"
+                >
+                  Stdin {showStdin ? '▲' : '▼'}
+                </button>
+              </div>
+            </div>
+
+            {/* Optional Feedback Banner */}
+            {feedback && (
+              <div className="py-1 px-3 bg-emerald-950/80 border-b border-emerald-700/60 text-xs text-emerald-300 flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>{feedback}</span>
+              </div>
+            )}
+
+            {/* Stdin Panel */}
+            {showStdin && (
+              <div className="p-3 bg-slate-950/90 border-b border-slate-800">
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                  Standard Input (stdin):
+                </label>
+                <textarea
+                  value={stdinInput}
+                  onChange={(e) => setStdinInput(e.target.value)}
+                  rows={2}
+                  placeholder="Enter input values passed to program..."
+                  className="w-full text-xs font-mono bg-slate-900 border border-slate-700/80 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-emerald-500 resize-none"
+                />
+              </div>
+            )}
+
+            {/* Code Textarea Editor with Line Numbers */}
+            <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs relative min-h-[240px]">
+              {/* Line Numbers */}
+              <div className="py-4 px-3 bg-slate-900/60 text-slate-600 text-right select-none border-r border-slate-800/80 shrink-0">
+                {lineNumbers.map((num) => (
+                  <div key={num} className="leading-6">
+                    {num}
+                  </div>
+                ))}
+              </div>
+
+              {/* Code Input */}
+              <textarea
+                ref={textareaRef}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                onKeyDown={handleKeyDown}
+                spellCheck={false}
+                className="flex-1 w-full p-4 bg-transparent text-slate-200 font-mono text-xs leading-6 resize-none focus:outline-none focus:ring-0 whitespace-pre overflow-auto"
+                placeholder="Write your code solution here..."
+              />
+            </div>
+
+            {/* Status Footer */}
+            <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                Runtime: <strong className="text-slate-300">{LANG_LABELS[language]}</strong>
+              </span>
+              <span>Shortcut: <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Ctrl</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Enter</kbd> to Run</span>
+            </div>
+          </div>
+
+          {/* OUTPUT / RESULT SECTION (POSITIONED DIRECTLY BELOW COMPILER) */}
+          <div className="min-h-[190px] max-h-[300px] flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
+            {/* Header */}
+            <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold text-white tracking-wide">Output / Result</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {executionStats && (
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      executionStats.status === 'success'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                    }`}
+                  >
+                    {executionStats.status === 'success' ? '✔ Finished' : '✖ Error'}
+                    {executionStats.durationMs !== undefined && ` (${executionStats.durationMs}ms)`}
+                  </span>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleClearTerminal}
+                  className="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 transition"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            {/* Terminal Output Body */}
+            <div className="flex-1 bg-black/95 p-3.5 font-mono text-xs overflow-auto min-h-[120px] leading-relaxed">
+              {isRunning && (
+                <div className="flex items-center gap-2 text-emerald-400 py-2">
+                  <div className="w-3.5 h-3.5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+                  <span>Compiling and executing {FILE_NAMES[language]}...</span>
+                </div>
+              )}
+
+              {!isRunning && !terminalOutput && !terminalError && (
+                <div className="text-slate-500 italic py-5 text-center flex flex-col items-center gap-1.5">
+                  <Terminal className="w-6 h-6 opacity-40" />
+                  <p>Click &quot;Run&quot; to execute your solution against sample test inputs.</p>
+                </div>
+              )}
+
+              {/* Standard Output */}
+              {terminalOutput && (
+                <pre className="text-emerald-400 whitespace-pre-wrap font-mono select-text">
+                  {terminalOutput}
+                </pre>
+              )}
+
+              {/* Error Output */}
+              {terminalError && (
+                <div className="mt-2 p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 text-rose-300 whitespace-pre-wrap font-mono">
+                  <div className="flex items-center gap-1.5 font-bold text-rose-400 mb-1">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>Compilation / Runtime Diagnostic:</span>
+                  </div>
+                  {terminalError}
+                </div>
+              )}
+            </div>
+
+            {/* Terminal Footer */}
+            <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+              <span className="text-slate-500">Execution Engine:</span>
+              <span className="text-slate-300 font-mono text-[11px]">
+                {language === 'java' && 'OpenJDK 17 / JVM'}
+                {language === 'python' && 'Python 3.13'}
+                {language === 'typescript' && 'TypeScript 5.x / Node.js'}
+                {language === 'javascript' && 'Node.js v20 (V8)'}
+                {language === 'csharp' && '.NET 8 / C# Compiler'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
