@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
 import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
+import { LANGUAGE_COURSES } from '@/lib/kids-courses';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import {
@@ -41,6 +42,12 @@ interface SidebarProps {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
 }
+
+const KIDS_TRACK_LIST = [
+  { id: 'python' as const, label: 'Python Programming', short: 'Python', badge: 'PY', icon: Terminal, color: 'text-amber-500', badgeStyle: 'bg-amber-500/10 text-amber-500 border border-amber-500/20' },
+  { id: 'javascript' as const, label: 'JavaScript', short: 'JavaScript', badge: 'JS', icon: Code2, color: 'text-emerald-500', badgeStyle: 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' },
+  { id: 'java' as const, label: 'Java', short: 'Java', badge: 'JAVA', icon: Laptop, color: 'text-cyan-500', badgeStyle: 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' },
+];
 
 export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
@@ -86,6 +93,13 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   // Active Portal Mode: 'sdet' | 'kids' (Strict separation between Kids Free Coding & SDET Pro)
   const [portalMode, setPortalMode] = useState<'sdet' | 'kids'>('sdet');
   const [kidsCoursesOpen, setKidsCoursesOpen] = useState(true);
+  const [kidsActiveLang, setKidsActiveLang] = useState<'python' | 'javascript' | 'java'>('python');
+  const [kidsActiveConcept, setKidsActiveConcept] = useState<string>('');
+  const [openKidsLangs, setOpenKidsLangs] = useState<Record<string, boolean>>({
+    python: true,
+    javascript: false,
+    java: false,
+  });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -108,6 +122,19 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         setPortalMode(QADatabase.getPortalMode());
       }
 
+      const syncKidsRoute = () => {
+        if (pathname?.startsWith('/kids')) {
+          const params = new URLSearchParams(window.location.search);
+          const l = (params.get('lang') || 'python') as 'python' | 'javascript' | 'java';
+          const c = params.get('concept') || '';
+          setKidsActiveLang(l);
+          setKidsActiveConcept(c);
+          setOpenKidsLangs(prev => ({ ...prev, [l]: true }));
+        }
+      };
+      syncKidsRoute();
+      window.addEventListener('popstate', syncKidsRoute);
+
       const handlePortalChange = (e: any) => {
         if (e.detail?.mode) {
           setPortalMode(e.detail.mode);
@@ -119,6 +146,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       window.addEventListener('intelligentqa_portal_changed', handlePortalChange);
       return () => {
         window.removeEventListener('intelligentqa_portal_changed', handlePortalChange);
+        window.removeEventListener('popstate', syncKidsRoute);
       };
     }
   }, [pathname]);
@@ -383,54 +411,84 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </button>
 
                 {kidsCoursesOpen && (
-                  <div className="pl-2 pr-1 py-1 space-y-1 border-l-2 border-amber-500/30 ml-4 my-1">
-                    {/* Python */}
-                    <Link
-                      href="/kids?lang=python"
-                      onClick={onCloseMobile}
-                      className={childItemClass(pathname === '/kids')}
-                      title="Python Programming Course"
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Terminal className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                        <span className="truncate font-medium">Python Programming</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded">
-                        PY
-                      </span>
-                    </Link>
+                  <div className="pl-1 pr-1 py-1 space-y-1.5 border-l-2 border-amber-500/30 ml-3 my-1">
+                    {KIDS_TRACK_LIST.map((track) => {
+                      const isLangOpen = Boolean(openKidsLangs[track.id]);
+                      const isLangActive = pathname === '/kids' && kidsActiveLang === track.id && !kidsActiveConcept;
+                      const courseMeta = LANGUAGE_COURSES[track.id];
+                      const Icon = track.icon;
 
-                    {/* JavaScript */}
-                    <Link
-                      href="/kids?lang=javascript"
-                      onClick={onCloseMobile}
-                      className={childItemClass(pathname === '/kids')}
-                      title="JavaScript Programming Course"
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Code2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                        <span className="truncate font-medium">JavaScript</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded">
-                        JS
-                      </span>
-                    </Link>
+                      return (
+                        <div key={track.id} className="space-y-0.5">
+                          {/* Language Header Link & Toggle */}
+                          <div className="flex items-center justify-between group rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800/40">
+                            <Link
+                              href={`/kids?lang=${track.id}`}
+                              onClick={() => {
+                                setKidsActiveLang(track.id);
+                                setKidsActiveConcept('');
+                                setOpenKidsLangs(p => ({ ...p, [track.id]: true }));
+                                if (onCloseMobile) onCloseMobile();
+                              }}
+                              className={`flex-1 flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${
+                                isLangActive
+                                  ? 'bg-amber-500/15 text-amber-500 font-bold'
+                                  : 'text-slate-600 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white'
+                              }`}
+                              title={`${track.label} Home`}
+                            >
+                              <Icon className={`w-3.5 h-3.5 shrink-0 ${track.color}`} />
+                              <span className="truncate font-semibold">{track.label}</span>
+                              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ml-auto ${track.badgeStyle}`}>
+                                {track.badge}
+                              </span>
+                            </Link>
 
-                    {/* Java */}
-                    <Link
-                      href="/kids?lang=java"
-                      onClick={onCloseMobile}
-                      className={childItemClass(pathname === '/kids')}
-                      title="Java Programming Course"
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Laptop className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                        <span className="truncate font-medium">Java</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded">
-                        JAVA
-                      </span>
-                    </Link>
+                            <button
+                              type="button"
+                              onClick={() => setOpenKidsLangs(p => ({ ...p, [track.id]: !p[track.id] }))}
+                              className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded transition"
+                              title={`Toggle ${track.label} concepts`}
+                            >
+                              {isLangOpen ? (
+                                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                              ) : (
+                                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                              )}
+                            </button>
+                          </div>
+
+                          {/* Concepts List below each language */}
+                          {isLangOpen && courseMeta && (
+                            <div className="pl-3 pr-1 py-1 space-y-0.5 border-l-2 border-slate-700/40 ml-3.5 my-1">
+                              {courseMeta.concepts.map((concept) => {
+                                const isConceptActive =
+                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveConcept === concept.id;
+                                return (
+                                  <Link
+                                    key={concept.id}
+                                    href={`/kids?lang=${track.id}&concept=${concept.id}`}
+                                    onClick={() => {
+                                      setKidsActiveLang(track.id);
+                                      setKidsActiveConcept(concept.id);
+                                      if (onCloseMobile) onCloseMobile();
+                                    }}
+                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] transition truncate ${
+                                      isConceptActive
+                                        ? 'bg-amber-500/20 text-amber-400 font-bold border-l-2 border-amber-500 pl-1.5'
+                                        : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-neutral-200 hover:bg-slate-100/50 dark:hover:bg-neutral-800/30'
+                                    }`}
+                                    title={concept.title}
+                                  >
+                                    <span className="truncate">{concept.title}</span>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>

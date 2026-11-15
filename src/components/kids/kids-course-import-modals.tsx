@@ -15,7 +15,7 @@ import {
   Plus,
 } from 'lucide-react';
 import {
-  KidLesson,
+  CourseConcept,
   generateCourseImportTemplate,
   downloadCourseImportTemplate,
   saveCustomLesson,
@@ -174,16 +174,15 @@ interface UploadModalProps {
 export function KidsCourseUploadModal({ isOpen, onClose, language, onCourseAdded }: UploadModalProps) {
   const [activeTab, setActiveTab] = useState<'upload' | 'manual'>('upload');
   const [jsonInput, setJsonInput] = useState('');
-  const [stagedLessons, setStagedLessons] = useState<KidLesson[]>([]);
+  const [stagedLessons, setStagedLessons] = useState<CourseConcept[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
   // Manual Form State
   const [title, setTitle] = useState('');
-  const [module, setModule] = useState('Core Fundamentals');
   const [summary, setSummary] = useState('');
   const [starterCode, setStarterCode] = useState('');
-  const [exercise, setExercise] = useState('');
+  const [overview, setOverview] = useState('');
 
   if (!isOpen) return null;
 
@@ -209,35 +208,37 @@ export function KidsCourseUploadModal({ isOpen, onClose, language, onCourseAdded
       if (filename.endsWith('.json') || content.trim().startsWith('[') || content.trim().startsWith('{')) {
         const parsed = JSON.parse(content);
         const list = Array.isArray(parsed) ? parsed : [parsed];
-        const staged: KidLesson[] = list.map((item, i) => ({
+        const staged: CourseConcept[] = list.map((item, i) => ({
           id: `custom-${language}-${Date.now()}-${i}`,
-          title: item.title || `Lesson ${i + 1}`,
-          module: item.module || 'Imported Module',
+          title: item.title || `Concept ${i + 1}`,
+          order: 10 + i,
           language: language,
-          summary: item.summary || 'Imported programming lesson.',
+          summary: item.summary || 'Imported programming concept.',
           overview: item.overview || '',
+          keyPoints: item.keyPoints || [],
           starterCode: item.starterCode || item.code || '# Write code here',
           solutionCode: item.solutionCode || '',
-          exercise: item.exercise || 'Complete the exercise in compiler.',
+          bestPractices: item.bestPractices || [],
         }));
         setStagedLessons(prev => [...prev, ...staged]);
       } else {
         // Simple CSV parser
         const lines = content.split('\n').filter(Boolean);
-        const staged: KidLesson[] = [];
+        const staged: CourseConcept[] = [];
         for (let i = 1; i < lines.length; i++) {
           const parts = lines[i].split(',').map(s => s.replace(/^"|"$/g, '').trim());
           if (parts[0]) {
             staged.push({
               id: `custom-${language}-${Date.now()}-${i}`,
               title: parts[0],
-              module: parts[1] || 'Imported Module',
+              order: 10 + i,
               language: language,
-              summary: parts[3] || 'Imported lesson',
-              overview: parts[4] || '',
-              starterCode: parts[5] || '',
-              solutionCode: parts[6] || '',
-              exercise: parts[7] || '',
+              summary: parts[2] || 'Imported concept',
+              overview: parts[3] || '',
+              keyPoints: [],
+              starterCode: parts[4] || '',
+              solutionCode: parts[5] || '',
+              bestPractices: [],
             });
           }
         }
@@ -252,14 +253,16 @@ export function KidsCourseUploadModal({ isOpen, onClose, language, onCourseAdded
     e.preventDefault();
     if (!title.trim()) return;
 
-    const newLesson: KidLesson = {
+    const newLesson: CourseConcept = {
       id: `custom-${language}-${Date.now()}`,
       title: title.trim(),
-      module: module.trim() || 'General Programming',
+      order: 10 + stagedLessons.length,
       language: language,
-      summary: summary.trim() || 'Interactive coding lesson.',
+      summary: summary.trim() || 'Interactive programming concept.',
+      overview: overview.trim() || '',
+      keyPoints: [],
       starterCode: starterCode.trim() || '# Write code here',
-      exercise: exercise.trim() || 'Practice in compiler.',
+      bestPractices: [],
     };
 
     if (editingIndex !== null) {
@@ -274,17 +277,16 @@ export function KidsCourseUploadModal({ isOpen, onClose, language, onCourseAdded
     // Reset Form
     setTitle('');
     setSummary('');
+    setOverview('');
     setStarterCode('');
-    setExercise('');
   };
 
   const handleEditStaged = (index: number) => {
     const item = stagedLessons[index];
     setTitle(item.title);
-    setModule(item.module);
     setSummary(item.summary);
+    setOverview(item.overview || '');
     setStarterCode(item.starterCode);
-    setExercise(item.exercise);
     setEditingIndex(index);
     setActiveTab('manual');
   };
@@ -426,25 +428,24 @@ export function KidsCourseUploadModal({ isOpen, onClose, language, onCourseAdded
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Module / Category *</label>
+                  <label className="text-xs font-semibold text-slate-300">Concept Overview</label>
                   <input
                     type="text"
-                    required
-                    value={module}
-                    onChange={(e) => setModule(e.target.value)}
-                    placeholder="e.g. Loops & Logic"
+                    value={overview}
+                    onChange={(e) => setOverview(e.target.value)}
+                    placeholder="e.g. Detailed explanation of this concept"
                     className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Lesson Summary</label>
+                <label className="text-xs font-semibold text-slate-300">Concept Summary</label>
                 <input
                   type="text"
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
-                  placeholder="Short explanation of what the lesson teaches"
+                  placeholder="Short explanation of what the concept teaches"
                   className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
                 />
               </div>
@@ -457,17 +458,6 @@ export function KidsCourseUploadModal({ isOpen, onClose, language, onCourseAdded
                   onChange={(e) => setStarterCode(e.target.value)}
                   placeholder="Code template loaded into the online compiler"
                   className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-amber-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Exercise Challenge</label>
-                <input
-                  type="text"
-                  value={exercise}
-                  onChange={(e) => setExercise(e.target.value)}
-                  placeholder="Instructions for the student to solve"
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
                 />
               </div>
 
@@ -506,7 +496,7 @@ export function KidsCourseUploadModal({ isOpen, onClose, language, onCourseAdded
                     <div className="min-w-0">
                       <div className="font-bold text-white truncate">{item.title}</div>
                       <div className="text-[11px] text-slate-400 truncate">
-                        {item.module} · {item.summary}
+                        {item.summary}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">

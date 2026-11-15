@@ -50,7 +50,7 @@ test('Requirement 3 & 4 & 5: Ask AI button, programming answering capability, an
 
 test('Requirement 6: Library with readily available coding problems for Kids 10-14 in Python, JS, TS, Java', () => {
   const codingLibFile = fs.readFileSync(path.join(__dirname, '../src/lib/coding-problems.ts'), 'utf8');
-  const kidsPageFile = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
 
   // Verify Kids category in coding problems
   assert.ok(codingLibFile.includes('Kids Coding (Ages 10-14)'), 'Defines Kids Coding (Ages 10-14) category');
@@ -66,9 +66,8 @@ test('Requirement 6: Library with readily available coding problems for Kids 10-
   assert.ok(codingLibFile.includes('function reverseMessage'), 'JS/TS starter for rover problem');
   assert.ok(codingLibFile.includes('public static String reverseMessage'), 'Java starter for rover problem');
 
-  // Verify Kids page displays problem library
-  assert.ok(kidsPageFile.includes('Readily Available Coding Challenges'), 'Kids page has Coding Challenges section');
-  assert.ok(kidsPageFile.includes('kidsProblems.map'), 'Maps over kids problems');
+  // Verify Sidebar links to Coding Library for Kids
+  assert.ok(sidebarFile.includes('/sandbox/code/problems?category=kids'), 'Sidebar links to Coding Library');
 });
 
 test('Requirement 7 & 8: Online Compiler for Java, JS, Python and Left Nav & Profile section', () => {
@@ -78,15 +77,15 @@ test('Requirement 7 & 8: Online Compiler for Java, JS, Python and Left Nav & Pro
   const topNavFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/top-nav.tsx'), 'utf8');
 
   // Requirement 7: Online Compiler for Java, Javascript, Python
-  assert.ok(kidsPageFile.includes('Kids Online Compiler &amp; Runner'), 'Kids page has Online Compiler');
-  assert.ok(kidsPageFile.includes("['python', 'javascript', 'typescript', 'java']"), 'Compiler supports Python, JS, TS, Java');
+  assert.ok(kidsPageFile.includes('Compiler IDE'), 'Kids page has Online Compiler IDE');
+  assert.ok(kidsPageFile.includes("activeLang: 'python' | 'javascript' | 'java'"), 'Compiler supports languages');
   assert.ok(codeCompilerFile.includes('Online Python Compiler'), 'Sandbox code compiler supports Python');
   assert.ok(codeCompilerFile.includes('Online JavaScript Runner'), 'Sandbox code compiler supports JavaScript');
   assert.ok(codeCompilerFile.includes('Online Java Compiler'), 'Sandbox code compiler supports Java');
 
   // Requirement 8: Left Navigation and Profile section at Top
   assert.ok(sidebarFile.includes('href="/kids"') || sidebarFile.includes("'/kids'"), 'Sidebar left navigation links to /kids');
-  assert.ok(sidebarFile.includes('Kids Coding (10–14)'), 'Sidebar displays Kids Coding');
+  assert.ok(sidebarFile.includes('Kids Coding (10–14)') || sidebarFile.includes('Programming Courses (Ages 10–14)'), 'Sidebar displays Kids Coding');
   assert.ok(topNavFile.includes('profileMenuOpen'), 'TopNav provides Profile section at Top');
   assert.ok(topNavFile.includes('currentUser'), 'TopNav manages user profile session');
 });
@@ -150,7 +149,6 @@ test('Requirement 11: Programming Courses, Import Template & Upload, and Coding 
 
   // 2. Kids Problem Library renamed to Coding Library
   assert.ok(sidebarFile.includes('>Coding Library</span>'), 'Sidebar displays Coding Library');
-  assert.ok(kidsPageFile.includes('Coding Library (Readily Available Coding Challenges)'), 'Kids page displays Coding Library header');
 
   // 3. Courses section in Left Navigation with Python, JavaScript, Java
   assert.ok(sidebarFile.includes('Python Programming'), 'Sidebar features Python course');
@@ -168,4 +166,38 @@ test('Requirement 11: Programming Courses, Import Template & Upload, and Coding 
   assert.ok(courseLibFile.includes('generateCourseImportTemplate'), 'Defines generateCourseImportTemplate');
   assert.ok(courseLibFile.includes('downloadCourseImportTemplate'), 'Defines downloadCourseImportTemplate');
   assert.ok(courseLibFile.includes('saveCustomLesson'), 'Defines saveCustomLesson for uploaded lessons');
+});
+
+test('Requirement 12: Language Home Page, 9 Concepts in Left Navigation, and Split Try It Yourself Compiler', () => {
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const kidsPageFile = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
+  const courseLibFile = fs.readFileSync(path.join(__dirname, '../src/lib/kids-courses.ts'), 'utf8');
+
+  // 1. Marketing hero and sign-up promotional clutter removed from /kids
+  assert.ok(!kidsPageFile.includes('100% Free Programming Courses for Kids & Beginners'), 'Promotional marketing hero removed');
+  assert.ok(!kidsPageFile.includes('Sign in with Google &amp; Enable Live AI Answers'), 'Duplicated Google auth hero removed');
+
+  // 2. Language Home Page contains description, why learn, use cases, and execution model
+  assert.ok(kidsPageFile.includes('courseMeta.description'), 'Renders thorough language description');
+  assert.ok(kidsPageFile.includes('courseMeta.whyLearn'), 'Renders Why Learn section');
+  assert.ok(kidsPageFile.includes('courseMeta.useCases'), 'Renders Industry Applications');
+  assert.ok(kidsPageFile.includes('courseMeta.executionModel'), 'Renders Execution Architecture');
+
+  // 3. Left Navigation renders concepts below each language
+  assert.ok(sidebarFile.includes('KIDS_TRACK_LIST.map'), 'Sidebar loops through language tracks');
+  assert.ok(sidebarFile.includes('courseMeta.concepts.map'), 'Sidebar maps over all concepts under each language');
+  assert.ok(courseLibFile.includes('Introduction & Syntax'), 'Defines Introduction concept');
+  assert.ok(courseLibFile.includes('Operators & Expressions'), 'Defines Operators concept');
+  assert.ok(courseLibFile.includes('Conditions & Decisions'), 'Defines Conditions concept');
+  assert.ok(courseLibFile.includes('Loops & Iteration'), 'Defines Loops concept');
+  assert.ok(courseLibFile.includes('Strings & Manipulation'), 'Defines Strings concept');
+  assert.ok(courseLibFile.includes('Functions & Methods'), 'Defines Functions concept');
+  assert.ok(courseLibFile.includes('Objects & Classes'), 'Defines Objects concept');
+  assert.ok(courseLibFile.includes('Data Structures'), 'Defines Data Structures concept');
+  assert.ok(courseLibFile.includes('Advanced Concepts'), 'Defines Advanced Concepts');
+
+  // 4. Try it yourself button on top of each concept opens compiler IDE on right side with output below
+  assert.ok(kidsPageFile.includes('Try it yourself'), 'Features Try it yourself button on top of concepts');
+  assert.ok(kidsPageFile.includes('handleTryItYourself'), 'Defines handleTryItYourself interaction');
+  assert.ok(kidsPageFile.includes('Execution Console / Output'), 'Renders execution console output directly below IDE on right side');
 });
