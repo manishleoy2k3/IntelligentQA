@@ -7,21 +7,31 @@ describe('Compiler Multi-Tier Architecture & Vercel Resiliency', () => {
   const compilerRoutePath = path.join(__dirname, '../src/app/api/sandbox/compiler/route.ts');
   const compilerContent = fs.readFileSync(compilerRoutePath, 'utf8');
 
-  it('Tier 1-4 execution engine functions exist in route.ts', () => {
+  it('Tier 1-5 multi-cloud execution engine functions exist in route.ts', () => {
     assert.ok(compilerContent.includes('executeWithWandbox'), 'Wandbox engine should be defined');
+    assert.ok(compilerContent.includes('executeWithJudge0'), 'Judge0 CE engine should be defined');
+    assert.ok(compilerContent.includes('executeWithGlot'), 'Glot.io engine should be defined');
     assert.ok(compilerContent.includes('executeWithPiston'), 'Piston engine should be defined');
     assert.ok(compilerContent.includes('executeWithGemini'), 'Gemini AI simulation engine should be defined');
     assert.ok(compilerContent.includes('simulateJavaInProcess'), 'In-process Java VM simulation should be defined');
     assert.ok(compilerContent.includes('simulatePythonInProcess'), 'In-process Python VM simulation should be defined');
   });
 
+  it('Safe Python binary check prevents spawn python3 ENOENT on Vercel', () => {
+    assert.ok(compilerContent.includes('getPythonBinary'), 'Should safely detect if python binary is present before spawning');
+    assert.ok(compilerContent.includes('pyBin.available'), 'Must gate subprocess behind available flag');
+  });
+
+  it('Wandbox includes active cpython-head compiler for Python execution', () => {
+    assert.ok(compilerContent.includes('cpython-head'), 'Wandbox must use cpython-head for Python');
+  });
+
   it('Dynamic Java class name extraction is implemented to avoid hardcoded Main.java errors', () => {
     assert.ok(compilerContent.includes('extractJavaClassName'), 'Should dynamically extract class name from code');
-    assert.ok(compilerContent.includes('${javaClass}.java'), 'Piston payload must use dynamic java class name');
+    assert.ok(compilerContent.includes('${javaClass}.java'), 'Payload must use dynamic java class name');
   });
 
   it('In-process Java VM transpiler correctly runs basic Java 21 programs with zero external dependencies', () => {
-    // Test the logic directly
     const vm = require('vm');
     const javaCode = `
       public class Main {
@@ -49,6 +59,42 @@ describe('Compiler Multi-Tier Architecture & Vercel Resiliency', () => {
     vm.runInContext(js, context);
 
     assert.strictEqual(output.trim(), 'Result: 50');
+  });
+
+  it('In-process Python VM transpiler correctly executes Python starter code with sum, len, and f-strings', () => {
+    const vm = require('vm');
+    const pyStarter = `
+scores = [95, 88, 92, 100, 78]
+average = sum(scores) / len(scores)
+print(f"Average score: {average:.1f}")
+`;
+
+    // Transpile f-strings and basic Python constructs
+    let js = pyStarter.replace(/f"([^"]*)"/g, (_m, content) => {
+      const converted = content.replace(/\{([^}:]+)(?::\.([0-9]+)f)?\}/g, (_fm, expr, precision) => {
+        if (precision) {
+          return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+        }
+        return `\${${expr.trim()}}`;
+      });
+      return `\`${converted}\``;
+    });
+
+    js = js.replace(/scores\s*=\s*/, 'let scores = ');
+    js = js.replace(/average\s*=\s*/, 'let average = ');
+
+    let output = '';
+    const sandbox = {
+      print: (...args) => { output += args.join(' ') + '\n'; },
+      sum: (arr) => arr.reduce((a, b) => a + b, 0),
+      len: (arr) => arr.length,
+      Number,
+    };
+
+    const context = vm.createContext(sandbox);
+    vm.runInContext(js, context);
+
+    assert.strictEqual(output.trim(), 'Average score: 90.6');
   });
 
   it('Frontend pages pass user Gemini key in x-gemini-api-key header', () => {

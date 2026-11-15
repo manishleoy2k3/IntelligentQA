@@ -49,6 +49,7 @@ function runSubprocess(
   });
 }
 
+// Check local Java binaries
 function getJavaBinaries(): { javac: string; java: string; available: boolean } {
   const candidateDirs = [
     '/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin',
@@ -71,6 +72,25 @@ function getJavaBinaries(): { javac: string; java: string; available: boolean } 
   return { javac: 'javac', java: 'java', available: false };
 }
 
+// Check local Python binary
+function getPythonBinary(): { python: string; available: boolean } {
+  const candidateDirs = [
+    '/usr/bin',
+    '/usr/local/bin',
+    '/opt/homebrew/bin',
+    '/usr/local/python3/bin',
+  ];
+
+  for (const dir of candidateDirs) {
+    const pyPath = path.join(dir, 'python3');
+    if (fs.existsSync(pyPath)) {
+      return { python: pyPath, available: true };
+    }
+  }
+
+  return { python: 'python3', available: false };
+}
+
 function extractJavaClassName(code: string): string {
   const match = code.match(/(?:public\s+)?(?:final\s+)?(?:abstract\s+)?class\s+([A-Za-z0-9_]+)/);
   return match ? match[1] : 'Main';
@@ -86,40 +106,102 @@ function safeRequire(modName: string) {
 }
 
 // ---------------------------------------------------------------------------
-// TIER 2A: Wandbox API (High reliability on Serverless/AWS without Cloudflare blocking)
+// CLOUD TIER 1: Wandbox API (Active on Serverless/AWS without Cloudflare blocking)
 // ---------------------------------------------------------------------------
 async function executeWithWandbox(
   language: string,
   code: string,
   stdin?: string
 ): Promise<{ stdout: string; stderr: string; code: number } | null> {
-  const wandboxCompilers: Record<string, string> = {
-    java: 'openjdk-head',
-    python: 'cpython-3.12.0',
-    py: 'cpython-3.12.0',
-    javascript: 'nodejs-20.17.0',
-    js: 'nodejs-20.17.0',
-    typescript: 'typescript-5.5.4',
-    ts: 'typescript-5.5.4',
-    csharp: 'dotnetcore-8.0.300',
-    'c#': 'dotnetcore-8.0.300',
-    cs: 'dotnetcore-8.0.300',
+  const wandboxCompilers: Record<string, string[]> = {
+    java: ['openjdk-head'],
+    python: ['cpython-head', 'cpython-3.11.5', 'cpython-3.10.12'],
+    py: ['cpython-head', 'cpython-3.11.5', 'cpython-3.10.12'],
+    javascript: ['nodejs-head', 'nodejs-20.17.0'],
+    js: ['nodejs-head', 'nodejs-20.17.0'],
+    typescript: ['typescript-head', 'typescript-5.5.4'],
+    ts: ['typescript-head', 'typescript-5.5.4'],
+    csharp: ['dotnetcore-head', 'mono-head'],
+    'c#': ['dotnetcore-head', 'mono-head'],
+    cs: ['dotnetcore-head', 'mono-head'],
   };
 
-  const compiler = wandboxCompilers[language.toLowerCase()];
-  if (!compiler) return null;
+  const compilers = wandboxCompilers[language.toLowerCase()];
+  if (!compilers || compilers.length === 0) return null;
+
+  for (const compiler of compilers) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
+      const res = await fetch('https://wandbox.org/api/compile.json', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          compiler,
+          code,
+          stdin: stdin || '',
+        }),
+      });
+
+      clearTimeout(timeout);
+
+      if (res.ok) {
+        const data = await res.json();
+        const status = parseInt(data.status ?? '0', 10);
+        const stdout = data.program_output || '';
+        const stderr = data.compiler_error || data.program_error || '';
+
+        return {
+          stdout,
+          stderr,
+          code: status !== 0 || data.compiler_error ? (status === 0 ? 1 : status) : 0,
+        };
+      }
+    } catch {
+      // try next compiler option
+    }
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// CLOUD TIER 2: Judge0 CE Public API (Used globally for CP and code execution)
+// ---------------------------------------------------------------------------
+async function executeWithJudge0(
+  language: string,
+  code: string,
+  stdin?: string
+): Promise<{ stdout: string; stderr: string; code: number } | null> {
+  const judge0LangMap: Record<string, number> = {
+    python: 71, // Python 3.8.1
+    py: 71,
+    java: 62, // OpenJDK 13
+    javascript: 63, // Node.js 12.14.0
+    js: 63,
+    typescript: 74, // TypeScript 3.7.4
+    ts: 74,
+    csharp: 51, // C# Mono 6.6.0
+    'c#': 51,
+    cs: 51,
+  };
+
+  const langId = judge0LangMap[language.toLowerCase()];
+  if (!langId) return null;
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 9000);
+    const timeout = setTimeout(() => controller.abort(), 7000);
 
-    const res = await fetch('https://wandbox.org/api/compile.json', {
+    const res = await fetch('https://ce.judge0.com/submissions?base64_encoded=false&wait=true', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
-        compiler,
-        code,
+        source_code: code,
+        language_id: langId,
         stdin: stdin || '',
       }),
     });
@@ -128,24 +210,83 @@ async function executeWithWandbox(
 
     if (res.ok) {
       const data = await res.json();
-      const status = parseInt(data.status ?? '0', 10);
-      const stdout = data.program_output || '';
-      const stderr = data.compiler_error || data.program_error || '';
+      const stdout = data.stdout || '';
+      const stderr = data.compile_output || data.stderr || '';
+      const isAccepted = data.status && (data.status.id === 3 || data.status.description === 'Accepted');
 
       return {
         stdout,
         stderr,
-        code: status !== 0 || data.compiler_error ? (status === 0 ? 1 : status) : 0,
+        code: isAccepted ? 0 : 1,
       };
     }
-    return null;
   } catch {
-    return null;
+    // fallback
   }
+
+  return null;
 }
 
 // ---------------------------------------------------------------------------
-// TIER 2B: Piston Execution Engine (Multi-endpoint with dynamic filename)
+// CLOUD TIER 3: Glot.io API (Free open-source execution API)
+// ---------------------------------------------------------------------------
+async function executeWithGlot(
+  language: string,
+  code: string,
+  stdin?: string
+): Promise<{ stdout: string; stderr: string; code: number } | null> {
+  const javaClass = extractJavaClassName(code);
+  const glotLangMap: Record<string, { lang: string; file: string }> = {
+    python: { lang: 'python', file: 'main.py' },
+    py: { lang: 'python', file: 'main.py' },
+    java: { lang: 'java', file: `${javaClass}.java` },
+    javascript: { lang: 'javascript', file: 'main.js' },
+    js: { lang: 'javascript', file: 'main.js' },
+    typescript: { lang: 'typescript', file: 'main.ts' },
+    ts: { lang: 'typescript', file: 'main.ts' },
+    csharp: { lang: 'csharp', file: 'main.cs' },
+    'c#': { lang: 'csharp', file: 'main.cs' },
+    cs: { lang: 'csharp', file: 'main.cs' },
+  };
+
+  const target = glotLangMap[language.toLowerCase()];
+  if (!target) return null;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 7000);
+
+    const res = await fetch(`https://glot.io/api/run/${target.lang}/latest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        files: [{ name: target.file, content: code }],
+        stdin: stdin || '',
+      }),
+    });
+
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json();
+      const stdout = data.stdout || '';
+      const stderr = data.stderr || data.error || '';
+      return {
+        stdout,
+        stderr,
+        code: stderr && !stdout ? 1 : 0,
+      };
+    }
+  } catch {
+    // fallback
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// CLOUD TIER 4: Piston Multi-Mirror Engine
 // ---------------------------------------------------------------------------
 async function executeWithPiston(
   language: string,
@@ -177,7 +318,7 @@ async function executeWithPiston(
   for (const endpoint of endpoints) {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 7000);
+      const timeout = setTimeout(() => controller.abort(), 6000);
 
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -219,7 +360,7 @@ async function executeWithPiston(
 }
 
 // ---------------------------------------------------------------------------
-// TIER 3: Gemini AI Headless Simulation Engine
+// CLOUD TIER 5: Gemini AI Execution Simulation
 // ---------------------------------------------------------------------------
 async function executeWithGemini(
   language: string,
@@ -287,7 +428,7 @@ ${code}`;
 }
 
 // ---------------------------------------------------------------------------
-// TIER 4: Built-in In-Process Java & Python Virtual Sandbox Fallback
+// IN-PROCESS VM SIMULATORS (Zero network dependency, works 100% on Vercel)
 // ---------------------------------------------------------------------------
 function simulateJavaInProcess(
   javaCode: string
@@ -367,7 +508,7 @@ function simulateJavaInProcess(
     const sandbox = {
       console: {
         log: (...args: any[]) => {
-          output += args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ') + '\n';
+          output += args.map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a))).join(' ') + '\n';
         },
         error: (...args: any[]) => {
           output += args.join(' ') + '\n';
@@ -396,62 +537,196 @@ function simulateJavaInProcess(
   }
 }
 
+// In-process Python Transpiler & Virtual Sandbox
 function simulatePythonInProcess(
   pythonCode: string
 ): { stdout: string; stderr: string; code: number } {
   try {
-    let js = pythonCode;
-    // Replace print(...) with console.log(...)
-    js = js.replace(/print\s*\(/g, 'console.log(');
-    // Replace True/False/None
-    js = js.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+    const lines = pythonCode.split(/\r?\n/);
+    const jsLines: string[] = [];
+    const indentStack = [0];
 
+    for (let rawLine of lines) {
+      const trimmed = rawLine.trim();
+      if (!trimmed || trimmed.startsWith('#')) {
+        jsLines.push(trimmed.startsWith('#') ? `// ${trimmed.slice(1)}` : '');
+        continue;
+      }
+
+      const indent = (rawLine.match(/^(\s*)/)?.[1] || '').length;
+
+      while (indentStack.length > 1 && indent < indentStack[indentStack.length - 1]) {
+        indentStack.pop();
+        jsLines.push('}'.padStart(indentStack[indentStack.length - 1] + 1, ' '));
+      }
+
+      let line = trimmed;
+
+      // Convert f-strings: f"Average score: {average:.1f}"
+      line = line.replace(/f"([^"]*)"/g, (_m, content) => {
+        const converted = content.replace(/\{([^}:]+)(?::\.([0-9]+)f)?\}/g, (_fm: string, expr: string, precision?: string) => {
+          if (precision) {
+            return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+          }
+          return `\${${expr.trim()}}`;
+        });
+        return `\`${converted}\``;
+      });
+
+      line = line.replace(/f'([^']*)'/g, (_m, content) => {
+        const converted = content.replace(/\{([^}:]+)(?::\.([0-9]+)f)?\}/g, (_fm: string, expr: string, precision?: string) => {
+          if (precision) {
+            return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+          }
+          return `\${${expr.trim()}}`;
+        });
+        return `\`${converted}\``;
+      });
+
+      // Replace boolean and None
+      line = line.replace(/\bTrue\b/g, 'true');
+      line = line.replace(/\bFalse\b/g, 'false');
+      line = line.replace(/\bNone\b/g, 'null');
+
+      // Replace and/or/not
+      line = line.replace(/\band\b/g, '&&');
+      line = line.replace(/\bor\b/g, '||');
+      line = line.replace(/\bnot\b/g, '!');
+
+      // Convert def
+      if (line.match(/^def\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*:/)) {
+        line = line.replace(/^def\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*:/, 'function $1($2) {');
+        indentStack.push(indent + 4);
+        jsLines.push(' '.repeat(indent) + line);
+        continue;
+      }
+
+      // Convert for in range
+      if (line.match(/^for\s+([A-Za-z0-9_]+)\s+in\s+([^:]+):/)) {
+        line = line.replace(/^for\s+([A-Za-z0-9_]+)\s+in\s+([^:]+):/, 'for (let $1 of $2) {');
+        indentStack.push(indent + 4);
+        jsLines.push(' '.repeat(indent) + line);
+        continue;
+      }
+
+      // Convert while
+      if (line.match(/^while\s+([^:]+):/)) {
+        line = line.replace(/^while\s+([^:]+):/, 'while ($1) {');
+        indentStack.push(indent + 4);
+        jsLines.push(' '.repeat(indent) + line);
+        continue;
+      }
+
+      // Convert if / elif / else
+      if (line.match(/^if\s+([^:]+):/)) {
+        line = line.replace(/^if\s+([^:]+):/, 'if ($1) {');
+        indentStack.push(indent + 4);
+        jsLines.push(' '.repeat(indent) + line);
+        continue;
+      }
+      if (line.match(/^elif\s+([^:]+):/)) {
+        line = line.replace(/^elif\s+([^:]+):/, '} else if ($1) {');
+        jsLines.push(' '.repeat(indent) + line);
+        continue;
+      }
+      if (line.match(/^else\s*:/)) {
+        line = line.replace(/^else\s*:/, '} else {');
+        jsLines.push(' '.repeat(indent) + line);
+        continue;
+      }
+
+      // Convert variable declarations: x = 10 -> let x = 10
+      if (line.match(/^[a-zA-Z_][a-zA-Z0-9_]*\s*=[^=]/)) {
+        line = `let ${line}`;
+      }
+
+      jsLines.push(' '.repeat(indent) + line + ';');
+    }
+
+    while (indentStack.length > 1) {
+      indentStack.pop();
+      jsLines.push('}');
+    }
+
+    const transpiledJs = jsLines.join('\n');
     let output = '';
+
     const sandbox = {
-      console: {
-        log: (...args: any[]) => {
-          output += args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ') + '\n';
-        },
-        error: (...args: any[]) => {
-          output += args.join(' ') + '\n';
-        },
+      print: (...args: any[]) => {
+        output += args.map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a))).join(' ') + '\n';
       },
+      sum: (arr: any[]) => (Array.isArray(arr) ? arr.reduce((a, b) => a + b, 0) : 0),
+      len: (obj: any) =>
+        obj && obj.length !== undefined
+          ? obj.length
+          : obj && typeof obj === 'object'
+          ? Object.keys(obj).length
+          : 0,
+      range: (start: number, end?: number, step = 1) => {
+        if (end === undefined) {
+          end = start;
+          start = 0;
+        }
+        const res: number[] = [];
+        for (let i = start; i < end; i += step) res.push(i);
+        return res;
+      },
+      max: (...args: any[]) => (Array.isArray(args[0]) ? Math.max(...args[0]) : Math.max(...args)),
+      min: (...args: any[]) => (Array.isArray(args[0]) ? Math.min(...args[0]) : Math.min(...args)),
+      abs: Math.abs,
+      round: (val: any, n = 0) => Number(Number(val).toFixed(n)),
+      str: String,
+      int: (x: any) => parseInt(x, 10),
+      float: (x: any) => parseFloat(x),
+      bool: Boolean,
       Math,
       JSON,
-      String,
-      Number,
-      Boolean,
       Array,
+      Object,
+      Number,
+      String,
     };
 
     const context = vm.createContext(sandbox);
-    vm.runInContext(js, context, { timeout: 2000 });
+    vm.runInContext(transpiledJs, context, { timeout: 2500 });
     return { stdout: output, stderr: '', code: 0 };
   } catch (err: any) {
     return { stdout: '', stderr: err.message || 'Execution error', code: 1 };
   }
 }
 
-// Master Cloud Fallback Orchestrator (Wandbox -> Piston -> Gemini -> In-Process VM)
+// Master Multi-Cloud Orchestrator
 async function executeWithCloudCompiler(
   language: string,
   code: string,
   stdin?: string,
   apiKey?: string
 ): Promise<{ stdout: string; stderr: string; code: number; engine: string } | null> {
-  // 1. Try Wandbox
+  // 1. Wandbox (High priority, fast)
   const wandboxRes = await executeWithWandbox(language, code, stdin);
   if (wandboxRes) {
     return { ...wandboxRes, engine: 'wandbox' };
   }
 
-  // 2. Try Piston Mirrors
+  // 2. Judge0 CE Public API
+  const judge0Res = await executeWithJudge0(language, code, stdin);
+  if (judge0Res) {
+    return { ...judge0Res, engine: 'judge0' };
+  }
+
+  // 3. Glot.io API
+  const glotRes = await executeWithGlot(language, code, stdin);
+  if (glotRes) {
+    return { ...glotRes, engine: 'glot' };
+  }
+
+  // 4. Piston Multi-Mirror
   const pistonRes = await executeWithPiston(language, code, stdin);
   if (pistonRes) {
     return { ...pistonRes, engine: 'piston' };
   }
 
-  // 3. Try Gemini AI Execution Simulation
+  // 5. Gemini AI Execution Simulation (If key provided)
   if (apiKey) {
     const geminiRes = await executeWithGemini(language, code, stdin, apiKey);
     if (geminiRes) {
@@ -459,7 +734,7 @@ async function executeWithCloudCompiler(
     }
   }
 
-  // 4. Built-in In-Process VM Simulation
+  // 6. In-Process VM Simulation
   const normLang = language.toLowerCase();
   if (normLang === 'java') {
     const simRes = simulateJavaInProcess(code);
@@ -497,44 +772,60 @@ export async function POST(req: NextRequest) {
     const startTime = Date.now();
     const normalizedLang = (language || 'java').toLowerCase();
 
-    // 1. PYTHON RUNNER (Python 3)
+    // 1. PYTHON RUNNER (Local binary check -> Multi-Cloud -> In-Process VM)
     if (normalizedLang === 'python' || normalizedLang === 'py') {
-      const result = await runSubprocess('python3', ['-c', code], {
-        timeout: 5000,
-        stdin,
-      });
+      const pyBin = getPythonBinary();
 
-      // If python3 missing on host environment (e.g. Vercel Serverless Function), fallback to cloud execution engine
-      if (
-        result.stderr.includes('ENOENT') ||
-        result.stderr.includes('not found') ||
-        result.stderr.includes('spawn python3')
-      ) {
-        const cloudResult = await executeWithCloudCompiler('python', code, stdin, clientApiKey);
-        if (cloudResult) {
+      if (pyBin.available) {
+        const result = await runSubprocess(pyBin.python, ['-c', code], {
+          timeout: 5000,
+          stdin,
+        });
+
+        if (
+          !result.stderr.includes('ENOENT') &&
+          !result.stderr.includes('not found') &&
+          !result.stderr.includes('spawn')
+        ) {
           return NextResponse.json({
             language: 'python',
-            success: cloudResult.code === 0,
-            status: cloudResult.code === 0 ? 'success' : 'runtime_error',
-            stdout: cloudResult.stdout,
-            stderr: cloudResult.stderr,
+            success: result.code === 0,
+            status: result.code === 0 ? 'success' : 'runtime_error',
+            stdout: result.stdout,
+            stderr: result.stderr,
             executionTimeMs: Date.now() - startTime,
-            exitCode: cloudResult.code,
-            engine: cloudResult.engine,
+            exitCode: result.code,
+            engine: 'local-python',
           });
         }
       }
 
-      const durationMs = Date.now() - startTime;
+      // Cloud & In-Process VM fallback on serverless (Vercel)
+      const cloudResult = await executeWithCloudCompiler('python', code, stdin, clientApiKey);
+      if (cloudResult) {
+        return NextResponse.json({
+          language: 'python',
+          success: cloudResult.code === 0,
+          status: cloudResult.code === 0 ? 'success' : 'runtime_error',
+          stdout: cloudResult.stdout,
+          stderr: cloudResult.stderr,
+          executionTimeMs: Date.now() - startTime,
+          exitCode: cloudResult.code,
+          engine: cloudResult.engine,
+        });
+      }
 
+      // Final VM fallback for Python
+      const vmResult = simulatePythonInProcess(code);
       return NextResponse.json({
         language: 'python',
-        success: result.code === 0,
-        status: result.code === 0 ? 'success' : 'runtime_error',
-        stdout: result.stdout,
-        stderr: result.stderr,
-        executionTimeMs: durationMs,
-        exitCode: result.code,
+        success: vmResult.code === 0,
+        status: vmResult.code === 0 ? 'success' : 'runtime_error',
+        stdout: vmResult.stdout,
+        stderr: vmResult.stderr,
+        executionTimeMs: Date.now() - startTime,
+        exitCode: vmResult.code,
+        engine: 'in-process-vm',
       });
     }
 
@@ -544,7 +835,33 @@ export async function POST(req: NextRequest) {
         timeout: 5000,
         stdin,
       });
-      const durationMs = Date.now() - startTime;
+
+      if (!result.stderr.includes('ENOENT') && !result.stderr.includes('spawn')) {
+        return NextResponse.json({
+          language: 'javascript',
+          success: result.code === 0,
+          status: result.code === 0 ? 'success' : 'runtime_error',
+          stdout: result.stdout,
+          stderr: result.stderr,
+          executionTimeMs: Date.now() - startTime,
+          exitCode: result.code,
+          engine: 'node-local',
+        });
+      }
+
+      const cloudResult = await executeWithCloudCompiler('javascript', code, stdin, clientApiKey);
+      if (cloudResult) {
+        return NextResponse.json({
+          language: 'javascript',
+          success: cloudResult.code === 0,
+          status: cloudResult.code === 0 ? 'success' : 'runtime_error',
+          stdout: cloudResult.stdout,
+          stderr: cloudResult.stderr,
+          executionTimeMs: Date.now() - startTime,
+          exitCode: cloudResult.code,
+          engine: cloudResult.engine,
+        });
+      }
 
       return NextResponse.json({
         language: 'javascript',
@@ -552,7 +869,7 @@ export async function POST(req: NextRequest) {
         status: result.code === 0 ? 'success' : 'runtime_error',
         stdout: result.stdout,
         stderr: result.stderr,
-        executionTimeMs: durationMs,
+        executionTimeMs: Date.now() - startTime,
         exitCode: result.code,
       });
     }
@@ -579,31 +896,49 @@ export async function POST(req: NextRequest) {
           timeout: 5000,
           stdin,
         });
-        const durationMs = Date.now() - startTime;
 
+        if (!result.stderr.includes('ENOENT') && !result.stderr.includes('spawn')) {
+          return NextResponse.json({
+            language: 'typescript',
+            success: result.code === 0,
+            status: result.code === 0 ? 'success' : 'runtime_error',
+            stdout: result.stdout,
+            stderr: result.stderr,
+            executionTimeMs: Date.now() - startTime,
+            exitCode: result.code,
+            engine: 'node-swc',
+          });
+        }
+      } catch {
+        // fallback to cloud compiler
+      }
+
+      const cloudResult = await executeWithCloudCompiler('typescript', code, stdin, clientApiKey);
+      if (cloudResult) {
         return NextResponse.json({
           language: 'typescript',
-          success: result.code === 0,
-          status: result.code === 0 ? 'success' : 'runtime_error',
-          stdout: result.stdout,
-          stderr: result.stderr,
-          executionTimeMs: durationMs,
-          exitCode: result.code,
-        });
-      } catch (transpileErr: any) {
-        return NextResponse.json({
-          language: 'typescript',
-          success: false,
-          status: 'compilation_error',
-          stdout: '',
-          stderr: transpileErr.message || 'TypeScript transpile error.',
+          success: cloudResult.code === 0,
+          status: cloudResult.code === 0 ? 'success' : 'compilation_error',
+          stdout: cloudResult.stdout,
+          stderr: cloudResult.stderr,
           executionTimeMs: Date.now() - startTime,
-          exitCode: 1,
+          exitCode: cloudResult.code,
+          engine: cloudResult.engine,
         });
       }
+
+      return NextResponse.json({
+        language: 'typescript',
+        success: false,
+        status: 'compilation_error',
+        stdout: '',
+        stderr: 'TypeScript compilation could not be executed in the current environment.',
+        executionTimeMs: Date.now() - startTime,
+        exitCode: 1,
+      });
     }
 
-    // 4. JAVA RUNNER (Local JDK -> Wandbox -> Piston -> Gemini AI -> In-Process VM)
+    // 4. JAVA RUNNER (Local JDK -> Wandbox -> Judge0 -> Glot -> Piston -> Gemini AI -> In-Process VM)
     if (normalizedLang === 'java') {
       const javaBins = getJavaBinaries();
       const className = extractJavaClassName(code);
@@ -659,6 +994,7 @@ export async function POST(req: NextRequest) {
             stderr: runRes.stderr,
             executionTimeMs: Date.now() - startTime,
             exitCode: runRes.code,
+            engine: 'local-jdk',
           });
         } catch (execErr: any) {
           return NextResponse.json({
@@ -679,7 +1015,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Fallback if JDK binary missing (e.g. Vercel Serverless Function without local JDK)
+      // Cloud & In-Process VM fallback on serverless (Vercel)
       const cloudResult = await executeWithCloudCompiler('java', code, stdin, clientApiKey);
       if (cloudResult) {
         return NextResponse.json({
