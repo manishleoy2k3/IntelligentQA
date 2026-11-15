@@ -105,6 +105,24 @@ function safeRequire(modName: string) {
   }
 }
 
+// Detect container/daemon infrastructure failures from external runners (e.g. catatonit, docker daemon, OCI runtime)
+function isInfrastructureError(output?: string): boolean {
+  if (!output) return false;
+  return (
+    output.includes('catatonit') ||
+    output.includes('failed to exec pid1') ||
+    output.includes('container_linux') ||
+    output.includes('runc did not terminate') ||
+    output.includes('OCI runtime') ||
+    output.includes('docker:') ||
+    output.includes('podman:') ||
+    output.includes('daemon error') ||
+    output.includes('container init failed') ||
+    output.includes('fork/exec') ||
+    (output.includes('No such file or directory') && output.includes('pid1'))
+  );
+}
+
 // ---------------------------------------------------------------------------
 // CLOUD TIER 1: Wandbox API (Active on Serverless/AWS without Cloudflare blocking)
 // ---------------------------------------------------------------------------
@@ -152,6 +170,10 @@ async function executeWithWandbox(
         const status = parseInt(data.status ?? '0', 10);
         const stdout = data.program_output || '';
         const stderr = data.compiler_error || data.program_error || '';
+
+        if (isInfrastructureError(stderr) || isInfrastructureError(stdout)) {
+          continue;
+        }
 
         return {
           stdout,
@@ -212,6 +234,11 @@ async function executeWithJudge0(
       const data = await res.json();
       const stdout = data.stdout || '';
       const stderr = data.compile_output || data.stderr || '';
+
+      if (isInfrastructureError(stderr) || isInfrastructureError(stdout)) {
+        return null;
+      }
+
       const isAccepted = data.status && (data.status.id === 3 || data.status.description === 'Accepted');
 
       return {
@@ -272,6 +299,11 @@ async function executeWithGlot(
       const data = await res.json();
       const stdout = data.stdout || '';
       const stderr = data.stderr || data.error || '';
+
+      if (isInfrastructureError(stderr) || isInfrastructureError(stdout)) {
+        return null;
+      }
+
       return {
         stdout,
         stderr,
@@ -337,16 +369,20 @@ async function executeWithPiston(
       if (res.ok) {
         const data = await res.json();
         if (data.compile && data.compile.code !== 0) {
+          const compileErr = data.compile.stderr || data.compile.output || 'Compilation failed.';
+          if (isInfrastructureError(compileErr)) continue;
           return {
             stdout: data.compile.stdout || '',
-            stderr: data.compile.stderr || data.compile.output || 'Compilation failed.',
+            stderr: compileErr,
             code: data.compile.code || 1,
           };
         }
         if (data.run) {
+          const runErr = data.run.stderr || '';
+          if (isInfrastructureError(runErr)) continue;
           return {
             stdout: data.run.stdout || data.run.output || '',
-            stderr: data.run.stderr || '',
+            stderr: runErr,
             code: data.run.code || 0,
           };
         }
@@ -702,36 +738,36 @@ async function executeWithCloudCompiler(
   stdin?: string,
   apiKey?: string
 ): Promise<{ stdout: string; stderr: string; code: number; engine: string } | null> {
-  // 1. Wandbox (High priority, fast)
-  const wandboxRes = await executeWithWandbox(language, code, stdin);
-  if (wandboxRes) {
-    return { ...wandboxRes, engine: 'wandbox' };
-  }
-
-  // 2. Judge0 CE Public API
-  const judge0Res = await executeWithJudge0(language, code, stdin);
-  if (judge0Res) {
-    return { ...judge0Res, engine: 'judge0' };
-  }
-
-  // 3. Glot.io API
-  const glotRes = await executeWithGlot(language, code, stdin);
-  if (glotRes) {
-    return { ...glotRes, engine: 'glot' };
-  }
-
-  // 4. Piston Multi-Mirror
+  // 1. Piston Multi-Mirror (High reliability, primary across IDEs)
   const pistonRes = await executeWithPiston(language, code, stdin);
-  if (pistonRes) {
+  if (pistonRes && !isInfrastructureError(pistonRes.stderr)) {
     return { ...pistonRes, engine: 'piston' };
   }
 
-  // 5. Gemini AI Execution Simulation (If key provided)
+  // 2. Wandbox (High speed, open-source multi-compiler)
+  const wandboxRes = await executeWithWandbox(language, code, stdin);
+  if (wandboxRes && !isInfrastructureError(wandboxRes.stderr)) {
+    return { ...wandboxRes, engine: 'wandbox' };
+  }
+
+  // 3. Gemini AI Execution Simulation (If user key provided)
   if (apiKey) {
     const geminiRes = await executeWithGemini(language, code, stdin, apiKey);
-    if (geminiRes) {
+    if (geminiRes && !isInfrastructureError(geminiRes.stderr)) {
       return { ...geminiRes, engine: 'gemini-ai' };
     }
+  }
+
+  // 4. Judge0 CE Public API (With strict infra error rejection)
+  const judge0Res = await executeWithJudge0(language, code, stdin);
+  if (judge0Res && !isInfrastructureError(judge0Res.stderr)) {
+    return { ...judge0Res, engine: 'judge0' };
+  }
+
+  // 5. Glot.io API (With strict infra error rejection)
+  const glotRes = await executeWithGlot(language, code, stdin);
+  if (glotRes && !isInfrastructureError(glotRes.stderr)) {
+    return { ...glotRes, engine: 'glot' };
   }
 
   // 6. In-Process VM Simulation
@@ -802,7 +838,7 @@ export async function POST(req: NextRequest) {
 
       // Cloud & In-Process VM fallback on serverless (Vercel)
       const cloudResult = await executeWithCloudCompiler('python', code, stdin, clientApiKey);
-      if (cloudResult) {
+      if (cloudResult && !isInfrastructureError(cloudResult.stderr)) {
         return NextResponse.json({
           language: 'python',
           success: cloudResult.code === 0,

@@ -133,4 +133,10 @@ print(f"Average score: {average:.1f}")
     assert.ok(problemSolver.includes('handleEditorScroll'), 'Problem solver must sync scroll');
     assert.ok(problemSolver.includes('extractErrorLineNumber'), 'Problem solver must extract error line number');
   });
+
+  it('Container daemon and infrastructure failures (e.g. catatonit, failed to exec pid1) are detected and filtered', () => {
+    assert.ok(compilerContent.includes('isInfrastructureError'), 'isInfrastructureError filter must be defined');
+    assert.ok(compilerContent.includes('catatonit'), 'catatonit pattern must be filtered');
+    assert.ok(compilerContent.includes('failed to exec pid1'), 'failed to exec pid1 pattern must be filtered');
+  });
 });
