@@ -24,7 +24,6 @@ import {
   ChevronRight,
   Sparkles,
   Info,
-  Maximize2,
   Minimize2,
 } from 'lucide-react';
 import {
@@ -77,8 +76,8 @@ function KidsCoursesContent() {
     ? allConcepts.find((c) => c.id === conceptParam)
     : undefined;
 
-  // Compiler IDE State
-  const [showCompiler, setShowCompiler] = useState<boolean>(true);
+  // Compiler IDE State: hidden by default until user clicks "Try it yourself"
+  const [showCompiler, setShowCompiler] = useState<boolean>(false);
   const [editorCode, setEditorCode] = useState<string>('');
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [terminalOutput, setTerminalOutput] = useState<string>('');
@@ -118,21 +117,34 @@ function KidsCoursesContent() {
     }
   }, [activeLang, conceptParam, activeConcept?.id]);
 
-  // Handle "Try it yourself" button click
-  const handleTryItYourself = () => {
-    setShowCompiler(true);
-    if (activeConcept) {
-      setEditorCode(activeConcept.starterCode);
-      setTerminalOutput(`Loaded starter code for "${activeConcept.title}". Click "Run Code" to test output!`);
+  // Keep IDE hidden by default when navigating concepts, unless explicitly requested via ?try=true
+  useEffect(() => {
+    if (searchParams.get('try') === 'true') {
+      setShowCompiler(true);
     } else {
-      setEditorCode(LANGUAGE_DEFAULTS[activeLang].starter);
-      setTerminalOutput(`Loaded ${courseMeta.name} playground. Click "Run Code" to execute!`);
+      setShowCompiler(false);
     }
-    setTerminalError('');
-    setTimeout(() => {
-      compilerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      textareaRef.current?.focus();
-    }, 50);
+  }, [conceptParam, activeLang]);
+
+  // Handle "Try it yourself" toggle: opens IDE if hidden, closes IDE if open
+  const handleTryItYourself = () => {
+    if (showCompiler) {
+      setShowCompiler(false);
+    } else {
+      setShowCompiler(true);
+      if (activeConcept) {
+        setEditorCode(activeConcept.starterCode);
+        setTerminalOutput(`Loaded starter code for "${activeConcept.title}". Click "Run Code" to test output!`);
+      } else {
+        setEditorCode(LANGUAGE_DEFAULTS[activeLang].starter);
+        setTerminalOutput(`Loaded ${courseMeta.name} playground. Click "Run Code" to execute!`);
+      }
+      setTerminalError('');
+      setTimeout(() => {
+        compilerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        textareaRef.current?.focus();
+      }, 60);
+    }
   };
 
   // Run Code via backend execution engine
@@ -187,75 +199,77 @@ function KidsCoursesContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans">
-      {/* 1. TOP HEADER & LANGUAGE NAVIGATION */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-4 sm:px-6 py-3.5">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Language Selector Tabs */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <Link
-              href="/kids?lang=python"
-              className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                activeLang === 'python'
-                  ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
-                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
-              }`}
-            >
-              <Terminal className="w-3.5 h-3.5 text-inherit" />
-              <span>Python Course</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">3.12</span>
-            </Link>
+      {/* 1. TOP HEADER & LANGUAGE NAVIGATION (Rendered ONLY on main language overview page) */}
+      {!activeConcept && (
+        <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-4 sm:px-6 py-3.5">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Language Selector Tabs */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Link
+                href="/kids?lang=python"
+                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                  activeLang === 'python'
+                    ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
+                    : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                }`}
+              >
+                <Terminal className="w-3.5 h-3.5 text-inherit" />
+                <span>Python Course</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">3.12</span>
+              </Link>
 
-            <Link
-              href="/kids?lang=javascript"
-              className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                activeLang === 'javascript'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md font-extrabold'
-                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
-              }`}
-            >
-              <Code2 className="w-3.5 h-3.5 text-inherit" />
-              <span>JavaScript Course</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">ES2024</span>
-            </Link>
+              <Link
+                href="/kids?lang=javascript"
+                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                  activeLang === 'javascript'
+                    ? 'bg-emerald-500 text-slate-950 shadow-md font-extrabold'
+                    : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                }`}
+              >
+                <Code2 className="w-3.5 h-3.5 text-inherit" />
+                <span>JavaScript Course</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">ES2024</span>
+              </Link>
 
-            <Link
-              href="/kids?lang=java"
-              className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                activeLang === 'java'
-                  ? 'bg-cyan-500 text-slate-950 shadow-md font-extrabold'
-                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
-              }`}
-            >
-              <Laptop className="w-3.5 h-3.5 text-inherit" />
-              <span>Java Course</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">21 LTS</span>
-            </Link>
+              <Link
+                href="/kids?lang=java"
+                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                  activeLang === 'java'
+                    ? 'bg-cyan-500 text-slate-950 shadow-md font-extrabold'
+                    : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                }`}
+              >
+                <Laptop className="w-3.5 h-3.5 text-inherit" />
+                <span>Java Course</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">21 LTS</span>
+              </Link>
+            </div>
+
+            {/* Import Template & Import Course Content Buttons */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setShowTemplateModal(true)}
+                className="py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                title="Download standardized Import Template (JSON/CSV) with mandatory schema fields"
+              >
+                <FileDown className="w-3.5 h-3.5 text-amber-400" />
+                <span>Import Template</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowUploadModal(true)}
+                className="py-1.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
+                title="Import and Upload new course concepts or guides"
+              >
+                <UploadCloud className="w-3.5 h-3.5" />
+                <span>Import Course Content</span>
+              </button>
+            </div>
           </div>
-
-          {/* Import Template & Import Course Content Buttons */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              type="button"
-              onClick={() => setShowTemplateModal(true)}
-              className="py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-              title="Download standardized Import Template (JSON/CSV) with mandatory schema fields"
-            >
-              <FileDown className="w-3.5 h-3.5 text-amber-400" />
-              <span>Import Template</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowUploadModal(true)}
-              className="py-1.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
-              title="Import and Upload new course concepts or guides"
-            >
-              <UploadCloud className="w-3.5 h-3.5" />
-              <span>Import Course Content</span>
-            </button>
-          </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* 2. MAIN BODY: LANGUAGE HOME OR ACTIVE CONCEPT VIEW */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6">
@@ -525,26 +539,24 @@ function KidsCoursesContent() {
                 </h1>
               </div>
 
-              {/* Requirement 4: "Try it yourself" button on top of each concept */}
+              {/* "Try it yourself" toggle button: opens IDE if hidden, closes IDE if open */}
               <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
                 <button
                   type="button"
                   onClick={handleTryItYourself}
-                  className="py-2.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg transition flex items-center gap-2 cursor-pointer active:scale-95 animate-pulse"
-                  title="Open compiler IDE on right side with live output below"
+                  className={`py-2.5 px-6 rounded-2xl font-black text-xs sm:text-sm shadow-lg transition flex items-center gap-2 cursor-pointer active:scale-95 ${
+                    showCompiler
+                      ? 'bg-slate-800 hover:bg-slate-750 text-amber-400 border border-amber-500/40 ring-1 ring-amber-500/20'
+                      : 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 animate-pulse'
+                  }`}
+                  title={showCompiler ? 'Click to hide compiler IDE' : 'Click to open compiler IDE on right side with live output below'}
                 >
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>Try it yourself</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowCompiler(!showCompiler)}
-                  className="py-2 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5 cursor-pointer"
-                  title="Toggle compiler section"
-                >
-                  {showCompiler ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                  <span>{showCompiler ? 'Hide IDE' : 'Open IDE'}</span>
+                  {showCompiler ? (
+                    <Minimize2 className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Play className="w-4 h-4 fill-current" />
+                  )}
+                  <span>{showCompiler ? 'Hide IDE' : 'Try it yourself'}</span>
                 </button>
               </div>
             </div>

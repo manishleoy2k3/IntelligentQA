@@ -355,11 +355,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           className="flex items-center gap-2.5 focus:outline-none"
         >
           <QABrandLogo size={32} showText={true} showZeroCostBadge={false} />
-          {isKidsPortal && (
-            <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-              Kids Lab
-            </span>
-          )}
         </Link>
 
         {/* Mobile close button */}
@@ -382,10 +377,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           /* ========================================================= */
           <div className="space-y-4">
             <div className="space-y-1">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-500 dark:text-amber-400 px-3 pb-1">
-                Programming Courses (Ages 10–14)
-              </div>
-
               {/* COURSES (Python, JavaScript, Java) */}
               <div className="space-y-1">
                 <button
