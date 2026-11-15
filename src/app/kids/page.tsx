@@ -106,6 +106,79 @@ function KidsCoursesContent() {
   const lineNumbersRef1 = useRef<HTMLDivElement>(null);
   const lineNumbersRef2 = useRef<HTMLDivElement>(null);
 
+  // Resizing state for split view (Concept vs Compiler & IDE vs Output)
+  const [descriptionWidthPct, setDescriptionWidthPct] = useState<number>(45);
+  const [compilerHeightPct, setCompilerHeightPct] = useState<number>(58);
+  const [isHResizing, setIsHResizing] = useState<boolean>(false);
+  const [isVResizing, setIsVResizing] = useState<boolean>(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(true);
+
+  const mainSplitRef = useRef<HTMLDivElement>(null);
+  const rightSplitColumnRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  // Horizontal resizer (Concept Description vs Compiler+Output)
+  const startHResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsHResizing(true);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!mainSplitRef.current) return;
+      const rect = mainSplitRef.current.getBoundingClientRect();
+      const currentX = moveEvent.clientX - rect.left;
+      const pct = (currentX / rect.width) * 100;
+      const clamped = Math.min(Math.max(pct, 20), 75);
+      setDescriptionWidthPct(clamped);
+    };
+
+    const handleMouseUp = () => {
+      setIsHResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Vertical resizer (Compiler IDE vs Output in right column)
+  const startVResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsVResizing(true);
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!rightSplitColumnRef.current) return;
+      const rect = rightSplitColumnRef.current.getBoundingClientRect();
+      const currentY = moveEvent.clientY - rect.top;
+      const pct = (currentY / rect.height) * 100;
+      const clamped = Math.min(Math.max(pct, 25), 80);
+      setCompilerHeightPct(clamped);
+    };
+
+    const handleMouseUp = () => {
+      setIsVResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
   // Synchronized scroll handlers for line numbers gutter
   const handleEditorScroll1 = (e: React.UIEvent<HTMLTextAreaElement>) => {
     if (lineNumbersRef1.current) {
@@ -692,9 +765,21 @@ function KidsCoursesContent() {
             </div>
 
             {/* Split Screen: Left = Concept Explanation, Right = Compiler IDE & Output Below */}
-            <div className={`grid grid-cols-1 ${showCompiler ? 'lg:grid-cols-2' : ''} gap-6 items-start`}>
+            <div
+              ref={mainSplitRef}
+              className={`flex flex-col ${
+                showCompiler
+                  ? 'lg:flex-row lg:h-[calc(100vh-140px)] lg:min-h-[640px] gap-0'
+                  : 'gap-6'
+              } items-stretch`}
+            >
               {/* LEFT COLUMN: Concept Guide & Walkthrough */}
-              <div className="space-y-5 bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 sm:p-6 shadow-sm">
+              <div
+                style={showCompiler && isDesktop ? { width: `${descriptionWidthPct}%` } : undefined}
+                className={`space-y-5 bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 sm:p-6 shadow-sm min-w-0 ${
+                  showCompiler ? 'lg:h-full lg:overflow-y-auto' : ''
+                }`}
+              >
                 {/* Summary Callout */}
                 <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs sm:text-sm text-amber-200 leading-relaxed flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
@@ -807,12 +892,37 @@ function KidsCoursesContent() {
                 </div>
               </div>
 
+              {/* Horizontal Resizer Handle between Concept and Compiler Workspace */}
+              {showCompiler && (
+                <div
+                  onMouseDown={startHResizing}
+                  className="hidden lg:flex w-2.5 items-center justify-center cursor-col-resize group shrink-0 select-none py-4 mx-1"
+                  title="Drag left/right to resize Concept and Compiler"
+                >
+                  <div
+                    className={`w-1 h-24 rounded-full transition-colors ${
+                      isHResizing ? 'bg-amber-500' : 'bg-slate-700 group-hover:bg-amber-400'
+                    }`}
+                  />
+                </div>
+              )}
+
               {/* RIGHT COLUMN: Compiler IDE on top, Output Console directly below */}
               {showCompiler && (
-                <div ref={compilerRef} className="space-y-4 sticky top-20">
+                <div
+                  ref={(node) => {
+                    compilerRef.current = node;
+                    rightSplitColumnRef.current = node;
+                  }}
+                  style={isDesktop ? { width: `calc(${100 - descriptionWidthPct}% - 0.875rem)` } : undefined}
+                  className="flex-1 flex flex-col min-w-0 h-full overflow-hidden"
+                >
                   {/* COMPILER IDE (TOP) */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden flex flex-col shadow-xl">
-                    <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs">
+                  <div
+                    style={isDesktop ? { height: `${compilerHeightPct}%` } : undefined}
+                    className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden flex flex-col shadow-xl min-h-[200px] shrink-0"
+                  >
+                    <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs shrink-0">
                       <div className="flex items-center gap-2">
                         <Terminal className="w-4 h-4 text-amber-400" />
                         <span className="font-bold text-white font-mono">
@@ -848,7 +958,7 @@ function KidsCoursesContent() {
                     </div>
 
                     {/* Code Editor with Line Numbers */}
-                    <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs sm:text-sm relative min-h-[300px]">
+                    <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs sm:text-sm relative min-h-[120px]">
                       {/* Line Numbers Gutter */}
                       <div
                         ref={lineNumbersRef2}
@@ -885,7 +995,7 @@ function KidsCoursesContent() {
                       />
                     </div>
 
-                    <div className="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                    <div className="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
                       <span className="flex items-center gap-2">
                         <span>{editorLineCount} lines · {activeLang}</span>
                         {detectedErrorLine && (
@@ -898,9 +1008,25 @@ function KidsCoursesContent() {
                     </div>
                   </div>
 
+                  {/* Vertical Resizer Handle between Compiler IDE and Output Console */}
+                  <div
+                    onMouseDown={startVResizing}
+                    className="h-2.5 flex items-center justify-center cursor-row-resize group shrink-0 select-none px-4 my-1"
+                    title="Drag up/down to resize Compiler and Output"
+                  >
+                    <div
+                      className={`h-1 w-20 rounded-full transition-colors ${
+                        isVResizing ? 'bg-amber-500' : 'bg-slate-700 group-hover:bg-amber-400'
+                      }`}
+                    />
+                  </div>
+
                   {/* COMPILER OUTPUT DIRECTLY BELOW IDE (BOTTOM) */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden flex flex-col shadow-xl">
-                    <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
+                  <div
+                    style={isDesktop ? { height: `calc(${100 - compilerHeightPct}% - 0.875rem)` } : undefined}
+                    className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden flex flex-col shadow-xl min-h-[140px] shrink-0"
+                  >
+                    <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400 shrink-0">
                       <div className="flex items-center gap-2">
                         <Laptop className="w-4 h-4 text-blue-400" />
                         <span className="font-bold text-white">Execution Console / Output</span>
@@ -917,7 +1043,7 @@ function KidsCoursesContent() {
                       </button>
                     </div>
 
-                    <div className="p-4 bg-slate-950 font-mono text-xs text-slate-300 min-h-[160px] max-h-[300px] overflow-y-auto space-y-2 whitespace-pre-wrap">
+                    <div className="flex-1 p-4 bg-slate-950 font-mono text-xs text-slate-300 overflow-y-auto space-y-2 whitespace-pre-wrap min-h-[80px]">
                       {terminalOutput && (
                         <div className="text-emerald-400 font-semibold">{terminalOutput}</div>
                       )}
@@ -933,7 +1059,7 @@ function KidsCoursesContent() {
                       )}
                     </div>
 
-                    <div className="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                    <div className="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
                       <span>Status: {isRunning ? 'Executing...' : 'Ready'}</span>
                       <span className="text-[10px]">In-Browser Execution Sandbox</span>
                     </div>

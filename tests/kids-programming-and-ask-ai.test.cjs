@@ -200,4 +200,12 @@ test('Requirement 12: Language Home Page, 9 Concepts in Left Navigation, and Spl
   assert.ok(kidsPageFile.includes('Try it yourself'), 'Features Try it yourself button on top of concepts');
   assert.ok(kidsPageFile.includes('handleTryItYourself'), 'Defines handleTryItYourself interaction');
   assert.ok(kidsPageFile.includes('Execution Console / Output'), 'Renders execution console output directly below IDE on right side');
+
+  // 5. Concept Description and Compiler IDE + Output sections are horizontally and vertically resizable
+  assert.ok(kidsPageFile.includes('startHResizing'), 'Includes horizontal resizer handler for Concept vs Compiler');
+  assert.ok(kidsPageFile.includes('startVResizing'), 'Includes vertical resizer handler for Compiler vs Output');
+  assert.ok(kidsPageFile.includes('cursor-col-resize'), 'Includes cursor-col-resize handle between Concept and Compiler');
+  assert.ok(kidsPageFile.includes('cursor-row-resize'), 'Includes cursor-row-resize handle between Compiler and Output');
+  assert.ok(kidsPageFile.includes('descriptionWidthPct'), 'Applies descriptionWidthPct dynamic width');
+  assert.ok(kidsPageFile.includes('compilerHeightPct'), 'Applies compilerHeightPct dynamic height');
 });
