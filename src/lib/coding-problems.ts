@@ -1,0 +1,1317 @@
+export interface CodingProblem {
+  id: string;
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  category: string;
+  description: string;
+  constraints?: string[];
+  examples: {
+    input: string;
+    output: string;
+    explanation?: string;
+  }[];
+  starterTemplates: {
+    java: string;
+    python: string;
+    typescript: string;
+    javascript: string;
+    csharp: string;
+  };
+  isCustom?: boolean;
+}
+
+export const DEFAULT_CODING_PROBLEMS: CodingProblem[] = [
+  {
+    id: 'two-sum',
+    title: '1. Two Sum (Find Indices of Target Sum)',
+    difficulty: 'Easy',
+    category: 'Arrays & HashMaps',
+    description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+
+In test automation, this pattern is frequently used to match paired test data records (e.g., matching debit and credit transactions that reconcile to a net zero balance).
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.`,
+    constraints: [
+      '2 <= nums.length <= 10^4',
+      '-10^9 <= nums[i] <= 10^9',
+      '-10^9 <= target <= 10^9',
+      'Only one valid answer exists.',
+    ],
+    examples: [
+      {
+        input: 'nums = [2, 7, 11, 15], target = 9',
+        output: '[0, 1]',
+        explanation: 'Because nums[0] + nums[1] == 9, we return [0, 1].',
+      },
+      {
+        input: 'nums = [3, 2, 4], target = 6',
+        output: '[1, 2]',
+        explanation: 'nums[1] + nums[2] == 6, so indices are [1, 2].',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.*;
+
+public class Main {
+    // Problem: Two Sum
+    // Return indices of the two numbers that add up to target
+    public static int[] twoSum(int[] nums, int target) {
+        // Tip: Use a HashMap<Integer, Integer> for O(n) single-pass lookup
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            if (map.containsKey(complement)) {
+                return new int[] { map.get(complement), i };
+            }
+            map.put(nums[i], i);
+        }
+        return new int[] {};
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {2, 7, 11, 15};
+        int target = 9;
+        int[] result = twoSum(nums, target);
+        System.out.println("Result: [" + result[0] + ", " + result[1] + "]");
+        // Expected: [0, 1]
+    }
+}
+`,
+      python: `def two_sum(nums: list[int], target: int) -> list[int]:
+    """
+    Problem: Two Sum
+    Return indices of the two numbers that add up to target.
+    """
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+
+if __name__ == "__main__":
+    nums = [2, 7, 11, 15]
+    target = 9
+    result = two_sum(nums, target)
+    print(f"Result: {result}")
+    # Expected: [0, 1]
+`,
+      typescript: `function twoSum(nums: number[], target: number): number[] {
+  const map = new Map<number, number>();
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (map.has(complement)) {
+      return [map.get(complement)!, i];
+    }
+    map.set(nums[i], i);
+  }
+  return [];
+}
+
+const nums = [2, 7, 11, 15];
+const target = 9;
+console.log("Result:", twoSum(nums, target));
+// Expected: [0, 1]
+`,
+      javascript: `function twoSum(nums, target) {
+  const map = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (map.has(complement)) {
+      return [map.get(complement), i];
+    }
+    map.set(nums[i], i);
+  }
+  return [];
+}
+
+const nums = [2, 7, 11, 15];
+const target = 9;
+console.log("Result:", twoSum(nums, target));
+// Expected: [0, 1]
+`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static int[] TwoSum(int[] nums, int target) {
+        Dictionary<int, int> map = new Dictionary<int, int>();
+        for (int i = 0; i < nums.Length; i++) {
+            int complement = target - nums[i];
+            if (map.ContainsKey(complement)) {
+                return new int[] { map[complement], i };
+            }
+            if (!map.ContainsKey(nums[i])) {
+                map.Add(nums[i], i);
+            }
+        }
+        return new int[] {};
+    }
+
+    static void Main(string[] args) {
+        int[] nums = { 2, 7, 11, 15 };
+        int target = 9;
+        int[] result = TwoSum(nums, target);
+        Console.WriteLine($"Result: [{result[0]}, {result[1]}]");
+        // Expected: [0, 1]
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'valid-palindrome',
+    title: '2. Valid Palindrome & String Sanitization',
+    difficulty: 'Easy',
+    category: 'Strings & Two Pointers',
+    description: `A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.
+
+SDETs frequently use string sanitization when verifying dynamic web table text, normalized search inputs, and localized UI labels.`,
+    constraints: [
+      '1 <= s.length <= 2 * 10^5',
+      's consists only of printable ASCII characters.',
+    ],
+    examples: [
+      {
+        input: 's = "A man, a plan, a canal: Panama"',
+        output: 'true',
+        explanation: '"amanaplanacanalpanama" is a palindrome.',
+      },
+      {
+        input: 's = "race a car"',
+        output: 'false',
+        explanation: '"raceacar" is not a palindrome.',
+      },
+    ],
+    starterTemplates: {
+      java: `public class Main {
+    // Problem: Valid Palindrome
+    public static boolean isPalindrome(String s) {
+        // Sanitize: keep only alphanumeric and convert to lowercase
+        String clean = s.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        int left = 0, right = clean.length() - 1;
+        while (left < right) {
+            if (clean.charAt(left) != clean.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        String test1 = "A man, a plan, a canal: Panama";
+        String test2 = "race a car";
+        System.out.println("Test 1 is Palindrome: " + isPalindrome(test1)); // true
+        System.out.println("Test 2 is Palindrome: " + isPalindrome(test2)); // false
+    }
+}
+`,
+      python: `import re
+
+def is_palindrome(s: str) -> bool:
+    clean = re.sub(r'[^a-zA-Z0-9]', '', s).lower()
+    return clean == clean[::-1]
+
+if __name__ == "__main__":
+    test1 = "A man, a plan, a canal: Panama"
+    test2 = "race a car"
+    print("Test 1 is Palindrome:", is_palindrome(test1)) # True
+    print("Test 2 is Palindrome:", is_palindrome(test2)) # False
+`,
+      typescript: `function isPalindrome(s: string): boolean {
+  const clean = s.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  return clean === clean.split('').reverse().join('');
+}
+
+console.log("Test 1:", isPalindrome("A man, a plan, a canal: Panama")); // true
+console.log("Test 2:", isPalindrome("race a car")); // false
+`,
+      javascript: `function isPalindrome(s) {
+  const clean = s.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  return clean === clean.split('').reverse().join('');
+}
+
+console.log("Test 1:", isPalindrome("A man, a plan, a canal: Panama")); // true
+console.log("Test 2:", isPalindrome("race a car")); // false
+`,
+      csharp: `using System;
+using System.Text.RegularExpressions;
+
+class Program {
+    public static bool IsPalindrome(string s) {
+        string clean = Regex.Replace(s, "[^a-zA-Z0-9]", "").ToLower();
+        int left = 0, right = clean.Length - 1;
+        while (left < right) {
+            if (clean[left] != clean[right]) return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine("Test 1: " + IsPalindrome("A man, a plan, a canal: Panama")); // True
+        Console.WriteLine("Test 2: " + IsPalindrome("race a car")); // False
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'find-duplicates',
+    title: '3. Find Duplicate Elements in Array',
+    difficulty: 'Easy',
+    category: 'Arrays & Sets',
+    description: `Given an integer array nums, return all elements that appear more than once in the array.
+
+In API and database testing, checking for unexpected duplicates is a critical validation step for user registrations, order tracking numbers, and product SKUs.`,
+    constraints: [
+      '1 <= nums.length <= 10^5',
+      '-10^9 <= nums[i] <= 10^9',
+    ],
+    examples: [
+      {
+        input: 'nums = [4, 3, 2, 7, 8, 2, 3, 1]',
+        output: '[2, 3]',
+        explanation: 'Numbers 2 and 3 appear twice.',
+      },
+      {
+        input: 'nums = [1, 1, 2]',
+        output: '[1]',
+        explanation: '1 appears twice.',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.*;
+
+public class Main {
+    // Problem: Find Duplicates in Array
+    public static List<Integer> findDuplicates(int[] nums) {
+        Set<Integer> seen = new HashSet<>();
+        Set<Integer> duplicates = new TreeSet<>();
+        for (int num : nums) {
+            if (!seen.add(num)) {
+                duplicates.add(num);
+            }
+        }
+        return new ArrayList<>(duplicates);
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {4, 3, 2, 7, 8, 2, 3, 1};
+        System.out.println("Duplicates found: " + findDuplicates(nums));
+        // Expected: [2, 3]
+    }
+}
+`,
+      python: `def find_duplicates(nums: list[int]) -> list[int]:
+    seen = set()
+    duplicates = set()
+    for num in nums:
+        if num in seen:
+            duplicates.add(num)
+        else:
+            seen.add(num)
+    return sorted(list(duplicates))
+
+if __name__ == "__main__":
+    nums = [4, 3, 2, 7, 8, 2, 3, 1]
+    print("Duplicates:", find_duplicates(nums)) # [2, 3]
+`,
+      typescript: `function findDuplicates(nums: number[]): number[] {
+  const seen = new Set<number>();
+  const duplicates = new Set<number>();
+  for (const n of nums) {
+    if (seen.has(n)) {
+      duplicates.add(n);
+    } else {
+      seen.add(n);
+    }
+  }
+  return Array.from(duplicates).sort((a, b) => a - b);
+}
+
+console.log("Duplicates:", findDuplicates([4, 3, 2, 7, 8, 2, 3, 1])); // [2, 3]
+`,
+      javascript: `function findDuplicates(nums) {
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const n of nums) {
+    if (seen.has(n)) {
+      duplicates.add(n);
+    } else {
+      seen.add(n);
+    }
+  }
+  return Array.from(duplicates).sort((a, b) => a - b);
+}
+
+console.log("Duplicates:", findDuplicates([4, 3, 2, 7, 8, 2, 3, 1])); // [2, 3]
+`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static List<int> FindDuplicates(int[] nums) {
+        HashSet<int> seen = new HashSet<int>();
+        SortedSet<int> duplicates = new SortedSet<int>();
+        foreach (int num in nums) {
+            if (!seen.Add(num)) {
+                duplicates.Add(num);
+            }
+        }
+        return new List<int>(duplicates);
+    }
+
+    static void Main(string[] args) {
+        int[] nums = { 4, 3, 2, 7, 8, 2, 3, 1 };
+        Console.WriteLine("Duplicates: [" + string.Join(", ", FindDuplicates(nums)) + "]");
+        // Expected: [2, 3]
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'valid-parentheses',
+    title: '4. Valid Parentheses & Bracket Matching',
+    difficulty: 'Easy',
+    category: 'Stacks & Syntax Validation',
+    description: `Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.
+3. Every close bracket has a corresponding open bracket of the same type.
+
+In QA automation, this algorithm is widely used to validate JSON syntax, HTML/XML tag nesting, and mathematical formula inputs.`,
+    constraints: [
+      '1 <= s.length <= 10^4',
+      's consists of parentheses only "()[]{}".',
+    ],
+    examples: [
+      {
+        input: 's = "()[]{}"',
+        output: 'true',
+      },
+      {
+        input: 's = "(]"',
+        output: 'false',
+      },
+      {
+        input: 's = "([{}])"',
+        output: 'true',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.Stack;
+
+public class Main {
+    // Problem: Valid Parentheses using Stack
+    public static boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        for (char c : s.toCharArray()) {
+            if (c == '(') stack.push(')');
+            else if (c == '{') stack.push('}');
+            else if (c == '[') stack.push(']');
+            else if (stack.isEmpty() || stack.pop() != c) {
+                return false;
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Test '()[]{}': " + isValid("()[]{}")); // true
+        System.out.println("Test '(]': " + isValid("(]"));         // false
+        System.out.println("Test '([{}])': " + isValid("([{}])")); // true
+    }
+}
+`,
+      python: `def is_valid(s: str) -> bool:
+    stack = []
+    mapping = {")": "(", "}": "{", "]": "["}
+    for char in s:
+        if char in mapping:
+            top = stack.pop() if stack else '#'
+            if mapping[char] != top:
+                return False
+        else:
+            stack.append(char)
+    return len(stack) == 0
+
+if __name__ == "__main__":
+    print("Test '()[]{}':", is_valid("()[]{}")) # True
+    print("Test '(]':", is_valid("(]"))         # False
+    print("Test '([{}])':", is_valid("([{}])")) # True
+`,
+      typescript: `function isValid(s: string): boolean {
+  const stack: string[] = [];
+  const map: Record<string, string> = { ')': '(', '}': '{', ']': '[' };
+  for (const c of s) {
+    if (map[c]) {
+      const top = stack.pop() || '#';
+      if (map[c] !== top) return false;
+    } else {
+      stack.push(c);
+    }
+  }
+  return stack.length === 0;
+}
+
+console.log("Test '()[]{}':", isValid("()[]{}")); // true
+console.log("Test '(]':", isValid("(]")); // false
+`,
+      javascript: `function isValid(s) {
+  const stack = [];
+  const map = { ')': '(', '}': '{', ']': '[' };
+  for (const c of s) {
+    if (map[c]) {
+      const top = stack.pop() || '#';
+      if (map[c] !== top) return false;
+    } else {
+      stack.push(c);
+    }
+  }
+  return stack.length === 0;
+}
+
+console.log("Test '()[]{}':", isValid("()[]{}")); // true
+console.log("Test '(]':", isValid("(]")); // false
+`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static bool IsValid(string s) {
+        Stack<char> stack = new Stack<char>();
+        foreach (char c in s) {
+            if (c == '(') stack.Push(')');
+            else if (c == '{') stack.Push('}');
+            else if (c == '[') stack.Push(']');
+            else if (stack.Count == 0 || stack.Pop() != c) return false;
+        }
+        return stack.Count == 0;
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine("Test '()[]{}': " + IsValid("()[]{}")); // True
+        Console.WriteLine("Test '(]': " + IsValid("(]"));         // False
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'first-unique-character',
+    title: '5. First Non-Repeating Character in a String',
+    difficulty: 'Easy',
+    category: 'Strings & HashMaps',
+    description: `Given a string s, find the first non-repeating character in it and return its index. If it does not exist, return -1.
+
+This problem evaluates character frequency counting and order preservation (e.g. testing unique OTP codes, token generation, or stream logs).`,
+    constraints: [
+      '1 <= s.length <= 10^5',
+      's consists of only lowercase English letters.',
+    ],
+    examples: [
+      {
+        input: 's = "leetcode"',
+        output: '0',
+        explanation: 'The character "l" at index 0 is the first non-repeating character.',
+      },
+      {
+        input: 's = "loveleetcode"',
+        output: '2',
+        explanation: 'Character "v" at index 2 is the first unique character.',
+      },
+      {
+        input: 's = "aabb"',
+        output: '-1',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    // Problem: First Non-Repeating Character
+    public static int firstUniqChar(String s) {
+        Map<Character, Integer> counts = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            counts.put(c, counts.getOrDefault(c, 0) + 1);
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (counts.get(s.charAt(i)) == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Index in 'leetcode': " + firstUniqChar("leetcode"));         // 0
+        System.out.println("Index in 'loveleetcode': " + firstUniqChar("loveleetcode")); // 2
+        System.out.println("Index in 'aabb': " + firstUniqChar("aabb"));                 // -1
+    }
+}
+`,
+      python: `from collections import Counter
+
+def first_uniq_char(s: str) -> int:
+    counts = Counter(s)
+    for i, char in enumerate(s):
+        if counts[char] == 1:
+            return i
+    return -1
+
+if __name__ == "__main__":
+    print("leetcode:", first_uniq_char("leetcode"))         # 0
+    print("loveleetcode:", first_uniq_char("loveleetcode")) # 2
+    print("aabb:", first_uniq_char("aabb"))                 # -1
+`,
+      typescript: `function firstUniqChar(s: string): number {
+  const map = new Map<string, number>();
+  for (const c of s) {
+    map.set(c, (map.get(c) || 0) + 1);
+  }
+  for (let i = 0; i < s.length; i++) {
+    if (map.get(s[i]) === 1) return i;
+  }
+  return -1;
+}
+
+console.log("leetcode:", firstUniqChar("leetcode")); // 0
+console.log("loveleetcode:", firstUniqChar("loveleetcode")); // 2
+`,
+      javascript: `function firstUniqChar(s) {
+  const map = new Map();
+  for (const c of s) {
+    map.set(c, (map.get(c) || 0) + 1);
+  }
+  for (let i = 0; i < s.length; i++) {
+    if (map.get(s[i]) === 1) return i;
+  }
+  return -1;
+}
+
+console.log("leetcode:", firstUniqChar("leetcode")); // 0
+console.log("loveleetcode:", firstUniqChar("loveleetcode")); // 2
+`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static int FirstUniqChar(string s) {
+        Dictionary<char, int> counts = new Dictionary<char, int>();
+        foreach (char c in s) {
+            counts[c] = counts.ContainsKey(c) ? counts[c] + 1 : 1;
+        }
+        for (int i = 0; i < s.Length; i++) {
+            if (counts[s[i]] == 1) return i;
+        }
+        return -1;
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine("leetcode: " + FirstUniqChar("leetcode")); // 0
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'email-regex-validator',
+    title: '6. RegEx Email & Format Validator',
+    difficulty: 'Medium',
+    category: 'RegEx & Data Sanitization',
+    description: `Implement a robust email address format validator using Regular Expressions (RegEx).
+
+A valid email satisfies:
+1. Username contains letters, numbers, dots, underscores, or dashes (cannot start with special character).
+2. Followed by '@'.
+3. Domain name contains letters and dashes.
+4. Top-level domain (TLD) has at least 2 characters (e.g. .com, .io, .org).
+
+In QA automation, validating user input constraints on forms and API payloads is a daily SDET responsibility.`,
+    constraints: [
+      'Email string length between 3 and 254 characters.',
+      'Must reject double dots (..), missing @, and missing TLD.',
+    ],
+    examples: [
+      {
+        input: 'valid.sdet_pro@intelligentqa.io',
+        output: 'true',
+      },
+      {
+        input: 'invalid..user@qa..com',
+        output: 'false',
+      },
+      {
+        input: 'missing-at-sign.com',
+        output: 'false',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.regex.Pattern;
+
+public class Main {
+    // Problem: Email Format Validator using RegEx
+    private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\\\.)+[a-zA-Z]{2,7}$";
+    private static final Pattern PATTERN = Pattern.compile(EMAIL_REGEX);
+
+    public static boolean isValidEmail(String email) {
+        if (email == null) return false;
+        return PATTERN.matcher(email).matches();
+    }
+
+    public static void main(String[] args) {
+        String[] testEmails = {
+            "valid.sdet_pro@intelligentqa.io",
+            "invalid..user@qa..com",
+            "missing-at-sign.com",
+            "tester@domain.co.uk"
+        };
+        for (String email : testEmails) {
+            System.out.println(email + " -> " + isValidEmail(email));
+        }
+    }
+}
+`,
+      python: `import re
+
+EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+
+def is_valid_email(email: str) -> bool:
+    if not email or ".." in email:
+        return False
+    return bool(EMAIL_PATTERN.match(email))
+
+if __name__ == "__main__":
+    emails = [
+        "valid.sdet_pro@intelligentqa.io",
+        "invalid..user@qa..com",
+        "missing-at-sign.com",
+        "tester@domain.co.uk"
+    ]
+    for email in emails:
+        print(f"{email} -> {is_valid_email(email)}")
+`,
+      typescript: `function isValidEmail(email: string): boolean {
+  if (!email || email.includes('..')) return false;
+  const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+  return regex.test(email);
+}
+
+const tests = [
+  "valid.sdet_pro@intelligentqa.io",
+  "invalid..user@qa..com",
+  "missing-at-sign.com"
+];
+tests.forEach(e => console.log(e, "->", isValidEmail(e)));
+`,
+      javascript: `function isValidEmail(email) {
+  if (!email || email.includes('..')) return false;
+  const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+  return regex.test(email);
+}
+
+const tests = [
+  "valid.sdet_pro@intelligentqa.io",
+  "invalid..user@qa..com",
+  "missing-at-sign.com"
+];
+tests.forEach(e => console.log(e, "->", isValidEmail(e)));
+`,
+      csharp: `using System;
+using System.Text.RegularExpressions;
+
+class Program {
+    static readonly Regex EmailRegex = new Regex(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", RegexOptions.Compiled);
+
+    public static bool IsValidEmail(string email) {
+        if (string.IsNullOrEmpty(email) || email.Contains("..")) return false;
+        return EmailRegex.IsMatch(email);
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine("valid.sdet_pro@intelligentqa.io: " + IsValidEmail("valid.sdet_pro@intelligentqa.io"));
+        Console.WriteLine("invalid..user@qa..com: " + IsValidEmail("invalid..user@qa..com"));
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'merge-sorted-arrays',
+    title: '7. Merge Two Sorted Arrays',
+    difficulty: 'Easy',
+    category: 'Arrays & Two Pointers',
+    description: `You are given two integer arrays nums1 and nums2, sorted in non-decreasing order. Merge nums1 and nums2 into a single sorted array.
+
+In automation testing, merging sorted lists is a standard routine when aggregating paginated API responses or verifying sorted UI table columns across multi-page grids.`,
+    constraints: [
+      'nums1 and nums2 are sorted in ascending order.',
+      '0 <= nums1.length, nums2.length <= 10^4',
+    ],
+    examples: [
+      {
+        input: 'nums1 = [1, 2, 4], nums2 = [1, 3, 4]',
+        output: '[1, 1, 2, 3, 4, 4]',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.Arrays;
+
+public class Main {
+    // Problem: Merge Two Sorted Arrays
+    public static int[] mergeSorted(int[] nums1, int[] nums2) {
+        int[] merged = new int[nums1.length + nums2.length];
+        int i = 0, j = 0, k = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] <= nums2[j]) {
+                merged[k++] = nums1[i++];
+            } else {
+                merged[k++] = nums2[j++];
+            }
+        }
+        while (i < nums1.length) merged[k++] = nums1[i++];
+        while (j < nums2.length) merged[k++] = nums2[j++];
+        return merged;
+    }
+
+    public static void main(String[] args) {
+        int[] nums1 = {1, 2, 4};
+        int[] nums2 = {1, 3, 4};
+        int[] result = mergeSorted(nums1, nums2);
+        System.out.println("Merged: " + Arrays.toString(result));
+        // Expected: [1, 1, 2, 3, 4, 4]
+    }
+}
+`,
+      python: `def merge_sorted(nums1: list[int], nums2: list[int]) -> list[int]:
+    merged = []
+    i, j = 0, 0
+    while i < len(nums1) and j < len(nums2):
+        if nums1[i] <= nums2[j]:
+            merged.append(nums1[i])
+            i += 1
+        else:
+            merged.append(nums2[j])
+            j += 1
+    merged.extend(nums1[i:])
+    merged.extend(nums2[j:])
+    return merged
+
+if __name__ == "__main__":
+    nums1 = [1, 2, 4]
+    nums2 = [1, 3, 4]
+    print("Merged:", merge_sorted(nums1, nums2))
+    # Expected: [1, 1, 2, 3, 4, 4]
+`,
+      typescript: `function mergeSorted(nums1: number[], nums2: number[]): number[] {
+  const merged: number[] = [];
+  let i = 0, j = 0;
+  while (i < nums1.length && j < nums2.length) {
+    if (nums1[i] <= nums2[j]) merged.push(nums1[i++]);
+    else merged.push(nums2[j++]);
+  }
+  return [...merged, ...nums1.slice(i), ...nums2.slice(j)];
+}
+
+console.log("Merged:", mergeSorted([1, 2, 4], [1, 3, 4]));
+`,
+      javascript: `function mergeSorted(nums1, nums2) {
+  const merged = [];
+  let i = 0, j = 0;
+  while (i < nums1.length && j < nums2.length) {
+    if (nums1[i] <= nums2[j]) merged.push(nums1[i++]);
+    else merged.push(nums2[j++]);
+  }
+  return [...merged, ...nums1.slice(i), ...nums2.slice(j)];
+}
+
+console.log("Merged:", mergeSorted([1, 2, 4], [1, 3, 4]));
+`,
+      csharp: `using System;
+
+class Program {
+    public static int[] MergeSorted(int[] nums1, int[] nums2) {
+        int[] merged = new int[nums1.Length + nums2.Length];
+        int i = 0, j = 0, k = 0;
+        while (i < nums1.Length && j < nums2.Length) {
+            if (nums1[i] <= nums2[j]) merged[k++] = nums1[i++];
+            else merged[k++] = nums2[j++];
+        }
+        while (i < nums1.Length) merged[k++] = nums1[i++];
+        while (j < nums2.Length) merged[k++] = nums2[j++];
+        return merged;
+    }
+
+    static void Main(string[] args) {
+        int[] res = MergeSorted(new int[]{1, 2, 4}, new int[]{1, 3, 4});
+        Console.WriteLine("Merged: [" + string.Join(", ", res) + "]");
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'group-anagrams',
+    title: '8. Group Anagrams',
+    difficulty: 'Medium',
+    category: 'Strings & HashMaps',
+    description: `Given an array of strings strs, group the anagrams together. You can return the answer in any order.
+
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.`,
+    constraints: [
+      '1 <= strs.length <= 10^4',
+      '0 <= strs[i].length <= 100',
+      'strs[i] consists of lowercase English letters.',
+    ],
+    examples: [
+      {
+        input: 'strs = ["eat", "tea", "tan", "ate", "nat", "bat"]',
+        output: '[["bat"], ["nat", "tan"], ["ate", "eat", "tea"]]',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.*;
+
+public class Main {
+    // Problem: Group Anagrams
+    public static List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+        for (String s : strs) {
+            char[] chars = s.toCharArray();
+            Arrays.sort(chars);
+            String sortedKey = new String(chars);
+            map.computeIfAbsent(sortedKey, k -> new ArrayList<>()).add(s);
+        }
+        return new ArrayList<>(map.values());
+    }
+
+    public static void main(String[] args) {
+        String[] strs = {"eat", "tea", "tan", "ate", "nat", "bat"};
+        System.out.println("Grouped Anagrams: " + groupAnagrams(strs));
+    }
+}
+`,
+      python: `from collections import defaultdict
+
+def group_anagrams(strs: list[str]) -> list[list[str]]:
+    groups = defaultdict(list)
+    for s in strs:
+        sorted_key = "".join(sorted(s))
+        groups[sorted_key].append(s)
+    return list(groups.values())
+
+if __name__ == "__main__":
+    strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+    print("Grouped Anagrams:", group_anagrams(strs))
+`,
+      typescript: `function groupAnagrams(strs: string[]): string[][] {
+  const map = new Map<string, string[]>();
+  for (const s of strs) {
+    const key = s.split('').sort().join('');
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(s);
+  }
+  return Array.from(map.values());
+}
+
+console.log(groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"]));
+`,
+      javascript: `function groupAnagrams(strs) {
+  const map = new Map();
+  for (const s of strs) {
+    const key = s.split('').sort().join('');
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(s);
+  }
+  return Array.from(map.values());
+}
+
+console.log(groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"]));
+`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static List<List<string>> GroupAnagrams(string[] strs) {
+        Dictionary<string, List<string>> map = new Dictionary<string, List<string>>();
+        foreach (string s in strs) {
+            char[] arr = s.ToCharArray();
+            Array.Sort(arr);
+            string key = new string(arr);
+            if (!map.ContainsKey(key)) map[key] = new List<string>();
+            map[key].Add(s);
+        }
+        return new List<List<string>>(map.Values);
+    }
+
+    static void Main(string[] args) {
+        var res = GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
+        foreach (var group in res) {
+            Console.WriteLine("[" + string.Join(", ", group) + "]");
+        }
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'extract-numbers-and-sum',
+    title: '9. Extract Numbers from String & Sum Them',
+    difficulty: 'Easy',
+    category: 'RegEx & String Parsing',
+    description: `Given a dirty string containing mixed text, currency symbols, and numbers (e.g. "Total: $12.50 discount: $2.50 and fee: $5.00"), extract all floating-point numbers and return their sum.
+
+In automated web and e-commerce checkout testing, extracting and calculating monetary values from cart tables and billing summaries is an everyday requirement.`,
+    constraints: [
+      'String contains zero or more positive numeric values (integers or decimals).',
+    ],
+    examples: [
+      {
+        input: 'Item 1: $10.50, Item 2: $20.25, Tax: $1.25',
+        output: '32.0',
+        explanation: '10.50 + 20.25 + 1.25 = 32.0',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Main {
+    // Problem: Extract Numbers & Sum Them
+    public static double sumAmounts(String text) {
+        Pattern pattern = Pattern.compile("\\\\d+(?:\\\\.\\\\d+)?");
+        Matcher matcher = pattern.matcher(text);
+        double total = 0.0;
+        while (matcher.find()) {
+            total += Double.parseDouble(matcher.group());
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        String receipt = "Item 1: $10.50, Item 2: $20.25, Tax: $1.25";
+        System.out.println("Total calculated sum: $" + sumAmounts(receipt));
+        // Expected: 32.0
+    }
+}
+`,
+      python: `import re
+
+def sum_amounts(text: str) -> float:
+    numbers = re.findall(r'\d+(?:\.\d+)?', text)
+    return sum(float(n) for n in numbers)
+
+if __name__ == "__main__":
+    receipt = "Item 1: $10.50, Item 2: $20.25, Tax: $1.25"
+    print("Total calculated: " + str(sum_amounts(receipt))) # 32.00
+`,
+      typescript: `function sumAmounts(text: string): number {
+  const matches = text.match(/\\d+(?:\\.\\d+)?/g);
+  if (!matches) return 0;
+  return matches.reduce((acc, curr) => acc + parseFloat(curr), 0);
+}
+
+const receipt = "Item 1: $10.50, Item 2: $20.25, Tax: $1.25";
+console.log("Total:", sumAmounts(receipt)); // 32
+`,
+      javascript: `function sumAmounts(text) {
+  const matches = text.match(/\\d+(?:\\.\\d+)?/g);
+  if (!matches) return 0;
+  return matches.reduce((acc, curr) => acc + parseFloat(curr), 0);
+}
+
+const receipt = "Item 1: $10.50, Item 2: $20.25, Tax: $1.25";
+console.log("Total:", sumAmounts(receipt)); // 32
+`,
+      csharp: `using System;
+using System.Text.RegularExpressions;
+
+class Program {
+    public static double SumAmounts(string text) {
+        MatchCollection matches = Regex.Matches(text, @"\d+(?:\.\d+)?");
+        double sum = 0.0;
+        foreach (Match m in matches) {
+            sum += double.Parse(m.Value);
+        }
+        return sum;
+    }
+
+    static void Main(string[] args) {
+        string receipt = "Item 1: $10.50, Item 2: $20.25, Tax: $1.25";
+        Console.WriteLine("Total: $" + SumAmounts(receipt));
+    }
+}
+`,
+    },
+  },
+  {
+    id: 'longest-common-prefix',
+    title: '10. Longest Common Prefix',
+    difficulty: 'Easy',
+    category: 'Strings & Algorithms',
+    description: `Write a function to find the longest common prefix string amongst an array of strings.
+
+If there is no common prefix, return an empty string "".
+
+In SDET test suites, this is used to identify common test class namespaces, REST endpoint route groups, and element ID prefixes.`,
+    constraints: [
+      '1 <= strs.length <= 200',
+      '0 <= strs[i].length <= 200',
+      'strs[i] consists of only lowercase English letters.',
+    ],
+    examples: [
+      {
+        input: 'strs = ["flower", "flow", "flight"]',
+        output: '"fl"',
+      },
+      {
+        input: 'strs = ["dog", "racecar", "car"]',
+        output: '""',
+        explanation: 'There is no common prefix among the input strings.',
+      },
+    ],
+    starterTemplates: {
+      java: `public class Main {
+    // Problem: Longest Common Prefix
+    public static String longestCommonPrefix(String[] strs) {
+        if (strs == null || strs.length == 0) return "";
+        String prefix = strs[0];
+        for (int i = 1; i < strs.length; i++) {
+            while (strs[i].indexOf(prefix) != 0) {
+                prefix = prefix.substring(0, prefix.length() - 1);
+                if (prefix.isEmpty()) return "";
+            }
+        }
+        return prefix;
+    }
+
+    public static void main(String[] args) {
+        String[] test1 = {"flower", "flow", "flight"};
+        String[] test2 = {"dog", "racecar", "car"};
+        System.out.println("Common Prefix (Test 1): \"" + longestCommonPrefix(test1) + "\""); // "fl"
+        System.out.println("Common Prefix (Test 2): \"" + longestCommonPrefix(test2) + "\""); // ""
+    }
+}
+`,
+      python: `def longest_common_prefix(strs: list[str]) -> str:
+    if not strs:
+        return ""
+    prefix = strs[0]
+    for s in strs[1:]:
+        while not s.startswith(prefix):
+            prefix = prefix[:-1]
+            if not prefix:
+                return ""
+    return prefix
+
+if __name__ == "__main__":
+    print('Test 1:', longest_common_prefix(["flower", "flow", "flight"])) # "fl"
+    print('Test 2:', longest_common_prefix(["dog", "racecar", "car"]))     # ""
+`,
+      typescript: `function longestCommonPrefix(strs: string[]): string {
+  if (!strs.length) return "";
+  let prefix = strs[0];
+  for (let i = 1; i < strs.length; i++) {
+    while (!strs[i].startsWith(prefix)) {
+      prefix = prefix.slice(0, -1);
+      if (!prefix) return "";
+    }
+  }
+  return prefix;
+}
+
+console.log("Test 1:", longestCommonPrefix(["flower", "flow", "flight"])); // "fl"
+`,
+      javascript: `function longestCommonPrefix(strs) {
+  if (!strs.length) return "";
+  let prefix = strs[0];
+  for (let i = 1; i < strs.length; i++) {
+    while (!strs[i].startsWith(prefix)) {
+      prefix = prefix.slice(0, -1);
+      if (!prefix) return "";
+    }
+  }
+  return prefix;
+}
+
+console.log("Test 1:", longestCommonPrefix(["flower", "flow", "flight"])); // "fl"
+`,
+      csharp: `using System;
+
+class Program {
+    public static string LongestCommonPrefix(string[] strs) {
+        if (strs == null || strs.Length == 0) return "";
+        string prefix = strs[0];
+        for (int i = 1; i < strs.Length; i++) {
+            while (!strs[i].StartsWith(prefix)) {
+                prefix = prefix.Substring(0, prefix.Length - 1);
+                if (prefix == "") return "";
+            }
+        }
+        return prefix;
+    }
+
+    static void Main(string[] args) {
+        Console.WriteLine("Prefix: " + LongestCommonPrefix(new string[] { "flower", "flow", "flight" })); // "fl"
+    }
+}
+`,
+    },
+  },
+];
+
+const LOCAL_STORAGE_KEY = 'sdet_custom_coding_problems';
+
+export function getStoredCustomProblems(): CodingProblem[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.error('Failed to parse custom coding problems from localStorage', e);
+    return [];
+  }
+}
+
+export function saveCustomProblem(problem: Omit<CodingProblem, 'id'>): CodingProblem {
+  const existing = getStoredCustomProblems();
+  const newProblem: CodingProblem = {
+    ...problem,
+    id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    isCustom: true,
+  };
+  const updated = [newProblem, ...existing];
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save problem to localStorage', e);
+  }
+  return newProblem;
+}
+
+export function deleteCustomProblem(id: string): void {
+  const existing = getStoredCustomProblems();
+  const updated = existing.filter(p => p.id !== id);
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to delete problem from localStorage', e);
+  }
+}
+
+export function getAllProblems(): CodingProblem[] {
+  const custom = getStoredCustomProblems();
+  return [...custom, ...DEFAULT_CODING_PROBLEMS];
+}
+
+export function parseImportedProblems(content: string): { problems: CodingProblem[]; error?: string } {
+  const trimmed = content.trim();
+  if (!trimmed) {
+    return { problems: [], error: 'Input is empty.' };
+  }
+
+  // 1. Try JSON
+  if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      const items = Array.isArray(parsed) ? parsed : [parsed];
+      const valid: CodingProblem[] = [];
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (!item.title) continue;
+        valid.push({
+          id: `imported-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 6)}`,
+          title: String(item.title),
+          difficulty: (['Easy', 'Medium', 'Hard'].includes(item.difficulty) ? item.difficulty : 'Medium') as any,
+          category: item.category || 'General Coding',
+          description: item.description || 'Problem statement not specified.',
+          constraints: Array.isArray(item.constraints) ? item.constraints : [],
+          examples: Array.isArray(item.examples) ? item.examples : [],
+          starterTemplates: item.starterTemplates || {
+            java: `public class Main {\n    public static void main(String[] args) {\n        // ${item.title}\n        System.out.println("Solve: ${item.title}");\n    }\n}`,
+            python: `# ${item.title}\ndef solve():\n    pass\n\nif __name__ == "__main__":\n    print("Solve: ${item.title}")`,
+            typescript: `// ${item.title}\nconsole.log("Solve: ${item.title}");`,
+            javascript: `// ${item.title}\nconsole.log("Solve: ${item.title}");`,
+            csharp: `using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Solve: ${item.title}");\n    }\n}`,
+          },
+          isCustom: true,
+        });
+      }
+
+      if (valid.length === 0) {
+        return { problems: [], error: 'No valid questions found in JSON. Expected objects with "title" and "description".' };
+      }
+
+      // Save to localStorage
+      const existing = getStoredCustomProblems();
+      const updated = [...valid, ...existing];
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+
+      return { problems: valid };
+    } catch (err: any) {
+      return { problems: [], error: `Invalid JSON syntax: ${err.message}` };
+    }
+  }
+
+  // 2. Try CSV (Header: Title, Difficulty, Category, Description)
+  try {
+    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) return { problems: [], error: 'CSV file is empty.' };
+
+    const valid: CodingProblem[] = [];
+    const startIndex = lines[0].toLowerCase().includes('title') ? 1 : 0;
+
+    for (let i = startIndex; i < lines.length; i++) {
+      const line = lines[i];
+      // Simple CSV split (handling commas within quotes or plain commas)
+      const parts = line.split(',').map(s => s.replace(/^["']|["']$/g, '').trim());
+      if (parts.length >= 1 && parts[0]) {
+        const title = parts[0];
+        const difficulty = (parts[1] && ['Easy', 'Medium', 'Hard'].includes(parts[1]) ? parts[1] : 'Easy') as any;
+        const category = parts[2] || 'Imported';
+        const description = parts[3] || title;
+
+        valid.push({
+          id: `imported-csv-${Date.now()}-${i}`,
+          title,
+          difficulty,
+          category,
+          description,
+          examples: [],
+          starterTemplates: {
+            java: `public class Main {\n    public static void main(String[] args) {\n        // Problem: ${title}\n        System.out.println("Hello from ${title}");\n    }\n}`,
+            python: `# Problem: ${title}\ndef solve():\n    pass\n\nif __name__ == "__main__":\n    print("${title}")`,
+            typescript: `// Problem: ${title}\nconsole.log("${title}");`,
+            javascript: `// Problem: ${title}\nconsole.log("${title}");`,
+            csharp: `using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("${title}");\n    }\n}`,
+          },
+          isCustom: true,
+        });
+      }
+    }
+
+    if (valid.length === 0) {
+      return { problems: [], error: 'Could not extract valid questions from CSV.' };
+    }
+
+    const existing = getStoredCustomProblems();
+    const updated = [...valid, ...existing];
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+
+    return { problems: valid };
+  } catch (e: any) {
+    return { problems: [], error: `CSV parsing failed: ${e.message}` };
+  }
+}
