@@ -33,10 +33,10 @@ test('Request 2: Fonts are standardized and consistent across parent and child i
   assert.ok(sidebarFile.includes('navItemClass(isAiToolsActive)'), 'AI Tools parent uses navItemClass');
   assert.ok(sidebarFile.includes('navItemClass(isInterviewActive)'), 'Interview Bank parent uses navItemClass');
 
-  // Child items have clean typography
+  // Child items have clean typography & 5. Online Compilers
   assert.ok(sidebarFile.includes('Web Automation Lab'), 'Renders readable subtext');
   assert.ok(sidebarFile.includes('API Testing Lab'), 'Renders readable subtext');
-  assert.ok(sidebarFile.includes('Compiler &amp; Runner'), 'Renders readable subtext');
+  assert.ok(sidebarFile.includes('5. Online Compilers'), 'Renamed 5. Hands-On Coding Lab to 5. Online Compilers');
 });
 
 test('Coding Problems Library & Dedicated Catalog & Solver Features', () => {
@@ -52,12 +52,14 @@ test('Coding Problems Library & Dedicated Catalog & Solver Features', () => {
   assert.ok(codingProblemsFile.includes('saveCustomProblem'), 'Provides saveCustomProblem helper');
   assert.ok(codingProblemsFile.includes('parseImportedProblems'), 'Provides parseImportedProblems helper');
 
-  // Request 10 #1 & #2: Freeform Compiler kept clean with output below compiler
-  assert.ok(codePageFile.includes('Online Code Compiler'), 'Renders pure online compiler header');
-  assert.ok(codePageFile.includes('/sandbox/code/problems'), 'Links to Coding Library');
-  assert.ok(codePageFile.includes('Output / Result'), 'Renders Output / Result');
+  // Online Compilers (freeform): Output on right, resizable, clear & external links removed
+  assert.ok(codePageFile.includes('Online Compilers'), 'Renders Online Compilers header');
+  assert.ok(!codePageFile.includes('1. Selenium Lab'), 'External Selenium links removed');
+  assert.ok(!codePageFile.includes('title="Clear terminal output"'), 'Clear button removed');
+  assert.ok(codePageFile.includes('cursor-col-resize'), 'Has resizable handle between compiler and output');
+  assert.ok(codePageFile.includes('Output / Result'), 'Renders Output / Result on right');
 
-  // Request 10 #3 & #4: Coding Library Catalog page
+  // Coding Library Catalog page
   assert.ok(problemsCatalogFile.includes('Coding Problem Library'), 'Has library header');
   assert.ok(problemsCatalogFile.includes('Add Problem'), 'Has Add Problem button');
   assert.ok(problemsCatalogFile.includes('Import / Upload'), 'Has Import / Upload button');
@@ -66,13 +68,15 @@ test('Coding Problems Library & Dedicated Catalog & Solver Features', () => {
   assert.ok(problemsCatalogFile.includes('showAddModal'), 'Has Add Problem modal');
   assert.ok(problemsCatalogFile.includes('showImportModal'), 'Has Import modal');
 
-  // Problem Solver layout & features
+  // Problem Solver layout & features: Resizable Description, Compiler, and Output
   assert.ok(problemSolverFile.includes('Description'), 'Renders Description on left (renamed from Problem Statement)');
   assert.ok(problemSolverFile.includes('Solutions'), 'Has Solutions button beside Description');
   assert.ok(problemSolverFile.includes('handleLoadSolution'), 'Loads and pastes solution code into compiler');
   assert.ok(problemSolverFile.includes('DEFAULT_COMPILER_CODE'), 'Initializes with normal compiler starter code');
   assert.ok(problemSolverFile.includes('handleReset'), 'Resets code back to normal compiler starter template');
   assert.ok(!problemSolverFile.includes('title="Clear terminal output"'), 'Clear button is removed');
+  assert.ok(problemSolverFile.includes('cursor-col-resize'), 'Description section is resizable horizontally');
+  assert.ok(problemSolverFile.includes('cursor-row-resize'), 'Compiler and Output sections are resizable vertically');
   assert.ok(problemSolverFile.includes('handleRunCode'), 'Renders compiler on right');
   assert.ok(problemSolverFile.includes('Output / Result'), 'Renders output below compiler');
 });

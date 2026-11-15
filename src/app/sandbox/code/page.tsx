@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import Link from 'next/link';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Play,
   RotateCcw,
@@ -12,9 +11,7 @@ import {
   Laptop,
   CheckCircle2,
   AlertCircle,
-  Trash2,
   ChevronDown,
-  BookOpen,
 } from 'lucide-react';
 
 export type SupportedLang = 'java' | 'python' | 'typescript' | 'javascript' | 'csharp';
@@ -111,8 +108,46 @@ export default function OnlineCompilerPage() {
   } | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [resetFeedback, setResetFeedback] = useState<boolean>(false);
+  const [editorWidthPct, setEditorWidthPct] = useState<number>(55);
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(true);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  const startResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const currentX = moveEvent.clientX - rect.left;
+      const pct = (currentX / rect.width) * 100;
+      const clamped = Math.min(Math.max(pct, 25), 75);
+      setEditorWidthPct(clamped);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
 
   // Switch Language
   const handleLanguageChange = (newLang: SupportedLang) => {
@@ -239,7 +274,7 @@ export default function OnlineCompilerPage() {
             </div>
             <div>
               <h1 className="text-base md:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                Online Code Compiler
+                Online Compilers
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   {LANG_LABELS[language]}
                 </span>
@@ -248,35 +283,6 @@ export default function OnlineCompilerPage() {
                 Write, compile, and execute Java, Python, TypeScript, JavaScript, and C# programs online.
               </p>
             </div>
-          </div>
-
-          {/* Quick Links: Problem Library & Practice Labs */}
-          <div className="flex items-center gap-2 text-xs">
-            <Link
-              href="/sandbox/code/problems"
-              className="text-emerald-300 hover:text-white px-2.5 py-1 rounded bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-700/60 font-semibold transition flex items-center gap-1.5"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Coding Library (10+ Problems)</span>
-            </Link>
-            <Link
-              href="/sandbox/web"
-              className="text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 transition"
-            >
-              1. Selenium Lab
-            </Link>
-            <Link
-              href="/sandbox/web?mode=playwright"
-              className="text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 transition"
-            >
-              2. Playwright Lab
-            </Link>
-            <Link
-              href="/sandbox/api"
-              className="text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 transition"
-            >
-              3. API Lab
-            </Link>
           </div>
         </div>
       </div>
@@ -306,7 +312,7 @@ export default function OnlineCompilerPage() {
             </div>
           </div>
 
-          {/* Action Buttons: Run, Reset, Clear, Copy, Stdin */}
+          {/* Action Buttons: Run, Reset, Copy, Stdin (Clear button removed) */}
           <div className="flex items-center gap-2">
             {/* Run Button (Green prominent) */}
             <button
@@ -342,17 +348,6 @@ export default function OnlineCompilerPage() {
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
-            </button>
-
-            {/* Clear Console Output */}
-            <button
-              type="button"
-              onClick={handleClearTerminal}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
-              title="Clear terminal output"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Clear</span>
             </button>
 
             {/* Copy Code */}
@@ -391,12 +386,18 @@ export default function OnlineCompilerPage() {
         )}
       </div>
 
-      {/* Main Workspace Layout: Top = Compiler Editor, Bottom = Output Terminal (Below Compiler) */}
-      <div className="flex-1 flex flex-col overflow-hidden max-w-7xl w-full mx-auto p-3 md:p-4 gap-4">
-        {/* TOP: Code Editor (Compiler Section) */}
-        <div className="flex-[3] min-h-[380px] flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      {/* Main Workspace Layout: Side-by-Side Resizable (Compiler Left, Output Right) */}
+      <div
+        ref={containerRef}
+        className="flex-1 flex flex-col md:flex-row overflow-hidden max-w-7xl w-full mx-auto p-3 md:p-4 gap-2 h-[calc(100vh-140px)] min-h-[580px]"
+      >
+        {/* LEFT: Code Editor (Compiler Section) */}
+        <div
+          style={isDesktop ? { width: `${editorWidthPct}%` } : undefined}
+          className="flex-1 md:flex-none flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-w-[280px] h-full"
+        >
           {/* Editor File Tab Header */}
-          <div className="px-4 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+          <div className="px-4 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2 px-3 py-1 rounded-t-lg bg-slate-950 border-t-2 border-emerald-500 text-xs font-mono font-semibold text-white">
                 <FileCode className="w-3.5 h-3.5 text-emerald-400" />
@@ -411,7 +412,7 @@ export default function OnlineCompilerPage() {
 
           {/* Optional Stdin Area */}
           {showStdin && (
-            <div className="p-3 bg-slate-950/90 border-b border-slate-800">
+            <div className="p-3 bg-slate-950/90 border-b border-slate-800 shrink-0">
               <label className="block text-[11px] font-semibold text-slate-400 mb-1">
                 Standard Input (stdin):
               </label>
@@ -426,9 +427,9 @@ export default function OnlineCompilerPage() {
           )}
 
           {/* Textarea Editor with Line Numbers */}
-          <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs relative min-h-[260px]">
+          <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs relative min-h-0">
             {/* Line Numbers */}
-            <div className="py-4 px-3 bg-slate-900/60 text-slate-600 text-right select-none border-r border-slate-800/80 shrink-0">
+            <div className="py-4 px-3 bg-slate-900/60 text-slate-600 text-right select-none border-r border-slate-800/80 shrink-0 overflow-hidden">
               {lineNumbers.map((num) => (
                 <div key={num} className="leading-6">
                   {num}
@@ -449,7 +450,7 @@ export default function OnlineCompilerPage() {
           </div>
 
           {/* Editor Status Footer */}
-          <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+          <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between shrink-0">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
               Runtime: <strong className="text-slate-300">{LANG_LABELS[language]}</strong>
@@ -458,10 +459,22 @@ export default function OnlineCompilerPage() {
           </div>
         </div>
 
-        {/* BOTTOM: Output Terminal (Directly Below Compiler Section) */}
-        <div className="flex-[2] min-h-[220px] max-h-[360px] flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        {/* Resizer Handle between Compiler and Output */}
+        <div
+          onMouseDown={startResizing}
+          className="hidden md:flex w-2.5 items-center justify-center cursor-col-resize group shrink-0 select-none py-4"
+          title="Drag left/right to resize Compiler and Output"
+        >
+          <div className={`w-1 h-20 rounded-full transition-colors ${isResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`} />
+        </div>
+
+        {/* RIGHT: Output Terminal */}
+        <div
+          style={isDesktop ? { width: `calc(${100 - editorWidthPct}% - 0.625rem)` } : undefined}
+          className="flex-1 md:flex-none flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-w-[260px] h-full"
+        >
           {/* Terminal Header */}
-          <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <Terminal className="w-4 h-4 text-emerald-400" />
               <span className="text-xs font-bold text-white tracking-wide">Output / Result</span>
@@ -480,14 +493,6 @@ export default function OnlineCompilerPage() {
                   {executionStats.durationMs !== undefined && ` (${executionStats.durationMs}ms)`}
                 </span>
               )}
-
-              <button
-                type="button"
-                onClick={handleClearTerminal}
-                className="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 transition"
-              >
-                Clear
-              </button>
             </div>
           </div>
 
@@ -528,7 +533,7 @@ export default function OnlineCompilerPage() {
           </div>
 
           {/* Terminal Footer Specs */}
-          <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+          <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between shrink-0">
             <span className="text-slate-500">Compiler / Runtime:</span>
             <span className="text-slate-300 font-mono text-[11px]">
               {language === 'java' && 'OpenJDK 17 / JVM'}

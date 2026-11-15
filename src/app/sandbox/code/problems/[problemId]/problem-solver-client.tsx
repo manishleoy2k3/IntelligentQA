@@ -92,7 +92,79 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
   const [copied, setCopied] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
+  // Resizing state
+  const [descriptionWidthPct, setDescriptionWidthPct] = useState<number>(40);
+  const [compilerHeightPct, setCompilerHeightPct] = useState<number>(62);
+  const [isHResizing, setIsHResizing] = useState<boolean>(false);
+  const [isVResizing, setIsVResizing] = useState<boolean>(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(true);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+  const rightColumnRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  // Horizontal resizer (Description vs Compiler+Output)
+  const startHResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsHResizing(true);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!mainContainerRef.current) return;
+      const rect = mainContainerRef.current.getBoundingClientRect();
+      const currentX = moveEvent.clientX - rect.left;
+      const pct = (currentX / rect.width) * 100;
+      const clamped = Math.min(Math.max(pct, 20), 70);
+      setDescriptionWidthPct(clamped);
+    };
+
+    const handleMouseUp = () => {
+      setIsHResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Vertical resizer (Compiler vs Output in right column)
+  const startVResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsVResizing(true);
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!rightColumnRef.current) return;
+      const rect = rightColumnRef.current.getBoundingClientRect();
+      const currentY = moveEvent.clientY - rect.top;
+      const pct = (currentY / rect.height) * 100;
+      const clamped = Math.min(Math.max(pct, 25), 80);
+      setCompilerHeightPct(clamped);
+    };
+
+    const handleMouseUp = () => {
+      setIsVResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
 
   // Load problems and initialize with normal compiler starter code
   useEffect(() => {
@@ -311,12 +383,18 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
         </div>
       </div>
 
-      {/* Main 2-Column Split View: Problem Statements on Left, Compiler & Output on Right */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden max-w-7xl w-full mx-auto p-3 md:p-4 gap-4">
+      {/* Main 2-Column Split View: Description on Left, Compiler & Output on Right (Resizable) */}
+      <div
+        ref={mainContainerRef}
+        className="flex-1 flex flex-col lg:flex-row overflow-hidden max-w-7xl w-full mx-auto p-3 md:p-4 gap-2 h-[calc(100vh-125px)] min-h-[600px]"
+      >
         {/* LEFT COLUMN: Description & Examples */}
-        <div className="w-full lg:w-[45%] xl:w-[42%] flex flex-col bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
+        <div
+          style={isDesktop ? { width: `${descriptionWidthPct}%` } : undefined}
+          className="w-full lg:w-auto flex flex-col bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shrink-0 h-full min-w-[280px]"
+        >
           {/* Header */}
-          <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-white font-bold text-xs border border-slate-700">
                 <BookOpen className="w-3.5 h-3.5 text-blue-400" />
@@ -418,10 +496,26 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
           </div>
         </div>
 
+        {/* Resizer Handle between Description and Right Column */}
+        <div
+          onMouseDown={startHResizing}
+          className="hidden lg:flex w-2.5 items-center justify-center cursor-col-resize group shrink-0 select-none py-4"
+          title="Drag left/right to resize Description and Compiler"
+        >
+          <div className={`w-1 h-20 rounded-full transition-colors ${isHResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`} />
+        </div>
+
         {/* RIGHT COLUMN: Compiler Section (Top) + Output / Result Section (Directly Below Compiler) */}
-        <div className="flex-1 flex flex-col gap-4 min-w-0">
+        <div
+          ref={rightColumnRef}
+          style={isDesktop ? { width: `calc(${100 - descriptionWidthPct}% - 0.625rem)` } : undefined}
+          className="flex-1 flex flex-col gap-2 min-w-0 h-full overflow-hidden"
+        >
           {/* COMPILER SECTION */}
-          <div className="flex-1 flex flex-col min-w-0 bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-h-[360px]">
+          <div
+            style={isDesktop ? { height: `${compilerHeightPct}%` } : undefined}
+            className="flex flex-col min-w-0 bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-h-[220px] shrink-0"
+          >
             {/* Action Bar: Language Selector + Run / Reset Buttons */}
             <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
@@ -567,10 +661,22 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
             </div>
           </div>
 
+          {/* Resizer Handle between Compiler and Output */}
+          <div
+            onMouseDown={startVResizing}
+            className="h-2.5 flex items-center justify-center cursor-row-resize group shrink-0 select-none px-4"
+            title="Drag up/down to resize Compiler and Output"
+          >
+            <div className={`h-1 w-20 rounded-full transition-colors ${isVResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`} />
+          </div>
+
           {/* OUTPUT / RESULT SECTION (POSITIONED DIRECTLY BELOW COMPILER) */}
-          <div className="min-h-[190px] max-h-[300px] flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
+          <div
+            style={isDesktop ? { height: `calc(${100 - compilerHeightPct}% - 0.625rem)` } : undefined}
+            className="flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-h-[140px] shrink-0"
+          >
             {/* Header */}
-            <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+            <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-emerald-400" />
                 <span className="text-xs font-bold text-white tracking-wide">Output / Result</span>

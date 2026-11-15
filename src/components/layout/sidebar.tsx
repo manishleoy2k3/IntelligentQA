@@ -534,18 +534,18 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </span>
               </Link>
 
-              {/* 5. Hands-On Coding Lab */}
+              {/* 5. Online Compilers */}
               <Link
                 href="/sandbox/code"
                 onClick={onCloseMobile}
                 className={childItemClass(pathname === '/sandbox/code')}
-                title="Hands-On Coding Lab: Multi-Language Compiler & Runner (Java, Python, TypeScript)"
+                title="Online Compilers: Multi-Language Compiler & Runner (Java, Python, TypeScript, JS, C#)"
               >
                 <div className="flex items-center gap-2 truncate">
                   <Laptop className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">5. Hands-On Coding Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Compiler &amp; Runner</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">5. Online Compilers</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Java, Python, TS, JS, C#</span>
                   </div>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded shrink-0">

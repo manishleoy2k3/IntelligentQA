@@ -266,7 +266,7 @@ function CodingProblemsCatalogContent() {
               <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
                 <Link href="/dashboard" className="hover:text-white transition">Dashboard</Link>
                 <span>/</span>
-                <Link href="/sandbox/code" className="hover:text-white transition">Hands-On Coding Lab</Link>
+                <Link href="/sandbox/code" className="hover:text-white transition">Online Compilers</Link>
                 <span>/</span>
                 <span className="text-emerald-400 font-semibold">Coding Library</span>
               </div>
