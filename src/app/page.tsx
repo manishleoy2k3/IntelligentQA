@@ -36,14 +36,24 @@ export default function HomePage() {
       const user = QADatabase.getCurrentUser();
       setCurrentUser(user);
       if (user) {
-        router.replace('/dashboard');
+        const portal = QADatabase.getPortalMode();
+        if (portal === 'kids') {
+          router.replace('/kids');
+        } else {
+          router.replace('/dashboard');
+        }
       }
 
       const handleAuth = () => {
         const u = QADatabase.getCurrentUser();
         setCurrentUser(u);
         if (u) {
-          router.replace('/dashboard');
+          const portal = QADatabase.getPortalMode();
+          if (portal === 'kids') {
+            router.replace('/kids');
+          } else {
+            router.replace('/dashboard');
+          }
         }
       };
 
@@ -138,6 +148,9 @@ export default function HomePage() {
         <div className="pt-2 max-w-md mx-auto">
           <Link
             href="/kids"
+            onClick={() => {
+              QADatabase.setPortalMode('kids');
+            }}
             className="w-full py-3.5 px-6 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-extrabold rounded-2xl text-sm sm:text-base transition-all shadow-md hover:shadow-orange-500/25 hover:scale-[1.02] active:scale-95 flex items-center justify-between group border border-white/20"
           >
             <div className="flex items-center gap-3">

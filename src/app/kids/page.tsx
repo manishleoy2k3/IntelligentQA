@@ -101,6 +101,7 @@ export default function KidsCodingPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      QADatabase.setPortalMode('kids');
       const user = QADatabase.getCurrentUser();
       setCurrentUser(user);
       setHasGeminiKey(Boolean(QADatabase.getUserGeminiKey(user?.id)));

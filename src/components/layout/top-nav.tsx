@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { QADatabase, getInitials } from '@/lib/qa-db';
 import ProfileModal from '@/components/profile/profile-modal';
 import { UserProfile } from '@/types/qa';
@@ -23,11 +24,13 @@ interface TopNavProps {
 }
 
 export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
+  const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [hasGeminiKey, setHasGeminiKey] = useState<boolean>(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [portalMode, setPortalMode] = useState<'sdet' | 'kids'>('sdet');
 
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -38,6 +41,12 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
       setCurrentUser(user);
       setHasGeminiKey(Boolean(QADatabase.getUserGeminiKey(user?.id)));
 
+      if (pathname?.startsWith('/kids')) {
+        setPortalMode('kids');
+      } else {
+        setPortalMode(QADatabase.getPortalMode());
+      }
+
       const handleAuth = () => {
         const u = QADatabase.getCurrentUser();
         setCurrentUser(u);
@@ -47,15 +56,21 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         const u = QADatabase.getCurrentUser();
         setHasGeminiKey(Boolean(QADatabase.getUserGeminiKey(u?.id)));
       };
+      const handlePortal = (e: any) => {
+        if (e.detail?.mode) setPortalMode(e.detail.mode);
+        else setPortalMode(QADatabase.getPortalMode());
+      };
 
       window.addEventListener('intelligentqa_auth_changed', handleAuth);
       window.addEventListener('intelligentqa_key_changed', handleKey);
+      window.addEventListener('intelligentqa_portal_changed', handlePortal);
       return () => {
         window.removeEventListener('intelligentqa_auth_changed', handleAuth);
         window.removeEventListener('intelligentqa_key_changed', handleKey);
+        window.removeEventListener('intelligentqa_portal_changed', handlePortal);
       };
     }
-  }, []);
+  }, [pathname]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -109,8 +124,8 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
   return (
     <header className="w-full h-14 bg-white/95 dark:bg-[#0B0D11]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-neutral-800/80 px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans">
-      {/* Left: Mobile Sidebar Toggle */}
-      <div className="flex items-center gap-2">
+      {/* Left: Mobile Sidebar Toggle & Active Portal Pill */}
+      <div className="flex items-center gap-2.5">
         <button
           type="button"
           onClick={onToggleMobileSidebar}
@@ -119,6 +134,18 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         >
           <Menu className="w-5 h-5" />
         </button>
+
+        {portalMode === 'kids' ? (
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Kids Coding Portal (10–14)</span>
+          </span>
+        ) : (
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+            <Layers className="w-3.5 h-3.5 text-emerald-500" />
+            <span>SDET Career Portal</span>
+          </span>
+        )}
       </div>
 
       {/* Right Corner: "Ask SDET AI", Notifications and Profiles */}
@@ -224,13 +251,52 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                   </button>
 
                   <Link
-                    href="/dashboard"
+                    href={portalMode === 'kids' ? '/kids' : '/dashboard'}
                     onClick={() => setProfileMenuOpen(false)}
                     className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors"
                   >
                     <Layers className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span>Learning Dashboard</span>
+                    <span>{portalMode === 'kids' ? 'Kids Missions Hub' : 'Learning Dashboard'}</span>
                   </Link>
+
+                  {/* Portal Switcher */}
+                  {portalMode === 'kids' ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        QADatabase.setPortalMode('sdet');
+                        setProfileMenuOpen(false);
+                        window.location.href = '/dashboard';
+                      }}
+                      className="w-full px-3 py-2 text-left rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold flex items-center justify-between transition-colors cursor-pointer text-xs border border-emerald-200/50 dark:border-emerald-900/50"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <span>Switch to SDET Professional</span>
+                      </div>
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">
+                        SDET
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        QADatabase.setPortalMode('kids');
+                        setProfileMenuOpen(false);
+                        window.location.href = '/kids';
+                      }}
+                      className="w-full px-3 py-2 text-left rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold flex items-center justify-between transition-colors cursor-pointer text-xs border border-amber-200/50 dark:border-amber-900/50"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                        <span>Switch to Kids Coding (10–14)</span>
+                      </div>
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-600 dark:text-amber-300">
+                        Kids
+                      </span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Log Out */}

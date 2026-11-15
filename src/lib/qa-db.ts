@@ -189,6 +189,27 @@ export const QADatabase = {
     return null;
   },
 
+  // Active Portal Mode (Separates SDET Professional & Kids Coding experiences)
+  getPortalMode(): 'sdet' | 'kids' {
+    if (!isBrowser()) return 'sdet';
+    try {
+      const mode = window.localStorage.getItem('intelligentqa_active_portal');
+      return mode === 'kids' ? 'kids' : 'sdet';
+    } catch {
+      return 'sdet';
+    }
+  },
+
+  setPortalMode(mode: 'sdet' | 'kids'): void {
+    if (!isBrowser()) return;
+    try {
+      window.localStorage.setItem('intelligentqa_active_portal', mode);
+      window.dispatchEvent(new CustomEvent('intelligentqa_portal_changed', { detail: { mode } }));
+    } catch (err) {
+      console.warn('Failed to persist portal mode:', err);
+    }
+  },
+
   // OTP Management (AscentWealth Style Flow)
   generateOtp(email: string): string {
     const cleanEmail = email.trim().toLowerCase();

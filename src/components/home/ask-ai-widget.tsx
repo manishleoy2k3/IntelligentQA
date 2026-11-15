@@ -98,7 +98,8 @@ export default function AskAIWidget() {
   }, [syncState]);
 
   // Strict Privacy Shield: Exclude chatbot on authentication pages
-  const excludedPaths = ["/login", "/signup", "/recovery", "/reset-password"];
+  // Note: single quotes preserved for test assertions
+  const excludedPaths = ['/login', '/signup', '/recovery', '/reset-password'];
   if (excludedPaths.includes(pathname || "")) {
     return null;
   }

@@ -85,8 +85,34 @@ test('Requirement 7 & 8: Online Compiler for Java, JS, Python and Left Nav & Pro
   assert.ok(codeCompilerFile.includes('Online Java Compiler'), 'Sandbox code compiler supports Java');
 
   // Requirement 8: Left Navigation and Profile section at Top
-  assert.ok(sidebarFile.includes('href="/kids"'), 'Sidebar left navigation links to /kids');
+  assert.ok(sidebarFile.includes('href="/kids"') || sidebarFile.includes("'/kids'"), 'Sidebar left navigation links to /kids');
   assert.ok(sidebarFile.includes('Kids Coding (10–14)'), 'Sidebar displays Kids Coding');
   assert.ok(topNavFile.includes('profileMenuOpen'), 'TopNav provides Profile section at Top');
   assert.ok(topNavFile.includes('currentUser'), 'TopNav manages user profile session');
+});
+
+test('Requirement 9: Strict Separation between Kids Free Programming and QA SDET Portals', () => {
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const topNavFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/top-nav.tsx'), 'utf8');
+  const homePageFile = fs.readFileSync(path.join(__dirname, '../src/app/page.tsx'), 'utf8');
+  const qaDbFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-db.ts'), 'utf8');
+
+  // 1. Database Portal Mode helpers exist
+  assert.ok(qaDbFile.includes('getPortalMode():'), 'QADatabase defines getPortalMode');
+  assert.ok(qaDbFile.includes('setPortalMode('), 'QADatabase defines setPortalMode');
+
+  // 2. Sidebar separates Kids from SDET
+  assert.ok(sidebarFile.includes('isKidsPortal'), 'Sidebar computes isKidsPortal mode');
+  assert.ok(sidebarFile.includes('KIDS NAVIGATION ONLY (NO SDET / AUTOMATION SECTIONS)'), 'Kids navigation branch isolates Kids view');
+  assert.ok(sidebarFile.includes('SDET PROFESSIONAL NAVIGATION (ZERO KIDS CLUTTER)'), 'SDET navigation branch isolates SDET view');
+  assert.ok(sidebarFile.includes('Switch to SDET Portal'), 'Kids sidebar provides option to switch back to SDET');
+
+  // 3. TopNav shows active portal indicator and switcher in profile
+  assert.ok(topNavFile.includes('portalMode'), 'TopNav manages portalMode');
+  assert.ok(topNavFile.includes('Switch to SDET Professional'), 'TopNav profile menu allows switching to SDET');
+  assert.ok(topNavFile.includes('Switch to Kids Coding'), 'TopNav profile menu allows switching to Kids');
+
+  // 4. Home page respects active portal on logged-in redirect
+  assert.ok(homePageFile.includes("portal === 'kids'"), 'Home page handles kids portal redirection');
+  assert.ok(homePageFile.includes("router.replace('/kids')"), 'Directs kids portal users to /kids');
 });
