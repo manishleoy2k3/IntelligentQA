@@ -94,6 +94,7 @@ export interface UserProfile {
   geminiApiKey?: string;
   authProvider?: 'google' | 'email';
   aiPreference?: 'enabled' | 'opted_out';
+  role?: 'admin' | 'user';
   profileCompleted?: boolean;
   createdAt: string;
   updatedAt: string;
@@ -204,3 +205,31 @@ export interface DiagnosticQuestion {
     scoreWeight: number;
   }[];
 }
+
+export interface ModerationItem {
+  id: string;
+  type: 'guide' | 'problem' | 'kids_concept';
+  title: string;
+  trackOrLanguage: string;
+  category?: string;
+  summary: string;
+  submittedBy: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  submittedAt: string;
+  status: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string;
+  contentPayload: any;
+  reviewedAt?: string;
+  reviewedBy?: string;
+}
+
+export interface AdminUserEntry {
+  email: string;
+  role: 'super_admin' | 'admin';
+  addedAt: string;
+  addedBy?: string;
+}
+

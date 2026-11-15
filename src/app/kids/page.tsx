@@ -65,7 +65,9 @@ function KidsCoursesContent() {
   const conceptParam = searchParams.get('concept');
 
   // Course metadata and custom imported lessons
-  const courseMeta = LANGUAGE_COURSES[activeLang];
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [courseMeta, setCourseMeta] = useState<LanguageCourseMeta>(() => QADatabase.getKidsCourse(activeLang));
   const [customLessons, setCustomLessons] = useState<CourseConcept[]>([]);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -87,12 +89,38 @@ function KidsCoursesContent() {
   const compilerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Ensure portal mode is set to kids
+  // Ensure portal mode is set to kids & check Admin role
   useEffect(() => {
     if (typeof window !== 'undefined') {
       QADatabase.setPortalMode('kids');
+      const u = QADatabase.getCurrentUser();
+      setCurrentUser(u);
+      setIsAdmin(QADatabase.isAdmin(u));
+
+      const handleUserOrRoleChange = () => {
+        const updated = QADatabase.getCurrentUser();
+        setCurrentUser(updated);
+        setIsAdmin(QADatabase.isAdmin(updated));
+      };
+
+      window.addEventListener('intelligentqa_auth_changed', handleUserOrRoleChange);
+      window.addEventListener('intelligentqa_role_changed', handleUserOrRoleChange);
+      return () => {
+        window.removeEventListener('intelligentqa_auth_changed', handleUserOrRoleChange);
+        window.removeEventListener('intelligentqa_role_changed', handleUserOrRoleChange);
+      };
     }
   }, []);
+
+  // Sync course metadata from database when activeLang changes or when updated by admin
+  useEffect(() => {
+    setCourseMeta(QADatabase.getKidsCourse(activeLang));
+    const handleCoursesUpdated = () => {
+      setCourseMeta(QADatabase.getKidsCourse(activeLang));
+    };
+    window.addEventListener('intelligentqa_kids_courses_updated', handleCoursesUpdated);
+    return () => window.removeEventListener('intelligentqa_kids_courses_updated', handleCoursesUpdated);
+  }, [activeLang]);
 
   // Reload custom lessons when active language changes
   const reloadCustomLessons = () => {
@@ -245,28 +273,30 @@ function KidsCoursesContent() {
               </Link>
             </div>
 
-            {/* Import Template & Import Course Content Buttons */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setShowTemplateModal(true)}
-                className="py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-                title="Download standardized Import Template (JSON/CSV) with mandatory schema fields"
-              >
-                <FileDown className="w-3.5 h-3.5 text-amber-400" />
-                <span>Import Template</span>
-              </button>
+            {/* Import Template & Import Course Content Buttons (Admin CMS Only) */}
+            {isAdmin && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setShowTemplateModal(true)}
+                  className="py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  title="Download standardized Import Template (JSON/CSV) with mandatory schema fields"
+                >
+                  <FileDown className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Import Template</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setShowUploadModal(true)}
-                className="py-1.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
-                title="Import and Upload new course concepts or guides"
-              >
-                <UploadCloud className="w-3.5 h-3.5" />
-                <span>Import Course Content</span>
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setShowUploadModal(true)}
+                  className="py-1.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
+                  title="Import and Upload new course concepts or guides"
+                >
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>Import Course Content</span>
+                </button>
+              </div>
+            )}
           </div>
         </header>
       )}
@@ -426,7 +456,7 @@ function KidsCoursesContent() {
                         <span>Try it</span>
                       </Link>
 
-                      {concept.id.startsWith('custom-') && (
+                      {isAdmin && concept.id.startsWith('custom-') && (
                         <button
                           type="button"
                           onClick={() => {

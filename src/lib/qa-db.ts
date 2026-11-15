@@ -7,7 +7,20 @@ import {
   InterviewSession,
   QuestionBookmark,
   TrackId,
+  Track,
+  Module,
+  Lesson,
+  ModerationItem,
+  AdminUserEntry,
 } from '@/types/qa';
+import { QA_TRACKS } from '@/lib/qa-curriculum';
+import {
+  CourseConcept,
+  LanguageCourseMeta,
+  LANGUAGE_COURSES,
+} from '@/lib/kids-courses';
+import { saveCustomGuide, ConceptGuide } from '@/lib/concept-guides';
+import { saveCustomProblem, CodingProblem } from '@/lib/coding-problems';
 import { validateGeminiKeySyntax } from '@/lib/gemini-validator';
 
 // Helper to compute initials from first letter of First Name and first letter of Last Name
@@ -29,7 +42,24 @@ export const DEMO_USER: UserProfile = {
   primaryTrack: 'playwright-ts',
   experienceYears: undefined,
   streakCount: 0,
+  role: 'user',
   profileCompleted: false,
+  lastActiveDate: new Date().toISOString().split('T')[0],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
+
+// Default Admin user for Course Content Management
+export const DEMO_ADMIN_USER: UserProfile = {
+  id: 'usr-admin-001',
+  displayName: 'Course Administrator',
+  email: 'admin@intelligentqa.io',
+  targetRole: 'Test Architect',
+  primaryTrack: 'selenium-java',
+  experienceYears: 10,
+  streakCount: 25,
+  role: 'admin',
+  profileCompleted: true,
   lastActiveDate: new Date().toISOString().split('T')[0],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
@@ -37,13 +67,18 @@ export const DEMO_USER: UserProfile = {
 
 // In-Memory fallback store for SSR and unit testing
 class MemoryDatabase {
-  profiles = new Map<string, UserProfile>([['usr-sdet-001', DEMO_USER]]);
+  profiles = new Map<string, UserProfile>([
+    ['usr-sdet-001', DEMO_USER],
+    ['usr-admin-001', DEMO_ADMIN_USER],
+  ]);
   userProgress = new Map<string, UserProgress[]>();
   codeSubmissions = new Map<string, CodeSubmission[]>();
   artifacts = new Map<string, QAGeneratedArtifact[]>();
   agentSessions = new Map<string, QAAgentSession[]>();
   interviewSessions = new Map<string, InterviewSession[]>();
   bookmarks = new Map<string, QuestionBookmark[]>();
+  sdetTracks: Track[] = QA_TRACKS;
+  kidsCourses: Record<'python' | 'javascript' | 'java', LanguageCourseMeta> = LANGUAGE_COURSES;
 
   constructor() {
     // Seed initial progress for demo user
@@ -163,6 +198,11 @@ export const QADatabase = {
       }
     }
 
+    const adminEmails = this.getAdminEmails().map(e => e.toLowerCase().trim());
+    const isExplicitAdmin = adminEmails.includes(cleanEmail) || cleanEmail === 'admin@intelligentqa.io';
+    const computedRole: 'admin' | 'user' = isExplicitAdmin ? 'admin' : (user.role === 'admin' && adminEmails.includes(cleanEmail) ? 'admin' : 'user');
+    user.role = computedRole;
+
     // Strict Data Isolation: Restore ONLY keys saved by this specific user
     const userStoredKey = isBrowser()
       ? window.localStorage.getItem(`intelligentqa_gemini_key_email_${cleanEmail}`) ||
@@ -193,12 +233,17 @@ export const QADatabase = {
     const safeEmailId = cleanEmail.replace(/[^a-zA-Z0-9]/g, '_');
     const id = `usr_${safeEmailId}`;
 
+    const adminEmails = this.getAdminEmails().map(e => e.toLowerCase().trim());
+    const isExplicitAdmin = adminEmails.includes(cleanEmail) || cleanEmail === 'admin@intelligentqa.io';
+    const computedRole: 'admin' | 'user' = isExplicitAdmin ? 'admin' : 'user';
+
     const user: UserProfile = {
       id,
       displayName: displayName || 'New SDET Student',
       email: email?.trim() || cleanEmail,
       targetRole: targetRole || 'Manual QA',
       primaryTrack: 'playwright-ts',
+      role: computedRole,
       experienceYears: undefined,
       streakCount: 0,
       profileCompleted: false,
@@ -937,5 +982,479 @@ export const QADatabase = {
       list = memoryDb.bookmarks.get(userId) || [];
     }
     return list.filter(b => b.userId === userId);
+  },
+
+  // =========================================================================
+  // ROLE-BASED ACCESS CONTROL (RBAC) & ADMIN AUTHORIZATION
+  // =========================================================================
+
+  // Retrieve authorized Admin emails allowlist
+  getAdminEmails(): string[] {
+    const defaultAdmins = ['admin@intelligentqa.io'];
+    if (!isBrowser()) return defaultAdmins;
+    const stored = getStoredItem<string[]>('intelligentqa_admin_emails', defaultAdmins);
+    if (!stored || !Array.isArray(stored) || stored.length === 0) {
+      return defaultAdmins;
+    }
+    // Always guarantee primary owner admin@intelligentqa.io is present
+    if (!stored.some(e => e.toLowerCase() === 'admin@intelligentqa.io')) {
+      stored.unshift('admin@intelligentqa.io');
+    }
+    return stored;
+  },
+
+  // Add an authorized Admin email
+  addAdminEmail(email: string, addedBy?: string): { success: boolean; message: string } {
+    if (!email || !email.trim()) {
+      return { success: false, message: 'Email address is required.' };
+    }
+    const clean = email.trim().toLowerCase();
+    const current = this.getAdminEmails();
+    if (current.some(e => e.toLowerCase() === clean)) {
+      return { success: false, message: `Email "${clean}" is already an authorized Admin.` };
+    }
+    const updated = [...current, clean];
+    setStoredItem('intelligentqa_admin_emails', updated);
+
+    // If a user profile with this email exists, upgrade them
+    const safeEmailId = clean.replace(/[^a-zA-Z0-9]/g, '_');
+    const profileKey = `intelligentqa_profile_usr_${safeEmailId}`;
+    const user = getStoredItem<UserProfile | null>(profileKey, null);
+    if (user) {
+      user.role = 'admin';
+      setStoredItem(profileKey, user);
+    }
+    const currentUser = this.getCurrentUser();
+    if (currentUser && currentUser.email.toLowerCase() === clean) {
+      currentUser.role = 'admin';
+      setStoredItem('intelligentqa_current_user', currentUser);
+    }
+
+    if (isBrowser()) {
+      window.dispatchEvent(new CustomEvent('intelligentqa_admin_list_changed', { detail: { emails: updated } }));
+      window.dispatchEvent(new CustomEvent('intelligentqa_role_changed', { detail: { email: clean, role: 'admin' } }));
+      window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+    }
+    return { success: true, message: `Successfully granted Admin privileges to ${clean}.` };
+  },
+
+  // Remove an authorized Admin email
+  removeAdminEmail(email: string): { success: boolean; message: string } {
+    if (!email) return { success: false, message: 'Email address is required.' };
+    const clean = email.trim().toLowerCase();
+    if (clean === 'admin@intelligentqa.io') {
+      return { success: false, message: 'Primary System Super Admin (admin@intelligentqa.io) cannot be removed.' };
+    }
+    const current = this.getAdminEmails();
+    const updated = current.filter(e => e.toLowerCase() !== clean);
+    setStoredItem('intelligentqa_admin_emails', updated);
+
+    // Downgrade existing profile if present
+    const safeEmailId = clean.replace(/[^a-zA-Z0-9]/g, '_');
+    const profileKey = `intelligentqa_profile_usr_${safeEmailId}`;
+    const user = getStoredItem<UserProfile | null>(profileKey, null);
+    if (user) {
+      user.role = 'user';
+      setStoredItem(profileKey, user);
+    }
+    const currentUser = this.getCurrentUser();
+    if (currentUser && currentUser.email.toLowerCase() === clean) {
+      currentUser.role = 'user';
+      setStoredItem('intelligentqa_current_user', currentUser);
+    }
+
+    if (isBrowser()) {
+      window.dispatchEvent(new CustomEvent('intelligentqa_admin_list_changed', { detail: { emails: updated } }));
+      window.dispatchEvent(new CustomEvent('intelligentqa_role_changed', { detail: { email: clean, role: 'user' } }));
+      window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+    }
+    return { success: true, message: `Revoked Admin privileges from ${clean}.` };
+  },
+
+  // Master Admin Passcode for initial setup / elevation
+  getAdminSecret(): string {
+    if (!isBrowser()) return 'AdminIntelligentQA#2026';
+    return getStoredItem<string>('intelligentqa_admin_secret', 'AdminIntelligentQA#2026');
+  },
+
+  setAdminSecret(newSecret: string): { success: boolean; message: string } {
+    if (!newSecret || newSecret.trim().length < 6) {
+      return { success: false, message: 'Admin passcode must be at least 6 characters.' };
+    }
+    setStoredItem('intelligentqa_admin_secret', newSecret.trim());
+    return { success: true, message: 'Admin Security Passcode updated.' };
+  },
+
+  // Verify Admin Passcode and elevate the current user
+  verifyAndElevateAdmin(passcode: string, targetUser?: UserProfile | null): { success: boolean; message: string } {
+    const valid = this.getAdminSecret();
+    if (passcode.trim() !== valid) {
+      return { success: false, message: 'Invalid Admin Security Passcode.' };
+    }
+    const user = targetUser || this.getCurrentUser();
+    if (!user || !user.email) {
+      return { success: false, message: 'Please log in first before elevating account.' };
+    }
+    this.addAdminEmail(user.email);
+    user.role = 'admin';
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_current_user', user);
+      setStoredItem(`intelligentqa_profile_${user.id}`, user);
+      window.dispatchEvent(new CustomEvent('intelligentqa_role_changed', { detail: { userId: user.id, role: 'admin' } }));
+      window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+    }
+    return { success: true, message: `Account elevated to Admin. Welcome, ${user.displayName || user.email}!` };
+  },
+
+  // Strictly check if user is an authorized Admin
+  isAdmin(user?: UserProfile | null): boolean {
+    const target = user || this.getCurrentUser();
+    if (!target || !target.email) return false;
+    const cleanEmail = target.email.toLowerCase().trim();
+    const adminEmails = this.getAdminEmails().map(e => e.toLowerCase().trim());
+    return adminEmails.includes(cleanEmail);
+  },
+
+  setUserRole(userId: string, role: 'admin' | 'user'): void {
+    if (isBrowser()) {
+      setStoredItem(`intelligentqa_role_${userId}`, role);
+      const current = this.getCurrentUser();
+      if (current && current.id === userId) {
+        current.role = role;
+        if (role === 'admin' && current.email) {
+          this.addAdminEmail(current.email);
+        } else if (role === 'user' && current.email && current.email !== 'admin@intelligentqa.io') {
+          this.removeAdminEmail(current.email);
+        }
+        setStoredItem('intelligentqa_current_user', current);
+        setStoredItem(`intelligentqa_profile_${userId}`, current);
+      }
+      window.dispatchEvent(new CustomEvent('intelligentqa_role_changed', { detail: { userId, role } }));
+      window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+    }
+  },
+
+  // Switch current logged in session to Demo Admin user
+  switchToAdminSession(): UserProfile {
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_current_user', DEMO_ADMIN_USER);
+      setStoredItem(`intelligentqa_profile_${DEMO_ADMIN_USER.id}`, DEMO_ADMIN_USER);
+      this.addAdminEmail(DEMO_ADMIN_USER.email);
+      window.dispatchEvent(new CustomEvent('intelligentqa_role_changed', { detail: { userId: DEMO_ADMIN_USER.id, role: 'admin' } }));
+      window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+    }
+    return DEMO_ADMIN_USER;
+  },
+
+  // Switch current logged in session to Demo Student user
+  switchToStudentSession(): UserProfile {
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_current_user', DEMO_USER);
+      setStoredItem(`intelligentqa_profile_${DEMO_USER.id}`, DEMO_USER);
+      window.dispatchEvent(new CustomEvent('intelligentqa_role_changed', { detail: { userId: DEMO_USER.id, role: 'user' } }));
+      window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+    }
+    return DEMO_USER;
+  },
+
+  // =========================================================================
+  // CONTENT MODERATION & APPROVAL WORKFLOW (Guides, Problems, Kids Concepts)
+  // =========================================================================
+
+  // Retrieve all submitted items awaiting Admin approval
+  getPendingSubmissions(type?: 'guide' | 'problem' | 'kids_concept'): ModerationItem[] {
+    const list = this.getAllSubmissions();
+    return list.filter(item => item.status === 'pending' && (!type || item.type === type));
+  },
+
+  // Retrieve all submissions across all statuses
+  getAllSubmissions(): ModerationItem[] {
+    if (!isBrowser()) return [];
+    return getStoredItem<ModerationItem[]>('intelligentqa_moderation_queue', []);
+  },
+
+  // Submit new content for review by normal users or community members
+  submitContentForReview(data: Omit<ModerationItem, 'id' | 'status' | 'submittedAt'>): ModerationItem {
+    const id = `mod-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const newItem: ModerationItem = {
+      ...data,
+      id,
+      status: 'pending',
+      submittedAt: new Date().toISOString(),
+    };
+
+    const current = this.getAllSubmissions();
+    const updated = [newItem, ...current];
+    setStoredItem('intelligentqa_moderation_queue', updated);
+
+    if (isBrowser()) {
+      window.dispatchEvent(new CustomEvent('intelligentqa_moderation_updated', { detail: { item: newItem } }));
+    }
+    return newItem;
+  },
+
+  // Admin approves a pending submission and directly publishes it to the live database
+  approveSubmission(submissionId: string, reviewerEmail?: string): { success: boolean; message: string; publishedItem?: any } {
+    const current = this.getAllSubmissions();
+    const targetIdx = current.findIndex(s => s.id === submissionId);
+    if (targetIdx === -1) {
+      return { success: false, message: 'Submission not found.' };
+    }
+
+    const item = current[targetIdx];
+    item.status = 'approved';
+    item.reviewedAt = new Date().toISOString();
+    item.reviewedBy = reviewerEmail || this.getCurrentUser()?.email || 'admin@intelligentqa.io';
+
+    let publishedItem: any = null;
+
+    // Direct automated publishing into the respective database store
+    if (item.type === 'guide') {
+      const guideData: ConceptGuide = {
+        id: item.contentPayload?.id || `guide-${Date.now()}`,
+        trackId: item.trackOrLanguage,
+        title: item.title,
+        category: item.category || 'Community Guides',
+        level: item.contentPayload?.level || 'Intermediate',
+        summary: item.summary,
+        overview: item.contentPayload?.overview || item.summary,
+        architectureOrMechanism: item.contentPayload?.architectureOrMechanism || '',
+        codeSnippets: item.contentPayload?.codeSnippets || [
+          {
+            language: item.trackOrLanguage.includes('ts') || item.trackOrLanguage === 'playwright' ? 'typescript' : 'java',
+            code: item.contentPayload?.code || '// Approved Guide Code',
+          },
+        ],
+        bestPractices: item.contentPayload?.bestPractices || [],
+        antiPatterns: item.contentPayload?.antiPatterns || [],
+        interviewTips: item.contentPayload?.interviewTips || '',
+        isCustom: true,
+      };
+      saveCustomGuide(guideData);
+      publishedItem = guideData;
+    } else if (item.type === 'problem') {
+      const problemData: CodingProblem = {
+        id: item.contentPayload?.id || `problem-${Date.now()}`,
+        title: item.title,
+        difficulty: item.contentPayload?.difficulty || 'Medium',
+        category: item.category || 'Algorithms',
+        description: item.summary,
+        constraints: item.contentPayload?.constraints || [],
+        examples: item.contentPayload?.examples || [],
+        starterTemplates: item.contentPayload?.starterTemplates || {
+          java: '// Java template',
+          python: '# Python template',
+          typescript: '// TypeScript template',
+          javascript: '// JavaScript template',
+          csharp: '// C# template',
+        },
+        isCustom: true,
+      };
+      saveCustomProblem(problemData);
+      publishedItem = problemData;
+    } else if (item.type === 'kids_concept') {
+      const conceptData: CourseConcept = {
+        id: item.contentPayload?.id || `concept-${Date.now()}`,
+        title: item.title,
+        order: 99,
+        language: item.trackOrLanguage as any,
+        summary: item.summary,
+        overview: item.contentPayload?.overview || item.summary,
+        keyPoints: item.contentPayload?.keyPoints || [],
+        starterCode: item.contentPayload?.starterCode || '# Write code here',
+        solutionCode: item.contentPayload?.solutionCode || '',
+        bestPractices: item.contentPayload?.bestPractices || [],
+      };
+      this.saveKidsConcept(conceptData);
+      publishedItem = conceptData;
+    }
+
+    current[targetIdx] = item;
+    setStoredItem('intelligentqa_moderation_queue', current);
+
+    if (isBrowser()) {
+      window.dispatchEvent(new CustomEvent('intelligentqa_moderation_updated', { detail: { item, publishedItem } }));
+      window.dispatchEvent(new CustomEvent('intelligentqa_content_approved', { detail: { item, publishedItem } }));
+    }
+    return { success: true, message: `Approved and published "${item.title}" to live curriculum!`, publishedItem };
+  },
+
+  // Admin rejects a pending submission with feedback
+  rejectSubmission(submissionId: string, reason?: string, reviewerEmail?: string): { success: boolean; message: string } {
+    const current = this.getAllSubmissions();
+    const targetIdx = current.findIndex(s => s.id === submissionId);
+    if (targetIdx === -1) {
+      return { success: false, message: 'Submission not found.' };
+    }
+
+    const item = current[targetIdx];
+    item.status = 'rejected';
+    item.rejectionReason = reason || 'Does not meet curriculum guidelines.';
+    item.reviewedAt = new Date().toISOString();
+    item.reviewedBy = reviewerEmail || this.getCurrentUser()?.email || 'admin@intelligentqa.io';
+
+    current[targetIdx] = item;
+    setStoredItem('intelligentqa_moderation_queue', current);
+
+    if (isBrowser()) {
+      window.dispatchEvent(new CustomEvent('intelligentqa_moderation_updated', { detail: { item } }));
+    }
+    return { success: true, message: `Submission "${item.title}" has been rejected.` };
+  },
+
+  // Delete a submission from the moderation queue
+  deleteSubmission(submissionId: string): boolean {
+    const current = this.getAllSubmissions();
+    const updated = current.filter(s => s.id !== submissionId);
+    setStoredItem('intelligentqa_moderation_queue', updated);
+    if (isBrowser()) {
+      window.dispatchEvent(new Event('intelligentqa_moderation_updated'));
+    }
+    return true;
+  },
+
+  // =========================================================================
+  // COURSE CONTENT MANAGEMENT (SDET & KIDS COURSES DATABASE)
+  // =========================================================================
+
+  // SDET Track & Curriculum Management
+  getTracks(): Track[] {
+    if (!isBrowser()) return memoryDb.sdetTracks;
+    const stored = getStoredItem<Track[] | null>('intelligentqa_db_sdet_tracks', null);
+    if (stored && Array.isArray(stored) && stored.length > 0) {
+      return stored;
+    }
+    // Seed database with initial curriculum
+    setStoredItem('intelligentqa_db_sdet_tracks', QA_TRACKS);
+    return QA_TRACKS;
+  },
+
+  getTrackById(id: string): Track | undefined {
+    const tracks = this.getTracks();
+    return tracks.find(t => t.id === id);
+  },
+
+  saveTrack(track: Track): void {
+    const tracks = this.getTracks();
+    const index = tracks.findIndex(t => t.id === track.id);
+    let updated: Track[];
+    if (index >= 0) {
+      updated = [...tracks];
+      updated[index] = track;
+    } else {
+      updated = [...tracks, track];
+    }
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_db_sdet_tracks', updated);
+      window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated', { detail: { trackId: track.id } }));
+    } else {
+      memoryDb.sdetTracks = updated;
+    }
+  },
+
+  saveLesson(trackId: string, moduleId: string, lesson: Lesson): void {
+    const tracks = this.getTracks();
+    const track = tracks.find(t => t.id === trackId);
+    if (!track) return;
+
+    let targetModule = track.modules.find(m => m.id === moduleId);
+    if (!targetModule && track.modules.length > 0) {
+      targetModule = track.modules[0];
+    }
+    if (!targetModule) return;
+
+    const existingIndex = targetModule.lessons.findIndex(l => l.id === lesson.id);
+    if (existingIndex >= 0) {
+      targetModule.lessons[existingIndex] = lesson;
+    } else {
+      targetModule.lessons.push(lesson);
+    }
+
+    track.totalLessons = track.modules.reduce((sum, m) => sum + m.lessons.length, 0);
+    this.saveTrack(track);
+  },
+
+  deleteLesson(trackId: string, lessonId: string): void {
+    const tracks = this.getTracks();
+    const track = tracks.find(t => t.id === trackId);
+    if (!track) return;
+
+    track.modules.forEach(m => {
+      m.lessons = m.lessons.filter(l => l.id !== lessonId);
+    });
+
+    track.totalLessons = track.modules.reduce((sum, m) => sum + m.lessons.length, 0);
+    this.saveTrack(track);
+  },
+
+  resetTracksToDefault(): void {
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_db_sdet_tracks', QA_TRACKS);
+      window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+    } else {
+      memoryDb.sdetTracks = QA_TRACKS;
+    }
+  },
+
+  // Kids Language Courses Management
+  getKidsCourses(): Record<'python' | 'javascript' | 'java', LanguageCourseMeta> {
+    if (!isBrowser()) return memoryDb.kidsCourses;
+    const stored = getStoredItem<Record<'python' | 'javascript' | 'java', LanguageCourseMeta> | null>(
+      'intelligentqa_db_kids_courses',
+      null
+    );
+    if (stored && stored.python && stored.javascript && stored.java) {
+      return stored;
+    }
+    setStoredItem('intelligentqa_db_kids_courses', LANGUAGE_COURSES);
+    return LANGUAGE_COURSES;
+  },
+
+  getKidsCourse(lang: 'python' | 'javascript' | 'java'): LanguageCourseMeta {
+    const courses = this.getKidsCourses();
+    return courses[lang] || LANGUAGE_COURSES[lang];
+  },
+
+  saveKidsCourse(course: LanguageCourseMeta): void {
+    const courses = this.getKidsCourses();
+    courses[course.id] = course;
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_db_kids_courses', courses);
+      window.dispatchEvent(new CustomEvent('intelligentqa_kids_courses_updated', { detail: { lang: course.id } }));
+    } else {
+      memoryDb.kidsCourses = courses;
+    }
+  },
+
+  saveKidsConcept(concept: CourseConcept): void {
+    const courses = this.getKidsCourses();
+    const course = courses[concept.language];
+    if (!course) return;
+
+    const existingIndex = course.concepts.findIndex(c => c.id === concept.id);
+    if (existingIndex >= 0) {
+      course.concepts[existingIndex] = concept;
+    } else {
+      course.concepts.push(concept);
+    }
+    this.saveKidsCourse(course);
+  },
+
+  deleteKidsConcept(lang: 'python' | 'javascript' | 'java', conceptId: string): void {
+    const courses = this.getKidsCourses();
+    const course = courses[lang];
+    if (!course) return;
+
+    course.concepts = course.concepts.filter(c => c.id !== conceptId);
+    this.saveKidsCourse(course);
+  },
+
+  resetKidsCoursesToDefault(): void {
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_db_kids_courses', LANGUAGE_COURSES);
+      window.dispatchEvent(new CustomEvent('intelligentqa_kids_courses_updated'));
+    } else {
+      memoryDb.kidsCourses = LANGUAGE_COURSES;
+    }
   },
 };

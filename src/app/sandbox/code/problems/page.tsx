@@ -32,11 +32,13 @@ import {
   getCodingProblemImportTemplate,
   downloadCodingProblemTemplate,
 } from '@/lib/coding-problems';
+import { QADatabase } from '@/lib/qa-db';
 
 function CodingProblemsCatalogContent() {
   const searchParams = useSearchParams();
   const initialGroup = searchParams?.get('group') || 'All';
 
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [problems, setProblems] = useState<CodingProblem[]>(DEFAULT_CODING_PROBLEMS);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
@@ -66,10 +68,32 @@ function CodingProblemsCatalogContent() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load problems from localStorage on mount
+  // Load problems from localStorage on mount & listen for Auth / Admin role
   useEffect(() => {
     const all = getAllProblems();
     setProblems(all);
+
+    if (typeof window !== 'undefined') {
+      const u = QADatabase.getCurrentUser();
+      setIsAdmin(QADatabase.isAdmin(u));
+
+      const handleAuth = () => {
+        const updated = QADatabase.getCurrentUser();
+        setIsAdmin(QADatabase.isAdmin(updated));
+      };
+      const handleApproved = () => {
+        setProblems(getAllProblems());
+      };
+
+      window.addEventListener('intelligentqa_auth_changed', handleAuth);
+      window.addEventListener('intelligentqa_role_changed', handleAuth);
+      window.addEventListener('intelligentqa_content_approved', handleApproved);
+      return () => {
+        window.removeEventListener('intelligentqa_auth_changed', handleAuth);
+        window.removeEventListener('intelligentqa_role_changed', handleAuth);
+        window.removeEventListener('intelligentqa_content_approved', handleApproved);
+      };
+    }
   }, []);
 
   const showBanner = (msg: string) => {
@@ -165,6 +189,50 @@ function CodingProblemsCatalogContent() {
       .map(s => s.trim())
       .filter(Boolean);
 
+    if (!isAdmin) {
+      const u = QADatabase.getCurrentUser();
+      const problemPayload = {
+        title: newTitle.trim(),
+        difficulty: newDifficulty,
+        category: newCategory.trim() || 'General',
+        description: newDescription.trim() || 'Custom problem description.',
+        constraints,
+        examples,
+        starterTemplates: {
+          java: `public class Main {\n    public static void main(String[] args) {\n        // Problem: ${newTitle}\n        System.out.println("Solution for ${newTitle}");\n    }\n}`,
+          python: `# Problem: ${newTitle}\ndef solve():\n    pass\n\nif __name__ == "__main__":\n    print("Solution for ${newTitle}")`,
+          typescript: `// Problem: ${newTitle}\nconsole.log("Solution for ${newTitle}");`,
+          javascript: `// Problem: ${newTitle}\nconsole.log("Solution for ${newTitle}");`,
+          csharp: `using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Solution for ${newTitle}");\n    }\n}`,
+        },
+      };
+
+      QADatabase.submitContentForReview({
+        type: 'problem',
+        title: newTitle.trim(),
+        trackOrLanguage: newCategory.trim() || 'General',
+        category: newCategory.trim() || 'General',
+        summary: newDescription.trim() || 'Custom problem description.',
+        submittedBy: {
+          id: u?.id || 'guest',
+          name: u?.displayName || 'Community Student',
+          email: u?.email || 'student@intelligentqa.io',
+        },
+        contentPayload: problemPayload,
+      });
+
+      setShowAddModal(false);
+      setNewTitle('');
+      setNewDescription('');
+      setNewConstraints('');
+      setNewExampleInput('');
+      setNewExampleOutput('');
+      setNewExplanation('');
+
+      showBanner(`🎉 Coding problem "${newTitle.trim()}" submitted for Admin review and approval!`);
+      return;
+    }
+
     const created = saveCustomProblem({
       title: newTitle.trim(),
       difficulty: newDifficulty,
@@ -216,17 +284,45 @@ function CodingProblemsCatalogContent() {
     const res = parseImportedProblems(text);
     if (res.error) {
       setImportStatus({ error: res.error });
-    } else {
-      const updated = getAllProblems();
-      setProblems(updated);
-      setImportStatus({ success: `Successfully imported ${res.problems.length} coding problem(s)!` });
+      return;
+    }
+
+    if (!isAdmin) {
+      const u = QADatabase.getCurrentUser();
+      res.problems.forEach((p) => {
+        QADatabase.submitContentForReview({
+          type: 'problem',
+          title: p.title,
+          trackOrLanguage: p.category,
+          category: p.category,
+          summary: p.description,
+          submittedBy: {
+            id: u?.id || 'guest',
+            name: u?.displayName || 'Community Student',
+            email: u?.email || 'student@intelligentqa.io',
+          },
+          contentPayload: p,
+        });
+      });
+      setImportStatus({ success: `🎉 ${res.problems.length} problem(s) submitted for Admin review and approval!` });
       setTimeout(() => {
         setShowImportModal(false);
         setImportStatus(null);
         setImportText('');
-        showBanner(`Imported ${res.problems.length} problem(s) into your library.`);
-      }, 1200);
+        showBanner(`🎉 ${res.problems.length} problem(s) submitted for Admin review.`);
+      }, 1500);
+      return;
     }
+
+    const updated = getAllProblems();
+    setProblems(updated);
+    setImportStatus({ success: `Successfully imported ${res.problems.length} coding problem(s)!` });
+    setTimeout(() => {
+      setShowImportModal(false);
+      setImportStatus(null);
+      setImportText('');
+      showBanner(`Imported ${res.problems.length} problem(s) into your library.`);
+    }, 1200);
   };
 
   const handleExportJSON = () => {
@@ -295,34 +391,48 @@ function CodingProblemsCatalogContent() {
               <span>Online Compilers</span>
             </Link>
 
-            <button
-              type="button"
-              onClick={() => setShowAddModal(true)}
-              className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Problem</span>
-            </button>
+            {isAdmin ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(true)}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Problem</span>
+                </button>
 
-            <button
-              type="button"
-              onClick={() => setShowImportModal(true)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
-            >
-              <Upload className="w-3.5 h-3.5 text-blue-400" />
-              <span>Import / Upload</span>
-            </button>
+                <button
+                  type="button"
+                  onClick={() => setShowImportModal(true)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
+                >
+                  <Upload className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Import / Upload</span>
+                </button>
 
-            {/* Import Template Button */}
-            <button
-              type="button"
-              onClick={() => setShowTemplateModal(true)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
-              title="Download or preview standardized import template for coding problems"
-            >
-              <Download className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Import Template</span>
-            </button>
+                {/* Import Template Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowTemplateModal(true)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
+                  title="Download or preview standardized import template for coding problems"
+                >
+                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Import Template</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
+                title="Contribute a coding problem for Admin review"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Contribute Problem</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -519,7 +629,7 @@ function CodingProblemsCatalogContent() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          {prob.isCustom && (
+                          {isAdmin && prob.isCustom && (
                             <button
                               type="button"
                               onClick={(e) => handleDeleteProblem(prob.id, e)}

@@ -92,6 +92,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   // Active Portal Mode: 'sdet' | 'kids' (Strict separation between Kids Free Coding & SDET Pro)
   const [portalMode, setPortalMode] = useState<'sdet' | 'kids'>('sdet');
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [kidsCoursesOpen, setKidsCoursesOpen] = useState(true);
   const [kidsActiveLang, setKidsActiveLang] = useState<'python' | 'javascript' | 'java'>('python');
   const [kidsActiveConcept, setKidsActiveConcept] = useState<string>('');
@@ -103,6 +104,15 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const syncAdminRole = () => {
+        const u = QADatabase.getCurrentUser();
+        setCurrentUser(u);
+        setIsAdmin(QADatabase.isAdmin(u));
+      };
+      syncAdminRole();
+      window.addEventListener('intelligentqa_role_changed', syncAdminRole);
+      window.addEventListener('intelligentqa_auth_changed', syncAdminRole);
+
       const isKidsPath = pathname?.startsWith('/kids');
       if (isKidsPath) {
         setPortalMode('kids');
@@ -147,6 +157,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       return () => {
         window.removeEventListener('intelligentqa_portal_changed', handlePortalChange);
         window.removeEventListener('popstate', syncKidsRoute);
+        window.removeEventListener('intelligentqa_role_changed', syncAdminRole);
+        window.removeEventListener('intelligentqa_auth_changed', syncAdminRole);
       };
     }
   }, [pathname]);
@@ -545,6 +557,30 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </span>
               </button>
             </div>
+
+            {/* Admin CMS Link (Kids Mode - Admin Only) */}
+            {isAdmin && (
+              <div className="pt-2 border-t border-purple-500/20">
+                <Link
+                  href="/admin/cms"
+                  onClick={onCloseMobile}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    pathname === '/admin/cms'
+                      ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 font-bold border-l-2 border-purple-500 pl-2.5'
+                      : 'text-purple-700 dark:text-purple-400 hover:bg-purple-500/10'
+                  }`}
+                  title="Course Content Management System (Admin Only)"
+                >
+                  <ShieldCheck className="w-4 h-4 shrink-0 text-purple-500" />
+                  <div className="flex items-center justify-between flex-1 truncate">
+                    <span className="truncate">Course CMS</span>
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
+                      ADMIN
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            )}
 
             {/* Switch to SDET Professional */}
             <div className="pt-4 border-t border-slate-100 dark:border-neutral-800/80">
@@ -1077,6 +1113,36 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             </div>
           )}
         </div>
+
+        {/* ADMIN CMS (Strictly Role-Based: Admin Only) */}
+        {isAdmin && (
+          <div className="space-y-1 pt-2 border-t border-purple-500/20">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 px-3 pb-1 flex items-center justify-between">
+              <span>Administration</span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-300 font-bold">
+                CMS
+              </span>
+            </div>
+            <Link
+              href="/admin/cms"
+              onClick={onCloseMobile}
+              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                pathname === '/admin/cms'
+                  ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 font-bold border-l-2 border-purple-500 pl-2.5'
+                  : 'text-purple-700 dark:text-purple-400 hover:bg-purple-500/10'
+              }`}
+              title="Course Content Management System (Admin Only)"
+            >
+              <ShieldCheck className="w-4 h-4 shrink-0 text-purple-500" />
+              <div className="flex items-center justify-between flex-1 truncate">
+                <span className="truncate">Course CMS</span>
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
+                  ADMIN
+                </span>
+              </div>
+            </Link>
+          </div>
+        )}
 
         {/* SECTION: UTILITIES */}
         <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-neutral-800/80">

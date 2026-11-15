@@ -41,6 +41,7 @@ import {
   generateConceptGuideTemplate,
   downloadConceptGuideTemplate,
 } from '@/lib/concept-guides';
+import { QADatabase } from '@/lib/qa-db';
 
 export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { initialTrackId: string }) {
   const router = useRouter();
@@ -59,8 +60,35 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     badgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
   };
 
+  const [isAdmin, setIsAdmin] = useState<boolean>(true);
+
   // Tabs: 'import-staging' (Import & Staged Review) vs 'confirmed-guides' (Guide List like Selenium / Playwright)
-  const [activeTab, setActiveTab] = useState<'import-staging' | 'confirmed-guides'>('import-staging');
+  const [activeTab, setActiveTab] = useState<'import-staging' | 'confirmed-guides'>('confirmed-guides');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const u = QADatabase.getCurrentUser();
+      const adminStatus = QADatabase.isAdmin(u);
+      setIsAdmin(adminStatus);
+      if (adminStatus && searchParams.get('tab') === 'import') {
+        setActiveTab('import-staging');
+      }
+      const handleAuth = () => {
+        const updated = QADatabase.getCurrentUser();
+        const nextAdmin = QADatabase.isAdmin(updated);
+        setIsAdmin(nextAdmin);
+        if (!nextAdmin) {
+          setActiveTab('confirmed-guides');
+        }
+      };
+      window.addEventListener('intelligentqa_auth_changed', handleAuth);
+      window.addEventListener('intelligentqa_role_changed', handleAuth);
+      return () => {
+        window.removeEventListener('intelligentqa_auth_changed', handleAuth);
+        window.removeEventListener('intelligentqa_role_changed', handleAuth);
+      };
+    }
+  }, [searchParams]);
 
   // Staged (Imported) Guides vs Confirmed Guides
   const [stagedGuides, setStagedGuides] = useState<ConceptGuide[]>([]);
@@ -146,6 +174,31 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
     if (result.error) {
       setImportStatus({ error: result.error });
+      return;
+    }
+
+    if (!isAdmin) {
+      const u = QADatabase.getCurrentUser();
+      result.guides.forEach((g) => {
+        QADatabase.submitContentForReview({
+          type: 'guide',
+          title: g.title,
+          trackOrLanguage: activeTrack,
+          category: g.category,
+          summary: g.summary,
+          submittedBy: {
+            id: u?.id || 'guest',
+            name: u?.displayName || 'Community Student',
+            email: u?.email || 'student@intelligentqa.io',
+          },
+          contentPayload: g,
+        });
+      });
+      setImportStatus({
+        success: `🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`,
+      });
+      setImportText('');
+      showBanner(`🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`);
       return;
     }
 
@@ -278,6 +331,32 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
       isCustom: true,
     };
 
+    if (!isAdmin) {
+      const u = QADatabase.getCurrentUser();
+      QADatabase.submitContentForReview({
+        type: 'guide',
+        title: newGuide.title,
+        trackOrLanguage: activeTrack,
+        category: newGuide.category,
+        summary: newGuide.summary,
+        submittedBy: {
+          id: u?.id || 'guest',
+          name: u?.displayName || 'Community Student',
+          email: u?.email || 'student@intelligentqa.io',
+        },
+        contentPayload: newGuide,
+      });
+      setShowAddModal(false);
+      setNewTitle('');
+      setNewSummary('');
+      setNewOverview('');
+      setNewMechanism('');
+      setNewCode('');
+      setNewInterviewTips('');
+      showBanner(`🎉 Guide "${newGuide.title}" submitted for Admin review and approval!`);
+      return;
+    }
+
     saveStagedGuide(newGuide);
     setStagedGuides(getStagedGuides(activeTrack));
     setShowAddModal(false);
@@ -333,76 +412,92 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
           </div>
 
           {/* Quick Header Actions */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              type="button"
-              onClick={() => setShowTemplateModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-2 border border-slate-700 transition cursor-pointer shadow-xs"
-              title="Download or preview standard JSON/CSV import template"
-            >
-              <Download className="w-4 h-4 text-emerald-400" />
-              <span>Import Template</span>
-            </button>
+          {isAdmin ? (
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setShowTemplateModal(true)}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-2 border border-slate-700 transition cursor-pointer shadow-xs"
+                title="Download or preview standard JSON/CSV import template"
+              >
+                <Download className="w-4 h-4 text-emerald-400" />
+                <span>Import Template</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setShowImportModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2 shadow-md transition cursor-pointer"
-              title="Import guides from JSON or CSV"
-            >
-              <Upload className="w-4 h-4" />
-              <span>Import Guide</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowImportModal(true)}
+                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2 shadow-md transition cursor-pointer"
+                title="Import guides from JSON or CSV"
+              >
+                <Upload className="w-4 h-4" />
+                <span>Import Guide</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setShowAddModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
-            >
-              <Plus className="w-4 h-4 text-slate-400" />
-              <span>Add Guide</span>
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
+              >
+                <Plus className="w-4 h-4 text-slate-400" />
+                <span>Add Guide</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-2 shadow-md transition cursor-pointer"
+                title="Contribute a guide for Admin review"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Contribute a Guide</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Tab Switcher: Import & Staging vs Confirmed Guide List */}
-        <div className="max-w-7xl mx-auto flex items-center gap-3 mt-4 pt-3 border-t border-slate-800/80">
-          <button
-            type="button"
-            onClick={() => setActiveTab('import-staging')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
-              activeTab === 'import-staging'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700'
-            }`}
-          >
-            <UploadCloud className="w-4 h-4" />
-            <span>Import &amp; Staging</span>
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-              activeTab === 'import-staging' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'
-            }`}>
-              {stagedGuides.length}
-            </span>
-          </button>
+        {isAdmin && (
+          <div className="max-w-7xl mx-auto flex items-center gap-3 mt-4 pt-3 border-t border-slate-800/80">
+            <button
+              type="button"
+              onClick={() => setActiveTab('import-staging')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+                activeTab === 'import-staging'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700'
+              }`}
+            >
+              <UploadCloud className="w-4 h-4" />
+              <span>Import &amp; Staging</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                activeTab === 'import-staging' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'
+              }`}>
+                {stagedGuides.length}
+              </span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('confirmed-guides')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
-              activeTab === 'confirmed-guides'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>{trackInfo.name} Guides List</span>
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-              activeTab === 'confirmed-guides' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'
-            }`}>
-              {confirmedGuides.length}
-            </span>
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab('confirmed-guides')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+                activeTab === 'confirmed-guides'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>{trackInfo.name} Guides List</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                activeTab === 'confirmed-guides' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'
+              }`}>
+                {confirmedGuides.length}
+              </span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main Content Area */}
@@ -674,7 +769,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
                           {guide.level}
                         </span>
-                        {guide.isCustom && (
+                        {isAdmin && guide.isCustom && (
                           <button
                             type="button"
                             onClick={() => handleDeleteConfirmed(guide.id)}

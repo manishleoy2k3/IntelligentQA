@@ -1943,10 +1943,29 @@ export const QA_TRACKS: Track[] = [
 ];
 
 export function getTrackById(id: string): Track | undefined {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = window.localStorage.getItem('intelligentqa_db_sdet_tracks');
+      if (stored) {
+        const list: Track[] = JSON.parse(stored);
+        const found = list.find(t => t.id === id);
+        if (found) return found;
+      }
+    } catch {}
+  }
   return QA_TRACKS.find(t => t.id === id);
 }
 
 export function getAllLessons(): Lesson[] {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = window.localStorage.getItem('intelligentqa_db_sdet_tracks');
+      if (stored) {
+        const list: Track[] = JSON.parse(stored);
+        return list.flatMap(t => t.modules.flatMap(m => m.lessons));
+      }
+    } catch {}
+  }
   return QA_TRACKS.flatMap(t => t.modules.flatMap(m => m.lessons));
 }
 
