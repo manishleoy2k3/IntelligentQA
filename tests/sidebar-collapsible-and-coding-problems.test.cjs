@@ -66,8 +66,13 @@ test('Coding Problems Library & Dedicated Catalog & Solver Features', () => {
   assert.ok(problemsCatalogFile.includes('showAddModal'), 'Has Add Problem modal');
   assert.ok(problemsCatalogFile.includes('showImportModal'), 'Has Import modal');
 
-  // Request 10 #5: Detailed Problem Solver layout
-  assert.ok(problemSolverFile.includes('Problem Statement'), 'Renders problem statement on left');
+  // Problem Solver layout & features
+  assert.ok(problemSolverFile.includes('Description'), 'Renders Description on left (renamed from Problem Statement)');
+  assert.ok(problemSolverFile.includes('Solutions'), 'Has Solutions button beside Description');
+  assert.ok(problemSolverFile.includes('handleLoadSolution'), 'Loads and pastes solution code into compiler');
+  assert.ok(problemSolverFile.includes('DEFAULT_COMPILER_CODE'), 'Initializes with normal compiler starter code');
+  assert.ok(problemSolverFile.includes('handleReset'), 'Resets code back to normal compiler starter template');
+  assert.ok(!problemSolverFile.includes('title="Clear terminal output"'), 'Clear button is removed');
   assert.ok(problemSolverFile.includes('handleRunCode'), 'Renders compiler on right');
   assert.ok(problemSolverFile.includes('Output / Result'), 'Renders output below compiler');
 });

@@ -13,7 +13,6 @@ import {
   Laptop,
   CheckCircle2,
   AlertCircle,
-  Trash2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -21,6 +20,7 @@ import {
   ArrowLeft,
   Code2,
   Tag,
+  Sparkles,
 } from 'lucide-react';
 import {
   CodingProblem,
@@ -46,11 +46,39 @@ const LANG_LABELS: Record<SupportedLang, string> = {
   csharp: 'C# (.NET)',
 };
 
+// Normal compiler starter templates (clean blank compiler state)
+export const DEFAULT_COMPILER_CODE: Record<SupportedLang, string> = {
+  java: `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, SDET World!");
+    }
+}
+`,
+  python: `# Python 3
+print("Hello, SDET World!")
+`,
+  typescript: `// TypeScript
+const greeting: string = "Hello, SDET World!";
+console.log(greeting);
+`,
+  javascript: `// JavaScript
+console.log("Hello, SDET World!");
+`,
+  csharp: `using System;
+
+public class Program {
+    public static void Main() {
+        Console.WriteLine("Hello, SDET World!");
+    }
+}
+`,
+};
+
 export default function ProblemSolverClient({ problemId }: { problemId: string }) {
   const router = useRouter();
   const [allProblems, setAllProblems] = useState<CodingProblem[]>(DEFAULT_CODING_PROBLEMS);
   const [language, setLanguage] = useState<SupportedLang>('java');
-  const [code, setCode] = useState<string>('');
+  const [code, setCode] = useState<string>(DEFAULT_COMPILER_CODE['java']);
   const [stdinInput, setStdinInput] = useState<string>('');
   const [showStdin, setShowStdin] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -66,37 +94,45 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Load problem
+  // Load problems and initialize with normal compiler starter code
   useEffect(() => {
     const list = getAllProblems();
     setAllProblems(list);
-    const prob = list.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS[0];
-    if (prob) {
-      setCode(prob.starterTemplates[language] || '');
-    }
+    // User requirement: Keep it blank / same as normal compiler
+    setCode(DEFAULT_COMPILER_CODE[language]);
   }, [problemId, language]);
 
   const currentProblem = allProblems.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS[0];
   const currentIndex = allProblems.findIndex(p => p.id === problemId);
 
-  // Language change
+  // Language change: switch to normal compiler starter template for that language
   const handleLanguageChange = (newLang: SupportedLang) => {
     setLanguage(newLang);
-    if (currentProblem) {
-      setCode(currentProblem.starterTemplates[newLang] || '');
-    }
+    setCode(DEFAULT_COMPILER_CODE[newLang]);
     setTerminalOutput('');
     setTerminalError('');
     setExecutionStats(null);
   };
 
-  // Reset to starter template
-  const handleReset = () => {
-    if (currentProblem) {
-      setCode(currentProblem.starterTemplates[language] || '');
-      setFeedback('Code reset to starter problem template.');
-      setTimeout(() => setFeedback(null), 2500);
+  // User requirement 2: When user clicks on Solutions, paste solution code in the compiler section
+  const handleLoadSolution = () => {
+    if (currentProblem && currentProblem.starterTemplates) {
+      const solutionCode = currentProblem.starterTemplates[language] || '';
+      setCode(solutionCode);
+      setFeedback(`✨ Solution code pasted into compiler (${LANG_LABELS[language]})! Click 'Run' to test.`);
+      setTimeout(() => setFeedback(null), 3500);
+
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
     }
+  };
+
+  // User requirement 4: Reset should reset the solution code pasted back to normal Compiler
+  const handleReset = () => {
+    setCode(DEFAULT_COMPILER_CODE[language]);
+    setFeedback('Code reset back to normal compiler starter template.');
+    setTimeout(() => setFeedback(null), 2500);
     setTerminalOutput('');
     setTerminalError('');
     setExecutionStats(null);
@@ -277,14 +313,28 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
 
       {/* Main 2-Column Split View: Problem Statements on Left, Compiler & Output on Right */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden max-w-7xl w-full mx-auto p-3 md:p-4 gap-4">
-        {/* LEFT COLUMN: Problem Statements & Examples */}
+        {/* LEFT COLUMN: Description & Examples */}
         <div className="w-full lg:w-[45%] xl:w-[42%] flex flex-col bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl shrink-0">
           {/* Header */}
-          <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-blue-400" />
-              <span className="text-xs font-bold text-white">Problem Statement</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-white font-bold text-xs border border-slate-700">
+                <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                <span>Description</span>
+              </div>
+
+              {/* Requirement 1 & 2: Solutions button beside Description */}
+              <button
+                type="button"
+                onClick={handleLoadSolution}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 hover:border-emerald-500/50 text-xs font-bold transition shadow-xs cursor-pointer group"
+                title={`Paste verified ${LANG_LABELS[language]} solution code into the compiler editor`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <span>Solutions</span>
+              </button>
             </div>
+
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
               {currentProblem.category}
             </span>
@@ -427,21 +477,10 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                   type="button"
                   onClick={handleReset}
                   className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition cursor-pointer"
-                  title="Reset code to problem starter template"
+                  title="Reset code back to normal compiler starter template"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset</span>
-                </button>
-
-                {/* Clear Output */}
-                <button
-                  type="button"
-                  onClick={handleClearTerminal}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition cursor-pointer"
-                  title="Clear terminal output"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Clear</span>
                 </button>
 
                 {/* Copy Code */}
@@ -550,14 +589,6 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                     {executionStats.durationMs !== undefined && ` (${executionStats.durationMs}ms)`}
                   </span>
                 )}
-
-                <button
-                  type="button"
-                  onClick={handleClearTerminal}
-                  className="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 transition"
-                >
-                  Clear
-                </button>
               </div>
             </div>
 
