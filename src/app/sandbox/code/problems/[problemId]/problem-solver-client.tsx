@@ -27,6 +27,7 @@ import {
   DEFAULT_CODING_PROBLEMS,
   getAllProblems,
 } from '@/lib/coding-problems';
+import { QADatabase } from '@/lib/qa-db';
 
 export type SupportedLang = 'java' | 'python' | 'typescript' | 'javascript' | 'csharp';
 
@@ -271,9 +272,13 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     setTerminalError('');
 
     try {
+      const geminiKey = QADatabase.getUserGeminiKey() || '';
       const res = await fetch('/api/sandbox/compiler', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(geminiKey ? { 'x-gemini-api-key': geminiKey } : {}),
+        },
         body: JSON.stringify({
           language,
           code,

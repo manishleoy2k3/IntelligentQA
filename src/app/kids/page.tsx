@@ -183,9 +183,13 @@ function KidsCoursesContent() {
     setTerminalError('');
 
     try {
+      const geminiKey = QADatabase.getUserGeminiKey() || '';
       const res = await fetch('/api/sandbox/compiler', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(geminiKey ? { 'x-gemini-api-key': geminiKey } : {}),
+        },
         body: JSON.stringify({
           language: activeLang,
           code: editorCode,
