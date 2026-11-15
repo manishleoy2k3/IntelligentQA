@@ -54,6 +54,21 @@ const LANGUAGE_DEFAULTS: Record<'python' | 'javascript' | 'java', { starter: str
   },
 };
 
+// Extract error line number from compiler diagnostic or exception traceback
+function extractErrorLineNumber(errorText: string): number | null {
+  if (!errorText) return null;
+  // Python: File "...", line 8 or line 8, in ...
+  const pyMatch = errorText.match(/line\s+(\d+)/i);
+  if (pyMatch) return parseInt(pyMatch[1], 10);
+  // Java: Main.java:8: error:
+  const javaMatch = errorText.match(/:(\d+):\s*error/i);
+  if (javaMatch) return parseInt(javaMatch[1], 10);
+  // JS/Node: evalmachine.<anonymous>:8 or at line 8
+  const jsMatch = errorText.match(/:(\d+):\d+/);
+  if (jsMatch) return parseInt(jsMatch[1], 10);
+  return null;
+}
+
 function KidsCoursesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -88,6 +103,46 @@ function KidsCoursesContent() {
 
   const compilerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lineNumbersRef1 = useRef<HTMLDivElement>(null);
+  const lineNumbersRef2 = useRef<HTMLDivElement>(null);
+
+  // Synchronized scroll handlers for line numbers gutter
+  const handleEditorScroll1 = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (lineNumbersRef1.current) {
+      lineNumbersRef1.current.scrollTop = e.currentTarget.scrollTop;
+    }
+  };
+
+  const handleEditorScroll2 = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (lineNumbersRef2.current) {
+      lineNumbersRef2.current.scrollTop = e.currentTarget.scrollTop;
+    }
+  };
+
+  // Keyboard shortcut & Tab indentation support
+  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleRunCode();
+      return;
+    }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const textarea = e.currentTarget;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+      const indent = '    ';
+      setEditorCode(val.substring(0, start) + indent + val.substring(end));
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + indent.length;
+      }, 0);
+    }
+  };
+
+  const editorLineCount = editorCode.split('\n').length;
+  const editorLineNumbers = Array.from({ length: Math.max(editorLineCount, 1) }, (_, i) => i + 1);
+  const detectedErrorLine = extractErrorLineNumber(terminalError);
 
   // Ensure portal mode is set to kids & check Admin role
   useEffect(() => {
@@ -516,14 +571,55 @@ function KidsCoursesContent() {
                       <span>{isRunning ? 'Running...' : 'Run Code'}</span>
                     </button>
                   </div>
-                  <textarea
-                    ref={textareaRef}
-                    rows={12}
-                    value={editorCode}
-                    onChange={(e) => setEditorCode(e.target.value)}
-                    className="w-full flex-1 p-4 bg-slate-900 font-mono text-xs sm:text-sm text-slate-200 focus:outline-none resize-none leading-relaxed"
-                    spellCheck={false}
-                  />
+                  {/* Code Editor with Line Numbers */}
+                  <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs sm:text-sm relative min-h-[280px]">
+                    {/* Line Numbers Gutter */}
+                    <div
+                      ref={lineNumbersRef1}
+                      className="w-12 py-4 px-2 bg-slate-900/60 text-slate-500 text-right select-none border-r border-slate-800/80 shrink-0 overflow-hidden font-mono text-xs leading-6"
+                    >
+                      {editorLineNumbers.map((num) => {
+                        const isError = detectedErrorLine === num;
+                        return (
+                          <div
+                            key={num}
+                            className={`leading-6 pr-1 font-mono transition-colors ${
+                              isError
+                                ? 'text-rose-400 font-extrabold bg-rose-500/25 rounded-xs'
+                                : 'text-slate-600 hover:text-slate-400'
+                            }`}
+                            title={isError ? `Error detected on line ${num}` : `Line ${num}`}
+                          >
+                            {num}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Code Input */}
+                    <textarea
+                      ref={textareaRef}
+                      value={editorCode}
+                      onChange={(e) => setEditorCode(e.target.value)}
+                      onKeyDown={handleEditorKeyDown}
+                      onScroll={handleEditorScroll1}
+                      className="flex-1 w-full p-4 bg-transparent text-slate-200 font-mono text-xs sm:text-sm leading-6 resize-none focus:outline-none focus:ring-0 whitespace-pre overflow-auto"
+                      spellCheck={false}
+                      placeholder="Write your code here..."
+                    />
+                  </div>
+
+                  <div className="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                    <span className="flex items-center gap-2">
+                      <span>{editorLineCount} lines</span>
+                      {detectedErrorLine && (
+                        <span className="text-rose-400 font-semibold flex items-center gap-1">
+                          ● Error on Line {detectedErrorLine}
+                        </span>
+                      )}
+                    </span>
+                    <span>Shortcut: <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Ctrl</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Enter</kbd> to Run</span>
+                  </div>
                 </div>
 
                 {/* Terminal Output */}
@@ -751,18 +847,54 @@ function KidsCoursesContent() {
                       </div>
                     </div>
 
-                    <textarea
-                      ref={textareaRef}
-                      rows={13}
-                      value={editorCode}
-                      onChange={(e) => setEditorCode(e.target.value)}
-                      className="w-full flex-1 p-4 bg-slate-900 font-mono text-xs sm:text-sm text-slate-200 focus:outline-none resize-none leading-relaxed border-0"
-                      spellCheck={false}
-                    />
+                    {/* Code Editor with Line Numbers */}
+                    <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs sm:text-sm relative min-h-[300px]">
+                      {/* Line Numbers Gutter */}
+                      <div
+                        ref={lineNumbersRef2}
+                        className="w-12 py-4 px-2 bg-slate-900/60 text-slate-500 text-right select-none border-r border-slate-800/80 shrink-0 overflow-hidden font-mono text-xs leading-6"
+                      >
+                        {editorLineNumbers.map((num) => {
+                          const isError = detectedErrorLine === num;
+                          return (
+                            <div
+                              key={num}
+                              className={`leading-6 pr-1 font-mono transition-colors ${
+                                isError
+                                  ? 'text-rose-400 font-extrabold bg-rose-500/25 rounded-xs'
+                                  : 'text-slate-600 hover:text-slate-400'
+                              }`}
+                              title={isError ? `Error detected on line ${num}` : `Line ${num}`}
+                            >
+                              {num}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Code Input */}
+                      <textarea
+                        ref={textareaRef}
+                        value={editorCode}
+                        onChange={(e) => setEditorCode(e.target.value)}
+                        onKeyDown={handleEditorKeyDown}
+                        onScroll={handleEditorScroll2}
+                        className="flex-1 w-full p-4 bg-transparent text-slate-200 font-mono text-xs sm:text-sm leading-6 resize-none focus:outline-none focus:ring-0 whitespace-pre overflow-auto"
+                        spellCheck={false}
+                        placeholder="Write your code here..."
+                      />
+                    </div>
 
                     <div className="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
-                      <span>{editorCode.split('\n').length} lines · {activeLang}</span>
-                      <span>Press &quot;Run Code&quot; to compile and see output</span>
+                      <span className="flex items-center gap-2">
+                        <span>{editorLineCount} lines · {activeLang}</span>
+                        {detectedErrorLine && (
+                          <span className="text-rose-400 font-semibold flex items-center gap-1">
+                            ● Error on Line {detectedErrorLine}
+                          </span>
+                        )}
+                      </span>
+                      <span>Shortcut: <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Ctrl</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Enter</kbd> to Run</span>
                     </div>
                   </div>
 

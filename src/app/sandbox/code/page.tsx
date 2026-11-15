@@ -15,6 +15,18 @@ import {
 } from "lucide-react";
 import { QADatabase } from "@/lib/qa-db";
 
+// Extract error line number from compiler diagnostic or exception traceback
+function extractErrorLineNumber(errorText: string): number | null {
+  if (!errorText) return null;
+  const pyMatch = errorText.match(/line\s+(\d+)/i);
+  if (pyMatch) return parseInt(pyMatch[1], 10);
+  const javaMatch = errorText.match(/:(\d+):\s*error/i);
+  if (javaMatch) return parseInt(javaMatch[1], 10);
+  const jsMatch = errorText.match(/:(\d+):\d+/);
+  if (jsMatch) return parseInt(jsMatch[1], 10);
+  return null;
+}
+
 export type SupportedLang =
   | "java"
   | "python"
@@ -119,7 +131,14 @@ export default function OnlineCompilerPage() {
   const [isDesktop, setIsDesktop] = useState<boolean>(true);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lineNumbersRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleEditorScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (lineNumbersRef.current) {
+      lineNumbersRef.current.scrollTop = e.currentTarget.scrollTop;
+    }
+  };
 
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
@@ -277,6 +296,7 @@ export default function OnlineCompilerPage() {
 
   const lineCount = code.split("\n").length;
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1);
+  const detectedErrorLine = extractErrorLineNumber(terminalError);
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100vh-60px)] bg-slate-950 text-slate-100 font-sans">
@@ -456,12 +476,26 @@ export default function OnlineCompilerPage() {
           {/* Textarea Editor with Line Numbers */}
           <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs relative min-h-0">
             {/* Line Numbers */}
-            <div className="py-4 px-3 bg-slate-900/60 text-slate-600 text-right select-none border-r border-slate-800/80 shrink-0 overflow-hidden">
-              {lineNumbers.map((num) => (
-                <div key={num} className="leading-6">
-                  {num}
-                </div>
-              ))}
+            <div
+              ref={lineNumbersRef}
+              className="w-12 py-4 px-2 bg-slate-900/60 text-slate-500 text-right select-none border-r border-slate-800/80 shrink-0 overflow-hidden font-mono text-xs leading-6"
+            >
+              {lineNumbers.map((num) => {
+                const isError = detectedErrorLine === num;
+                return (
+                  <div
+                    key={num}
+                    className={`leading-6 pr-1 font-mono transition-colors ${
+                      isError
+                        ? "text-rose-400 font-extrabold bg-rose-500/25 rounded-xs"
+                        : "text-slate-600 hover:text-slate-400"
+                    }`}
+                    title={isError ? `Error detected on line ${num}` : `Line ${num}`}
+                  >
+                    {num}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Code Input */}
@@ -470,6 +504,7 @@ export default function OnlineCompilerPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               onKeyDown={handleKeyDown}
+              onScroll={handleEditorScroll}
               spellCheck={false}
               className="flex-1 w-full p-4 bg-transparent text-slate-200 font-mono text-xs leading-6 resize-none focus:outline-none focus:ring-0 whitespace-pre overflow-auto"
               placeholder="Write your code here..."
@@ -478,12 +513,21 @@ export default function OnlineCompilerPage() {
 
           {/* Editor Status Footer */}
           <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between shrink-0">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              Runtime:{" "}
-              <strong className="text-slate-300">
-                {LANG_LABELS[language]}
-              </strong>
+            <span className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                Runtime:{" "}
+                <strong className="text-slate-300">
+                  {LANG_LABELS[language]}
+                </strong>
+              </span>
+              <span className="text-slate-600">|</span>
+              <span>{lineCount} lines</span>
+              {detectedErrorLine && (
+                <span className="text-rose-400 font-semibold flex items-center gap-1">
+                  ● Error on Line {detectedErrorLine}
+                </span>
+              )}
             </span>
             <span>
               Shortcut:{" "}
