@@ -85,6 +85,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   // Active Portal Mode: 'sdet' | 'kids' (Strict separation between Kids Free Coding & SDET Pro)
   const [portalMode, setPortalMode] = useState<'sdet' | 'kids'>('sdet');
+  const [kidsCoursesOpen, setKidsCoursesOpen] = useState(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -354,18 +355,85 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           <div className="space-y-4">
             <div className="space-y-1">
               <div className="text-[10px] font-bold uppercase tracking-wider text-amber-500 dark:text-amber-400 px-3 pb-1">
-                Kids Coding Portal (Ages 10–14)
+                Programming Courses (Ages 10–14)
               </div>
 
-              {/* Kids Dashboard & Missions */}
-              <Link
-                href="/kids"
-                onClick={onCloseMobile}
-                className={navItemClass(pathname === '/kids')}
-              >
-                <Sparkles className="w-4 h-4 shrink-0 text-amber-500" />
-                <span>Kids Dashboard &amp; Missions</span>
-              </Link>
+              {/* COURSES (Python, JavaScript, Java) */}
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => setKidsCoursesOpen(!kidsCoursesOpen)}
+                  className={`w-full ${navItemClass(pathname === '/kids')} justify-between`}
+                  title="Courses: Learn Programming in Python, JavaScript, and Java"
+                >
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="w-4 h-4 shrink-0 text-amber-500" />
+                    <span>Courses</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                      3 Tracks
+                    </span>
+                    {kidsCoursesOpen ? (
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    ) : (
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                    )}
+                  </div>
+                </button>
+
+                {kidsCoursesOpen && (
+                  <div className="pl-2 pr-1 py-1 space-y-1 border-l-2 border-amber-500/30 ml-4 my-1">
+                    {/* Python */}
+                    <Link
+                      href="/kids?lang=python"
+                      onClick={onCloseMobile}
+                      className={childItemClass(pathname === '/kids')}
+                      title="Python Programming Course"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <Terminal className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <span className="truncate font-medium">Python Programming</span>
+                      </div>
+                      <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded">
+                        PY
+                      </span>
+                    </Link>
+
+                    {/* JavaScript */}
+                    <Link
+                      href="/kids?lang=javascript"
+                      onClick={onCloseMobile}
+                      className={childItemClass(pathname === '/kids')}
+                      title="JavaScript Programming Course"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <Code2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span className="truncate font-medium">JavaScript</span>
+                      </div>
+                      <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded">
+                        JS
+                      </span>
+                    </Link>
+
+                    {/* Java */}
+                    <Link
+                      href="/kids?lang=java"
+                      onClick={onCloseMobile}
+                      className={childItemClass(pathname === '/kids')}
+                      title="Java Programming Course"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <Laptop className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                        <span className="truncate font-medium">Java</span>
+                      </div>
+                      <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded">
+                        JAVA
+                      </span>
+                    </Link>
+                  </div>
+                )}
+              </div>
 
               {/* Online Compilers (Python, JS, TS, Java) */}
               <Link
@@ -381,38 +449,19 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </div>
               </Link>
 
-              {/* Kids Coding Library */}
+              {/* Coding Library (Renamed from Kids Problem Library) */}
               <Link
                 href="/sandbox/code/problems?category=kids"
                 onClick={onCloseMobile}
                 className={navItemClass(pathname?.startsWith('/sandbox/code/problems'))}
-                title="Kids Problem Library: Fun Coding Puzzles for Ages 10-14"
+                title="Coding Library: Ready-to-solve problems in Python, JavaScript, TypeScript & Java"
               >
                 <BookOpen className="w-4 h-4 shrink-0 text-emerald-500" />
                 <div className="flex flex-col truncate">
-                  <span className="truncate font-semibold">Kids Problem Library</span>
-                  <span className="text-[10px] text-slate-500 dark:text-neutral-400">Puzzles &amp; Challenges</span>
+                  <span className="truncate font-semibold">Coding Library</span>
+                  <span className="text-[10px] text-slate-500 dark:text-neutral-400">Python, JS, TS, Java</span>
                 </div>
               </Link>
-
-              {/* Ask AI Coding Helper */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (onCloseMobile) onCloseMobile();
-                  window.dispatchEvent(new Event('intelligentqa_open_ask_ai'));
-                }}
-                className={`w-full ${navItemClass(false)} justify-between text-left`}
-                title="Ask AI: Coding queries, logic help, and debugging"
-              >
-                <div className="flex items-center gap-3">
-                  <Bot className="w-4 h-4 shrink-0 text-indigo-500" />
-                  <span>Ask AI Coding Helper</span>
-                </div>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500">
-                  AI
-                </span>
-              </button>
 
               {/* Gemini API Key */}
               <button

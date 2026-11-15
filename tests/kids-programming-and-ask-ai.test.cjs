@@ -139,3 +139,33 @@ test('Requirement 10: Strict User Data Isolation & Gemini Key Privacy Protection
   // 5. Gemini Key Modal saves with user scoping
   assert.ok(geminiModalFile.includes('setUserGeminiKey(sanitized, user?.id)'), 'Modal saves key scoped to current user id');
 });
+
+test('Requirement 11: Programming Courses, Import Template & Upload, and Coding Library Navigation', () => {
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const kidsPageFile = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
+  const courseLibFile = fs.readFileSync(path.join(__dirname, '../src/lib/kids-courses.ts'), 'utf8');
+
+  // 1. Ask AI Coding Helper removed from Left Navigation
+  assert.ok(!sidebarFile.includes('Ask AI Coding Helper'), 'Ask AI Coding Helper is removed from Left Navigation');
+
+  // 2. Kids Problem Library renamed to Coding Library
+  assert.ok(sidebarFile.includes('>Coding Library</span>'), 'Sidebar displays Coding Library');
+  assert.ok(kidsPageFile.includes('Coding Library (Readily Available Coding Challenges)'), 'Kids page displays Coding Library header');
+
+  // 3. Courses section in Left Navigation with Python, JavaScript, Java
+  assert.ok(sidebarFile.includes('Python Programming'), 'Sidebar features Python course');
+  assert.ok(sidebarFile.includes('JavaScript'), 'Sidebar features JavaScript course');
+  assert.ok(sidebarFile.includes('Java'), 'Sidebar features Java course');
+
+  // 4. Kids Courses Page has Import Template and Import/Upload buttons
+  assert.ok(kidsPageFile.includes('Import Template'), 'Courses page has Import Template button');
+  assert.ok(kidsPageFile.includes('Import Course Content'), 'Courses page has Import Course Content button');
+  assert.ok(kidsPageFile.includes('Python Course'), 'Courses page provides Python course tab');
+  assert.ok(kidsPageFile.includes('JavaScript Course'), 'Courses page provides JavaScript course tab');
+  assert.ok(kidsPageFile.includes('Java Course'), 'Courses page provides Java course tab');
+
+  // 5. Template generator supports JSON and CSV with mandatory schema
+  assert.ok(courseLibFile.includes('generateCourseImportTemplate'), 'Defines generateCourseImportTemplate');
+  assert.ok(courseLibFile.includes('downloadCourseImportTemplate'), 'Defines downloadCourseImportTemplate');
+  assert.ok(courseLibFile.includes('saveCustomLesson'), 'Defines saveCustomLesson for uploaded lessons');
+});
