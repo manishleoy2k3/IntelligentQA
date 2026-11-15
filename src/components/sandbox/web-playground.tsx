@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import {
   Play,
   RotateCcw,
@@ -25,6 +26,9 @@ import {
   RefreshCw,
   Eye,
   Terminal,
+  BookOpen,
+  Download,
+  ArrowRight,
 } from 'lucide-react';
 
 export default function WebPlayground() {
@@ -291,6 +295,56 @@ export default function WebPlayground() {
         <div className="text-xs text-slate-500 flex items-center gap-2">
           <span className="font-medium">Manual QA Learning Path:</span>
           <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">1. Selenium → 2. Playwright → 3. Rest Assured → 4. AI for QA</span>
+        </div>
+      </div>
+
+      {/* Concept Guides & Import Quick Action Banner */}
+      <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+            <BookOpen className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="font-bold text-sm text-white flex items-center gap-2">
+              {framework === 'selenium'
+                ? 'Selenium Architecture & Concept Guides'
+                : framework === 'playwright'
+                ? 'Playwright Architecture & Concept Guides'
+                : 'Selenium & Playwright Architecture Guides'}
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono">
+                Guides &amp; Templates
+              </span>
+            </span>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Explore deep-dive architecture guides, interview tips, or download standardized JSON/CSV templates to import concepts.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
+          <Link
+            href={`/guides/${framework === 'playwright' ? 'playwright' : 'selenium'}?action=template`}
+            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 font-semibold transition"
+            title="Download or preview guide import template"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-400" />
+            <span>Import Template</span>
+          </Link>
+          <Link
+            href={`/guides/${framework === 'playwright' ? 'playwright' : 'selenium'}?action=import`}
+            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 font-semibold transition"
+            title="Import custom guides via JSON or CSV"
+          >
+            <UploadCloud className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Import Guide</span>
+          </Link>
+          <Link
+            href={`/guides/${framework === 'playwright' ? 'playwright' : 'selenium'}`}
+            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 transition shadow-xs"
+          >
+            <span>Browse Guides</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
       </div>
 

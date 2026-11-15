@@ -595,7 +595,80 @@ Ad-hoc casual prompts like "write tests for login" produce shallow, repetitive t
   },
 ];
 
-const LOCAL_STORAGE_KEY_PREFIX = 'intelligentqa_custom_guides_';
+export const LOCAL_STORAGE_KEY_PREFIX = 'intelligentqa_custom_guides_';
+export const STAGED_STORAGE_KEY_PREFIX = 'intelligentqa_staged_guides_';
+
+export function getStagedGuides(trackId?: string): ConceptGuide[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+    const key = normTrack ? `${STAGED_STORAGE_KEY_PREFIX}${normTrack}` : `${STAGED_STORAGE_KEY_PREFIX}selenium`;
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveStagedGuide(guide: ConceptGuide): ConceptGuide {
+  if (typeof window === 'undefined') return guide;
+  const normTrack = guide.trackId === 'selenium-java' ? 'selenium' : guide.trackId === 'playwright-ts' ? 'playwright' : guide.trackId;
+  const existing = getStagedGuides(normTrack);
+  const updated = [guide, ...existing.filter(g => g.id !== guide.id)];
+  localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+  return guide;
+}
+
+export function updateStagedGuide(guide: ConceptGuide): ConceptGuide {
+  if (typeof window === 'undefined') return guide;
+  const normTrack = guide.trackId === 'selenium-java' ? 'selenium' : guide.trackId === 'playwright-ts' ? 'playwright' : guide.trackId;
+  const existing = getStagedGuides(normTrack);
+  const updated = existing.map(g => (g.id === guide.id ? guide : g));
+  localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+  return guide;
+}
+
+export function deleteStagedGuide(id: string, trackId?: string): void {
+  if (typeof window === 'undefined') return;
+  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const existing = getStagedGuides(normTrack);
+  const updated = existing.filter(g => g.id !== id);
+  localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+}
+
+export function clearStagedGuides(trackId?: string): void {
+  if (typeof window === 'undefined') return;
+  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  localStorage.removeItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`);
+}
+
+export function confirmAndSubmitStagedGuides(
+  trackId?: string,
+  guideIds?: string[]
+): { count: number; saved: ConceptGuide[] } {
+  if (typeof window === 'undefined') return { count: 0, saved: [] };
+  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const staged = getStagedGuides(normTrack);
+  if (staged.length === 0) return { count: 0, saved: [] };
+
+  const toConfirm = guideIds ? staged.filter(g => guideIds.includes(g.id)) : staged;
+  const remaining = guideIds ? staged.filter(g => !guideIds.includes(g.id)) : [];
+
+  // Save to confirmed list
+  const existingConfirmed = getStoredCustomGuides(normTrack);
+  const newConfirmed = toConfirm.map(g => ({ ...g, isCustom: true }));
+  const updatedConfirmed = [...newConfirmed, ...existingConfirmed.filter(e => !newConfirmed.some(n => n.id === e.id))];
+  localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updatedConfirmed));
+
+  // Update or clear staging
+  if (remaining.length > 0) {
+    localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(remaining));
+  } else {
+    localStorage.removeItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`);
+  }
+
+  return { count: toConfirm.length, saved: toConfirm };
+}
 
 export function getStoredCustomGuides(trackId?: string): ConceptGuide[] {
   if (typeof window === 'undefined') return [];
@@ -693,7 +766,11 @@ export function downloadConceptGuideTemplate(format: 'json' | 'csv', trackId: st
 }
 
 // Parse imported guides from JSON or CSV
-export function parseImportedGuides(content: string, trackId: string = 'selenium'): { guides: ConceptGuide[]; error?: string } {
+export function parseImportedGuides(
+  content: string,
+  trackId: string = 'selenium',
+  stageOnly: boolean = true
+): { guides: ConceptGuide[]; error?: string } {
   const normTrack = (trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId) as any;
   const trimmed = content.trim();
 
@@ -740,10 +817,16 @@ export function parseImportedGuides(content: string, trackId: string = 'selenium
         return { guides: [], error: 'No valid guides found in JSON. Expected objects with "title", "category", and "summary".' };
       }
 
-      // Save to localStorage
-      const existing = getStoredCustomGuides(normTrack);
-      const updated = [...valid, ...existing];
-      localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+      // Save to storage (Staged by default, or direct confirmed if stageOnly is false)
+      if (stageOnly) {
+        const existing = getStagedGuides(normTrack);
+        const updated = [...valid, ...existing.filter(e => !valid.some(v => v.id === e.id))];
+        localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+      } else {
+        const existing = getStoredCustomGuides(normTrack);
+        const updated = [...valid, ...existing.filter(e => !valid.some(v => v.id === e.id))];
+        localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+      }
 
       return { guides: valid };
     } catch (e: any) {
@@ -791,9 +874,16 @@ export function parseImportedGuides(content: string, trackId: string = 'selenium
       return { guides: [], error: 'Could not extract valid guides from CSV.' };
     }
 
-    const existing = getStoredCustomGuides(normTrack);
-    const updated = [...valid, ...existing];
-    localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+    // Save to storage (Staged by default, or direct confirmed if stageOnly is false)
+    if (stageOnly) {
+      const existing = getStagedGuides(normTrack);
+      const updated = [...valid, ...existing.filter(e => !valid.some(v => v.id === e.id))];
+      localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+    } else {
+      const existing = getStoredCustomGuides(normTrack);
+      const updated = [...valid, ...existing.filter(e => !valid.some(v => v.id === e.id))];
+      localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
+    }
 
     return { guides: valid };
   } catch (e: any) {

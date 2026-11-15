@@ -345,29 +345,40 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
                 {courseTracks.map((track, trackIdx) => {
                   const isExpanded = openTracks[track.id];
-                  const isTrackActive = pathname?.includes(`/tracks/${track.id}`);
+                  const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
+                  const isTrackActive =
+                    pathname?.includes(`/tracks/${track.id}`) ||
+                    pathname === `/guides/${guideSlug}` ||
+                    pathname?.startsWith(`/guides/${guideSlug}/`);
                   const Icon = track.icon;
 
                   return (
                     <div key={track.id} className="space-y-0.5">
-                      {/* Track Parent Row (Collapsible on click - toggles on every click) */}
+                      {/* Track Parent Row (Navigates to Track's Guide & Import Hub on click, expands lessons) */}
                       <div
                         onClick={() => toggleTrack(track.id)}
                         className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group cursor-pointer ${
                           isTrackActive
-                            ? 'bg-slate-100/90 dark:bg-neutral-800/80 font-semibold'
-                            : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40'
+                            ? 'bg-slate-100/90 dark:bg-neutral-800/80 font-semibold text-emerald-600 dark:text-emerald-400'
+                            : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40 text-slate-800 dark:text-neutral-200'
                         }`}
+                        title={`${track.displayTitle}: Open Guide & Import Hub`}
                       >
-                        <div
+                        <Link
+                          href={`/guides/${guideSlug}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenTracks(p => ({ ...p, [track.id]: true }));
+                            onCloseMobile?.();
+                          }}
                           className="flex items-center gap-2 truncate flex-1 min-w-0"
                           title={`${track.displayTitle} (${track.lessons.length} Lessons)`}
                         >
                           <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
-                          <span className="truncate text-slate-800 dark:text-neutral-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-semibold">
+                          <span className="truncate font-semibold">
                             {track.displayTitle}
                           </span>
-                        </div>
+                        </Link>
 
                         <div
                           className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0"
@@ -380,11 +391,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                             }`}
                           />
                         </div>
-
-                        {/* Hidden reference link for SEO and navigation: /tracks/selenium-java, /tracks/playwright-ts, /tracks/api-testing, /tracks/ai-qa */}
-                        <span className="sr-only">
-                          <Link href={`/tracks/${track.id}`}>{track.displayTitle}</Link>
-                        </span>
                       </div>
 
                       {/* All Individual Lessons with total hours of each individual lesson */}
