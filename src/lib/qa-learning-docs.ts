@@ -3077,7 +3077,7 @@ public abstract class BaseTest {
   // 10. Listeners, Screenshots & Maven CI/CD Execution
   if (lessonId === 'sel-listeners-reports-cicd') {
     return {
-      title: '10. Listeners, Screenshots & Maven CI/CD Execution',
+      title: '10. Listeners, Screenshots, Apache POI Excel Data & AutoIT File Uploads in CI/CD',
       category,
       tagline: 'CI/CD Automation: Test Listeners, Automatic Failure Screenshots & Allure Reporting',
       overview: 'Automated tests that run unattended inside CI/CD pipelines (such as GitHub Actions or Jenkins) must provide automated diagnostics. Test listeners monitor test lifecycle events (pass, fail, skip) and automatically capture screenshots and browser logs on failure.',
@@ -6996,7 +6996,7 @@ public class PojoSerializationTest {
   // 7. Auth Tokens (JWT, OAuth2 & API Keys)
   if (lessonId === 'api-auth-tokens') {
     return {
-      title: '7. Auth Tokens (JWT, OAuth2 & API Keys)',
+      title: '7. Auth Tokens (JWT, OAuth2, Spotify & Google OAuth Flows, Multipart Form Data)',
       category,
       tagline: 'Securing API Automation: JWT Parsing, OAuth2 Client Credentials Flow, and Token Lifecycle Management',
       overview: 'Modern enterprise APIs are guarded by robust identity and access management (IAM) mechanisms: JSON Web Tokens (JWT), OAuth2 authorization flows, API Keys, and session cookies. Automation suites must never hardcode static tokens in source code, as tokens expire within minutes or hours. An enterprise SDET architecture incorporates an automated token acquisition layer that retrieves fresh tokens via OAuth2 token endpoints, caches tokens in memory for the duration of their validity, decodes JWT payloads to verify scopes and claims, and automatically injects Authorization: Bearer <token> headers into outgoing requests.',
@@ -7409,7 +7409,7 @@ function getAiLessonDoc(
     return {
       title: '2. Step 1: Prompt Engineering Mastery for Testers',
       category,
-      tagline: 'System Roles, Few-Shot Learning, Chain-of-Thought, and Gherkin BDD Prompt Patterns',
+      tagline: 'The 3 C\'s (Context, Constraints, Clarity), Zero-Shot vs Few-Shot, Chain-of-Thought, and Context Window Token Limits',
       overview: 'Prompt engineering is not about typing casual English sentences into a chat box. For an SDET, prompt engineering is precise interface programming: designing structured, repeatable context templates that guide an LLM to produce production-grade Gherkin BDD specs, comprehensive test matrices, and bug reports without hallucinations. The difference between an amateur tester prompt ("write test cases for search") and an SDET prompt (System Role + Context Constraints + Few-Shot Examples + Output Format) is the difference between generic garbage and actionable, executable test automation assets.',
       whyItMattersForManualQA: 'When manual testers first try ChatGPT or Gemini, they often give up after getting superficial, 3-step test cases. Mastering prompt engineering techniques like System Directives, Chain-of-Thought (CoT), and Few-Shot Learning allows you to generate exhaustive test matrices—including boundary values, SQL injection payloads, concurrency edge cases, and accessibility considerations—in under 15 seconds.',
       architectureUnderTheHood: {
@@ -7421,9 +7421,9 @@ function getAiLessonDoc(
         {
           stepNumber: 1,
           title: 'The 4-Part Enterprise Prompt Pattern: R-C-O-F',
-          badge: 'Framework',
-          summary: 'Apply Role, Context, Output format, and Few-Shot examples to every QA prompt.',
-          explanation: 'Structure prompts using the R-C-O-F framework: (R) Role: Set domain authority; (C) Context: Paste acceptance criteria; (O) Output Schema: Specify Gherkin, Markdown table, or JSON; (F) Few-Shot Exemplar: Provide 1 golden example.',
+          badge: '3 C\'s Framework',
+          summary: 'Apply the 3 C\'s: Context, Constraints, and Clarity to maximize Zero-Shot & Few-Shot prompting accuracy.',
+          explanation: 'Structure prompts using the 3 C\'s and R-C-O-F framework: (1) Context & Role: Business domain authority and acceptance criteria, (2) Constraints: Explicit negative rules (e.g. "Zero UI assertions, only contract checks"), (3) Clarity & Schema: Deterministic output format (Gherkin/JSON). Understand Context Window Limits: Avoid context bloat by passing focused DOM snippets rather than 10,000-line body dumps.',
           codeSnippet: {
             language: 'markdown',
             caption: 'Enterprise R-C-O-F Prompt Template for QA Test Generation',
@@ -8010,8 +8010,8 @@ function getAiLessonDoc(
           stepNumber: 1,
           title: 'Understanding the Model Context Protocol (MCP) in QA',
           badge: 'MCP Architecture',
-          summary: 'Connect AI agents directly to browsers, databases, and test runners.',
-          explanation: 'Anthropic open-sourced the Model Context Protocol (MCP) to standardize how AI agents interact with external tools. In testing, an MCP server provides an agent with tools: clickElement(), executePlaywrightTest(), queryDatabase(), and readGitDiff(). The agent chooses which tool to call based on the testing goal.',
+          summary: 'Connect AI agents directly to browsers (Playwright MCP), Mobile Apps (Mobile-MCP / MobileWright), and Workflow Automations (n8n).',
+          explanation: 'Anthropic open-sourced the Model Context Protocol (MCP) to standardize how AI agents interact with external tools. In testing, an MCP server provides an agent with tools: clickElement(), executePlaywrightTest(), queryDatabase(), and readGitDiff(). With Mobile-MCP and MobileWright, agents automate mobile native apps on Android emulators. With n8n workflow agents, QA teams automate Jira bug creation, Google Sheets synchronization, and Slack regression alerts.',
           codeSnippet: {
             language: 'json',
             caption: 'MCP Configuration for Playwright Browser & Database Tools',
