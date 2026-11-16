@@ -360,7 +360,7 @@ if __name__ == "__main__":
       difficulty: 'Creative',
       category: 'Game',
       iconName: 'Gamepad2',
-      summary: 'A complete, playable 2D Snake game built on HTML5 Canvas. Kids can control the snake with arrow keys, eat glowing food, grow longer, and beat high scores!',
+      summary: 'A complete, playable 2D Snake game built on HTML5 Canvas. Players can control the snake with arrow keys, eat glowing food, grow longer, and beat high scores!',
       features: [
         'HTML5 2D Canvas grid rendering loop',
         'Keyboard arrow controls (Up, Down, Left, Right)',

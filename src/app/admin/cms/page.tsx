@@ -478,7 +478,7 @@ export default function CourseCMSPage() {
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Manage, edit, upload, and publish course content across SDET and Kids Programming.
+                Manage, edit, upload, and publish course content across SDET and Coding Tutorials.
               </p>
             </div>
           </div>
@@ -574,7 +574,7 @@ export default function CourseCMSPage() {
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>Kids Courses (3)</span>
+              <span>Coding Courses (3)</span>
             </button>
 
             <button
@@ -699,7 +699,7 @@ export default function CourseCMSPage() {
                   triggerBanner('🔄 Reset SDET tracks to factory defaults.');
                 } else {
                   QADatabase.resetKidsCoursesToDefault();
-                  triggerBanner('🔄 Reset Kids courses to factory defaults.');
+                  triggerBanner('🔄 Reset Coding courses to factory defaults.');
                 }
                 reloadData();
               }}
@@ -938,7 +938,7 @@ export default function CourseCMSPage() {
                                     : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
                                 }`}
                               >
-                                {item.type === 'guide' ? 'Guide' : item.type === 'problem' ? 'Coding Problem' : 'Kids Concept'}
+                                {item.type === 'guide' ? 'Guide' : item.type === 'problem' ? 'Coding Problem' : 'Coding Concept'}
                               </span>
                             </td>
                             <td className="py-3.5 px-4 max-w-xs">

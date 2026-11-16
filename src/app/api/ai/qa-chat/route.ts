@@ -45,8 +45,8 @@ export async function POST(req: NextRequest) {
         'gemini-flash-lite-latest',
       ];
 
-      const systemPrompt = `You are an expert AI Programming & Coding Assistant and Debugging Specialist for IntelligentQA and Kids Coding Lab.
-You assist developers, SDETs, and learners/kids (ages 10-14) with any programming queries, concepts, and code debugging.
+      const systemPrompt = `You are an expert AI Programming & Coding Assistant and Debugging Specialist for IntelligentQA and Coding Tutorial.
+You assist developers, SDETs, and coding learners with any programming queries, concepts, and code debugging.
 You specialize in Python, JavaScript, TypeScript, Java, and C#, covering variables, loops, conditionals, functions, data structures, algorithms, debugging, OOP, and test automation.
 
 CRITICAL FORMATTING & CONTENT RULES:

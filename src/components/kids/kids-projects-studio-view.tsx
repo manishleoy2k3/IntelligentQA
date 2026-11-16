@@ -221,7 +221,7 @@ export default function KidsProjectsStudioView({ language }: KidsProjectsStudioV
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono">
               <Gamepad2 className="w-4 h-4" />
-              <span>Kids Project Studio &amp; Game Coding Workspace</span>
+              <span>Project Studio &amp; Game Coding Workspace</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
               <span>Build Real Games &amp; Apps with {language.toUpperCase()}</span>

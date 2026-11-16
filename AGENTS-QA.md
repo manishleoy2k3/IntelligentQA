@@ -46,26 +46,24 @@ This document is the authoritative implementation specification. Follow `AGENTS-
 
 ---
 
-## STRICT ARCHITECTURAL SEPARATION: SDET PLATFORM VS. KIDS CODING PLATFORM
+## STRICT ARCHITECTURAL SEPARATION: SDET PLATFORM VS. CODING TUTORIAL PLATFORM
 
-The application enforces a **100% strict, permanent separation** between the Enterprise SDET Platform and the Kids Coding Platform. Both platforms function as completely independent sites with independent navigation, dedicated views, independent target audiences, and zero cross-switching.
+The application enforces a **100% strict, permanent separation** between the Enterprise SDET Platform and the independent Coding Tutorial Platform (`/kids`). Both platforms function as completely independent sites with independent navigation, dedicated views, independent target audiences, and zero cross-switching.
 
 ### Rules of Separation:
-1. **ZERO CROSS-SWITCHING AT ANY POINT IN TIME**:
-   - Neither platform permits switching to the other at any time.
-   - All portal switchers ("Switch to SDET Professional", "Switch to Kids Coding", "Kids Coding (10-14) Switch →") are strictly eradicated from Top Navigation, Profile Menus, Sidebars, and Home pages.
-2. **TOTAL PLATFORM INDEPENDENCE**:
-   - **Enterprise SDET Platform (`/`, `/dashboard`, `/tracks/*`, `/sandbox/*`, `/qa-agents`, `/interview-*`, `/guides/*`)**:
-     - Dedicated exclusively to professional QA engineers and manual testers transitioning into high-demand SDETs.
-     - Contains only enterprise tracks: Playwright + TypeScript, Selenium + Java, API Testing (REST Assured), AI in QA, and Interview Mastery.
-     - Contains only professional practice labs: Web DOM Sandbox, Mock REST API, Online Multi-Language Compilers, and Algorithmic Coding Problem Library.
-     - Home page (`/`) is 100% focused on SDET transformation; logged-in users route directly to `/dashboard`. Zero links, banners, or references to Kids Coding exist on the SDET site.
-   - **Kids Coding Platform (`/kids`)**:
-     - Dedicated exclusively to young learners and beginners (ages 10-18+).
-     - Contains only core programming tracks: Python (30 lessons), JavaScript (27 lessons), Java (29 lessons).
-     - Contains only beginner-friendly practice: Knowledge Testing Exercises (4-5 questions per section) and the Kids Game & Project Studio (9 playable starter projects).
-     - Operates with its own independent navigation and layout without any SDET tracks, automation frameworks, or links back to the SDET portal.
-3. **STRICT ROUTE-DRIVEN ISOLATION**:
+1. **SIGNED-IN SDET USERS EXPERIENCE ZERO KIDS / TUTORIAL CLUTTER**:
+   - Whoever signs up or logs into the IntelligentQA site is routed directly to `/dashboard` and can access all SDET features (Tracks, Sandboxes, QA Agents Suite, Interview Question Bank, Interview Griller) without any link, banner, or menu item of Kids programming.
+   - All SDET sidebars, top headers, and profile menus are 100% focused on SDET automation.
+2. **CODING TUTORIAL OPENS IN NEW TAB / WINDOW WITHOUT SIGN-UP REQUIRED**:
+   - The Coding Tutorial button on the public homepage opens in a new tab or browser window (`target="_blank" rel="noopener noreferrer"`).
+   - The entire Coding Tutorial site is accessible immediately without any sign up using Google or email.
+   - Unauthenticated visitors can view all programming lessons, use the split-screen compiler, complete all exercises with real-time feedback, and build games/projects in the project studio.
+3. **AI FEATURES ON CODING TUTORIAL REQUIRE USER GEMINI KEY**:
+   - To use AI features on the Coding Tutorial site (Ask AI coding assistant, code debugging), users must configure their free personal Google Gemini API key.
+   - If no Gemini key is provided, AI features remain cleanly disabled with an inline prompt to configure a key. No sign-up or login is required to add a Gemini key.
+4. **COMPLETE ERADICATION OF "KIDS" WORDING**:
+   - The word "Kids" has been eliminated across user-facing text, replaced with "Coding Tutorial", "Coding Courses", "Coding Library", and "Project Studio & Game Coding Workspace".
+5. **STRICT ROUTE-DRIVEN ISOLATION**:
    - The UI view is governed strictly by the requested route (`pathname?.startsWith('/kids')`), ensuring zero shared portal toggle state or cross-redirection between the two platforms.
 
 ---

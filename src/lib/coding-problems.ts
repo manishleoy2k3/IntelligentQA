@@ -1169,14 +1169,14 @@ class Program {
   },
 
   // ==========================================
-  // KIDS CODING PROBLEMS (AGES 10-14)
+  // CODING TUTORIAL PROBLEMS
   // Python, JavaScript, TypeScript & Java
   // ==========================================
   {
     id: 'kids-reverse-string',
     title: '🚀 Secret Space Rover Code (Reverse a Word)',
     difficulty: 'Easy',
-    category: 'Kids Coding (Ages 10-14)',
+    category: 'Coding Tutorial',
     description: `A Mars space rover received a reversed secret message from Earth!
 Write a program to reverse the word so the astronauts on Mars can read it clearly.
 
@@ -1198,7 +1198,7 @@ For example, if the rover receives "olleh", your program should output "hello".`
       },
     ],
     starterTemplates: {
-      python: `# Kids Coding: Secret Space Rover Code
+      python: `# Coding Tutorial: Secret Space Rover Code
 # Reverse the word so astronauts can read it!
 
 def reverse_message(word: str) -> str:
@@ -1208,7 +1208,7 @@ def reverse_message(word: str) -> str:
 print("Mars Message:", reverse_message("olleh"))  # Expected: hello
 print("Rocket Code:", reverse_message("tekcor"))  # Expected: rocket
 `,
-      javascript: `// Kids Coding: Secret Space Rover Code
+      javascript: `// Coding Tutorial: Secret Space Rover Code
 // Reverse the word so astronauts can read it!
 
 function reverseMessage(word) {
@@ -1218,7 +1218,7 @@ function reverseMessage(word) {
 console.log("Mars Message:", reverseMessage("olleh")); // Expected: hello
 console.log("Rocket Code:", reverseMessage("tekcor")); // Expected: rocket
 `,
-      typescript: `// Kids Coding: Secret Space Rover Code
+      typescript: `// Coding Tutorial: Secret Space Rover Code
 // Reverse the word so astronauts can read it!
 
 function reverseMessage(word: string): string {
@@ -1229,7 +1229,7 @@ console.log("Mars Message:", reverseMessage("olleh")); // Expected: hello
 console.log("Rocket Code:", reverseMessage("tekcor")); // Expected: rocket
 `,
       java: `public class Main {
-    // Kids Coding: Secret Space Rover Code
+    // Coding Tutorial: Secret Space Rover Code
     public static String reverseMessage(String word) {
         return new StringBuilder(word).reverse().toString();
     }
@@ -1260,7 +1260,7 @@ class Program {
     id: 'kids-magic-fruit-counter',
     title: '🍎 Magic Fruit Basket Counter',
     difficulty: 'Easy',
-    category: 'Kids Coding (Ages 10-14)',
+    category: 'Coding Tutorial',
     description: `Help the friendly picnic robot count fruits in the basket!
 Given a list of fruit names and a target fruit you are looking for, return the total count of how many times that fruit appears.`,
     constraints: [
@@ -1280,7 +1280,7 @@ Given a list of fruit names and a target fruit you are looking for, return the t
       },
     ],
     starterTemplates: {
-      python: `# Kids Coding: Magic Fruit Basket Counter
+      python: `# Coding Tutorial: Magic Fruit Basket Counter
 # Count how many target fruits are in the list!
 
 def count_fruits(fruits: list, target: str) -> int:
@@ -1293,7 +1293,7 @@ def count_fruits(fruits: list, target: str) -> int:
 basket = ["apple", "banana", "apple", "mango", "apple"]
 print("Apple count:", count_fruits(basket, "apple"))  # Expected: 3
 `,
-      javascript: `// Kids Coding: Magic Fruit Basket Counter
+      javascript: `// Coding Tutorial: Magic Fruit Basket Counter
 // Count how many target fruits are in the array!
 
 function countFruits(fruits, target) {
@@ -1309,7 +1309,7 @@ function countFruits(fruits, target) {
 const basket = ["apple", "banana", "apple", "mango", "apple"];
 console.log("Apple count:", countFruits(basket, "apple")); // Expected: 3
 `,
-      typescript: `// Kids Coding: Magic Fruit Basket Counter
+      typescript: `// Coding Tutorial: Magic Fruit Basket Counter
 // Count how many target fruits are in the array!
 
 function countFruits(fruits: string[], target: string): number {
@@ -1322,7 +1322,7 @@ console.log("Apple count:", countFruits(basket, "apple")); // Expected: 3
       java: `import java.util.*;
 
 public class Main {
-    // Kids Coding: Magic Fruit Basket Counter
+    // Coding Tutorial: Magic Fruit Basket Counter
     public static int countFruits(String[] fruits, String target) {
         int count = 0;
         for (String f : fruits) {
@@ -1362,7 +1362,7 @@ class Program {
     id: 'kids-superhero-power',
     title: '⚡ Superhero Max Power Level Finder',
     difficulty: 'Easy',
-    category: 'Kids Coding (Ages 10-14)',
+    category: 'Coding Tutorial',
     description: `The Superhero Academy needs to find their strongest champion for the cosmic tournament!
 Given an array of superhero power levels (positive numbers), find and return the maximum power on the team.`,
     constraints: [
@@ -1377,7 +1377,7 @@ Given an array of superhero power levels (positive numbers), find and return the
       },
     ],
     starterTemplates: {
-      python: `# Kids Coding: Superhero Max Power Finder
+      python: `# Coding Tutorial: Superhero Max Power Finder
 # Find the highest number in the list!
 
 def find_highest_power(powers: list) -> int:
@@ -1390,7 +1390,7 @@ def find_highest_power(powers: list) -> int:
 team_powers = [45, 88, 99, 72, 105, 60]
 print("Champion Power:", find_highest_power(team_powers))  # Expected: 105
 `,
-      javascript: `// Kids Coding: Superhero Max Power Finder
+      javascript: `// Coding Tutorial: Superhero Max Power Finder
 // Find the highest number in the array!
 
 function findHighestPower(powers) {
@@ -1406,7 +1406,7 @@ function findHighestPower(powers) {
 const teamPowers = [45, 88, 99, 72, 105, 60];
 console.log("Champion Power:", findHighestPower(teamPowers)); // Expected: 105
 `,
-      typescript: `// Kids Coding: Superhero Max Power Finder
+      typescript: `// Coding Tutorial: Superhero Max Power Finder
 // Find the highest number in the array!
 
 function findHighestPower(powers: number[]): number {
@@ -1417,7 +1417,7 @@ const teamPowers = [45, 88, 99, 72, 105, 60];
 console.log("Champion Power:", findHighestPower(teamPowers)); // Expected: 105
 `,
       java: `public class Main {
-    // Kids Coding: Superhero Max Power Finder
+    // Coding Tutorial: Superhero Max Power Finder
     public static int findHighestPower(int[] powers) {
         int highest = powers[0];
         for (int p : powers) {
@@ -1457,7 +1457,7 @@ class Program {
     id: 'kids-buzz-boom',
     title: '🐝 Buzz & Boom Game (Multiples of 3 and 5)',
     difficulty: 'Easy',
-    category: 'Kids Coding (Ages 10-14)',
+    category: 'Coding Tutorial',
     description: `Play the Buzz & Boom game from 1 to N!
 For every number from 1 to N:
 - If divisible by 3, output "Buzz"
@@ -1475,7 +1475,7 @@ For every number from 1 to N:
       },
     ],
     starterTemplates: {
-      python: `# Kids Coding: Buzz & Boom Game
+      python: `# Coding Tutorial: Buzz & Boom Game
 
 def buzz_boom(n: int) -> list:
     result = []
@@ -1492,7 +1492,7 @@ def buzz_boom(n: int) -> list:
 
 print(buzz_boom(15))
 `,
-      javascript: `// Kids Coding: Buzz & Boom Game
+      javascript: `// Coding Tutorial: Buzz & Boom Game
 
 function buzzBoom(n) {
     const result = [];
@@ -1512,7 +1512,7 @@ function buzzBoom(n) {
 
 console.log(buzzBoom(15));
 `,
-      typescript: `// Kids Coding: Buzz & Boom Game
+      typescript: `// Coding Tutorial: Buzz & Boom Game
 
 function buzzBoom(n: number): string[] {
     const result: string[] = [];
@@ -1582,7 +1582,7 @@ class Program {
     id: 'kids-mirror-word',
     title: '🪞 Magic Mirror Word Detective (Palindrome)',
     difficulty: 'Easy',
-    category: 'Kids Coding (Ages 10-14)',
+    category: 'Coding Tutorial',
     description: `A Magic Mirror word reads exactly the same forwards and backwards!
 Words like "radar", "racecar", "level", and "mom" are Magic Mirror words.
 Write a function that returns true if the word is a magic mirror word, else false.`,
@@ -1603,7 +1603,7 @@ Write a function that returns true if the word is a magic mirror word, else fals
       },
     ],
     starterTemplates: {
-      python: `# Kids Coding: Magic Mirror Word Detective
+      python: `# Coding Tutorial: Magic Mirror Word Detective
 
 def is_mirror_word(word: str) -> bool:
     return word == word[::-1]
@@ -1611,7 +1611,7 @@ def is_mirror_word(word: str) -> bool:
 print("racecar:", is_mirror_word("racecar"))  # True
 print("robot:", is_mirror_word("robot"))      # False
 `,
-      javascript: `// Kids Coding: Magic Mirror Word Detective
+      javascript: `// Coding Tutorial: Magic Mirror Word Detective
 
 function isMirrorWord(word) {
     const reversed = word.split('').reverse().join('');
@@ -1621,7 +1621,7 @@ function isMirrorWord(word) {
 console.log("racecar:", isMirrorWord("racecar")); // true
 console.log("robot:", isMirrorWord("robot"));     // false
 `,
-      typescript: `// Kids Coding: Magic Mirror Word Detective
+      typescript: `// Coding Tutorial: Magic Mirror Word Detective
 
 function isMirrorWord(word: string): boolean {
     const reversed = word.split('').reverse().join('');
@@ -1663,7 +1663,7 @@ class Program {
     id: 'kids-treasure-gold',
     title: '🪙 Treasure Island Gold Coin Collector',
     difficulty: 'Easy',
-    category: 'Kids Coding (Ages 10-14)',
+    category: 'Coding Tutorial',
     description: `A young pirate explorer is exploring a treasure map!
 Along the path:
 - Positive numbers represent gold coins collected.
@@ -1681,7 +1681,7 @@ Write a function to sum up only the positive gold coins collected along the trai
       },
     ],
     starterTemplates: {
-      python: `# Kids Coding: Treasure Island Gold Coin Collector
+      python: `# Coding Tutorial: Treasure Island Gold Coin Collector
 
 def collect_gold(coins: list) -> int:
     total_gold = 0
@@ -1693,7 +1693,7 @@ def collect_gold(coins: list) -> int:
 chest = [10, -5, 20, -2, 5]
 print("Total Gold Collected:", collect_gold(chest))  # Expected: 35
 `,
-      javascript: `// Kids Coding: Treasure Island Gold Coin Collector
+      javascript: `// Coding Tutorial: Treasure Island Gold Coin Collector
 
 function collectGold(coins) {
     let totalGold = 0;
@@ -1708,7 +1708,7 @@ function collectGold(coins) {
 const chest = [10, -5, 20, -2, 5];
 console.log("Total Gold Collected:", collectGold(chest)); // Expected: 35
 `,
-      typescript: `// Kids Coding: Treasure Island Gold Coin Collector
+      typescript: `// Coding Tutorial: Treasure Island Gold Coin Collector
 
 function collectGold(coins: number[]): number {
     return coins.filter(c => c > 0).reduce((sum, c) => sum + c, 0);

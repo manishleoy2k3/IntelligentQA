@@ -51,8 +51,8 @@ test('Requirement 6: Library with readily available coding problems for Kids 10-
   const codingLibFile = fs.readFileSync(path.join(__dirname, '../src/lib/coding-problems.ts'), 'utf8');
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
 
-  // Verify Kids category in coding problems
-  assert.ok(codingLibFile.includes('Kids Coding (Ages 10-14)'), 'Defines Kids Coding (Ages 10-14) category');
+  // Verify Coding Tutorial category in coding problems
+  assert.ok(codingLibFile.includes('Coding Tutorial'), 'Defines Coding Tutorial category');
   assert.ok(codingLibFile.includes('kids-reverse-string'), 'Includes Secret Space Rover Code problem');
   assert.ok(codingLibFile.includes('kids-magic-fruit-counter'), 'Includes Magic Fruit Basket Counter problem');
   assert.ok(codingLibFile.includes('kids-superhero-power'), 'Includes Superhero Max Power Finder problem');
@@ -92,6 +92,7 @@ test('Requirement 9: Complete Separation of Kids Coding Platform & SDET Site (No
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
   const topNavFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/top-nav.tsx'), 'utf8');
   const homePageFile = fs.readFileSync(path.join(__dirname, '../src/app/page.tsx'), 'utf8');
+  const askAiFile = fs.readFileSync(path.join(__dirname, '../src/components/home/ask-ai-widget.tsx'), 'utf8');
 
   // 1. Sidebar strictly separates Kids from SDET based on route with zero cross-portal switchers
   assert.ok(sidebarFile.includes('isKidsPortal'), 'Sidebar computes isKidsPortal mode');
@@ -103,10 +104,16 @@ test('Requirement 9: Complete Separation of Kids Coding Platform & SDET Site (No
   // 2. TopNav profile menu allows NO cross-portal switching at any point
   assert.ok(!topNavFile.includes('Switch to SDET Professional'), 'TopNav profile menu contains no SDET switcher');
   assert.ok(!topNavFile.includes('Switch to Kids Coding'), 'TopNav profile menu contains no Kids switcher');
+  assert.ok(!topNavFile.includes('Kids Coding Portal'), 'TopNav badge contains no Kids wording');
 
-  // 3. SDET Home page is 100% focused on SDET with zero Kids banner or cross-redirection
+  // 3. SDET Home page provides separate new-tab Coding Tutorial button for visitors without sign-up
   assert.ok(!homePageFile.includes('Free Programming for Kids'), 'Home page contains no Kids promotion');
-  assert.ok(homePageFile.includes("router.replace('/dashboard')"), 'SDET logged in users route directly to /dashboard');
+  assert.ok(homePageFile.includes('Coding Tutorial'), 'Home page features Coding Tutorial button');
+  assert.ok(homePageFile.includes('target="_blank"'), 'Coding Tutorial opens in new tab or browser window');
+  assert.ok(homePageFile.includes("router.replace('/dashboard')"), 'SDET logged in users route directly to /dashboard without Kids clutter');
+
+  // 4. AI features on Coding Tutorial strictly require Gemini Key, otherwise disabled
+  assert.ok(askAiFile.includes('isKidsPortal && !activeApiKey'), 'Coding Tutorial disables AI without Gemini Key');
 });
 
 test('Requirement 10: Strict User Data Isolation & Gemini Key Privacy Protection', () => {

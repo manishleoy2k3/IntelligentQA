@@ -154,7 +154,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         {portalMode === "kids" ? (
           <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Kids Coding Portal (10–14)</span>
+            <span>Coding Tutorial</span>
           </span>
         ) : (
           <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
@@ -350,7 +350,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                     <Layers className="w-4 h-4 text-blue-500 shrink-0" />
                     <span>
                       {pathname?.startsWith("/kids")
-                        ? "Kids Coding Hub"
+                        ? "Coding Tutorial Hub"
                         : "Learning Dashboard"}
                     </span>
                   </Link>
