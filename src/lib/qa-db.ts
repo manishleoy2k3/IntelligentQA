@@ -1415,45 +1415,21 @@ export const QADatabase = {
       'intelligentqa_db_kids_courses',
       null
     );
-    if (stored && stored.python && stored.javascript && stored.java) {
-      // Auto-upgrade database if comprehensive standard curriculum expanded
-      const isUpToDate =
-        stored.python.concepts.length >= LANGUAGE_COURSES.python.concepts.length &&
-        stored.javascript.concepts.length >= LANGUAGE_COURSES.javascript.concepts.length &&
-        stored.java.concepts.length >= LANGUAGE_COURSES.java.concepts.length;
+    const CURRICULUM_VERSION = 'v3_merged_intro_syntax_numbered';
+    const storedVersion = getStoredItem<string>('intelligentqa_db_kids_courses_version', '');
 
-      if (isUpToDate) {
-        return stored;
-      }
-
-      // Merge and preserve any custom added concepts while upgrading to comprehensive curriculum
-      const upgraded: Record<'python' | 'javascript' | 'java', LanguageCourseMeta> = {
-        python: {
-          ...LANGUAGE_COURSES.python,
-          concepts: [
-            ...LANGUAGE_COURSES.python.concepts,
-            ...stored.python.concepts.filter(c => !LANGUAGE_COURSES.python.concepts.some(def => def.id === c.id)),
-          ],
-        },
-        javascript: {
-          ...LANGUAGE_COURSES.javascript,
-          concepts: [
-            ...LANGUAGE_COURSES.javascript.concepts,
-            ...stored.javascript.concepts.filter(c => !LANGUAGE_COURSES.javascript.concepts.some(def => def.id === c.id)),
-          ],
-        },
-        java: {
-          ...LANGUAGE_COURSES.java,
-          concepts: [
-            ...LANGUAGE_COURSES.java.concepts,
-            ...stored.java.concepts.filter(c => !LANGUAGE_COURSES.java.concepts.some(def => def.id === c.id)),
-          ],
-        },
-      };
-
-      setStoredItem('intelligentqa_db_kids_courses', upgraded);
-      return upgraded;
+    if (
+      storedVersion === CURRICULUM_VERSION &&
+      stored &&
+      stored.python &&
+      stored.javascript &&
+      stored.java &&
+      stored.python.concepts.length === LANGUAGE_COURSES.python.concepts.length
+    ) {
+      return stored;
     }
+
+    setStoredItem('intelligentqa_db_kids_courses_version', CURRICULUM_VERSION);
     setStoredItem('intelligentqa_db_kids_courses', LANGUAGE_COURSES);
     return LANGUAGE_COURSES;
   },

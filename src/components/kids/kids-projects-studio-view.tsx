@@ -192,8 +192,14 @@ export default function KidsProjectsStudioView({ language }: KidsProjectsStudioV
       if (!res.ok || data.error) {
         setTerminalError(data.error || 'Execution encountered an issue.');
         setTerminalOutput('');
+      } else if (!data.success && data.stderr && !data.stdout) {
+        setTerminalError(data.stderr);
+        setTerminalOutput('');
       } else {
-        const out = data.stdout || 'Program completed with no standard output.';
+        const out = data.stdout || (data.stderr ? '' : 'Program completed with no standard output.');
+        if (data.stderr) {
+          setTerminalError(data.stderr);
+        }
         setTerminalOutput(out);
       }
     } catch (err: any) {

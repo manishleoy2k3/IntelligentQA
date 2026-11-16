@@ -92,8 +92,17 @@ function getPythonBinary(): { python: string; available: boolean } {
 }
 
 function extractJavaClassName(code: string): string {
-  const match = code.match(/(?:public\s+)?(?:final\s+)?(?:abstract\s+)?class\s+([A-Za-z0-9_]+)/);
-  return match ? match[1] : 'Main';
+  // 1. If there is a public class, JLS mandates the file name must match the public class
+  const publicMatch = code.match(/public\s+(?:final\s+)?class\s+([A-Za-z0-9_]+)/);
+  if (publicMatch) return publicMatch[1];
+
+  // 2. Otherwise find the class that declares main method
+  const mainMatch = code.match(/class\s+([A-Za-z0-9_]+)[^{]*\{[\s\S]*?public\s+static\s+void\s+main/);
+  if (mainMatch) return mainMatch[1];
+
+  // 3. Match any non-abstract class
+  const classMatch = code.match(/(?:final\s+)?class\s+([A-Za-z0-9_]+)/);
+  return classMatch ? classMatch[1] : 'Main';
 }
 
 function safeRequire(modName: string) {
@@ -589,6 +598,12 @@ function simulatePythonInProcess(
         continue;
       }
 
+      // Handle standard python module imports by converting to comment
+      if (trimmed.match(/^(?:import\s+[a-zA-Z0-9_, ]+|from\s+[a-zA-Z0-9_.]+\s+import\s+.*)$/)) {
+        jsLines.push(`// ${trimmed}`);
+        continue;
+      }
+
       const indent = (rawLine.match(/^(\s*)/)?.[1] || '').length;
 
       while (indentStack.length > 1 && indent < indentStack[indentStack.length - 1]) {
@@ -597,6 +612,21 @@ function simulatePythonInProcess(
       }
 
       let line = trimmed;
+
+      // Handle class definitions
+      if (line.match(/^class\s+([A-Za-z0-9_]+)(?:\(([^)]*)\))?\s*:/)) {
+        const classMatch = line.match(/^class\s+([A-Za-z0-9_]+)(?:\(([^)]*)\))?\s*:/);
+        const className = classMatch?.[1];
+        const baseClass = classMatch?.[2]?.trim();
+        if (baseClass) {
+          line = `class ${className} extends ${baseClass} {`;
+        } else {
+          line = `class ${className} {`;
+        }
+        indentStack.push(indent + 4);
+        jsLines.push(' '.repeat(indent) + line);
+        continue;
+      }
 
       // Convert f-strings: f"Average score: {average:.1f}"
       line = line.replace(/f"([^"]*)"/g, (_m, content) => {
@@ -715,6 +745,29 @@ function simulatePythonInProcess(
       int: (x: any) => parseInt(x, 10),
       float: (x: any) => parseFloat(x),
       bool: Boolean,
+      random: {
+        randint: (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min,
+        choice: (arr: any[]) => (Array.isArray(arr) && arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined),
+        random: () => Math.random(),
+        shuffle: (arr: any[]) => {
+          if (Array.isArray(arr)) {
+            for (let i = arr.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+          }
+          return arr;
+        },
+      },
+      sys: {
+        version: '3.12.0 (IntelligentQA VM)',
+        stdout: {
+          write: (msg: any) => {
+            output += String(msg);
+          },
+        },
+      },
+      __name__: '__main__',
       Math,
       JSON,
       Array,

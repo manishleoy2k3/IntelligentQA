@@ -3,59 +3,43 @@ import { CourseConcept } from '../kids-courses-types';
 export const JAVASCRIPT_CONCEPTS: CourseConcept[] = [
   {
     id: 'intro',
-    title: 'JavaScript Intro & Syntax',
+    title: 'JavaScript Intro, Get Started & Syntax',
     order: 1,
     language: 'javascript',
-    summary: 'The language of the web, modern V8 runtime, dynamic typing, and fundamental JavaScript syntax.',
-    overview: 'JavaScript is a high-level, interpreted or just-in-time compiled language with first-class functions. Originally designed for web browsers, modern JavaScript runs everywhere—including high-performance servers (Node.js, Bun) and automation frameworks (Playwright, Cypress).',
+    summary: 'What is JavaScript, Node.js & browser runtimes, script execution, statements, and semicolon rules.',
+    overview: 'JavaScript is a high-level, dynamic, single-threaded language created by Brendan Eich in 1995. It powers the modern web, backend APIs via Node.js, and browser-driven end-to-end automation frameworks like Playwright and Cypress. Code is parsed and compiled Just-In-Time (JIT) by engines like Google V8.',
     keyPoints: [
-      'Executes on client browsers and server-side environments via Node.js',
-      'Dynamic, weakly-typed language with automatic memory management',
-      'Uses C-style syntax with curly braces {}, parentheses (), and semicolons',
-      'Supports procedural, object-oriented, and functional programming paradigms',
+      'Multi-paradigm: supports event-driven, functional, and object-oriented programming styles',
+      'Runtimes: runs natively inside every modern web browser and on server backends via Node.js / Bun',
+      'Syntax: uses curly braces {} for code blocks and camelCase for identifier naming',
+      'Statements & Semicolons: JavaScript features Automatic Semicolon Insertion (ASI), though explicit semicolons are standard',
     ],
-    starterCode: `// 1. JavaScript Intro & Syntax
+    starterCode: `// 1. JavaScript Intro, Get Started & Syntax
 const language = "JavaScript";
-const version = "ECMAScript 2024";
-const isFun = true;
+const runtime = typeof window !== "undefined" ? "Browser (DOM)" : "Node.js (Server/SDET)";
+const standard = "ECMAScript 2026 (ESNext)";
 
-console.log(\`Welcome to \${language} (\${version})!\`);
-console.log("Core Automation Tools: Playwright, Cypress, WebdriverIO");
-console.log("Interactive: " + isFun);
+console.log("⚡ Welcome to " + language + "!");
+console.log("Runtime Environment: " + runtime);
+console.log("Language Standard: " + standard);
+
+// Syntax Demo: Code Block & Condition
+const isReady = true;
+if (isReady) {
+  console.log("  ✓ Syntax Block: Curly braces define execution scope");
+  console.log("  ✓ Test automation ready!");
+}
 `,
     bestPractices: [
-      'Always write clean ECMAScript 2020+ code with const and let; avoid deprecated var.',
-      'Use modern template literals (\`Hello \${name}\`) instead of string concatenation with +.',
-    ],
-  },
-  {
-    id: 'get-started',
-    title: 'JavaScript Get Started',
-    order: 2,
-    language: 'javascript',
-    summary: 'Running JavaScript in browsers, script tags, Node.js terminal execution, and browser console.',
-    overview: 'JavaScript can be run directly inside browser developer tools, linked via <script src="app.js"></script> tags in HTML files, or executed in standalone headless engines with node app.js.',
-    keyPoints: [
-      'In browsers, scripts manipulate the Document Object Model (DOM)',
-      'In Node.js, JavaScript provides filesystem, networking, and server capabilities',
-      'The console.log() method outputs diagnostics to the developer console',
-      'No compilation step needed: engines compile source to bytecode at runtime',
-    ],
-    starterCode: `// 2. JavaScript Get Started
-const runtime = typeof window !== 'undefined' ? 'Browser DOM' : 'Node.js / V8 Sandbox';
-
-console.log("JavaScript Get Started!");
-console.log("Active Environment:", runtime);
-console.log("Ready to execute live automation scripts.");
-`,
-    bestPractices: [
-      'Use "use strict"; mode in scripts to catch accidental global variable leaks and silent errors.',
+      'Always write modern ES6+ code using const and let rather than legacy var.',
+      'Use strict equality (===) to prevent unexpected type coercion bugs.',
+      'Format consistently using Prettier or ESLint standards across your test repositories.',
     ],
   },
   {
     id: 'output',
     title: 'JavaScript Output',
-    order: 3,
+    order: 2,
     language: 'javascript',
     summary: 'console.log(), console.error(), console.table(), and template literals formatting.',
     overview: 'JavaScript provides rich logging utilities via the console object. Beyond simple logging, you can format structured tables with console.table(), warn with console.warn(), and time execution with console.time().',
@@ -65,7 +49,7 @@ console.log("Ready to execute live automation scripts.");
       'console.time() and console.timeEnd() measure code execution speed',
       'Template literals (\`...\`) allow multiline strings and embedded expressions',
     ],
-    starterCode: `// 3. JavaScript Output & Console Tools
+    starterCode: `// 2. JavaScript Output & Console Tools
 const testSuite = {
   suite: "Payment Gateway",
   passed: 24,
@@ -91,7 +75,7 @@ console.table(testCases);
   {
     id: 'comments',
     title: 'JavaScript Comments',
-    order: 4,
+    order: 3,
     language: 'javascript',
     summary: 'Single-line comments (//), multi-line comments (/* ... */), and JSDoc annotations.',
     overview: 'Comments explain code logic and document parameters. JSDoc comments (@param, @returns) enable rich TypeScript-like IDE autocompletion and type validation in plain JavaScript files.',
@@ -100,7 +84,7 @@ console.table(testCases);
       'Multi-line comments are enclosed between /* and */',
       'JSDoc blocks start with /** and document types with tags like @param and @returns',
     ],
-    starterCode: `// 4. JavaScript Comments & JSDoc
+    starterCode: `// 3. JavaScript Comments & JSDoc
 
 // Single line comment: Config URL
 const BASE_URL = "https://staging.intelligentqa.com";
@@ -126,7 +110,7 @@ console.log("HTTP 404 is success:", isSuccess(404));
   {
     id: 'variables',
     title: 'JavaScript Variables & Scope',
-    order: 5,
+    order: 4,
     language: 'javascript',
     summary: 'Declaring variables with let, const, and var, block scope, temporal dead zone, and reassignment.',
     overview: 'Modern JavaScript uses const for immutable references and let for mutable variables. Both are block-scoped. The legacy var keyword is function-scoped and subject to hoisting bugs.',
@@ -136,7 +120,7 @@ console.log("HTTP 404 is success:", isSuccess(404));
       'var is hoisted and function-scoped; avoid in modern development',
       'Naming convention: camelCase for variables/functions, UPPER_SNAKE_CASE for constants',
     ],
-    starterCode: `// 5. JavaScript Variables: const vs let
+    starterCode: `// 4. JavaScript Variables: const vs let
 const MAX_RETRIES = 3; // Cannot be reassigned
 let currentAttempt = 0; // Can be reassigned
 
@@ -156,7 +140,7 @@ console.log("Final Attempts:", currentAttempt);
   {
     id: 'data-types',
     title: 'JavaScript Data Types & Primitives',
-    order: 6,
+    order: 5,
     language: 'javascript',
     summary: 'The 7 primitive types (string, number, boolean, null, undefined, symbol, bigint) and objects.',
     overview: 'JavaScript has 7 primitive types that are immutable and passed by value, and one complex Object type (including arrays, functions, and plain objects) that is mutable and passed by reference.',
@@ -166,7 +150,7 @@ console.log("Final Attempts:", currentAttempt);
       'Primitives are stored directly on the call stack and compared by value',
       'Objects and Arrays are stored in heap memory and compared by reference',
     ],
-    starterCode: `// 6. JavaScript Data Types & Type Inspection
+    starterCode: `// 5. JavaScript Data Types & Type Inspection
 const items = [
   "Playwright",
   42,
@@ -191,7 +175,7 @@ items.forEach(item => {
   {
     id: 'numbers',
     title: 'JavaScript Numbers & Math',
-    order: 7,
+    order: 6,
     language: 'javascript',
     summary: 'Double-precision floats, integer safety, NaN, Infinity, and the built-in Math object.',
     overview: 'All numbers in JavaScript are 64-bit IEEE 754 floating-point numbers. The Math object provides static methods for trigonometry, rounding, powers, and pseudorandom numbers.',
@@ -201,7 +185,7 @@ items.forEach(item => {
       'Number.isNaN(x) is the only reliable way to check for NaN (NaN === NaN is false!)',
       'Math.floor(), Math.ceil(), Math.round(), Math.random(), Math.max()',
     ],
-    starterCode: `// 7. JavaScript Numbers and Math Operations
+    starterCode: `// 6. JavaScript Numbers and Math Operations
 const price = 49.99;
 const discount = 0.15;
 const discountedPrice = price * (1 - discount);
@@ -224,7 +208,7 @@ console.log("Random Test Port:", getRandomInt(3000, 9000));
   {
     id: 'casting',
     title: 'JavaScript Type Casting & Coercion',
-    order: 8,
+    order: 7,
     language: 'javascript',
     summary: 'Explicit conversion (Number(), String(), Boolean()) vs implicit coercion, and strict equality (===).',
     overview: 'JavaScript can convert types explicitly or implicitly. Implicit coercion happens automatically when operators like + or == are applied to mismatched types, often causing unexpected bugs.',
@@ -234,7 +218,7 @@ console.log("Random Test Port:", getRandomInt(3000, 9000));
       'Strict equality === checks both value and type without coercion',
       'Loose equality == coerces types (e.g. "0" == 0 is true, but "0" === 0 is false)',
     ],
-    starterCode: `// 8. JavaScript Type Casting & Strict Equality
+    starterCode: `// 7. JavaScript Type Casting & Strict Equality
 const rawInput = "100";
 const explicitNumber = Number(rawInput);
 const unaryNumber = +rawInput;
@@ -256,7 +240,7 @@ console.log('null === undefined:', null === undefined);
   {
     id: 'strings',
     title: 'JavaScript Strings & Template Literals',
-    order: 9,
+    order: 8,
     language: 'javascript',
     summary: 'Indexing, slicing, substring, trim, split, replace, regular expressions, and template literals.',
     overview: 'Strings are immutable UTF-16 character sequences. Modern JavaScript provides rich string methods along with backtick template literals for interpolation and multiline strings.',
@@ -266,7 +250,7 @@ console.log('null === undefined:', null === undefined);
       '.slice(start, end) extracts parts of a string without modifying the original',
       '.split(delimiter) and .join(delimiter) convert strings to arrays and back',
     ],
-    starterCode: `// 9. JavaScript Strings & Methods
+    starterCode: `// 8. JavaScript Strings & Methods
 const rawHeader = "   Authorization: Bearer eyJhbGciOiJIUzI1Ni...   ";
 
 const cleaned = rawHeader.trim();
@@ -288,7 +272,7 @@ console.log(\`Token Preview: \${token.slice(0, 15)}...\`);
   {
     id: 'booleans',
     title: 'JavaScript Booleans & Truthy/Falsy',
-    order: 10,
+    order: 9,
     language: 'javascript',
     summary: 'Boolean logic, truthy and falsy values, logical operators (&&, ||, !), and nullish coalescing (??).',
     overview: 'In JavaScript, any value can be evaluated in a boolean context. Values are categorized as either truthy or falsy. Modern JavaScript also includes the nullish coalescing operator ?? for safe defaults.',
@@ -298,7 +282,7 @@ console.log(\`Token Preview: \${token.slice(0, 15)}...\`);
       '|| returns the first truthy value or fallback',
       '?? (nullish coalescing) only falls back if value is null or undefined (not 0 or "")',
     ],
-    starterCode: `// 10. JavaScript Booleans & Nullish Coalescing (??)
+    starterCode: `// 9. JavaScript Booleans & Nullish Coalescing (??)
 const timeoutConfig = 0; // 0 is a valid timeout, but falsy!
 
 // || replaces 0 with 5000 because 0 is falsy! (Bug!)
@@ -322,7 +306,7 @@ console.log("Boolean({}):", Boolean({})); // true!
   {
     id: 'operators',
     title: 'JavaScript Operators & Expressions',
-    order: 11,
+    order: 10,
     language: 'javascript',
     summary: 'Arithmetic, assignment, comparison, logical, ternary, optional chaining (?.), and typeof.',
     overview: 'Operators perform computations, assignments, and structural property checks. Optional chaining ?. prevents "Cannot read properties of undefined" runtime crashes.',
@@ -332,7 +316,7 @@ console.log("Boolean({}):", Boolean({})); // true!
       'Optional chaining: user?.profile?.email returns undefined instead of throwing error',
       'Ternary operator: condition ? exprIfTrue : exprIfFalse',
     ],
-    starterCode: `// 11. JavaScript Operators & Optional Chaining (?.)
+    starterCode: `// 10. JavaScript Operators & Optional Chaining (?.)
 const userResponse = {
   id: 101,
   name: "Alex",
@@ -356,7 +340,7 @@ console.log(\`Memory: \${memoryMb} MB (\${tier})\`);
   {
     id: 'arrays',
     title: 'JavaScript Arrays & Methods',
-    order: 12,
+    order: 11,
     language: 'javascript',
     summary: 'Array creation, indexing, mutating methods (push, pop, shift, unshift, splice), and slicing.',
     overview: 'JavaScript arrays are ordered lists of values. They are dynamic, resizable, and can hold mixed types. Arrays provide built-in methods for queue and stack behaviors.',
@@ -366,7 +350,7 @@ console.log(\`Memory: \${memoryMb} MB (\${tier})\`);
       'slice(start, end) returns a shallow copy of a portion of an array without mutating',
       'splice(start, count, ...items) mutates the array by deleting or inserting elements in place',
     ],
-    starterCode: `// 12. JavaScript Arrays & Operations
+    starterCode: `// 11. JavaScript Arrays & Operations
 const testQueue = ["Login Test", "Cart Test"];
 
 // Queue operations
@@ -389,7 +373,7 @@ console.log("Next Two:", nextTwo);
   {
     id: 'array-iteration',
     title: 'JavaScript Array Iteration (map, filter, reduce)',
-    order: 13,
+    order: 12,
     language: 'javascript',
     summary: 'Functional array processing using forEach, map, filter, find, some, every, and reduce.',
     overview: 'Modern JavaScript favors functional transformations over traditional index-based for loops. Higher-order methods like map and filter produce clean, declarative data processing pipelines.',
@@ -399,7 +383,7 @@ console.log("Next Two:", nextTwo);
       'reduce(fn, init) accumulates all elements into a single computed value',
       'find(fn) returns the first matching element, or undefined if none match',
     ],
-    starterCode: `// 13. JavaScript Array Iteration Pipelines
+    starterCode: `// 12. JavaScript Array Iteration Pipelines
 const testRuns = [
   { id: 1, name: "API Auth", durationMs: 120, passed: true },
   { id: 2, name: "UI Checkout", durationMs: 850, passed: false },
@@ -427,7 +411,7 @@ console.log(\`Total Execution Time: \${totalDuration} ms\`);
   {
     id: 'objects',
     title: 'JavaScript Objects & Properties',
-    order: 14,
+    order: 13,
     language: 'javascript',
     summary: 'Object literals, dot and bracket notation, methods, Object.keys(), Object.values(), and Object.entries().',
     overview: 'Objects are collections of key-value properties. Keys are strings (or Symbols), and values can be any type including functions (methods). Objects form the foundation of JavaScript architecture.',
@@ -437,7 +421,7 @@ console.log(\`Total Execution Time: \${totalDuration} ms\`);
       'Object.keys(), Object.values(), and Object.entries() iterate object keys and values',
       'Object.freeze(obj) prevents adding, deleting, or modifying properties',
     ],
-    starterCode: `// 14. JavaScript Objects & Inspection
+    starterCode: `// 13. JavaScript Objects & Inspection
 const environmentConfig = {
   env: "staging",
   baseUrl: "https://staging.app.com",
@@ -463,7 +447,7 @@ for (const [key, value] of Object.entries(environmentConfig)) {
   {
     id: 'if-else',
     title: 'JavaScript If...Else & Conditions',
-    order: 15,
+    order: 14,
     language: 'javascript',
     summary: 'if, else if, else branching, nested conditions, and ternary operator expressions.',
     overview: 'Conditional statements control the execution flow of programs based on boolean expressions.',
@@ -472,7 +456,7 @@ for (const [key, value] of Object.entries(environmentConfig)) {
       'Curly braces are recommended even for single-line blocks to avoid bugs',
       'Ternary conditional: const status = score >= 70 ? "Pass" : "Fail"',
     ],
-    starterCode: `// 15. JavaScript If...Else & Guard Clauses
+    starterCode: `// 14. JavaScript If...Else & Guard Clauses
 function evaluateStatus(statusCode) {
   if (statusCode >= 200 && statusCode < 300) {
     return "SUCCESS: Request completed successfully.";
@@ -496,7 +480,7 @@ console.log(evaluateStatus(503));
   {
     id: 'switch',
     title: 'JavaScript Switch Statements',
-    order: 16,
+    order: 15,
     language: 'javascript',
     summary: 'The switch statement, case clauses, break keyword, and default fallback.',
     overview: 'A switch statement evaluates an expression matching against multiple case clauses using strict equality (===).',
@@ -505,7 +489,7 @@ console.log(evaluateStatus(503));
       'break terminates the switch block and prevents fall-through into next cases',
       'default clause executes when no cases match',
     ],
-    starterCode: `// 16. JavaScript Switch Statement
+    starterCode: `// 15. JavaScript Switch Statement
 const browser = "firefox";
 
 switch (browser.toLowerCase()) {
@@ -532,7 +516,7 @@ switch (browser.toLowerCase()) {
   {
     id: 'while-loops',
     title: 'JavaScript While & Do-While Loops',
-    order: 17,
+    order: 16,
     language: 'javascript',
     summary: 'while loops, do...while loops, break, and continue statements.',
     overview: 'A while loop executes statements as long as its condition evaluates to true. A do...while loop always executes its body at least once before testing the condition.',
@@ -541,7 +525,7 @@ switch (browser.toLowerCase()) {
       'do { ... } while (condition); executes body once before checking condition',
       'break exits the loop immediately; continue skips to the next iteration',
     ],
-    starterCode: `// 17. JavaScript While & Do-While Loops
+    starterCode: `// 16. JavaScript While & Do-While Loops
 let attempts = 0;
 const maxAttempts = 3;
 let connected = false;
@@ -569,7 +553,7 @@ do {
   {
     id: 'for-loops',
     title: 'JavaScript For Loops (for, for...in, for...of)',
-    order: 18,
+    order: 17,
     language: 'javascript',
     summary: 'Standard for loops, for...of for iterables, and for...in for object keys.',
     overview: 'JavaScript provides 3 distinct for loop constructs: traditional for(;;), for...of for iterating array values and strings, and for...in for iterating enumerable object property keys.',
@@ -579,7 +563,7 @@ do {
       'for (const key in object) iterates property keys of objects',
       'Never use for...in on arrays because it iterates arbitrary property names and indices as strings',
     ],
-    starterCode: `// 18. JavaScript For Loops Comparison
+    starterCode: `// 17. JavaScript For Loops Comparison
 const testSuites = ["Auth", "Billing", "Search"];
 
 // 1. for...of loop (Best for Arrays!)
@@ -602,7 +586,7 @@ for (const key in metrics) {
   {
     id: 'functions',
     title: 'JavaScript Functions & Arrow Functions',
-    order: 19,
+    order: 18,
     language: 'javascript',
     summary: 'Function declarations, expressions, arrow functions (=>), default parameters, and rest parameters.',
     overview: 'Functions encapsulate reusable behavior. Modern JavaScript uses arrow functions () => {} extensively for concise callbacks and lexical this binding.',
@@ -612,7 +596,7 @@ for (const key in metrics) {
       'Default parameters: function connect(port = 8080) { ... }',
       'Rest parameters gather arguments into an array: function logAll(...messages) { ... }',
     ],
-    starterCode: `// 19. JavaScript Functions & Arrow Syntax
+    starterCode: `// 18. JavaScript Functions & Arrow Syntax
 // Standard Function
 function add(a, b = 0) {
   return a + b;
@@ -640,7 +624,7 @@ console.log(summarizeTests("Smoke Suite", true, true, false, true));
   {
     id: 'scope',
     title: 'JavaScript Scope & Closures',
-    order: 20,
+    order: 19,
     language: 'javascript',
     summary: 'Lexical scope, block scope, hoisting, closures, and data encapsulation.',
     overview: 'A closure is the combination of a function bundled together with references to its surrounding lexical state. Closures allow inner functions to access outer scope variables even after the outer function has finished executing.',
@@ -649,7 +633,7 @@ console.log(summarizeTests("Smoke Suite", true, true, false, true));
       'Lexical scope: inner functions have access to variables in outer parent scopes',
       'Closures enable private state and factory functions',
     ],
-    starterCode: `// 20. JavaScript Closures for Encapsulation
+    starterCode: `// 19. JavaScript Closures for Encapsulation
 function createCounter(initialValue = 0) {
   let count = initialValue; // Private variable hidden by closure!
 
@@ -672,7 +656,7 @@ console.log("Current Count:", testIdGenerator.getCount());
   {
     id: 'destructuring',
     title: 'JavaScript Destructuring & Spread/Rest',
-    order: 21,
+    order: 20,
     language: 'javascript',
     summary: 'Array destructuring, object destructuring, spread operator (...), and rest parameters.',
     overview: 'Destructuring unpacks values from arrays or properties from objects into distinct variables. The spread operator (...) expands arrays and objects into individual elements or shallow copies.',
@@ -682,7 +666,7 @@ console.log("Current Count:", testIdGenerator.getCount());
       'Spread operator shallow clones objects: const clone = { ...original, updatedKey: "new" }',
       'Rest parameters collect remaining items: const [head, ...tail] = [1, 2, 3]',
     ],
-    starterCode: `// 21. JavaScript Destructuring & Spread Operator
+    starterCode: `// 20. JavaScript Destructuring & Spread Operator
 const config = {
   env: "staging",
   retries: 2,
@@ -713,7 +697,7 @@ console.log(\`Resolution: \${width}x\${height}\`);
   {
     id: 'sets-maps',
     title: 'JavaScript Sets & Maps',
-    order: 22,
+    order: 21,
     language: 'javascript',
     summary: 'The Set collection for unique values and Map collection for arbitrary-key dictionaries.',
     overview: 'Set and Map are modern ES6 collection types. Set stores unique values, eliminating duplicates. Map stores key-value pairs where keys can be any type, including objects and functions.',
@@ -723,7 +707,7 @@ console.log(\`Resolution: \${width}x\${height}\`);
       'Map preserves insertion order and provides .size property and .get()/.set() methods',
       'Fast O(1) average lookup performance for both Set and Map',
     ],
-    starterCode: `// 22. JavaScript Set and Map
+    starterCode: `// 21. JavaScript Set and Map
 // Deduplicating arrays with Set
 const browsers = ["Chrome", "Firefox", "Chrome", "Edge", "Firefox"];
 const uniqueBrowsers = [...new Set(browsers)];
@@ -745,7 +729,7 @@ console.log("Retrieved Data:", testSessionMap.get(sessionKey));
   {
     id: 'classes',
     title: 'JavaScript Classes & OOP',
-    order: 23,
+    order: 22,
     language: 'javascript',
     summary: 'Class declarations, constructor, instance methods, static methods, and private fields (#).',
     overview: 'Classes in JavaScript provide a clean syntax over JavaScript prototype-based inheritance. ES2022 introduces private fields prefixed with # for true private encapsulation.',
@@ -755,7 +739,7 @@ console.log("Retrieved Data:", testSessionMap.get(sessionKey));
       'Private fields and methods are prefixed with # (#privateField) and inaccessible from outside',
       'this references the current object instance',
     ],
-    starterCode: `// 23. JavaScript Classes & Private Fields
+    starterCode: `// 22. JavaScript Classes & Private Fields
 class BasePage {
   #authToken; // Private field (ES2022)
 
@@ -790,7 +774,7 @@ console.log("Auth:", loginPage.getAuthHeader());
   {
     id: 'inheritance',
     title: 'JavaScript Inheritance & Prototypes',
-    order: 24,
+    order: 23,
     language: 'javascript',
     summary: 'Subclasses with extends, super() constructor calls, method overriding, and prototype chains.',
     overview: 'Inheritance allows a subclass to inherit attributes and methods from a parent class using the extends keyword. Subclasses can override parent methods and call super() to invoke parent constructors.',
@@ -800,7 +784,7 @@ console.log("Auth:", loginPage.getAuthHeader());
       'Subclasses can override parent methods to specialize behavior',
       'instanceof operator verifies if an object derives from a specific class',
     ],
-    starterCode: `// 24. JavaScript Inheritance with extends & super
+    starterCode: `// 23. JavaScript Inheritance with extends & super
 class AutomationTest {
   constructor(name) {
     this.name = name;
@@ -835,7 +819,7 @@ console.log("Is instance of AutomationTest:", test instanceof AutomationTest);
   {
     id: 'try-catch',
     title: 'JavaScript Try...Catch & Error Handling',
-    order: 25,
+    order: 24,
     language: 'javascript',
     summary: 'try, catch, finally blocks, throwing Custom Errors, and Error object properties.',
     overview: 'Exceptions in JavaScript are handled using try...catch blocks. Unhandled errors crash execution, while handled errors allow resilient recovery and diagnostic logging.',
@@ -845,7 +829,7 @@ console.log("Is instance of AutomationTest:", test instanceof AutomationTest);
       'finally always executes regardless of whether an error occurred',
       'throw new Error("message") explicitly creates and triggers an exception',
     ],
-    starterCode: `// 25. JavaScript Error Handling & Custom Exceptions
+    starterCode: `// 24. JavaScript Error Handling & Custom Exceptions
 class ElementNotFoundError extends Error {
   constructor(selector) {
     super(\`Element matching selector "\${selector}" not found on page.\`);
@@ -881,7 +865,7 @@ try {
   {
     id: 'async-await',
     title: 'JavaScript Async/Await & Promises',
-    order: 26,
+    order: 25,
     language: 'javascript',
     summary: 'Promises (.then, .catch), async functions, await keyword, Promise.all(), and asynchronous patterns.',
     overview: 'JavaScript is single-threaded and non-blocking. Asynchronous operations (HTTP requests, browser automation commands, timer delays) return Promises. async/await provides synchronous-like syntax for asynchronous workflows.',
@@ -891,7 +875,7 @@ try {
       'await pauses function execution until the Promise resolves or rejects',
       'Promise.all([p1, p2]) runs multiple independent asynchronous operations concurrently',
     ],
-    starterCode: `// 26. JavaScript Async/Await & Concurrent Promises
+    starterCode: `// 25. JavaScript Async/Await & Concurrent Promises
 // Simulated asynchronous API fetch using Promise
 const simulateFetchUser = (userId) => {
   return new Promise((resolve, reject) => {
@@ -932,7 +916,7 @@ executeTestSuite();
   {
     id: 'modules',
     title: 'JavaScript Modules (ESM & CommonJS)',
-    order: 27,
+    order: 26,
     language: 'javascript',
     summary: 'export, import, export default, named exports, and differences with CommonJS (require).',
     overview: 'Modern JavaScript uses ES Modules (ESM) with import and export statements. Node.js traditionally used CommonJS with require() and module.exports.',
@@ -942,7 +926,7 @@ executeTestSuite();
       'ES modules are statically analyzed and hoisted',
       'CommonJS uses require("module") and module.exports',
     ],
-    starterCode: `// 27. JavaScript Modules Simulation
+    starterCode: `// 26. JavaScript Modules Simulation
 // In an ES Module file (utils.js):
 // export const API_VERSION = "v2";
 // export default class ApiClient { ... }
@@ -964,7 +948,7 @@ console.log("Imported Function:", MathModule.square(9));
   {
     id: 'advanced',
     title: 'JavaScript Advanced Concepts & Event Loop',
-    order: 28,
+    order: 27,
     language: 'javascript',
     summary: 'The Event Loop, Call Stack, Microtask queue vs Macrotask queue, and Proxy objects.',
     overview: 'The JavaScript runtime uses a single-threaded Event Loop to orchestrate synchronous execution, Microtasks (Promise callbacks, queueMicrotask), and Macrotasks (setTimeout, setInterval). Proxy objects allow intercepting and customizing fundamental operations.',
@@ -974,7 +958,7 @@ console.log("Imported Function:", MathModule.square(9));
       'Macrotask queue (timers, I/O) executes on the next event loop tick',
       'Proxy and Reflect APIs enable reactive state and dynamic method interception',
     ],
-    starterCode: `// 28. JavaScript Event Loop Microtask vs Macrotask
+    starterCode: `// 27. JavaScript Event Loop Microtask vs Macrotask
 console.log("1. Synchronous: Start");
 
 setTimeout(() => {

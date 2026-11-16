@@ -1753,6 +1753,655 @@ class Program {
 `,
     },
   },
+  {
+    id: 'trapping-rain-water',
+    title: '19. Trapping Rain Water (Two Pointers)',
+    difficulty: 'Hard',
+    category: 'Arrays & Two Pointers',
+    description: 'Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.\n\nIn SDET performance and telemetry systems, this two-pointer / histogram accumulation algorithm is used to measure queue bottleneck backpressure, data packet buffer pooling, and peak memory consumption under surge loads.',
+    constraints: [
+      'n == height.length',
+      '1 <= n <= 2 * 10^4',
+      '0 <= height[i] <= 10^5',
+    ],
+    examples: [
+      {
+        input: 'height = [0,1,0,2,1,0,1,3,2,1,2,1]',
+        output: '6',
+        explanation: 'The elevation map traps 6 units of rain water.',
+      },
+      {
+        input: 'height = [4,2,0,3,2,5]',
+        output: '9',
+        explanation: 'The elevation map traps 9 units of rain water.',
+      },
+    ],
+    starterTemplates: {
+      java: `public class Main {
+    // Problem: Trapping Rain Water (Hard)
+    // O(n) time, O(1) space two-pointer approach
+    public static int trap(int[] height) {
+        if (height == null || height.length <= 2) return 0;
+        int left = 0, right = height.length - 1;
+        int leftMax = 0, rightMax = 0;
+        int waterTrapped = 0;
+
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] >= leftMax) {
+                    leftMax = height[left];
+                } else {
+                    waterTrapped += leftMax - height[left];
+                }
+                left++;
+            } else {
+                if (height[right] >= rightMax) {
+                    rightMax = height[right];
+                } else {
+                    waterTrapped += rightMax - height[right];
+                }
+                right--;
+            }
+        }
+        return waterTrapped;
+    }
+
+    public static void main(String[] args) {
+        int[] elevation1 = {0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
+        System.out.println("Test Case 1 (Expected 6): " + trap(elevation1));
+
+        int[] elevation2 = {4, 2, 0, 3, 2, 5};
+        System.out.println("Test Case 2 (Expected 9): " + trap(elevation2));
+    }
+}`,
+      python: `def trap(height: list[int]) -> int:
+    if not height or len(height) <= 2:
+        return 0
+    left, right = 0, len(height) - 1
+    left_max, right_max = 0, 0
+    water = 0
+
+    while left < right:
+        if height[left] < height[right]:
+            if height[left] >= left_max:
+                left_max = height[left]
+            else:
+                water += left_max - height[left]
+            left += 1
+        else:
+            if height[right] >= right_max:
+                right_max = height[right]
+            else:
+                water += right_max - height[right]
+            right -= 1
+    return water
+
+elevation1 = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+print("Test Case 1 (Expected 6):", trap(elevation1))
+
+elevation2 = [4, 2, 0, 3, 2, 5]
+print("Test Case 2 (Expected 9):", trap(elevation2))`,
+      typescript: `function trap(height: number[]): number {
+    if (!height || height.length <= 2) return 0;
+    let left = 0, right = height.length - 1;
+    let leftMax = 0, rightMax = 0;
+    let water = 0;
+
+    while (left < right) {
+        if (height[left] < height[right]) {
+            if (height[left] >= leftMax) {
+                leftMax = height[left];
+            } else {
+                water += leftMax - height[left];
+            }
+            left++;
+        } else {
+            if (height[right] >= rightMax) {
+                rightMax = height[right];
+            } else {
+                water += rightMax - height[right];
+            }
+            right--;
+        }
+    }
+    return water;
+}
+
+const elevation1 = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1];
+console.log("Test Case 1 (Expected 6):", trap(elevation1));
+
+const elevation2 = [4, 2, 0, 3, 2, 5];
+console.log("Test Case 2 (Expected 9):", trap(elevation2));`,
+      javascript: `function trap(height) {
+    if (!height || height.length <= 2) return 0;
+    let left = 0, right = height.length - 1;
+    let leftMax = 0, rightMax = 0;
+    let water = 0;
+
+    while (left < right) {
+        if (height[left] < height[right]) {
+            if (height[left] >= leftMax) {
+                leftMax = height[left];
+            } else {
+                water += leftMax - height[left];
+            }
+            left++;
+        } else {
+            if (height[right] >= rightMax) {
+                rightMax = height[right];
+            } else {
+                water += rightMax - height[right];
+            }
+            right--;
+        }
+    }
+    return water;
+}
+
+const elevation1 = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1];
+console.log("Test Case 1 (Expected 6):", trap(elevation1));
+
+const elevation2 = [4, 2, 0, 3, 2, 5];
+console.log("Test Case 2 (Expected 9):", trap(elevation2));`,
+      csharp: `using System;
+
+class Program {
+    public static int Trap(int[] height) {
+        if (height == null || height.Length <= 2) return 0;
+        int left = 0, right = height.Length - 1;
+        int leftMax = 0, rightMax = 0;
+        int water = 0;
+
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] >= leftMax) leftMax = height[left];
+                else water += leftMax - height[left];
+                left++;
+            } else {
+                if (height[right] >= rightMax) rightMax = height[right];
+                else water += rightMax - height[right];
+                right--;
+            }
+        }
+        return water;
+    }
+
+    static void Main() {
+        int[] elevation1 = {0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
+        Console.WriteLine("Test Case 1 (Expected 6): " + Trap(elevation1));
+    }
+}`,
+    },
+  },
+  {
+    id: 'minimum-window-substring',
+    title: '20. Minimum Window Substring (Sliding Window)',
+    difficulty: 'Hard',
+    category: 'Strings & Sliding Window',
+    description: 'Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string \"\".\n\nIn automation testing, sliding window string parsing is frequently required when isolating minimum log trace windows containing all requisite error codes, correlation tokens, and session identifiers.',
+    constraints: [
+      'm == s.length',
+      'n == t.length',
+      '1 <= m, n <= 10^5',
+      's and t consist of uppercase and lowercase English letters.',
+    ],
+    examples: [
+      {
+        input: 's = "ADOBECODEBANC", t = "ABC"',
+        output: '"BANC"',
+        explanation: 'The minimum window substring "BANC" includes \'A\', \'B\', and \'C\' from string t.',
+      },
+      {
+        input: 's = "a", t = "a"',
+        output: '"a"',
+      },
+      {
+        input: 's = "a", t = "aa"',
+        output: '""',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.*;
+
+public class Main {
+    // Problem: Minimum Window Substring (Hard)
+    // O(m + n) time using sliding window & frequency map
+    public static String minWindow(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) return "";
+
+        int[] map = new int[128];
+        for (char c : t.toCharArray()) map[c]++;
+
+        int count = t.length(), begin = 0, end = 0, head = 0, d = Integer.MAX_VALUE;
+
+        while (end < s.length()) {
+            if (map[s.charAt(end++)]-- > 0) count--;
+            while (count == 0) {
+                if (end - begin < d) {
+                    d = end - (head = begin);
+                }
+                if (map[s.charAt(begin++)]++ == 0) count++;
+            }
+        }
+        return d == Integer.MAX_VALUE ? "" : s.substring(head, head + d);
+    }
+
+    public static void main(String[] args) {
+        String s = "ADOBECODEBANC";
+        String t = "ABC";
+        System.out.println("Result (Expected BANC): " + minWindow(s, t));
+    }
+}`,
+      python: `from collections import Counter
+
+def minWindow(s: str, t: str) -> str:
+    if not s or not t or len(s) < len(t):
+        return ""
+
+    t_count = Counter(t)
+    window = {}
+    have, need = 0, len(t_count)
+    res, res_len = [-1, -1], float("infinity")
+    l = 0
+
+    for r in range(len(s)):
+        c = s[r]
+        window[c] = window.get(c, 0) + 1
+
+        if c in t_count and window[c] == t_count[c]:
+            have += 1
+
+        while have == need:
+            if (r - l + 1) < res_len:
+                res = [l, r]
+                res_len = r - l + 1
+            window[s[l]] -= 1
+            if s[l] in t_count and window[s[l]] < t_count[s[l]]:
+                have -= 1
+            l += 1
+
+    l, r = res
+    return s[l:r + 1] if res_len != float("infinity") else ""
+
+print("Result (Expected BANC):", minWindow("ADOBECODEBANC", "ABC"))`,
+      typescript: `function minWindow(s: string, t: string): string {
+    if (!s || !t || s.length < t.length) return "";
+
+    const map = new Map<string, number>();
+    for (const c of t) map.set(c, (map.get(c) || 0) + 1);
+
+    let count = t.length;
+    let begin = 0, end = 0, head = 0, len = Infinity;
+
+    while (end < s.length) {
+        const c = s[end++];
+        const curr = map.get(c);
+        if (curr !== undefined) {
+            if (curr > 0) count--;
+            map.set(c, curr - 1);
+        }
+
+        while (count === 0) {
+            if (end - begin < len) {
+                len = end - begin;
+                head = begin;
+            }
+            const leftChar = s[begin++];
+            const leftCount = map.get(leftChar);
+            if (leftCount !== undefined) {
+                if (leftCount === 0) count++;
+                map.set(leftChar, leftCount + 1);
+            }
+        }
+    }
+    return len === Infinity ? "" : s.substring(head, head + len);
+}
+
+console.log("Result (Expected BANC):", minWindow("ADOBECODEBANC", "ABC"));`,
+      javascript: `function minWindow(s, t) {
+    if (!s || !t || s.length < t.length) return "";
+
+    const map = {};
+    for (const c of t) map[c] = (map[c] || 0) + 1;
+
+    let count = t.length;
+    let begin = 0, end = 0, head = 0, len = Infinity;
+
+    while (end < s.length) {
+        const c = s[end++];
+        if (map[c] !== undefined) {
+            if (map[c] > 0) count--;
+            map[c]--;
+        }
+
+        while (count === 0) {
+            if (end - begin < len) {
+                len = end - begin;
+                head = begin;
+            }
+            const leftChar = s[begin++];
+            if (map[leftChar] !== undefined) {
+                if (map[leftChar] === 0) count++;
+                map[leftChar]++;
+            }
+        }
+    }
+    return len === Infinity ? "" : s.substring(head, head + len);
+}
+
+console.log("Result (Expected BANC):", minWindow("ADOBECODEBANC", "ABC"));`,
+      csharp: `using System;
+
+class Program {
+    public static string MinWindow(string s, string t) {
+        if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t) || s.Length < t.Length) return "";
+        int[] map = new int[128];
+        foreach (char c in t) map[c]++;
+
+        int count = t.Length, begin = 0, end = 0, head = 0, d = int.MaxValue;
+        while (end < s.Length) {
+            if (map[s[end++]]-- > 0) count--;
+            while (count == 0) {
+                if (end - begin < d) d = end - (head = begin);
+                if (map[s[begin++]]++ == 0) count++;
+            }
+        }
+        return d == int.MaxValue ? "" : s.Substring(head, d);
+    }
+
+    static void Main() {
+        Console.WriteLine("Result (Expected BANC): " + MinWindow("ADOBECODEBANC", "ABC"));
+    }
+}`,
+    },
+  },
+  {
+    id: 'sliding-window-maximum',
+    title: '21. Sliding Window Maximum (Monotonic Queue)',
+    difficulty: 'Hard',
+    category: 'Arrays & Monotonic Queue',
+    description: 'You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position, return the max sliding window.\n\nIn high-frequency automated performance testing, monotonic deques process real-time p99 latency spikes and streaming metric maximums over fixed rolling time windows in optimal O(n) linear time.',
+    constraints: [
+      '1 <= nums.length <= 10^5',
+      '-10^4 <= nums[i] <= 10^4',
+      '1 <= k <= nums.length',
+    ],
+    examples: [
+      {
+        input: 'nums = [1,3,-1,-3,5,3,6,7], k = 3',
+        output: '[3,3,5,5,6,7]',
+        explanation: 'Window [1, 3, -1] -> 3; [3, -1, -3] -> 3; [-1, -3, 5] -> 5; [-3, 5, 3] -> 5; [5, 3, 6] -> 6; [3, 6, 7] -> 7',
+      },
+      {
+        input: 'nums = [1], k = 1',
+        output: '[1]',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.*;
+
+public class Main {
+    // Problem: Sliding Window Maximum (Hard)
+    // O(n) time using ArrayDeque as a Monotonic Decreasing Queue
+    public static int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length == 0 || k <= 0) return new int[0];
+        int n = nums.length;
+        int[] result = new int[n - k + 1];
+        Deque<Integer> deque = new ArrayDeque<>();
+
+        for (int i = 0; i < n; i++) {
+            while (!deque.isEmpty() && deque.peekFirst() < i - k + 1) {
+                deque.pollFirst();
+            }
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+
+            if (i >= k - 1) {
+                result[i - k + 1] = nums[deque.peekFirst()];
+            }
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {1, 3, -1, -3, 5, 3, 6, 7};
+        int k = 3;
+        System.out.println("Result: " + Arrays.toString(maxSlidingWindow(nums, k)));
+    }
+}`,
+      python: `from collections import deque
+
+def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
+    output = []
+    q = deque()
+    l = r = 0
+
+    while r < len(nums):
+        while q and nums[q[-1]] < nums[r]:
+            q.pop()
+        q.append(r)
+
+        if l > q[0]:
+            q.popleft()
+
+        if (r + 1) >= k:
+            output.append(nums[q[0]])
+            l += 1
+        r += 1
+
+    return output
+
+nums = [1, 3, -1, -3, 5, 3, 6, 7]
+print("Result:", maxSlidingWindow(nums, 3))`,
+      typescript: `function maxSlidingWindow(nums: number[], k: number): number[] {
+    const result: number[] = [];
+    const deque: number[] = [];
+
+    for (let i = 0; i < nums.length; i++) {
+        while (deque.length > 0 && deque[0] < i - k + 1) {
+            deque.shift();
+        }
+        while (deque.length > 0 && nums[deque[deque.length - 1]] < nums[i]) {
+            deque.pop();
+        }
+        deque.push(i);
+
+        if (i >= k - 1) {
+            result.push(nums[deque[0]]);
+        }
+    }
+    return result;
+}
+
+const nums = [1, 3, -1, -3, 5, 3, 6, 7];
+console.log("Result:", maxSlidingWindow(nums, 3));`,
+      javascript: `function maxSlidingWindow(nums, k) {
+    const result = [];
+    const deque = [];
+
+    for (let i = 0; i < nums.length; i++) {
+        while (deque.length > 0 && deque[0] < i - k + 1) {
+            deque.shift();
+        }
+        while (deque.length > 0 && nums[deque[deque.length - 1]] < nums[i]) {
+            deque.pop();
+        }
+        deque.push(i);
+
+        if (i >= k - 1) {
+            result.push(nums[deque[0]]);
+        }
+    }
+    return result;
+}
+
+const nums = [1, 3, -1, -3, 5, 3, 6, 7];
+console.log("Result:", maxSlidingWindow(nums, 3));`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static int[] MaxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.Length == 0) return new int[0];
+        int n = nums.Length;
+        int[] res = new int[n - k + 1];
+        LinkedList<int> deque = new LinkedList<int>();
+
+        for (int i = 0; i < n; i++) {
+            while (deque.Count > 0 && deque.First.Value < i - k + 1) deque.RemoveFirst();
+            while (deque.Count > 0 && nums[deque.Last.Value] < nums[i]) deque.RemoveLast();
+            deque.AddLast(i);
+            if (i >= k - 1) res[i - k + 1] = nums[deque.First.Value];
+        }
+        return res;
+    }
+
+    static void Main() {
+        int[] nums = { 1, 3, -1, -3, 5, 3, 6, 7 };
+        Console.WriteLine("Result: " + string.Join(", ", MaxSlidingWindow(nums, 3)));
+    }
+}`,
+    },
+  },
+  {
+    id: 'largest-rectangle-histogram',
+    title: '22. Largest Rectangle in Histogram (Monotonic Stack)',
+    difficulty: 'Hard',
+    category: 'Stacks & Monotonic Stack',
+    description: 'Given an array of integers heights representing the histogram\'s bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.\n\nMonotonic stack algorithms are an indispensable SDET pattern for max-throughput bandwidth analysis, resource provisioning boundaries, and optimal continuous container sizing.',
+    constraints: [
+      '1 <= heights.length <= 10^5',
+      '0 <= heights[i] <= 10^4',
+    ],
+    examples: [
+      {
+        input: 'heights = [2,1,5,6,2,3]',
+        output: '10',
+        explanation: 'The largest rectangle is formed by bars at indices 2 and 3 with area = 10 units.',
+      },
+      {
+        input: 'heights = [2,4]',
+        output: '4',
+      },
+    ],
+    starterTemplates: {
+      java: `import java.util.*;
+
+public class Main {
+    // Problem: Largest Rectangle in Histogram (Hard)
+    // O(n) time using a Monotonic Increasing Stack
+    public static int largestRectangleArea(int[] heights) {
+        if (heights == null || heights.length == 0) return 0;
+        int n = heights.length;
+        Stack<Integer> stack = new Stack<>();
+        int maxArea = 0;
+
+        for (int i = 0; i <= n; i++) {
+            int currentHeight = (i == n) ? 0 : heights[i];
+            while (!stack.isEmpty() && currentHeight < heights[stack.peek()]) {
+                int h = heights[stack.pop()];
+                int w = stack.isEmpty() ? i : i - stack.peek() - 1;
+                maxArea = Math.max(maxArea, h * w);
+            }
+            stack.push(i);
+        }
+        return maxArea;
+    }
+
+    public static void main(String[] args) {
+        int[] heights1 = {2, 1, 5, 6, 2, 3};
+        System.out.println("Test Case 1 (Expected 10): " + largestRectangleArea(heights1));
+
+        int[] heights2 = {2, 4};
+        System.out.println("Test Case 2 (Expected 4): " + largestRectangleArea(heights2));
+    }
+}`,
+      python: `def largestRectangleArea(heights: list[int]) -> int:
+    max_area = 0
+    stack = []
+
+    for i, h in enumerate(heights):
+        start = i
+        while stack and stack[-1][1] > h:
+            index, height = stack.pop()
+            max_area = max(max_area, height * (i - index))
+            start = index
+        stack.append((start, h))
+
+    for i, h in stack:
+        max_area = max(max_area, h * (len(heights) - i))
+    return max_area
+
+print("Test Case 1 (Expected 10):", largestRectangleArea([2, 1, 5, 6, 2, 3]))
+print("Test Case 2 (Expected 4):", largestRectangleArea([2, 4]))`,
+      typescript: `function largestRectangleArea(heights: number[]): number {
+    let maxArea = 0;
+    const stack: number[] = [];
+    const n = heights.length;
+
+    for (let i = 0; i <= n; i++) {
+        const currentHeight = i === n ? 0 : heights[i];
+        while (stack.length > 0 && currentHeight < heights[stack[stack.length - 1]]) {
+            const h = heights[stack.pop()!];
+            const w = stack.length === 0 ? i : i - stack[stack.length - 1] - 1;
+            maxArea = Math.max(maxArea, h * w);
+        }
+        stack.push(i);
+    }
+    return maxArea;
+}
+
+console.log("Test Case 1 (Expected 10):", largestRectangleArea([2, 1, 5, 6, 2, 3]));
+console.log("Test Case 2 (Expected 4):", largestRectangleArea([2, 4]));`,
+      javascript: `function largestRectangleArea(heights) {
+    let maxArea = 0;
+    const stack = [];
+    const n = heights.length;
+
+    for (let i = 0; i <= n; i++) {
+        const currentHeight = i === n ? 0 : heights[i];
+        while (stack.length > 0 && currentHeight < heights[stack[stack.length - 1]]) {
+            const h = heights[stack.pop()];
+            const w = stack.length === 0 ? i : i - stack[stack.length - 1] - 1;
+            maxArea = Math.max(maxArea, h * w);
+        }
+        stack.push(i);
+    }
+    return maxArea;
+}
+
+console.log("Test Case 1 (Expected 10):", largestRectangleArea([2, 1, 5, 6, 2, 3]));
+console.log("Test Case 2 (Expected 4):", largestRectangleArea([2, 4]));`,
+      csharp: `using System;
+using System.Collections.Generic;
+
+class Program {
+    public static int LargestRectangleArea(int[] heights) {
+        int maxArea = 0;
+        Stack<int> stack = new Stack<int>();
+        int n = heights.Length;
+
+        for (int i = 0; i <= n; i++) {
+            int currentHeight = (i == n) ? 0 : heights[i];
+            while (stack.Count > 0 && currentHeight < heights[stack.Peek()]) {
+                int h = heights[stack.Pop()];
+                int w = stack.Count == 0 ? i : i - stack.Peek() - 1;
+                maxArea = Math.Max(maxArea, h * w);
+            }
+            stack.Push(i);
+        }
+        return maxArea;
+    }
+
+    static void Main() {
+        int[] heights = { 2, 1, 5, 6, 2, 3 };
+        Console.WriteLine("Test Case 1 (Expected 10): " + LargestRectangleArea(heights));
+    }
+}`,
+    },
+  },
 ];
 
 const LOCAL_STORAGE_KEY = 'sdet_custom_coding_problems';

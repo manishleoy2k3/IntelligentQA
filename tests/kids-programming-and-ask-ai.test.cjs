@@ -218,7 +218,7 @@ test('Requirement 13: Comprehensive Mandatory Learning Concepts stored in Databa
 
   // Verify all mandatory concepts matching user's reference image for Python:
   const mandatoryPythonConcepts = [
-    'intro', 'get-started', 'syntax', 'output', 'comments',
+    'intro', 'output', 'comments',
     'variables', 'data-types', 'numbers', 'casting', 'strings',
     'booleans', 'operators', 'lists', 'tuples', 'sets',
     'dictionaries', 'if-else', 'match', 'while-loops', 'for-loops',
@@ -232,10 +232,11 @@ test('Requirement 13: Comprehensive Mandatory Learning Concepts stored in Databa
       `Python course must define mandatory concept: ${id}`
     );
   });
+  assert.ok(pythonCourseFile.includes('Python Intro, Get Started & Syntax'), 'Python course merges Intro, Get Started and Syntax');
 
   // Verify comprehensive JavaScript concepts:
   const mandatoryJsConcepts = [
-    'intro', 'get-started', 'output', 'comments', 'variables',
+    'intro', 'output', 'comments', 'variables',
     'data-types', 'numbers', 'casting', 'strings', 'booleans',
     'operators', 'arrays', 'array-iteration', 'objects', 'if-else',
     'switch', 'while-loops', 'for-loops', 'functions', 'scope',
@@ -249,10 +250,11 @@ test('Requirement 13: Comprehensive Mandatory Learning Concepts stored in Databa
       `JavaScript course must define mandatory concept: ${id}`
     );
   });
+  assert.ok(jsCourseFile.includes('JavaScript Intro, Get Started & Syntax'), 'JavaScript course merges Intro, Get Started and Syntax');
 
   // Verify comprehensive Java concepts:
   const mandatoryJavaConcepts = [
-    'intro', 'get-started', 'syntax', 'output', 'comments',
+    'intro', 'output', 'comments',
     'variables', 'data-types', 'casting', 'operators', 'strings',
     'booleans', 'numbers', 'arrays', 'if-else', 'switch',
     'while-loops', 'for-loops', 'methods', 'scope', 'classes-objects',
@@ -267,6 +269,7 @@ test('Requirement 13: Comprehensive Mandatory Learning Concepts stored in Databa
       `Java course must define mandatory concept: ${id}`
     );
   });
+  assert.ok(javaCourseFile.includes('Java Intro, Get Started & Syntax'), 'Java course merges Intro, Get Started and Syntax');
 
   // Verify Database migration & auto-upgrade logic in qa-db.ts
   assert.ok(dbFile.includes('getKidsCourses'), 'qa-db provides getKidsCourses()');
@@ -308,10 +311,12 @@ test('Requirement 15: Exercises under each programming language on Left Navigati
 
   // Verify Left navigation has exercises item under each language, positioned at the bottom after all lessons
   assert.ok(sidebarFile.includes('view=exercises'), 'Sidebar has Exercises link under language sections');
-  assert.ok(sidebarFile.includes('Exercises (Test Knowledge)'), 'Sidebar displays Exercises knowledge test item');
-  const curriculumLessonsIdx = sidebarFile.indexOf('Curriculum Lessons');
-  const exercisesIdx = sidebarFile.indexOf('Exercises (Test Knowledge)');
-  assert.ok(exercisesIdx > curriculumLessonsIdx, 'Exercises and Projects appear at the bottom after all Curriculum Lessons');
+  assert.ok(sidebarFile.includes('{track.short} Exercises'), 'Sidebar displays Exercises item');
+  assert.ok(!sidebarFile.includes('Curriculum Lessons'), 'Curriculum Lessons header removed as requested');
+  assert.ok(!sidebarFile.includes('Test Knowledge &amp; Projects'), 'Test Knowledge & Projects header removed as requested');
+  const conceptsMapIdx = sidebarFile.indexOf('courseMeta.concepts.map');
+  const exercisesIdx = sidebarFile.indexOf('view=exercises');
+  assert.ok(exercisesIdx > conceptsMapIdx, 'Exercises appear at the bottom after all concept lessons');
 
   // Verify 4-5 questions per section across Python, JS, Java
   ['python', 'javascript', 'java'].forEach((lang) => {

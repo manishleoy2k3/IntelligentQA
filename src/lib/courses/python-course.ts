@@ -3,92 +3,46 @@ import { CourseConcept, LanguageCourseMeta } from '../kids-courses-types';
 export const PYTHON_CONCEPTS: CourseConcept[] = [
   {
     id: 'intro',
-    title: 'Python Intro & Overview',
+    title: 'Python Intro, Get Started & Syntax',
     order: 1,
     language: 'python',
-    summary: 'What is Python, its design philosophy, key features, and why it is the #1 language for Automation and AI.',
-    overview: 'Python is a high-level, general-purpose interpreted language created by Guido van Rossum in 1991. Its design emphasizes code readability with clear English-like syntax and significant indentation, allowing developers to express algorithms in fewer lines than C++ or Java.',
+    summary: 'What is Python, execution lifecycle (.py & REPL), and core syntax & 4-space indentation rules.',
+    overview: 'Python is a high-level, general-purpose interpreted language created by Guido van Rossum in 1991. The Python interpreter reads your .py source file, compiles it into bytecode, and executes it immediately. Unlike languages requiring curly braces, Python delimits code blocks strictly using clean whitespace indentation.',
     keyPoints: [
       'Interpreted language: executes code line-by-line without manual compile steps',
-      'Dynamic typing: variable types are automatically discovered at runtime',
-      'Cross-platform: runs seamlessly on Windows, macOS, Linux, and Cloud Containers',
-      'Extensive standard library: "batteries included" philosophy covering math, networking, and testing',
+      'Execution lifecycle: run files via "python3 script.py" or interactively via the terminal REPL',
+      'Indentation rules: standard 4 spaces per nesting level define code blocks (PEP 8 standard)',
+      'Clean syntax: statements end with newline (no semicolons required)',
     ],
-    starterCode: `# 1. Python Intro & Welcome
-language = "Python"
-version = "3.12"
-creator = "Guido van Rossum"
-primary_uses = ["AI & Machine Learning", "SDET & Automation", "Backend APIs", "Data Science"]
+    starterCode: `# 1. Python Intro, Get Started & Syntax
+import sys
 
-print(f"Welcome to {language} {version}!")
-print(f"Conceived by {creator}.")
-print("Key Industry Domains:")
-for idx, domain in enumerate(primary_uses, start=1):
-    print(f"  {idx}. {domain}")
+# Welcome & Runtime Information
+print("🐍 Welcome to Python 3!")
+print(f"Active Interpreter Version: {sys.version.split()[0]}")
+
+# 4-Space Indentation Rules & Clean Syntax
+test_status = "PASS"
+execution_speed_ms = 42
+
+if test_status == "PASS":
+    print("  ✓ Indented Block: Test suite executed cleanly!")
+    print(f"  ✓ Duration: {execution_speed_ms}ms")
+else:
+    print("  ✗ Test suite failed.")
+
+print("Root level: Script completed successfully.")
 `,
     bestPractices: [
       'Write Pythonic code following the Zen of Python (PEP 20): Simple is better than complex.',
-      'Always use Python 3.x; Python 2 reached official End-of-Life in 2020.',
-    ],
-  },
-  {
-    id: 'get-started',
-    title: 'Python Get Started',
-    order: 2,
-    language: 'python',
-    summary: 'How Python programs execute, script files (.py), the REPL, and your first executed statement.',
-    overview: 'To run Python code, the Python interpreter reads your `.py` source file, compiles it into bytecode (.pyc), and executes it on the CPython virtual machine. You can also test quick expressions interactively in the terminal REPL (Read-Eval-Print Loop).',
-    keyPoints: [
-      'Python files end with the .py extension (e.g. main.py)',
-      'Run files in terminal via: python3 script.py',
-      'The interactive shell starts by simply typing: python3',
-      'In-browser execution compiles and runs your code inside a sandboxed environment instantly',
-    ],
-    starterCode: `# 2. Python Get Started - Execution Lifecycle
-import sys
-
-print("Python Get Started!")
-print(f"Active Interpreter Version: {sys.version.split()[0]}")
-print("Your interactive coding environment is ready to test scripts.")
-`,
-    bestPractices: [
-      'Use virtual environments (python -m venv .venv) to isolate third-party dependencies.',
-      'Keep your entry point clean using if __name__ == "__main__": blocks in production scripts.',
-    ],
-  },
-  {
-    id: 'syntax',
-    title: 'Python Syntax & Indentation',
-    order: 3,
-    language: 'python',
-    summary: 'Indentation rules, statements, semicolons, line continuation, and readability.',
-    overview: 'Unlike languages like C, Java, or JavaScript that use curly braces {} to delimit code blocks, Python uses whitespace indentation. A code block starts when lines are indented by 4 spaces and ends when the indent returns to the previous level.',
-    keyPoints: [
-      'Standard indentation is 4 spaces per nesting level (PEP 8 standard)',
-      'Mixing tabs and spaces causes IndentationError or TabError',
-      'Statements do not require semicolons at the end of lines',
-      'Multi-line statements can use parentheses () or backslashes \\ for continuation',
-    ],
-    starterCode: `# 3. Python Syntax and 4-Space Indentation Rules
-status_code = 200
-
-if status_code == 200:
-    print("Indented 4 spaces: Request was successful!")
-    print("Still inside the if block.")
-else:
-    print("Request failed.")
-
-print("Outside block: Execution resumed at root level.")
-`,
-    bestPractices: [
-      'Never mix tabs and spaces in Python files; configure your IDE to insert 4 spaces on Tab.',
-      'Prefer parenthesized continuation (foo = (1 + 2)) over backslash continuation.',
+      'Never mix tabs and spaces in Python files; configure your editor to indent with 4 spaces.',
+      'Keep your entry point clean using if __name__ == "__main__": blocks in executable scripts.',
     ],
   },
   {
     id: 'output',
     title: 'Python Output',
-    order: 4,
+    order: 2,
     language: 'python',
     summary: 'Printing to the console, sep and end parameters, and modern f-string interpolation.',
     overview: 'The print() function outputs strings, numbers, collections, and custom objects to standard output (sys.stdout). You can customize the separator between items with sep=, control trailing characters with end=, and format numbers cleanly with f-strings.',
@@ -97,7 +51,7 @@ print("Outside block: Execution resumed at root level.")
       'f-strings (f"Value: {val}") are the fastest, cleanest string formatting mechanism in Python',
       'Format specifications: {val:.2f} for floats, {num:05d} for padded integers',
     ],
-    starterCode: `# 4. Python Output & Formatting
+    starterCode: `# 2. Python Output & Formatting
 item = "Automation Test Suite"
 passed = 48
 total = 50
@@ -118,7 +72,7 @@ print("] 100%")
   {
     id: 'comments',
     title: 'Python Comments',
-    order: 5,
+    order: 3,
     language: 'python',
     summary: 'Single-line comments, inline comments, multi-line docstrings, and documentation standards.',
     overview: 'Comments clarify complex business rules, explain non-obvious algorithms, and document functions for other engineers. The Python interpreter completely ignores comments during execution.',
@@ -128,7 +82,7 @@ print("] 100%")
       'Docstrings use triple quotes ("""Docstring""") to document modules, classes, and functions',
       'Docstrings are accessible at runtime via obj.__doc__ or help(obj)',
     ],
-    starterCode: `# 5. Python Comments & Docstrings
+    starterCode: `# 3. Python Comments & Docstrings
 
 # Single-line comment explaining the variable
 base_url = "https://api.intelligentqa.com"
@@ -157,7 +111,7 @@ print(f"Latency test: {calculate_latency(100.5, 145.2):.1f} ms")
   {
     id: 'variables',
     title: 'Python Variables',
-    order: 6,
+    order: 4,
     language: 'python',
     summary: 'Creating variables, dynamic reassignment, multiple assignment, and naming conventions.',
     overview: 'In Python, a variable is created the moment you first assign a value to it using the = operator. You do not need to declare a variable type. Variables in Python are references pointing to objects stored in memory.',
@@ -167,7 +121,7 @@ print(f"Latency test: {calculate_latency(100.5, 145.2):.1f} ms")
       'Multiple assignments in one line: a, b, c = 1, 2, 3',
       'Naming convention: snake_case for variables/functions, PascalCase for classes',
     ],
-    starterCode: `# 6. Python Variables & Multiple Assignment
+    starterCode: `# 4. Python Variables & Multiple Assignment
 user_name = "Alex"
 user_age = 14
 is_enrolled = True
@@ -189,7 +143,7 @@ print(f"Swapped values: x={x}, y={y}, z={z}")
   {
     id: 'data-types',
     title: 'Python Data Types',
-    order: 7,
+    order: 5,
     language: 'python',
     summary: 'Built-in data types, type inspection with type(), and isinstance() validation.',
     overview: 'Python has built-in data types categorized into Text (str), Numeric (int, float, complex), Sequence (list, tuple, range), Mapping (dict), Set (set, frozenset), Boolean (bool), and Binary (bytes, bytearray).',
@@ -199,7 +153,7 @@ print(f"Swapped values: x={x}, y={y}, z={z}")
       'NoneType (None) represents the intentional absence of a value',
       'Everything in Python is an object, including integers and functions',
     ],
-    starterCode: `# 7. Python Data Types & Type Inspection
+    starterCode: `# 5. Python Data Types & Type Inspection
 sample_int = 42
 sample_float = 3.14159
 sample_str = "SDET Automated Testing"
@@ -221,7 +175,7 @@ for item in types:
   {
     id: 'numbers',
     title: 'Python Numbers',
-    order: 8,
+    order: 6,
     language: 'python',
     summary: 'Integers, floats, complex numbers, scientific notation, and the math module.',
     overview: 'Python supports arbitrary-precision integers (int can grow as large as memory permits), floating-point numbers (IEEE 754 double precision float), and complex numbers (complex with real and imaginary parts).',
@@ -231,7 +185,7 @@ for item in types:
       'complex numbers use j for the imaginary unit (e.g. 3 + 4j)',
       'The math module provides advanced operations like sqrt, floor, ceil, and pi',
     ],
-    starterCode: `# 8. Python Numbers & Mathematical Utilities
+    starterCode: `# 6. Python Numbers & Mathematical Utilities
 import math
 
 # Unlimited precision integer
@@ -256,7 +210,7 @@ print(f"math.sqrt(144): {math.sqrt(144):.0f}")
   {
     id: 'casting',
     title: 'Python Casting',
-    order: 9,
+    order: 7,
     language: 'python',
     summary: 'Type conversion functions: int(), float(), str(), bool(), list(), and tuple().',
     overview: 'Casting converts a value from one data type to another. Python provides explicit constructor functions to cast between numbers, strings, and collections.',
@@ -266,7 +220,7 @@ print(f"math.sqrt(144): {math.sqrt(144):.0f}")
       'str(100) converts any Python object into its string representation',
       'bool(x) evaluates truthiness: 0, "", [], {}, None become False; others become True',
     ],
-    starterCode: `# 9. Python Casting & Type Conversions
+    starterCode: `# 7. Python Casting & Type Conversions
 raw_input_age = "15"
 parsed_age = int(raw_input_age)
 next_year_age = parsed_age + 1
@@ -290,7 +244,7 @@ print("bool(42):", bool(42))
   {
     id: 'strings',
     title: 'Python Strings & Manipulation',
-    order: 10,
+    order: 8,
     language: 'python',
     summary: 'Indexing, slicing, immutability, string methods (split, join, replace, upper, strip), and f-strings.',
     overview: 'Strings in Python are immutable sequences of Unicode characters enclosed in single or double quotes. Python provides rich slicing syntax [start:end:step] and dozens of built-in transformation methods.',
@@ -300,7 +254,7 @@ print("bool(42):", bool(42))
       'Common methods: .lower(), .upper(), .strip(), .split(), .join(), .replace()',
       'f-strings support inline expressions, function calls, and formatting flags',
     ],
-    starterCode: `# 10. Python Strings & Slicing
+    starterCode: `# 8. Python Strings & Slicing
 message = "  Automation Engineer with Python  "
 
 # Trimming and Case formatting
@@ -327,7 +281,7 @@ print("Kebab-case joined:", rejoined)
   {
     id: 'booleans',
     title: 'Python Booleans & Logic',
-    order: 11,
+    order: 9,
     language: 'python',
     summary: 'Boolean values True and False, comparison evaluation, truthiness, and short-circuit evaluation.',
     overview: 'Booleans represent one of two truth values: True or False. In Python, booleans are a subclass of integers (True == 1 and False == 0). Every Python object evaluates to True or False in conditional contexts.',
@@ -337,7 +291,7 @@ print("Kebab-case joined:", rejoined)
       'Truthy values: Any non-zero number, non-empty string, or populated collection',
       'Logical operators: and, or, not',
     ],
-    starterCode: `# 11. Python Booleans & Logical Evaluation
+    starterCode: `# 9. Python Booleans & Logical Evaluation
 has_token = True
 is_expired = False
 role = "admin"
@@ -360,7 +314,7 @@ print("Empty cart has items:", bool(empty_cart))
   {
     id: 'operators',
     title: 'Python Operators & Expressions',
-    order: 12,
+    order: 10,
     language: 'python',
     summary: 'Arithmetic, assignment, comparison, logical, identity (is), and membership (in) operators.',
     overview: 'Python provides standard arithmetic operators (+, -, *, /, //, %, **), comparison operators (==, !=, <, >), logical operators (and, or, not), identity operators (is, is not), and membership operators (in, not in).',
@@ -370,7 +324,7 @@ print("Empty cart has items:", bool(empty_cart))
       'is checks memory identity (same object in RAM); == checks value equality',
       'in checks for membership inside a string, list, tuple, set, or dictionary',
     ],
-    starterCode: `# 12. Python Operators in Action
+    starterCode: `# 10. Python Operators in Action
 a = 17
 b = 5
 
@@ -398,7 +352,7 @@ print("list1 is list2 (Same memory address):", list1 is list2)
   {
     id: 'lists',
     title: 'Python Lists & Comprehensions',
-    order: 13,
+    order: 11,
     language: 'python',
     summary: 'Ordered mutable collections, indexing, slicing, methods (append, pop, sort), and list comprehensions.',
     overview: 'Lists are ordered, mutable sequences that can store duplicate elements of mixed data types. List comprehensions provide a concise syntax to create new lists from existing iterables based on transformations and filters.',
@@ -408,7 +362,7 @@ print("list1 is list2 (Same memory address):", list1 is list2)
       'Common methods: .append(), .extend(), .insert(), .remove(), .pop(), .sort(), .reverse()',
       'List comprehension syntax: [expression for item in iterable if condition]',
     ],
-    starterCode: `# 13. Python Lists & List Comprehensions
+    starterCode: `# 11. Python Lists & List Comprehensions
 frameworks = ["Selenium", "Appium", "Playwright", "Cypress"]
 
 # Modifying lists
@@ -433,7 +387,7 @@ print("Even Squares:", even_squares)
   {
     id: 'tuples',
     title: 'Python Tuples & Immutability',
-    order: 14,
+    order: 12,
     language: 'python',
     summary: 'Ordered immutable collections, packing and unpacking, singleton tuples, and tuple hashing.',
     overview: 'A tuple is an ordered, immutable collection. Once created, its items cannot be added, removed, or changed. Because they are immutable, tuples can be used as dictionary keys and set elements if all members are hashable.',
@@ -443,7 +397,7 @@ print("Even Squares:", even_squares)
       'Tuple unpacking allows assigning members to multiple variables: x, y = point',
       'Tuples use less memory and execute faster than lists',
     ],
-    starterCode: `# 14. Python Tuples & Unpacking
+    starterCode: `# 12. Python Tuples & Unpacking
 endpoint = ("GET", "/api/v1/users", 200)
 
 # Unpacking
@@ -467,7 +421,7 @@ print(f"Screen: {width}x{height}")
   {
     id: 'sets',
     title: 'Python Sets & Operations',
-    order: 15,
+    order: 13,
     language: 'python',
     summary: 'Unordered collections of unique elements, set operations (union, intersection, difference), and deduplication.',
     overview: 'A set is an unordered, unindexed collection of unique elements. Sets are implemented as hash tables, making membership testing (x in my_set) an extremely fast O(1) constant-time operation.',
@@ -477,7 +431,7 @@ print(f"Screen: {width}x{height}")
       'Union (a | b), Intersection (a & b), Difference (a - b), Symmetric Difference (a ^ b)',
       'O(1) average lookup performance compared to O(N) for lists',
     ],
-    starterCode: `# 15. Python Sets & Fast Deduplication
+    starterCode: `# 13. Python Sets & Fast Deduplication
 browsers = ["Chrome", "Firefox", "Chrome", "Edge", "Safari", "Firefox"]
 
 # Remove duplicates in one step
@@ -500,7 +454,7 @@ print("SDET Exclusive Skills (Difference):", sdet_skills - frontend_skills)
   {
     id: 'dictionaries',
     title: 'Python Dictionaries & Key-Value Pairs',
-    order: 16,
+    order: 14,
     language: 'python',
     summary: 'Mapping type with key-value pairs, dictionary methods (.get, .keys, .values, .items), and dict comprehensions.',
     overview: 'Dictionaries are mutable mappings of unique keys to values. As of Python 3.7+, dictionaries maintain insertion order. They provide constant-time O(1) average lookups by key.',
@@ -510,7 +464,7 @@ print("SDET Exclusive Skills (Difference):", sdet_skills - frontend_skills)
       'Use user.get("age", 0) to avoid KeyError when accessing optional keys',
       'Dictionary comprehensions allow transforming mappings concisely',
     ],
-    starterCode: `# 16. Python Dictionaries in Action
+    starterCode: `# 14. Python Dictionaries in Action
 test_run = {
     "suite": "Smoke Tests",
     "total": 45,
@@ -541,7 +495,7 @@ print("High Scorers:", passing_students)
   {
     id: 'if-else',
     title: 'Python If...Else Conditions & Decisions',
-    order: 17,
+    order: 15,
     language: 'python',
     summary: 'Branching logic with if, elif, else, nested conditions, and conditional ternary expressions.',
     overview: 'Conditional statements allow programs to make decisions and execute different blocks of code based on whether a boolean expression evaluates to True or False.',
@@ -551,7 +505,7 @@ print("High Scorers:", passing_students)
       'Ternary conditional expression: result = "Pass" if score >= 70 else "Fail"',
       'pass keyword acts as a syntactical placeholder for empty blocks',
     ],
-    starterCode: `# 17. Python If...Else & Ternary Operator
+    starterCode: `# 15. Python If...Else & Ternary Operator
 http_status = 404
 
 if 200 <= http_status < 300:
@@ -580,7 +534,7 @@ print(f"Grade {grade} -> Verdict: {verdict}")
   {
     id: 'match',
     title: 'Python Match & Case Statements',
-    order: 18,
+    order: 16,
     language: 'python',
     summary: 'Structural pattern matching introduced in Python 3.10 with match and case expressions.',
     overview: 'Introduced in Python 3.10 (PEP 634), the match statement brings structural pattern matching to Python, replacing complex if-elif chains with elegant pattern matching on values, shapes, types, and sequence structures.',
@@ -590,7 +544,7 @@ print(f"Grade {grade} -> Verdict: {verdict}")
       'Combines values using the pipe | symbol (e.g. case 200 | 201:)',
       'Supports guard conditions with if (e.g. case x if x > 100:)',
     ],
-    starterCode: `# 18. Python Match & Case Statement (Python 3.10+)
+    starterCode: `# 16. Python Match & Case Statement (Python 3.10+)
 command = "DELETE /api/users"
 
 action, *resource = command.split()
@@ -615,7 +569,7 @@ match action:
   {
     id: 'while-loops',
     title: 'Python While Loops & Iteration',
-    order: 19,
+    order: 17,
     language: 'python',
     summary: 'Iterating while a condition holds true, break, continue, and the loop else clause.',
     overview: 'A while loop repeatedly executes a target block of statements as long as the test condition remains True. Python also features a unique while...else clause that executes when the condition becomes False without hitting break.',
@@ -625,7 +579,7 @@ match action:
       'continue skips the rest of the current iteration and re-evaluates the condition',
       'else block runs when the loop condition terminates normally without a break',
     ],
-    starterCode: `# 19. Python While Loops & Polling Simulation
+    starterCode: `# 17. Python While Loops & Polling Simulation
 retry_count = 0
 max_retries = 5
 service_ready = False
@@ -650,7 +604,7 @@ print(f"Final Service State: Ready={service_ready}")
   {
     id: 'for-loops',
     title: 'Python For Loops',
-    order: 20,
+    order: 18,
     language: 'python',
     summary: 'Iterating over sequences, iterating dictionaries, enumerate(), zip(), and nested loops.',
     overview: 'Python for loops iterate over elements of any sequence or iterable (strings, lists, tuples, sets, dictionaries, generators). Unlike traditional C-style for loops, Python for loops act like for-each iterators.',
@@ -660,7 +614,7 @@ print(f"Final Service State: Ready={service_ready}")
       'zip(list1, list2) iterates over multiple collections in parallel',
       'Nested loops iterate through multidimensional matrices or combinations',
     ],
-    starterCode: `# 20. Python For Loops with enumerate and zip
+    starterCode: `# 18. Python For Loops with enumerate and zip
 test_cases = ["Login Test", "Cart Checkout", "Profile Update", "Logout Test"]
 durations_ms = [320, 1150, 480, 210]
 
@@ -683,7 +637,7 @@ for name, ms in zip(test_cases, durations_ms):
   {
     id: 'range',
     title: 'Python Range Function',
-    order: 21,
+    order: 19,
     language: 'python',
     summary: 'The range(start, stop, step) sequence generator, memory efficiency, and step increments.',
     overview: 'The range() function returns an immutable sequence of numbers. Instead of allocating memory for all numbers at once, range generates numbers on the fly in O(1) memory, regardless of the size of the range.',
@@ -693,7 +647,7 @@ for name, ms in zip(test_cases, durations_ms):
       'range(start, stop, step): increments by step; negative step counts backward',
       'O(1) memory complexity: range(1_000_000) takes the same tiny memory footprint as range(10)',
     ],
-    starterCode: `# 21. Python Range Generator
+    starterCode: `# 19. Python Range Generator
 # Basic range 0 to 4
 print("range(5):", list(range(5)))
 
@@ -716,7 +670,7 @@ print("BLASTOFF!")
   {
     id: 'functions',
     title: 'Python Functions & Methods',
-    order: 22,
+    order: 20,
     language: 'python',
     summary: 'Defining functions with def, parameters, default arguments, *args, **kwargs, and return values.',
     overview: 'Functions are reusable, named blocks of code designed to perform specific operations. Python functions are first-class citizens, meaning they can be passed as arguments, assigned to variables, and returned from other functions.',
@@ -726,7 +680,7 @@ print("BLASTOFF!")
       '*args gathers arbitrary positional arguments into a tuple',
       '**kwargs gathers arbitrary keyword arguments into a dictionary',
     ],
-    starterCode: `# 22. Python Functions with *args and **kwargs
+    starterCode: `# 20. Python Functions with *args and **kwargs
 def calculate_grade(score: float, max_score: float = 100.0) -> str:
     pct = (score / max_score) * 100
     if pct >= 90: return "A"
@@ -752,7 +706,7 @@ build_report("Nightly CI Run", 98.5, 120.4, 45.2, environment="Staging", runner=
   {
     id: 'lambda',
     title: 'Python Lambda & Anonymous Functions',
-    order: 23,
+    order: 21,
     language: 'python',
     summary: 'Single-expression anonymous functions, map(), filter(), sorted(key=...), and callbacks.',
     overview: 'A lambda function is a small, anonymous function defined with the lambda keyword. It can take any number of arguments, but can only contain a single expression whose evaluated result is returned.',
@@ -762,7 +716,7 @@ build_report("Nightly CI Run", 98.5, 120.4, 45.2, environment="Staging", runner=
       'map(func, iterable) transforms each element',
       'filter(func, iterable) keeps elements where func evaluates to True',
     ],
-    starterCode: `# 23. Python Lambda & Higher-Order Functions
+    starterCode: `# 21. Python Lambda & Higher-Order Functions
 # Sorting objects by custom dictionary keys
 users = [
     {"name": "Alice", "score": 92},
@@ -791,7 +745,7 @@ print("Tripled Evens:", tripled)
   {
     id: 'arrays',
     title: 'Python Arrays & Collections',
-    order: 24,
+    order: 22,
     language: 'python',
     summary: 'The array module for homogeneous primitive arrays, comparison with lists, and memory efficiency.',
     overview: 'While Python lists can store heterogeneous objects, the array module provides compact, homogeneous arrays of primitive numeric data types (integers, floats) stored directly as contiguous C buffers in memory.',
@@ -801,7 +755,7 @@ print("Tripled Evens:", tripled)
       'Directly compatible with binary C file reading and writing',
       'Lists are preferred for general programming; array and NumPy are preferred for numeric workloads',
     ],
-    starterCode: `# 24. Python Homogeneous Arrays vs Lists
+    starterCode: `# 22. Python Homogeneous Arrays vs Lists
 import array
 
 # Create an array of signed integers (type code 'i')
@@ -822,7 +776,7 @@ print(f"Average: {sum(sensor_readings) / len(sensor_readings):.1f}")
   {
     id: 'classes-objects',
     title: 'Python Objects & Classes',
-    order: 25,
+    order: 23,
     language: 'python',
     summary: 'Object-Oriented Programming (OOP), __init__ constructor, instance methods, self parameter, and __str__.',
     overview: 'Classes provide a blueprint for creating objects, bundling data (attributes) and behavior (methods) together. The __init__() method initializes instance state, and self refers to the active object instance.',
@@ -832,7 +786,7 @@ print(f"Average: {sum(sensor_readings) / len(sensor_readings):.1f}")
       'self must be the first parameter of any instance method in Python',
       '__str__ and __repr__ define how the object renders as human-readable text',
     ],
-    starterCode: `# 25. Python Classes & Object-Oriented Blueprint
+    starterCode: `# 23. Python Classes & Object-Oriented Blueprint
 class TestCase:
     def __init__(self, test_id: str, title: str, priority: str = "P2"):
         self.test_id = test_id
@@ -865,7 +819,7 @@ print(checkout_test)
   {
     id: 'inheritance',
     title: 'Python Inheritance & Polymorphism',
-    order: 26,
+    order: 24,
     language: 'python',
     summary: 'Subclasses, super() function, method overriding, multiple inheritance, and polymorphic interfaces.',
     overview: 'Inheritance allows a new class (child/subclass) to inherit attributes and methods from an existing class (parent/superclass). Polymorphism enables different classes to be treated uniformly through shared method interfaces.',
@@ -875,7 +829,7 @@ print(checkout_test)
       'Subclasses can override parent methods to provide specialized behavior',
       'isinstance(obj, Parent) returns True for child class instances',
     ],
-    starterCode: `# 26. Python Inheritance & Polymorphic Automation Drivers
+    starterCode: `# 24. Python Inheritance & Polymorphic Automation Drivers
 class BaseDriver:
     def __init__(self, browser_name: str):
         self.browser_name = browser_name
@@ -910,7 +864,7 @@ for d in drivers:
   {
     id: 'iterators',
     title: 'Python Iterators & Generators',
-    order: 27,
+    order: 25,
     language: 'python',
     summary: 'The iterator protocol (__iter__, __next__), generator functions with yield, and memory efficiency.',
     overview: 'An iterator is an object representing a stream of data that produces values one at a time via next(). A generator function uses yield to pause execution and stream values with near-zero memory footprint.',
@@ -920,7 +874,7 @@ for d in drivers:
       'yield turns any standard Python function into a lazy generator',
       'Generators enable streaming multi-gigabyte log files without memory crashes',
     ],
-    starterCode: `# 27. Python Generators with yield for Memory Efficiency
+    starterCode: `# 25. Python Generators with yield for Memory Efficiency
 def page_id_generator(batch_size: int, total_items: int):
     """Lazily generate pagination offsets without preallocating a list."""
     current = 0
@@ -943,7 +897,7 @@ for page_token in stream:
   {
     id: 'scope',
     title: 'Python Scope & Global Variables',
-    order: 28,
+    order: 26,
     language: 'python',
     summary: 'LEGB rule (Local, Enclosing, Global, Built-in), the global keyword, and nonlocal closures.',
     overview: 'Scope determines where a variable is recognized and accessible. Python resolves variable references using the LEGB rule: Local $\\rightarrow$ Enclosing $\\rightarrow$ Global $\\rightarrow$ Built-in.',
@@ -954,7 +908,7 @@ for page_token in stream:
       'Built-in scope: pre-defined keywords and built-in functions (len, print, range)',
       'The global and nonlocal keywords permit modifying outer variables',
     ],
-    starterCode: `# 28. Python Scope & LEGB Demonstration
+    starterCode: `# 26. Python Scope & LEGB Demonstration
 global_counter = 100
 
 def outer_function():
@@ -983,7 +937,7 @@ print(f"Modified global counter: {global_counter}")
   {
     id: 'modules',
     title: 'Python Modules & Packages',
-    order: 29,
+    order: 27,
     language: 'python',
     summary: 'import statements, from ... import ..., aliasing with as, __name__ == "__main__", and packages.',
     overview: 'A module is simply a Python file (.py) containing functions, classes, and definitions. A package is a directory containing multiple modules with an __init__.py file. Modules allow organizing code into modular architectures.',
@@ -993,7 +947,7 @@ print(f"Modified global counter: {global_counter}")
       'as keyword creates aliases (e.g. import datetime as dt)',
       'if __name__ == "__main__": runs code only when executed directly, not when imported',
     ],
-    starterCode: `# 29. Python Built-in Modules & Time Calculations
+    starterCode: `# 27. Python Built-in Modules & Time Calculations
 import time
 import datetime
 import random
@@ -1021,7 +975,7 @@ print(f"Sum computation took: {elapsed:.2f} ms")
   {
     id: 'file-handling',
     title: 'Python File Handling & I/O',
-    order: 30,
+    order: 28,
     language: 'python',
     summary: 'Reading, writing, appending files with open(), and safe context managers (with open).',
     overview: 'Python provides native file operations for reading and writing text and binary files. Using context managers (with open(...) as f:) guarantees that file handles are automatically closed even if exceptions occur.',
@@ -1031,7 +985,7 @@ print(f"Sum computation took: {elapsed:.2f} ms")
       'f.read() reads full contents, f.readline() reads one line, f.readlines() reads all lines into a list',
       'The io and json modules provide in-memory and serialized structured data management',
     ],
-    starterCode: `# 30. Python File Simulation & Context Manager
+    starterCode: `# 28. Python File Simulation & Context Manager
 import io
 import json
 
@@ -1063,7 +1017,7 @@ print(f"All Tests Passed: {loaded['passed'] > 0 and loaded['failed'] == 0}")
   {
     id: 'try-except',
     title: 'Python Try...Except & Error Handling',
-    order: 31,
+    order: 29,
     language: 'python',
     summary: 'Exception handling with try, except, else, finally, and custom exceptions with raise.',
     overview: 'Errors in Python are represented by exceptions. When an error occurs, Python raises an exception. You can catch and recover from exceptions using try...except blocks without crashing your application.',
@@ -1074,7 +1028,7 @@ print(f"All Tests Passed: {loaded['passed'] > 0 and loaded['failed'] == 0}")
       'finally: always runs regardless of success or failure, ideal for cleanup',
       'raise CustomError("message") triggers an exception explicitly',
     ],
-    starterCode: `# 31. Python Exception Handling & Cleanup
+    starterCode: `# 29. Python Exception Handling & Cleanup
 def safe_divide(numerator: float, denominator: float):
     try:
         result = numerator / denominator
@@ -1101,7 +1055,7 @@ safe_divide(10, 0)
   {
     id: 'advanced',
     title: 'Python Advanced Concepts & Decorators',
-    order: 32,
+    order: 30,
     language: 'python',
     summary: 'Decorators (@functools.wraps), context managers, dataclasses, and *args/**kwargs forwarding.',
     overview: 'Python decorators allow you to modify or extend the behavior of functions or methods without permanently altering their source code. They are widely used in frameworks like PyTest (@pytest.mark), Flask/FastAPI (@app.get), and custom logging.',
@@ -1111,7 +1065,7 @@ safe_divide(10, 0)
       'functools.wraps preserves original function metadata (name, docstring)',
       'Dataclasses (@dataclass) automatically generate __init__, __repr__, and __eq__ methods',
     ],
-    starterCode: `# 32. Python Decorators & Timing Wrapper
+    starterCode: `# 30. Python Decorators & Timing Wrapper
 import time
 from functools import wraps
 

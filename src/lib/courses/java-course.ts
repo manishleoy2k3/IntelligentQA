@@ -3,103 +3,47 @@ import { CourseConcept } from '../kids-courses-types';
 export const JAVA_CONCEPTS: CourseConcept[] = [
   {
     id: 'intro',
-    title: 'Java Intro & JVM Architecture',
+    title: 'Java Intro, Get Started & Syntax',
     order: 1,
     language: 'java',
-    summary: 'Write Once, Run Anywhere (WORA), the JDK vs JRE vs JVM, and Java compilation model.',
-    overview: 'Java is a class-based, object-oriented, strongly-typed programming language designed to have as few implementation dependencies as possible. Java source code (.java) compiles into bytecode (.class), which runs on any system with a Java Virtual Machine (JVM).',
+    summary: 'What is Java, JVM architecture (WORA), entry point main method, and class syntax structure.',
+    overview: 'Java is a statically-typed, object-oriented, class-based language created by James Gosling at Sun Microsystems in 1995. Its core philosophy is "Write Once, Run Anywhere" (WORA): Java source (.java) compiles to bytecode (.class), which executes across any operating system on the Java Virtual Machine (JVM). Every executable application begins inside public static void main(String[] args).',
     keyPoints: [
-      'JVM (Java Virtual Machine) executes compiled Java bytecode',
-      'JRE (Java Runtime Environment) provides the JVM plus core runtime class libraries',
-      'JDK (Java Development Kit) provides the JRE plus the javac compiler and developer tools',
-      'Automatic garbage collection manages memory allocation without manual pointers',
+      'JVM Ecosystem: JDK (Development Kit), JRE (Runtime), JVM (Bytecode Execution Virtual Machine)',
+      'Main Method Entry Point: public static void main(String[] args) is required by the JVM to launch',
+      'Class Structure: Every function and variable in Java must reside inside a class declaration',
+      'Syntax Rules: Java is case-sensitive, statements must end in semicolons (;), and blocks use curly braces {}',
     ],
-    starterCode: `// 1. Java Intro & JVM Architecture
+    starterCode: `// 1. Java Intro, Get Started & Syntax
 public class Main {
     public static void main(String[] args) {
-        String language = "Java";
-        String javaVersion = System.getProperty("java.version");
-        String jvmName = System.getProperty("java.vm.name");
+        String platform = "Java Platform (SE 21 LTS)";
+        String architecture = "JVM Bytecode (Write Once, Run Anywhere)";
+        
+        System.out.println("☕ Welcome to " + platform + "!");
+        System.out.println("Execution Model: " + architecture);
 
-        System.out.println("Welcome to " + language + "!");
-        System.out.println("JVM Version: " + javaVersion);
-        System.out.println("Virtual Machine: " + jvmName);
-        System.out.println("SDET Standard: Industry #1 for Selenium WebDriver & Appium frameworks.");
-    }
-}
-`,
-    bestPractices: [
-      'Target Long-Term Support (LTS) versions (Java 17 or Java 21) for production test frameworks.',
-      'Always follow standard Java naming conventions: PascalCase for classes, camelCase for methods/variables.',
-    ],
-  },
-  {
-    id: 'get-started',
-    title: 'Java Get Started & Main Method',
-    order: 2,
-    language: 'java',
-    summary: 'The main entry point: public static void main(String[] args), javac compilation, and java execution.',
-    overview: 'Every standalone Java application requires an entry point: public static void main(String[] args). The JVM calls this method to start execution. In modern Java (Java 21+), single-file source code can be executed directly via java Main.java.',
-    keyPoints: [
-      'public: accessible to the JVM from outside the class package',
-      'static: callable without instantiating an object of the enclosing class',
-      'void: returns no value to the operating system',
-      'String[] args: receives command-line arguments as an array of strings',
-    ],
-    starterCode: `// 2. Java Get Started: Entry Point Anatomy
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Starting Java Program Execution...");
-        System.out.println("Arguments Count: " + args.length);
+        // Core Syntax & Block Scope
+        int testCases = 25;
+        boolean suitePassed = true;
 
-        if (args.length > 0) {
-            System.out.println("First Argument: " + args[0]);
-        } else {
-            System.out.println("Running with default execution parameters.");
+        if (suitePassed) {
+            System.out.println("  ✓ Code Block Executed: All " + testCases + " tests passed!");
+            System.out.println("  ✓ Class structure and main entry point validated.");
         }
     }
 }
 `,
     bestPractices: [
-      'Keep the main method clean; instantiate a dedicated controller or runner class rather than placing business logic in static main.',
-    ],
-  },
-  {
-    id: 'syntax',
-    title: 'Java Syntax & Class Structure',
-    order: 3,
-    language: 'java',
-    summary: 'Java class anatomy, curly braces {}, case sensitivity, statements, and semicolon requirements.',
-    overview: 'In Java, all code must reside inside a class. Java is strictly case-sensitive: myVar and MyVar are distinct. Every executable statement must end with a semicolon (;).',
-    keyPoints: [
-      'The file name must match the public class name (e.g. Main.java for public class Main)',
-      'Statements end with a semicolon (;)',
-      'Blocks of code are enclosed in curly braces {}',
-      'Case sensitivity applies to all keywords, class names, method names, and identifiers',
-    ],
-    starterCode: `// 3. Java Syntax & Structural Rules
-public class Main {
-    public static void main(String[] args) {
-        // Variable declaration and statement termination with semicolons
-        int statusCode = 200;
-        String statusMessage = "OK";
-
-        if (statusCode == 200) {
-            System.out.println("Response Status: " + statusCode + " - " + statusMessage);
-        } else {
-            System.out.println("Request Failed!");
-        }
-    }
-}
-`,
-    bestPractices: [
-      'One public class per file, matching the exact file name (e.g. UserService.java).',
+      'Follow Java naming conventions: UpperCamelCase for Classes and lowerCamelCase for methods and variables.',
+      'Always ensure the public class name matches the filename exactly (e.g., Main.java for public class Main).',
+      'Use modern Java LTS versions (Java 17, Java 21) for production test automation frameworks.',
     ],
   },
   {
     id: 'output',
     title: 'Java Output (println & printf)',
-    order: 4,
+    order: 2,
     language: 'java',
     summary: 'Standard output via System.out.println(), System.out.print(), and System.out.printf() format specifiers.',
     overview: 'Java provides standard streams in the System class: System.out (standard output) and System.err (error output). println() appends a newline, print() does not, and printf() supports C-style format strings (%s, %d, %.2f).',
@@ -109,7 +53,7 @@ public class Main {
       'System.out.printf() formats text with specifiers: %s (string), %d (integer), %.2f (float)',
       'System.err.println() prints diagnostics to standard error stream',
     ],
-    starterCode: `// 4. Java Output Formatting with println and printf
+    starterCode: `// 2. Java Output Formatting with println and printf
 public class Main {
     public static void main(String[] args) {
         String testSuite = "Regression Suite";
@@ -138,7 +82,7 @@ public class Main {
   {
     id: 'comments',
     title: 'Java Comments & Javadoc',
-    order: 5,
+    order: 3,
     language: 'java',
     summary: 'Single-line comments (//), multi-line comments (/* ... */), and formal Javadoc (/** ... */) tags.',
     overview: 'Javadoc comments generate standard HTML documentation from source code annotations (@param, @return, @throws). They are used across all major enterprise frameworks.',
@@ -147,7 +91,7 @@ public class Main {
       'Multi-line comments are enclosed between /* and */',
       'Javadoc blocks begin with /** and include tags: @param, @return, @throws, @author',
     ],
-    starterCode: `// 5. Java Comments & Javadoc Documentation
+    starterCode: `// 3. Java Comments & Javadoc Documentation
 public class Main {
     /**
      * Calculates the exponential backoff delay in milliseconds.
@@ -175,7 +119,7 @@ public class Main {
   {
     id: 'variables',
     title: 'Java Variables & Strong Typing',
-    order: 6,
+    order: 4,
     language: 'java',
     summary: 'Strong static typing, variable declaration, initialization, constants with final, and local type inference (var).',
     overview: 'Java is statically typed: every variable must have a declared type before use. Since Java 10, the var keyword allows local variable type inference where the compiler infers the type from the initialization expression.',
@@ -185,7 +129,7 @@ public class Main {
       'var keyword (Java 10+) infers local variable type without sacrificing type safety',
       'Variable scope is strictly block-scoped to the enclosing curly braces {}',
     ],
-    starterCode: `// 6. Java Variables, Constants, and Local Type Inference
+    starterCode: `// 4. Java Variables, Constants, and Local Type Inference
 public class Main {
     // Constant at class level
     public static final String DEFAULT_ENVIRONMENT = "STAGING";
@@ -217,7 +161,7 @@ public class Main {
   {
     id: 'data-types',
     title: 'Java Data Types (Primitive vs Object)',
-    order: 7,
+    order: 5,
     language: 'java',
     summary: 'The 8 primitive types (byte, short, int, long, float, double, boolean, char) and Object wrapper classes.',
     overview: 'Java differentiates between 8 primitive types stored directly on the stack and Reference/Object types stored on the heap. Autoboxing automatically converts between primitives and their wrapper classes (e.g. int $\\leftrightarrow$ Integer).',
@@ -227,7 +171,7 @@ public class Main {
       'Generics and Collections (List<Integer>) require wrapper objects, not raw primitives',
       'Autoboxing/unboxing converts between int and Integer automatically',
     ],
-    starterCode: `// 7. Java Primitive Types & Autoboxing
+    starterCode: `// 5. Java Primitive Types & Autoboxing
 public class Main {
     public static void main(String[] args) {
         // 8 Primitive Types
@@ -260,7 +204,7 @@ public class Main {
   {
     id: 'casting',
     title: 'Java Type Casting (Widening & Narrowing)',
-    order: 8,
+    order: 6,
     language: 'java',
     summary: 'Widening casting (automatic, safe) vs Narrowing casting (explicit, potential data loss).',
     overview: 'Type casting assigns a value of one primitive data type to another. Widening casting occurs automatically from smaller to larger types. Narrowing casting requires an explicit cast operator (type) and may cause truncation.',
@@ -270,7 +214,7 @@ public class Main {
       'Explicit syntax: int myInt = (int) myDouble;',
       'Parsing strings: Integer.parseInt("123"), Double.parseDouble("45.67")',
     ],
-    starterCode: `// 8. Java Type Casting & String Parsing
+    starterCode: `// 6. Java Type Casting & String Parsing
 public class Main {
     public static void main(String[] args) {
         // Widening casting: int to double (safe & automatic)
@@ -297,7 +241,7 @@ public class Main {
   {
     id: 'operators',
     title: 'Java Operators & Expressions',
-    order: 9,
+    order: 7,
     language: 'java',
     summary: 'Arithmetic, relational, logical (&&, ||, !), bitwise, assignment, and ternary operators.',
     overview: 'Java operators perform calculations, comparisons, and logic. Short-circuit operators (&&, ||) avoid evaluating the right operand if the left operand determines the outcome.',
@@ -307,7 +251,7 @@ public class Main {
       'Logical: && (short-circuit AND), || (short-circuit OR), ! (NOT)',
       'Ternary conditional: condition ? valueIfTrue : valueIfFalse',
     ],
-    starterCode: `// 9. Java Operators & Short-Circuit Evaluation
+    starterCode: `// 7. Java Operators & Short-Circuit Evaluation
 public class Main {
     public static void main(String[] args) {
         int a = 23;
@@ -335,7 +279,7 @@ public class Main {
   {
     id: 'strings',
     title: 'Java Strings & Manipulation',
-    order: 10,
+    order: 8,
     language: 'java',
     summary: 'String immutability, String Pool, methods (substring, split, equals), and StringBuilder for efficiency.',
     overview: 'Strings in Java are immutable objects backed by the String Constant Pool. Comparing strings must always use .equals() rather than ==. For heavy concatenation inside loops, StringBuilder must be used.',
@@ -345,7 +289,7 @@ public class Main {
       'String Pool caches string literals to conserve memory',
       'StringBuilder provides mutable character sequences for O(N) concatenation',
     ],
-    starterCode: `// 10. Java Strings & StringBuilder Performance
+    starterCode: `// 8. Java Strings & StringBuilder Performance
 public class Main {
     public static void main(String[] args) {
         String str1 = "IntelligentQA";
@@ -380,7 +324,7 @@ public class Main {
   {
     id: 'booleans',
     title: 'Java Booleans & Conditions',
-    order: 11,
+    order: 9,
     language: 'java',
     summary: 'boolean primitive, Boolean wrapper, comparison evaluation, and logical expressions.',
     overview: 'The boolean data type has only two possible values: true and false. Unlike C or Python, Java integers (0 or 1) cannot be coerced into booleans.',
@@ -389,7 +333,7 @@ public class Main {
       'Conditions in if statements must evaluate to a strict boolean expression',
       'Boolean wrapper class provides Boolean.parseBoolean("true")',
     ],
-    starterCode: `// 11. Java Booleans & Strict Evaluation
+    starterCode: `// 9. Java Booleans & Strict Evaluation
 public class Main {
     public static void main(String[] args) {
         boolean isBrowserOpen = true;
@@ -413,7 +357,7 @@ public class Main {
   {
     id: 'numbers',
     title: 'Java Numbers & Math API',
-    order: 12,
+    order: 10,
     language: 'java',
     summary: 'The java.lang.Math class: min, max, sqrt, pow, abs, random, and BigDecimal for financial precision.',
     overview: 'The Math class contains static methods for basic numeric operations. For financial or arbitrary-precision decimal operations, java.math.BigDecimal is used to prevent double rounding errors.',
@@ -423,7 +367,7 @@ public class Main {
       'Math.round(), Math.floor(), Math.ceil() for rounding floats and doubles',
       'Use BigDecimal for monetary calculations where floating point inaccuracies are unacceptable',
     ],
-    starterCode: `// 12. Java Math Utility Methods
+    starterCode: `// 10. Java Math Utility Methods
 public class Main {
     public static void main(String[] args) {
         int a = 45;
@@ -448,7 +392,7 @@ public class Main {
   {
     id: 'arrays',
     title: 'Java Arrays (1D & 2D)',
-    order: 13,
+    order: 11,
     language: 'java',
     summary: 'Fixed-size contiguous memory blocks, 1D arrays, multidimensional 2D matrices, and java.util.Arrays.',
     overview: 'Arrays are fixed-length data structures that hold elements of the same type. Array length is established upon creation and cannot change. The java.util.Arrays utility class provides sorting, searching, and string representations.',
@@ -458,7 +402,7 @@ public class Main {
       '2D arrays (matrices): int[][] matrix = new int[3][3];',
       'Arrays.toString() and Arrays.deepToString() render arrays cleanly',
     ],
-    starterCode: `// 13. Java Arrays & Arrays Utility Class
+    starterCode: `// 11. Java Arrays & Arrays Utility Class
 import java.util.Arrays;
 
 public class Main {
@@ -491,7 +435,7 @@ public class Main {
   {
     id: 'if-else',
     title: 'Java If...Else Conditions & Decisions',
-    order: 14,
+    order: 12,
     language: 'java',
     summary: 'Branching logic with if, else if, else, nested conditions, and guard clauses.',
     overview: 'Conditional statements direct execution based on truth values. Java requires boolean expressions inside condition parentheses.',
@@ -500,7 +444,7 @@ public class Main {
       'Compound conditions use && (AND), || (OR), and ! (NOT)',
       'Always use block braces {} even for single-line statements to avoid dangling else bugs',
     ],
-    starterCode: `// 14. Java If...Else Branching Logic
+    starterCode: `// 12. Java If...Else Branching Logic
 public class Main {
     public static void main(String[] args) {
         int httpCode = 404;
@@ -524,7 +468,7 @@ public class Main {
   {
     id: 'switch',
     title: 'Java Switch & Pattern Matching',
-    order: 15,
+    order: 13,
     language: 'java',
     summary: 'Traditional switch statements, break keyword, and modern Java 14+ switch expressions (->).',
     overview: 'A switch statement allows a variable to be tested for equality against a list of values. Modern Java (Java 14+) introduces switch expressions using the arrow syntax -> that return values directly and eliminate accidental break fall-through.',
@@ -534,7 +478,7 @@ public class Main {
       'Supports byte, short, char, int, String, and enum types',
       'default case acts as the catch-all branch',
     ],
-    starterCode: `// 15. Java Modern Switch Expressions (Java 14+)
+    starterCode: `// 13. Java Modern Switch Expressions (Java 14+)
 public class Main {
     public static void main(String[] args) {
         String environment = "STAGING";
@@ -558,7 +502,7 @@ public class Main {
   {
     id: 'while-loops',
     title: 'Java While Loops & Iteration',
-    order: 16,
+    order: 14,
     language: 'java',
     summary: 'while loops, do...while loops, polling conditions, and loop control with break and continue.',
     overview: 'A while loop executes while its boolean expression evaluates to true. A do-while loop evaluates its condition at the end of the block, guaranteeing at least one execution.',
@@ -568,7 +512,7 @@ public class Main {
       'break terminates the loop immediately',
       'continue skips to the next iteration',
     ],
-    starterCode: `// 16. Java While Loop: Polling WebDriver Element Wait Simulation
+    starterCode: `// 14. Java While Loop: Polling WebDriver Element Wait Simulation
 public class Main {
     public static void main(String[] args) {
         int elapsedMs = 0;
@@ -599,7 +543,7 @@ public class Main {
   {
     id: 'for-loops',
     title: 'Java For Loops & Enhanced For-Each',
-    order: 17,
+    order: 15,
     language: 'java',
     summary: 'Traditional indexed for(;;), enhanced for-each (:), nested loops, and loop labels.',
     overview: 'Java provides standard indexed for loops and enhanced for-each loops for iterating over arrays and any class implementing java.lang.Iterable.',
@@ -609,7 +553,7 @@ public class Main {
       'Use enhanced for-each when you do not need the numeric index',
       'Labeled break and continue statements allow breaking out of outer nested loops',
     ],
-    starterCode: `// 17. Java For Loops: Indexed vs Enhanced For-Each
+    starterCode: `// 15. Java For Loops: Indexed vs Enhanced For-Each
 public class Main {
     public static void main(String[] args) {
         String[] testEndpoints = {"/api/login", "/api/users", "/api/checkout"};
@@ -635,7 +579,7 @@ public class Main {
   {
     id: 'methods',
     title: 'Java Functions & Methods',
-    order: 18,
+    order: 16,
     language: 'java',
     summary: 'Method signature, parameters, return types, static vs instance methods, and method overloading.',
     overview: 'A method is a block of code declared within a class that performs an action. Method overloading allows multiple methods to share the same name with different parameter signatures.',
@@ -645,7 +589,7 @@ public class Main {
       'void indicates the method does not return a value',
       'Method overloading: same method name with different parameter count or types',
     ],
-    starterCode: `// 18. Java Method Overloading & Signatures
+    starterCode: `// 16. Java Method Overloading & Signatures
 public class Main {
     // Method 1: Default timeout
     public static void clickElement(String locator) {
@@ -671,7 +615,7 @@ public class Main {
   {
     id: 'scope',
     title: 'Java Scope & Variable Lifecycles',
-    order: 19,
+    order: 17,
     language: 'java',
     summary: 'Class scope (fields), method scope (parameters), block scope ({}), and variable shadowing (this).',
     overview: 'Variable scope defines the accessibility of variables across different parts of a program. In Java, scope is determined by curly braces {}. Instance fields are shadowed by local variables of the same name.',
@@ -681,7 +625,7 @@ public class Main {
       'Block variables: accessible only within the specific { ... } block where declared',
       'this keyword resolves shadowing between instance fields and parameter names',
     ],
-    starterCode: `// 19. Java Scope & Shadowing Resolution
+    starterCode: `// 17. Java Scope & Shadowing Resolution
 public class Main {
     // Class variable
     private static int globalExecutionCount = 0;
@@ -707,7 +651,7 @@ public class Main {
   {
     id: 'classes-objects',
     title: 'Java Objects & Classes',
-    order: 20,
+    order: 18,
     language: 'java',
     summary: 'Object-Oriented Programming (OOP) foundation, creating classes, new keyword, state and behavior.',
     overview: 'A class is a blueprint from which individual objects are instantiated. Objects possess state (stored in fields) and behavior (exposed through methods).',
@@ -717,7 +661,7 @@ public class Main {
       'Fields hold object state; methods define object actions',
       'toString() method returns a textual representation of the object',
     ],
-    starterCode: `// 20. Java OOP Blueprint & Objects
+    starterCode: `// 18. Java OOP Blueprint & Objects
 class TestCase {
     String testId;
     String description;
@@ -758,7 +702,7 @@ public class Main {
   {
     id: 'constructors',
     title: 'Java Constructors & Initialization',
-    order: 21,
+    order: 19,
     language: 'java',
     summary: 'Default constructor, parameterized constructors, constructor overloading, and constructor chaining with this().',
     overview: 'A constructor is a special method called when an object is instantiated with new. Constructors initialize object state. Constructor chaining using this() allows constructors to delegate to each other.',
@@ -768,7 +712,7 @@ public class Main {
       'The compiler provides a default no-arg constructor only if no custom constructors are defined',
       'this(...) calls another constructor in the same class and must be the first line',
     ],
-    starterCode: `// 21. Java Constructor Chaining with this()
+    starterCode: `// 19. Java Constructor Chaining with this()
 class BrowserConfig {
     String browserName;
     int timeoutSeconds;
@@ -814,7 +758,7 @@ public class Main {
   {
     id: 'modifiers',
     title: 'Java Access Modifiers & Encapsulation',
-    order: 22,
+    order: 20,
     language: 'java',
     summary: 'public, protected, default (package-private), private modifiers, and getters/setters encapsulation.',
     overview: 'Encapsulation bundles data and methods together, protecting object state from unauthorized direct manipulation. Data fields should be private and exposed via validated getters and setters.',
@@ -824,7 +768,7 @@ public class Main {
       'protected: accessible within the same package and by subclasses',
       'public: accessible from any class in any package',
     ],
-    starterCode: `// 22. Java Encapsulation & Access Modifiers
+    starterCode: `// 20. Java Encapsulation & Access Modifiers
 class UserProfile {
     private String username;
     private int age;
@@ -867,7 +811,7 @@ public class Main {
   {
     id: 'inheritance',
     title: 'Java Inheritance & Super Keyword',
-    order: 23,
+    order: 21,
     language: 'java',
     summary: 'Subclasses using extends, super() constructor calls, method overriding with @Override, and single inheritance.',
     overview: 'Inheritance allows a child class to inherit fields and methods from a parent class using extends. Java supports single inheritance of classes (a class can only extend one superclass).',
@@ -877,7 +821,7 @@ public class Main {
       '@Override annotation ensures the compiler checks that a method actually overrides a parent method',
       'final classes cannot be inherited; final methods cannot be overridden',
     ],
-    starterCode: `// 23. Java Inheritance & super Keyword
+    starterCode: `// 21. Java Inheritance & super Keyword
 class BaseTest {
     protected String environment;
 
@@ -922,7 +866,7 @@ public class Main {
   {
     id: 'polymorphism',
     title: 'Java Polymorphism & Method Overriding',
-    order: 24,
+    order: 22,
     language: 'java',
     summary: 'Compile-time polymorphism (overloading) vs Runtime dynamic polymorphism (overriding and upcasting).',
     overview: 'Polymorphism allows objects of different classes to be treated through a uniform superclass or interface reference. Dynamic method dispatch determines which overridden method to execute at runtime.',
@@ -931,7 +875,7 @@ public class Main {
       'Dynamic dispatch invokes the child overridden implementation at runtime',
       'Enables extensible framework architectures without hardcoding specific implementations',
     ],
-    starterCode: `// 24. Java Dynamic Polymorphism
+    starterCode: `// 22. Java Dynamic Polymorphism
 interface WebDriver {
     void get(String url);
     void quit();
@@ -974,7 +918,7 @@ public class Main {
   {
     id: 'abstraction',
     title: 'Java Abstraction & Interfaces',
-    order: 25,
+    order: 23,
     language: 'java',
     summary: 'abstract classes vs interfaces, default methods in interfaces, and multiple interface implementation.',
     overview: 'Abstraction hides internal implementation details while exposing a clear contract. An interface defines what a class must do, while an abstract class can provide partial implementation and state.',
@@ -984,7 +928,7 @@ public class Main {
       'Interfaces can define default and static methods (Java 8+)',
       'All variables in an interface are implicitly public static final constants',
     ],
-    starterCode: `// 25. Java Abstraction & Interfaces
+    starterCode: `// 23. Java Abstraction & Interfaces
 interface Reportable {
     void generateReport();
 
@@ -1035,7 +979,7 @@ public class Main {
   {
     id: 'arraylist',
     title: 'Java ArrayList & List Collections',
-    order: 26,
+    order: 24,
     language: 'java',
     summary: 'The java.util.List interface, ArrayList dynamic resizing, generics, and common List methods.',
     overview: 'ArrayList is a resizable array implementation of the List interface. As elements are added, its capacity grows dynamically. It provides fast O(1) random access by index.',
@@ -1045,7 +989,7 @@ public class Main {
       'Generics (<Type>) enforce compile-time type safety',
       'Fast O(1) read access by index; slower O(N) arbitrary insertions/deletions',
     ],
-    starterCode: `// 26. Java ArrayList Collections
+    starterCode: `// 24. Java ArrayList Collections
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1079,7 +1023,7 @@ public class Main {
   {
     id: 'hashmap',
     title: 'Java HashMap & Key-Value Dictionaries',
-    order: 27,
+    order: 25,
     language: 'java',
     summary: 'The java.util.Map interface, HashMap implementation, key-value mappings, and iteration.',
     overview: 'HashMap is a hash table based implementation of the Map interface. It stores unique keys mapped to values with O(1) average lookup, insertion, and deletion performance.',
@@ -1089,7 +1033,7 @@ public class Main {
       'Iterate entries using map.entrySet()',
       'Keys must properly implement hashCode() and equals()',
     ],
-    starterCode: `// 27. Java HashMap & EntrySet Iteration
+    starterCode: `// 25. Java HashMap & EntrySet Iteration
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1119,7 +1063,7 @@ public class Main {
   {
     id: 'hashset',
     title: 'Java HashSet & Sets',
-    order: 28,
+    order: 26,
     language: 'java',
     summary: 'The java.util.Set interface, HashSet unique elements, deduplication, and mathematical set operations.',
     overview: 'A Set is a collection that cannot contain duplicate elements. HashSet is backed by a HashMap, offering constant-time O(1) performance for add, remove, and contains operations.',
@@ -1129,7 +1073,7 @@ public class Main {
       'No index-based access (unordered collection)',
       'Set operations: addAll (union), retainAll (intersection), removeAll (difference)',
     ],
-    starterCode: `// 28. Java HashSet & Fast Deduplication
+    starterCode: `// 26. Java HashSet & Fast Deduplication
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -1154,7 +1098,7 @@ public class Main {
   {
     id: 'iterators',
     title: 'Java Iterators & Stream API',
-    order: 29,
+    order: 27,
     language: 'java',
     summary: 'Iterator interface, safe removal during iteration, and functional Stream API (filter, map, collect).',
     overview: 'Java Iterators allow safely removing elements from a collection during iteration. Java 8+ Stream API enables declarative functional operations (filter, map, reduce) over collections.',
@@ -1163,7 +1107,7 @@ public class Main {
       'iterator.remove() safely deletes elements without ConcurrentModificationException',
       'Stream API: list.stream().filter(...).map(...).toList()',
     ],
-    starterCode: `// 29. Java Stream API & Functional Pipelines
+    starterCode: `// 27. Java Stream API & Functional Pipelines
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -1195,7 +1139,7 @@ public class Main {
   {
     id: 'exceptions',
     title: 'Java Exceptions & Try...Catch',
-    order: 30,
+    order: 28,
     language: 'java',
     summary: 'Checked vs Unchecked exceptions, try-catch-finally, try-with-resources, and custom exceptions.',
     overview: 'Java distinguishes between Checked exceptions (subclasses of Exception checked at compile-time) and Unchecked exceptions (subclasses of RuntimeException like NullPointerException). Try-with-resources automatically closes AutoCloseable resources.',
@@ -1205,7 +1149,7 @@ public class Main {
       'Unchecked exceptions (RuntimeException) do not require explicit throws declarations',
       'try-with-resources: try (AutoCloseable res = new Resource()) { ... } ensures automatic cleanup',
     ],
-    starterCode: `// 30. Java Exception Handling & Custom Exceptions
+    starterCode: `// 28. Java Exception Handling & Custom Exceptions
 class ElementNotFoundException extends RuntimeException {
     public ElementNotFoundException(String locator) {
         super("Element with locator '" + locator + "' was not found within timeout.");
@@ -1240,7 +1184,7 @@ public class Main {
   {
     id: 'advanced',
     title: 'Java Advanced Concepts & Generics',
-    order: 31,
+    order: 29,
     language: 'java',
     summary: 'Generics (<T>), bounded wildcards (? extends / ? super), Enums, and Reflection basics.',
     overview: 'Generics provide compile-time type safety and eliminate runtime ClassCastExceptions. Enums provide type-safe constants with custom fields and methods.',
@@ -1249,7 +1193,7 @@ public class Main {
       'Enums define fixed sets of named constants with fields and behavior',
       'Reflection allows inspecting classes, methods, and annotations at runtime',
     ],
-    starterCode: `// 31. Java Generics & Type-Safe Enums
+    starterCode: `// 29. Java Generics & Type-Safe Enums
 enum Environment {
     DEV("https://dev.api.com", 15),
     STAGING("https://staging.api.com", 30),

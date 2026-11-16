@@ -120,9 +120,9 @@ ASCII_ART = {
 def determine_winner(player, computer):
     if player == computer:
         return "Tie"
-    elif (player == "Rock" and computer == "Scissors") or \\
-         (player == "Paper" and computer == "Rock") or \\
-         (player == "Scissors" and computer == "Paper"):
+    elif ((player == "Rock" and computer == "Scissors") or
+          (player == "Paper" and computer == "Rock") or
+          (player == "Scissors" and computer == "Paper")):
         return "Player"
     else:
         return "Computer"
@@ -422,7 +422,7 @@ class SnakeGame {
     // Check Food Collision
     if (head.x === this.food.x && head.y === this.food.y) {
       this.score += 10;
-      console.log(\`🍎 Delicious! Food eaten. Score: \${this.score} pts\`);
+      console.log("🍎 Delicious! Food eaten. Score: " + this.score + " pts");
       // Respawn food
       this.food = {
         x: Math.floor(Math.random() * this.gridSize),
@@ -435,9 +435,9 @@ class SnakeGame {
   }
 
   renderAscii() {
-    console.log(\`Score: \${this.score} | Snake Length: \${this.snake.length}\`);
-    console.log(\`Snake Head at: (\${this.snake[0].x}, \${this.snake[0].y})\`);
-    console.log(\`Food Target at: (\${this.food.x}, \${this.food.y})\\n\`);
+    console.log("Score: " + this.score + " | Snake Length: " + this.snake.length);
+    console.log("Snake Head at: (" + this.snake[0].x + ", " + this.snake[0].y + ")");
+    console.log("Food Target at: (" + this.food.x + ", " + this.food.y + ")\n");
   }
 }
 
@@ -445,7 +445,7 @@ class SnakeGame {
 const game = new SnakeGame(20);
 console.log("🎮 SNAKE ARCADE GAME INITIALIZED!");
 for (let tick = 1; tick <= 5; tick++) {
-  console.log(\`--- Game Tick #\${tick} ---\`);
+  console.log("--- Game Tick #" + tick + " ---");
   game.update();
   game.renderAscii();
 }
@@ -508,7 +508,7 @@ class PongGame {
     // Score Check: Right side (Player scores)
     if (this.ball.x >= this.tableWidth) {
       this.playerPaddle.score++;
-      console.log(\`🏆 GOAL! Player scores! (\${this.playerPaddle.score} - \${this.aiPaddle.score})\`);
+      console.log("🏆 GOAL! Player scores! (" + this.playerPaddle.score + " - " + this.aiPaddle.score + ")");
       this.resetBall();
     }
   }
@@ -524,7 +524,7 @@ const pong = new PongGame();
 console.log("🏓 RETRO PONG TOURNAMENT STARTED!");
 for (let i = 1; i <= 6; i++) {
   pong.update();
-  console.log(\`Ball Position: (\${pong.ball.x}, \${pong.ball.y})\`);
+  console.log("Ball Position: (" + pong.ball.x + ", " + pong.ball.y + ")");
 }
 `,
       solutionCode: `// Pong complete`,
@@ -578,17 +578,17 @@ class MemoryGame {
     const card1 = this.deck[cardIndex1];
     const card2 = this.deck[cardIndex2];
 
-    console.log(\`Move #\${this.moves}: Flipped [Card \${cardIndex1}: \${card1}] and [Card \${cardIndex2}: \${card2}]\`);
+    console.log("Move #" + this.moves + ": Flipped [Card " + cardIndex1 + ": " + card1 + "] and [Card " + cardIndex2 + ": " + card2 + "]");
 
     if (card1 === card2) {
       this.matchedPairs++;
-      console.log(\`🎉 MATCH FOUND! Pairs matched: \${this.matchedPairs}/\${this.deck.length / 2}\\n\`);
+      console.log("🎉 MATCH FOUND! Pairs matched: " + this.matchedPairs + "/" + (this.deck.length / 2) + "\n");
     } else {
-      console.log("❌ No match! Cards turned back down.\\n");
+      console.log("❌ No match! Cards turned back down.\n");
     }
 
     if (this.matchedPairs === this.deck.length / 2) {
-      console.log(\`🏆 CONGRATULATIONS! You solved the puzzle in \${this.moves} moves!\`);
+      console.log("🏆 CONGRATULATIONS! You solved the puzzle in " + this.moves + " moves!");
     }
   }
 }

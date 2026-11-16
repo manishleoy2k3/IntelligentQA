@@ -475,10 +475,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           {/* Concepts List below each language */}
                           {isLangOpen && courseMeta && (
                             <div className="pl-3 pr-1 py-1 space-y-0.5 border-l-2 border-slate-700/40 ml-3.5 my-1">
-                              <div className="pt-1 pb-0.5 px-2 text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500">
-                                Curriculum Lessons
-                              </div>
-
                               {courseMeta.concepts.map((concept: CourseConcept) => {
                                 const isConceptActive =
                                   pathname === '/kids' && kidsActiveLang === track.id && kidsActiveConcept === concept.id;
@@ -504,10 +500,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                 );
                               })}
 
-                              {/* Practice, Test & Projects (At bottom after completing all lessons) */}
-                              <div className="pt-2 pb-0.5 px-2 text-[9px] font-mono font-bold uppercase tracking-wider text-amber-400/80 dark:text-amber-500/80 border-t border-slate-800/80 mt-1.5">
-                                Test Knowledge &amp; Projects
-                              </div>
+                              <div className="border-t border-slate-800/80 my-1 pt-0.5" />
 
                               {/* 1. Exercises Knowledge Test (4-5 questions per section) */}
                               <Link
@@ -523,10 +516,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                     ? 'bg-amber-500/25 text-amber-300 font-extrabold border-l-2 border-amber-400 pl-1.5'
                                     : 'text-amber-500/90 dark:text-amber-400/90 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-500/10'
                                 }`}
-                                title={`${track.short} Testing Exercises (4-5 questions per section)`}
+                                title={`${track.short} Exercises`}
                               >
                                 <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-                                <span className="truncate">{track.short} Exercises (Test Knowledge)</span>
+                                <span className="truncate">{track.short} Exercises</span>
                               </Link>
 
                               {/* 2. Build Games & Projects Studio */}
@@ -543,10 +536,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                     ? 'bg-emerald-500/25 text-emerald-300 font-extrabold border-l-2 border-emerald-400 pl-1.5'
                                     : 'text-emerald-600/90 dark:text-emerald-400/90 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-500/10'
                                 }`}
-                                title={`Create Games & Projects with ${track.short}`}
+                                title={`${track.short} Games & Projects`}
                               >
                                 <Gamepad2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
-                                <span className="truncate">Build Games &amp; Projects</span>
+                                <span className="truncate">{track.short} Games &amp; Projects</span>
                               </Link>
                             </div>
                           )}
