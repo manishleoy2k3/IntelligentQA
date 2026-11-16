@@ -475,6 +475,40 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           {/* Concepts List below each language */}
                           {isLangOpen && courseMeta && (
                             <div className="pl-3 pr-1 py-1 space-y-0.5 border-l-2 border-slate-700/40 ml-3.5 my-1">
+                              <div className="pt-1 pb-0.5 px-2 text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500">
+                                Curriculum Lessons
+                              </div>
+
+                              {courseMeta.concepts.map((concept: CourseConcept) => {
+                                const isConceptActive =
+                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveConcept === concept.id;
+                                return (
+                                  <Link
+                                    key={concept.id}
+                                    href={`/kids?lang=${track.id}&concept=${concept.id}`}
+                                    onClick={() => {
+                                      setKidsActiveLang(track.id);
+                                      setKidsActiveConcept(concept.id);
+                                      setKidsActiveView('');
+                                      if (onCloseMobile) onCloseMobile();
+                                    }}
+                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] transition truncate ${
+                                      isConceptActive
+                                        ? 'bg-amber-500/20 text-amber-400 font-bold border-l-2 border-amber-500 pl-1.5'
+                                        : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-neutral-200 hover:bg-slate-100/50 dark:hover:bg-neutral-800/30'
+                                    }`}
+                                    title={concept.title}
+                                  >
+                                    <span className="truncate">{concept.title}</span>
+                                  </Link>
+                                );
+                              })}
+
+                              {/* Practice, Test & Projects (At bottom after completing all lessons) */}
+                              <div className="pt-2 pb-0.5 px-2 text-[9px] font-mono font-bold uppercase tracking-wider text-amber-400/80 dark:text-amber-500/80 border-t border-slate-800/80 mt-1.5">
+                                Test Knowledge &amp; Projects
+                              </div>
+
                               {/* 1. Exercises Knowledge Test (4-5 questions per section) */}
                               <Link
                                 href={`/kids?lang=${track.id}&view=exercises`}
@@ -514,35 +548,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                 <Gamepad2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
                                 <span className="truncate">Build Games &amp; Projects</span>
                               </Link>
-
-                              <div className="pt-1.5 pb-0.5 px-2 text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500">
-                                Curriculum Lessons
-                              </div>
-
-                              {courseMeta.concepts.map((concept: CourseConcept) => {
-                                const isConceptActive =
-                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveConcept === concept.id;
-                                return (
-                                  <Link
-                                    key={concept.id}
-                                    href={`/kids?lang=${track.id}&concept=${concept.id}`}
-                                    onClick={() => {
-                                      setKidsActiveLang(track.id);
-                                      setKidsActiveConcept(concept.id);
-                                      setKidsActiveView('');
-                                      if (onCloseMobile) onCloseMobile();
-                                    }}
-                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] transition truncate ${
-                                      isConceptActive
-                                        ? 'bg-amber-500/20 text-amber-400 font-bold border-l-2 border-amber-500 pl-1.5'
-                                        : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-neutral-200 hover:bg-slate-100/50 dark:hover:bg-neutral-800/30'
-                                    }`}
-                                    title={concept.title}
-                                  >
-                                    <span className="truncate">{concept.title}</span>
-                                  </Link>
-                                );
-                              })}
                             </div>
                           )}
                         </div>

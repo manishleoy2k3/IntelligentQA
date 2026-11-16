@@ -938,10 +938,11 @@ function KidsCoursesContent() {
                     </Link>
                   ) : (
                     <Link
-                      href={`/kids?lang=${activeLang}`}
-                      className="py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition ml-auto"
+                      href={`/kids?lang=${activeLang}&view=exercises`}
+                      className="py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition ml-auto flex items-center gap-1.5"
                     >
-                      Course Complete! Return Home →
+                      <span>Complete Lessons → Take Exercises</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   )}
                 </div>

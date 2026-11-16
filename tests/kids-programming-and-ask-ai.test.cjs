@@ -306,9 +306,12 @@ test('Requirement 15: Exercises under each programming language on Left Navigati
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
   const kidsPageFile = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
 
-  // Verify Left navigation has exercises item under each language
+  // Verify Left navigation has exercises item under each language, positioned at the bottom after all lessons
   assert.ok(sidebarFile.includes('view=exercises'), 'Sidebar has Exercises link under language sections');
   assert.ok(sidebarFile.includes('Exercises (Test Knowledge)'), 'Sidebar displays Exercises knowledge test item');
+  const curriculumLessonsIdx = sidebarFile.indexOf('Curriculum Lessons');
+  const exercisesIdx = sidebarFile.indexOf('Exercises (Test Knowledge)');
+  assert.ok(exercisesIdx > curriculumLessonsIdx, 'Exercises and Projects appear at the bottom after all Curriculum Lessons');
 
   // Verify 4-5 questions per section across Python, JS, Java
   ['python', 'javascript', 'java'].forEach((lang) => {

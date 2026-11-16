@@ -35,11 +35,13 @@ test('Google 1-Click Sign-In eliminates multi-screen friction', () => {
   assert.ok(googleBtnFile.includes('loginWithGoogle'), 'Logs in immediately if account remembered');
   assert.ok(googleBtnFile.includes('Use another Google account'), 'Allows switching accounts');
 
-  // Check Google OAuth page has removed consent hurdle
+  // Check Google OAuth page has removed consent hurdle and has zero fake emails
   const googleOAuthFile = fs.readFileSync(path.join(__dirname, '../src/app/auth/google/page.tsx'), 'utf8');
   assert.ok(!googleOAuthFile.includes("step === 'consent'"), 'Completely removed redundant consent screen');
   assert.ok(googleOAuthFile.includes('handleSelectExisting'), 'Has 1-click account selection');
   assert.ok(googleOAuthFile.includes('Connecting to IntelligentQA'), 'Shows smooth quick authorization');
+  assert.ok(!googleOAuthFile.includes('qa.student@gmail.com'), 'Does not include hardcoded mock emails like qa.student@gmail.com');
+  assert.ok(!googleOAuthFile.includes('interviewer@interviewvector.com'), 'Does not include dummy interviewer account');
 });
 
 test('QA Database provides AscentWealth OTP and Credential helpers', () => {

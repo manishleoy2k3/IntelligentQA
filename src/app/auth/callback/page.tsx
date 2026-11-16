@@ -37,9 +37,9 @@ function AuthCallbackContent() {
         const name = searchParams.get('name');
         const code = searchParams.get('code');
 
-        // Target credentials for login
-        const targetEmail = email || (code ? 'qa.student@gmail.com' : 'google.student@intelligentqa.io');
-        const targetName = name || (email ? email.split('@')[0] : 'Google Student');
+        // Target credentials for login (from OAuth callback parameters)
+        const targetEmail = email || (code ? 'google.user@gmail.com' : 'google.user@intelligentqa.io');
+        const targetName = name || (email ? email.split('@')[0] : 'Google User');
 
         // Multi-user isolation: purge prior user's session if different user
         const existingUser = QADatabase.getCurrentUser();

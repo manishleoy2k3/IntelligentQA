@@ -34,39 +34,35 @@ function GoogleOAuthContent() {
   const [customName, setCustomName] = useState('');
   const [showKeyModal, setShowKeyModal] = useState(false);
 
-  // Default accounts modeled after authentic Google account chooser (Image 3)
-  const [accounts, setAccounts] = useState<StoredGoogleAccount[]>([
-    {
-      name: 'Manish Kumar',
-      email: 'manishleoy2k3@gmail.com',
-    },
-    {
-      name: 'Interviewer .',
-      email: 'interviewer@interviewvector.com',
-      signedOut: true,
-    },
-    {
-      name: 'QA Student',
-      email: 'qa.student@gmail.com',
-    },
-  ]);
+  // Accounts previously used and remembered on this browser (empty by default - zero fake/mock emails)
+  const [accounts, setAccounts] = useState<StoredGoogleAccount[]>([]);
 
-  // Merge any previously saved Google accounts from localStorage
+  // Check for real Google Client ID or load remembered accounts on this device
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+      // If official Google Client ID is configured, redirect directly to real Google OAuth
+      if (googleClientId) {
+        const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(googleClientId)}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile&prompt=select_account`;
+        return;
+      }
+
       try {
         const remembered = QADatabase.getRememberedGoogleAccounts();
         if (remembered && remembered.length > 0) {
-          setAccounts(prev => {
-            const existingEmails = new Set(prev.map(a => a.email.toLowerCase()));
-            const newAccs = remembered
-              .filter(r => r.email && !existingEmails.has(r.email.toLowerCase()))
-              .map(r => ({ email: r.email, name: r.name }));
-            return [...newAccs, ...prev];
-          });
+          const userAccounts = remembered
+            .filter(r => r.email)
+            .map(r => ({ email: r.email, name: r.name || r.email.split('@')[0] }));
+          setAccounts(userAccounts);
+          setShowCustomInput(false);
+        } else {
+          // If no remembered accounts on this device, prompt directly for user's Google email
+          setAccounts([]);
+          setShowCustomInput(true);
         }
       } catch {
-        // ignore
+        setShowCustomInput(true);
       }
     }
   }, []);
@@ -246,19 +242,28 @@ function GoogleOAuthContent() {
                 </div>
 
                 <div className="flex items-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowCustomInput(false)}
-                    className="px-4 py-2.5 rounded-xl border border-neutral-700 text-neutral-400 hover:text-white text-sm font-medium transition-colors"
-                  >
-                    Back to Accounts
-                  </button>
+                  {accounts.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowCustomInput(false)}
+                      className="px-4 py-2.5 rounded-xl border border-neutral-700 text-neutral-400 hover:text-white text-sm font-medium transition-colors"
+                    >
+                      Back to Accounts
+                    </button>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="px-4 py-2.5 rounded-xl border border-neutral-700 text-neutral-400 hover:text-white text-sm font-medium transition-colors"
+                    >
+                      Back to Login
+                    </Link>
+                  )}
                   <button
                     type="submit"
                     disabled={authorizing || !customEmail.trim()}
-                    className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all flex items-center justify-center gap-2"
+                    className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>Continue →</span>
+                    <span>Continue with Google →</span>
                   </button>
                 </div>
               </form>
