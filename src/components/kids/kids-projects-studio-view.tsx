@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { KIDS_PROJECTS, ProjectTemplate } from '@/lib/kids-projects';
 import { QADatabase } from '@/lib/qa-db';
+import { UserProfile } from '@/types/qa';
 
 interface KidsProjectsStudioViewProps {
   language: 'python' | 'javascript' | 'java';
@@ -37,6 +38,7 @@ export default function KidsProjectsStudioView({ language }: KidsProjectsStudioV
   const [terminalError, setTerminalError] = useState<string>('');
   const [savedFeedback, setSavedFeedback] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
@@ -44,19 +46,60 @@ export default function KidsProjectsStudioView({ language }: KidsProjectsStudioV
   const activeProject: ProjectTemplate | undefined =
     templates.find((p) => p.id === selectedProjectId) || templates[0];
 
-  // Load saved code from localStorage for the active project
+  // Load saved code from Database for the active user & active project
   useEffect(() => {
-    if (typeof window !== 'undefined' && activeProject) {
-      const storageKey = `intelligentqa_kids_custom_project_${language}_${activeProject.id}`;
-      const savedCode = localStorage.getItem(storageKey);
-      if (savedCode) {
-        setEditorCode(savedCode);
-        setTerminalOutput(`Loaded saved project code for "${activeProject.title}". Click "Run Project" to play!`);
-      } else {
-        setEditorCode(activeProject.starterCode);
-        setTerminalOutput(`Ready to play "${activeProject.title}". Click "Run Project" to start!`);
+    const loadProjectCode = async () => {
+      const user = QADatabase.getCurrentUser();
+      setCurrentUser(user);
+      const uid = user ? user.id : 'usr_guest';
+
+      if (activeProject) {
+        try {
+          // 1. Check user-scoped record in QADatabase
+          const savedCode = await QADatabase.getUserProjectCode(uid, language, activeProject.id);
+          if (savedCode) {
+            setEditorCode(savedCode);
+            setTerminalOutput(`Loaded saved project code from Database for "${activeProject.title}". Click "Run Project" to play!`);
+            setTerminalError('');
+            return;
+          }
+
+          // 2. Try server database endpoint
+          const res = await fetch(`/api/db/user-data?userId=${encodeURIComponent(uid)}&type=project&language=${language}&projectId=${encodeURIComponent(activeProject.id)}`).catch(() => null);
+          if (res && res.ok) {
+            const data = await res.json();
+            if (data?.record?.code) {
+              setEditorCode(data.record.code);
+              setTerminalOutput(`Loaded saved project code from Database for "${activeProject.title}". Click "Run Project" to play!`);
+              setTerminalError('');
+              return;
+            }
+          }
+
+          // Default fallback to starter template
+          setEditorCode(activeProject.starterCode);
+          setTerminalOutput(`Ready to play "${activeProject.title}". Click "Run Project" to start!`);
+          setTerminalError('');
+        } catch {
+          setEditorCode(activeProject.starterCode);
+          setTerminalOutput(`Ready to play "${activeProject.title}". Click "Run Project" to start!`);
+          setTerminalError('');
+        }
       }
-      setTerminalError('');
+    };
+
+    loadProjectCode();
+
+    // Listen for auth changes (login / logout) to reload code for the authenticated user and prevent cross-user leakage
+    const handleAuthChange = () => {
+      loadProjectCode();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('intelligentqa_auth_changed', handleAuthChange);
+      return () => {
+        window.removeEventListener('intelligentqa_auth_changed', handleAuthChange);
+      };
     }
   }, [selectedProjectId, language]);
 
@@ -88,26 +131,24 @@ export default function KidsProjectsStudioView({ language }: KidsProjectsStudioV
     }
   };
 
-  // Save project code to localStorage
-  const handleSaveProject = () => {
-    if (typeof window !== 'undefined' && activeProject) {
-      const storageKey = `intelligentqa_kids_custom_project_${language}_${activeProject.id}`;
-      localStorage.setItem(storageKey, editorCode);
+  // Save project code to Database
+  const handleSaveProject = async () => {
+    if (activeProject) {
+      const uid = currentUser ? currentUser.id : 'usr_guest';
+      await QADatabase.saveUserProjectCode(uid, language, activeProject.id, editorCode);
       setSavedFeedback(true);
-      setTimeout(() => setSavedFeedback(false), 2000);
+      setTimeout(() => setSavedFeedback(false), 2500);
     }
   };
 
   // Reset to original template starter
-  const handleResetToTemplate = () => {
-    if (activeProject && window.confirm(`Reset code for "${activeProject.title}" to original template?`)) {
+  const handleResetToTemplate = async () => {
+    if (activeProject && window.confirm(`Reset code for "${activeProject.title}" in database to original template?`)) {
       setEditorCode(activeProject.starterCode);
       setTerminalOutput('Reset to original project blueprint.');
       setTerminalError('');
-      if (typeof window !== 'undefined') {
-        const storageKey = `intelligentqa_kids_custom_project_${language}_${activeProject.id}`;
-        localStorage.removeItem(storageKey);
-      }
+      const uid = currentUser ? currentUser.id : 'usr_guest';
+      await QADatabase.resetUserProjectCode(uid, language, activeProject.id);
     }
   };
 
@@ -184,7 +225,12 @@ export default function KidsProjectsStudioView({ language }: KidsProjectsStudioV
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            <div className="px-2.5 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{currentUser ? `DB: ${currentUser.displayName || currentUser.email}` : 'DB: Guest Mode'}</span>
+            </div>
+
             <button
               type="button"
               onClick={handleSaveProject}
@@ -193,10 +239,10 @@ export default function KidsProjectsStudioView({ language }: KidsProjectsStudioV
                   ? 'bg-emerald-600 text-white'
                   : 'bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700'
               }`}
-              title="Save project progress to your browser"
+              title="Save project progress to database"
             >
               {savedFeedback ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{savedFeedback ? 'Saved!' : 'Save Game'}</span>
+              <span>{savedFeedback ? 'Saved to DB!' : 'Save Game'}</span>
             </button>
 
             <button

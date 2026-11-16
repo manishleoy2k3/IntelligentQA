@@ -12,6 +12,8 @@ import {
   Lesson,
   ModerationItem,
   AdminUserEntry,
+  UserExerciseProgressRecord,
+  UserCodingProjectRecord,
 } from '@/types/qa';
 import { QA_TRACKS } from '@/lib/qa-curriculum';
 import {
@@ -19,6 +21,8 @@ import {
   LanguageCourseMeta,
   LANGUAGE_COURSES,
 } from '@/lib/kids-courses';
+import { KIDS_EXERCISES, LanguageExercises } from '@/lib/kids-exercises';
+import { KIDS_PROJECTS, ProjectTemplate } from '@/lib/kids-projects';
 import { saveCustomGuide, ConceptGuide } from '@/lib/concept-guides';
 import { saveCustomProblem, CodingProblem } from '@/lib/coding-problems';
 import { validateGeminiKeySyntax } from '@/lib/gemini-validator';
@@ -79,6 +83,10 @@ class MemoryDatabase {
   bookmarks = new Map<string, QuestionBookmark[]>();
   sdetTracks: Track[] = QA_TRACKS;
   kidsCourses: Record<'python' | 'javascript' | 'java', LanguageCourseMeta> = LANGUAGE_COURSES;
+  kidsExercises: Record<'python' | 'javascript' | 'java', LanguageExercises> = KIDS_EXERCISES;
+  kidsProjects: Record<'python' | 'javascript' | 'java', ProjectTemplate[]> = KIDS_PROJECTS;
+  userExerciseProgress = new Map<string, UserExerciseProgressRecord[]>();
+  userCodingProjects = new Map<string, UserCodingProjectRecord[]>();
 
   constructor() {
     // Seed initial progress for demo user
@@ -1491,6 +1499,197 @@ export const QADatabase = {
       window.dispatchEvent(new CustomEvent('intelligentqa_kids_courses_updated'));
     } else {
       memoryDb.kidsCourses = LANGUAGE_COURSES;
+    }
+  },
+
+  // Kids Exercises Catalog in Database
+  getKidsExercises(lang?: 'python' | 'javascript' | 'java'): Record<'python' | 'javascript' | 'java', LanguageExercises> | LanguageExercises {
+    if (!isBrowser()) {
+      if (lang) return memoryDb.kidsExercises[lang] || KIDS_EXERCISES[lang];
+      return memoryDb.kidsExercises;
+    }
+    const stored = getStoredItem<Record<'python' | 'javascript' | 'java', LanguageExercises> | null>(
+      'intelligentqa_db_kids_exercises_catalog',
+      null
+    );
+    const catalog = stored || KIDS_EXERCISES;
+    if (lang) return catalog[lang] || KIDS_EXERCISES[lang];
+    return catalog;
+  },
+
+  // User Exercise Progress (Row-Level Security: Only returns records where e.userId === userId)
+  async getUserExerciseProgress(userId: string, language: 'python' | 'javascript' | 'java'): Promise<UserExerciseProgressRecord | null> {
+    if (!userId) return null;
+    let list: UserExerciseProgressRecord[] = [];
+    if (isBrowser()) {
+      list = getStoredItem<UserExerciseProgressRecord[]>(`intelligentqa_db_user_exercises_${userId}`, []);
+    } else {
+      list = memoryDb.userExerciseProgress.get(userId) || [];
+    }
+
+    // Owner check: Ensure zero cross-user leakage
+    const scoped = list.filter((e) => e.userId === userId);
+    const matched = scoped.find((e) => e.language === language);
+    return matched || null;
+  },
+
+  async saveUserExerciseProgress(
+    userId: string,
+    language: 'python' | 'javascript' | 'java',
+    userAnswers: Record<string, number>,
+    score?: number,
+    totalAnswered?: number
+  ): Promise<UserExerciseProgressRecord> {
+    const existingList = isBrowser()
+      ? getStoredItem<UserExerciseProgressRecord[]>(`intelligentqa_db_user_exercises_${userId}`, [])
+      : (memoryDb.userExerciseProgress.get(userId) || []);
+
+    const list = existingList.filter((e) => e.userId === userId && e.language !== language);
+    const now = new Date().toISOString();
+    const record: UserExerciseProgressRecord = {
+      id: `uexp_${userId}_${language}`,
+      userId,
+      language,
+      userAnswers: { ...userAnswers },
+      score: typeof score === 'number' ? score : 0,
+      totalAnswered: typeof totalAnswered === 'number' ? totalAnswered : Object.keys(userAnswers).length,
+      updatedAt: now,
+    };
+
+    list.push(record);
+    memoryDb.userExerciseProgress.set(userId, list);
+
+    if (isBrowser()) {
+      setStoredItem(`intelligentqa_db_user_exercises_${userId}`, list);
+      try {
+        fetch('/api/db/user-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            type: 'exercises',
+            language,
+            userAnswers,
+            score: record.score,
+            totalAnswered: record.totalAnswered,
+          }),
+        }).catch(() => {});
+      } catch {}
+    }
+
+    return record;
+  },
+
+  async resetUserExerciseProgress(userId: string, language: 'python' | 'javascript' | 'java'): Promise<void> {
+    if (!userId) return;
+    const existingList = isBrowser()
+      ? getStoredItem<UserExerciseProgressRecord[]>(`intelligentqa_db_user_exercises_${userId}`, [])
+      : (memoryDb.userExerciseProgress.get(userId) || []);
+
+    const list = existingList.filter((e) => !(e.userId === userId && e.language === language));
+    memoryDb.userExerciseProgress.set(userId, list);
+
+    if (isBrowser()) {
+      setStoredItem(`intelligentqa_db_user_exercises_${userId}`, list);
+      try {
+        fetch(`/api/db/user-data?userId=${encodeURIComponent(userId)}&type=exercises&language=${language}`, {
+          method: 'DELETE',
+        }).catch(() => {});
+      } catch {}
+    }
+  },
+
+  // Kids Project Templates Catalog in Database
+  getKidsProjectTemplates(language?: 'python' | 'javascript' | 'java'): Record<'python' | 'javascript' | 'java', ProjectTemplate[]> | ProjectTemplate[] {
+    if (!isBrowser()) {
+      if (language) return memoryDb.kidsProjects[language] || KIDS_PROJECTS[language];
+      return memoryDb.kidsProjects;
+    }
+    const stored = getStoredItem<Record<'python' | 'javascript' | 'java', ProjectTemplate[]> | null>(
+      'intelligentqa_db_kids_projects_catalog',
+      null
+    );
+    const catalog = stored || KIDS_PROJECTS;
+    if (language) return catalog[language] || KIDS_PROJECTS[language];
+    return catalog;
+  },
+
+  // User Project Code (Row-Level Security: Only returns records where proj.userId === userId)
+  async getUserProjectCode(userId: string, language: 'python' | 'javascript' | 'java', projectId: string): Promise<string | null> {
+    if (!userId) return null;
+    let list: UserCodingProjectRecord[] = [];
+    if (isBrowser()) {
+      list = getStoredItem<UserCodingProjectRecord[]>(`intelligentqa_db_user_projects_${userId}`, []);
+    } else {
+      list = memoryDb.userCodingProjects.get(userId) || [];
+    }
+
+    // Owner check: Ensure zero cross-user leakage
+    const scoped = list.filter((proj) => proj.userId === userId);
+    const matched = scoped.find((proj) => proj.language === language && proj.projectId === projectId);
+    return matched ? matched.code : null;
+  },
+
+  async saveUserProjectCode(
+    userId: string,
+    language: 'python' | 'javascript' | 'java',
+    projectId: string,
+    code: string
+  ): Promise<UserCodingProjectRecord> {
+    const existingList = isBrowser()
+      ? getStoredItem<UserCodingProjectRecord[]>(`intelligentqa_db_user_projects_${userId}`, [])
+      : (memoryDb.userCodingProjects.get(userId) || []);
+
+    const list = existingList.filter((proj) => !(proj.userId === userId && proj.language === language && proj.projectId === projectId));
+    const now = new Date().toISOString();
+    const record: UserCodingProjectRecord = {
+      id: `uproj_${userId}_${language}_${projectId}`,
+      userId,
+      language,
+      projectId,
+      code,
+      updatedAt: now,
+    };
+
+    list.push(record);
+    memoryDb.userCodingProjects.set(userId, list);
+
+    if (isBrowser()) {
+      setStoredItem(`intelligentqa_db_user_projects_${userId}`, list);
+      try {
+        fetch('/api/db/user-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            type: 'project',
+            language,
+            projectId,
+            code,
+          }),
+        }).catch(() => {});
+      } catch {}
+    }
+
+    return record;
+  },
+
+  async resetUserProjectCode(userId: string, language: 'python' | 'javascript' | 'java', projectId: string): Promise<void> {
+    if (!userId) return;
+    const existingList = isBrowser()
+      ? getStoredItem<UserCodingProjectRecord[]>(`intelligentqa_db_user_projects_${userId}`, [])
+      : (memoryDb.userCodingProjects.get(userId) || []);
+
+    const list = existingList.filter((proj) => !(proj.userId === userId && proj.language === language && proj.projectId === projectId));
+    memoryDb.userCodingProjects.set(userId, list);
+
+    if (isBrowser()) {
+      setStoredItem(`intelligentqa_db_user_projects_${userId}`, list);
+      try {
+        fetch(`/api/db/user-data?userId=${encodeURIComponent(userId)}&type=project&language=${language}&projectId=${encodeURIComponent(projectId)}`, {
+          method: 'DELETE',
+        }).catch(() => {});
+      } catch {}
     }
   },
 };

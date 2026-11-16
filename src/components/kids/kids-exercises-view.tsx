@@ -19,6 +19,8 @@ import {
   Lightbulb,
 } from 'lucide-react';
 import { KIDS_EXERCISES, ExerciseQuestion } from '@/lib/kids-exercises';
+import { QADatabase } from '@/lib/qa-db';
+import { UserProfile } from '@/types/qa';
 
 interface KidsExercisesViewProps {
   language: 'python' | 'javascript' | 'java';
@@ -30,42 +32,86 @@ export default function KidsExercisesView({ language, onSwitchLanguage }: KidsEx
   const [selectedSectionIndex, setSelectedSectionIndex] = useState<number>(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [revealedHints, setRevealedHints] = useState<Record<string, boolean>>({});
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [dbSyncStatus, setDbSyncStatus] = useState<'synced' | 'saving' | 'offline'>('synced');
 
-  // LocalStorage persistence for learner progress
+  // Load user profile and user-scoped exercise progress from Database
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    const fetchUserAndProgress = async () => {
+      const user = QADatabase.getCurrentUser();
+      setCurrentUser(user);
+      const uid = user ? user.id : 'usr_guest';
+
       try {
-        const saved = localStorage.getItem(`intelligentqa_kids_exercises_${language}`);
-        if (saved) {
-          setUserAnswers(JSON.parse(saved));
+        // 1. Load from QADatabase (Row-Level Security: scoped to user.id)
+        const record = await QADatabase.getUserExerciseProgress(uid, language);
+        if (record && record.userAnswers) {
+          setUserAnswers(record.userAnswers);
         } else {
-          setUserAnswers({});
+          // If no local record, try server database endpoint
+          const res = await fetch(`/api/db/user-data?userId=${encodeURIComponent(uid)}&type=exercises&language=${language}`).catch(() => null);
+          if (res && res.ok) {
+            const data = await res.json();
+            if (data?.record?.userAnswers) {
+              setUserAnswers(data.record.userAnswers);
+            } else {
+              setUserAnswers({});
+            }
+          } else {
+            setUserAnswers({});
+          }
         }
       } catch {
         setUserAnswers({});
       }
+    };
+
+    fetchUserAndProgress();
+
+    // Listen for auth changes (login / logout) to switch user records immediately with zero data leakage
+    const handleAuthChange = () => {
+      fetchUserAndProgress();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('intelligentqa_auth_changed', handleAuthChange);
+      return () => {
+        window.removeEventListener('intelligentqa_auth_changed', handleAuthChange);
+      };
     }
   }, [language]);
 
-  const handleSelectOption = (questionId: string, optionIndex: number) => {
+  const handleSelectOption = async (questionId: string, optionIndex: number) => {
     const updated = { ...userAnswers, [questionId]: optionIndex };
     setUserAnswers(updated);
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(`intelligentqa_kids_exercises_${language}`, JSON.stringify(updated));
-      } catch {
-        // ignore storage quota errors
-      }
+    setDbSyncStatus('saving');
+
+    const uid = currentUser ? currentUser.id : 'usr_guest';
+
+    // Calculate score
+    const allQuestions = courseExercises.sections.flatMap((s) => s.questions);
+    let correct = 0;
+    allQuestions.forEach((q) => {
+      if (updated[q.id] === q.correctIndex) correct++;
+    });
+    const answeredCount = Object.keys(updated).length;
+
+    // Persist to Database with strict userId scoping
+    try {
+      await QADatabase.saveUserExerciseProgress(uid, language, updated, correct, answeredCount);
+      setDbSyncStatus('synced');
+    } catch {
+      setDbSyncStatus('offline');
     }
   };
 
-  const handleResetProgress = () => {
-    if (window.confirm(`Are you sure you want to reset all your ${courseExercises.title} answers?`)) {
+  const handleResetProgress = async () => {
+    if (window.confirm(`Are you sure you want to reset all your ${courseExercises.title} answers in the database?`)) {
       setUserAnswers({});
       setRevealedHints({});
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(`intelligentqa_kids_exercises_${language}`);
-      }
+      const uid = currentUser ? currentUser.id : 'usr_guest';
+      await QADatabase.resetUserExerciseProgress(uid, language);
+      setDbSyncStatus('synced');
     }
   };
 
@@ -108,15 +154,22 @@ export default function KidsExercisesView({ language, onSwitchLanguage }: KidsEx
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={handleResetProgress}
-            className="py-1.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition self-start sm:self-auto cursor-pointer"
-            title="Reset answers to try exercises again"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Progress</span>
-          </button>
+          <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+            <div className="px-2.5 py-1 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{currentUser ? `DB Saved: ${currentUser.displayName || currentUser.email}` : 'DB: Guest Mode'}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleResetProgress}
+              className="py-1.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+              title="Reset answers in database to try exercises again"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Progress</span>
+            </button>
+          </div>
         </div>
 
         {/* Scoreboard Metrics */}

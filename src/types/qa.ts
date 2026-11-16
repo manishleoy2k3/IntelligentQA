@@ -233,3 +233,23 @@ export interface AdminUserEntry {
   addedBy?: string;
 }
 
+export interface UserExerciseProgressRecord {
+  id: string;
+  userId: string;
+  language: 'python' | 'javascript' | 'java';
+  userAnswers: Record<string, number>;
+  score: number;
+  totalAnswered: number;
+  updatedAt: string;
+}
+
+export interface UserCodingProjectRecord {
+  id: string;
+  userId: string;
+  language: 'python' | 'javascript' | 'java';
+  projectId: string;
+  code: string;
+  updatedAt: string;
+}
+
+

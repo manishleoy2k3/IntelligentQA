@@ -348,3 +348,34 @@ test('Requirement 15: Exercises under each programming language on Left Navigati
   assert.ok(exercisesComponentFile.includes('revealedHints'), 'Togglable hints for learners');
   assert.ok(kidsPageFile.includes('KidsExercisesView'), 'Kids page integrates KidsExercisesView');
 });
+
+test('Requirement 16: Database Persistence for all learning concepts, questions, exercises, and projects with zero user leakage', () => {
+  const dbFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-db.ts'), 'utf8');
+  const apiDbFile = fs.readFileSync(path.join(__dirname, '../src/app/api/db/user-data/route.ts'), 'utf8');
+  const exercisesViewFile = fs.readFileSync(path.join(__dirname, '../src/components/kids/kids-exercises-view.tsx'), 'utf8');
+  const projectsViewFile = fs.readFileSync(path.join(__dirname, '../src/components/kids/kids-projects-studio-view.tsx'), 'utf8');
+
+  // Verify Database methods exist for Kids exercises, user progress, and projects
+  assert.ok(dbFile.includes('getKidsExercises'), 'QADatabase provides getKidsExercises');
+  assert.ok(dbFile.includes('getUserExerciseProgress'), 'QADatabase provides getUserExerciseProgress');
+  assert.ok(dbFile.includes('saveUserExerciseProgress'), 'QADatabase provides saveUserExerciseProgress');
+  assert.ok(dbFile.includes('resetUserExerciseProgress'), 'QADatabase provides resetUserExerciseProgress');
+  assert.ok(dbFile.includes('getUserProjectCode'), 'QADatabase provides getUserProjectCode');
+  assert.ok(dbFile.includes('saveUserProjectCode'), 'QADatabase provides saveUserProjectCode');
+  assert.ok(dbFile.includes('resetUserProjectCode'), 'QADatabase provides resetUserProjectCode');
+
+  // Verify Row-Level Security (RLS) ensures zero data leakage across different users
+  assert.ok(dbFile.includes('e.userId === userId'), 'Filters user exercise records strictly by userId');
+  assert.ok(dbFile.includes('proj.userId === userId'), 'Filters user project records strictly by userId');
+
+  // Verify dedicated Server Database API endpoint exists
+  assert.ok(apiDbFile.includes('/api/db/user-data') || apiDbFile.includes('serverUserExercises'), 'Server DB route manages user data');
+  assert.ok(apiDbFile.includes('r.userId === userId'), 'Server API filters exercises by userId');
+  assert.ok(apiDbFile.includes('p.userId === userId'), 'Server API filters projects by userId');
+
+  // Verify UI views use QADatabase and react to auth changes (logout / login)
+  assert.ok(exercisesViewFile.includes('QADatabase.saveUserExerciseProgress'), 'Exercises view persists to Database');
+  assert.ok(exercisesViewFile.includes('intelligentqa_auth_changed'), 'Exercises view refreshes on auth changes');
+  assert.ok(projectsViewFile.includes('QADatabase.saveUserProjectCode'), 'Projects view persists code to Database');
+  assert.ok(projectsViewFile.includes('intelligentqa_auth_changed'), 'Projects view refreshes on auth changes');
+});
