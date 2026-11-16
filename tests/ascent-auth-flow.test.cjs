@@ -51,4 +51,20 @@ test('QA Database provides AscentWealth OTP and Credential helpers', () => {
   assert.ok(qaDbFile.includes('setPassword'), 'Sets persistent password for email');
   assert.ok(qaDbFile.includes('verifyPassword'), 'Validates password for email');
   assert.ok(qaDbFile.includes('getPrimaryGoogleAccount'), 'Retrieves primary remembered Google user');
+  assert.ok(qaDbFile.includes('clearSession'), 'Provides clearSession method matching AscentWealth');
+});
+
+test('AscentWealth Google OAuth Callback & Multi-User Isolation', () => {
+  const callbackFile = fs.readFileSync(path.join(__dirname, '../src/app/auth/callback/page.tsx'), 'utf8');
+
+  // Error handling matching AscentWealth
+  assert.ok(callbackFile.includes('Sign-in with Google was not completed'), 'Displays AscentWealth error header');
+  assert.ok(callbackFile.includes('Try Again with Google'), 'Provides Try Again with Google action');
+  assert.ok(callbackFile.includes('Google sign-in was cancelled or access was denied'), 'Detects cancellation');
+
+  // Connecting state
+  assert.ok(callbackFile.includes('Connecting your Google account'), 'Displays connecting state banner');
+
+  // Multi-user isolation
+  assert.ok(callbackFile.includes('clearSession'), 'Purges previous session if user switched to prevent data leakage');
 });

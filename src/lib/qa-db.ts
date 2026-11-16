@@ -522,6 +522,10 @@ export const QADatabase = {
     }
   },
 
+  clearSession(): void {
+    this.logout();
+  },
+
   // Gemini API Key Management (Per User / Per Device)
   getUserGeminiKey(userId?: string): string {
     if (!isBrowser()) return '';

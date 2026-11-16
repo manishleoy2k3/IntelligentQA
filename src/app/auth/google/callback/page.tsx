@@ -1,47 +1,139 @@
 'use client';
 
-import React, { useEffect, Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { AlertCircle, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
 import { QADatabase } from '@/lib/qa-db';
 
 function CallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const redirectTo = searchParams.get('redirect_to') || searchParams.get('state') || '/dashboard';
 
   useEffect(() => {
-    const code = searchParams?.get('code');
-    const email = searchParams?.get('email');
-    const name = searchParams?.get('name');
-    const redirectTo = searchParams?.get('state') || searchParams?.get('redirect_to') || '/dashboard';
+    let cancelled = false;
 
-    const processOAuth = async () => {
-      try {
-        if (email) {
-          await QADatabase.loginWithGoogle(email, name || undefined);
-        } else {
-          // Fallback if generic code passed
-          await QADatabase.loginWithGoogle('qa.student@gmail.com', 'QA Student');
+    async function processOAuth() {
+      const errorParam = searchParams.get('error') || searchParams.get('error_description');
+      if (errorParam) {
+        const isCancelled = errorParam === 'access_denied' || errorParam.toLowerCase().includes('denied');
+        const msg = isCancelled
+          ? 'Google sign-in was cancelled or access was denied.'
+          : `Google sign-in failed: ${errorParam}`;
+        if (!cancelled) {
+          setStatus('error');
+          setErrorMessage(msg);
         }
-        router.push(redirectTo);
+        return;
+      }
+
+      try {
+        const code = searchParams?.get('code');
+        const email = searchParams?.get('email');
+        const name = searchParams?.get('name');
+
+        const targetEmail = email || (code ? 'qa.student@gmail.com' : 'google.student@intelligentqa.io');
+        const targetName = name || (email ? email.split('@')[0] : 'Google Student');
+
+        // Multi-user isolation
+        const existingUser = QADatabase.getCurrentUser();
+        if (existingUser && existingUser.email.toLowerCase() !== targetEmail.toLowerCase()) {
+          QADatabase.clearSession();
+        }
+
+        const user = await QADatabase.loginWithGoogle(targetEmail, targetName);
+        if (!user) {
+          throw new Error('Unable to confirm your Google account session. Please try signing in again.');
+        }
+
+        if (!cancelled) {
+          setStatus('success');
+          router.replace(redirectTo);
+        }
       } catch (err) {
         console.error('OAuth Callback processing error:', err);
-        router.push('/dashboard');
+        if (!cancelled) {
+          setStatus('error');
+          setErrorMessage(
+            err instanceof Error
+              ? err.message
+              : 'An unexpected error occurred during Google sign-in. Please try again.'
+          );
+        }
       }
-    };
+    }
 
-    processOAuth();
-  }, [router, searchParams]);
+    void processOAuth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router, searchParams, redirectTo]);
+
+  function retryGoogleSignIn() {
+    setStatus('loading');
+    setErrorMessage('');
+    router.push(`/auth/google?redirect_to=${encodeURIComponent(redirectTo)}&prompt=select_account`);
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA] dark:bg-slate-950 p-4 font-sans">
+        <div className="w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-xl text-center space-y-5">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-500">
+            <AlertCircle className="h-8 w-8" />
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Sign-in with Google was not completed
+            </h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {errorMessage || 'Unable to authenticate with Google. Please try again.'}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <button
+              type="button"
+              onClick={retryGoogleSignIn}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow transition cursor-pointer"
+            >
+              <RefreshCw size={16} />
+              <span>Try Again with Google</span>
+            </button>
+
+            <Link
+              href="/login"
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-750"
+            >
+              <span>Back to Sign In</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-slate-950 space-y-4">
-      <div className="w-12 h-12 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
-      <div className="text-center space-y-1">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white">
-          Completing Google OAuth 2.0 Sign In...
-        </h2>
-        <p className="text-xs text-slate-500">
-          Syncing your Google credentials with IntelligentQA
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA] dark:bg-slate-950 p-4 font-sans">
+      <div className="w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-xl text-center space-y-4">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+        <div className="space-y-1.5">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Connecting your Google account
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Please wait while we verify your credentials and prepare your workspace...
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -51,8 +143,8 @@ export default function GoogleOAuthCallbackPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-          <div className="w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA] dark:bg-slate-950">
+          <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full" />
         </div>
       }
     >
