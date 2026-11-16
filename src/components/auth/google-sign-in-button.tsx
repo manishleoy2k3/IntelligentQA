@@ -33,7 +33,20 @@ export default function GoogleSignInButton({
   const handleGoogleSignIn = () => {
     if (loading) return;
     setLoading(true);
-    // Direct navigation to Google OAuth 2.0 Account Chooser (Image 3)
+
+    // If real Google OAuth Client ID is provided in environment, redirect directly to Google (accounts.google.com)
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (googleClientId && typeof window !== 'undefined') {
+      const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(
+        googleClientId
+      )}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile&prompt=select_account&state=${encodeURIComponent(
+        redirectTo
+      )}`;
+      return;
+    }
+
+    // Direct navigation to Google OAuth account setup
     router.push(`/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`);
   };
 
