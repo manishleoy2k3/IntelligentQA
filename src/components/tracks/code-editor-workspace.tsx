@@ -235,6 +235,8 @@ export default function CodeEditorWorkspace({
 
   useEffect(() => {
     setGuideLang(isPlaywright || isAi ? 'typescript' : 'java');
+    // Ensure latest curriculum and lesson guides from Database are synced
+    QADatabase.syncCurriculumFromDatabase();
   }, [track.id, isPlaywright, isAi]);
 
   const [selectedLang, setSelectedLang] = useState<SupportedLang>(

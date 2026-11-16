@@ -1,3 +1,4 @@
+import { setCustomLessonDocOverride, LessonDoc } from '@/lib/qa-learning-docs';
 import {
   UserProfile,
   UserProgress,
@@ -1299,8 +1300,149 @@ export const QADatabase = {
   },
 
   // =========================================================================
-  // COURSE CONTENT MANAGEMENT (SDET & KIDS COURSES DATABASE)
+  // COURSE CONTENT MANAGEMENT (SDET COURSES DATABASE)
   // =========================================================================
+
+  // =========================================================================
+  // CENTRALIZED SERVER & DATABASE CURRICULUM SYNC
+  // =========================================================================
+
+  // Background fetch to sync latest tracks, lesson docs, and coding problems from Database
+  async syncCurriculumFromDatabase(): Promise<{ success: boolean; tracks?: Track[]; lessonDocs?: Record<string, any>; codingProblems?: any[] }> {
+    if (!isBrowser()) return { success: false };
+    try {
+      const res = await fetch('/api/db/curriculum?type=all');
+      if (!res.ok) return { success: false };
+      const data = await res.json();
+      if (data.success) {
+        if (Array.isArray(data.tracks) && data.tracks.length > 0) {
+          setStoredItem('intelligentqa_db_sdet_tracks', data.tracks);
+        }
+        if (data.lessonDocs && typeof data.lessonDocs === 'object') {
+          setStoredItem('intelligentqa_db_lesson_docs', data.lessonDocs);
+          Object.entries(data.lessonDocs).forEach(([id, doc]) => {
+            setCustomLessonDocOverride(id, doc as any);
+          });
+        }
+        if (Array.isArray(data.codingProblems) && data.codingProblems.length > 0) {
+          setStoredItem('sdet_custom_coding_problems', data.codingProblems);
+        }
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+        return { success: true, tracks: data.tracks, lessonDocs: data.lessonDocs, codingProblems: data.codingProblems };
+      }
+    } catch (e) {
+      console.warn('Could not sync curriculum from centralized server database', e);
+    }
+    return { success: false };
+  },
+
+  // Save lesson and publish to both local cache and centralized database
+  async saveLessonToDatabase(trackId: string, moduleId: string, lesson: Lesson, lessonDoc?: Partial<LessonDoc>): Promise<boolean> {
+    this.saveLesson(trackId, moduleId, lesson);
+    if (lessonDoc && lesson.id) {
+      this.saveLessonDocToDatabase(lesson.id, lessonDoc);
+    }
+    if (isBrowser()) {
+      try {
+        const res = await fetch('/api/db/curriculum', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save_lesson',
+            trackId,
+            moduleId,
+            lesson,
+            lessonDoc,
+          }),
+        });
+        return res.ok;
+      } catch (err) {
+        console.error('Failed to persist lesson to database server', err);
+      }
+    }
+    return false;
+  },
+
+  // Save lesson documentation guide to centralized database
+  async saveLessonDocToDatabase(lessonId: string, lessonDoc: Partial<LessonDoc>): Promise<boolean> {
+    if (isBrowser()) {
+      const existing = getStoredItem<Record<string, any>>('intelligentqa_db_lesson_docs', {}) || {};
+      existing[lessonId] = lessonDoc;
+      setStoredItem('intelligentqa_db_lesson_docs', existing);
+      setCustomLessonDocOverride(lessonId, lessonDoc);
+
+      try {
+        const res = await fetch('/api/db/curriculum', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save_lesson_doc',
+            lessonId,
+            lessonDoc,
+          }),
+        });
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated', { detail: { lessonId } }));
+        return res.ok;
+      } catch (err) {
+        console.error('Failed to persist lesson doc to database server', err);
+      }
+    }
+    return false;
+  },
+
+  // Delete lesson from both local state and centralized database
+  async deleteLessonFromDatabase(trackId: string, lessonId: string): Promise<boolean> {
+    this.deleteLesson(trackId, lessonId);
+    if (isBrowser()) {
+      try {
+        const res = await fetch(`/api/db/curriculum?type=lesson&trackId=${encodeURIComponent(trackId)}&lessonId=${encodeURIComponent(lessonId)}`, {
+          method: 'DELETE',
+        });
+        return res.ok;
+      } catch (err) {
+        console.error('Failed to delete lesson from database server', err);
+      }
+    }
+    return false;
+  },
+
+  // Save coding problem to centralized database
+  async saveCodingProblemToDatabase(problem: any): Promise<boolean> {
+    if (isBrowser()) {
+      saveCustomProblem(problem);
+      try {
+        const res = await fetch('/api/db/curriculum', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'save_problem',
+            problem,
+          }),
+        });
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+        return res.ok;
+      } catch (err) {
+        console.error('Failed to save coding problem to database server', err);
+      }
+    }
+    return false;
+  },
+
+  // Delete coding problem from centralized database
+  async deleteCodingProblemFromDatabase(problemId: string): Promise<boolean> {
+    if (isBrowser()) {
+      try {
+        const res = await fetch(`/api/db/curriculum?type=problem&problemId=${encodeURIComponent(problemId)}`, {
+          method: 'DELETE',
+        });
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+        return res.ok;
+      } catch (err) {
+        console.error('Failed to delete coding problem from database server', err);
+      }
+    }
+    return false;
+  },
 
   // SDET Track & Curriculum Management
   getTracks(): Track[] {

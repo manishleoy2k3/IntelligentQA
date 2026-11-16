@@ -8120,6 +8120,28 @@ function getAiLessonDoc(
 }
 
 
+// Registry for custom lesson doc overrides saved by Admin to the Database
+const customDbLessonDocs: Record<string, Partial<LessonDoc>> = {};
+
+export function setCustomLessonDocOverride(lessonId: string, doc: Partial<LessonDoc>) {
+  if (lessonId && doc) {
+    customDbLessonDocs[lessonId] = doc;
+  }
+}
+
+export function getCustomLessonDocOverride(lessonId: string): Partial<LessonDoc> | undefined {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('intelligentqa_db_lesson_docs');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed[lessonId]) return parsed[lessonId];
+      }
+    } catch {}
+  }
+  return customDbLessonDocs[lessonId];
+}
+
 export function getLessonDoc(
   lessonId: string,
   trackId: string,
@@ -8127,6 +8149,53 @@ export function getLessonDoc(
   lessonDesc?: string,
   selectedLanguage: 'java' | 'python' | 'typescript' = 'java'
 ): LessonDoc {
+  // Check if admin has published a custom/edited doc in the Database
+  const customOverride = getCustomLessonDocOverride(lessonId);
+  if (customOverride && customOverride.title) {
+    const baseDoc = {
+      title: customOverride.title || lessonTitle || 'Lesson',
+      category: customOverride.category || trackId,
+      tagline: customOverride.tagline || lessonDesc || '',
+      overview: customOverride.overview || lessonDesc || '',
+      whyItMattersForManualQA: customOverride.whyItMattersForManualQA || 'Automates repetitive manual testing workflows.',
+      architectureUnderTheHood: customOverride.architectureUnderTheHood || {
+        title: 'Under the Hood Architecture',
+        flowOrMechanism: 'Test Runner <==> Browser / API Engine',
+        keyTakeaway: 'Ensures reliable execution and automated verification.',
+      },
+      stepByStepGuide: customOverride.stepByStepGuide || [
+        {
+          stepNumber: 1,
+          title: 'Implementation Overview',
+          summary: customOverride.overview || 'Step-by-step implementation guide.',
+          explanation: customOverride.overview || '',
+          proTip: 'Follow clean architecture and separation of concerns.',
+        }
+      ],
+      manualToAutomatedBridge: customOverride.manualToAutomatedBridge || [
+        {
+          manualAction: 'Manual verification steps',
+          automatedApproach: 'Scripted assertion and validation',
+          whyItMatters: 'Eliminates repetitive manual execution time.',
+        }
+      ],
+      productionCodeExample: customOverride.productionCodeExample || {
+        title: 'Production Automation Code Example',
+        description: 'Robust automation implementation with best practices.',
+        language: selectedLanguage,
+        code: (customOverride.productionCodeExample as any)?.code || '',
+        annotations: [],
+      },
+      bestPractices: customOverride.bestPractices || ['Use explicit assertions', 'Maintain locator stability'],
+      antiPatterns: customOverride.antiPatterns || ['Avoid hardcoded thread sleeps'],
+      interviewQnA: customOverride.interviewQnA || {
+        question: 'How do you implement this pattern in production?',
+        answer: 'By isolating test logic into modular components with explicit waits and assertions.',
+      },
+    };
+    return baseDoc as LessonDoc;
+  }
+
   const isSelenium = trackId === 'selenium-java';
   const isPython = selectedLanguage === 'python';
 

@@ -73,6 +73,13 @@ function CodingProblemsCatalogContent() {
     const all = getAllProblems();
     setProblems(all);
 
+    // Sync latest coding problems from centralized server database
+    QADatabase.syncCurriculumFromDatabase().then((res) => {
+      if (res.success) {
+        setProblems(getAllProblems());
+      }
+    });
+
     if (typeof window !== 'undefined') {
       const u = QADatabase.getCurrentUser();
       setIsAdmin(QADatabase.isAdmin(u));
@@ -87,10 +94,12 @@ function CodingProblemsCatalogContent() {
 
       window.addEventListener('intelligentqa_auth_changed', handleAuth);
       window.addEventListener('intelligentqa_role_changed', handleAuth);
+      window.addEventListener('intelligentqa_curriculum_updated', handleApproved);
       window.addEventListener('intelligentqa_content_approved', handleApproved);
       return () => {
         window.removeEventListener('intelligentqa_auth_changed', handleAuth);
         window.removeEventListener('intelligentqa_role_changed', handleAuth);
+        window.removeEventListener('intelligentqa_curriculum_updated', handleApproved);
         window.removeEventListener('intelligentqa_content_approved', handleApproved);
       };
     }
