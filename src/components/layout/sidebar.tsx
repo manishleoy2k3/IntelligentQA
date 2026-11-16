@@ -336,12 +336,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       {/* 2. SCROLLABLE NAVIGATION MENUS */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
 
-            {/* SECTION: WORKSPACE */}
+            {/* NAVIGATION */}
             <div className="space-y-1">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 px-3 pb-1">
-                Workspace
-              </div>
-
               {/* Dashboard */}
               <Link
                 href="/dashboard"

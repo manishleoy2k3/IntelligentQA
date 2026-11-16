@@ -36,9 +36,13 @@ function CallbackContent() {
         const email = searchParams?.get('email');
         const name = searchParams?.get('name');
 
-        // Target credentials for login (from OAuth callback parameters)
-        const targetEmail = email || (code ? 'google.user@gmail.com' : 'google.user@intelligentqa.io');
-        const targetName = name || (email ? email.split('@')[0] : 'Google User');
+        // Verify authentic email returned from Google UserInfo
+        if (!email) {
+          throw new Error('Google did not provide a verified email address. Please try signing in again.');
+        }
+
+        const targetEmail = email.trim().toLowerCase();
+        const targetName = name?.trim() || targetEmail.split('@')[0];
 
         // Multi-user isolation
         const existingUser = QADatabase.getCurrentUser();
