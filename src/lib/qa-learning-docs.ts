@@ -2612,7 +2612,20 @@ class LoginPage(BasePage):
           },
           proTip: 'If a test fails, the assertion message tells you exactly what business requirement failed.'
         }
-      ] : [
+      ,
+        {
+          stepNumber: 5,
+          title: 'AI-Assisted POM Generation with GitHub Copilot in PyCharm',
+          badge: 'GenAI Tools',
+          summary: 'Accelerate Page Object Model creation by prompting AI inside PyCharm with element outerHTML.',
+          explanation: 'Paste component HTML into GitHub Copilot in PyCharm with prompt: "Generate Python Selenium Page Object with private By locators, explicit waits, and typed action methods." Review and commit.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Prompting Copilot in PyCharm for Clean Page Objects',
+            code: '# Prompt: Create LoginPage class with private By tuples and WebDriverWait\nclass LoginPage:\n    def __init__(self, driver):\n        self.driver = driver\n        self._email = (By.ID, "email")\n        self._login_btn = (By.CSS_SELECTOR, "button[type=\'submit\']")'
+          },
+          proTip: 'Always verify generated locators against live browser DevTools inspection.'
+        }] : [
         {
           stepNumber: 1,
           title: 'BasePage Encapsulation with Explicit Wait Wrappers (Java)',
@@ -2718,7 +2731,20 @@ public class LoginTest extends BaseTest {
           },
           proTip: 'If a test fails, the assertion message tells you exactly what business requirement failed.'
         }
-      ],
+      ,
+        {
+          stepNumber: 5,
+          title: 'AI-Assisted POM Generation with GitHub Copilot in IntelliJ & Eclipse',
+          badge: 'GenAI Tools',
+          summary: 'Scaffold Selenium Java Page Objects and TestNG tests effortlessly using GenAI plugins.',
+          explanation: 'Use GitHub Copilot plugin in IntelliJ IDEA or Eclipse. Feed the component HTML and prompt: "Generate Selenium 4 Java Page Object class with private By locators, fluent navigation methods returning target Page, and zero Thread.sleep."',
+          codeSnippet: {
+            language: 'java',
+            caption: 'AI-Scaffolded Selenium 4 Page Object in IntelliJ',
+            code: '// Prompt: Generate Selenium 4 Page Object with private By and fluent methods\npackage com.intelligentqa.pages;\nimport org.openqa.selenium.*;\nimport org.openqa.selenium.support.ui.*;\nimport java.time.Duration;\n\npublic class LoginPage {\n    private final WebDriver driver;\n    private final By emailField = By.id("email");\n    private final By submitButton = By.cssSelector("button[type=\'submit\']");\n\n    public LoginPage(WebDriver driver) {\n        this.driver = driver;\n    }\n\n    public DashboardPage loginAs(String user, String pass) {\n        driver.findElement(emailField).sendKeys(user);\n        driver.findElement(submitButton).click();\n        return new DashboardPage(driver);\n    }\n}'
+          },
+          proTip: 'Enforce team coding standards in Copilot prompt instructions to ensure uniform POM naming conventions.'
+        }],
       manualToAutomatedBridge: [
         {
           manualAction: 'Manual tester logs in on Login page, then navigates to Dashboard',
@@ -5989,7 +6015,27 @@ jobs:
         },
         proTip: 'Always isolate test state so each test execution starts from a clean, predictable baseline.'
       }
-    ],
+    ,
+        {
+          stepNumber: 5,
+          title: 'Integrating AI Agents & Model Context Protocol (MCP) into Playwright',
+          badge: 'Agentic Testing',
+          summary: 'Configure Playwright MCP and VS Code Copilot Agents to scaffold, review, and heal tests.',
+          explanation: 'Modern Playwright frameworks integrate directly with developer tools via the Model Context Protocol (MCP). By configuring a Playwright MCP server in your workspace, coding agents (like Claude Code or GitHub Copilot in Agent Mode) can navigate the browser, record locators, execute spec files, and auto-correct failed assertions by reading DOM errors.',
+          codeSnippet: {
+            language: isPython ? 'json' : 'json',
+            caption: 'Playwright MCP Configuration (.vscode/mcp.json or claude_desktop_config.json)',
+            code: JSON.stringify({
+              mcpServers: {
+                "playwright": {
+                  "command": "npx",
+                  "args": ["-y", "@executeautomation/playwright-mcp-server"]
+                }
+              }
+            }, null, 2)
+          },
+          proTip: 'Instruct your coding agent via .cursorrules or copilot-instructions.md: "Always use resilient getByRole/getByLabel locators, Page Object Model, and web-first assertions."'
+        }],
     manualToAutomatedBridge: [
       {
         manualAction: `Perform ${cleanTitle} by manually clicking and observing screen`,
