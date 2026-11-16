@@ -3,14 +3,13 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 
-test('Requirement 1: Free Programming for Kids button on Home Page', () => {
-  const homePageFile = fs.readFileSync(path.join(__dirname, '../src/app/page.tsx'), 'utf8');
+test('Requirement 1: Independent Kids Coding Platform at /kids', () => {
+  const kidsPageFile = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
 
-  // Verify Free Programming for Kids button is on the Home page
-  assert.ok(homePageFile.includes('Free Programming for Kids'), 'Home page contains Free Programming for Kids button');
-  assert.ok(homePageFile.includes('href="/kids"'), 'Button links to /kids hub');
-  assert.ok(homePageFile.includes('Ages 10–14'), 'Mentions target age group 10-14');
-  assert.ok(homePageFile.includes('Python, JavaScript, Java'), 'Mentions supported languages');
+  // Verify Kids Coding Platform operates independently with Python, JS, Java tracks
+  assert.ok(kidsPageFile.includes('Python'), 'Kids platform supports Python');
+  assert.ok(kidsPageFile.includes('JavaScript'), 'Kids platform supports JavaScript');
+  assert.ok(kidsPageFile.includes('Java'), 'Kids platform supports Java');
 });
 
 test('Requirement 2: User Signup/Login using Google along with Gemini Key feature', () => {
@@ -83,37 +82,31 @@ test('Requirement 7 & 8: Online Compiler for Java, JS, Python and Left Nav & Pro
   assert.ok(codeCompilerFile.includes('Online JavaScript Runner'), 'Sandbox code compiler supports JavaScript');
   assert.ok(codeCompilerFile.includes('Online Java Compiler'), 'Sandbox code compiler supports Java');
 
-  // Requirement 8: Left Navigation and Profile section at Top
-  assert.ok(sidebarFile.includes('href="/kids"') || sidebarFile.includes("'/kids'"), 'Sidebar left navigation links to /kids');
-  assert.ok(sidebarFile.includes('Kids Coding (10–14)') || sidebarFile.includes('Programming Courses (Ages 10–14)'), 'Sidebar displays Kids Coding');
+  // Requirement 8: Independent Navigation and Profile section at Top
+  assert.ok(sidebarFile.includes('isKidsPortal'), 'Sidebar computes independent Kids portal view');
   assert.ok(topNavFile.includes('profileMenuOpen'), 'TopNav provides Profile section at Top');
   assert.ok(topNavFile.includes('currentUser'), 'TopNav manages user profile session');
 });
 
-test('Requirement 9: Strict Separation between Kids Free Programming and QA SDET Portals', () => {
+test('Requirement 9: Complete Separation of Kids Coding Platform & SDET Site (No Cross-Switching Allowed)', () => {
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
   const topNavFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/top-nav.tsx'), 'utf8');
   const homePageFile = fs.readFileSync(path.join(__dirname, '../src/app/page.tsx'), 'utf8');
-  const qaDbFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-db.ts'), 'utf8');
 
-  // 1. Database Portal Mode helpers exist
-  assert.ok(qaDbFile.includes('getPortalMode():'), 'QADatabase defines getPortalMode');
-  assert.ok(qaDbFile.includes('setPortalMode('), 'QADatabase defines setPortalMode');
-
-  // 2. Sidebar separates Kids from SDET
+  // 1. Sidebar strictly separates Kids from SDET based on route with zero cross-portal switchers
   assert.ok(sidebarFile.includes('isKidsPortal'), 'Sidebar computes isKidsPortal mode');
   assert.ok(sidebarFile.includes('KIDS NAVIGATION ONLY (NO SDET / AUTOMATION SECTIONS)'), 'Kids navigation branch isolates Kids view');
   assert.ok(sidebarFile.includes('SDET PROFESSIONAL NAVIGATION (ZERO KIDS CLUTTER)'), 'SDET navigation branch isolates SDET view');
-  assert.ok(sidebarFile.includes('Switch to SDET Portal'), 'Kids sidebar provides option to switch back to SDET');
+  assert.ok(!sidebarFile.includes('Switch to SDET Portal'), 'Kids sidebar has zero SDET switchers');
+  assert.ok(!sidebarFile.includes('Kids Coding (10–14)'), 'SDET sidebar has zero Kids switchers');
 
-  // 3. TopNav shows active portal indicator and switcher in profile
-  assert.ok(topNavFile.includes('portalMode'), 'TopNav manages portalMode');
-  assert.ok(topNavFile.includes('Switch to SDET Professional'), 'TopNav profile menu allows switching to SDET');
-  assert.ok(topNavFile.includes('Switch to Kids Coding'), 'TopNav profile menu allows switching to Kids');
+  // 2. TopNav profile menu allows NO cross-portal switching at any point
+  assert.ok(!topNavFile.includes('Switch to SDET Professional'), 'TopNav profile menu contains no SDET switcher');
+  assert.ok(!topNavFile.includes('Switch to Kids Coding'), 'TopNav profile menu contains no Kids switcher');
 
-  // 4. Home page respects active portal on logged-in redirect
-  assert.ok(homePageFile.includes("portal === 'kids'"), 'Home page handles kids portal redirection');
-  assert.ok(homePageFile.includes("router.replace('/kids')"), 'Directs kids portal users to /kids');
+  // 3. SDET Home page is 100% focused on SDET with zero Kids banner or cross-redirection
+  assert.ok(!homePageFile.includes('Free Programming for Kids'), 'Home page contains no Kids promotion');
+  assert.ok(homePageFile.includes("router.replace('/dashboard')"), 'SDET logged in users route directly to /dashboard');
 });
 
 test('Requirement 10: Strict User Data Isolation & Gemini Key Privacy Protection', () => {

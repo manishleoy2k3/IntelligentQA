@@ -46,6 +46,30 @@ This document is the authoritative implementation specification. Follow `AGENTS-
 
 ---
 
+## STRICT ARCHITECTURAL SEPARATION: SDET PLATFORM VS. KIDS CODING PLATFORM
+
+The application enforces a **100% strict, permanent separation** between the Enterprise SDET Platform and the Kids Coding Platform. Both platforms function as completely independent sites with independent navigation, dedicated views, independent target audiences, and zero cross-switching.
+
+### Rules of Separation:
+1. **ZERO CROSS-SWITCHING AT ANY POINT IN TIME**:
+   - Neither platform permits switching to the other at any time.
+   - All portal switchers ("Switch to SDET Professional", "Switch to Kids Coding", "Kids Coding (10-14) Switch →") are strictly eradicated from Top Navigation, Profile Menus, Sidebars, and Home pages.
+2. **TOTAL PLATFORM INDEPENDENCE**:
+   - **Enterprise SDET Platform (`/`, `/dashboard`, `/tracks/*`, `/sandbox/*`, `/qa-agents`, `/interview-*`, `/guides/*`)**:
+     - Dedicated exclusively to professional QA engineers and manual testers transitioning into high-demand SDETs.
+     - Contains only enterprise tracks: Playwright + TypeScript, Selenium + Java, API Testing (REST Assured), AI in QA, and Interview Mastery.
+     - Contains only professional practice labs: Web DOM Sandbox, Mock REST API, Online Multi-Language Compilers, and Algorithmic Coding Problem Library.
+     - Home page (`/`) is 100% focused on SDET transformation; logged-in users route directly to `/dashboard`. Zero links, banners, or references to Kids Coding exist on the SDET site.
+   - **Kids Coding Platform (`/kids`)**:
+     - Dedicated exclusively to young learners and beginners (ages 10-18+).
+     - Contains only core programming tracks: Python (30 lessons), JavaScript (27 lessons), Java (29 lessons).
+     - Contains only beginner-friendly practice: Knowledge Testing Exercises (4-5 questions per section) and the Kids Game & Project Studio (9 playable starter projects).
+     - Operates with its own independent navigation and layout without any SDET tracks, automation frameworks, or links back to the SDET portal.
+3. **STRICT ROUTE-DRIVEN ISOLATION**:
+   - The UI view is governed strictly by the requested route (`pathname?.startsWith('/kids')`), ensuring zero shared portal toggle state or cross-redirection between the two platforms.
+
+---
+
 ## 1. TECH STACK & BRAND DESIGN SYSTEM
 
 ### Technology Stack
@@ -421,6 +445,9 @@ Python (30 lessons), JavaScript (27 lessons), Java (29 lessons) with unified "In
 #### 8. AI Code Debugging
 Ask AI includes `diagnoseCodeError` with stack trace analysis and line-by-line fix suggestions.
 
+#### 9. Absolute Independence of SDET & Kids Coding Platforms
+Zero cross-switching allowed at any point. Both platforms operate with completely independent navigation, layouts, and route boundaries.
+
 ---
 
 ## 8. DEFINITION OF DONE
@@ -436,3 +463,4 @@ Ask AI includes `diagnoseCodeError` with stack trace analysis and line-by-line f
 9. All automated unit tests passing (`npm test`, 104/104 tests passing).
 10. Zero TypeScript errors (`npx tsc --noEmit`) and clean production build (`npm run build`).
 11. Zero mandatory paid dependencies or subscriptions.
+12. 100% strict separation between the SDET Platform and Kids Coding Platform with zero switching mechanisms at any point in time.

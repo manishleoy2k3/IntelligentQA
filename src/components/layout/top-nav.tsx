@@ -310,52 +310,13 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                   </button>
 
                   <Link
-                    href={portalMode === 'kids' ? '/kids' : '/dashboard'}
+                    href={pathname?.startsWith('/kids') ? '/kids' : '/dashboard'}
                     onClick={() => setProfileMenuOpen(false)}
                     className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors"
                   >
                     <Layers className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span>{portalMode === 'kids' ? 'Kids Missions Hub' : 'Learning Dashboard'}</span>
+                    <span>{pathname?.startsWith('/kids') ? 'Kids Coding Hub' : 'Learning Dashboard'}</span>
                   </Link>
-
-                  {/* Portal Switcher */}
-                  {portalMode === 'kids' ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        QADatabase.setPortalMode('sdet');
-                        setProfileMenuOpen(false);
-                        window.location.href = '/dashboard';
-                      }}
-                      className="w-full px-3 py-2 text-left rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold flex items-center justify-between transition-colors cursor-pointer text-xs border border-emerald-200/50 dark:border-emerald-900/50"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>Switch to SDET Professional</span>
-                      </div>
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">
-                        SDET
-                      </span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        QADatabase.setPortalMode('kids');
-                        setProfileMenuOpen(false);
-                        window.location.href = '/kids';
-                      }}
-                      className="w-full px-3 py-2 text-left rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold flex items-center justify-between transition-colors cursor-pointer text-xs border border-amber-200/50 dark:border-amber-900/50"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
-                        <span>Switch to Kids Coding (10–14)</span>
-                      </div>
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-600 dark:text-amber-300">
-                        Kids
-                      </span>
-                    </button>
-                  )}
                 </div>
 
                 {/* Log Out */}
