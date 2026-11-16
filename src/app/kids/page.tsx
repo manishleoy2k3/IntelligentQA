@@ -25,6 +25,9 @@ import {
   Sparkles,
   Info,
   Minimize2,
+  Gamepad2,
+  Trophy,
+  Rocket,
 } from 'lucide-react';
 import {
   LANGUAGE_COURSES,
@@ -37,6 +40,8 @@ import {
   KidsCourseTemplateModal,
   KidsCourseUploadModal,
 } from '@/components/kids/kids-course-import-modals';
+import KidsExercisesView from '@/components/kids/kids-exercises-view';
+import KidsProjectsStudioView from '@/components/kids/kids-projects-studio-view';
 import { QADatabase } from '@/lib/qa-db';
 
 const LANGUAGE_DEFAULTS: Record<'python' | 'javascript' | 'java', { starter: string; filename: string }> = {
@@ -78,6 +83,7 @@ function KidsCoursesContent() {
   const activeLang: 'python' | 'javascript' | 'java' =
     rawLang === 'javascript' || rawLang === 'java' ? rawLang : 'python';
   const conceptParam = searchParams.get('concept');
+  const viewParam = searchParams.get('view'); // 'exercises' | 'projects' | null
 
   // Course metadata and custom imported lessons
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -362,47 +368,92 @@ function KidsCoursesContent() {
       {/* 1. TOP HEADER & LANGUAGE NAVIGATION (Rendered ONLY on main language overview page) */}
       {!activeConcept && (
         <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-4 sm:px-6 py-3.5">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            {/* Language Selector Tabs */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <Link
-                href="/kids?lang=python"
-                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                  activeLang === 'python'
-                    ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
-                    : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
-                }`}
-              >
-                <Terminal className="w-3.5 h-3.5 text-inherit" />
-                <span>Python Course</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">3.12</span>
-              </Link>
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Left: Language Selector Tabs & Mode Switcher */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Language Selector Tabs */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <Link
+                  href={`/kids?lang=python${viewParam ? `&view=${viewParam}` : ''}`}
+                  className={`py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    activeLang === 'python'
+                      ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
+                      : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                  }`}
+                >
+                  <Terminal className="w-3.5 h-3.5 text-inherit" />
+                  <span>Python Course</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">3.12</span>
+                </Link>
 
-              <Link
-                href="/kids?lang=javascript"
-                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                  activeLang === 'javascript'
-                    ? 'bg-emerald-500 text-slate-950 shadow-md font-extrabold'
-                    : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
-                }`}
-              >
-                <Code2 className="w-3.5 h-3.5 text-inherit" />
-                <span>JavaScript Course</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">ES2024</span>
-              </Link>
+                <Link
+                  href={`/kids?lang=javascript${viewParam ? `&view=${viewParam}` : ''}`}
+                  className={`py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    activeLang === 'javascript'
+                      ? 'bg-emerald-500 text-slate-950 shadow-md font-extrabold'
+                      : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                  }`}
+                >
+                  <Code2 className="w-3.5 h-3.5 text-inherit" />
+                  <span>JavaScript Course</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">ES2024</span>
+                </Link>
 
-              <Link
-                href="/kids?lang=java"
-                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                  activeLang === 'java'
-                    ? 'bg-cyan-500 text-slate-950 shadow-md font-extrabold'
-                    : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
-                }`}
-              >
-                <Laptop className="w-3.5 h-3.5 text-inherit" />
-                <span>Java Course</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">21 LTS</span>
-              </Link>
+                <Link
+                  href={`/kids?lang=java${viewParam ? `&view=${viewParam}` : ''}`}
+                  className={`py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    activeLang === 'java'
+                      ? 'bg-cyan-500 text-slate-950 shadow-md font-extrabold'
+                      : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                  }`}
+                >
+                  <Laptop className="w-3.5 h-3.5 text-inherit" />
+                  <span>Java Course</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/20 text-inherit">21 LTS</span>
+                </Link>
+              </div>
+
+              {/* View Switcher: Lessons | Exercises | Game Studio */}
+              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800 shadow-inner">
+                <Link
+                  href={`/kids?lang=${activeLang}`}
+                  className={`py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    !viewParam
+                      ? 'bg-slate-800 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Curriculum Lessons & Walkthroughs"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Lessons</span>
+                </Link>
+
+                <Link
+                  href={`/kids?lang=${activeLang}&view=exercises`}
+                  className={`py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    viewParam === 'exercises'
+                      ? 'bg-amber-500 text-slate-950 shadow-xs'
+                      : 'text-slate-400 hover:text-amber-400'
+                  }`}
+                  title="Interactive Knowledge Testing Quizzes (4-5 Qs per section)"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Exercises</span>
+                </Link>
+
+                <Link
+                  href={`/kids?lang=${activeLang}&view=projects`}
+                  className={`py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    viewParam === 'projects'
+                      ? 'bg-emerald-500 text-slate-950 shadow-xs'
+                      : 'text-slate-400 hover:text-emerald-400'
+                  }`}
+                  title="Build Games & Interactive Projects"
+                >
+                  <Gamepad2 className="w-3.5 h-3.5" />
+                  <span>Game Studio</span>
+                </Link>
+              </div>
             </div>
 
             {/* Import Template & Import Course Content Buttons (Admin CMS Only) */}
@@ -433,9 +484,13 @@ function KidsCoursesContent() {
         </header>
       )}
 
-      {/* 2. MAIN BODY: LANGUAGE HOME OR ACTIVE CONCEPT VIEW */}
+      {/* 2. MAIN BODY: LANGUAGE HOME, EXERCISES, GAME STUDIO, OR ACTIVE CONCEPT VIEW */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6">
-        {!activeConcept ? (
+        {viewParam === 'exercises' ? (
+          <KidsExercisesView language={activeLang} />
+        ) : viewParam === 'projects' ? (
+          <KidsProjectsStudioView language={activeLang} />
+        ) : !activeConcept ? (
           /* ========================================================= */
           /* LANGUAGE HOME PAGE (Overview, Architecture, Curriculum)   */
           /* ========================================================= */

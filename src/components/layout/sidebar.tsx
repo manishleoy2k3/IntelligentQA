@@ -36,6 +36,7 @@ import {
   FileText,
   ListChecks,
   MessageSquare,
+  Gamepad2,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -96,6 +97,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   const [kidsCoursesOpen, setKidsCoursesOpen] = useState(true);
   const [kidsActiveLang, setKidsActiveLang] = useState<'python' | 'javascript' | 'java'>('python');
   const [kidsActiveConcept, setKidsActiveConcept] = useState<string>('');
+  const [kidsActiveView, setKidsActiveView] = useState<string>('');
   const [openKidsLangs, setOpenKidsLangs] = useState<Record<string, boolean>>({
     python: true,
     javascript: false,
@@ -138,8 +140,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           const params = new URLSearchParams(window.location.search);
           const l = (params.get('lang') || 'python') as 'python' | 'javascript' | 'java';
           const c = params.get('concept') || '';
+          const v = params.get('view') || '';
           setKidsActiveLang(l);
           setKidsActiveConcept(c);
+          setKidsActiveView(v);
           setOpenKidsLangs(prev => ({ ...prev, [l]: true }));
         }
       };
@@ -471,6 +475,50 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           {/* Concepts List below each language */}
                           {isLangOpen && courseMeta && (
                             <div className="pl-3 pr-1 py-1 space-y-0.5 border-l-2 border-slate-700/40 ml-3.5 my-1">
+                              {/* 1. Exercises Knowledge Test (4-5 questions per section) */}
+                              <Link
+                                href={`/kids?lang=${track.id}&view=exercises`}
+                                onClick={() => {
+                                  setKidsActiveLang(track.id);
+                                  setKidsActiveConcept('');
+                                  setKidsActiveView('exercises');
+                                  if (onCloseMobile) onCloseMobile();
+                                }}
+                                className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-bold transition truncate ${
+                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveView === 'exercises' && !kidsActiveConcept
+                                    ? 'bg-amber-500/25 text-amber-300 font-extrabold border-l-2 border-amber-400 pl-1.5'
+                                    : 'text-amber-500/90 dark:text-amber-400/90 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-500/10'
+                                }`}
+                                title={`${track.short} Testing Exercises (4-5 questions per section)`}
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
+                                <span className="truncate">{track.short} Exercises (Test Knowledge)</span>
+                              </Link>
+
+                              {/* 2. Build Games & Projects Studio */}
+                              <Link
+                                href={`/kids?lang=${track.id}&view=projects`}
+                                onClick={() => {
+                                  setKidsActiveLang(track.id);
+                                  setKidsActiveConcept('');
+                                  setKidsActiveView('projects');
+                                  if (onCloseMobile) onCloseMobile();
+                                }}
+                                className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-bold transition truncate mb-1 ${
+                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveView === 'projects' && !kidsActiveConcept
+                                    ? 'bg-emerald-500/25 text-emerald-300 font-extrabold border-l-2 border-emerald-400 pl-1.5'
+                                    : 'text-emerald-600/90 dark:text-emerald-400/90 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-500/10'
+                                }`}
+                                title={`Create Games & Projects with ${track.short}`}
+                              >
+                                <Gamepad2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                                <span className="truncate">Build Games &amp; Projects</span>
+                              </Link>
+
+                              <div className="pt-1.5 pb-0.5 px-2 text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500">
+                                Curriculum Lessons
+                              </div>
+
                               {courseMeta.concepts.map((concept: CourseConcept) => {
                                 const isConceptActive =
                                   pathname === '/kids' && kidsActiveLang === track.id && kidsActiveConcept === concept.id;
@@ -481,6 +529,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                     onClick={() => {
                                       setKidsActiveLang(track.id);
                                       setKidsActiveConcept(concept.id);
+                                      setKidsActiveView('');
                                       if (onCloseMobile) onCloseMobile();
                                     }}
                                     className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] transition truncate ${

@@ -273,3 +273,78 @@ test('Requirement 13: Comprehensive Mandatory Learning Concepts stored in Databa
   assert.ok(dbFile.includes('intelligentqa_db_kids_courses'), 'qa-db stores kids courses in persistent key');
   assert.ok(dbFile.includes('LANGUAGE_COURSES.python.concepts.length'), 'qa-db checks curriculum length for auto-upgrade');
 });
+
+test('Requirement 14: Coding Workspace for Users & Kids to create Games and Projects', () => {
+  const projectsLibFile = fs.readFileSync(path.join(__dirname, '../src/lib/kids-projects.ts'), 'utf8');
+  const studioComponentFile = fs.readFileSync(path.join(__dirname, '../src/components/kids/kids-projects-studio-view.tsx'), 'utf8');
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const kidsPageFile = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
+
+  // Verify game project templates exist for Python and JavaScript
+  assert.ok(projectsLibFile.includes('py-game-number-guess'), 'Provides Python Number Guesser game');
+  assert.ok(projectsLibFile.includes('py-game-rock-paper-scissors'), 'Provides Python Rock Paper Scissors game');
+  assert.ok(projectsLibFile.includes('py-game-dungeon-quest'), 'Provides Python Dungeon Quest text RPG');
+  assert.ok(projectsLibFile.includes('js-game-snake'), 'Provides JavaScript 2D Snake Arcade game');
+  assert.ok(projectsLibFile.includes('js-game-pong'), 'Provides JavaScript Retro Pong game');
+  assert.ok(projectsLibFile.includes('java-game-monster-arena'), 'Provides Java Monster Arena RPG');
+
+  // Verify Studio coding workspace features: save project, reset, download, run
+  assert.ok(studioComponentFile.includes('handleSaveProject'), 'Supports saving project progress to localStorage');
+  assert.ok(studioComponentFile.includes('handleResetToTemplate'), 'Supports resetting to project blueprint');
+  assert.ok(studioComponentFile.includes('handleDownloadScript'), 'Supports downloading game script');
+  assert.ok(studioComponentFile.includes('handleRunProject'), 'Supports executing project code in live sandbox');
+
+  // Verify Game Studio navigation in Sidebar and Kids page
+  assert.ok(sidebarFile.includes('view=projects'), 'Sidebar links to Build Games & Projects workspace');
+  assert.ok(kidsPageFile.includes('KidsProjectsStudioView'), 'Kids page renders KidsProjectsStudioView');
+  assert.ok(kidsPageFile.includes('Game Studio'), 'Kids page header includes Game Studio tab');
+});
+
+test('Requirement 15: Exercises under each programming language on Left Navigation (4-5 questions per section)', () => {
+  const exercisesLibFile = fs.readFileSync(path.join(__dirname, '../src/lib/kids-exercises.ts'), 'utf8');
+  const exercisesComponentFile = fs.readFileSync(path.join(__dirname, '../src/components/kids/kids-exercises-view.tsx'), 'utf8');
+  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const kidsPageFile = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
+
+  // Verify Left navigation has exercises item under each language
+  assert.ok(sidebarFile.includes('view=exercises'), 'Sidebar has Exercises link under language sections');
+  assert.ok(sidebarFile.includes('Exercises (Test Knowledge)'), 'Sidebar displays Exercises knowledge test item');
+
+  // Verify 4-5 questions per section across Python, JS, Java
+  ['python', 'javascript', 'java'].forEach((lang) => {
+    assert.ok(exercisesLibFile.includes(`language: '${lang}'`), `Exercises defined for ${lang}`);
+  });
+
+  // Verify multiple sections exist and each section has 4-5 questions
+  assert.ok(exercisesLibFile.includes('Section 1: Syntax, Output & Comments'), 'Python section 1 present');
+  assert.ok(exercisesLibFile.includes('Section 2: Variables, Data Types & Numbers'), 'Python section 2 present');
+  assert.ok(exercisesLibFile.includes('Section 3: Strings & Casting'), 'Python section 3 present');
+  assert.ok(exercisesLibFile.includes('Section 4: Conditions, Match & Loops'), 'Python section 4 present');
+  assert.ok(exercisesLibFile.includes('Section 5: Lists, Tuples, Sets & Dictionaries'), 'Python section 5 present');
+  assert.ok(exercisesLibFile.includes('Section 6: Functions, OOP & Advanced'), 'Python section 6 present');
+
+  assert.ok(exercisesLibFile.includes('Section 1: Syntax, Output & Variables'), 'JS section 1 present');
+  assert.ok(exercisesLibFile.includes('Section 2: Arrays & Iteration'), 'JS section 2 present');
+  assert.ok(exercisesLibFile.includes('Section 3: Objects & Destructuring'), 'JS section 3 present');
+  assert.ok(exercisesLibFile.includes('Section 4: Functions & Closures'), 'JS section 4 present');
+  assert.ok(exercisesLibFile.includes('Section 5: Async Programming & Promises'), 'JS section 5 present');
+
+  assert.ok(exercisesLibFile.includes('Section 1: Syntax, JVM & Data Types'), 'Java section 1 present');
+  assert.ok(exercisesLibFile.includes('Section 2: Control Flow & Loops'), 'Java section 2 present');
+  assert.ok(exercisesLibFile.includes('Section 3: OOP, Classes & Inheritance'), 'Java section 3 present');
+  assert.ok(exercisesLibFile.includes('Section 4: Collections & Exceptions'), 'Java section 4 present');
+
+  // Verify count of questions (id: 'py-', 'js-', 'java-')
+  const pyQuestions = (exercisesLibFile.match(/id:\s*'py-\d+-\d+'/g) || []).length;
+  const jsQuestions = (exercisesLibFile.match(/id:\s*'js-\d+-\d+'/g) || []).length;
+  const javaQuestions = (exercisesLibFile.match(/id:\s*'java-\d+-\d+'/g) || []).length;
+  assert.ok(pyQuestions >= 24, `Python must have at least 24 questions across sections (found ${pyQuestions})`);
+  assert.ok(jsQuestions >= 20, `JavaScript must have at least 20 questions across sections (found ${jsQuestions})`);
+  assert.ok(javaQuestions >= 20, `Java must have at least 20 questions across sections (found ${javaQuestions})`);
+
+  // Verify Exercises component features: questions, instant feedback, scoring, hints
+  assert.ok(exercisesComponentFile.includes('handleSelectOption'), 'Interactive answer selection');
+  assert.ok(exercisesComponentFile.includes('handleResetProgress'), 'Reset exercise answers capability');
+  assert.ok(exercisesComponentFile.includes('revealedHints'), 'Togglable hints for learners');
+  assert.ok(kidsPageFile.includes('KidsExercisesView'), 'Kids page integrates KidsExercisesView');
+});
