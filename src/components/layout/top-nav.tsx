@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { QADatabase, getInitials } from '@/lib/qa-db';
-import ProfileModal from '@/components/profile/profile-modal';
-import { UserProfile } from '@/types/qa';
+import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { QADatabase, getInitials } from "@/lib/qa-db";
+import ProfileModal from "@/components/profile/profile-modal";
+import { UserProfile } from "@/types/qa";
 import {
   Sparkles,
   Bell,
@@ -19,7 +19,7 @@ import {
   ShieldCheck,
   Lock,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface TopNavProps {
   onToggleMobileSidebar?: () => void;
@@ -34,22 +34,25 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showAdminUnlockModal, setShowAdminUnlockModal] = useState(false);
-  const [adminPasscode, setAdminPasscode] = useState('');
-  const [adminUnlockStatus, setAdminUnlockStatus] = useState<{ error?: string; success?: string } | null>(null);
-  const [portalMode, setPortalMode] = useState<'sdet' | 'kids'>('sdet');
+  const [adminPasscode, setAdminPasscode] = useState("");
+  const [adminUnlockStatus, setAdminUnlockStatus] = useState<{
+    error?: string;
+    success?: string;
+  } | null>(null);
+  const [portalMode, setPortalMode] = useState<"sdet" | "kids">("sdet");
 
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const user = QADatabase.getCurrentUser();
       setCurrentUser(user);
       setIsAdmin(QADatabase.isAdmin(user));
       setHasGeminiKey(Boolean(QADatabase.getUserGeminiKey(user?.id)));
 
-      if (pathname?.startsWith('/kids')) {
-        setPortalMode('kids');
+      if (pathname?.startsWith("/kids")) {
+        setPortalMode("kids");
       } else {
         setPortalMode(QADatabase.getPortalMode());
       }
@@ -69,15 +72,18 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         else setPortalMode(QADatabase.getPortalMode());
       };
 
-      window.addEventListener('intelligentqa_auth_changed', handleAuth);
-      window.addEventListener('intelligentqa_role_changed', handleAuth);
-      window.addEventListener('intelligentqa_key_changed', handleKey);
-      window.addEventListener('intelligentqa_portal_changed', handlePortal);
+      window.addEventListener("intelligentqa_auth_changed", handleAuth);
+      window.addEventListener("intelligentqa_role_changed", handleAuth);
+      window.addEventListener("intelligentqa_key_changed", handleKey);
+      window.addEventListener("intelligentqa_portal_changed", handlePortal);
       return () => {
-        window.removeEventListener('intelligentqa_auth_changed', handleAuth);
-        window.removeEventListener('intelligentqa_role_changed', handleAuth);
-        window.removeEventListener('intelligentqa_key_changed', handleKey);
-        window.removeEventListener('intelligentqa_portal_changed', handlePortal);
+        window.removeEventListener("intelligentqa_auth_changed", handleAuth);
+        window.removeEventListener("intelligentqa_role_changed", handleAuth);
+        window.removeEventListener("intelligentqa_key_changed", handleKey);
+        window.removeEventListener(
+          "intelligentqa_portal_changed",
+          handlePortal,
+        );
       };
     }
   }, [pathname]);
@@ -93,41 +99,41 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         setNotificationsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleOpenAskAI = () => {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event('intelligentqa_open_ask_ai'));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("intelligentqa_open_ask_ai"));
     }
   };
 
   const handleLogout = () => {
     QADatabase.logout();
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
 
   const notifications = [
     {
       id: 1,
-      title: 'Playwright v1.42 Lab Updated',
-      desc: 'Shadow DOM and dynamic locator sandboxes now live.',
-      time: '10m ago',
+      title: "Playwright v1.42 Lab Updated",
+      desc: "Shadow DOM and dynamic locator sandboxes now live.",
+      time: "10m ago",
       unread: true,
     },
     {
       id: 2,
-      title: '3-Day Study Streak Active',
-      desc: 'Keep practicing to earn your SDET Architecture certificate.',
-      time: '2h ago',
+      title: "3-Day Study Streak Active",
+      desc: "Keep practicing to earn your SDET Architecture certificate.",
+      time: "2h ago",
       unread: true,
     },
     {
       id: 3,
-      title: 'New Interview Question Bank',
-      desc: 'Added 25 Lead SDET system design scenarios.',
-      time: '1d ago',
+      title: "New Interview Question Bank",
+      desc: "Added 25 Lead SDET system design scenarios.",
+      time: "1d ago",
       unread: false,
     },
   ];
@@ -145,7 +151,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <Menu className="w-5 h-5" />
         </button>
 
-        {portalMode === 'kids' ? (
+        {portalMode === "kids" ? (
           <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>Kids Coding Portal (10–14)</span>
@@ -189,20 +195,31 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           {notificationsOpen && (
             <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-neutral-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-neutral-800 px-1">
-                <span className="text-xs font-bold text-slate-900 dark:text-white">Notifications</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  Notifications
+                </span>
                 <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
                   2 New
                 </span>
               </div>
 
               <div className="divide-y divide-slate-100 dark:divide-neutral-800/80 max-h-64 overflow-y-auto">
-                {notifications.map(n => (
-                  <div key={n.id} className="py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-neutral-800/50 rounded-xl transition-colors">
+                {notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    className="py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-neutral-800/50 rounded-xl transition-colors"
+                  >
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-xs font-semibold text-slate-900 dark:text-white">{n.title}</span>
-                      <span className="text-[10px] text-slate-400">{n.time}</span>
+                      <span className="text-xs font-semibold text-slate-900 dark:text-white">
+                        {n.title}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {n.time}
+                      </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-neutral-400 mt-0.5">{n.desc}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-neutral-400 mt-0.5">
+                      {n.desc}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -212,7 +229,11 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
         {/* 3. Profiles Dropdown Container */}
         {currentUser && (
-          <div ref={profileRef} id="user-profile-menu-container" className="relative">
+          <div
+            ref={profileRef}
+            id="user-profile-menu-container"
+            className="relative"
+          >
             <button
               type="button"
               onClick={() => setProfileMenuOpen(!profileMenuOpen)}
@@ -223,9 +244,11 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                 {getInitials(currentUser.displayName)}
               </div>
               <span className="hidden sm:inline max-w-[120px] truncate text-xs font-bold text-slate-900 dark:text-white">
-                {currentUser.displayName?.split(' ')[0] || 'Profile'}
+                {currentUser.displayName?.split(" ")[0] || "Profile"}
               </span>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-slate-400 transition-transform ${profileMenuOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
             {/* Profile Dropdown Menu */}
@@ -238,12 +261,16 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                       {currentUser.displayName}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        isAdmin
-                          ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30'
-                          : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                      }`}>
-                        {isAdmin ? 'ADMIN' : (currentUser.targetRole || 'STUDENT')}
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          isAdmin
+                            ? "bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                        }`}
+                      >
+                        {isAdmin
+                          ? "ADMIN"
+                          : currentUser.targetRole || "STUDENT"}
                       </span>
                     </div>
                   </div>
@@ -253,13 +280,17 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
                   {/* Protected Access Level */}
                   <div className="pt-1.5 border-t border-slate-200/60 dark:border-neutral-700/60 flex items-center justify-between">
-                    <span className="text-[10px] text-slate-400">Access Level:</span>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                      isAdmin
-                        ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300'
-                        : 'bg-slate-200/60 dark:bg-neutral-700/60 text-slate-600 dark:text-slate-300'
-                    }`}>
-                      {isAdmin ? 'System Administrator' : 'Standard Student'}
+                    <span className="text-[10px] text-slate-400">
+                      Access Level:
+                    </span>
+                    <span
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                        isAdmin
+                          ? "bg-purple-500/20 text-purple-600 dark:text-purple-300"
+                          : "bg-slate-200/60 dark:bg-neutral-700/60 text-slate-600 dark:text-slate-300"
+                      }`}
+                    >
+                      {isAdmin ? "System Administrator" : "Standard Student"}
                     </span>
                   </div>
                 </div>
@@ -286,7 +317,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                       type="button"
                       onClick={() => {
                         setProfileMenuOpen(false);
-                        setAdminPasscode('');
+                        setAdminPasscode("");
                         setAdminUnlockStatus(null);
                         setShowAdminUnlockModal(true);
                       }}
@@ -310,12 +341,18 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                   </button>
 
                   <Link
-                    href={pathname?.startsWith('/kids') ? '/kids' : '/dashboard'}
+                    href={
+                      pathname?.startsWith("/kids") ? "/kids" : "/dashboard"
+                    }
                     onClick={() => setProfileMenuOpen(false)}
                     className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors"
                   >
                     <Layers className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span>{pathname?.startsWith('/kids') ? 'Kids Coding Hub' : 'Learning Dashboard'}</span>
+                    <span>
+                      {pathname?.startsWith("/kids")
+                        ? "Kids Coding Hub"
+                        : "Learning Dashboard"}
+                    </span>
                   </Link>
                 </div>
 
@@ -362,24 +399,36 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                 <Lock className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-white text-base">Admin Access Gateway</h3>
-                <p className="text-xs text-slate-400">Restricted system administration portal</p>
+                <h3 className="font-bold text-white text-base">
+                  Admin Access Gateway
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Restricted system administration portal
+                </p>
               </div>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Standard students have restricted access. Enter the platform master security passcode to verify administrator credentials for <span className="font-mono text-purple-400">{currentUser?.email}</span>.
+              Standard students have restricted access. Enter the platform
+              master security passcode to verify administrator credentials for{" "}
+              <span className="font-mono text-purple-400">
+                {currentUser?.email}
+              </span>
+              .
             </p>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const res = QADatabase.verifyAndElevateAdmin(adminPasscode, currentUser);
+                const res = QADatabase.verifyAndElevateAdmin(
+                  adminPasscode,
+                  currentUser,
+                );
                 if (res.success) {
                   setAdminUnlockStatus({ success: res.message });
                   setTimeout(() => {
                     setShowAdminUnlockModal(false);
-                    window.location.href = '/admin/cms';
+                    window.location.href = "/admin/cms";
                   }, 800);
                 } else {
                   setAdminUnlockStatus({ error: res.message });
