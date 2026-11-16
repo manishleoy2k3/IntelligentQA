@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
 import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
-import { LANGUAGE_COURSES, CourseConcept, LanguageCourseMeta } from '@/lib/kids-courses';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import {
@@ -44,11 +43,6 @@ interface SidebarProps {
   onCloseMobile?: () => void;
 }
 
-const KIDS_TRACK_LIST = [
-  { id: 'python' as const, label: 'Python Programming', short: 'Python', badge: 'PY', icon: Terminal, color: 'text-amber-500', badgeStyle: 'bg-amber-500/10 text-amber-500 border border-amber-500/20' },
-  { id: 'javascript' as const, label: 'JavaScript', short: 'JavaScript', badge: 'JS', icon: Code2, color: 'text-emerald-500', badgeStyle: 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' },
-  { id: 'java' as const, label: 'Java', short: 'Java', badge: 'JAVA', icon: Laptop, color: 'text-cyan-500', badgeStyle: 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' },
-];
 
 export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
@@ -92,18 +86,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   const [showKeyModal, setShowKeyModal] = useState(false);
 
   // Active Portal Mode: 'sdet' | 'kids' (Strict separation between Kids Free Coding & SDET Pro)
-  const [portalMode, setPortalMode] = useState<'sdet' | 'kids'>('sdet');
+  
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [kidsCoursesOpen, setKidsCoursesOpen] = useState(true);
-  const [kidsActiveLang, setKidsActiveLang] = useState<'python' | 'javascript' | 'java'>('python');
-  const [kidsActiveConcept, setKidsActiveConcept] = useState<string>('');
-  const [kidsActiveView, setKidsActiveView] = useState<string>('');
-  const [openKidsLangs, setOpenKidsLangs] = useState<Record<string, boolean>>({
-    python: true,
-    javascript: false,
-    java: false,
-  });
-  const [kidsCoursesMap, setKidsCoursesMap] = useState<Record<'python' | 'javascript' | 'java', LanguageCourseMeta>>(() => QADatabase.getKidsCourses());
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -116,58 +100,16 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       window.addEventListener('intelligentqa_role_changed', syncAdminRole);
       window.addEventListener('intelligentqa_auth_changed', syncAdminRole);
 
-      const isKidsPath = pathname?.startsWith('/kids');
-      if (isKidsPath) {
-        setPortalMode('kids');
-        QADatabase.setPortalMode('kids');
-      } else if (
-        pathname === '/dashboard' ||
-        pathname?.startsWith('/tracks') ||
-        pathname?.startsWith('/qa-agents') ||
-        pathname?.startsWith('/interview') ||
-        pathname?.startsWith('/guides') ||
-        pathname === '/sandbox/web' ||
-        pathname === '/sandbox/api'
-      ) {
-        setPortalMode('sdet');
-        QADatabase.setPortalMode('sdet');
-      } else {
-        setPortalMode(QADatabase.getPortalMode());
-      }
 
-      const syncKidsRoute = () => {
-        if (pathname?.startsWith('/kids')) {
-          const params = new URLSearchParams(window.location.search);
-          const l = (params.get('lang') || 'python') as 'python' | 'javascript' | 'java';
-          const c = params.get('concept') || '';
-          const v = params.get('view') || '';
-          setKidsActiveLang(l);
-          setKidsActiveConcept(c);
-          setKidsActiveView(v);
-          setOpenKidsLangs(prev => ({ ...prev, [l]: true }));
-        }
-      };
-      syncKidsRoute();
-      window.addEventListener('popstate', syncKidsRoute);
 
-      const handlePortalChange = (e: any) => {
-        if (e.detail?.mode) {
-          setPortalMode(e.detail.mode);
-        } else {
-          setPortalMode(QADatabase.getPortalMode());
-        }
-      };
 
-      const handleCoursesUpdated = () => {
-        setKidsCoursesMap(QADatabase.getKidsCourses());
-      };
 
-      window.addEventListener('intelligentqa_portal_changed', handlePortalChange);
-      window.addEventListener('intelligentqa_kids_courses_updated', handleCoursesUpdated);
+
+
       return () => {
-        window.removeEventListener('intelligentqa_portal_changed', handlePortalChange);
-        window.removeEventListener('intelligentqa_kids_courses_updated', handleCoursesUpdated);
-        window.removeEventListener('popstate', syncKidsRoute);
+
+
+
         window.removeEventListener('intelligentqa_role_changed', syncAdminRole);
         window.removeEventListener('intelligentqa_auth_changed', syncAdminRole);
       };
@@ -366,14 +308,13 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-neutral-800/40'
     }`;
 
-  const isKidsPortal = Boolean(pathname?.startsWith('/kids'));
 
   const sidebarContent = (
     <div className="flex flex-col h-full justify-between bg-white dark:bg-[#0C0E12] border-r border-slate-200 dark:border-neutral-800/80 font-sans select-none">
       {/* 1. TOP BRAND HEADER */}
       <div className="p-4 border-b border-slate-200/80 dark:border-neutral-800/80 flex items-center justify-between shrink-0">
         <Link
-          href={isKidsPortal ? '/kids' : '/dashboard'}
+          href="/dashboard"
           onClick={onCloseMobile}
           className="flex items-center gap-2.5 focus:outline-none"
         >
@@ -394,253 +335,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
       {/* 2. SCROLLABLE NAVIGATION MENUS */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-        {isKidsPortal ? (
-          /* ========================================================= */
-          /* KIDS NAVIGATION ONLY (NO SDET / AUTOMATION SECTIONS)      */
-          /* ========================================================= */
-          <div className="space-y-4">
-            <div className="space-y-1">
-              {/* COURSES (Python, JavaScript, Java) */}
-              <div className="space-y-1">
-                <button
-                  type="button"
-                  onClick={() => setKidsCoursesOpen(!kidsCoursesOpen)}
-                  className={`w-full ${navItemClass(pathname === '/kids')} justify-between`}
-                  title="Courses: Learn Programming in Python, JavaScript, and Java"
-                >
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="w-4 h-4 shrink-0 text-amber-500" />
-                    <span>Courses</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                      3 Tracks
-                    </span>
-                    {kidsCoursesOpen ? (
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                    ) : (
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                    )}
-                  </div>
-                </button>
 
-                {kidsCoursesOpen && (
-                  <div className="pl-1 pr-1 py-1 space-y-1.5 border-l-2 border-amber-500/30 ml-3 my-1">
-                    {KIDS_TRACK_LIST.map((track) => {
-                      const isLangOpen = Boolean(openKidsLangs[track.id]);
-                      const isLangActive = pathname === '/kids' && kidsActiveLang === track.id && !kidsActiveConcept;
-                      const courseMeta = (kidsCoursesMap && kidsCoursesMap[track.id]) || QADatabase.getKidsCourse(track.id);
-                      const Icon = track.icon;
-
-                      return (
-                        <div key={track.id} className="space-y-0.5">
-                          {/* Language Header Link & Toggle */}
-                          <div className="flex items-center justify-between group rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800/40">
-                            <Link
-                              href={`/kids?lang=${track.id}`}
-                              onClick={() => {
-                                setKidsActiveLang(track.id);
-                                setKidsActiveConcept('');
-                                setOpenKidsLangs(p => ({ ...p, [track.id]: true }));
-                                if (onCloseMobile) onCloseMobile();
-                              }}
-                              className={`flex-1 flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${
-                                isLangActive
-                                  ? 'bg-amber-500/15 text-amber-500 font-bold'
-                                  : 'text-slate-600 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white'
-                              }`}
-                              title={`${track.label} Home`}
-                            >
-                              <Icon className={`w-3.5 h-3.5 shrink-0 ${track.color}`} />
-                              <span className="truncate font-semibold">{track.label}</span>
-                              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ml-auto ${track.badgeStyle}`}>
-                                {track.badge}
-                              </span>
-                            </Link>
-
-                            <button
-                              type="button"
-                              onClick={() => setOpenKidsLangs(p => ({ ...p, [track.id]: !p[track.id] }))}
-                              className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded transition"
-                              title={`Toggle ${track.label} concepts`}
-                            >
-                              {isLangOpen ? (
-                                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                              ) : (
-                                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                              )}
-                            </button>
-                          </div>
-
-                          {/* Concepts List below each language */}
-                          {isLangOpen && courseMeta && (
-                            <div className="pl-3 pr-1 py-1 space-y-0.5 border-l-2 border-slate-700/40 ml-3.5 my-1">
-                              {courseMeta.concepts.map((concept: CourseConcept) => {
-                                const isConceptActive =
-                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveConcept === concept.id;
-                                return (
-                                  <Link
-                                    key={concept.id}
-                                    href={`/kids?lang=${track.id}&concept=${concept.id}`}
-                                    onClick={() => {
-                                      setKidsActiveLang(track.id);
-                                      setKidsActiveConcept(concept.id);
-                                      setKidsActiveView('');
-                                      if (onCloseMobile) onCloseMobile();
-                                    }}
-                                    className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] transition truncate ${
-                                      isConceptActive
-                                        ? 'bg-amber-500/20 text-amber-400 font-bold border-l-2 border-amber-500 pl-1.5'
-                                        : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-neutral-200 hover:bg-slate-100/50 dark:hover:bg-neutral-800/30'
-                                    }`}
-                                    title={concept.title}
-                                  >
-                                    <span className="truncate">{concept.title}</span>
-                                  </Link>
-                                );
-                              })}
-
-                              <div className="border-t border-slate-800/80 my-1 pt-0.5" />
-
-                              {/* 1. Exercises Knowledge Test (4-5 questions per section) */}
-                              <Link
-                                href={`/kids?lang=${track.id}&view=exercises`}
-                                onClick={() => {
-                                  setKidsActiveLang(track.id);
-                                  setKidsActiveConcept('');
-                                  setKidsActiveView('exercises');
-                                  if (onCloseMobile) onCloseMobile();
-                                }}
-                                className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-bold transition truncate ${
-                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveView === 'exercises' && !kidsActiveConcept
-                                    ? 'bg-amber-500/25 text-amber-300 font-extrabold border-l-2 border-amber-400 pl-1.5'
-                                    : 'text-amber-500/90 dark:text-amber-400/90 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-500/10'
-                                }`}
-                                title={`${track.short} Exercises`}
-                              >
-                                <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-                                <span className="truncate">{track.short} Exercises</span>
-                              </Link>
-
-                              {/* 2. Build Games & Projects Studio */}
-                              <Link
-                                href={`/kids?lang=${track.id}&view=projects`}
-                                onClick={() => {
-                                  setKidsActiveLang(track.id);
-                                  setKidsActiveConcept('');
-                                  setKidsActiveView('projects');
-                                  if (onCloseMobile) onCloseMobile();
-                                }}
-                                className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-bold transition truncate mb-1 ${
-                                  pathname === '/kids' && kidsActiveLang === track.id && kidsActiveView === 'projects' && !kidsActiveConcept
-                                    ? 'bg-emerald-500/25 text-emerald-300 font-extrabold border-l-2 border-emerald-400 pl-1.5'
-                                    : 'text-emerald-600/90 dark:text-emerald-400/90 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-500/10'
-                                }`}
-                                title={`${track.short} Games & Projects`}
-                              >
-                                <Gamepad2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
-                                <span className="truncate">{track.short} Games &amp; Projects</span>
-                              </Link>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Online Compilers (Python, JS, TS, Java) */}
-              <Link
-                href="/sandbox/code"
-                onClick={onCloseMobile}
-                className={navItemClass(pathname === '/sandbox/code')}
-                title="Online Compilers: Multi-Language Compiler (Python, JS, TS, Java)"
-              >
-                <Laptop className="w-4 h-4 shrink-0 text-blue-500" />
-                <div className="flex flex-col truncate">
-                  <span className="truncate font-semibold">Online Compilers</span>
-                  <span className="text-[10px] text-slate-500 dark:text-neutral-400">Python, JS, TS, Java</span>
-                </div>
-              </Link>
-
-              {/* Coding Library (Renamed from Kids Problem Library) */}
-              <Link
-                href="/sandbox/code/problems?category=kids"
-                onClick={onCloseMobile}
-                className={navItemClass(pathname?.startsWith('/sandbox/code/problems'))}
-                title="Coding Library: Ready-to-solve problems in Python, JavaScript, TypeScript & Java"
-              >
-                <BookOpen className="w-4 h-4 shrink-0 text-emerald-500" />
-                <div className="flex flex-col truncate">
-                  <span className="truncate font-semibold">Coding Library</span>
-                  <span className="text-[10px] text-slate-500 dark:text-neutral-400">Python, JS, TS, Java</span>
-                </div>
-              </Link>
-
-              {/* Gemini API Key */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (onCloseMobile) onCloseMobile();
-                  setShowKeyModal(true);
-                }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group cursor-pointer ${
-                  geminiKey
-                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                    : 'text-slate-600 dark:text-neutral-400 hover:bg-slate-100 dark:hover:bg-neutral-800'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Key className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <div className="flex flex-col text-left">
-                    <span className="text-xs font-semibold leading-tight text-slate-900 dark:text-white">
-                      Gemini API Key
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-normal">
-                      {geminiKey ? 'Active Key Connected' : 'Free AI Studio Key'}
-                    </span>
-                  </div>
-                </div>
-                <span
-                  className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
-                    geminiKey ? 'bg-emerald-600 text-white' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
-                  }`}
-                >
-                  {geminiKey ? 'ACTIVE' : 'KEY'}
-                </span>
-              </button>
-            </div>
-
-            {/* Admin CMS Link (Kids Mode - Admin Only) */}
-            {isAdmin && (
-              <div className="pt-2 border-t border-purple-500/20">
-                <Link
-                  href="/admin/cms"
-                  onClick={onCloseMobile}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                    pathname === '/admin/cms'
-                      ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 font-bold border-l-2 border-purple-500 pl-2.5'
-                      : 'text-purple-700 dark:text-purple-400 hover:bg-purple-500/10'
-                  }`}
-                  title="Course Content Management System (Admin Only)"
-                >
-                  <ShieldCheck className="w-4 h-4 shrink-0 text-purple-500" />
-                  <div className="flex items-center justify-between flex-1 truncate">
-                    <span className="truncate">Course CMS</span>
-                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
-                      ADMIN
-                    </span>
-                  </div>
-                </Link>
-              </div>
-            )}
-          </div>
-        ) : (
-          /* ========================================================= */
-          /* SDET PROFESSIONAL NAVIGATION (ZERO KIDS CLUTTER)          */
-          /* ========================================================= */
-          <>
             {/* SECTION: WORKSPACE */}
             <div className="space-y-1">
               <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 px-3 pb-1">
@@ -1185,8 +880,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             <WhatsAppDailyModal />
           </div>
         </div>
-          </>
-        )}
+
       </div>
 
       {/* Embedded Modals */}

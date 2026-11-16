@@ -104,25 +104,20 @@ export default function AskAIWidget() {
     return null;
   }
 
-  const isKidsPortal = Boolean(pathname?.startsWith('/kids'));
-  const isGuestLimitReached = !isKidsPortal && !currentUser && guestCount >= GUEST_MAX_QUESTIONS;
+  const isGuestLimitReached = !currentUser && guestCount >= GUEST_MAX_QUESTIONS;
 
   const handleSend = async (userText?: string) => {
     const textToSend = userText || query;
     if (!textToSend.trim() || loading) return;
 
     // Critical: Block AI features for Coding Tutorial if user has not provided Gemini key
-    if (isKidsPortal && !activeApiKey) {
-      return;
-    }
-
     // Critical: Block AI features for logged-in users until Gemini key is provided
     if (currentUser && !activeApiKey) {
       return;
     }
 
     // Check guest limit before sending (SDET portal only)
-    if (!isKidsPortal && !currentUser && guestCount >= GUEST_MAX_QUESTIONS) {
+    if (!currentUser && guestCount >= GUEST_MAX_QUESTIONS) {
       return;
     }
 
@@ -131,7 +126,7 @@ export default function AskAIWidget() {
     setLoading(true);
 
     // If guest on SDET portal, increment count
-    if (!isKidsPortal && !currentUser) {
+    if (!currentUser) {
       const newCount = QADatabase.incrementGuestChatCount();
       setGuestCount(newCount);
     }
@@ -309,7 +304,7 @@ export default function AskAIWidget() {
                 <span>Zero Cost Forever · No Credit Card Required</span>
               </div>
             </div>
-          ) : (currentUser && !activeApiKey) || (isKidsPortal && !activeApiKey) ? (
+          ) : currentUser && !activeApiKey ? (
             /* Disabled state when Gemini key is not provided */
             <div className="p-3.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 space-y-2">
               <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-center space-y-2">
@@ -318,9 +313,7 @@ export default function AskAIWidget() {
                   <span>AI Mentor Disabled · Gemini Key Required</span>
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {isKidsPortal
-                    ? "To use AI features on Coding Tutorial, please provide your free Google Gemini API key. No account or sign-up needed!"
-                    : "To protect shared quota and prevent server token burn, please configure your personal free Gemini API key to activate AI chat."}
+                  "To protect shared quota and prevent server token burn, please configure your personal free Gemini API key to activate AI chat."
                 </p>
                 <button
                   type="button"
@@ -356,9 +349,7 @@ export default function AskAIWidget() {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder={
-                    isKidsPortal
-                      ? "Ask any question about programming, syntax, or debugging..."
-                      : !currentUser
+                    !currentUser
                       ? `Ask anything (${GUEST_MAX_QUESTIONS - guestCount} guest questions left)...`
                       : "Ask anything about switching from Manual QA..."
                   }

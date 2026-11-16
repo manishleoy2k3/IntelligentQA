@@ -98,30 +98,23 @@ print(f"Average score: {average:.1f}")
   });
 
   it('Frontend pages pass user Gemini key in x-gemini-api-key header', () => {
-    const kidsPage = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
     const sandboxCodePage = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/page.tsx'), 'utf8');
     const problemSolver = fs.readFileSync(
       path.join(__dirname, '../src/app/sandbox/code/problems/[problemId]/problem-solver-client.tsx'),
       'utf8'
     );
 
-    assert.ok(kidsPage.includes('x-gemini-api-key'), 'Kids page must pass x-gemini-api-key');
     assert.ok(sandboxCodePage.includes('x-gemini-api-key'), 'Sandbox code page must pass x-gemini-api-key');
     assert.ok(problemSolver.includes('x-gemini-api-key'), 'Problem solver must pass x-gemini-api-key');
   });
 
   it('Line numbers, synchronized scrolling, and error line extraction are implemented in all compiler IDEs', () => {
-    const kidsPage = fs.readFileSync(path.join(__dirname, '../src/app/kids/page.tsx'), 'utf8');
     const sandboxCodePage = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/page.tsx'), 'utf8');
     const problemSolver = fs.readFileSync(
       path.join(__dirname, '../src/app/sandbox/code/problems/[problemId]/problem-solver-client.tsx'),
       'utf8'
     );
 
-    // Check Kids IDE
-    assert.ok(kidsPage.includes('lineNumbersRef1') && kidsPage.includes('lineNumbersRef2'), 'Kids IDE must have line numbers ref');
-    assert.ok(kidsPage.includes('extractErrorLineNumber'), 'Kids IDE must extract error line number');
-    assert.ok(kidsPage.includes('handleEditorScroll'), 'Kids IDE must sync scroll');
 
     // Check Sandbox Code IDE
     assert.ok(sandboxCodePage.includes('lineNumbersRef'), 'Sandbox code page must have line numbers ref');

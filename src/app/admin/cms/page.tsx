@@ -31,20 +31,17 @@ import {
 } from 'lucide-react';
 import { QADatabase } from '@/lib/qa-db';
 import { Track, Lesson, ModerationItem } from '@/types/qa';
-import { CourseConcept, LanguageCourseMeta } from '@/lib/kids-courses';
 
 export default function CourseCMSPage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [activePortal, setActivePortal] = useState<'sdet' | 'kids' | 'approvals' | 'team'>('sdet');
+  const [activePortal, setActivePortal] = useState<'sdet' | 'approvals' | 'team'>('sdet');
 
   // Selected Course
   const [selectedSdetTrackId, setSelectedSdetTrackId] = useState<string>('selenium-java');
-  const [selectedKidsLang, setSelectedKidsLang] = useState<'python' | 'javascript' | 'java'>('python');
 
   // Loaded Course Content from Database
   const [sdetTracks, setSdetTracks] = useState<Track[]>([]);
-  const [kidsCourses, setKidsCourses] = useState<Record<string, LanguageCourseMeta> | null>(null);
 
   // Moderation & Approvals
   const [submissions, setSubmissions] = useState<ModerationItem[]>([]);
@@ -74,7 +71,6 @@ export default function CourseCMSPage() {
 
   // Edit / Add Form State
   const [editingTarget, setEditingTarget] = useState<{
-    isKids: boolean;
     courseId: string;
     moduleId?: string;
     item: any | null; // null for new
@@ -103,8 +99,6 @@ export default function CourseCMSPage() {
   const reloadData = () => {
     const tracks = QADatabase.getTracks();
     setSdetTracks(tracks);
-    const courses = QADatabase.getKidsCourses();
-    setKidsCourses(courses);
     const subs = QADatabase.getAllSubmissions();
     setSubmissions(subs);
     const admins = QADatabase.getAdminEmails();
@@ -129,14 +123,12 @@ export default function CourseCMSPage() {
       window.addEventListener('intelligentqa_auth_changed', handleAuthOrRole);
       window.addEventListener('intelligentqa_role_changed', handleAuthOrRole);
       window.addEventListener('intelligentqa_curriculum_updated', reloadData);
-      window.addEventListener('intelligentqa_kids_courses_updated', reloadData);
       window.addEventListener('intelligentqa_moderation_updated', reloadData);
       window.addEventListener('intelligentqa_admin_list_changed', reloadData);
       return () => {
         window.removeEventListener('intelligentqa_auth_changed', handleAuthOrRole);
         window.removeEventListener('intelligentqa_role_changed', handleAuthOrRole);
         window.removeEventListener('intelligentqa_curriculum_updated', reloadData);
-        window.removeEventListener('intelligentqa_kids_courses_updated', reloadData);
         window.removeEventListener('intelligentqa_moderation_updated', reloadData);
         window.removeEventListener('intelligentqa_admin_list_changed', reloadData);
       };
@@ -144,26 +136,24 @@ export default function CourseCMSPage() {
   }, []);
 
   // Open Edit / Add Modal
-  const handleOpenAdd = (isKids: boolean) => {
+  const handleOpenAdd = () => {
     setEditingTarget({
-      isKids,
-      courseId: isKids ? selectedKidsLang : selectedSdetTrackId,
+      courseId: selectedSdetTrackId,
       item: null,
     });
     setFormTitle('');
-    setFormModule(isKids ? 'Core Fundamentals' : 'Automation Basics');
+    setFormModule('Automation Basics');
     setFormSummary('');
     setFormOverview('');
-    setFormStarterCode(isKids ? '# Write starter code here' : '// Automation starter template');
+    setFormStarterCode('// Automation starter template');
     setFormSolutionCode('');
     setFormBestPractices('');
     setShowEditModal(true);
   };
 
-  const handleOpenEdit = (item: any, isKids: boolean, moduleId?: string) => {
+  const handleOpenEdit = (item: any, moduleId?: string) => {
     setEditingTarget({
-      isKids,
-      courseId: isKids ? selectedKidsLang : selectedSdetTrackId,
+      courseId: selectedSdetTrackId,
       moduleId,
       item,
     });
@@ -188,30 +178,7 @@ export default function CourseCMSPage() {
     e.preventDefault();
     if (!editingTarget || !formTitle.trim()) return;
 
-    if (editingTarget.isKids) {
-      const lang = editingTarget.courseId as 'python' | 'javascript' | 'java';
-      const conceptId = editingTarget.item?.id || `concept-${Date.now()}`;
-      const bestPracticesList = formBestPractices
-        .split('\n')
-        .map((s) => s.trim())
-        .filter(Boolean);
 
-      const concept: CourseConcept = {
-        id: conceptId,
-        title: formTitle.trim(),
-        order: editingTarget.item?.order || 10,
-        language: lang,
-        summary: formSummary.trim(),
-        overview: formOverview.trim(),
-        keyPoints: [],
-        starterCode: formStarterCode.trim(),
-        solutionCode: formSolutionCode.trim(),
-        bestPractices: bestPracticesList,
-      };
-
-      QADatabase.saveKidsConcept(concept);
-      triggerBanner(`✅ Concept "${concept.title}" saved into ${lang.toUpperCase()} database.`);
-    } else {
       const trackId = editingTarget.courseId as any;
       const lessonId = editingTarget.item?.id || `les-${Date.now()}`;
       const moduleId = editingTarget.moduleId || 'mod-custom-1';
@@ -258,21 +225,15 @@ export default function CourseCMSPage() {
 
       QADatabase.saveLesson(trackId, moduleId, lesson);
       triggerBanner(`✅ Lesson "${lesson.title}" saved into ${trackId} database.`);
-    }
 
     reloadData();
     setShowEditModal(false);
   };
 
   // Delete Lesson / Concept from Database
-  const handleDeleteItem = (id: string, isKids: boolean) => {
-    if (isKids) {
-      QADatabase.deleteKidsConcept(selectedKidsLang, id);
-      triggerBanner(`🗑 Concept removed from ${selectedKidsLang} course database.`);
-    } else {
-      QADatabase.deleteLesson(selectedSdetTrackId, id);
-      triggerBanner(`🗑 Lesson removed from ${selectedSdetTrackId} track database.`);
-    }
+  const handleDeleteItem = (id: string) => {
+    QADatabase.deleteLesson(selectedSdetTrackId, id);
+    triggerBanner(`🗑 Lesson removed from ${selectedSdetTrackId} track database.`);
     reloadData();
     setShowDeleteConfirmId(null);
   };
@@ -284,24 +245,7 @@ export default function CourseCMSPage() {
       const parsed = JSON.parse(importJsonText);
       const items = Array.isArray(parsed) ? parsed : [parsed];
 
-      if (activePortal === 'kids') {
-        items.forEach((item, idx) => {
-          const concept: CourseConcept = {
-            id: item.id || `custom-${selectedKidsLang}-${Date.now()}-${idx}`,
-            title: item.title || `Concept ${idx + 1}`,
-            order: 10 + idx,
-            language: selectedKidsLang,
-            summary: item.summary || 'Imported programming concept.',
-            overview: item.overview || '',
-            keyPoints: item.keyPoints || [],
-            starterCode: item.starterCode || item.code || '# Write code here',
-            solutionCode: item.solutionCode || '',
-            bestPractices: item.bestPractices || [],
-          };
-          QADatabase.saveKidsConcept(concept);
-        });
-        triggerBanner(`🎉 Imported ${items.length} concepts into ${selectedKidsLang.toUpperCase()} database.`);
-      } else {
+
         items.forEach((item, idx) => {
           const lesson: Lesson = {
             id: item.id || `les-${Date.now()}-${idx}`,
@@ -345,7 +289,6 @@ export default function CourseCMSPage() {
           QADatabase.saveLesson(selectedSdetTrackId, 'mod-custom-imported', lesson);
         });
         triggerBanner(`🎉 Imported ${items.length} lessons into ${selectedSdetTrackId} database.`);
-      }
 
       reloadData();
       setImportJsonText('');
@@ -359,13 +302,8 @@ export default function CourseCMSPage() {
   const handleExportCourse = () => {
     let exportData: any;
     let filename = '';
-    if (activePortal === 'kids') {
-      exportData = kidsCourses?.[selectedKidsLang];
-      filename = `${selectedKidsLang}_course_database_export.json`;
-    } else {
-      exportData = sdetTracks.find((t) => t.id === selectedSdetTrackId);
-      filename = `${selectedSdetTrackId}_track_database_export.json`;
-    }
+    exportData = sdetTracks.find((t) => t.id === selectedSdetTrackId);
+    filename = `${selectedSdetTrackId}_track_database_export.json`;
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -381,7 +319,6 @@ export default function CourseCMSPage() {
 
   // Active track / course for display
   const currentSdetTrack = sdetTracks.find((t) => t.id === selectedSdetTrackId) || sdetTracks[0];
-  const currentKidsCourse = kidsCourses?.[selectedKidsLang];
 
   // RBAC Access Guard: if not admin, show access restricted screen with secure passcode verification
   if (!isAdmin) {
@@ -522,11 +459,11 @@ export default function CourseCMSPage() {
 
             <button
               type="button"
-              onClick={() => handleOpenAdd(activePortal === 'kids')}
+              onClick={() => handleOpenAdd()}
               className="py-1.5 px-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-md transition"
             >
               <Plus className="w-4 h-4" />
-              <span>+ Add {activePortal === 'kids' ? 'Concept' : 'Lesson'}</span>
+              <span>+ Add Lesson</span>
             </button>
           </div>
         </div>
@@ -564,18 +501,7 @@ export default function CourseCMSPage() {
               <span>SDET Courses ({sdetTracks.length})</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => setActivePortal('kids')}
-              className={`py-2 px-4 rounded-xl text-xs font-extrabold transition flex items-center gap-2 cursor-pointer ${
-                activePortal === 'kids'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Coding Courses (3)</span>
-            </button>
+
 
             <button
               type="button"
@@ -626,55 +552,29 @@ export default function CourseCMSPage() {
         </div>
 
         {/* VIEW 1 & 2: SDET & KIDS CURRICULUM MANAGEMENT */}
-        {(activePortal === 'sdet' || activePortal === 'kids') && (
+        {activePortal === 'sdet' && (
           <div className="space-y-6">
 
         {/* Course Selector Sub-Tabs */}
-        {activePortal === 'sdet' ? (
-          <div className="flex items-center gap-2 flex-wrap">
-            {sdetTracks.map((track) => (
-              <button
-                key={track.id}
-                type="button"
-                onClick={() => setSelectedSdetTrackId(track.id)}
-                className={`py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                  selectedSdetTrackId === track.id
-                    ? 'bg-slate-800 text-white border border-purple-500/50 shadow-sm'
-                    : 'bg-slate-900/80 hover:bg-slate-850 text-slate-400 border border-slate-800'
-                }`}
-              >
-                <span>{track.title}</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300">
-                  {track.totalLessons} Lessons
-                </span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 flex-wrap">
-            {(['python', 'javascript', 'java'] as const).map((lang) => {
-              const meta = kidsCourses?.[lang];
-              return (
-                <button
-                  key={lang}
-                  type="button"
-                  onClick={() => setSelectedKidsLang(lang)}
-                  className={`py-2 px-4 rounded-xl text-xs font-bold capitalize transition flex items-center gap-2 ${
-                    selectedKidsLang === lang
-                      ? 'bg-slate-800 text-white border border-amber-500/50 shadow-sm'
-                      : 'bg-slate-900/80 hover:bg-slate-850 text-slate-400 border border-slate-800'
-                  }`}
-                >
-                  {lang === 'python' ? <Terminal className="w-3.5 h-3.5 text-amber-500" /> : lang === 'javascript' ? <Code2 className="w-3.5 h-3.5 text-emerald-500" /> : <Laptop className="w-3.5 h-3.5 text-cyan-500" />}
-                  <span>{meta?.name || lang}</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400">
-                    {meta?.concepts.length || 9} Concepts
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {sdetTracks.map((track) => (
+            <button
+              key={track.id}
+              type="button"
+              onClick={() => setSelectedSdetTrackId(track.id)}
+              className={`py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                selectedSdetTrackId === track.id
+                  ? 'bg-slate-800 text-white border border-purple-500/50 shadow-sm'
+                  : 'bg-slate-900/80 hover:bg-slate-850 text-slate-400 border border-slate-800'
+              }`}
+            >
+              <span>{track.title}</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300">
+                {track.totalLessons} Lessons
+              </span>
+            </button>
+          ))}
+        </div>
 
         {/* Selected Course Overview Card */}
         <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -682,11 +582,11 @@ export default function CourseCMSPage() {
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono font-bold text-slate-400">Active Course:</span>
               <span className="text-sm font-bold text-white">
-                {activePortal === 'sdet' ? currentSdetTrack?.title : currentKidsCourse?.name}
+                {currentSdetTrack?.title}
               </span>
             </div>
             <p className="text-xs text-slate-400 line-clamp-2 max-w-2xl">
-              {activePortal === 'sdet' ? currentSdetTrack?.description : currentKidsCourse?.description}
+              {currentSdetTrack?.description}
             </p>
           </div>
 
@@ -694,13 +594,8 @@ export default function CourseCMSPage() {
             <button
               type="button"
               onClick={() => {
-                if (activePortal === 'sdet') {
-                  QADatabase.resetTracksToDefault();
-                  triggerBanner('🔄 Reset SDET tracks to factory defaults.');
-                } else {
-                  QADatabase.resetKidsCoursesToDefault();
-                  triggerBanner('🔄 Reset Coding courses to factory defaults.');
-                }
+                QADatabase.resetTracksToDefault();
+                triggerBanner('🔄 Reset SDET tracks to factory defaults.');
                 reloadData();
               }}
               className="py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-400 hover:text-slate-200 text-xs font-semibold transition flex items-center gap-1.5"
@@ -711,7 +606,7 @@ export default function CourseCMSPage() {
             </button>
 
             <Link
-              href={activePortal === 'sdet' ? `/tracks/${selectedSdetTrackId}` : `/kids?lang=${selectedKidsLang}`}
+              href={`/tracks/${selectedSdetTrackId}`}
               target="_blank"
               className="py-1.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700"
             >
@@ -724,7 +619,7 @@ export default function CourseCMSPage() {
         {/* Content Management Table */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
           <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs font-bold text-slate-400">
-            <span>Course Content Repository ({activePortal === 'sdet' ? currentSdetTrack?.totalLessons : currentKidsCourse?.concepts.length} Items)</span>
+            <span>Course Content Repository ({currentSdetTrack?.totalLessons} Lessons)</span>
             <span className="text-slate-500 font-normal">Stored in IntelligentQA DB</span>
           </div>
 
@@ -740,9 +635,7 @@ export default function CourseCMSPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
-                {activePortal === 'sdet' ? (
-                  /* SDET Lessons Rows */
-                  currentSdetTrack?.modules.flatMap((mod) =>
+                {currentSdetTrack?.modules.flatMap((mod) =>
                     mod.lessons
                       .filter((les) =>
                         searchQuery
@@ -769,7 +662,7 @@ export default function CourseCMSPage() {
                             <div className="flex items-center justify-end gap-1.5">
                               <button
                                 type="button"
-                                onClick={() => handleOpenEdit(les, false, mod.id)}
+                                onClick={() => handleOpenEdit(les, mod.id)}
                                 className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition cursor-pointer"
                                 title="Edit lesson content in database"
                               >
@@ -787,54 +680,7 @@ export default function CourseCMSPage() {
                           </td>
                         </tr>
                       ))
-                  )
-                ) : (
-                  /* Kids Concepts Rows */
-                  currentKidsCourse?.concepts
-                    .filter((con) =>
-                      searchQuery
-                        ? con.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          con.summary.toLowerCase().includes(searchQuery.toLowerCase())
-                        : true
-                    )
-                    .map((con, idx) => (
-                      <tr key={con.id} className="hover:bg-slate-850/50 transition">
-                        <td className="py-3.5 px-4 font-mono text-slate-500">{con.order || idx + 1}</td>
-                        <td className="py-3.5 px-4">
-                          <div className="font-bold text-white text-xs">{con.title}</div>
-                          <div className="text-[11px] text-amber-400 font-mono mt-0.5">{con.language.toUpperCase()}</div>
-                        </td>
-                        <td className="py-3.5 px-4 text-slate-400 max-w-md truncate">
-                          {con.summary}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                            {con.id.startsWith('custom-') ? 'Custom Imported' : 'Core Concept'}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => handleOpenEdit(con, true)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition cursor-pointer"
-                              title="Edit concept content in database"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setShowDeleteConfirmId(con.id)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition cursor-pointer"
-                              title="Delete concept from database"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                )}
+                  )}
               </tbody>
             </table>
           </div>
@@ -1497,7 +1343,7 @@ export default function CourseCMSPage() {
               <div className="flex items-center gap-2.5">
                 <UploadCloud className="w-5 h-5 text-emerald-400" />
                 <h3 className="text-sm font-bold text-white">
-                  Batch Import to {activePortal === 'kids' ? selectedKidsLang.toUpperCase() : selectedSdetTrackId}
+                  Batch Import to {selectedSdetTrackId}
                 </h3>
               </div>
               <button
@@ -1577,7 +1423,7 @@ export default function CourseCMSPage() {
               </button>
               <button
                 type="button"
-                onClick={() => handleDeleteItem(showDeleteConfirmId, activePortal === 'kids')}
+                onClick={() => handleDeleteItem(showDeleteConfirmId)}
                 className="py-2 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold"
               >
                 Confirm Delete

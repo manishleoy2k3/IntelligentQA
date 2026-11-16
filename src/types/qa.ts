@@ -208,7 +208,7 @@ export interface DiagnosticQuestion {
 
 export interface ModerationItem {
   id: string;
-  type: 'guide' | 'problem' | 'kids_concept';
+  type: 'guide' | 'problem';
   title: string;
   trackOrLanguage: string;
   category?: string;
