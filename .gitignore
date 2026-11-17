@@ -32,3 +32,6 @@ Thumbs.db
 # Diagnostic & coverage
 coverage
 .nyc_output
+
+# To DO Tasks
+todo.md
