@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { QADatabase } from '@/lib/qa-db';
 import GoogleSignInButton from '@/components/auth/google-sign-in-button';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
+import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import {
   ShieldCheck,
   Key,
@@ -311,101 +312,22 @@ export default function AscentAuthCard({
           <X className="w-4 h-4" />
         </button>
 
-        {/* Center 3D Metallic Emblem Logo */}
+        {/* Official IntelligentQA Brand Logo */}
         <div className="relative flex justify-center mb-5 z-10">
-          <div className="w-16 h-16 flex items-center justify-center relative">
-            <svg
-              className="w-14 h-14 drop-shadow-[0_8px_16px_rgba(255,255,255,0.15)] transition-transform duration-300 hover:scale-105"
-              viewBox="0 0 64 64"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient id="chrome-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FFFFFF" />
-                  <stop offset="35%" stopColor="#D4D4D8" />
-                  <stop offset="65%" stopColor="#71717A" />
-                  <stop offset="100%" stopColor="#E4E4E7" />
-                </linearGradient>
-                <linearGradient id="chrome-grad-2" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#F4F4F5" />
-                  <stop offset="50%" stopColor="#A1A1AA" />
-                  <stop offset="100%" stopColor="#FFFFFF" />
-                </linearGradient>
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="2" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-              {/* 3D Chrome Ribbon/Helix Loops */}
-              <path
-                d="M32 6C22 6 16 14 16 22C16 32 36 34 36 44C36 49 32 54 26 54C20 54 16 50 16 46"
-                stroke="url(#chrome-grad-1)"
-                strokeWidth="7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M32 58C42 58 48 50 48 42C48 32 28 30 28 20C28 15 32 10 38 10C44 10 48 14 48 18"
-                stroke="url(#chrome-grad-2)"
-                strokeWidth="7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {/* Central Metallic Core Spheres */}
-              <circle cx="32" cy="32" r="4.5" fill="#FFFFFF" filter="url(#glow)" />
-              <circle cx="28" cy="20" r="2.5" fill="#E4E4E7" />
-              <circle cx="36" cy="44" r="2.5" fill="#D4D4D8" />
-            </svg>
+          <div className="w-16 h-16 rounded-2xl bg-[#1A1A1A] border border-[#2B2B2B] flex items-center justify-center shadow-xl mx-auto hover:scale-105 transition-transform">
+            <QABrandLogo size={38} showText={false} />
           </div>
         </div>
 
-        {/* Portal Switcher (Student Portal vs Admin Portal) */}
-        <div className="flex items-center justify-center p-1 bg-[#181818] rounded-full border border-[#282828] max-w-[280px] mx-auto mb-4 relative z-10 shadow-inner">
-          <button
-            type="button"
-            onClick={() => {
-              setAccountType('student');
-              if (email === 'admin@intelligentqa.io') setEmail('');
-            }}
-            className={`flex-1 py-1.5 px-3 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              accountType === 'student'
-                ? 'bg-white text-black shadow-sm'
-                : 'text-[#A1A1AA] hover:text-white'
-            }`}
-          >
-            Student Portal
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setAccountType('admin');
-              setEmail('admin@intelligentqa.io');
-            }}
-            className={`flex-1 py-1.5 px-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-              accountType === 'admin'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md'
-                : 'text-[#A1A1AA] hover:text-purple-300'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Admin Portal</span>
-          </button>
-        </div>
-
-        {/* Big Bold Emergent Typography */}
+        {/* Big Bold Clean Headline */}
         <div className="space-y-1 my-5 text-center relative z-10">
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-            {accountType === 'student' ? 'Describe your idea' : 'Control your platform'}
+            From Manual QA to SDET
           </h2>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-            {accountType === 'student' ? 'Build websites & apps with' : 'Manage curriculum with'}
+            Master Test Automation with
           </h2>
-          <div
-            className={`text-2xl sm:text-3xl font-black tracking-tight ${
-              accountType === 'student' ? 'text-[#81FF89]' : 'text-[#C084FC]'
-            }`}
-          >
+          <div className="text-2xl sm:text-3xl font-black tracking-tight text-[#81FF89]">
             AI
           </div>
         </div>
@@ -415,7 +337,7 @@ export default function AscentAuthCard({
           <GoogleSignInButton
             buttonText="Continue with Google"
             redirectTo={accountType === 'admin' ? '/admin' : redirectTo}
-            className="w-full py-3.5 px-6 rounded-full bg-white hover:bg-zinc-100 text-black font-extrabold text-sm flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.99] cursor-pointer border-0"
+            className="w-full py-3.5 px-6 rounded-full !bg-white hover:!bg-zinc-100 !text-black font-extrabold text-sm flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.99] cursor-pointer border-0"
           />
 
           {/* Social Icons Row (GitHub, Apple, Facebook) */}

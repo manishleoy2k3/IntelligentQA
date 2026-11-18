@@ -68,7 +68,7 @@ export default function GoogleSignInButton({
         type="button"
         onClick={handleGoogleSignIn}
         disabled={loading}
-        className={`w-full py-3.5 px-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold rounded-2xl text-sm transition-all shadow-sm hover:shadow flex items-center justify-center gap-3 active:scale-[0.99] cursor-pointer disabled:opacity-60 ${className}`}
+        className={`w-full py-3.5 px-4 bg-white hover:bg-zinc-100 text-black border border-slate-200 font-bold rounded-full text-sm transition-all shadow-md flex items-center justify-center gap-3 active:scale-[0.99] cursor-pointer disabled:opacity-60 ${className}`}
       >
         {/* Google Multi-Color SVG Icon */}
         <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">

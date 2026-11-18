@@ -3,59 +3,62 @@ const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
 
-test('Emergent Sign-Up Window: Visual & Structural Match with Target Design', () => {
+test('1. Home Page: Clean split layout with HeroShowcaseCarousel and navigation arrows', () => {
+  const homePath = path.join(process.cwd(), 'src/app/page.tsx');
+  const homeContent = fs.readFileSync(homePath, 'utf-8');
+
+  assert.ok(homeContent.includes('HeroShowcaseCarousel'), 'Home page embeds HeroShowcaseCarousel');
+  assert.ok(homeContent.includes('AscentAuthCard'), 'Home page embeds AscentAuthCard on left column');
+
+  const carouselPath = path.join(process.cwd(), 'src/components/home/hero-showcase-carousel.tsx');
+  assert.ok(fs.existsSync(carouselPath), 'hero-showcase-carousel.tsx exists');
+
+  const carouselContent = fs.readFileSync(carouselPath, 'utf-8');
+  assert.ok(carouselContent.includes('ChevronLeft') && carouselContent.includes('ChevronRight'), 'Has left and right navigation arrows');
+  assert.ok(carouselContent.includes('SHOWCASE_SLIDES'), 'Has showcase content slides');
+  assert.ok(carouselContent.includes('Built for Manual QA'), 'Showcases Manual QA to SDET content');
+});
+
+test('2. Get started does NOT have Admin portal toggle button', () => {
   const cardPath = path.join(process.cwd(), 'src/components/auth/ascent-auth-card.tsx');
   const content = fs.readFileSync(cardPath, 'utf-8');
 
-  // 1. Top Emblem & Close Button
-  assert.ok(content.includes('chrome-grad-1'), 'Has 3D chrome/metallic emblem gradient');
-  assert.ok(content.includes('aria-label="Close"'), 'Has top-right close X button');
-
-  // 2. Both Admin and Student Portal Switcher
-  assert.ok(content.includes('Student Portal'), 'Has Student Portal option');
-  assert.ok(content.includes('Admin Portal'), 'Has Admin Portal option');
-  assert.ok(content.includes('accountType'), 'Has accountType state for dual portal support');
-
-  // 3. Emergent Big Typography
-  assert.ok(content.includes('Describe your idea'), 'Features Emergent primary headline');
-  assert.ok(content.includes('Build websites & apps with'), 'Features Emergent secondary headline');
-  assert.ok(content.includes('text-[#81FF89]') || content.includes('text-emerald'), 'Features glowing green AI accent');
-
-  // 4. Primary White Pill Google Button
-  assert.ok(content.includes('Continue with Google'), 'Features primary Continue with Google CTA');
-
-  // 5. Social Icons Row (GitHub, Apple, Facebook)
-  assert.ok(content.includes('handleSocialSignIn(\'github\')'), 'Has GitHub social button');
-  assert.ok(content.includes('handleSocialSignIn(\'apple\')'), 'Has Apple social button');
-  assert.ok(content.includes('handleSocialSignIn(\'facebook\')'), 'Has Facebook social button');
-
-  // 6. Dashed OR Divider
-  assert.ok(content.includes('border-dashed') && content.includes('OR'), 'Features dashed OR divider');
-
-  // 7. Secondary Action Pills
-  assert.ok(content.includes('Continue with Email'), 'Features Continue with Email button');
-  assert.ok(content.includes('Continue with Phone'), 'Features Continue with Phone button');
-
-  // 8. Footer Disclaimer
+  // Verify there is no visible toggle button between Student and Admin in the card UI
   assert.ok(
-    content.includes('Terms of Service') && content.includes('Privacy Policy'),
-    'Features Terms of Service and Privacy Policy disclaimer at bottom'
+    !content.includes('Portal Switcher (Student Portal vs Admin Portal)'),
+    'Admin portal toggle button has been removed from Get Started'
+  );
+  assert.ok(
+    !content.includes('text-[#A1A1AA] hover:text-purple-300'),
+    'Admin portal toggle pill button has been removed'
   );
 });
 
-test('Emergent Sign-Up Window: Dual-mode routing for Student and Admin', () => {
+test('3. Card uses our official IntelligentQA Brand Logo', () => {
   const cardPath = path.join(process.cwd(), 'src/components/auth/ascent-auth-card.tsx');
   const content = fs.readFileSync(cardPath, 'utf-8');
 
-  assert.ok(content.includes("router.push('/admin')"), 'Admin selection routes directly to /admin');
-  assert.ok(content.includes('router.push(redirectTo)'), 'Student selection routes to destination / dashboard');
+  assert.ok(content.includes('QABrandLogo'), 'Uses official QABrandLogo');
 });
 
-test('AuthModal exists for modal trigger anywhere across the application', () => {
-  const modalPath = path.join(process.cwd(), 'src/components/auth/auth-modal.tsx');
-  assert.ok(fs.existsSync(modalPath), 'auth-modal.tsx component must exist');
+test('4. Replaced generic copy with true QA & SDET copy', () => {
+  const cardPath = path.join(process.cwd(), 'src/components/auth/ascent-auth-card.tsx');
+  const content = fs.readFileSync(cardPath, 'utf-8');
 
-  const content = fs.readFileSync(modalPath, 'utf-8');
-  assert.ok(content.includes('AscentAuthCard'), 'Embeds AscentAuthCard');
-  assert.ok(content.includes('intelligentqa_open_auth_modal'), 'Listens for global open event');
+  assert.ok(!content.includes('Describe your idea Build websites & apps with AI'), 'Removed non-QA copy');
+  assert.ok(content.includes('From Manual QA to SDET'), 'Has "From Manual QA to SDET"');
+  assert.ok(content.includes('Master Test Automation with'), 'Has "Master Test Automation with"');
+  assert.ok(content.includes('text-[#81FF89]'), 'Features glowing green AI accent');
+});
+
+test('5. Continue with Google button background is solid pure white', () => {
+  const cardPath = path.join(process.cwd(), 'src/components/auth/ascent-auth-card.tsx');
+  const content = fs.readFileSync(cardPath, 'utf-8');
+
+  assert.ok(content.includes('!bg-white'), 'Google button uses explicit pure white background');
+  assert.ok(content.includes('!text-black'), 'Google button uses explicit black text');
+
+  const googleBtnPath = path.join(process.cwd(), 'src/components/auth/google-sign-in-button.tsx');
+  const googleBtnContent = fs.readFileSync(googleBtnPath, 'utf-8');
+  assert.ok(!googleBtnContent.includes('dark:bg-slate-900'), 'Removed dark mode override so it stays pure white');
 });
