@@ -139,26 +139,26 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
   ];
 
   return (
-    <header className="w-full h-14 bg-white/95 dark:bg-[#0B0D11]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-neutral-800/80 px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans">
+    <header className="w-full h-16 bg-[#141414]/95 backdrop-blur-md border-b border-[#262626] px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans">
       {/* Left: Mobile Sidebar Toggle & Active Portal Pill */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onToggleMobileSidebar}
-          className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
+          className="md:hidden p-2 rounded-full text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] transition-colors cursor-pointer"
           aria-label="Toggle Navigation Menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {portalMode === "kids" ? (
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1E1E1E] text-amber-400 border border-amber-500/30">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Coding Tutorial</span>
           </span>
         ) : (
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-            <Layers className="w-3.5 h-3.5 text-emerald-500" />
+          <span className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1E1E1E] text-[#81FF89] border border-[#81FF89]/30">
+            <Layers className="w-3.5 h-3.5 text-[#81FF89]" />
             <span>SDET Career Portal</span>
           </span>
         )}
@@ -171,11 +171,11 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           type="button"
           onClick={handleOpenAskAI}
           aria-label="Ask SDET AI"
-          className="flex items-center gap-2 sm:gap-2.5 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-bold rounded-full shadow-md transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm"
+          className="flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(129,255,137,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm"
           title="Ask AI: Coding queries, algorithms, syntax, and programming help (Ask SDET AI)"
         >
-          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
-          <span className="font-bold tracking-tight">Ask AI</span>
+          <Sparkles className="w-4 h-4 text-white shrink-0" />
+          <span className="font-extrabold tracking-tight">Ask AI</span>
           <span className="sr-only">Ask SDET AI</span>
         </button>
 
@@ -184,40 +184,40 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <button
             type="button"
             onClick={() => setNotificationsOpen(!notificationsOpen)}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors relative cursor-pointer"
+            className="p-2.5 rounded-full text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] transition-colors relative cursor-pointer"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0B0D11]" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#81FF89] ring-2 ring-[#141414]" />
           </button>
 
           {/* Notifications Dropdown */}
           {notificationsOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-neutral-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-neutral-800 px-1">
-                <span className="text-xs font-bold text-slate-900 dark:text-white">
+            <div className="absolute right-0 mt-3 w-80 bg-[#161616] border border-[#262626] rounded-[24px] shadow-2xl p-4 space-y-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#262626] px-1">
+                <span className="text-xs font-bold text-white">
                   Notifications
                 </span>
-                <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                <span className="text-xs font-semibold text-[#81FF89] bg-[#81FF89]/15 px-2 py-0.5 rounded-full">
                   2 New
                 </span>
               </div>
 
-              <div className="divide-y divide-slate-100 dark:divide-neutral-800/80 max-h-64 overflow-y-auto">
+              <div className="divide-y divide-[#262626] max-h-64 overflow-y-auto">
                 {notifications.map((n) => (
                   <div
                     key={n.id}
-                    className="py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-neutral-800/50 rounded-xl transition-colors"
+                    className="py-3 px-2 hover:bg-[#1E1E1E] rounded-xl transition-colors"
                   >
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-xs font-semibold text-slate-900 dark:text-white">
+                      <span className="text-xs font-semibold text-white">
                         {n.title}
                       </span>
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-xs text-[#A1A1AA]">
                         {n.time}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-neutral-400 mt-0.5">
+                    <p className="text-xs text-[#A1A1AA] mt-1 leading-relaxed">
                       {n.desc}
                     </p>
                   </div>
@@ -237,35 +237,35 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
             <button
               type="button"
               onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-              className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-xs font-semibold hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-800 dark:text-white transition-all cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-neutral-700"
+              className="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full text-xs font-semibold bg-[#161616] hover:bg-[#1E1E1E] text-white transition-all cursor-pointer border border-[#262626]"
               aria-label="User profile menu"
             >
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#81FF89] to-[#80FFF9] text-black font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
                 {getInitials(currentUser.displayName)}
               </div>
-              <span className="hidden sm:inline max-w-[120px] truncate text-xs font-bold text-slate-900 dark:text-white">
+              <span className="hidden sm:inline max-w-[120px] truncate text-xs font-bold text-white">
                 {currentUser.displayName?.split(" ")[0] || "Profile"}
               </span>
               <ChevronDown
-                className={`w-3.5 h-3.5 text-slate-400 transition-transform ${profileMenuOpen ? "rotate-180" : ""}`}
+                className={`w-3.5 h-3.5 text-[#A1A1AA] transition-transform ${profileMenuOpen ? "rotate-180" : ""}`}
               />
             </button>
 
             {/* Profile Dropdown Menu */}
             {profileMenuOpen && (
-              <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-neutral-800 rounded-2xl shadow-2xl p-3 space-y-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute right-0 mt-3 w-76 bg-[#161616] border border-[#262626] rounded-[24px] shadow-2xl p-4 space-y-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 {/* User Identity Card */}
-                <div className="p-3 bg-slate-50 dark:bg-neutral-800/60 rounded-xl space-y-1.5">
+                <div className="p-3.5 bg-[#1F1F1F] rounded-[18px] border border-[#262626] space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                    <span className="font-bold text-white text-xs truncate">
                       {currentUser.displayName}
                     </span>
                     <div className="flex items-center gap-1.5">
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           isAdmin
-                            ? "bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30"
-                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                            ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                            : "bg-[#81FF89]/15 text-[#81FF89] border border-[#81FF89]/30"
                         }`}
                       >
                         {isAdmin
@@ -274,20 +274,20 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                       </span>
                     </div>
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-neutral-400 truncate">
+                  <div className="text-xs text-[#A1A1AA] truncate">
                     {currentUser.email}
                   </div>
 
                   {/* Protected Access Level */}
-                  <div className="pt-1.5 border-t border-slate-200/60 dark:border-neutral-700/60 flex items-center justify-between">
-                    <span className="text-[10px] text-slate-400">
+                  <div className="pt-2 border-t border-[#262626] flex items-center justify-between">
+                    <span className="text-[11px] text-[#A1A1AA]">
                       Access Level:
                     </span>
                     <span
                       className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
                         isAdmin
-                          ? "bg-purple-500/20 text-purple-600 dark:text-purple-300"
-                          : "bg-slate-200/60 dark:bg-neutral-700/60 text-slate-600 dark:text-slate-300"
+                          ? "bg-purple-500/20 text-purple-300"
+                          : "bg-[#2A2A2A] text-[#D4D4D8]"
                       }`}
                     >
                       {isAdmin ? "System Administrator" : "Standard Student"}
@@ -302,13 +302,13 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                     <Link
                       href="/admin/cms"
                       onClick={() => setProfileMenuOpen(false)}
-                      className="w-full px-3 py-2 text-left rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-between transition-colors border border-purple-500/30"
+                      className="w-full px-3.5 py-2.5 text-left rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-bold flex items-center justify-between transition-colors border border-purple-500/30"
                     >
                       <div className="flex items-center gap-2.5">
-                        <ShieldCheck className="w-4 h-4 text-purple-500 shrink-0" />
-                        <span>Course CMS & Approvals</span>
+                        <ShieldCheck className="w-4 h-4 text-purple-400 shrink-0" />
+                        <span>Course CMS &amp; Approvals</span>
                       </div>
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-300">
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300">
                         Admin
                       </span>
                     </Link>
@@ -321,9 +321,9 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                         setAdminUnlockStatus(null);
                         setShowAdminUnlockModal(true);
                       }}
-                      className="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-500 hover:text-slate-700 dark:text-neutral-400 dark:hover:text-neutral-200 flex items-center gap-2 transition-colors cursor-pointer text-[11px]"
+                      className="w-full px-3.5 py-2 text-left rounded-xl hover:bg-[#222222] text-[#A1A1AA] hover:text-white flex items-center gap-2 transition-colors cursor-pointer text-xs"
                     >
-                      <ShieldCheck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#81FF89] shrink-0" />
                       <span>Admin Access Gateway</span>
                     </button>
                   )}
@@ -334,9 +334,9 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                       setProfileMenuOpen(false);
                       setShowProfileModal(true);
                     }}
-                    className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                    className="w-full px-3.5 py-2.5 text-left rounded-xl hover:bg-[#222222] text-[#D4D4D8] hover:text-white font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
                   >
-                    <UserCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <UserCheck className="w-4 h-4 text-[#81FF89] shrink-0" />
                     <span>Complete / Edit QA Profile</span>
                   </button>
 
@@ -345,9 +345,9 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                       pathname?.startsWith("/kids") ? "/kids" : "/dashboard"
                     }
                     onClick={() => setProfileMenuOpen(false)}
-                    className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors"
+                    className="w-full px-3.5 py-2.5 text-left rounded-xl hover:bg-[#222222] text-[#D4D4D8] hover:text-white font-medium flex items-center gap-2.5 transition-colors"
                   >
-                    <Layers className="w-4 h-4 text-blue-500 shrink-0" />
+                    <Layers className="w-4 h-4 text-[#80FFF9] shrink-0" />
                     <span>
                       {pathname?.startsWith("/kids")
                         ? "Coding Tutorial Hub"
@@ -357,11 +357,11 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                 </div>
 
                 {/* Log Out */}
-                <div className="pt-2 border-t border-slate-100 dark:border-neutral-800">
+                <div className="pt-2 border-t border-[#262626]">
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="w-full px-3 py-2 text-left rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-2.5 transition-colors cursor-pointer text-xs"
+                    className="w-full px-3.5 py-2 text-left rounded-xl hover:bg-rose-950/40 text-rose-400 font-semibold flex items-center gap-2.5 transition-colors cursor-pointer text-xs"
                   >
                     <LogOut className="w-4 h-4 shrink-0" />
                     <span>Log Out</span>
@@ -384,31 +384,31 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
       {/* Admin Security Gateway Modal */}
       {showAdminUnlockModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl relative space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#161616] border border-[#262626] rounded-[28px] w-full max-w-md p-6 sm:p-8 shadow-2xl relative space-y-4">
             <button
               type="button"
               onClick={() => setShowAdminUnlockModal(false)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition cursor-pointer"
+              className="absolute top-4 right-4 p-2 text-[#A1A1AA] hover:text-white rounded-full hover:bg-[#222222] transition cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="font-bold text-white text-base">
                   Admin Access Gateway
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#A1A1AA]">
                   Restricted system administration portal
                 </p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#D4D4D8] leading-relaxed">
               Standard students have restricted access. Enter the platform
               master security passcode to verify administrator credentials for{" "}
               <span className="font-mono text-purple-400">
@@ -437,7 +437,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
               className="space-y-3 pt-2"
             >
               <div>
-                <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#A1A1AA] uppercase tracking-wider mb-1.5">
                   Admin Master Passcode
                 </label>
                 <input
@@ -445,20 +445,20 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                   value={adminPasscode}
                   onChange={(e) => setAdminPasscode(e.target.value)}
                   placeholder="Enter security key..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition"
+                  className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-4 py-3 text-sm text-white placeholder-[#71717A] focus:outline-none focus:border-[#81FF89] transition"
                   autoFocus
                 />
               </div>
 
               {adminUnlockStatus?.error && (
-                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-900/60 text-rose-400 text-xs flex items-center gap-2">
                   <X className="w-4 h-4 shrink-0" />
                   <span>{adminUnlockStatus.error}</span>
                 </div>
               )}
 
               {adminUnlockStatus?.success && (
-                <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-900/60 text-[#81FF89] text-xs flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
                   <span>{adminUnlockStatus.success}</span>
                 </div>
@@ -468,14 +468,14 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                 <button
                   type="button"
                   onClick={() => setShowAdminUnlockModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition cursor-pointer"
+                  className="px-5 py-2.5 rounded-full bg-[#222222] hover:bg-[#2A2A2A] text-[#D4D4D8] text-xs font-semibold transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!adminPasscode.trim()}
-                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer"
+                  className="px-5 py-2.5 rounded-full bg-white hover:bg-neutral-200 disabled:opacity-50 text-black text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   <span>Authorize Admin</span>

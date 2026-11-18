@@ -50,47 +50,47 @@ export default function TracksDirectoryPage() {
 
         <Link
           href="/assessment"
-          className="flex items-center gap-2 py-2.5 px-4 bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm hover:opacity-95"
+          className="flex items-center gap-2 py-3 px-5 bg-white text-black rounded-full text-xs font-bold transition-all shadow-md hover:bg-neutral-200 cursor-pointer"
         >
           Take 5-Min Diagnostic
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
-      {/* Manual Tester Transition Roadmap Guide */}
-      <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 border border-slate-700/80 text-white shadow-md space-y-3">
+      {/* Manual Tester Transition Roadmap Guide (Emergent Card) */}
+      <div className="p-6 rounded-[24px] bg-[#161616] border border-[#262626] text-white shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-500 text-slate-950">
+            <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-[#81FF89] text-black">
               Recommended Sequence
             </span>
-            <h2 className="text-base sm:text-lg font-bold">Manual QA to Full-Stack SDET Progression Roadmap</h2>
+            <h2 className="text-base sm:text-lg font-bold text-white">Manual QA to Full-Stack SDET Progression Roadmap</h2>
           </div>
-          <span className="text-xs text-slate-400 font-mono">Total SDET Curriculum: 88 Hours · 38 Lessons</span>
+          <span className="text-xs text-[#A1A1AA] font-mono">Total SDET Curriculum: 88 Hours · 38 Lessons</span>
         </div>
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#D4D4D8] leading-relaxed">
           If you are transitioning from a manual testing background, sequence is everything. Start with Core Java &amp; Selenium to master DOM locators and OOPs architecture, level up to Playwright for modern auto-waiting, transition Postman tests to REST Assured code, and master AI agent workflows.
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
-          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-amber-500/30">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-xs">
+          <div className="p-3 rounded-xl bg-[#141414] border border-amber-500/30">
             <div className="text-amber-400 font-bold">Stage 1 · 26h</div>
             <div className="font-semibold text-white">Selenium (Java)</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">OOPs &amp; DOM Foundation</div>
+            <div className="text-[11px] text-[#A1A1AA] mt-0.5">OOPs &amp; DOM Foundation</div>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-emerald-500/30">
-            <div className="text-emerald-400 font-bold">Stage 2 · 24h</div>
+          <div className="p-3 rounded-xl bg-[#141414] border border-[#81FF89]/30">
+            <div className="text-[#81FF89] font-bold">Stage 2 · 24h</div>
             <div className="font-semibold text-white">Playwright (TS)</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Auto-Waiting &amp; Async Web</div>
+            <div className="text-[11px] text-[#A1A1AA] mt-0.5">Auto-Waiting &amp; Async Web</div>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-purple-500/30">
-            <div className="text-purple-400 font-bold">Stage 3 · 18h</div>
+          <div className="p-3 rounded-xl bg-[#141414] border border-[#80FFF9]/30">
+            <div className="text-[#80FFF9] font-bold">Stage 3 · 18h</div>
             <div className="font-semibold text-white">Rest Assured (API)</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Postman to Code-Based API</div>
+            <div className="text-[11px] text-[#A1A1AA] mt-0.5">Postman to Code-Based API</div>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-800/80 border border-cyan-500/30">
+          <div className="p-3 rounded-xl bg-[#141414] border border-cyan-500/30">
             <div className="text-cyan-400 font-bold">Stage 4 · 20h</div>
             <div className="font-semibold text-white">AI for QA</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Prompts &amp; Autonomous Agents</div>
+            <div className="text-[11px] text-[#A1A1AA] mt-0.5">Prompts &amp; Autonomous Agents</div>
           </div>
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function TracksDirectoryPage() {
           return (
             <div
               key={track.id}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col justify-between space-y-6 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-md"
+              className="emergent-card rounded-[24px] border border-[#262626] bg-[#161616] p-6 shadow-sm flex flex-col justify-between space-y-6 hover:border-[#81FF89]/40 transition-all hover:shadow-md"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

@@ -16,10 +16,10 @@ function SignupContent() {
   const redirectTo = searchParams?.get('redirect_to') || '/';
 
   return (
-    <div className="min-h-[88vh] flex flex-col items-center justify-center p-4 py-8 bg-[#F8F9FA] dark:bg-slate-950 font-sans">
+    <div className="min-h-[88vh] flex flex-col items-center justify-center p-4 py-8 bg-[#111111] font-sans">
       {/* Zero-Cost Guarantee Banner */}
-      <div className="mb-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-        <ShieldCheck className="w-3.5 h-3.5" />
+      <div className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#161616] text-[#81FF89] border border-[#262626]">
+        <ShieldCheck className="w-4 h-4 text-[#81FF89]" />
         <span>IntelligentQA Zero-Cost Guarantee · 100% Free Forever</span>
       </div>
 

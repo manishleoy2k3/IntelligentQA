@@ -219,15 +219,15 @@ export default function AscentAuthCard({
 
   return (
     <div className="w-full flex flex-col items-center justify-center font-sans">
-      {/* CARD CONTAINER (Rounded 32px matching Image 1 & 2) */}
-      <div className="w-full max-w-[440px] bg-white dark:bg-slate-900 rounded-[32px] border border-slate-200/90 dark:border-slate-800 p-8 sm:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.06)] dark:shadow-none space-y-6">
+      {/* CARD CONTAINER (Emergent Rounded 28px Card) */}
+      <div className="w-full max-w-[440px] bg-[#161616] rounded-[28px] border border-[#262626] p-8 sm:p-10 shadow-2xl space-y-6">
         {/* App Logo in Dark Rounded Square (Top Center) */}
-        <div className="w-14 h-14 rounded-2xl bg-[#0F2D20] text-emerald-400 flex items-center justify-center shadow-md mx-auto">
+        <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#262626] text-[#81FF89] flex items-center justify-center shadow-md mx-auto">
           <QABrandLogo size={34} showText={false} />
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center text-white tracking-tight">
           {mode === 'login' ? 'Welcome back' : 'Create your account'}
         </h1>
 
@@ -242,8 +242,8 @@ export default function AscentAuthCard({
 
         {/* Divider: OR SIGN IN WITH EMAIL / OR SIGN UP WITH EMAIL */}
         <div className="relative flex items-center justify-center my-6">
-          <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-          <span className="bg-white dark:bg-slate-900 px-4 text-[11px] font-semibold tracking-wider text-slate-400 uppercase shrink-0">
+          <div className="border-t border-[#262626] w-full" />
+          <span className="bg-[#161616] px-4 text-xs font-semibold tracking-wider text-[#A1A1AA] uppercase shrink-0">
             {mode === 'login' ? 'OR SIGN IN WITH EMAIL' : 'OR SIGN UP WITH EMAIL'}
           </span>
         </div>
@@ -262,7 +262,7 @@ export default function AscentAuthCard({
           <form onSubmit={handleDirectLogin} className="space-y-4">
             {/* Email Address */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-200">
+              <label className="block text-sm font-semibold text-white">
                 Email address
               </label>
               <input
@@ -271,17 +271,17 @@ export default function AscentAuthCard({
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#173F2E]/20 focus:border-[#173F2E] text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-[#2B2B2B] bg-[#0F0F0F] text-white placeholder-[#71717A] focus:outline-none focus:ring-1 focus:ring-[#81FF89] focus:border-[#81FF89] text-sm"
               />
             </div>
 
             {/* Password with Eye Toggle */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-200">
+              <label className="block text-sm font-semibold text-white">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#71717A]">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -290,23 +290,23 @@ export default function AscentAuthCard({
                   value={password}
                   onChange={e => setPasswordState(e.target.value)}
                   placeholder="Your password"
-                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#173F2E]/20 focus:border-[#173F2E] text-sm"
+                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-[#2B2B2B] bg-[#0F0F0F] text-white placeholder-[#71717A] focus:outline-none focus:ring-1 focus:ring-[#81FF89] focus:border-[#81FF89] text-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#71717A] hover:text-white cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Sign in Button in Deep Green (#173F2E) */}
+            {/* Sign in Button (Emergent White Pill Button) */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-3.5 px-4 bg-[#173F2E] hover:bg-[#113123] text-white font-semibold rounded-xl text-base transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-60"
+              className="w-full mt-6 py-3.5 px-4 bg-white hover:bg-neutral-200 text-black font-bold rounded-full text-base transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-60"
             >
               <span>Sign in</span>
               <ArrowRight className="w-4 h-4" />
@@ -317,7 +317,7 @@ export default function AscentAuthCard({
               <button
                 type="button"
                 onClick={openForgotModal}
-                className="text-sm font-semibold text-[#173F2E] dark:text-emerald-400 hover:underline cursor-pointer"
+                className="text-sm font-semibold text-[#81FF89] hover:underline cursor-pointer"
               >
                 Forgot password?
               </button>
@@ -343,7 +343,7 @@ export default function AscentAuthCard({
           <form onSubmit={handleDirectSignup} className="space-y-4">
             {/* Email Address */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-200">
+              <label className="block text-sm font-semibold text-white">
                 Email address
               </label>
               <input
@@ -352,17 +352,17 @@ export default function AscentAuthCard({
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#173F2E]/20 focus:border-[#173F2E] text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-[#2B2B2B] bg-[#0F0F0F] text-white placeholder-[#71717A] focus:outline-none focus:ring-1 focus:ring-[#81FF89] focus:border-[#81FF89] text-sm"
               />
             </div>
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-200">
+              <label className="block text-sm font-semibold text-white">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#71717A]">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -371,12 +371,12 @@ export default function AscentAuthCard({
                   value={password}
                   onChange={e => setPasswordState(e.target.value)}
                   placeholder="At least 8 characters"
-                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#173F2E]/20 focus:border-[#173F2E] text-sm"
+                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-[#2B2B2B] bg-[#0F0F0F] text-white placeholder-[#71717A] focus:outline-none focus:ring-1 focus:ring-[#81FF89] focus:border-[#81FF89] text-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#71717A] hover:text-white cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -385,11 +385,11 @@ export default function AscentAuthCard({
 
             {/* Confirm Password */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-200">
+              <label className="block text-sm font-semibold text-white">
                 Confirm password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#71717A]">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -398,23 +398,23 @@ export default function AscentAuthCard({
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter your password"
-                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#173F2E]/20 focus:border-[#173F2E] text-sm"
+                  className="w-full pl-10 pr-10 py-3 rounded-xl border border-[#2B2B2B] bg-[#0F0F0F] text-white placeholder-[#71717A] focus:outline-none focus:ring-1 focus:ring-[#81FF89] focus:border-[#81FF89] text-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#71717A] hover:text-white cursor-pointer"
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Create Account Button in Deep Green (#173F2E) */}
+            {/* Create Account Button (Emergent White Pill Button) */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-3.5 px-4 bg-[#173F2E] hover:bg-[#113123] text-white font-semibold rounded-xl text-base transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-60"
+              className="w-full mt-6 py-3.5 px-4 bg-white hover:bg-neutral-200 text-black font-bold rounded-full text-base transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-60"
             >
               <span>Create account</span>
               <ArrowRight className="w-4 h-4" />

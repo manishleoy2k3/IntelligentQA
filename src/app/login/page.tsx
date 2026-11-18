@@ -13,7 +13,7 @@ function LoginContent() {
   const redirectTo = searchParams?.get('redirect_to') || '/';
 
   return (
-    <div className="min-h-[88vh] flex flex-col items-center justify-center p-4 py-8 bg-[#F8F9FA] dark:bg-slate-950 font-sans">
+    <div className="min-h-[88vh] flex flex-col items-center justify-center p-4 py-8 bg-[#111111] font-sans">
       <AscentAuthCard redirectTo={redirectTo} initialMode="login" />
 
       {/* Accessible semantic anchors for tests & screen readers */}

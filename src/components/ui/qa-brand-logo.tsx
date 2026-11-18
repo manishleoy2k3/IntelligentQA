@@ -41,30 +41,30 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
         aria-label="IntelligentQA Logo - Verified Code Augmented with AI"
       >
         <defs>
-          {/* Main Slate & Tech Gradient */}
+          {/* Emergent Obsidian & Tech Gradient */}
           <linearGradient id="qa-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0F172A" />
-            <stop offset="50%" stopColor="#1E293B" />
-            <stop offset="100%" stopColor="#0B0F17" />
+            <stop offset="0%" stopColor="#1E1E1E" />
+            <stop offset="50%" stopColor="#161616" />
+            <stop offset="100%" stopColor="#0F0F0F" />
           </linearGradient>
 
-          {/* Verification Checkmark (Emerald/Cyan Energy) */}
+          {/* Verification Checkmark (Neon Lime #81FF89 / #00FF37 Energy) */}
           <linearGradient id="check-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#34D399" />
-            <stop offset="100%" stopColor="#059669" />
+            <stop offset="0%" stopColor="#81FF89" />
+            <stop offset="100%" stopColor="#00FF37" />
           </linearGradient>
 
-          {/* Code Syntax Bracket (Sky Blue / Violet Glow) */}
+          {/* Code Syntax Bracket (Cyber Cyan #80FFF9 Glow) */}
           <linearGradient id="code-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38BDF8" />
-            <stop offset="100%" stopColor="#6366F1" />
+            <stop offset="0%" stopColor="#80FFF9" />
+            <stop offset="100%" stopColor="#38BDF8" />
           </linearGradient>
 
           {/* AI Neural Spark Gradient */}
           <linearGradient id="spark-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#F59E0B" />
-            <stop offset="50%" stopColor="#EC4899" />
-            <stop offset="100%" stopColor="#A855F7" />
+            <stop offset="0%" stopColor="#81FF89" />
+            <stop offset="50%" stopColor="#80FFF9" />
+            <stop offset="100%" stopColor="#FFFFFF" />
           </linearGradient>
 
           {/* Soft outer glow */}
@@ -82,13 +82,13 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
           height="44"
           rx="12"
           fill="url(#qa-bg-grad)"
-          stroke="#334155"
+          stroke="#262626"
           strokeWidth="1.5"
         />
 
         {/* Subtle grid pattern / matrix lines */}
-        <line x1="8" y1="24" x2="40" y2="24" stroke="#1E293B" strokeWidth="0.75" strokeDasharray="2 2" />
-        <line x1="24" y1="8" x2="24" y2="40" stroke="#1E293B" strokeWidth="0.75" strokeDasharray="2 2" />
+        <line x1="8" y1="24" x2="40" y2="24" stroke="#222222" strokeWidth="0.75" strokeDasharray="2 2" />
+        <line x1="24" y1="8" x2="24" y2="40" stroke="#222222" strokeWidth="0.75" strokeDasharray="2 2" />
 
         {/* 1. Left Code Syntax Bracket: < / { */}
         <path
@@ -99,7 +99,7 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
           strokeLinejoin="round"
         />
 
-        {/* 2. Verification Checkmark: ✔ (Passionate Emerald) */}
+        {/* 2. Verification Checkmark: ✔ (Passionate Neon Lime) */}
         <path
           d="M17 25L23 31L35 15"
           stroke="url(#check-grad)"
@@ -116,7 +116,7 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
           strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity="0.8"
+          opacity="0.85"
         />
 
         {/* 4. The AI Neural Spark (✦) floating on top right */}
@@ -132,22 +132,22 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
         )}
       </svg>
 
-      {/* Typography with clean Linear/Vercel style */}
+      {/* Typography with clean Emergent style */}
       {showText && (
         <div className="flex flex-col leading-tight">
           <div className="flex items-center gap-1.5">
-            <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg">
-              Intelligent<span className="bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-500 bg-clip-text text-transparent">QA</span>
+            <span className="font-extrabold tracking-tight text-white text-lg">
+              Intelligent<span className="bg-gradient-to-r from-[#81FF89] to-[#80FFF9] bg-clip-text text-transparent">QA</span>
             </span>
             {showZeroCostBadge && (
-              <span className="text-[10px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+              <span className="text-xs font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[#1A1A1A] text-[#81FF89] border border-[#262626]">
                 Zero-Cost
               </span>
             )}
           </div>
           {textVariant === 'full' && (
-            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 -mt-0.5">
-              SDET & AI Transformation
+            <span className="text-xs font-medium text-[#A1A1AA] -mt-0.5">
+              SDET &amp; AI Transformation
             </span>
           )}
         </div>

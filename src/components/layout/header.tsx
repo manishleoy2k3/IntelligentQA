@@ -109,15 +109,15 @@ export default function Header({
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full bg-[#111111]/90 backdrop-blur-md border-b border-[#262626] transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
         {/* Left Side: Mobile Sidebar Toggle + Brand Logo */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           {currentUser && (
             <button
               type="button"
               onClick={onToggleMobileSidebar}
-              className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="md:hidden p-2.5 rounded-full text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] transition-colors cursor-pointer"
               aria-label="Toggle Side Navigation"
             >
               <Menu className="w-5 h-5" />
@@ -130,29 +130,31 @@ export default function Header({
           </Link>
         </div>
 
-        {/* Center Navigation Bar */}
-        <nav className="hidden lg:flex items-center gap-1.5 text-sm font-semibold text-slate-600 dark:text-slate-300">
+        {/* Center Navigation Bar (Emergent Pill Nav) */}
+        <nav className="hidden lg:flex items-center text-sm font-semibold text-slate-600">
           {currentUser ? (
-            /* Logged-in top bar is clean & uncluttered: top-level menus are in AscentWealth Side Left Navigation */
+            /* Logged-in top bar is clean & uncluttered: top-level menus are in Side Left Navigation */
             <span className="sr-only">
               {memberNavLinks.map(l => l.label).join(' ')}
             </span>
           ) : (
             /* Clean Minimal Public Guest Navigation */
-            guestNavLinks.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors font-semibold text-sm text-slate-600"
-              >
-                {link.label}
-              </Link>
-            ))
+            <div className="emergent-pill-nav px-3 py-1.5 flex items-center gap-1">
+              {guestNavLinks.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="px-4 py-2 rounded-full text-sm font-semibold text-slate-600 dark:text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] transition-all"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           )}
         </nav>
 
         {/* Right Actions */}
-        <div className="hidden sm:flex items-center gap-2.5">
+        <div className="hidden sm:flex items-center gap-3">
           {currentUser ? (
             /* LOGGED-IN ACTIONS */
             <>
@@ -161,12 +163,12 @@ export default function Header({
               {/* Gemini API Key / Core Mode Management Pill */}
               <button
                 onClick={() => setShowKeyModal(true)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all cursor-pointer ${
                   geminiKey
-                    ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:border-emerald-400'
+                    ? 'bg-[#161616] border-[#262626] text-[#81FF89] hover:border-[#81FF89]/50 shadow-[0_0_15px_rgba(129,255,137,0.15)]'
                     : aiPref === 'opted_out'
-                    ? 'bg-sky-50 dark:bg-sky-950/50 border-sky-300 dark:border-sky-800 text-sky-700 dark:text-sky-300 hover:border-sky-400'
-                    : 'bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 hover:border-amber-400'
+                    ? 'bg-[#161616] border-[#262626] text-[#80FFF9] hover:border-[#80FFF9]/50'
+                    : 'bg-[#161616] border-amber-500/40 text-amber-300 hover:border-amber-400'
                 }`}
                 title="Manage your Google AI Studio key or toggle Core Automation mode"
               >
@@ -181,45 +183,45 @@ export default function Header({
               </button>
 
               {/* User Profile Menu with Clubbed Log Out & QA Details */}
-              <div id="user-profile-menu-container" className="relative pl-1 border-l border-slate-200 dark:border-slate-800">
+              <div id="user-profile-menu-container" className="relative pl-1 border-l border-[#262626]">
                 <button
                   type="button"
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white transition-all shadow-sm cursor-pointer"
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-[#161616] hover:bg-[#1E1E1E] border border-[#262626] text-white transition-all shadow-sm cursor-pointer"
                   aria-expanded={profileMenuOpen}
                   aria-label="User profile menu"
                 >
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-sky-500 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#81FF89] to-[#80FFF9] text-black font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
                     {getInitials(currentUser.displayName)}
                   </div>
                   <span className="max-w-[130px] truncate">{currentUser.displayName?.split(' ')[0] || 'Profile'}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-[#A1A1AA] transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Profile Dropdown Menu */}
                 {profileMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 space-y-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="absolute right-0 mt-3 w-76 bg-[#161616] border border-[#262626] rounded-[24px] shadow-2xl p-4 space-y-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                     {/* User Identity Header */}
-                    <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl space-y-1.5">
+                    <div className="p-3.5 bg-[#1F1F1F] rounded-[18px] space-y-1.5 border border-[#262626]">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                        <span className="font-bold text-white text-sm truncate">
                           {currentUser.displayName}
                         </span>
                         {currentUser.profileCompleted ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#81FF89]/15 text-[#81FF89] border border-[#81FF89]/30">
                             {currentUser.targetRole}
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
                             Profile Incomplete
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-slate-500 truncate">
+                      <div className="text-xs text-[#A1A1AA] truncate">
                         {currentUser.email}
                       </div>
-                      <div className="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
-                        <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="text-xs text-[#D4D4D8] flex items-center gap-1.5 font-medium">
+                        <Clock className="w-3.5 h-3.5 text-[#81FF89] shrink-0" />
                         <span>
                           {currentUser.profileCompleted && typeof currentUser.experienceYears === 'number' && currentUser.experienceYears > 0
                             ? `${currentUser.experienceYears} Years QA Experience`
@@ -238,18 +240,18 @@ export default function Header({
                           setProfileMenuOpen(false);
                           setShowProfileModal(true);
                         }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3.5 py-2.5 text-left rounded-xl hover:bg-[#222222] text-[#D4D4D8] hover:text-white font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <UserCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <UserCheck className="w-4 h-4 text-[#81FF89] shrink-0" />
                         <span>Complete / Edit QA Profile</span>
                       </button>
 
                       <Link
                         href="/dashboard"
                         onClick={() => setProfileMenuOpen(false)}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors"
+                        className="w-full px-3.5 py-2.5 text-left rounded-xl hover:bg-[#222222] text-[#D4D4D8] hover:text-white font-medium flex items-center gap-2.5 transition-colors"
                       >
-                        <Layers className="w-4 h-4 text-blue-500 shrink-0" />
+                        <Layers className="w-4 h-4 text-[#80FFF9] shrink-0" />
                         <span>Learning Dashboard</span>
                       </Link>
 
@@ -259,22 +261,22 @@ export default function Header({
                           setProfileMenuOpen(false);
                           setShowKeyModal(true);
                         }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3.5 py-2.5 text-left rounded-xl hover:bg-[#222222] text-[#D4D4D8] hover:text-white font-medium flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <Key className="w-4 h-4 text-amber-500 shrink-0" />
+                        <Key className="w-4 h-4 text-amber-400 shrink-0" />
                         <span>Gemini AI Key Settings</span>
                       </button>
                     </div>
 
                     {/* Log Out clubbed inside profile dropdown */}
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div className="pt-2 border-t border-[#262626]">
                       <button
                         type="button"
                         onClick={() => {
                           setProfileMenuOpen(false);
                           handleLogout();
                         }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-2.5 transition-colors cursor-pointer text-sm"
+                        className="w-full px-3.5 py-2.5 text-left rounded-xl hover:bg-rose-950/40 text-rose-400 font-semibold flex items-center gap-2.5 transition-colors cursor-pointer text-sm"
                       >
                         <LogOut className="w-4 h-4 shrink-0" />
                         <span>Log Out</span>
@@ -285,17 +287,17 @@ export default function Header({
               </div>
             </>
           ) : (
-            /* CLEAN GUEST ACTIONS (Ultra-professional, no clutter) */
-            <div className="flex items-center gap-2.5">
+            /* CLEAN GUEST ACTIONS (Emergent Pill Buttons) */
+            <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-5 py-2.5 rounded-full text-sm font-semibold text-[#D4D4D8] hover:text-white hover:bg-[#1E1E1E] transition-all"
               >
                 Log In
               </Link>
               <Link
                 href="/signup"
-                className="flex items-center gap-1.5 px-4.5 py-2 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-sm active:scale-95"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold bg-white hover:bg-neutral-200 text-black transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>Sign Up Free</span>
@@ -313,7 +315,7 @@ export default function Header({
               setMobileMenuOpen(!mobileMenuOpen);
             }
           }}
-          className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 rounded-lg"
+          className="md:hidden p-2 text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] rounded-full transition-colors cursor-pointer"
           aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -322,7 +324,7 @@ export default function Header({
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-3">
+        <div className="lg:hidden border-b border-[#262626] bg-[#111111] p-4 space-y-3">
           {currentUser ? (
             /* Logged in Mobile Menu */
             <>
@@ -332,7 +334,7 @@ export default function Header({
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-800"
+                    className="p-3 rounded-xl bg-[#161616] text-[#D4D4D8] hover:text-white border border-[#262626]"
                   >
                     {link.label}
                   </Link>
@@ -347,7 +349,7 @@ export default function Header({
                     setMobileMenuOpen(false);
                     setShowKeyModal(true);
                   }}
-                  className="py-2 px-3 rounded-xl text-xs font-semibold border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 flex items-center justify-center gap-2"
+                  className="py-2.5 px-4 rounded-full text-xs font-semibold border border-[#262626] bg-[#161616] text-[#81FF89] flex items-center justify-center gap-2"
                 >
                   <Key className="w-3.5 h-3.5" />
                   {geminiKey
@@ -357,15 +359,15 @@ export default function Header({
                     : 'Connect Free Gemini Key'}
                 </button>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="p-4 bg-[#161616] rounded-[20px] border border-[#262626] space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-900 dark:text-white truncate">{currentUser.displayName}</span>
+                    <span className="font-bold text-white truncate">{currentUser.displayName}</span>
                     {currentUser.profileCompleted ? (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-300 dark:border-emerald-800">
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#81FF89]/15 text-[#81FF89] font-semibold border border-[#81FF89]/30">
                         {currentUser.targetRole}
                       </span>
                     ) : (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-semibold border border-amber-300 dark:border-amber-800">
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-semibold border border-amber-500/30">
                         Profile Incomplete
                       </span>
                     )}
@@ -376,7 +378,7 @@ export default function Header({
                         setMobileMenuOpen(false);
                         setShowProfileModal(true);
                       }}
-                      className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-center text-xs font-bold transition-colors"
+                      className="flex-1 py-2 px-3 bg-white hover:bg-neutral-200 text-black rounded-full text-center text-xs font-bold transition-colors cursor-pointer"
                     >
                       Edit QA Profile
                     </button>
@@ -385,7 +387,7 @@ export default function Header({
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
-                      className="py-2 px-3 bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                      className="py-2 px-3 bg-rose-950/40 text-rose-300 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       Log Out
@@ -397,31 +399,31 @@ export default function Header({
           ) : (
             /* Minimal Guest Mobile Menu */
             <div className="space-y-3">
-              <div className="flex flex-col gap-1 text-xs font-medium">
+              <div className="flex flex-col gap-1 text-sm font-medium">
                 {guestNavLinks.map(link => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="p-2.5 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
+                    className="p-3 rounded-xl text-[#A1A1AA] hover:text-white hover:bg-[#1A1A1A]"
                   >
                     {link.label}
                   </Link>
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#262626]">
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-center text-xs font-semibold"
+                  className="py-3 px-4 bg-[#1E1E1E] text-white rounded-full text-center text-sm font-semibold"
                 >
                   Log In
                 </Link>
                 <Link
                   href="/signup"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 bg-emerald-600 text-white rounded-xl text-center text-xs font-bold"
+                  className="py-3 px-4 bg-white text-black font-bold rounded-full text-center text-sm"
                 >
                   Sign Up Free
                 </Link>
