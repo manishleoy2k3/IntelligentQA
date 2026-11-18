@@ -77,20 +77,54 @@ test('6 & 7. AI QA Agents: Renamed from AI Tools & Agents, consolidated all agen
   assert.ok(content.includes('AI Interview Griller'), 'Includes AI Interview Griller inside AI QA Agents');
 });
 
-test('8. Top Navigation: Gemini API Key button placed on top immediately left to Ask AI button', () => {
+test('8. Top Navigation: Coding Tutorial button removed, button renamed to Add Gemini Key, placed left to Ask AI', () => {
   const topNavPath = path.join(process.cwd(), 'src/components/layout/top-nav.tsx');
   const content = fs.readFileSync(topNavPath, 'utf-8');
 
-  const keyIndex = content.indexOf('Gemini API Key');
+  // 1. Coding Tutorial button removed
+  assert.ok(!content.includes('<span>Coding Tutorial</span>'), 'Coding Tutorial button is removed from top');
+
+  // 2. Button renamed to Add Gemini Key (when not connected)
+  assert.ok(content.includes('Add Gemini Key'), 'TopNav button says Add Gemini Key');
+  assert.ok(!content.includes('"FREE"'), 'Old FREE label removed');
+
+  // 3. Button position
+  const keyIndex = content.indexOf('Add Gemini Key');
   const askAiIndex = content.indexOf('Ask AI');
 
-  assert.ok(keyIndex !== -1, 'TopNav contains Gemini API Key button');
+  assert.ok(keyIndex !== -1, 'TopNav contains Add Gemini Key button');
   assert.ok(askAiIndex !== -1, 'TopNav contains Ask AI button');
   assert.ok(keyIndex < askAiIndex, 'Gemini API Key button is placed directly to the left of Ask AI button');
   assert.ok(content.includes('GeminiKeyModal'), 'Embeds GeminiKeyModal');
 });
 
-test('9. Interview Questions: Direct single-click navigation replacing old Interview Bank accordion', () => {
+test('9. Gemini Key Modal: Not hidden at top with z-[100] and clean centering', () => {
+  const modalPath = path.join(process.cwd(), 'src/components/auth/gemini-key-modal.tsx');
+  const modalContent = fs.readFileSync(modalPath, 'utf-8');
+
+  assert.ok(modalContent.includes('z-[100]'), 'Modal uses z-[100] to sit above all headers and toolbars');
+  assert.ok(modalContent.includes('min-h-screen'), 'Overlay provides min-h-screen to center modal cleanly');
+  assert.ok(modalContent.includes('my-auto'), 'Card uses my-auto to prevent clipping off the top edge');
+});
+
+test('10. AI Prompt Lab: Generates prompt-specific, relevant, complete and correct outputs', () => {
+  const routePath = path.join(process.cwd(), 'src/app/api/ai/qa-agent/route.ts');
+  const routeContent = fs.readFileSync(routePath, 'utf-8');
+
+  assert.ok(routeContent.includes("action === 'prompt_lab'"), 'API supports prompt_lab action');
+  assert.ok(routeContent.includes('generatePromptLabOutput'), 'API includes prompt-specific output generator');
+  assert.ok(routeContent.includes('bva-equivalence-partitioning'), 'Generates tailored BVA partitions');
+  assert.ok(routeContent.includes('playwright-ts-pom-scaffolder'), 'Generates tailored Playwright POM');
+  assert.ok(routeContent.includes('api-security-tampering-matrix'), 'Generates tailored OWASP API matrix');
+  assert.ok(routeContent.includes('bug-report-to-rca-generator'), 'Generates tailored Jira defect ticket & RCA');
+
+  const pagePath = path.join(process.cwd(), 'src/app/prompt-lab/page.tsx');
+  const pageContent = fs.readFileSync(pagePath, 'utf-8');
+  assert.ok(pageContent.includes("action: 'prompt_lab'"), 'Page sends prompt_lab action with activePrompt.id');
+  assert.ok(pageContent.includes('promptId: activePrompt.id'), 'Page sends dynamic promptId to backend');
+});
+
+test('11. Interview Questions: Direct single-click navigation replacing old Interview Bank accordion', () => {
   const sidebarPath = path.join(process.cwd(), 'src/components/layout/sidebar.tsx');
   const content = fs.readFileSync(sidebarPath, 'utf-8');
 

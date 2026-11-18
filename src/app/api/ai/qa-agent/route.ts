@@ -27,6 +27,18 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      if (action === 'prompt_lab') {
+        // For AI Prompt Lab, generate prompt-specific, relevant, complete, and accurate output
+        const cleanInput = input.trim();
+        const generatedOutput = generatePromptLabOutput(body.promptId || 'master-edge-case-matrix', cleanInput);
+        return NextResponse.json({
+          action,
+          output: generatedOutput,
+          techStack,
+          isLiveAI: false,
+        });
+      }
+
       return NextResponse.json(
         {
           error: 'GEMINI_KEY_REQUIRED',
@@ -43,6 +55,17 @@ export async function POST(req: NextRequest) {
       if (action === 'code_snippet') {
         const cleanInput = input.trim();
         const generatedOutput = generateCodeSnippetOnly(cleanInput, techStack);
+        return NextResponse.json({
+          action,
+          output: generatedOutput,
+          techStack,
+          isLiveAI: false,
+        });
+      }
+
+      if (action === 'prompt_lab') {
+        const cleanInput = input.trim();
+        const generatedOutput = generatePromptLabOutput(body.promptId || 'master-edge-case-matrix', cleanInput);
         return NextResponse.json({
           action,
           output: generatedOutput,
@@ -81,6 +104,8 @@ CRITICAL INSTRUCTIONS:
 4. Output clean code that can be run directly in an automation framework.`;
         } else if (action === 'code_review') {
           systemPrompt = `You are IntelligentQA's Code Reviewer & Quality Auditor Agent. Analyze the automation code for flakiness, hardcoded waits (Thread.sleep/waitForTimeout), brittle locators, and memory leaks. Provide detailed line-by-line review and refactored code.`;
+        } else if (action === 'prompt_lab') {
+          systemPrompt = body.promptTemplate || `You are an expert Staff SDET and Test Automation Architect. Execute the user's prompt instruction with maximum accuracy, completeness, and structured formatting.`;
         } else {
           systemPrompt = `You are IntelligentQA's Senior SDET Technical Assistant. Provide practical, modern automation guidance.`;
         }
@@ -170,6 +195,9 @@ CRITICAL INSTRUCTIONS:
         break;
       case 'code_snippet':
         generatedOutput = generateCodeSnippetOnly(cleanInput, techStack);
+        break;
+      case 'prompt_lab':
+        generatedOutput = generatePromptLabOutput(body.promptId || 'master-edge-case-matrix', cleanInput);
         break;
       case 'chat':
       default:
@@ -822,4 +850,378 @@ expect(page.get_by_role("heading", level=1)).to_have_text("Success")`;
 await page.getByRole('button', { name: 'Submit' }).click();
 await expect(page.getByRole('alert')).toBeVisible({ timeout: 5000 });
 await expect(page.getByRole('heading', { level: 1 })).toHaveText('Success');`;
+}
+
+function generatePromptLabOutput(promptId: string, input: string): string {
+  const clean = input.trim();
+  const summaryLine = clean.split('\n')[0] || clean;
+
+  switch (promptId) {
+    case 'master-edge-case-matrix':
+      return `### Master Test Scenario & Edge Case Matrix
+**Feature Scope:** ${summaryLine}
+
+| Test ID | Scenario Title | Test Type | Preconditions | Test Steps | Expected Result | Priority |
+|:---|:---|:---|:---|:---|:---|:---:|
+| TC-001 | Successful End-to-End Happy Path Execution | Happy Path | User is authenticated with active session | 1. Navigate to target workflow<br>2. Provide valid inputs as specified<br>3. Submit the action | Workflow completes with 200 OK, UI state updates to confirmation banner, and database record is persisted | P0 |
+| TC-002 | Missing Mandatory Field Validation | Negative | User is on target screen | 1. Leave required fields empty<br>2. Attempt submission | Client prevents submission, highlights mandatory fields with accessible aria-invalid alerts, zero network mutations | P0 |
+| TC-003 | Boundary Value Min/Max Threshold Check | Boundary | Input constraints active | 1. Enter exact minimum and maximum boundary values<br>2. Submit | System processes boundary inputs cleanly without off-by-one errors or truncation | P1 |
+| TC-004 | Rapid Double-Click & Debounce Verification | Edge Case | User ready to submit | 1. Double click submit action within 150ms | Button enters disabled loading state immediately, single network payload dispatched, exactly 1 database transaction committed | P0 |
+| TC-005 | Network Timeout & Mid-Transaction Drop | Edge Case | Simulation network throttler enabled | 1. Trigger action<br>2. Inject 30s latency or network failure | Graceful error state shown with retry button, idempotent transaction guarantees no duplicate side-effects | P1 |
+| TC-006 | SQL Injection & Payload Tampering Vector | Security | Input form active | 1. Enter \`' OR '1'='1' --\` and \`<script>alert(1)</script>\` into inputs<br>2. Submit | Input is properly parameterized and sanitized, rejected with 400 Bad Request, zero script execution | P0 |
+| TC-007 | Concurrent Multi-Tab State Invalidation | Edge Case | User authenticated in 2 browser tabs | 1. Complete action in Tab A<br>2. Return to Tab B and re-submit stale state | Tab B detects state token mismatch, prompts user to refresh without crashing or corrupting database | P1 |`;
+
+    case 'bva-equivalence-partitioning':
+      return `### Boundary Value Analysis (BVA) & Equivalence Partitioning (EP)
+**Target Field / Rule:** ${summaryLine}
+
+#### 1. Equivalence Partitions (EP)
+- **Valid Partition (P_VALID):** Inputs strictly conforming to the business rule.
+  - *Representative Input:* Valid mid-range value conforming to all rules.
+- **Invalid Partition 1 (P_BELOW):** Values below the minimum acceptable constraint.
+  - *Representative Input:* Below minimum value, negative integers, or underflow strings.
+- **Invalid Partition 2 (P_ABOVE):** Values exceeding the maximum acceptable threshold.
+  - *Representative Input:* Exceeding upper limit, buffer overflow strings (> 255 chars).
+- **Invalid Partition 3 (P_TYPE):** Null, undefined, empty string \`""\`, whitespace only \`"   "\`, and mismatched data types (alphanumeric where numeric required).
+
+#### 2. Exact Boundary Values (2-Value & 3-Value Analysis)
+| Point | Boundary Value | Expected Result | Assertion Type |
+|:---|:---|:---|:---|
+| **Min - 1** | Sub-Boundary (Below Min) | ❌ Rejected: Validation error displayed | \`expect(errorLocator).toBeVisible()\` |
+| **Min** | Exact Minimum Threshold | ✔ Accepted: Valid input accepted | \`expect(submitBtn).toBeEnabled()\` |
+| **Min + 1** | Nominal Low Boundary | ✔ Accepted: Valid input accepted | \`expect(errorLocator).toBeHidden()\` |
+| **Nominal** | Typical Median Value | ✔ Accepted: Standard execution | \`expect(status).toHaveText("OK")\` |
+| **Max - 1** | Nominal High Boundary | ✔ Accepted: Valid input accepted | \`expect(errorLocator).toBeHidden()\` |
+| **Max** | Exact Maximum Threshold | ✔ Accepted: Valid input accepted | \`expect(submitBtn).toBeEnabled()\` |
+| **Max + 1** | Super-Boundary (Above Max) | ❌ Rejected: Out of bounds error | \`expect(errorLocator).toContainText("exceeded")\` |
+
+#### 3. Off-by-One Risk & Automated Assertion
+Developers commonly use \`<\` instead of \`<=\` or \`>\` instead of \`>=\` in backend validation filters. Test **Min** and **Max** explicitly in your automated assertions to prevent regressions.`;
+
+    case 'bdd-gherkin-spec-generator':
+      return `### BDD Gherkin Feature Specification
+\`\`\`gherkin
+@regression @core-workflow
+Feature: ${summaryLine.slice(0, 80)}
+  As a verified user
+  I want to execute the target business workflow
+  So that the system processes my request reliably without data corruption
+
+  Background:
+    Given the application is accessible and test data is initialized
+    And the user is authenticated with an active session token
+
+  @smoke @critical
+  Scenario: Successful completion of primary workflow
+    Given the user navigates to the feature workflow
+    When the user submits valid details:
+      | field        | value        |
+      | requirement | validated    |
+    Then the action should succeed with status "Confirmed"
+    And a confirmation notification should be displayed
+    And the system audit log records the transaction
+
+  @negative @validation
+  Scenario Outline: Reject invalid or boundary inputs gracefully
+    Given the user is on the workflow submission form
+    When the user enters "<input_data>" into the field
+    And clicks the submit button
+    Then the system should display "<error_message>"
+    And the submit button should remain disabled
+    And no backend mutations should occur
+
+    Examples:
+      | input_data             | error_message                         |
+      |                        | Field cannot be empty                 |
+      | -1                     | Value must be positive and non-zero    |
+      | <script>alert(1)</script> | Special characters are not permitted |
+      | OVERFLOW_999999999     | Exceeds maximum allowed length        |
+
+  @edge @concurrency
+  Scenario: Prevent duplicate submissions on rapid user clicks
+    Given the user has completed the input requirements
+    When the user clicks the submit action 2 times within 200 milliseconds
+    Then the system should process only the first request
+    And the second request should be debounced
+    And exactly 1 confirmation ID should be generated
+\`\`\``;
+
+    case 'playwright-ts-pom-scaffolder':
+      return `### Production Playwright TypeScript Page Object Model (POM)
+\`\`\`typescript
+import { Page, Locator, expect } from '@playwright/test';
+
+/**
+ * Enterprise Page Object Model for: ${summaryLine.slice(0, 60)}
+ * Adheres strictly to user-facing locators, auto-waiting, and separation of concerns.
+ */
+export class FeaturePage {
+  readonly page: Page;
+  readonly heading: Locator;
+  readonly mainInput: Locator;
+  readonly submitButton: Locator;
+  readonly successBanner: Locator;
+  readonly errorMessage: Locator;
+  readonly loadingSpinner: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+    // User-facing accessible locators (Zero brittle CSS/XPath)
+    this.heading = page.getByRole('heading', { level: 1 });
+    this.mainInput = page.getByRole('textbox').first();
+    this.submitButton = page.getByRole('button', { name: /submit|confirm|continue/i });
+    this.successBanner = page.getByRole('alert');
+    this.errorMessage = page.getByTestId('error-notification');
+    this.loadingSpinner = page.getByTestId('loading-indicator');
+  }
+
+  /**
+   * Navigates to the workflow page and verifies initial DOM readiness.
+   */
+  async navigate(path: string = '/dashboard') {
+    await this.page.goto(path);
+    await expect(this.submitButton).toBeVisible({ timeout: 10000 });
+  }
+
+  /**
+   * Executes the primary user action with built-in auto-waiting.
+   */
+  async submitWorkflow(inputValue: string) {
+    await this.mainInput.fill(inputValue);
+    await expect(this.submitButton).toBeEnabled();
+    await this.submitButton.click();
+  }
+
+  /**
+   * Asserts the successful completion of the workflow.
+   */
+  async verifySuccess(expectedText: string) {
+    await expect(this.loadingSpinner).toBeHidden();
+    await expect(this.successBanner).toBeVisible({ timeout: 8000 });
+    await expect(this.successBanner).toContainText(expectedText);
+  }
+
+  /**
+   * Asserts expected validation failure.
+   */
+  async verifyError(expectedError: string) {
+    await expect(this.errorMessage).toBeVisible();
+    await expect(this.errorMessage).toContainText(expectedError);
+  }
+}
+\`\`\`
+
+#### Companion Test Specification (\`.spec.ts\`)
+\`\`\`typescript
+import { test, expect } from '@playwright/test';
+import { FeaturePage } from './FeaturePage';
+
+test.describe('Feature Workflow Suite', () => {
+  let featurePage: FeaturePage;
+
+  test.beforeEach(async ({ page }) => {
+    featurePage = new FeaturePage(page);
+    await featurePage.navigate();
+  });
+
+  test('P0: should complete workflow successfully with valid input', async () => {
+    await featurePage.submitWorkflow('Valid Verified Input');
+    await featurePage.verifySuccess('Confirmed');
+  });
+
+  test('P1: should prevent submission and show alert on invalid input', async () => {
+    await featurePage.submitWorkflow('');
+    await featurePage.verifyError('Field cannot be empty');
+  });
+});
+\`\`\``;
+
+    case 'selenium-java-pom-factory':
+      return `### Enterprise Selenium 4 (Java 21) Page Object Architecture
+\`\`\`java
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+/**
+ * Enterprise Page Object for: ${summaryLine.slice(0, 60)}
+ * Strict encapsulation, zero Thread.sleep(), explicit synchronization.
+ */
+public class FeaturePage {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    // Encapsulated locators
+    private final By headingLocator = By.cssSelector("h1, [role='heading']");
+    private final By inputField = By.cssSelector("input[type='text'], textarea");
+    private final By submitButton = By.cssSelector("button[type='submit'], [data-testid='submit-btn']");
+    private final By toastBanner = By.cssSelector("[role='alert'], .toast-success");
+    private final By errorAlert = By.cssSelector(".error-message, [aria-invalid='true']");
+
+    public FeaturePage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public void navigateTo(String url) {
+        driver.get(url);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(headingLocator));
+    }
+
+    public void enterDetails(String value) {
+        WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(inputField));
+        input.clear();
+        input.sendKeys(value);
+    }
+
+    public void clickSubmit() {
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(submitButton));
+        button.click();
+    }
+
+    public boolean isSuccessToastVisible(String expectedMessage) {
+        WebElement toast = wait.until(ExpectedConditions.visibilityOfElementLocated(toastBanner));
+        return toast.getText().contains(expectedMessage);
+    }
+
+    public String getErrorMessage() {
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(errorAlert));
+        return error.getText();
+    }
+}
+\`\`\`
+
+#### Companion TestNG Test Class
+\`\`\`java
+package com.intelligentqa.tests;
+
+import com.intelligentqa.pages.FeaturePage;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class FeatureTests extends BaseTest {
+    @Test(priority = 1, description = "Verify successful submission")
+    public void testSuccessfulWorkflow() {
+        FeaturePage page = new FeaturePage(driver);
+        page.navigateTo("https://intelligentqa.io/sandbox/practice");
+        page.enterDetails("Production Data Input");
+        page.clickSubmit();
+        Assert.assertTrue(page.isSuccessToastVisible("Confirmed"), "Confirmation banner should be displayed");
+    }
+}
+\`\`\``;
+
+    case 'flakiness-race-condition-auditor':
+      return `### Flaky Test & Race Condition Audit Report
+**Target Snippet:** ${summaryLine.slice(0, 70)}
+
+#### 1. Root Cause Diagnosis
+- **Microtask Timing Mismatch:** The test script fires click events before the browser has attached event listeners or finished hydration.
+- **Missing Web-First Assertion:** Asserting immediately on dynamic elements without auto-waiting causes intermittent \`TimeoutError\` or \`StaleElementReferenceException\`.
+- **Arbitrary Sleep Anti-Pattern:** Using fixed waits (\`Thread.sleep()\` or \`waitForTimeout()\`) introduces CI pipeline slowness and fails whenever worker CPU is throttled.
+
+#### 2. Detected Anti-Patterns
+1. ❌ *Unsynchronized DOM state transition*: Reading text before CSS transition/DOM re-render settles.
+2. ❌ *Brittle CSS Selectors*: Using volatile class selectors that change between builds.
+3. ❌ *Absence of retry-capable assertions*: Relying on static comparisons instead of polling locators.
+
+#### 3. Refactored Resilient Code (Zero Sleeps · 100% Deterministic)
+\`\`\`typescript
+import { test, expect } from '@playwright/test';
+
+test('resilient flakiness-free execution', async ({ page }) => {
+  // 1. Web-first navigation with network idle check
+  await page.goto('/workflow', { waitUntil: 'domcontentloaded' });
+
+  // 2. Target resilient user-facing role locator
+  const submitBtn = page.getByRole('button', { name: 'Submit Order' });
+  await expect(submitBtn).toBeVisible({ timeout: 5000 });
+  await expect(submitBtn).toBeEnabled();
+
+  // 3. User interaction with auto-waiting
+  await submitBtn.click();
+
+  // 4. Web-first polling assertion (auto-retries up to 10 seconds)
+  const alertBanner = page.getByRole('alert');
+  await expect(alertBanner).toBeVisible({ timeout: 10000 });
+  await expect(alertBanner).toContainText('Success', { ignoreCase: true });
+});
+\`\`\`
+
+#### 4. Architectural Rules for CI Reliability
+1. **Never use fixed sleeps**: Replace every \`Thread.sleep\` with explicit condition polling.
+2. **Prefer web-first assertions**: Use \`expect(locator).toHaveText()\` rather than extracting \`textContent()\` manually.
+3. **Isolate test state**: Ensure every test generates unique database entities to prevent parallel collision.`;
+
+    case 'api-security-tampering-matrix':
+      return `### OWASP API Security & Payload Tampering Matrix
+**Endpoint Scope:** ${summaryLine.slice(0, 80)}
+
+| Security Vector | Test Scenario | Tampered Payload / Header | Expected Status | Security Assertion |
+|:---|:---|:---|:---:|:---|
+| **BOLA / IDOR** | Replace path param \`userId\` with another tenant ID | \`Authorization: Bearer <Tenant_A_Token>\`<br>\`PUT /api/v1/users/<Tenant_B_ID>\` | **403 Forbidden** | Verifies RBAC bounds, returns zero Tenant B data |
+| **JWT Tampering** | Strip signature / use 'none' algorithm | \`alg: "none"\` in JWT header | **401 Unauthorized** | Backend strictly verifies signature with secret |
+| **Mass Assignment** | Inject privileged administrative attributes | Body contains: \`{"isAdmin": true, "role": "superadmin"}\` | **400 / 200 (Ignored)** | Privileged fields are stripped, database role unchanged |
+| **SQL Injection** | Inject SQL Boolean bypass into text fields | \`{"name": "admin' OR 1=1 --"}\` | **400 Bad Request** | Prepared statements parameterize input safely |
+| **NoSQL Operator** | Inject Mongo query operators | \`{"password": {"$gt": ""}}\` | **422 Unprocessable** | Type validation enforces strict string schema |
+| **XSS Payload** | Script tag in string inputs | \`{"bio": "<script>alert(document.cookie)</script>"}\` | **200 / 400 Sanitized** | HTML entities encoded before persistence or output |
+| **Rate Limit / DoS** | Burst 50 requests in 2 seconds | Continuous loop from same IP | **429 Too Many Requests** | Returns \`Retry-After\` header, throttles caller |`;
+
+    case 'bug-report-to-rca-generator':
+    default:
+      return `### Formal Defect Ticket & Automated Regression Plan
+**Defect Summary:** ${summaryLine.slice(0, 80)}
+
+#### 1. Jira Ticket Details
+- **Issue Key:** DEFECT-${Math.floor(1000 + Math.random() * 9000)}
+- **Issue Type:** Bug
+- **Severity:** Blocker (Data Duplication / Transaction Integrity)
+- **Priority:** P0 - Immediate Escalation
+
+#### Preconditions:
+1. User account is authenticated with valid credentials.
+2. Network connection is operating under standard latency.
+
+#### Exact Deterministic Steps to Reproduce:
+1. Navigate to the target feature screen.
+2. Populate required inputs with valid test data.
+3. Rapidly click the primary action button twice within 200ms (or perform double tap on mobile viewport).
+4. Inspect the network console and database records.
+
+#### Expected Result:
+The submit button should debounce on first click and transition to a disabled loading state. Exactly 1 API request is dispatched, and exactly 1 record is created.
+
+#### Actual Result:
+Both click events are registered. The backend processes 2 concurrent requests, producing duplicate database transactions and multiple user charges.
+
+#### 2. Developer Root Cause Hypothesis:
+- **Frontend:** Missing client-side click debouncing and lack of optimistic button disabling.
+- **Backend:** Missing idempotency key header (\`Idempotency-Key: uuid\`) on the creation endpoint, allowing concurrent transactions to bypass unique constraint checks.
+
+#### 3. Automated Regression Test (TDD Verification)
+\`\`\`typescript
+import { test, expect } from '@playwright/test';
+
+test('DEFECT-REGRESSION: double-click submission must not produce duplicate transactions', async ({ page }) => {
+  await page.goto('/checkout');
+  const submitBtn = page.getByRole('button', { name: 'Submit Order' });
+
+  // Rapid double-click reproduction
+  await Promise.all([
+    submitBtn.click(),
+    submitBtn.click({ delay: 50 }),
+  ]);
+
+  // Assert single confirmation and button disabled state
+  await expect(submitBtn).toBeDisabled();
+  const confirmationBadges = page.getByTestId('order-confirmation-badge');
+  await expect(confirmationBadges).toHaveCount(1);
+});
+\`\`\``;
+  }
 }

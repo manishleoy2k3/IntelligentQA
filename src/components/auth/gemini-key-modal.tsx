@@ -213,11 +213,11 @@ export default function GeminiKeyModal({
       onClick={e => {
         if (e.target === e.currentTarget && !isTesting) onClose();
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center min-h-screen animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
     >
-      <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto font-sans">
+      <div className="relative my-auto w-full max-w-lg bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#2E2E2E] rounded-3xl shadow-2xl p-5 sm:p-7 space-y-5 max-h-[86vh] overflow-y-auto font-sans">
         {/* ============================================================== */}
         {/* VIEW A: USER ALREADY HAS A KEY ADDED (EDIT / DELETE / ADD NEW) */}
         {/* ============================================================== */}

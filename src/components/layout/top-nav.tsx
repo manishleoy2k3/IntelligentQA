@@ -143,7 +143,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
   return (
     <header className="w-full h-16 bg-[#141414]/95 backdrop-blur-md border-b border-[#262626] px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans">
-      {/* Left: Mobile Sidebar Toggle & Active Portal Pill */}
+      {/* Left: Mobile Sidebar Toggle */}
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -153,27 +153,15 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         >
           <Menu className="w-5 h-5" />
         </button>
-
-        {portalMode === "kids" ? (
-          <span className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1E1E1E] text-amber-400 border border-amber-500/30">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Coding Tutorial</span>
-          </span>
-        ) : (
-          <span className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1E1E1E] text-[#81FF89] border border-[#81FF89]/30">
-            <Layers className="w-3.5 h-3.5 text-[#81FF89]" />
-            <span>SDET Career Portal</span>
-          </span>
-        )}
       </div>
 
       {/* Right Corner: Action Controls, Notifications and Profiles */}
       <div className="flex items-center gap-2 sm:gap-3.5 ml-auto">
-        {/* Gemini API Key Button (placed on top immediately left to Ask AI) */}
+        {/* Gemini API Key Button */}
         <button
           type="button"
           onClick={() => setShowKeyModal(true)}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm transition-all border shadow-sm cursor-pointer active:scale-95 select-none ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm transition-all border shadow-sm cursor-pointer active:scale-95 select-none ${
             hasGeminiKey
               ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
               : "bg-[#1E1E1E] hover:bg-[#282828] text-amber-400 border-amber-500/30"
@@ -181,16 +169,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           title="Gemini API Key: Configure your free Google AI Studio key"
         >
           <Key className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span className="hidden xs:inline">Gemini API Key</span>
-          <span
-            className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
-              hasGeminiKey
-                ? "bg-emerald-500/20 text-[#81FF89]"
-                : "bg-amber-500/20 text-amber-300"
-            }`}
-          >
-            {hasGeminiKey ? "ACTIVE" : "FREE"}
-          </span>
+          <span>{hasGeminiKey ? "Gemini Key: Active" : "Add Gemini Key"}</span>
         </button>
 
         {/* 1. "Ask AI" Button (formerly "Ask SDET AI") */}
