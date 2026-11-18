@@ -59,6 +59,7 @@ import {
   resetInterviewQuestions,
 } from '@/lib/interview-questions-bank';
 import { getLessonDoc, LessonDoc } from '@/lib/qa-learning-docs';
+import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
 
 type AdminSection = 'overview' | 'course' | 'labs' | 'agents' | 'interviews' | 'team';
 
@@ -753,36 +754,10 @@ function AdminDashboardContent() {
               <span className="text-[11px] font-mono font-bold text-purple-400 bg-purple-500/15 px-2.5 py-0.5 rounded-full border border-purple-500/30">
                 SYSTEM ADMINISTRATOR
               </span>
-              <span className="text-zinc-600">•</span>
-              <span className="text-xs text-zinc-400">Full Edit &amp; Delete Rights Active</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-1">
               Admin Control Center
             </h1>
-          </div>
-
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <Link
-              href="/dashboard"
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#1C1C1C] hover:bg-[#262626] text-zinc-300 hover:text-white border border-[#2B2B2B] flex items-center gap-1.5 transition-colors"
-            >
-              <Eye className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Preview Student Portal</span>
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                QADatabase.resetTracksToDefault();
-                resetInterviewQuestions();
-                resetAgentConfigs();
-                triggerBanner('Restored all factory defaults for curriculum, agents, and interview bank.');
-                reloadData();
-              }}
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-950/30 hover:bg-rose-950/50 text-rose-300 border border-rose-900/50 flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Factory Reset</span>
-            </button>
           </div>
         </div>
 
@@ -889,9 +864,6 @@ function AdminDashboardContent() {
                     <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">
                       Course
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed mt-1">
-                      Manage SDET tracks (Selenium Java, Playwright TS, API Testing, AI QA), modules, in-depth lesson guides, starter code, and solutions.
-                    </p>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
@@ -927,9 +899,6 @@ function AdminDashboardContent() {
                     <h3 className="text-lg font-bold text-white group-hover:text-sky-300 transition-colors">
                       Practice Labs
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed mt-1">
-                      Manage coding challenges across Java, Python, and TypeScript, multi-tier compilers, Web Automation Playgrounds, and Mock API sandboxes.
-                    </p>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
@@ -963,9 +932,6 @@ function AdminDashboardContent() {
                     <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
                       AI Tools and Agents
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed mt-1">
-                      Configure the 5 autonomous QA agents (Requirements, Test Matrix, POM Generator, Code Auditor, Senior Mentor), system instructions, and prompt presets.
-                    </p>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
@@ -999,9 +965,6 @@ function AdminDashboardContent() {
                     <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
                       Interview Banks
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed mt-1">
-                      Curate the comprehensive SDET and Test Architect interview question bank across Playwright, Selenium, API Testing, and Concurrency.
-                    </p>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
@@ -1486,9 +1449,9 @@ function AdminDashboardContent() {
                       </div>
                     </div>
 
-                    <div className="p-3 bg-[#0F0F0F] rounded-xl border border-[#222222] text-xs text-zinc-300 leading-relaxed">
-                      <span className="font-bold text-zinc-400">Answer: </span>
-                      {item.answerSummary}
+                    <div className="p-3.5 bg-[#0F0F0F] rounded-xl border border-[#222222] text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                      <span className="font-bold text-zinc-400 block mb-1">Answer: </span>
+                      <FormattedInterviewAnswer text={item.answerSummary} isDark />
                     </div>
                   </div>
                 ))}
@@ -2021,15 +1984,24 @@ function AdminDashboardContent() {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Answer Summary</label>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-zinc-300">Answer Summary</label>
+                  <span className="text-[10px] text-zinc-500 font-mono">Keeps exact paragraphs, bullets &amp; code formatting</span>
+                </div>
                 <textarea
-                  rows={3}
+                  rows={6}
                   value={iqAnswer}
                   onChange={e => setIqAnswer(e.target.value)}
-                  placeholder="Detailed technical explanation and recommended response..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
+                  placeholder="Paste or write detailed technical explanation... Exact formatting, line breaks, bullet points, and code blocks from your source will be preserved."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-sans text-white leading-relaxed whitespace-pre-wrap"
                 />
+                {iqAnswer.trim() && (
+                  <div className="p-3 bg-[#141414] rounded-xl border border-[#252525] text-xs text-zinc-300 space-y-1">
+                    <span className="text-[10px] uppercase font-bold text-emerald-400 block">Live Formatted Preview:</span>
+                    <FormattedInterviewAnswer text={iqAnswer} isDark />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1">

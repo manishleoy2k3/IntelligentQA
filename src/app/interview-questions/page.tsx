@@ -27,6 +27,7 @@ import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import AuthGuard from '@/components/auth/auth-guard';
 import { parseRequirementsFile } from '@/lib/file-parser';
 import { generateExcelWorkbookXml } from '@/lib/excel-export';
+import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
 
 export default function InterviewQuestionsPage() {
   const [questions, setQuestions] = useState<InterviewQuestionItem[]>([]);
@@ -450,9 +451,9 @@ export default function InterviewQuestionsPage() {
                     {item.question}
                   </h3>
 
-                  <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {item.answerSummary}
-                  </p>
+                  <div className="text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <FormattedInterviewAnswer text={item.answerSummary} />
+                  </div>
 
                   {item.codeSnippet && (
                     <div className="relative p-4 bg-slate-950 text-emerald-300 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
