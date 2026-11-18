@@ -126,7 +126,7 @@ export default function HomePage() {
             {/* Email Alternative Links */}
             <div className="flex items-center justify-center gap-4 text-base text-[#A1A1AA] pt-1">
               <Link href="/signup" className="font-semibold text-white hover:text-[#81FF89] transition-colors underline decoration-dotted">
-                Or sign up with email →
+                Get Started with Email →
               </Link>
               <span>·</span>
               <Link href="/login" className="hover:text-white transition-colors">

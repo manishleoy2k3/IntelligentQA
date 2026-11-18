@@ -300,7 +300,7 @@ export default function Header({
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold bg-white hover:bg-neutral-200 text-black transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 <UserPlus className="w-4 h-4" />
-                <span>Sign Up Free</span>
+                <span>Get Started</span>
               </Link>
             </div>
           )}
@@ -425,7 +425,7 @@ export default function Header({
                   onClick={() => setMobileMenuOpen(false)}
                   className="py-3 px-4 bg-white text-black font-bold rounded-full text-center text-sm"
                 >
-                  Sign Up Free
+                  Get Started
                 </Link>
               </div>
             </div>
