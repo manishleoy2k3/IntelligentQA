@@ -613,6 +613,15 @@ export default function CourseCMSPage() {
 
           {/* Quick Actions & Role Switch */}
           <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              href="/admin"
+              className="py-1.5 px-3 rounded-xl bg-purple-600/30 hover:bg-purple-600/40 text-purple-300 text-xs font-bold border border-purple-500/40 transition flex items-center gap-1.5 shadow-sm"
+              title="Go to unified Admin Dashboard"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Admin Dashboard</span>
+            </Link>
+
             <button
               type="button"
               onClick={() => {

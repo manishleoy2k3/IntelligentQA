@@ -1514,6 +1514,16 @@ export const QADatabase = {
     this.saveTrack(track);
   },
 
+  deleteTrack(trackId: string): void {
+    const tracks = this.getTracks().filter(t => t.id !== trackId);
+    if (isBrowser()) {
+      setStoredItem('intelligentqa_db_sdet_tracks', tracks);
+      window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated', { detail: { trackId } }));
+    } else {
+      memoryDb.sdetTracks = tracks;
+    }
+  },
+
   resetTracksToDefault(): void {
     if (isBrowser()) {
       setStoredItem('intelligentqa_db_sdet_tracks', QA_TRACKS);

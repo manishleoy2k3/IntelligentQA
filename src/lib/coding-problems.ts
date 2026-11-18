@@ -2419,16 +2419,47 @@ export function getStoredCustomProblems(): CodingProblem[] {
   }
 }
 
-export function saveCustomProblem(problem: Omit<CodingProblem, 'id'>): CodingProblem {
+const DELETED_PROBLEMS_KEY = 'intelligentqa_deleted_coding_problem_ids';
+
+export function getDeletedProblemIds(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(DELETED_PROBLEMS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveCustomProblem(problem: Partial<CodingProblem> & { title: string; difficulty: 'Easy' | 'Medium' | 'Hard' }): CodingProblem {
   const existing = getStoredCustomProblems();
+  const id = problem.id || `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const idx = existing.findIndex(p => p.id === id);
+
   const newProblem: CodingProblem = {
+    category: 'General',
+    description: '',
     ...problem,
-    id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    id,
     isCustom: true,
-  };
-  const updated = [newProblem, ...existing];
+  } as CodingProblem;
+
+  let updated: CodingProblem[];
+  if (idx >= 0) {
+    updated = [...existing];
+    updated[idx] = newProblem;
+  } else {
+    updated = [newProblem, ...existing];
+  }
+
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    // If it was in deleted list, remove it from deleted list
+    const deleted = getDeletedProblemIds().filter(d => d !== id);
+    localStorage.setItem(DELETED_PROBLEMS_KEY, JSON.stringify(deleted));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('intelligentqa_problems_changed', { detail: { problem: newProblem } }));
+    }
   } catch (e) {
     console.error('Failed to save problem to localStorage', e);
   }
@@ -2440,14 +2471,26 @@ export function deleteCustomProblem(id: string): void {
   const updated = existing.filter(p => p.id !== id);
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    // Also track in deleted IDs so default problems get removed as well
+    const deleted = getDeletedProblemIds();
+    if (!deleted.includes(id)) {
+      deleted.push(id);
+      localStorage.setItem(DELETED_PROBLEMS_KEY, JSON.stringify(deleted));
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('intelligentqa_problems_changed', { detail: { id } }));
+    }
   } catch (e) {
     console.error('Failed to delete problem from localStorage', e);
   }
 }
 
 export function getAllProblems(): CodingProblem[] {
-  const custom = getStoredCustomProblems();
-  return [...custom, ...DEFAULT_CODING_PROBLEMS];
+  const deletedIds = new Set(getDeletedProblemIds());
+  const custom = getStoredCustomProblems().filter(p => !deletedIds.has(p.id));
+  const customIds = new Set(custom.map(p => p.id));
+  const defaults = DEFAULT_CODING_PROBLEMS.filter(p => !deletedIds.has(p.id) && !customIds.has(p.id));
+  return [...custom, ...defaults];
 }
 
 export function parseImportedProblems(content: string): { problems: CodingProblem[]; error?: string } {

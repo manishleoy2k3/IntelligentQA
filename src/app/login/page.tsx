@@ -20,6 +20,7 @@ function LoginContent() {
       <span className="sr-only">Continue with Google</span>
       <span className="sr-only">buttonText="Continue with Google"</span>
       <span className="sr-only">Demo Login</span>
+      <span className="sr-only">Admin Login</span>
     </div>
   );
 }

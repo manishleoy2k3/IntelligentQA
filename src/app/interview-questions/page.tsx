@@ -21,6 +21,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { getCuratedInterviewQuestions } from '@/lib/qa-knowledge-base';
+import { getAllInterviewQuestions } from '@/lib/interview-questions-bank';
 import { InterviewQuestionItem } from '@/types/qa';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import AuthGuard from '@/components/auth/auth-guard';
@@ -46,24 +47,23 @@ export default function InterviewQuestionsPage() {
   const [importError, setImportError] = useState('');
 
   useEffect(() => {
-    const baseQuestions = getCuratedInterviewQuestions();
-    let customQuestions: InterviewQuestionItem[] = [];
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem('intelligentqa_custom_interview_questions');
-        if (stored) {
-          customQuestions = JSON.parse(stored);
-        }
-      } catch (e) {
-        console.warn('Failed to load custom questions:', e);
-      }
-    }
-    setQuestions([...customQuestions, ...baseQuestions]);
+    const loadQuestions = () => {
+      const all = getAllInterviewQuestions();
+      setQuestions(all);
+    };
+    loadQuestions();
 
     const user = QADatabase.getCurrentUser() || DEMO_USER;
     QADatabase.getBookmarks(user.id).then(bms => {
       setBookmarkedIds(bms.map(b => b.questionId));
     });
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('intelligentqa_interview_questions_changed', loadQuestions);
+      return () => {
+        window.removeEventListener('intelligentqa_interview_questions_changed', loadQuestions);
+      };
+    }
   }, []);
 
   // Reset display limit when filter criteria changes

@@ -36,6 +36,8 @@ export default function AscentAuthCard({
 
   // Mode: 'login' | 'signup'
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
+  // Account Type: 'student' | 'admin'
+  const [accountType, setAccountType] = useState<'student' | 'admin'>('student');
 
   // Form Fields
   const [email, setEmail] = useState('');
@@ -93,7 +95,12 @@ export default function AscentAuthCard({
       }
 
       await QADatabase.login(cleanEmail);
-      router.push(redirectTo);
+      const isExplicitAdmin = QADatabase.getAdminEmails().some(e => e.toLowerCase() === cleanEmail) || cleanEmail === 'admin@intelligentqa.io' || accountType === 'admin';
+      if (isExplicitAdmin) {
+        router.push('/admin');
+      } else {
+        router.push(redirectTo);
+      }
     } catch (err) {
       console.error('Login error:', err);
       setError('Sign in failed. Please try again.');
@@ -151,6 +158,19 @@ export default function AscentAuthCard({
       router.push(redirectTo);
     } catch (err) {
       console.error('Demo login error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 1-Click Fast Admin Login for immediate platform management
+  const handleAdminDemoLogin = async () => {
+    setLoading(true);
+    try {
+      QADatabase.switchToAdminSession();
+      router.push('/admin');
+    } catch (err) {
+      console.error('Admin demo login error:', err);
     } finally {
       setLoading(false);
     }
@@ -226,10 +246,56 @@ export default function AscentAuthCard({
           <QABrandLogo size={34} showText={false} />
         </div>
 
+        {/* Portal Login Role Switcher */}
+        {mode === 'login' && (
+          <div className="flex items-center justify-center p-1 bg-[#1F1F1F] rounded-2xl border border-[#2B2B2B]">
+            <button
+              type="button"
+              onClick={() => {
+                setAccountType('student');
+                if (email === 'admin@intelligentqa.io') setEmail('');
+              }}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                accountType === 'student'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-[#A1A1AA] hover:text-white'
+              }`}
+            >
+              Student Portal
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAccountType('admin');
+                setEmail('admin@intelligentqa.io');
+              }}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                accountType === 'admin'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md'
+                  : 'text-[#A1A1AA] hover:text-purple-300'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Admin Portal</span>
+            </button>
+          </div>
+        )}
+
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl font-bold text-center text-white tracking-tight">
-          {mode === 'login' ? 'Welcome back' : 'Create your account'}
-        </h1>
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            {mode === 'signup'
+              ? 'Create your account'
+              : accountType === 'admin'
+              ? 'Admin Portal'
+              : 'Welcome back'}
+          </h1>
+          {mode === 'login' && accountType === 'admin' && (
+            <p className="text-xs text-purple-300">
+              Platform Management: Courses, Labs, AI Agents &amp; Interview Banks
+            </p>
+          )}
+        </div>
 
         {/* Google Single Sign-On Button */}
         <GoogleSignInButton
@@ -302,13 +368,17 @@ export default function AscentAuthCard({
               </div>
             </div>
 
-            {/* Sign in Button (Emergent White Pill Button) */}
+            {/* Sign in Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-3.5 px-4 bg-white hover:bg-neutral-200 text-black font-bold rounded-full text-base transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-60"
+              className={`w-full mt-6 py-3.5 px-4 font-bold rounded-full text-base transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-60 ${
+                accountType === 'admin'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-purple-500/25'
+                  : 'bg-white hover:bg-neutral-200 text-black'
+              }`}
             >
-              <span>Sign in</span>
+              <span>{accountType === 'admin' ? 'Sign in to Admin Portal' : 'Sign in'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -323,16 +393,26 @@ export default function AscentAuthCard({
               </button>
             </div>
 
-            {/* Secondary 1-Click Demo Login */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
+            {/* 1-Click Fast Logins */}
+            <div className="pt-3 border-t border-[#262626] flex items-center justify-center gap-4 text-xs">
               <button
                 type="button"
                 onClick={handleDemoLogin}
-                className="text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-medium hover:underline cursor-pointer"
+                className="text-zinc-400 hover:text-white font-medium hover:underline cursor-pointer"
               >
                 Demo Login
               </button>
+              <span className="text-zinc-600">•</span>
+              <button
+                type="button"
+                onClick={handleAdminDemoLogin}
+                className="text-purple-400 hover:text-purple-300 font-semibold hover:underline cursor-pointer flex items-center gap-1.5"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin Login</span>
+              </button>
             </div>
+            <span className="sr-only">Admin Login</span>
           </form>
         )}
 

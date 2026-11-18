@@ -849,18 +849,18 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               </span>
             </div>
             <Link
-              href="/admin/cms"
+              href="/admin"
               onClick={onCloseMobile}
               className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                pathname === '/admin/cms'
+                pathname === '/admin' || pathname === '/admin/cms'
                   ? 'bg-purple-500/20 text-purple-600 dark:text-purple-300 font-bold border-l-2 border-purple-500 pl-2.5'
                   : 'text-purple-700 dark:text-purple-400 hover:bg-purple-500/10'
               }`}
-              title="Course Content Management System (Admin Only)"
+              title="Admin Dashboard (Admin Only)"
             >
               <ShieldCheck className="w-4 h-4 shrink-0 text-purple-500" />
               <div className="flex items-center justify-between flex-1 truncate">
-                <span className="truncate">Course CMS</span>
+                <span className="truncate">Admin Dashboard</span>
                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
                   ADMIN
                 </span>

@@ -1,4 +1,5 @@
 import { InterviewQuestionItem } from '@/types/qa';
+export type { InterviewQuestionItem };
 
 /**
  * Curated Core Questions Bank for SDETs
@@ -629,3 +630,94 @@ export function generateComprehensiveQuestionBank(): InterviewQuestionItem[] {
 
   return allQuestions;
 }
+
+export const CUSTOM_INTERVIEW_QUESTIONS_KEY = 'intelligentqa_custom_interview_questions';
+export const DELETED_INTERVIEW_QUESTIONS_KEY = 'intelligentqa_deleted_interview_questions';
+
+export function getStoredCustomInterviewQuestions(): InterviewQuestionItem[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(CUSTOM_INTERVIEW_QUESTIONS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.warn('Failed to parse custom interview questions', e);
+    return [];
+  }
+}
+
+export function getDeletedInterviewQuestionIds(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(DELETED_INTERVIEW_QUESTIONS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveInterviewQuestion(question: InterviewQuestionItem): InterviewQuestionItem {
+  const current = getStoredCustomInterviewQuestions();
+  const id = question.id || `iq-custom-${Date.now()}`;
+  const itemToSave = { ...question, id };
+
+  const existingIdx = current.findIndex(q => q.id === id);
+  let updated: InterviewQuestionItem[];
+  if (existingIdx >= 0) {
+    updated = [...current];
+    updated[existingIdx] = itemToSave;
+  } else {
+    updated = [itemToSave, ...current];
+  }
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CUSTOM_INTERVIEW_QUESTIONS_KEY, JSON.stringify(updated));
+      const deleted = getDeletedInterviewQuestionIds().filter(d => d !== id);
+      localStorage.setItem(DELETED_INTERVIEW_QUESTIONS_KEY, JSON.stringify(deleted));
+      window.dispatchEvent(new CustomEvent('intelligentqa_interview_questions_changed', { detail: { question: itemToSave } }));
+    } catch (e) {
+      console.error('Failed to save interview question', e);
+    }
+  }
+  return itemToSave;
+}
+
+export function deleteInterviewQuestion(id: string): void {
+  const current = getStoredCustomInterviewQuestions();
+  const updated = current.filter(q => q.id !== id);
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CUSTOM_INTERVIEW_QUESTIONS_KEY, JSON.stringify(updated));
+      const deleted = getDeletedInterviewQuestionIds();
+      if (!deleted.includes(id)) {
+        deleted.push(id);
+        localStorage.setItem(DELETED_INTERVIEW_QUESTIONS_KEY, JSON.stringify(deleted));
+      }
+      window.dispatchEvent(new CustomEvent('intelligentqa_interview_questions_changed', { detail: { id } }));
+    } catch (e) {
+      console.error('Failed to delete interview question', e);
+    }
+  }
+}
+
+export function getAllInterviewQuestions(): InterviewQuestionItem[] {
+  const deletedIds = new Set(getDeletedInterviewQuestionIds());
+  const custom = getStoredCustomInterviewQuestions().filter(q => !deletedIds.has(q.id));
+  const customIds = new Set(custom.map(q => q.id));
+  const base = generateComprehensiveQuestionBank().filter(q => !deletedIds.has(q.id) && !customIds.has(q.id));
+  return [...custom, ...base];
+}
+
+export function resetInterviewQuestions(): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(CUSTOM_INTERVIEW_QUESTIONS_KEY);
+      localStorage.removeItem(DELETED_INTERVIEW_QUESTIONS_KEY);
+      window.dispatchEvent(new CustomEvent('intelligentqa_interview_questions_changed', { detail: { reset: true } }));
+    } catch (e) {
+      console.error('Failed to reset interview questions', e);
+    }
+  }
+}
+

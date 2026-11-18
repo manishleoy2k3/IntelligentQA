@@ -300,13 +300,13 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                   {/* Dedicated Admin CMS Link (Admin Only) */}
                   {isAdmin ? (
                     <Link
-                      href="/admin/cms"
+                      href="/admin"
                       onClick={() => setProfileMenuOpen(false)}
                       className="w-full px-3.5 py-2.5 text-left rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-bold flex items-center justify-between transition-colors border border-purple-500/30"
                     >
                       <div className="flex items-center gap-2.5">
                         <ShieldCheck className="w-4 h-4 text-purple-400 shrink-0" />
-                        <span>Course CMS &amp; Approvals</span>
+                        <span>Admin Dashboard</span>
                       </div>
                       <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300">
                         Admin
