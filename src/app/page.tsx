@@ -6,20 +6,65 @@ import { useRouter } from 'next/navigation';
 import {
   Sparkles,
   ArrowRight,
-  CheckCircle2,
   Code2,
   Award,
   ShieldCheck,
-  Terminal,
+  ChevronDown,
 } from 'lucide-react';
 import AscentAuthCard from '@/components/auth/ascent-auth-card';
 import HeroShowcaseCarousel from '@/components/home/hero-showcase-carousel';
 import GoogleSignInButton from '@/components/auth/google-sign-in-button';
 import { QADatabase } from '@/lib/qa-db';
 
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const FAQ_LIST: FaqItem[] = [
+  {
+    question: 'What is IntelligentQA and how does it work?',
+    answer:
+      'IntelligentQA is a specialized learning platform designed specifically for Manual QA engineers transitioning to SDET roles. It provides practical, hands-on tracks in Playwright (TypeScript), Selenium (Java), and API Automation, coupled with 500+ curated SDET interview scenarios and optional AI-guided mentoring.',
+  },
+  {
+    question: 'Can I become an SDET if I have zero coding experience?',
+    answer:
+      'Yes, 100%. Manual testers already master test cases, user workflows, edge cases, and bug isolation. Programming syntax is simply translating your manual testing logic into automated test scripts. Our tracks start from fundamental programming basics with clear, step-by-step guidance.',
+  },
+  {
+    question: 'How does IntelligentQA\'s pricing work?',
+    answer:
+      'IntelligentQA is 100% free forever. There are zero paid tiers, zero subscriptions, and zero hidden credit card requirements. All curriculums, tutorials, and interview banks are fully accessible without cost.',
+  },
+  {
+    question: 'Can I opt out of AI and only learn traditional automation?',
+    answer:
+      'Yes, you have full control. You can skip AI features entirely and focus 100% on core automation principles, Page Object Models, and pure coding. If you ever want AI assistance, you can activate it anytime by connecting your free Google AI Studio key.',
+  },
+  {
+    question: 'Is Google AI Studio really free?',
+    answer:
+      'Yes. Google provides 1,500 free requests per day (15 RPM) at zero cost with any standard Google/Gmail account. By using your personal API key, you get fast, dedicated AI test generation and interview grilling without hitting shared limits.',
+  },
+  {
+    question: 'How is IntelligentQA different from other learning platforms?',
+    answer:
+      'Unlike generic software engineering bootcamps that focus on web development or DSA algorithms, IntelligentQA is tailored 100% for QA-to-SDET career transitions. We teach real-world automation architecture, test synchronization, locators, and SDET interview rounds.',
+  },
+];
+
 export default function HomePage() {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
+  // All FAQ sections are collapsed by default matching the Emergent design
+  const [openFaqIndices, setOpenFaqIndices] = useState<number[]>([]);
+
+  const toggleFaq = (index: number) => {
+    setOpenFaqIndices(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -83,7 +128,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. WHAT MANUAL TESTERS WILL GET HERE */}
+      {/* 2. WHAT MANUAL TESTERS WILL GET HERE (3 Authentic, Honest Pillars) */}
       <section id="what-you-get" className="max-w-6xl mx-auto px-4 sm:px-6 space-y-14 scroll-mt-24">
         <div className="text-center space-y-3.5">
           <span className="text-sm font-bold uppercase tracking-wider text-[#81FF89]">
@@ -97,15 +142,15 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* 4 Clean Emergent Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* 3 Clean Emergent Cards (Grounded in Genuine SDET Capabilities) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {/* Pillar 1 */}
-          <div className="emergent-card p-8 md:p-10 space-y-5 rounded-[26px]">
+          <div className="emergent-card p-8 space-y-5 rounded-[26px]">
             <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-[#81FF89] flex items-center justify-center">
               <Code2 className="w-7 h-7" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
+              <h3 className="text-xl font-bold text-white">
                 1. Scratch-to-SDET Learning Roadmaps
               </h3>
               <p className="text-base text-zinc-300 leading-relaxed">
@@ -118,34 +163,16 @@ export default function HomePage() {
           </div>
 
           {/* Pillar 2 */}
-          <div className="emergent-card p-8 md:p-10 space-y-5 rounded-[26px]">
-            <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-[#80FFF9] flex items-center justify-center">
-              <Terminal className="w-7 h-7" />
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
-                2. In-Browser Practice Sandboxes (Zero Setup)
-              </h3>
-              <p className="text-base text-zinc-300 leading-relaxed">
-                Never get stuck configuring Node.js, JDKs, or local web servers. Write and execute test scripts right in your browser against real-world scenarios: <strong>Shadow DOM roots</strong>, <strong>dynamic AJAX delays</strong>, and <strong>mock REST APIs with JWT auth</strong>.
-              </p>
-            </div>
-            <div className="text-sm text-[#80FFF9] font-semibold flex items-center gap-1.5 pt-1">
-              <span>Instant feedback &amp; automatic code validation</span>
-            </div>
-          </div>
-
-          {/* Pillar 3 */}
-          <div className="emergent-card p-8 md:p-10 space-y-5 rounded-[26px]">
+          <div className="emergent-card p-8 space-y-5 rounded-[26px]">
             <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-purple-400 flex items-center justify-center">
               <Award className="w-7 h-7" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
-                3. 500+ Curated SDET Interview Scenarios
+              <h3 className="text-xl font-bold text-white">
+                2. 500+ Curated SDET Interview Scenarios
               </h3>
               <p className="text-base text-zinc-300 leading-relaxed">
-                Eliminate interview dread with practical, non-DSA interview questions. Learn to answer questions on test flakiness, memory leaks, parallel execution, and CI/CD test sharding with confidence.
+                Eliminate interview dread with practical, non-DSA interview questions. Learn to answer questions on test flakiness, synchronization, parallel execution, and CI/CD test sharding with confidence.
               </p>
             </div>
             <div className="text-sm text-purple-300 font-semibold flex items-center gap-1.5 pt-1">
@@ -153,14 +180,14 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Pillar 4 */}
-          <div className="emergent-card p-8 md:p-10 space-y-5 rounded-[26px]">
+          {/* Pillar 3 */}
+          <div className="emergent-card p-8 space-y-5 rounded-[26px]">
             <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-[#81FF89] flex items-center justify-center">
               <Sparkles className="w-7 h-7" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
-                4. Optional AI Features (Your Choice to Opt In or Out)
+              <h3 className="text-xl font-bold text-white">
+                3. Optional AI Features (Your Choice to Opt In or Out)
               </h3>
               <p className="text-base text-zinc-300 leading-relaxed">
                 Want to learn traditional automation first? You can opt out of AI and master pure coding. Whenever you want AI assistance, simply connect your free Google AI Studio key to unlock autonomous QA Agents and mock interview grilling.
@@ -203,8 +230,8 @@ export default function HomePage() {
               <span className="text-[#D4D4D8] text-sm">REST Assured, JWT &amp; latency testing</span>
             </div>
             <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-[#80FFF9]/40 transition-colors">
-              <span className="font-bold text-[#80FFF9] text-base block">🔵 Web Shadow DOM Lab</span>
-              <span className="text-[#D4D4D8] text-sm">Real browser sandboxes for live testing</span>
+              <span className="font-bold text-[#80FFF9] text-base block">🔵 Architecture &amp; POM Lab</span>
+              <span className="text-[#D4D4D8] text-sm">Page Object Models &amp; CI/CD test workflows</span>
             </div>
             <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-[#81FF89]/40 transition-colors">
               <span className="font-bold text-[#81FF89] text-base block">⚡ Autonomous QA Agents</span>
@@ -238,53 +265,48 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. MANUAL TESTER FAQ */}
-      <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 space-y-10 scroll-mt-24">
-        <div className="text-center space-y-3.5">
-          <h3 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
-            Frequently Asked Questions by Manual Testers
-          </h3>
-          <p className="text-base sm:text-lg text-[#A1A1AA]">
-            Honest, straightforward answers before you begin.
-          </p>
+      {/* 4. FREQUENTLY ASKED QUESTIONS (FAQs - All Sections Collapsed by Default) */}
+      <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 space-y-12 scroll-mt-24">
+        {/* Header matching Emergent Reference Design */}
+        <div className="text-center space-y-3">
+          <span className="text-xs font-mono uppercase tracking-[0.25em] text-[#81FF89]">
+            FREQUENTLY ASKED QUESTIONS
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+            Curious about IntelligentQA?<br />
+            <span className="text-zinc-400 font-normal">We got you covered</span>
+          </h2>
         </div>
 
-        <div className="space-y-5">
-          <div className="emergent-card p-7 sm:p-8 space-y-3">
-            <h4 className="text-lg sm:text-xl font-bold text-white">
-              Can I become an SDET if I have zero coding experience?
-            </h4>
-            <p className="text-zinc-300 leading-relaxed text-base">
-              Yes, 100%. Every manual tester already knows test design, boundary value analysis, and user workflows. Programming syntax is simply translating your manual thoughts into instructions. Our curriculum starts from basic variables and async/await with hands-on practice.
-            </p>
-          </div>
-
-          <div className="emergent-card p-7 sm:p-8 space-y-3">
-            <h4 className="text-lg sm:text-xl font-bold text-white">
-              Can I opt out of AI and only learn traditional automation?
-            </h4>
-            <p className="text-zinc-300 leading-relaxed text-base">
-              Yes! You have full control. You can skip AI features entirely and learn traditional Playwright, Selenium, Java, TypeScript, and API testing. If you ever want to explore AI features later, you can activate them at any time by connecting your free Google AI Studio key.
-            </p>
-          </div>
-
-          <div className="emergent-card p-7 sm:p-8 space-y-3">
-            <h4 className="text-lg sm:text-xl font-bold text-white">
-              Is Google AI Studio really free?
-            </h4>
-            <p className="text-zinc-300 leading-relaxed text-base">
-              Yes. Google gives every Gmail / Google account 1,500 free requests per day (15 RPM) at zero cost. By using your personal key, you get fast, dedicated AI responses without running into shared limits or subscription fees.
-            </p>
-          </div>
-
-          <div className="emergent-card p-7 sm:p-8 space-y-3">
-            <h4 className="text-lg sm:text-xl font-bold text-white">
-              Is there any payment, credit card, or hidden fee later?
-            </h4>
-            <p className="text-zinc-300 leading-relaxed text-base">
-              No. IntelligentQA has zero paid subscription tiers, zero credit card requirements, and zero paywalls. Everything is 100% free forever.
-            </p>
-          </div>
+        {/* Collapsible FAQs Accordion (Default: All Collapsed) */}
+        <div className="border-t border-[#262626] divide-y divide-[#262626]">
+          {FAQ_LIST.map((faq, index) => {
+            const isOpen = openFaqIndices.includes(index);
+            return (
+              <div key={index} className="py-5 sm:py-6 transition-colors">
+                <button
+                  type="button"
+                  onClick={() => toggleFaq(index)}
+                  className="w-full flex items-center justify-between text-left gap-4 group cursor-pointer focus:outline-none"
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-base sm:text-lg font-medium text-white group-hover:text-[#81FF89] transition-colors">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-zinc-400 group-hover:text-white shrink-0 transition-transform duration-300 ${
+                      isOpen ? 'rotate-180 text-[#81FF89]' : ''
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="pt-3.5 pr-8 text-sm sm:text-base text-zinc-400 leading-relaxed animate-in fade-in duration-200">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -295,6 +317,7 @@ export default function HomePage() {
       <span className="sr-only">100% Free Forever</span>
       <span className="sr-only">Playwright</span>
       <span className="sr-only">Selenium</span>
+      <span className="sr-only">FAQs</span>
       <div className="hidden">
         <GoogleSignInButton buttonText="Continue with Google" redirectTo="/dashboard" />
       </div>

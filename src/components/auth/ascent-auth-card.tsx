@@ -177,19 +177,6 @@ export default function AscentAuthCard({
     }
   };
 
-  // 1-Click Fast Demo Login for instant Student evaluation
-  const handleDemoLogin = async () => {
-    setLoading(true);
-    try {
-      await QADatabase.login('qa.student@intelligentqa.io', 'QA Student');
-      router.push(redirectTo);
-    } catch (err) {
-      console.error('Demo login error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // 1-Click Fast Admin Login for immediate platform management
   const handleAdminDemoLogin = async () => {
     setLoading(true);
@@ -418,9 +405,9 @@ export default function AscentAuthCard({
             <span>Continue with Phone</span>
           </button>
 
-          {/* 1-Click Fast Instant Demo Access */}
-          <div className="pt-2">
-            {accountType === 'admin' ? (
+          {/* 1-Click Fast Admin Demo Login (Only when opened explicitly in admin mode) */}
+          {accountType === 'admin' && (
+            <div className="pt-2">
               <button
                 type="button"
                 onClick={handleAdminDemoLogin}
@@ -429,17 +416,8 @@ export default function AscentAuthCard({
                 <Zap className="w-3.5 h-3.5 text-purple-400" />
                 <span>1-Click Fast Admin Demo Login</span>
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleDemoLogin}
-                className="w-full py-2.5 px-4 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-[#81FF89] font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5 text-[#81FF89]" />
-                <span>1-Click Fast Student Demo Login</span>
-              </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* REVEALABLE EMAIL / PASSWORD FORM */}

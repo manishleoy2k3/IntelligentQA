@@ -94,7 +94,7 @@ export default function Header({
   const guestNavLinks = [
     { href: '/#what-you-get', label: "What You'll Get" },
     { href: '/#curriculum-preview', label: 'Curriculum' },
-    { href: '/#faq', label: 'FAQ' },
+    { href: '/#faq', label: 'FAQs' },
   ];
 
   // 2. Member Workspace Links (Visible ONLY after login)

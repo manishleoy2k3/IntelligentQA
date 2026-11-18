@@ -7,13 +7,11 @@ test('Minimal uncluttered Home Page is designed specifically for Manual Testers'
   const homeFile = fs.readFileSync(path.join(__dirname, '../src/app/page.tsx'), 'utf8');
 
   // Verify minimal, clean, reassuring structure
-  assert.ok(homeFile.includes('From Manual Tester to'), 'Hero title targets manual testers');
-  assert.ok(homeFile.includes('Confident SDET'), 'Hero highlights confident SDET transition');
+  assert.ok(homeFile.includes('HeroShowcaseCarousel') || homeFile.includes('From Manual QA to SDET'), 'Hero highlights QA to SDET transition');
   assert.ok(homeFile.includes('What You Will Get on IntelligentQA'), 'Contains clear "What You Will Get" section');
   assert.ok(homeFile.includes('Scratch-to-SDET Learning Roadmaps'), 'Pillar 1: Scratch to SDET roadmap');
-  assert.ok(homeFile.includes('In-Browser Practice Sandboxes'), 'Pillar 2: Zero-setup browser sandboxes');
-  assert.ok(homeFile.includes('500+ Curated SDET Interview Scenarios'), 'Pillar 3: Non-DSA interview bank');
-  assert.ok(homeFile.includes('Optional AI Features (Your Choice to Opt In or Out)'), 'Pillar 4: AI optionality');
+  assert.ok(homeFile.includes('500+ Curated SDET Interview Scenarios'), 'Pillar 2: Non-DSA interview bank');
+  assert.ok(homeFile.includes('Optional AI Features'), 'Pillar 3: AI optionality');
 
   // Verify tutorials and labs are kept inside user login
   assert.ok(homeFile.includes('All Tutorials, Practice Labs'), 'Explains full suite is inside account');

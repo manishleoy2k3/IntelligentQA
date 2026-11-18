@@ -82,17 +82,36 @@ test('6. Social icons (GitHub, Apple, Facebook) do not directly log in and show 
   assert.ok(modalContent.includes('Verify your'), 'Shows permission items to user');
 });
 
-test('7. Restored What You Will Get, Curriculum, and FAQ sections on Home Page with matching section IDs', () => {
+test('7. 1-Click Fast Student Demo Login button and its code are completely removed', () => {
+  const cardPath = path.join(process.cwd(), 'src/components/auth/ascent-auth-card.tsx');
+  const cardContent = fs.readFileSync(cardPath, 'utf-8');
+
+  assert.ok(!cardContent.includes('1-Click Fast Student Demo Login'), 'Student demo button text is removed');
+  assert.ok(!cardContent.includes('handleDemoLogin'), 'handleDemoLogin function is removed');
+});
+
+test('8. In-Browser Practice Sandboxes removed from What You Will Get section', () => {
   const homePath = path.join(process.cwd(), 'src/app/page.tsx');
   const homeContent = fs.readFileSync(homePath, 'utf-8');
 
-  // Verify section anchors
-  assert.ok(homeContent.includes('id="what-you-get"'), 'Home page contains section id="what-you-get"');
-  assert.ok(homeContent.includes('id="curriculum-preview"'), 'Home page contains section id="curriculum-preview"');
-  assert.ok(homeContent.includes('id="faq"'), 'Home page contains section id="faq"');
+  assert.ok(!homeContent.includes('In-Browser Practice Sandboxes'), 'Removed "In-Browser Practice Sandboxes" from home page');
+  assert.ok(!homeContent.includes('Zero Setup'), 'Removed unrealistic "Zero Setup" claims');
+  assert.ok(homeContent.includes('1. Scratch-to-SDET Learning Roadmaps'), 'Retains Roadmaps');
+  assert.ok(homeContent.includes('2. 500+ Curated SDET Interview Scenarios'), 'Retains Interview Scenarios');
+  assert.ok(homeContent.includes('3. Optional AI Features'), 'Retains Optional AI Features');
+});
 
-  // Verify content headers
-  assert.ok(homeContent.includes('What You Will Get on IntelligentQA'), 'Contains What You Will Get header');
-  assert.ok(homeContent.includes('All Tutorials, Practice Labs & QA Agents Await Inside') || homeContent.includes('All Tutorials, Practice Labs &amp; QA Agents Await Inside'), 'Contains Curriculum preview header');
-  assert.ok(homeContent.includes('Frequently Asked Questions by Manual Testers'), 'Contains FAQ header');
+test('9. FAQs has all sections collapsed by default and matches Emergent design', () => {
+  const homePath = path.join(process.cwd(), 'src/app/page.tsx');
+  const homeContent = fs.readFileSync(homePath, 'utf-8');
+
+  assert.ok(homeContent.includes('id="faq"'), 'Home page contains section id="faq"');
+  assert.ok(homeContent.includes('FREQUENTLY ASKED QUESTIONS'), 'Contains Emergent uppercase tracking label');
+  assert.ok(homeContent.includes('Curious about IntelligentQA?'), 'Contains Emergent reference heading');
+  assert.ok(homeContent.includes('openFaqIndices, setOpenFaqIndices] = useState<number[]>([])'), 'Initial state is empty array so all sections are collapsed by default');
+  assert.ok(homeContent.includes('ChevronDown'), 'Uses chevron indicator for accordion expand/collapse');
+
+  const headerPath = path.join(process.cwd(), 'src/components/layout/header.tsx');
+  const headerContent = fs.readFileSync(headerPath, 'utf-8');
+  assert.ok(headerContent.includes("label: 'FAQs'"), 'Nav label is updated to FAQs');
 });

@@ -34,7 +34,7 @@ export default function Footer() {
         {/* Interactive Practice Labs */}
         <div className="space-y-3">
           <h4 className="font-bold text-white uppercase tracking-wider text-xs">
-            Practice Sandboxes
+            Practice Labs
           </h4>
           <ul className="space-y-2.5 text-sm">
             <li><Link href="/sandbox/web" className="hover:text-[#81FF89] transition-colors">Web Automation Lab (Shadow DOM &amp; Delays)</Link></li>
