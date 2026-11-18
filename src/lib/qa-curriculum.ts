@@ -1952,6 +1952,19 @@ export function getTrackById(id: string): Track | undefined {
         if (found) return found;
       }
     } catch {}
+  } else {
+    try {
+      const fs = require('node:fs');
+      const path = require('node:path');
+      const storeFile = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+      if (fs.existsSync(storeFile)) {
+        const data = JSON.parse(fs.readFileSync(storeFile, 'utf-8'));
+        if (Array.isArray(data.tracks)) {
+          const found = data.tracks.find((t: any) => t.id === id);
+          if (found) return found;
+        }
+      }
+    } catch {}
   }
   return QA_TRACKS.find(t => t.id === id);
 }
@@ -1963,6 +1976,18 @@ export function getAllLessons(): Lesson[] {
       if (stored) {
         const list: Track[] = JSON.parse(stored);
         return list.flatMap(t => t.modules.flatMap(m => m.lessons));
+      }
+    } catch {}
+  } else {
+    try {
+      const fs = require('node:fs');
+      const path = require('node:path');
+      const storeFile = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+      if (fs.existsSync(storeFile)) {
+        const data = JSON.parse(fs.readFileSync(storeFile, 'utf-8'));
+        if (Array.isArray(data.tracks)) {
+          return data.tracks.flatMap((t: any) => t.modules.flatMap((m: any) => m.lessons));
+        }
       }
     } catch {}
   }

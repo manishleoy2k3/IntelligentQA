@@ -1484,17 +1484,29 @@ export const QADatabase = {
     const track = tracks.find(t => t.id === trackId);
     if (!track) return;
 
-    let targetModule = track.modules.find(m => m.id === moduleId);
-    if (!targetModule && track.modules.length > 0) {
-      targetModule = track.modules[0];
+    // Search if this lesson already exists in any module of the track
+    let found = false;
+    for (const mod of track.modules) {
+      const idx = mod.lessons.findIndex(l => l.id === lesson.id);
+      if (idx >= 0) {
+        if (moduleId && mod.id !== moduleId) {
+          mod.lessons.splice(idx, 1);
+        } else {
+          mod.lessons[idx] = lesson;
+          found = true;
+          break;
+        }
+      }
     }
-    if (!targetModule) return;
 
-    const existingIndex = targetModule.lessons.findIndex(l => l.id === lesson.id);
-    if (existingIndex >= 0) {
-      targetModule.lessons[existingIndex] = lesson;
-    } else {
-      targetModule.lessons.push(lesson);
+    if (!found) {
+      let targetModule = track.modules.find(m => m.id === moduleId);
+      if (!targetModule && track.modules.length > 0) {
+        targetModule = track.modules[0];
+      }
+      if (targetModule) {
+        targetModule.lessons.push(lesson);
+      }
     }
 
     track.totalLessons = track.modules.reduce((sum, m) => sum + m.lessons.length, 0);

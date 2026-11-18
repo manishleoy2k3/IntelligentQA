@@ -29,6 +29,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       };
       syncUser();
 
+      // Proactively sync latest curriculum modifications from database so all users see changes
+      QADatabase.syncCurriculumFromDatabase();
+
       window.addEventListener('intelligentqa_auth_changed', syncUser);
       window.addEventListener('intelligentqa_role_changed', syncUser);
       return () => {

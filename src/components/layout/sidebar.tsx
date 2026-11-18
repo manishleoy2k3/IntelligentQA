@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
 import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
+import { Track, Module, Lesson } from '@/types/qa';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import {
@@ -88,6 +89,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   // Active Portal Mode: 'sdet' | 'kids' (Strict separation between Kids Free Coding & SDET Pro)
   
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [curriculumTracks, setCurriculumTracks] = useState<Track[]>(() => {
+    if (typeof window !== 'undefined') {
+      return QADatabase.getTracks();
+    }
+    return QA_TRACKS;
+  });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -95,23 +102,17 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         const u = QADatabase.getCurrentUser();
         setCurrentUser(u);
         setIsAdmin(QADatabase.isAdmin(u));
+        setCurriculumTracks(QADatabase.getTracks());
       };
       syncAdminRole();
       window.addEventListener('intelligentqa_role_changed', syncAdminRole);
       window.addEventListener('intelligentqa_auth_changed', syncAdminRole);
-
-
-
-
-
-
+      window.addEventListener('intelligentqa_curriculum_updated', syncAdminRole);
 
       return () => {
-
-
-
         window.removeEventListener('intelligentqa_role_changed', syncAdminRole);
         window.removeEventListener('intelligentqa_auth_changed', syncAdminRole);
+        window.removeEventListener('intelligentqa_curriculum_updated', syncAdminRole);
       };
     }
   }, [pathname]);
@@ -257,7 +258,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       icon: Terminal,
       iconColor: 'text-amber-500',
       badgeClass: 'text-amber-600 dark:text-amber-400 bg-amber-500/10',
-      lessons: QA_TRACKS.find(t => t.id === 'selenium-java')?.modules.flatMap(m => m.lessons) || [],
+      lessons: curriculumTracks.find(t => t.id === 'selenium-java')?.modules.flatMap((m: Module) => m.lessons) || [],
     },
     {
       id: 'playwright-ts',
@@ -268,7 +269,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       icon: Code2,
       iconColor: 'text-emerald-500',
       badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10',
-      lessons: QA_TRACKS.find(t => t.id === 'playwright-ts')?.modules.flatMap(m => m.lessons) || [],
+      lessons: curriculumTracks.find(t => t.id === 'playwright-ts')?.modules.flatMap((m: Module) => m.lessons) || [],
     },
     {
       id: 'api-testing',
@@ -279,7 +280,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       icon: Server,
       iconColor: 'text-purple-500',
       badgeClass: 'text-purple-600 dark:text-purple-400 bg-purple-500/10',
-      lessons: QA_TRACKS.find(t => t.id === 'api-testing')?.modules.flatMap(m => m.lessons) || [],
+      lessons: curriculumTracks.find(t => t.id === 'api-testing')?.modules.flatMap((m: Module) => m.lessons) || [],
     },
     {
       id: 'ai-qa',
@@ -290,7 +291,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       icon: Sparkles,
       iconColor: 'text-cyan-500',
       badgeClass: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10',
-      lessons: QA_TRACKS.find(t => t.id === 'ai-qa')?.modules.flatMap(m => m.lessons) || [],
+      lessons: curriculumTracks.find(t => t.id === 'ai-qa')?.modules.flatMap((m: Module) => m.lessons) || [],
     },
   ];
 
@@ -427,7 +428,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                       {/* All Individual Lessons with total hours of each individual lesson */}
                       {isExpanded && (
                         <div className="pl-3 pr-0.5 py-0.5 space-y-0.5 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
-                          {track.lessons.map(lesson => {
+                          {track.lessons.map((lesson: Lesson) => {
                             const isLessonActive = pathname === `/tracks/${track.id}/${lesson.id}`;
                             const hours = getLessonHours(lesson.durationMinutes);
 

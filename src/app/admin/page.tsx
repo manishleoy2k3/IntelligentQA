@@ -281,6 +281,7 @@ function AdminDashboardContent() {
     setLessonStarterCode(
       lesson.challenge?.starterCode?.typescript ||
       lesson.challenge?.starterCode?.java ||
+      doc.productionCodeExample?.code ||
       lesson.automationContext?.playwrightTs ||
       lesson.automationContext?.seleniumJava ||
       '// Production starter code'
@@ -363,6 +364,13 @@ function AdminDashboardContent() {
       interviewQnA: {
         question: lessonInterviewQ.trim(),
         answer: lessonInterviewA.trim(),
+      },
+      productionCodeExample: {
+        title: `${lessonObj.title} - Implementation`,
+        description: lessonSummary.trim() || lessonObj.title,
+        code: lessonStarterCode.trim() || lessonSolutionCode.trim(),
+        language: trackId.includes('java') ? 'java' : (trackId.includes('python') ? 'python' : 'typescript'),
+        annotations: [],
       },
     };
 

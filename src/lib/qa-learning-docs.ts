@@ -8149,9 +8149,25 @@ export function getLessonDoc(
   lessonDesc?: string,
   selectedLanguage: 'java' | 'python' | 'typescript' = 'java'
 ): LessonDoc {
+  // Sync latest lesson title/description from database if updated by Admin
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('intelligentqa_db_sdet_tracks');
+      if (stored) {
+        const tracks = JSON.parse(stored);
+        const trk = tracks.find((t: any) => t.id === trackId);
+        const lsn = trk?.modules.flatMap((m: any) => m.lessons).find((l: any) => l.id === lessonId);
+        if (lsn) {
+          if (lsn.title) lessonTitle = lsn.title;
+          if (lsn.description) lessonDesc = lsn.description;
+        }
+      }
+    } catch {}
+  }
+
   // Check if admin has published a custom/edited doc in the Database
   const customOverride = getCustomLessonDocOverride(lessonId);
-  if (customOverride && customOverride.title) {
+  if (customOverride && (customOverride.title || customOverride.overview || customOverride.tagline)) {
     const baseDoc = {
       title: customOverride.title || lessonTitle || 'Lesson',
       category: customOverride.category || trackId,
@@ -8666,6 +8682,30 @@ export function getConceptCodeSnippet(
   lang: 'java' | 'typescript' | 'python',
   lessonTitle: string = 'Automation Concept'
 ): string {
+  // 1. Check custom doc override saved by Admin
+  const customOverride = getCustomLessonDocOverride(lessonId);
+  if (customOverride?.productionCodeExample?.code) {
+    return customOverride.productionCodeExample.code;
+  }
+
+  // 2. Check if curriculum in database has custom starter/solution code saved by Admin
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('intelligentqa_db_sdet_tracks');
+      if (stored) {
+        const tracks = JSON.parse(stored);
+        const trk = tracks.find((t: any) => t.id === trackId);
+        const lsn = trk?.modules.flatMap((m: any) => m.lessons).find((l: any) => l.id === lessonId);
+        if (lsn) {
+          if (lang === 'java' && lsn.challenge?.starterCode?.java) return lsn.challenge.starterCode.java;
+          if (lang === 'typescript' && lsn.challenge?.starterCode?.typescript) return lsn.challenge.starterCode.typescript;
+          if (lang === 'java' && lsn.automationContext?.seleniumJava) return lsn.automationContext.seleniumJava;
+          if (lang === 'typescript' && lsn.automationContext?.playwrightTs) return lsn.automationContext.playwrightTs;
+        }
+      }
+    } catch {}
+  }
+
   if (trackId === 'selenium-java') {
     const doc = getSeleniumLessonDoc(lessonId, lang === 'python', lessonTitle);
     return doc.productionCodeExample.code;

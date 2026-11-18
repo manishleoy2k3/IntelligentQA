@@ -3,14 +3,55 @@ import { Track, Lesson } from '@/types/qa';
 import { QA_TRACKS } from '@/lib/qa-curriculum';
 import { LessonDoc } from '@/lib/qa-learning-docs';
 import { CodingProblem, DEFAULT_CODING_PROBLEMS } from '@/lib/coding-problems';
+import fs from 'node:fs';
+import path from 'node:path';
 
-// In-Memory server storage that persists across user sessions during server runtime
+const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+
+// Persistent storage that survives server restarts and syncs across all user sessions
 let serverTracks: Track[] = JSON.parse(JSON.stringify(QA_TRACKS));
-const serverLessonDocs: Record<string, LessonDoc> = {};
+let serverLessonDocs: Record<string, LessonDoc> = {};
 let serverCodingProblems: CodingProblem[] = JSON.parse(JSON.stringify(DEFAULT_CODING_PROBLEMS));
+
+function loadFromDisk() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.tracks) && data.tracks.length > 0) {
+        serverTracks = data.tracks;
+      }
+      if (data.lessonDocs && typeof data.lessonDocs === 'object') {
+        serverLessonDocs = data.lessonDocs;
+      }
+      if (Array.isArray(data.codingProblems) && data.codingProblems.length > 0) {
+        serverCodingProblems = data.codingProblems;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load curriculum from disk', e);
+  }
+}
+
+function saveToDisk() {
+  try {
+    const payload = {
+      tracks: serverTracks,
+      lessonDocs: serverLessonDocs,
+      codingProblems: serverCodingProblems,
+    };
+    fs.writeFileSync(DATA_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to save curriculum to disk', e);
+  }
+}
+
+// Initial load from disk if store exists
+loadFromDisk();
 
 export async function GET(req: NextRequest) {
   try {
+    loadFromDisk();
     const { searchParams } = new URL(req.url);
     const type = searchParams.get('type') || 'all'; // 'tracks' | 'docs' | 'problems' | 'all'
     const trackId = searchParams.get('trackId');
@@ -67,6 +108,7 @@ export async function POST(req: NextRequest) {
     // 1. Bulk replace or update all tracks
     if (action === 'save_tracks' && Array.isArray(tracks)) {
       serverTracks = tracks;
+      saveToDisk();
       return NextResponse.json({
         success: true,
         message: 'Tracks updated successfully in database',
@@ -81,19 +123,29 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: `Track ${trackId} not found` }, { status: 404 });
       }
 
-      let targetModule = track.modules.find((m) => m.id === moduleId);
-      if (!targetModule && track.modules.length > 0) {
-        targetModule = track.modules[0];
-      }
-      if (!targetModule) {
-        return NextResponse.json({ error: 'Target module not found' }, { status: 404 });
+      // Check if lesson exists in any module of the track first
+      let found = false;
+      for (const mod of track.modules) {
+        const idx = mod.lessons.findIndex((l) => l.id === lesson.id);
+        if (idx >= 0) {
+          if (moduleId && mod.id !== moduleId) {
+            mod.lessons.splice(idx, 1);
+          } else {
+            mod.lessons[idx] = lesson;
+            found = true;
+            break;
+          }
+        }
       }
 
-      const existingIndex = targetModule.lessons.findIndex((l) => l.id === lesson.id);
-      if (existingIndex >= 0) {
-        targetModule.lessons[existingIndex] = lesson;
-      } else {
-        targetModule.lessons.push(lesson);
+      if (!found) {
+        let targetModule = track.modules.find((m) => m.id === moduleId);
+        if (!targetModule && track.modules.length > 0) {
+          targetModule = track.modules[0];
+        }
+        if (targetModule) {
+          targetModule.lessons.push(lesson);
+        }
       }
       track.totalLessons = track.modules.reduce((sum, m) => sum + m.lessons.length, 0);
 
@@ -101,6 +153,8 @@ export async function POST(req: NextRequest) {
       if (lessonDoc && lesson.id) {
         serverLessonDocs[lesson.id] = lessonDoc;
       }
+
+      saveToDisk();
 
       return NextResponse.json({
         success: true,
@@ -114,6 +168,7 @@ export async function POST(req: NextRequest) {
     if (action === 'save_lesson_doc' && lessonDoc && (lessonDoc.id || body.lessonId)) {
       const id = body.lessonId || lessonDoc.id;
       serverLessonDocs[id] = lessonDoc;
+      saveToDisk();
       return NextResponse.json({
         success: true,
         message: `Lesson doc for "${id}" saved to server database`,
@@ -137,6 +192,8 @@ export async function POST(req: NextRequest) {
         serverCodingProblems.unshift(savedProblem);
       }
 
+      saveToDisk();
+
       return NextResponse.json({
         success: true,
         message: `Coding problem "${savedProblem.title}" saved to server database`,
@@ -147,6 +204,7 @@ export async function POST(req: NextRequest) {
     // 5. Bulk replace coding problems
     if (action === 'save_problems' && Array.isArray(problems)) {
       serverCodingProblems = problems;
+      saveToDisk();
       return NextResponse.json({
         success: true,
         message: 'Coding problems updated successfully in database',
@@ -161,6 +219,7 @@ export async function POST(req: NextRequest) {
       for (const k of Object.keys(serverLessonDocs)) {
         delete serverLessonDocs[k];
       }
+      saveToDisk();
       return NextResponse.json({
         success: true,
         message: 'Curriculum database reset to original defaults',
@@ -192,6 +251,7 @@ export async function DELETE(req: NextRequest) {
         });
         track.totalLessons = track.modules.reduce((sum, m) => sum + m.lessons.length, 0);
         delete serverLessonDocs[lessonId];
+        saveToDisk();
         return NextResponse.json({
           success: true,
           message: `Lesson ${lessonId} deleted from server database`,
@@ -202,6 +262,7 @@ export async function DELETE(req: NextRequest) {
 
     if (type === 'problem' && problemId) {
       serverCodingProblems = serverCodingProblems.filter((p) => p.id !== problemId);
+      saveToDisk();
       return NextResponse.json({
         success: true,
         message: `Coding problem ${problemId} deleted from server database`,

@@ -242,10 +242,42 @@ export default function CodeEditorWorkspace({
   const [selectedLang, setSelectedLang] = useState<SupportedLang>(
     isPlaywright || isAi ? 'typescript' : 'java'
   );
+
+  const [activeLesson, setActiveLesson] = useState<Lesson>(() => {
+    if (typeof window !== 'undefined') {
+      const storedTracks = QADatabase.getTracks();
+      const trk = storedTracks.find(t => t.id === track.id);
+      const found = trk?.modules.flatMap(m => m.lessons).find(l => l.id === lesson.id);
+      if (found) return found;
+    }
+    return lesson;
+  });
+
+  const lsn = activeLesson;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const syncActiveLesson = () => {
+        const storedTracks = QADatabase.getTracks();
+        const trk = storedTracks.find(t => t.id === track.id);
+        const found = trk?.modules.flatMap(m => m.lessons).find(l => l.id === lesson.id);
+        if (found) {
+          setActiveLesson(found);
+          setCode(getCodeForLanguage(selectedLang, found, track.id));
+        }
+      };
+      syncActiveLesson();
+      window.addEventListener('intelligentqa_curriculum_updated', syncActiveLesson);
+      return () => {
+        window.removeEventListener('intelligentqa_curriculum_updated', syncActiveLesson);
+      };
+    }
+  }, [track.id, lesson.id, selectedLang]);
+
   const [code, setCode] = useState<string>(() =>
     getCodeForLanguage(
       isPlaywright || isAi ? 'typescript' : 'java',
-      lesson,
+      activeLesson,
       track.id
     )
   );
@@ -253,13 +285,13 @@ export default function CodeEditorWorkspace({
   // Switch code immediately when user selects a language tab
   const handleLanguageChange = (lang: SupportedLang) => {
     setSelectedLang(lang);
-    setCode(getCodeForLanguage(lang, lesson, track.id));
+    setCode(getCodeForLanguage(lang, lsn, track.id));
   };
 
   // Sync code whenever lesson or language changes
   useEffect(() => {
-    setCode(getCodeForLanguage(selectedLang, lesson, track.id));
-  }, [lesson.id, selectedLang, track.id]);
+    setCode(getCodeForLanguage(selectedLang, lsn, track.id));
+  }, [lsn.id, selectedLang, track.id]);
   const [activeTab, setActiveTab] = useState<'guide' | 'manual-vs-code' | 'ai-action'>('guide');
   const [validationResult, setValidationResult] = useState<{
     passed: boolean;
@@ -526,12 +558,12 @@ export default function CodeEditorWorkspace({
 
           <div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {lesson.title}
+              {lsn.title}
             </h2>
           </div>
 
           <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            {lesson.description}
+            {lsn.description}
           </p>
 
           {/* Subtabs */}
@@ -611,10 +643,10 @@ export default function CodeEditorWorkspace({
         <div className="p-4 md:p-6 space-y-6 flex-1 text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
           {activeTab === 'guide' && (() => {
             const doc = getLessonDoc(
-              lesson.id,
+              lsn.id,
               track.id,
-              lesson.title,
-              lesson.description,
+              lsn.title,
+              lsn.description,
               guideLang
             );
 
@@ -1119,8 +1151,8 @@ export default function CodeEditorWorkspace({
                   Lesson {lessonIndex} of {totalLessons}
                 </span>
                 <span className="hidden sm:inline text-slate-500">•</span>
-                <span className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline" title={lesson.title}>
-                  {lesson.title}
+                <span className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline" title={lsn.title}>
+                  {lsn.title}
                 </span>
               </div>
 
