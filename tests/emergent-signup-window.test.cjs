@@ -41,13 +41,14 @@ test('3. Card uses our official IntelligentQA Brand Logo', () => {
   assert.ok(content.includes('QABrandLogo'), 'Uses official QABrandLogo');
 });
 
-test('4. Replaced generic copy with true QA & SDET copy', () => {
+test('4. Headline removed "Master Test Automation" and shows "From Manual QA to SDET with AI"', () => {
   const cardPath = path.join(process.cwd(), 'src/components/auth/ascent-auth-card.tsx');
   const content = fs.readFileSync(cardPath, 'utf-8');
 
   assert.ok(!content.includes('Describe your idea Build websites & apps with AI'), 'Removed non-QA copy');
   assert.ok(content.includes('From Manual QA to SDET'), 'Has "From Manual QA to SDET"');
-  assert.ok(content.includes('Master Test Automation with'), 'Has "Master Test Automation with"');
+  assert.ok(!content.includes('Master Test Automation with'), 'Removed "Master Test Automation with"');
+  assert.ok(content.includes('with AI'), 'Displays "with AI"');
   assert.ok(content.includes('text-[#81FF89]'), 'Features glowing green AI accent');
 });
 
@@ -61,4 +62,37 @@ test('5. Continue with Google button background is solid pure white', () => {
   const googleBtnPath = path.join(process.cwd(), 'src/components/auth/google-sign-in-button.tsx');
   const googleBtnContent = fs.readFileSync(googleBtnPath, 'utf-8');
   assert.ok(!googleBtnContent.includes('dark:bg-slate-900'), 'Removed dark mode override so it stays pure white');
+});
+
+test('6. Social icons (GitHub, Apple, Facebook) do not directly log in and show OAuth authorization modal', () => {
+  const cardPath = path.join(process.cwd(), 'src/components/auth/ascent-auth-card.tsx');
+  const cardContent = fs.readFileSync(cardPath, 'utf-8');
+
+  assert.ok(cardContent.includes('SocialOAuthModal'), 'AscentAuthCard imports and renders SocialOAuthModal');
+  assert.ok(cardContent.includes('activeSocialProvider'), 'Manages activeSocialProvider state');
+  assert.ok(cardContent.includes('setActiveSocialProvider'), 'Sets activeSocialProvider on social button click');
+
+  const modalPath = path.join(process.cwd(), 'src/components/auth/social-oauth-modal.tsx');
+  assert.ok(fs.existsSync(modalPath), 'social-oauth-modal.tsx component exists');
+
+  const modalContent = fs.readFileSync(modalPath, 'utf-8');
+  assert.ok(modalContent.includes('wants access to your'), 'Contains authorization header matching OAuth spec');
+  assert.ok(modalContent.includes('Authorize'), 'Contains Authorize action button');
+  assert.ok(modalContent.includes('Cancel'), 'Contains Cancel dismiss action');
+  assert.ok(modalContent.includes('Verify your'), 'Shows permission items to user');
+});
+
+test('7. Restored What You Will Get, Curriculum, and FAQ sections on Home Page with matching section IDs', () => {
+  const homePath = path.join(process.cwd(), 'src/app/page.tsx');
+  const homeContent = fs.readFileSync(homePath, 'utf-8');
+
+  // Verify section anchors
+  assert.ok(homeContent.includes('id="what-you-get"'), 'Home page contains section id="what-you-get"');
+  assert.ok(homeContent.includes('id="curriculum-preview"'), 'Home page contains section id="curriculum-preview"');
+  assert.ok(homeContent.includes('id="faq"'), 'Home page contains section id="faq"');
+
+  // Verify content headers
+  assert.ok(homeContent.includes('What You Will Get on IntelligentQA'), 'Contains What You Will Get header');
+  assert.ok(homeContent.includes('All Tutorials, Practice Labs & QA Agents Await Inside') || homeContent.includes('All Tutorials, Practice Labs &amp; QA Agents Await Inside'), 'Contains Curriculum preview header');
+  assert.ok(homeContent.includes('Frequently Asked Questions by Manual Testers'), 'Contains FAQ header');
 });

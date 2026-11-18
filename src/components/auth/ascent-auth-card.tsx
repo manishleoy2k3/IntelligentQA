@@ -7,6 +7,7 @@ import { QADatabase } from '@/lib/qa-db';
 import GoogleSignInButton from '@/components/auth/google-sign-in-button';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
+import SocialOAuthModal, { SocialProvider } from '@/components/auth/social-oauth-modal';
 import {
   ShieldCheck,
   Key,
@@ -47,6 +48,7 @@ export default function AscentAuthCard({
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [showPhoneForm, setShowPhoneForm] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [activeSocialProvider, setActiveSocialProvider] = useState<SocialProvider | null>(null);
 
   // Form Fields
   const [email, setEmail] = useState('');
@@ -201,14 +203,20 @@ export default function AscentAuthCard({
     }
   };
 
-  // Social Sign-In Mock Handlers (instant smooth authentication)
-  const handleSocialSignIn = async (provider: 'github' | 'apple' | 'facebook') => {
+  // Social Sign-In: Opens authentic OAuth Permission Pop-up Window first
+  const handleSocialSignIn = (provider: SocialProvider) => {
+    setActiveSocialProvider(provider);
+  };
+
+  const executeSocialLogin = async (provider: SocialProvider, userIdentifier: string) => {
+    setActiveSocialProvider(null);
     setLoading(true);
     try {
+      const cleanId = (userIdentifier || provider).replace(/\s+/g, '').toLowerCase();
       const dummyEmail =
         accountType === 'admin'
           ? 'admin@intelligentqa.io'
-          : `${provider}.user@intelligentqa.io`;
+          : `${cleanId}@${provider}.intelligentqa.io`;
       const dummyName =
         accountType === 'admin'
           ? 'Platform Admin'
@@ -324,11 +332,8 @@ export default function AscentAuthCard({
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
             From Manual QA to SDET
           </h2>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-            Master Test Automation with
-          </h2>
           <div className="text-2xl sm:text-3xl font-black tracking-tight text-[#81FF89]">
-            AI
+            with AI
           </div>
         </div>
 
@@ -761,6 +766,15 @@ export default function AscentAuthCard({
         onSaved={() => setShowKeyModal(false)}
         onOptOut={() => setShowKeyModal(false)}
       />
+
+      {/* Social OAuth Permission Popup Modal (GitHub, Apple, Facebook) */}
+      {activeSocialProvider && (
+        <SocialOAuthModal
+          provider={activeSocialProvider}
+          onClose={() => setActiveSocialProvider(null)}
+          onAuthorize={executeSocialLogin}
+        />
+      )}
     </div>
   );
 }
