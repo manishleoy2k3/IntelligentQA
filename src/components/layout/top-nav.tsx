@@ -219,9 +219,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                       <span className="text-xs font-semibold text-white">
                         {n.title}
                       </span>
-                      <span className="text-xs text-[#A1A1AA]">
-                        {n.time}
-                      </span>
+                      <span className="text-xs text-[#A1A1AA]">{n.time}</span>
                     </div>
                     <p className="text-xs text-[#A1A1AA] mt-1 leading-relaxed">
                       {n.desc}
