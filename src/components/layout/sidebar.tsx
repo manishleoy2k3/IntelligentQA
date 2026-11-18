@@ -231,7 +231,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     pathname?.includes('/tracks/api-testing') ||
     pathname?.includes('/tracks/ai-qa');
 
-  const isPracticeActive = pathname?.startsWith('/sandbox');
+  const isPracticeActive = pathname?.startsWith('/sandbox') || pathname === '/prompt-lab';
   const isAiToolsActive = pathname?.includes('/qa-agents') || pathname?.includes('/interview-griller');
   const isInterviewActive = pathname?.includes('/interview-questions');
 
@@ -483,7 +483,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-neutral-800 text-slate-500 dark:text-neutral-400">
-                6 Labs
+                4 Labs
               </span>
               {practiceLabsOpen ? (
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform" />
@@ -528,66 +528,34 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </div>
               </Link>
 
-              {/* Selenium Web Lab */}
-              <Link
-                href="/sandbox/web?stack=selenium"
-                onClick={onCloseMobile}
-                className={childItemClass(pathname === '/sandbox/web' && (!pathname.includes('stack=playwright') && !pathname.includes('mode=playwright')))}
-                title="Selenium Web Automation Lab"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Terminal className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Selenium Web Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Web Automation Lab</span>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Playwright Web Lab */}
-              <Link
-                href="/sandbox/web?stack=playwright"
-                onClick={onCloseMobile}
-                className={childItemClass(pathname === '/sandbox/web' && (pathname.includes('stack=playwright') || pathname.includes('mode=playwright')))}
-                title="Playwright Web Automation Lab"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Code2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Playwright Web Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Web Automation Lab</span>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Rest Assured / API Lab */}
+              {/* API Testing Lab */}
               <Link
                 href="/sandbox/api"
                 onClick={onCloseMobile}
                 className={childItemClass(pathname === '/sandbox/api')}
-                title="Rest Assured API Testing Lab"
+                title="API Testing Lab: Mock REST API Server & Requests"
               >
                 <div className="flex items-center gap-2 truncate">
                   <Server className="w-3.5 h-3.5 text-purple-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Rest Assured / API Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">API Testing Lab</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">API Testing Lab</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">REST Mock Server &amp; Auth</span>
                   </div>
                 </div>
               </Link>
 
-              {/* AI for QA & Prompt Lab */}
+              {/* AI Prompt Lab for QA */}
               <Link
-                href="/qa-agents"
+                href="/prompt-lab"
                 onClick={onCloseMobile}
-                className={childItemClass(pathname === '/qa-agents')}
-                title="AI for QA & Autonomous Agent Suite"
+                className={childItemClass(pathname === '/prompt-lab')}
+                title="AI Prompt Lab for QA: Curated Testing & SDET Prompts"
               >
                 <div className="flex items-center gap-2 truncate">
                   <Sparkles className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">AI for QA &amp; Prompt Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Autonomous QA Agents</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">AI Prompt Lab for QA</span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Curated QA Prompts</span>
                   </div>
                 </div>
               </Link>
@@ -595,7 +563,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           )}
         </div>
 
-        {/* SECTION: AI AGENTS & TOOLS (Collapsible Parent Menu matching Courses) */}
+        {/* SECTION: AI QA AGENTS (Consolidated Suite including AI Interview Griller) */}
         <div className="space-y-1 pt-1">
           <button
             type="button"
@@ -603,12 +571,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             className={`w-full ${navItemClass(isAiToolsActive)} justify-between`}
           >
             <div className="flex items-center gap-3">
-              <Sparkles className="w-4 h-4 shrink-0 text-indigo-500" />
-              <span>AI Tools &amp; Agents</span>
+              <Bot className="w-4 h-4 shrink-0 text-indigo-500" />
+              <span>AI QA Agents</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-neutral-800 text-slate-500 dark:text-neutral-400">
-                AI Suite
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-500 font-bold">
+                6 Agents
               </span>
               {aiToolsSectionOpen ? (
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform" />
@@ -619,115 +587,83 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           </button>
 
           {aiToolsSectionOpen && (
-            <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
-              {/* QA AI AGENTS (Parent Menu with Child / Sub-Menu items for easy access) */}
-              <div className="space-y-1">
-                <button
-                  type="button"
-                  onClick={() => setQaAgentsOpen(!qaAgentsOpen)}
-                  className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-                    pathname === '/qa-agents'
-                      ? 'bg-slate-100 dark:bg-neutral-800/80 text-indigo-600 dark:text-indigo-400'
-                      : 'text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-800/60'
-                  } group cursor-pointer`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Bot className="w-3.5 h-3.5 shrink-0 text-indigo-500" />
-                    <span>QA AI Agents</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500">
-                      5 Agents
-                    </span>
-                    <ChevronDown
-                      className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
-                        qaAgentsOpen ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </div>
-                </button>
+            <div className="pl-2 pr-1 py-1 space-y-1 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
+              {/* 1. Requirement Generator */}
+              <Link
+                href="/qa-agents?tab=requirements"
+                onClick={e => handleAgentClick(e, 'requirements')}
+                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'requirements')}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <FileText className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                  <span className="truncate">Requirement Generator</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded">
+                  REQ
+                </span>
+              </Link>
 
-                {qaAgentsOpen && (
-                  <div className="pl-3 pr-1 py-0.5 space-y-0.5 border-l border-indigo-200/60 dark:border-indigo-900/40 ml-3">
-                    {/* 1. Requirement Generator */}
-                    <Link
-                      href="/qa-agents?tab=requirements"
-                      onClick={e => handleAgentClick(e, 'requirements')}
-                      className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'requirements')}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <FileText className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                        <span className="truncate">Requirement Generator</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded">
-                        REQ
-                      </span>
-                    </Link>
+              {/* 2. Test Case Generator */}
+              <Link
+                href="/qa-agents?tab=test_cases"
+                onClick={e => handleAgentClick(e, 'test_cases')}
+                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'test_cases')}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <ListChecks className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span className="truncate">Test Case Generator</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded">
+                  TC
+                </span>
+              </Link>
 
-                    {/* 2. Test Case Generator */}
-                    <Link
-                      href="/qa-agents?tab=test_cases"
-                      onClick={e => handleAgentClick(e, 'test_cases')}
-                      className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'test_cases')}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <ListChecks className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                        <span className="truncate">Test Case Generator</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded">
-                        TC
-                      </span>
-                    </Link>
+              {/* 3. Automation Code Generator */}
+              <Link
+                href="/qa-agents?tab=automation_code"
+                onClick={e => handleAgentClick(e, 'automation_code')}
+                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'automation_code')}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Code2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                  <span className="truncate">Automation Generator</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1 py-0.2 rounded">
+                  CODE
+                </span>
+              </Link>
 
-                    {/* 3. Automation Code Generator */}
-                    <Link
-                      href="/qa-agents?tab=automation_code"
-                      onClick={e => handleAgentClick(e, 'automation_code')}
-                      className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'automation_code')}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Code2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                        <span className="truncate">Automation Generator</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1 py-0.2 rounded">
-                        CODE
-                      </span>
-                    </Link>
+              {/* 4. Code Reviewer & Auditor */}
+              <Link
+                href="/qa-agents?tab=code_review"
+                onClick={e => handleAgentClick(e, 'code_review')}
+                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'code_review')}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span className="truncate">Code Auditor</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded">
+                  AUDIT
+                </span>
+              </Link>
 
-                    {/* 4. Code Reviewer & Auditor */}
-                    <Link
-                      href="/qa-agents?tab=code_review"
-                      onClick={e => handleAgentClick(e, 'code_review')}
-                      className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'code_review')}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <ShieldCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                        <span className="truncate">Code Auditor</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded">
-                        AUDIT
-                      </span>
-                    </Link>
+              {/* 5. Senior SDET Mentor Chat */}
+              <Link
+                href="/qa-agents?tab=chat"
+                onClick={e => handleAgentClick(e, 'chat')}
+                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'chat')}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <MessageSquare className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                  <span className="truncate">Senior SDET Mentor</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1 py-0.2 rounded">
+                  CHAT
+                </span>
+              </Link>
 
-                    {/* 5. Senior SDET Mentor Chat */}
-                    <Link
-                      href="/qa-agents?tab=chat"
-                      onClick={e => handleAgentClick(e, 'chat')}
-                      className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'chat')}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <MessageSquare className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                        <span className="truncate">Senior SDET Mentor</span>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1 py-0.2 rounded">
-                        CHAT
-                      </span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* AI Interview Griller */}
+              {/* 6. AI Interview Griller */}
               <Link
                 href="/interview-griller"
                 onClick={e => {
@@ -744,100 +680,32 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               >
                 <div className="flex items-center gap-2 truncate">
                   <Award className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">AI Interview Griller</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Live Mock Simulation</span>
-                  </div>
+                  <span className="truncate">AI Interview Griller</span>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded shrink-0">
                   MOCK
                 </span>
               </Link>
-
-              {/* Gemini API Key */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (onCloseMobile) onCloseMobile();
-                  setShowKeyModal(true);
-                }}
-                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-all group cursor-pointer ${
-                  geminiKey
-                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                    : 'text-slate-600 dark:text-neutral-400 hover:bg-slate-100 dark:hover:bg-neutral-800'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Key className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <div className="flex flex-col text-left">
-                    <span className="text-xs font-semibold leading-tight text-slate-900 dark:text-white">
-                      Gemini API Key
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-normal">
-                      {geminiKey ? 'Active Key Connected' : 'Free AI Studio Key'}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <span
-                    className={`inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
-                      geminiKey
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                    }`}
-                  >
-                    {geminiKey ? 'ACTIVE' : 'CONFIGURE'}
-                  </span>
-                </div>
-              </button>
             </div>
           )}
         </div>
 
-        {/* SECTION: INTERVIEW BANK (Collapsible Parent Menu matching Courses) */}
+        {/* SECTION: INTERVIEW QUESTIONS (Direct Single Click to View All Questions on Right) */}
         <div className="space-y-1 pt-1">
-          <button
-            type="button"
-            onClick={() => setInterviewBankOpen(!interviewBankOpen)}
-            className={`w-full ${navItemClass(isInterviewActive)} justify-between`}
+          <Link
+            href="/interview-questions"
+            onClick={onCloseMobile}
+            className={`w-full ${navItemClass(pathname === '/interview-questions')} justify-between`}
+            title="500+ Curated SDET & Automation Interview Question Bank"
           >
             <div className="flex items-center gap-3">
               <HelpCircle className="w-4 h-4 shrink-0 text-sky-500" />
-              <span>Interview Bank</span>
+              <span>Interview Questions</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-neutral-800 text-slate-500 dark:text-neutral-400">
-                500+ Qs
-              </span>
-              {interviewBankOpen ? (
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform" />
-              ) : (
-                <ChevronRight className="w-3.5 h-3.5 text-slate-400 transition-transform" />
-              )}
-            </div>
-          </button>
-
-          {interviewBankOpen && (
-            <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
-              <Link
-                href="/interview-questions"
-                onClick={onCloseMobile}
-                className={childItemClass(pathname === '/interview-questions')}
-                title="500+ Curated SDET & Automation Interview Question Bank"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <HelpCircle className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                  <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Interview Questions</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">500+ Question Bank</span>
-                  </div>
-                </div>
-                <span className="text-[9px] font-mono font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded shrink-0">
-                  500+
-                </span>
-              </Link>
-            </div>
-          )}
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold">
+              500+ Qs
+            </span>
+          </Link>
         </div>
 
         {/* ADMIN CMS (Strictly Role-Based: Admin Only) */}

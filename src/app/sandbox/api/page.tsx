@@ -157,10 +157,10 @@ export default function ApiSandboxPage() {
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-400 mb-2">
             <Server className="w-3.5 h-3.5" />
-            Lab B: Mock REST API Server
+            API Testing Lab
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            REST API Mocking Playground
+            API Testing Lab
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-2xl">
             A functional mock backend for API automation practice. Test JWT authentication, CRUD operations, pagination headers, delay injection, and status code verification.

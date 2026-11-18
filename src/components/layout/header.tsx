@@ -101,11 +101,10 @@ export default function Header({
   const memberNavLinks = [
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/tracks', label: 'Tracks' },
-    { href: '/sandbox/web', label: 'Web Lab' },
-    { href: '/sandbox/api', label: 'API Lab' },
-    { href: '/qa-agents', label: 'QA Agents' },
-    { href: '/interview-griller', label: 'Interview Griller' },
-    { href: '/interview-questions', label: '500+ Questions' },
+    { href: '/sandbox/api', label: 'API Testing Lab' },
+    { href: '/prompt-lab', label: 'Prompt Lab' },
+    { href: '/qa-agents', label: 'AI QA Agents' },
+    { href: '/interview-questions', label: 'Interview Questions' },
   ];
 
   return (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { QADatabase, getInitials } from "@/lib/qa-db";
 import ProfileModal from "@/components/profile/profile-modal";
+import GeminiKeyModal from "@/components/auth/gemini-key-modal";
 import { UserProfile } from "@/types/qa";
 import {
   Sparkles,
@@ -19,6 +20,7 @@ import {
   ShieldCheck,
   Lock,
   X,
+  Key,
 } from "lucide-react";
 
 interface TopNavProps {
@@ -33,6 +35,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
   const [showAdminUnlockModal, setShowAdminUnlockModal] = useState(false);
   const [adminPasscode, setAdminPasscode] = useState("");
   const [adminUnlockStatus, setAdminUnlockStatus] = useState<{
@@ -164,8 +167,32 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         )}
       </div>
 
-      {/* Right Corner: "Ask SDET AI", Notifications and Profiles */}
-      <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+      {/* Right Corner: Action Controls, Notifications and Profiles */}
+      <div className="flex items-center gap-2 sm:gap-3.5 ml-auto">
+        {/* Gemini API Key Button (placed on top immediately left to Ask AI) */}
+        <button
+          type="button"
+          onClick={() => setShowKeyModal(true)}
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm transition-all border shadow-sm cursor-pointer active:scale-95 select-none ${
+            hasGeminiKey
+              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+              : "bg-[#1E1E1E] hover:bg-[#282828] text-amber-400 border-amber-500/30"
+          }`}
+          title="Gemini API Key: Configure your free Google AI Studio key"
+        >
+          <Key className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span className="hidden xs:inline">Gemini API Key</span>
+          <span
+            className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
+              hasGeminiKey
+                ? "bg-emerald-500/20 text-[#81FF89]"
+                : "bg-amber-500/20 text-amber-300"
+            }`}
+          >
+            {hasGeminiKey ? "ACTIVE" : "FREE"}
+          </span>
+        </button>
+
         {/* 1. "Ask AI" Button (formerly "Ask SDET AI") */}
         <button
           type="button"
@@ -485,6 +512,22 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           </div>
         </div>
       )}
+      {/* Gemini Key Modal */}
+      <GeminiKeyModal
+        isOpen={showKeyModal}
+        onClose={() => setShowKeyModal(false)}
+        onSaved={() => {
+          const u = QADatabase.getCurrentUser();
+          setHasGeminiKey(Boolean(QADatabase.getUserGeminiKey(u?.id)));
+          setShowKeyModal(false);
+        }}
+        onOptOut={() => {
+          const u = QADatabase.getCurrentUser();
+          setHasGeminiKey(Boolean(QADatabase.getUserGeminiKey(u?.id)));
+          setShowKeyModal(false);
+        }}
+        reason="Connect your personal free Google AI Studio key (1,500 requests/day at zero cost) to use AI features, or opt out to focus purely on core traditional automation."
+      />
     </header>
   );
 }

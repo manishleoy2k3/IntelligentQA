@@ -49,16 +49,16 @@ const SHOWCASE_SLIDES: ShowcaseSlide[] = [
   },
   {
     id: 'in-browser-sandbox',
-    badge: 'Zero Local Setup',
-    title: 'Interactive Code Sandboxes',
-    subtitle: 'Write and execute real Java, TypeScript & Python test suites directly in your browser with instant grading.',
+    badge: 'Code Compilers',
+    title: 'Interactive Code Compilers',
+    subtitle: 'Practice and evaluate core Java, TypeScript & Python programming logic, OOP structures, and syntax directly in your browser.',
     mockup: {
-      browserUrl: 'intelligentqa.io/sandbox/interactive-editor',
-      headline: 'Zero Node.js or JDK configuration required',
-      subheadline: 'Practice against live dynamic AJAX delays, Shadow DOM trees, and mock REST APIs with JWT tokens.',
-      codePreview: `public class TestCheckoutPage {\n    @Test\n    public void testOrderSubmission() {\n        driver.get("https://intelligentqa.io/sandbox/web");\n        LoginPage login = new LoginPage(driver);\n        login.submitValidOrder();\n        Assert.assertTrue(login.isConfirmationVisible());\n    }\n}`,
-      statusBadge: '⚡ Real-time In-Browser Execution Active',
-      tags: ['Java 21', 'Selenium 4', 'REST Assured'],
+      browserUrl: 'intelligentqa.io/sandbox/code',
+      headline: 'In-Browser Compilers for Core Programming Logic',
+      subheadline: 'Practice algorithms, OOP design patterns, and test automation programming syntax with zero machine setup.',
+      codePreview: `// Java Online Compiler (OOP & Test Logic)\npublic class Solution {\n    public static void main(String[] args) {\n        String expectedStatus = "CONFIRMED";\n        boolean isReady = validatePayload(expectedStatus);\n        System.out.println("Execution result: " + isReady);\n    }\n    static boolean validatePayload(String status) {\n        return "CONFIRMED".equalsIgnoreCase(status);\n    }\n}`,
+      statusBadge: '⚡ Compiled & Evaluated Successfully (0ms)',
+      tags: ['Java Compiler', 'TypeScript Compiler', 'Python Compiler'],
     },
   },
   {
@@ -146,14 +146,15 @@ export default function HeroShowcaseCarousel() {
         {/* Title & Avatars Row */}
         <div className="space-y-2 text-center max-w-xl mx-auto">
           <div className="flex items-center justify-center gap-3">
-            {/* Avatars circle pills matching screenshot */}
-            <div className="flex -space-x-2 overflow-hidden">
-              <div className="inline-block w-8 h-8 rounded-full ring-2 ring-[#1E293B] bg-gradient-to-tr from-emerald-500 to-teal-400 text-black font-extrabold text-xs flex items-center justify-center shadow">
+            {/* Clean non-overlapping QA & SDET Badges */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-[#81FF89] border border-emerald-500/40 font-bold text-xs tracking-wider shadow-sm">
                 QA
-              </div>
-              <div className="inline-block w-8 h-8 rounded-full ring-2 ring-[#1E293B] bg-gradient-to-tr from-sky-500 to-indigo-500 text-white font-extrabold text-xs flex items-center justify-center shadow">
+              </span>
+              <span className="text-zinc-500 font-bold text-xs">→</span>
+              <span className="px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/40 font-bold text-xs tracking-wider shadow-sm">
                 SDET
-              </div>
+              </span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               {activeSlide.title}
