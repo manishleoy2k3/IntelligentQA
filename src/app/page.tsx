@@ -319,7 +319,7 @@ export default function HomePage() {
       {/* 5. START LEARNING ON INTELLIGENTQA TODAY (Emergent-style Sky Landscape Banner) */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div
-          className="relative w-full rounded-[32px] sm:rounded-[44px] overflow-hidden min-h-[540px] sm:min-h-[620px] md:min-h-[680px] flex flex-col items-center justify-between text-center px-4 sm:px-8 pt-10 sm:pt-14 pb-12 shadow-2xl border border-white/20 bg-cover bg-center bg-no-repeat"
+          className="relative w-full rounded-[32px] sm:rounded-[44px] overflow-hidden min-h-[500px] sm:min-h-[580px] md:min-h-[640px] flex flex-col items-center justify-start text-center px-4 sm:px-8 pt-16 sm:pt-24 pb-12 shadow-2xl border border-white/20 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: "url('/images/start-learning-intelligentqa-bg.jpg')",
           }}
@@ -327,34 +327,8 @@ export default function HomePage() {
           {/* Subtle atmospheric vignette for text clarity */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent pointer-events-none" />
 
-          {/* Top In-Banner Navigation matching Emergent screenshot */}
-          <div className="relative z-10 w-full flex items-center justify-between px-2 sm:px-4">
-            <Link href="/" className="inline-flex items-center gap-2 group">
-              <span className="text-xl sm:text-2xl font-black text-white tracking-tight drop-shadow-md">
-                intelligent<span className="text-emerald-300">qa</span>
-              </span>
-            </Link>
-
-            <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-white/95 drop-shadow">
-              <a href="#what-you-get" className="hover:text-emerald-200 transition-colors">Features</a>
-              <Link href="/tracks" className="hover:text-emerald-200 transition-colors">Pricing</Link>
-              <a href="#faq" className="hover:text-emerald-200 transition-colors">FAQs</a>
-              <Link href="/admin" className="hover:text-emerald-200 transition-colors">Enterprise</Link>
-            </div>
-
-            <div>
-              <Link
-                href={currentUser ? '/dashboard' : '/signup'}
-                className="py-2.5 px-6 rounded-full bg-white hover:bg-neutral-100 text-neutral-900 font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <span>Get Started</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
           {/* Center Call to Action */}
-          <div className="relative z-10 my-auto py-8 space-y-6 sm:space-y-8 max-w-3xl flex flex-col items-center">
+          <div className="relative z-10 py-6 sm:py-8 space-y-6 sm:space-y-8 max-w-3xl flex flex-col items-center">
             <h2 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight drop-shadow-xl leading-[1.12] max-w-2xl">
               Start Learning on IntelligentQA today.
             </h2>
@@ -369,9 +343,6 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-
-          {/* Spacer to give room for the floating 3D QA emblem and green hill */}
-          <div className="relative z-10 h-8 sm:h-14" />
         </div>
       </section>
 

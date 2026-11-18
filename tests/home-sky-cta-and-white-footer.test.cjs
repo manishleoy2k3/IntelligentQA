@@ -29,6 +29,12 @@ test('1. Home Page: Start Learning on IntelligentQA today Sky Section', () => {
   assert.ok(fs.existsSync(imagePath), 'start-learning-intelligentqa-bg.jpg exists in public/images');
   const imageStats = fs.statSync(imagePath);
   assert.ok(imageStats.size > 100000, 'start-learning-intelligentqa-bg.jpg is a high-resolution image (>100KB)');
+
+  // Verify in-banner top navigation is removed as requested
+  assert.ok(
+    !homePageFile.includes('Top In-Banner Navigation'),
+    'In-banner top navigation bar is cleanly removed from the sky section'
+  );
 });
 
 test('2. Footer: White background matching Emergent reference design', () => {
