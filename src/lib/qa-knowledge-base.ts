@@ -761,13 +761,559 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
       'Writing tests that only run on your local machine and fail in headless Linux containers'
     ],
     interviewTips: 'Explain how you set retries to 1 in CI (retries: process.env.CI ? 1 : 0) and use sharding to scale parallel workers.'
+  },
+
+  // 21. ThreadLocal WebDriver Parallel Execution
+  {
+    id: 'threadlocal-webdriver',
+    topic: 'ThreadLocal WebDriver for Parallel TestNG Execution',
+    category: 'selenium',
+    keywords: ['threadlocal', 'parallel execution', 'testng parallel', 'threadlocal webdriver', 'concurrency', 'multithreading', 'driver factory'],
+    question: 'How do you configure ThreadLocal WebDriver for parallel execution in TestNG?',
+    shortAnswer: 'To run Selenium tests in parallel without driver instance collisions, wrap the WebDriver instance inside a java.lang.ThreadLocal container. Each worker thread receives its own isolated browser session, preventing race conditions, state bleed, and session hijacking.',
+    detailedAnswer: `### ThreadLocal Driver Architecture:
+In multi-threaded execution (e.g. TestNG parallel="methods" thread-count="4"), a static \`WebDriver driver\` reference is shared across threads, causing tests to hijack each other's browser windows. Wrapping it in \`ThreadLocal<WebDriver>\` creates an isolated memory slot per OS thread.
+
+### Clean DriverFactory Pattern:
+1. Initialize the driver per thread: \`tlDriver.set(new ChromeDriver(options));\`
+2. Retrieve the thread-isolated instance: \`tlDriver.get();\`
+3. Quit and remove to prevent thread-pool memory leaks: \`tlDriver.get().quit(); tlDriver.remove();\``,
+    codeSnippet: {
+      selenium: `public class DriverFactory {
+    private static final ThreadLocal<WebDriver> tlDriver = new ThreadLocal<>();
+
+    public static synchronized void initDriver(String browser) {
+        if (browser.equalsIgnoreCase("chrome")) {
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless=new", "--no-sandbox");
+            tlDriver.set(new ChromeDriver(options));
+        }
+    }
+
+    public static WebDriver getDriver() {
+        return tlDriver.get();
+    }
+
+    public static void quitDriver() {
+        if (tlDriver.get() != null) {
+            tlDriver.get().quit();
+            tlDriver.remove(); // Essential: prevents memory leaks in thread pools
+        }
+    }
+}`
+    },
+    bestPractices: [
+      'Always invoke tlDriver.remove() in @AfterMethod to avoid memory leaks in reusable worker threads',
+      'Never declare WebDriver as a shared public static variable across test classes',
+      'Set parallel="methods" and thread-count="4" in testng.xml for thread-safe test execution'
+    ],
+    antiPatterns: [
+      'Using a static non-ThreadLocal WebDriver in parallel execution runs',
+      'Calling tlDriver.get().quit() without calling tlDriver.remove()'
+    ],
+    interviewTips: 'Highlighting tlDriver.remove() to avoid thread pool memory leaks immediately distinguishes senior SDETs from junior automation testers in technical interviews.'
+  },
+
+  // 22. Playwright iFrames and FrameLocator
+  {
+    id: 'playwright-iframes',
+    topic: 'Playwright iFrames & Nested Frames Handling',
+    category: 'playwright',
+    keywords: ['iframe', 'frame', 'framelocator', 'nested iframe', 'frameset', 'switchto frame'],
+    question: 'How do you handle iframes and nested frames in Playwright vs Selenium?',
+    shortAnswer: 'In Playwright, use page.frameLocator(selector) to target elements inside an iframe directly without manual context switching. Unlike Selenium which requires driver.switchTo().frame() and driver.switchTo().defaultContent(), Playwright frame locators compose naturally, auto-wait, and never require switching back.',
+    detailedAnswer: `### Playwright vs Selenium Frame Architecture
+In Selenium:
+Testers must manually call \`driver.switchTo().frame("frameName")\`, interact with the element, and remember to call \`driver.switchTo().defaultContent()\`. Forgetting to switch back is the #1 cause of NoSuchElementException in subsequent steps.
+
+In Playwright:
+\`page.frameLocator(selector)\` returns a Locator scoped to that frame. You interact directly: \`await page.frameLocator('#frameId').getByRole('button').click()\`. Playwright manages the frame execution context automatically.`,
+    codeSnippet: {
+      playwright: `// Target an element inside an iframe directly with auto-waiting
+const checkoutFrame = page.frameLocator('#payment-frame');
+await checkoutFrame.getByRole('textbox', { name: 'Card Number' }).fill('424242424242');
+await checkoutFrame.getByRole('button', { name: 'Pay Now' }).click();
+
+// Chaining for deeply nested iframes:
+const nestedInput = page.frameLocator('#outer-frame').frameLocator('#inner-frame').getByRole('textbox');
+await nestedInput.fill('Secure Data');`,
+      selenium: `// Selenium requires manual context switching and switching back:
+driver.switchTo().frame("payment-frame");
+driver.findElement(By.id("cardNumber")).sendKeys("424242424242");
+driver.findElement(By.id("payBtn")).click();
+driver.switchTo().defaultContent(); // Required, or subsequent actions fail!`
+    },
+    bestPractices: [
+      'Use frameLocator with role or id locators for stable frame access',
+      'Chain frameLocator calls for nested iframes without context-switching boilerplate',
+      'Never use manual sleeps to wait for iframe loads—Playwright auto-waits for frame readiness'
+    ],
+    antiPatterns: [
+      'Switching context manually in Playwright (not needed)',
+      'Forgetting driver.switchTo().defaultContent() in Selenium'
+    ],
+    interviewTips: 'Emphasize that Playwright frameLocator is lazy and auto-waits for the frame to attach, eliminating iframe race conditions.'
+  },
+
+  // 23. Selenium driver.close() vs driver.quit()
+  {
+    id: 'driver-close-vs-quit',
+    topic: 'driver.close() vs driver.quit() & Session Management',
+    category: 'selenium',
+    keywords: ['close vs quit', 'driver.close', 'driver.quit', 'nosuchsessionexception', 'session id is null', 'close vs quit difference'],
+    question: 'What is the exact difference between driver.close() and driver.quit() in Selenium?',
+    shortAnswer: 'driver.close() closes only the currently focused browser window or tab, leaving the WebDriver session and driver executable active. driver.quit() terminates all open browser windows, stops the WebDriver executable process (e.g. chromedriver), and destroys the session ID (setting it to null).',
+    detailedAnswer: `### Technical Breakdown:
+• \`driver.close()\`: Sends DELETE /session/{id}/window. If 3 tabs are open, only the active tab closes. If the last window closes, the driver process may linger.
+• \`driver.quit()\`: Sends DELETE /session/{id}. Kills the browser daemon process, clears temporary user profile directories, and invalidates the session ID. Any subsequent driver call throws \`NoSuchSessionException: Session ID is null\`.`,
+    codeSnippet: {
+      selenium: `// Example: Closing a secondary popup tab and cleaning up at test suite finish
+String parentWindow = driver.getWindowHandle();
+for (String handle : driver.getWindowHandles()) {
+    if (!handle.equals(parentWindow)) {
+        driver.switchTo().window(handle);
+        driver.close(); // Closes only popup tab
+    }
+}
+driver.switchTo().window(parentWindow);
+
+// In @AfterClass or @AfterSuite:
+@AfterClass
+public void tearDown() {
+    if (driver != null) {
+        driver.quit(); // Shuts down chromedriver process & session
+    }
+}`
+    },
+    bestPractices: [
+      'Always call driver.quit() in @AfterMethod or @AfterClass inside a try-finally block',
+      'Use driver.close() only when cleaning up secondary popups/tabs during a multi-window test',
+      'Never attempt to call driver methods after driver.quit() without re-initializing'
+    ],
+    antiPatterns: [
+      'Calling driver.close() at the end of a test suite instead of driver.quit(), causing orphaned zombie chromedriver processes on CI agents',
+      'Calling driver.findElement() after driver.quit() has been invoked'
+    ],
+    interviewTips: 'Mentioning that failing to call driver.quit() creates zombie chromedriver processes that eat RAM on CI/CD agents proves hands-on production infrastructure experience.'
+  },
+
+  // 24. Dynamic Web Tables and XPath Axes
+  {
+    id: 'dynamic-web-tables-xpath',
+    topic: 'Dynamic Web Tables & Advanced XPath Axes',
+    category: 'selenium',
+    keywords: ['web table', 'dynamic table', 'table', 'xpath axes', 'following-sibling', 'ancestor', 'preceding-sibling', 'dynamic xpath'],
+    question: 'How do you automate dynamic web tables with XPath axes in Selenium and Playwright?',
+    shortAnswer: 'In dynamic web tables where rows reorder or paginate, locate a unique anchor text cell (e.g. Customer Email or Order ID) and traverse relative to it using XPath axes (following-sibling::, parent::, ancestor::) in Selenium, or row-scoped locators (page.getByRole("row")) in Playwright.',
+    detailedAnswer: `### Dealing with Dynamic Web Tables:
+Hardcoding row indices (\`//table//tr[3]/td[4]\`) causes brittle failures when sorting, filtering, or new rows shift order.
+
+### Resilient Relative Traversal:
+1. **Find Anchor Cell**: Locate the unique cell: \`//td[text()='ORD-987']\`
+2. **Navigate to Row or Action Cell**:
+   • \`//td[text()='ORD-987']/following-sibling::td//button[text()='Delete']\`
+   • \`//tr[td[text()='ORD-987']]//button[@aria-label='Edit']\`
+3. **Playwright Row Scoping**:
+   \`page.getByRole('row', { name: /ORD-987/ }).getByRole('button', { name: 'Delete' }).click()\``,
+    codeSnippet: {
+      selenium: `// Selenium: Target action button relative to anchor order ID
+String orderId = "ORD-987";
+String xpath = String.format("//tr[td[text()='%s']]//button[contains(@class, 'delete-btn')]", orderId);
+
+WebElement deleteBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+deleteBtn.click();`,
+      playwright: `// Playwright: User-centric row scoping without raw XPath
+const orderRow = page.getByRole('row', { name: /ORD-987/ });
+await orderRow.getByRole('button', { name: 'Delete' }).click();
+await expect(orderRow).toHaveCount(0); // Verify row deleted`
+    },
+    bestPractices: [
+      'Anchor to unique, stable business identifiers (Order ID, Email, SKU) rather than row numbers',
+      'Use Playwright getByRole("row", { name: ... }) for clean accessible table queries',
+      'Use following-sibling:: and ancestor:: when working with legacy Selenium DOM structures'
+    ],
+    antiPatterns: [
+      'Using hardcoded absolute XPaths like /html/body/div[2]/table/tbody/tr[4]/td[2]',
+      'Iterating through all rows in a loop when a single relative XPath can target the row directly'
+    ],
+    interviewTips: 'Interviewers ask web table questions to test whether you write brittle indexed XPaths or robust relative relational locators using XPath axes.'
+  },
+
+  // 25. File Upload Automation in Playwright and Selenium
+  {
+    id: 'file-upload-automation',
+    topic: 'File Upload Automation (Playwright & Selenium)',
+    category: 'playwright',
+    keywords: ['file upload', 'upload file', 'setinputfiles', 'sendkeys upload', 'filechooser', 'upload test'],
+    question: 'How do you automate file uploads in Playwright and Selenium?',
+    shortAnswer: 'In Playwright, use locator.setInputFiles("path/to/file.pdf") or handle custom modal pickers with page.waitForEvent("filechooser"). In Selenium, pass the absolute file path directly using element.sendKeys(file.getAbsolutePath()) to the <input type="file"> element without clicking the button.',
+    detailedAnswer: `### The Golden Rule of File Upload Automation:
+Never click the "Upload" button if clicking it opens the native OS file explorer dialog (Windows Explorer / macOS Finder), because Selenium and Playwright cannot control native OS desktop windows!
+
+Instead:
+1. Target the underlying HTML \`<input type="file">\` tag directly.
+2. In Selenium: \`driver.findElement(By.cssSelector("input[type='file']")).sendKeys(absolutePath)\`
+3. In Playwright: \`await page.getByLabel("Upload").setInputFiles("path/to/file.pdf")\`
+4. For custom UI uploaders where the input is hidden, use Playwright's \`page.waitForEvent('filechooser')\`.`,
+    codeSnippet: {
+      playwright: `// Approach 1: Direct setInputFiles on the file input
+await page.getByLabel('Upload Resume').setInputFiles(path.join(__dirname, 'fixtures/sample.pdf'));
+
+// Approach 2: Handling custom drag-and-drop or custom button triggers:
+const fileChooserPromise = page.waitForEvent('filechooser');
+await page.getByRole('button', { name: 'Choose Document' }).click();
+const fileChooser = await fileChooserPromise;
+await fileChooser.setFiles('fixtures/sample.pdf');`,
+      selenium: `// Selenium: Send absolute file path directly to input[type='file']
+File uploadFile = new File("src/test/resources/sample.pdf");
+WebElement fileInput = driver.findElement(By.cssSelector("input[type='file']"));
+fileInput.sendKeys(uploadFile.getAbsolutePath());`
+    },
+    bestPractices: [
+      'Always pass absolute file paths to avoid working-directory discrepancies in CI/CD containers',
+      'Target input[type="file"] directly to bypass native OS file picker dialogs',
+      'Use Playwright waitForEvent("filechooser") for modern custom UI upload widgets'
+    ],
+    antiPatterns: [
+      'Clicking a file upload button and trying to use Robot class or AutoIT to interact with OS dialogs',
+      'Using hardcoded local Windows paths like C:\\Users\\Name\\Desktop in cross-platform test suites'
+    ],
+    interviewTips: 'Emphasize that targeting the file input directly avoids fragile OS-dependent tools like AutoIT or Java Robot class, keeping test runs 100% cloud & container compatible.'
+  },
+
+  // 26. REST Assured Bearer Token & OAuth2 Authentication
+  {
+    id: 'rest-assured-bearer-auth',
+    topic: 'REST Assured Bearer Token & OAuth2 Authentication',
+    category: 'api',
+    keywords: ['bearer token', 'oauth2', 'jwt', 'authorization header', 'requestspecbuilder', 'api auth', 'rest assured token'],
+    question: 'How do you handle Bearer Token and OAuth2 authentication in REST Assured?',
+    shortAnswer: 'Configure authentication centrally in a reusable RequestSpecification using RequestSpecBuilder.addHeader("Authorization", "Bearer " + token) or given().auth().oauth2(token). Reusing this spec across all test classes ensures tokens are injected consistently without repetitive boilerplate.',
+    detailedAnswer: `### Centralized API Authentication Architecture:
+1. **Token Retrieval**: Obtain a JWT/OAuth2 token in a \`@BeforeClass\` or \`AuthManager\` utility.
+2. **RequestSpecBuilder**: Inject the bearer token into a base specification.
+3. **Spec Injection**: Pass \`.spec(authSpec)\` to every API request. When tokens expire, refresh logic is isolated to one place.`,
+    codeSnippet: {
+      restassured: `public class SecureApiTests {
+    private static RequestSpecification authSpec;
+
+    @BeforeClass
+    public static void setupAuth() {
+        String jwtToken = AuthHelper.fetchJwtToken("sdet_user", "password123");
+
+        authSpec = new RequestSpecBuilder()
+            .setBaseUri("https://api.intelligentqa.io")
+            .setBasePath("/api/v1")
+            .addHeader("Authorization", "Bearer " + jwtToken)
+            .setContentType(ContentType.JSON)
+            .build();
+    }
+
+    @Test
+    public void testGetProtectedUserProfile() {
+        given()
+            .spec(authSpec)
+            .pathParam("userId", "usr-42")
+        .when()
+            .get("/users/{userId}")
+        .then()
+            .statusCode(200)
+            .body("status", equalTo("ACTIVE"))
+            .body("email", endsWith("@intelligentqa.io"));
+    }
+}`
+    },
+    bestPractices: [
+      'Encapsulate token generation and refresh logic in a singleton AuthManager class',
+      'Use RequestSpecBuilder to enforce common auth headers and base URIs across test suites',
+      'Never log sensitive bearer tokens or passwords in test reporting logs'
+    ],
+    antiPatterns: [
+      'Hardcoding JWT tokens with fixed expiration dates directly in test annotations',
+      'Manually repeating given().header("Authorization", "Bearer ...") in every single test method'
+    ],
+    interviewTips: 'Explain how RequestSpecBuilder eliminates code duplication and how you cache auth tokens in a singleton to avoid hammering the authentication server before every single test.'
+  },
+
+  // 27. Model Context Protocol (MCP) in QA Automation
+  {
+    id: 'mcp-qa-automation',
+    topic: 'Model Context Protocol (MCP) in QA Automation',
+    category: 'ai-qa',
+    keywords: ['mcp', 'model context protocol', 'ai agents in qa', 'mcp server', 'agentic testing', 'ai test automation'],
+    question: 'What is the Model Context Protocol (MCP) and how does it transform QA test automation?',
+    shortAnswer: 'Model Context Protocol (MCP) is an open standard that connects AI agents securely to local test runners, browser automation tools (Playwright CDP), Jira, and CI/CD logs. Instead of humans copying logs and DOM trees into chat prompts, MCP gives AI agents standardized tools to inspect live DOM states, execute test scripts, triage stack traces, and generate pull requests autonomously.',
+    detailedAnswer: `### The MCP Architecture for SDETs:
+• **Traditional AI**: Prompting an LLM in a web chat requires manually pasting code snippets, DOM trees, and error logs.
+• **Agentic MCP**: The AI agent acts as a client connected to MCP servers:
+  1. **Playwright / Browser MCP**: Agent navigates pages, captures accessibility trees, clicks elements, and records traces.
+  2. **Git / GitHub MCP**: Agent reads code diffs, branches, and opens pull requests with newly generated test cases.
+  3. **Database / API MCP**: Agent queries test databases and executes contract validations live.`,
+    codeSnippet: {
+      playwright: `// Agentic Test Execution via Model Context Protocol:
+// 1. MCP server exposes accessible DOM tools to the QA Agent
+// 2. The Agent inspects live accessibility tree:
+const snapshot = await mcpPlaywright.getAccessibilitySnapshot();
+
+// 3. Agent generates and verifies resilient locator on the fly:
+const locator = page.getByRole('button', { name: 'Confirm Purchase' });
+await locator.click();
+
+// 4. On test failure, agent queries CI MCP server to inspect server logs:
+const failureLogs = await mcpLogging.getPodLogs({ pod: 'checkout-service', since: '5m' });`
+    },
+    bestPractices: [
+      'Always keep a human SDET in the loop to review and approve agent PR submissions',
+      'Use MCP accessibility tools (roles, accessible names) rather than fragile CSS selectors',
+      'Run agentic test generation inside secure, isolated sandboxes'
+    ],
+    antiPatterns: [
+      'Allowing autonomous AI agents to deploy tests directly to production pipelines without code review',
+      'Feeding uncurated, massive DOM HTML blobs to LLMs instead of token-efficient accessibility trees'
+    ],
+    interviewTips: 'Explaining how MCP standardizes tool calling for browser drivers, CI logs, and test runners positions you as a forward-thinking, Next-Gen SDET Architect.'
+  },
+
+  // 28. Test Pyramid, Shift-Left Testing & Agile QA Strategy
+  {
+    id: 'test-pyramid-shift-left',
+    topic: 'Test Pyramid, Shift-Left Testing & Agile QA Strategy',
+    category: 'framework',
+    keywords: ['test pyramid', 'shift left', 'shift-left', 'agile qa', 'test strategy', 'test plan vs strategy', 'qa process', 'pyramid'],
+    question: 'What is Shift-Left testing and how does the Test Pyramid guide enterprise QA strategy?',
+    shortAnswer: 'Shift-Left testing involves moving testing activities earlier into the software lifecycle (unit tests, contract tests, static code analysis) before code reaches QA environments. The Test Pyramid guides this by recommending 70% Unit tests, 20% API/Integration tests, and 10% End-to-End UI tests, ensuring rapid feedback and minimal maintenance costs.',
+    detailedAnswer: `### The Test Pyramid Allocation:
+1. **Unit Layer (~70%)**: Fast (milliseconds), isolated, executed on every developer commit. Catches algorithmic and branch bugs.
+2. **API / Service Layer (~20%)**: Fast (10-50ms), validates schemas, business rules, and microservice contracts without browser rendering overhead.
+3. **E2E UI Layer (~10%)**: Slow (seconds), verifies critical P0 user journeys, multi-system integration, and visual presentation.
+
+### The Inverted Ice-Cream Cone Anti-Pattern:
+When teams have 70% UI tests and 10% Unit tests, test suites become slow (hours to run), flaky, expensive to maintain, and delay release cycles.`,
+    bestPractices: [
+      'Shift-Left by participating in 3 Amigos / Sprint Planning to define Acceptance Criteria and test matrices upfront',
+      'Push test verification down to the lowest feasible layer (API over UI, Unit over API)',
+      'Reserve End-to-End browser automation strictly for critical revenue-generating flows (Checkout, Sign In, Onboarding)'
+    ],
+    antiPatterns: [
+      'Automating every single edge case and validation error via UI browser tests (The Inverted Cone)',
+      'Beginning QA test design only after developers have completely finished coding'
+    ],
+    interviewTips: 'Emphasize that high test suite flakiness and slow CI pipelines almost always stem from an inverted test pyramid where teams over-automate through UI browsers instead of API contracts.'
+  },
+
+  // 29. Handling Multiple Windows, Tabs, and Popups
+  {
+    id: 'multiple-tabs-popups',
+    topic: 'Handling Multiple Windows, Tabs, and Popups',
+    category: 'playwright',
+    keywords: ['multiple tabs', 'new tab', 'popup', 'window handle', 'switch window', 'page.waitforevent', 'tabs'],
+    question: 'How do you handle multiple browser tabs and popups in Playwright and Selenium?',
+    shortAnswer: 'In Playwright, use context.waitForEvent("page") while triggering the popup action, returning a new Page instance with zero window handle switching. In Selenium, use driver.getWindowHandles(), iterate through the set, and switch using driver.switchTo().window(targetHandle).',
+    detailedAnswer: `### Playwright Multi-Page Architecture:
+Playwright treats multiple tabs as separate \`Page\` objects belonging to the same \`BrowserContext\`. You can interact with both tabs simultaneously without switching focus back and forth.
+
+### Selenium Multi-Window Architecture:
+Selenium maintains a single active window focus. You must explicitly query the set of handles (\`driver.getWindowHandles()\`) and issue \`driver.switchTo().window(handle)\`.`,
+    codeSnippet: {
+      playwright: `// Playwright: Listen for the new tab event while clicking
+const [newPage] = await Promise.all([
+    context.waitForEvent('page'),
+    page.getByRole('link', { name: 'Terms of Service' }).click() // Opens in target="_blank"
+]);
+
+await newPage.waitForLoadState();
+await expect(newPage.getByRole('heading', { level: 1 })).toHaveText('Terms of Service');
+
+// Interact with the original page without switching back!
+await page.getByRole('button', { name: 'Accept' }).click();`,
+      selenium: `// Selenium: Switch window handle manually
+String originalWindow = driver.getWindowHandle();
+driver.findElement(By.linkText("Terms of Service")).click();
+
+for (String windowHandle : driver.getWindowHandles()) {
+    if (!originalWindow.equals(windowHandle)) {
+        driver.switchTo().window(windowHandle);
+        break;
+    }
+}
+// Now on new window:
+System.out.println("Popup title: " + driver.getTitle());
+driver.close(); // Close popup
+driver.switchTo().window(originalWindow); // Switch back to original`
+    },
+    bestPractices: [
+      'In Playwright, use Promise.all with context.waitForEvent("page") to avoid missing the popup open event',
+      'In Selenium, always preserve the originalWindow handle so you can switch back reliably',
+      'Close auxiliary popup tabs as soon as their verification is finished to release browser memory'
+    ],
+    antiPatterns: [
+      'In Playwright, calling page.click() and then waiting for event afterwards (race condition: event may have already fired)',
+      'Forgetting to switch back to originalWindow in Selenium'
+    ],
+    interviewTips: 'Highlight that Playwright allows interacting with multiple pages concurrently in the same test without switching focus, whereas Selenium requires explicit thread context switching.'
+  },
+
+  // 30. Handling Dynamic Dropdowns and Auto-Suggest Inputs
+  {
+    id: 'dynamic-dropdowns-suggest',
+    topic: 'Dynamic Dropdowns and Auto-Suggest Inputs',
+    category: 'playwright',
+    keywords: ['dynamic dropdown', 'auto suggest', 'autocomplete', 'select option', 'dropdown', 'combobox'],
+    question: 'How do you automate dynamic auto-suggest dropdowns in Playwright and Selenium?',
+    shortAnswer: 'For standard HTML <select> tags, use page.selectOption(value) or Selenium new Select(element).selectByVisibleText(). For modern custom SPAs (React/Vue/Angular custom <div> or <ul> dropdowns), type into the input, wait for the suggestion panel to render, and click the item matching your accessible text or role.',
+    detailedAnswer: `### Two Types of Dropdowns:
+1. **Native HTML \`<select>\` Dropdowns**:
+   • Playwright: \`await page.getByLabel('Country').selectOption('IN');\`
+   • Selenium: \`new Select(driver.findElement(By.id("country"))).selectByVisibleText("India");\`
+2. **Custom JavaScript / SPA Auto-Suggest Comboboxes**:
+   • These are custom \`<input>\` and \`<ul>\` elements rendered by React/Vue.
+   • You must type into the input to trigger the backend search API, wait for options to appear, and click the option.`,
+    codeSnippet: {
+      playwright: `// Modern SPA Dynamic Auto-suggest combobox:
+const searchInput = page.getByRole('combobox', { name: 'Search Airports' });
+await searchInput.fill('JFK');
+
+// Auto-waiting for suggestions to appear and selecting matching option
+const option = page.getByRole('option', { name: 'John F. Kennedy Intl (JFK)' });
+await option.click();
+
+await expect(searchInput).toHaveValue(/JFK/);`,
+      selenium: `// Selenium custom auto-suggest:
+WebElement input = driver.findElement(By.id("airport-search"));
+input.sendKeys("JFK");
+
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+WebElement suggestion = wait.until(ExpectedConditions.visibilityOfElementLocated(
+    By.xpath("//ul[@role='listbox']//li[contains(text(), 'John F. Kennedy')]")
+));
+suggestion.click();`
+    },
+    bestPractices: [
+      'Check if the element is a native <select> before attempting to use Select class in Selenium',
+      'Use Playwright getByRole("option", { name: ... }) for accessible, reliable option selection',
+      'Never use fixed Thread.sleep() while waiting for autocomplete results to populate from backend APIs'
+    ],
+    antiPatterns: [
+      'Trying to use Selenium Select class on custom <div> or <ul> elements (throws UnexpectedTagNameException)',
+      'Clicking before the suggestion panel has finished animating or rendering'
+    ],
+    interviewTips: 'Distinguishing between native <select> elements and custom SPA <div> dropdowns demonstrates practical frontend test automation experience.'
+  },
+
+  // 31. Performance & Load Testing with k6 & JMeter
+  {
+    id: 'performance-k6-jmeter',
+    topic: 'Performance & Load Testing with k6 & JMeter',
+    category: 'framework',
+    keywords: ['k6', 'jmeter', 'load test', 'performance testing', 'stress testing', 'sla', 'response time', 'p95', 'load testing'],
+    question: 'How do you implement performance and load testing with k6 or JMeter in SDET pipelines?',
+    shortAnswer: 'Modern SDETs write performance tests as code using k6 (JavaScript/TypeScript) or JMeter. k6 runs in the same CI/CD repositories as Playwright, asserting strict non-functional SLAs (such as 95th percentile latency p(95) < 500ms and 0% error rate under load).',
+    detailedAnswer: `### Why k6 for Modern SDETs:
+1. **Tests as Code**: Written in JavaScript/TypeScript directly in your automation repository alongside Playwright.
+2. **Shift-Left Performance**: Developers and SDETs can run local load tests on feature branches before merging.
+3. **Automated CI Quality Gates**: Fails PR pipelines automatically if response times exceed threshold SLAs.`,
+    codeSnippet: {
+      playwright: `import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  vus: 50, // 50 virtual users concurrently
+  duration: '30s',
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // 95% of requests must complete below 500ms
+    http_req_failed: ['rate<0.01'],    // Less than 1% failed requests
+  },
+};
+
+export default function () {
+  const res = http.get('https://api.intelligentqa.io/api/v1/health');
+  check(res, { 'status is 200': (r) => r.status === 200 });
+  sleep(1);
+}`
+    },
+    bestPractices: [
+      'Define clear Non-Functional Requirements (NFRs) like p(95) latency and error thresholds',
+      'Integrate performance smoke tests into CI pull request pipelines to prevent latency regressions',
+      'Test in isolated staging environments with production-like data volumes'
+    ],
+    antiPatterns: [
+      'Running full-scale stress tests against production environments without scheduled maintenance windows',
+      'Ignoring 95th and 99th percentile latencies and relying only on average response times'
+    ],
+    interviewTips: 'Emphasize that average response times hide latency spikes; senior SDETs always measure p(95) and p(99) percentiles.'
+  },
+
+  // 32. Event-Driven & Apache Kafka Stream Testing
+  {
+    id: 'kafka-stream-testing',
+    topic: 'Event-Driven & Apache Kafka Stream Testing',
+    category: 'framework',
+    keywords: ['kafka', 'rabbit', 'rabbitmq', 'stream testing', 'event-driven', 'queue', 'pubsub', 'consumer', 'producer'],
+    question: 'How do SDETs test event-driven architectures with Apache Kafka or RabbitMQ?',
+    shortAnswer: 'To test event-driven systems using Apache Kafka, SDETs verify: 1) Producer schema compliance (Avro/JSON schemas); 2) Consumer idempotency (handling duplicate messages without duplicate records); and 3) End-to-end asynchronous workflows using polling libraries like Awaitility to assert that publishing an event results in the expected database or downstream queue state.',
+    detailedAnswer: `### 3 Core Pillars of Kafka Automation:
+1. **Schema Registry Validation**: Assert that messages conform to strict Avro, Protobuf, or JSON schema definitions.
+2. **Consumer Idempotency**: Intentionally publish identical message keys twice and assert that downstream records are created only once.
+3. **Asynchronous Polling with Awaitility**: Never use Thread.sleep; poll consumer topics dynamically with Awaitility until assertions pass.`,
+    codeSnippet: {
+      selenium: `// Producer test with Awaitility polling (Java):
+ProducerRecord<String, OrderEvent> record = new ProducerRecord<>("orders-topic", orderId, event);
+kafkaProducer.send(record).get();
+
+// Dynamically poll the database until consumer persists the order:
+Awaitility.await()
+    .atMost(Duration.ofSeconds(10))
+    .pollInterval(Duration.ofMillis(500))
+    .untilAsserted(() -> {
+        OrderEntity order = orderRepository.findByOrderId(orderId);
+        assertNotNull(order);
+        assertEquals("PROCESSED", order.getStatus());
+    });`
+    },
+    bestPractices: [
+      'Use Awaitility for dynamic asynchronous polling instead of arbitrary sleeps',
+      'Verify consumer idempotency by publishing duplicate events and verifying no double-processing',
+      'Use embedded Kafka (EmbeddedKafkaRule / Testcontainers) in automated CI pipelines'
+    ],
+    antiPatterns: [
+      'Inserting Thread.sleep(5000) waiting for asynchronous Kafka consumer processing',
+      'Testing consumers without verifying DLQ (Dead Letter Queue) failure handling'
+    ],
+    interviewTips: 'Explaining consumer idempotency and using Awaitility for asynchronous assertions demonstrates advanced enterprise backend SDET maturity.'
   }
 ];
+
+export function getNextStepSuggestion(category?: string, topic?: string): string {
+  const t = (topic || '').toLowerCase();
+  const c = (category || '').toLowerCase();
+
+  if (c === 'playwright' || t.includes('playwright')) {
+    return `👉 **Next Step for QA:** Practice this locator and action live in our interactive Web Automation Playground (\`/sandbox/web\`), or dive deeper into the Playwright + TypeScript Track at \`/tracks/playwright-ts\`.`;
+  }
+  if (c === 'selenium' || t.includes('selenium')) {
+    return `👉 **Next Step for QA:** Implement this pattern in your local automation suite or explore the enterprise Selenium track at \`/tracks/selenium-java\`. Try testing locators live in \`/sandbox/web\`.`;
+  }
+  if (c === 'api' || t.includes('api') || t.includes('rest assured')) {
+    return `👉 **Next Step for QA:** Test request headers, status codes, and schema validations live in our built-in Mock REST API Sandbox at \`/sandbox/api\`.`;
+  }
+  if (c === 'ai-qa' || t.includes('agent') || t.includes('ai') || t.includes('mcp')) {
+    return `👉 **Next Step for QA:** Experiment with autonomous QA workflows in our QA Agents Workspace at \`/qa-agents\`, or practice technical interview grilling at \`/interview-griller\`.`;
+  }
+  if (c === 'career-faq' || t.includes('salary') || t.includes('timeline') || t.includes('zero coding')) {
+    return `👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` to get your personalized SDET roadmap, or practice questions in our 500+ Question Bank at \`/interview-questions\`.`;
+  }
+  return `👉 **Next Step for QA:** Try applying this concept in our Web Playground (\`/sandbox/web\`) or ask our dedicated QA Agents (\`/qa-agents\`) to generate boilerplate code for you.`;
+}
 
 export function formatCrispChatAnswer(entry: QAKnowledgeEntry): string {
   let output = `${entry.shortAnswer}\n\n`;
 
-  // Add 2-3 key bullet points
+  // If detailed breakdown exists and there is no code snippet, include the detailed architectural content
+  if (entry.detailedAnswer && !entry.codeSnippet) {
+    output += `${entry.detailedAnswer.trim()}\n\n`;
+  }
+
+  // Add key bullet points
   if (entry.bestPractices && entry.bestPractices.length > 0) {
     output += `**Key Practical Guidance:**\n`;
     entry.bestPractices.slice(0, 3).forEach(bp => {
@@ -776,18 +1322,23 @@ export function formatCrispChatAnswer(entry: QAKnowledgeEntry): string {
     output += '\n';
   }
 
-  // Include minimal code if available
+  // Include full, compilable, clean code snippet
   if (entry.codeSnippet?.playwright) {
-    const lines = entry.codeSnippet.playwright.trim().split('\n').slice(0, 4).join('\n');
-    output += `\`\`\`typescript\n${lines}\n\`\`\`\n\n`;
+    output += `\`\`\`typescript\n${entry.codeSnippet.playwright.trim()}\n\`\`\`\n\n`;
+  } else if (entry.codeSnippet?.restassured) {
+    output += `\`\`\`java\n${entry.codeSnippet.restassured.trim()}\n\`\`\`\n\n`;
   } else if (entry.codeSnippet?.selenium) {
-    const lines = entry.codeSnippet.selenium.trim().split('\n').slice(0, 4).join('\n');
-    output += `\`\`\`java\n${lines}\n\`\`\`\n\n`;
+    output += `\`\`\`java\n${entry.codeSnippet.selenium.trim()}\n\`\`\`\n\n`;
+  } else if (entry.codeSnippet?.pythonOrOther) {
+    output += `\`\`\`python\n${entry.codeSnippet.pythonOrOther.trim()}\n\`\`\`\n\n`;
   }
 
   if (entry.interviewTips) {
-    output += `💡 **SDET Mentor Tip:** ${entry.interviewTips}`;
+    output += `💡 **SDET Mentor Tip:** ${entry.interviewTips}\n\n`;
   }
+
+  // Next Step Suggestion tailored to QA
+  output += getNextStepSuggestion(entry.category, entry.topic);
 
   return output.trim();
 }
@@ -820,7 +1371,9 @@ export function diagnoseCodeError(query: string): string | null {
 • **How to Resolve**:
   1. Simply click **"Run Code"** again—our resilient multi-tier execution engine automatically routes around the failed runner to our fallback providers and in-process virtual VM.
   2. If the problem persists, click **"Reset Starter"** and re-run.
-  3. Our compiler backend now automatically filters out remote container supervisor crashes and falls back seamlessly to the in-memory VM.`;
+  3. Our compiler backend now automatically filters out remote container supervisor crashes and falls back seamlessly to the in-memory VM.
+
+👉 **Next Step for QA:** Click "Run Code" again to let the in-process execution VM execute your code with zero container latency.`;
   }
 
   // 2. Python: SyntaxError EOL while scanning string literal
@@ -844,7 +1397,9 @@ print("Hello World
 # ✅ Fixed: close the quote and parenthesis properly
 print("Hello World")
 \`\`\`
-• **Multi-line Note**: If your text spans multiple lines, wrap it in triple quotes: \`"""your text here"""\` or \`'''your text here'''\`. Check the line highlighted in red in your editor gutter!`;
+• **Multi-line Note**: If your text spans multiple lines, wrap it in triple quotes: \`"""your text here"""\` or \`'''your text here'''\`. Check the line highlighted in red in your editor gutter!
+
+👉 **Next Step for QA:** Inspect the line highlighted in red in your editor gutter, close the open quote, and re-run.`;
   }
 
   // 3. Python: SyntaxError (Invalid syntax / unexpected EOF / missing colon)
@@ -866,7 +1421,9 @@ print("Hello World")
      \`\`\`
   2. **Unmatched Parentheses/Brackets**: Check that every \`(\`, \`[\`, and \`{\` has a matching \`)\`, \`]\`, and \`}\`.
   3. **Assignment vs Equality**: Using single \`=\` inside an \`if\` condition instead of \`==\`.
-• **Editor Tip**: Look at the line number highlighted in red in your editor gutter to find the exact line!`;
+• **Editor Tip**: Look at the line number highlighted in red in your editor gutter to find the exact line!
+
+👉 **Next Step for QA:** Verify colons at the end of conditional/loop headers and ensure all parentheses are properly paired before clicking "Run Code".`;
   }
 
   // 4. Python: IndentationError
@@ -890,7 +1447,9 @@ print(i)
 for i in range(3):
     print(i)
 \`\`\`
-• **Tip**: Use 4 spaces per indentation level. Pressing the <kbd>Tab</kbd> key in our editor automatically inserts 4 spaces.`;
+• **Tip**: Use 4 spaces per indentation level. Pressing the <kbd>Tab</kbd> key in our editor automatically inserts 4 spaces.
+
+👉 **Next Step for QA:** Highlight the block under the colon, press <kbd>Tab</kbd> to indent by 4 spaces, and re-run.`;
   }
 
   // 5. Python: NameError
@@ -905,10 +1464,39 @@ for i in range(3):
   1. **Typo / Case Sensitivity**: Python is strictly case-sensitive. \`Print\` is NOT \`print\`, \`True\` is NOT \`true\`.
   2. **Used Before Declared**: You used \`${varName}\` before assigning a value to it.
   3. **Missing Quotes**: If \`${varName}\` was meant to be text, wrap it in quotes: \`"${varName}"\`.
-  4. **Missing Import**: If it is a library function (e.g. \`math.sqrt\`), add \`import math\` at the top.`;
+  4. **Missing Import**: If it is a library function (e.g. \`math.sqrt\`), add \`import math\` at the top.
+
+👉 **Next Step for QA:** Check spelling and variable declaration order in your script, then click "Run Code".`;
   }
 
-  // 6. Python: TypeError
+  // 6. JavaScript/TypeScript: UnhandledPromiseRejection / Cannot read properties of undefined (Checked before generic TypeError!)
+  if (
+    q.includes('unhandledpromiserejection') ||
+    q.includes('cannot read properties of undefined') ||
+    q.includes('cannot read property') ||
+    (q.includes('typeerror') && (q.includes('undefined') || q.includes('null') || q.includes('promise')))
+  ) {
+    return `### ⚡ JS/TS Debugging: UnhandledPromiseRejection / Undefined Property
+
+**Diagnosis**: An asynchronous Promise rejected without a \`.catch()\` or \`try/catch\` block, or your code attempted to access a property on an object that evaluated to \`undefined\`.
+
+• **Common In Automation**:
+  1. An unawaited Playwright API call failed in the background.
+  2. Parsing an API response or JSON payload where the expected key was missing or renamed.
+  3. Accessing Page Object elements before page initialization.
+
+• **The Fix**:
+\`\`\`typescript
+// Guard object access and always await promises
+const response = await request.get('/api/users/1');
+const data = await response.json();
+const email = data?.user?.email ?? 'default@test.com'; // Optional chaining & nullish coalescing
+\`\`\`
+
+👉 **Next Step for QA:** Test your API assertions live in our Mock REST API Sandbox at \`/sandbox/api\` to ensure payload contracts are valid.`;
+  }
+
+  // 7. Python: TypeError
   if (q.includes('typeerror') || q.includes('unsupported operand type')) {
     return `### 🔍 Python Error Diagnosis: TypeError
 
@@ -921,7 +1509,9 @@ for i in range(3):
      # ✅ Fix: f"Score: {95}" or "Score: " + str(95)
      \`\`\`
   2. **Calling a non-function**: \`x = 10; x()\` triggers \`'int' object is not callable\`.
-• **Tip**: Use \`type(variable)\` or cast using \`int()\`, \`float()\`, or \`str()\` to align types.`;
+• **Tip**: Use \`type(variable)\` or cast using \`int()\`, \`float()\`, or \`str()\` to align types.
+
+👉 **Next Step for QA:** Convert data types using \`str()\` or f-strings before concatenation, then re-run your program.`;
   }
 
   // 7. Python: IndexError
@@ -937,7 +1527,9 @@ nums = [10, 20, 30]  # Length is 3 (valid indices: 0, 1, 2)
 print(nums[3])       # ❌ IndexError! Index 3 does not exist.
 print(nums[2])       # ✅ Output: 30
 \`\`\`
-• **Tip**: Check the length of your list with \`len(nums)\` before indexing, or iterate using \`for item in nums:\`.`;
+• **Tip**: Check the length of your list with \`len(nums)\` before indexing, or iterate using \`for item in nums:\`.
+
+👉 **Next Step for QA:** Verify list bounds using \`len()\` or use a \`for item in list:\` loop to prevent out-of-range indexing.`;
   }
 
   // 8. Python: ZeroDivisionError
@@ -952,7 +1544,9 @@ if divisor != 0:
     result = total / divisor
 else:
     result = 0
-\`\`\``;
+\`\`\`
+
+👉 **Next Step for QA:** Add a condition checking that the denominator is not zero before performing division.`;
   }
 
   // 9. Java: cannot find symbol
@@ -968,7 +1562,9 @@ else:
   4. **Missing Import**: If using \`Scanner\`, \`ArrayList\`, or \`Arrays\`, add imports:
      \`\`\`java
      import java.util.*;
-     \`\`\``;
+     \`\`\`
+
+👉 **Next Step for QA:** Check your variable type declarations and import statements at the top of your Java file.`;
   }
 
   // 10. Java: NullPointerException
@@ -986,7 +1582,9 @@ else:
 if (driver == null) {
     throw new IllegalStateException("WebDriver is not initialized. Verify @BeforeMethod / @BeforeEach setup.");
 }
-\`\`\``;
+\`\`\`
+
+👉 **Next Step for QA:** Verify that driver instantiation runs inside an \`@BeforeMethod\` hook before any test steps execute.`;
   }
 
   // 11. Selenium: ElementClickInterceptedException
@@ -1008,7 +1606,9 @@ WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.id("check
 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
 btn.click();
 \`\`\`
-• **Playwright Comparison**: In Playwright, \`await page.getByRole('button', { name: 'Checkout' }).click()\` automatically verifies the element receives pointer events and auto-waits for overlays to disappear.`;
+• **Playwright Comparison**: In Playwright, \`await page.getByRole('button', { name: 'Checkout' }).click()\` automatically verifies the element receives pointer events and auto-waits for overlays to disappear.
+
+👉 **Next Step for QA:** Practice overlay synchronization and explicit waits in our Web Automation Sandbox at \`/sandbox/web\`.`;
   }
 
   // 12. Playwright: Timeout 30000ms exceeded waiting for locator
@@ -1027,7 +1627,9 @@ await page.locator('div > button.primary-btn').click();
 
 // ✅ Resilient: accessible role and user-facing name
 await page.getByRole('button', { name: 'Submit Order' }).click();
-\`\`\``;
+\`\`\`
+
+👉 **Next Step for QA:** Run your test with \`npx playwright test --ui\` or inspect the Trace Viewer snapshot to see why the element was not actionable.`;
   }
 
   // 13. REST Assured: Connection Refused / SSL Handshake Exception
@@ -1049,7 +1651,9 @@ given()
 .then()
     .statusCode(200);
 \`\`\`
-• **Connection Refused**: Verify the server port is listening (\`curl -i http://localhost:PORT/health\`) and check for missing proxy configurations.`;
+• **Connection Refused**: Verify the server port is listening (\`curl -i http://localhost:PORT/health\`) and check for missing proxy configurations.
+
+👉 **Next Step for QA:** Test your API endpoints and headers live against our Mock REST API Sandbox at \`/sandbox/api\`.`;
   }
 
   // 14. REST Assured: UnrecognizedPropertyException / JSON Deserialization Error
@@ -1074,10 +1678,146 @@ public class UserResponseDto {
 UserResponseDto user = given()
     .get("/users/1")
     .as(UserResponseDto.class);
-\`\`\``;
+\`\`\`
+
+👉 **Next Step for QA:** Add \`@JsonIgnoreProperties(ignoreUnknown = true)\` above your POJO class declaration to make deserialization resilient to API schema additions.`;
   }
 
-  // 15. Generic error / traceback detector
+  // 15. Selenium: NoSuchElementException
+  if (
+    q.includes('nosuchelementexception') ||
+    (q.includes('no such element') && (q.includes('unable to locate') || q.includes('selenium') || q.includes('driver')))
+  ) {
+    return `### 🧭 Selenium Debugging: NoSuchElementException
+
+**Diagnosis**: Selenium WebDriver queried the DOM for an element matching your locator, but could not find any matching node.
+
+• **Top 3 Root Causes**:
+  1. **Timing & Asynchronous Rendering**: The element has not yet rendered in the DOM when \`driver.findElement()\` fired.
+  2. **Inside an iFrame**: The element resides inside an \`<iframe>\`, which requires switching context (\`driver.switchTo().frame(...)\`).
+  3. **Brittle or Dynamic Selector**: The ID or class is generated dynamically (e.g. \`id="btn_39485"\` changes on refresh).
+
+• **The Fix**:
+\`\`\`java
+// Replace implicit wait or bare findElement with explicit WebDriverWait
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("stable-id")));
+element.click();
+\`\`\`
+• **Anti-Pattern to Avoid**: Never use \`Thread.sleep(5000)\`—always use explicit WebDriverWait with \`visibilityOfElementLocated\` or \`presenceOfElementLocated\`.
+
+👉 **Next Step for QA:** Test your selector in our interactive Web Playground at \`/sandbox/web\` to verify DOM visibility and inspect element attributes.`;
+  }
+
+  // 16. Selenium: NoSuchSessionException / Session ID is null
+  if (
+    q.includes('nosuchsessionexception') ||
+    q.includes('session id is null') ||
+    (q.includes('session') && q.includes('terminated'))
+  ) {
+    return `### 🧭 Selenium Debugging: NoSuchSessionException / Session ID is Null
+
+**Diagnosis**: Your test code attempted to issue commands to a browser session that was already terminated, crashed, or quit prematurely.
+
+• **Root Causes**:
+  1. **Premature \`driver.quit()\`**: Calling \`quit()\` in an \`@AfterMethod\` while another test step or subsequent test method is still trying to use the same driver instance.
+  2. **Multi-Threaded Collision**: Running parallel tests with a shared static \`public static WebDriver driver;\` variable instead of \`ThreadLocal<WebDriver>\`.
+  3. **Browser Process Crash**: The browser ran out of memory in a Docker container (missing \`--shm-size=2gb\` or \`--disable-dev-shm-usage\`).
+
+• **The Fix**:
+\`\`\`java
+// Use ThreadLocal to give each thread its own isolated WebDriver instance
+public class BaseTest {
+    private static final ThreadLocal<WebDriver> tlDriver = new ThreadLocal<>();
+
+    public static WebDriver getDriver() {
+        return tlDriver.get();
+    }
+}
+\`\`\`
+
+👉 **Next Step for QA:** Check your \`testng.xml\` parallel configuration and ensure you are using ThreadLocal isolation in \`/tracks/selenium-java\`.`;
+  }
+
+  // 17. Playwright: TargetClosedError / Browser context closed
+  if (
+    q.includes('targetclosederror') ||
+    (q.includes('target page') && q.includes('closed')) ||
+    (q.includes('browser') && q.includes('has been closed'))
+  ) {
+    return `### 🎭 Playwright Debugging: TargetClosedError (Browser Closed Prematurely)
+
+**Diagnosis**: The browser, tab, or context was closed while an asynchronous Playwright operation (\`page.click\`, \`page.waitForSelector\`, or network fetch) was still pending.
+
+• **Root Causes**:
+  1. **Missing \`await\`**: Forgetting \`await\` on a navigation or asynchronous call causes the test to exit before the operation completes.
+  2. **Premature Fixture Teardown**: Closing the context or browser in a hook while an action is in flight.
+  3. **Browser Crash / OOM**: Running out of memory in CI containers.
+
+• **The Fix**:
+\`\`\`typescript
+// Ensure every Playwright action is properly awaited
+test('safe checkout flow', async ({ page }) => {
+  await page.goto('/checkout');
+  await page.getByRole('button', { name: 'Submit' }).click();
+  // Ensure we wait for response/navigation before test completes
+  await expect(page.getByRole('alert')).toHaveText('Success');
+});
+\`\`\`
+
+👉 **Next Step for QA:** Inspect the Playwright Trace Viewer (\`npx playwright show-trace trace.zip\`) or practice async/await test flows in \`/tracks/playwright-ts\`.`;
+  }
+
+  // 18. JavaScript/TypeScript: UnhandledPromiseRejection / Cannot read properties of undefined
+  if (
+    q.includes('unhandledpromiserejection') ||
+    q.includes('cannot read properties of undefined') ||
+    q.includes('cannot read property')
+  ) {
+    return `### ⚡ JS/TS Debugging: UnhandledPromiseRejection / Undefined Property
+
+**Diagnosis**: An asynchronous Promise rejected without a \`.catch()\` or \`try/catch\` block, or your code attempted to access a property on an object that evaluated to \`undefined\`.
+
+• **Common In Automation**:
+  1. An unawaited Playwright API call failed in the background.
+  2. Parsing an API response or JSON payload where the expected key was missing or renamed.
+  3. Accessing Page Object elements before page initialization.
+
+• **The Fix**:
+\`\`\`typescript
+// Guard object access and always await promises
+const response = await request.get('/api/users/1');
+const data = await response.json();
+const email = data?.user?.email ?? 'default@test.com'; // Optional chaining & nullish coalescing
+\`\`\`
+
+👉 **Next Step for QA:** Test your API assertions live in our Mock REST API Sandbox at \`/sandbox/api\` to ensure payload contracts are valid.`;
+  }
+
+  // 19. AssertionError: expected vs actual mismatch
+  if (
+    q.includes('assertionerror') ||
+    (q.includes('expected') && q.includes('actual') && (q.includes('received') || q.includes('to be') || q.includes('to equal')))
+  ) {
+    return `### 🧪 Test Automation Debugging: AssertionError (Expected vs Actual Mismatch)
+
+**Diagnosis**: The test ran successfully without crashing, but the application under test produced a value that failed your verification assertion.
+
+• **Root Causes**:
+  1. **Actual Application Bug**: The backend returned the wrong status or data (e.g. status 400 instead of 200).
+  2. **Timing / Stale State**: Asserting before the UI finished re-rendering (use web-first assertions like \`await expect(locator).toHaveText(...)\` which auto-retry).
+  3. **Whitespace / Case Sensitivity**: Mismatch in trailing spaces, line breaks, or casing.
+
+• **The Fix**:
+\`\`\`typescript
+// Use web-first auto-retrying assertions in Playwright
+await expect(page.getByRole('heading', { level: 1 })).toHaveText('Welcome, SDET', { timeout: 5000 });
+\`\`\`
+
+👉 **Next Step for QA:** Practice web-first assertions and debugging in our Web Playground (\`/sandbox/web\`) or report the defect using our QA defect templates.`;
+  }
+
+  // 20. Generic error / traceback detector
   if (
     q.includes('traceback (most recent call last)') ||
     (q.includes('line ') && q.includes('error')) ||
@@ -1092,7 +1832,9 @@ UserResponseDto user = given()
   1. **Check the Line Number**: Look at the editor gutter—our IDE automatically highlights the error line in **red** (\`● Error on Line X\`).
   2. **Read the Last Line**: In Python and Java, the last line of the error output always states the exact error type and reason.
   3. **Check Syntax**: Inspect quotes, colons, brackets, and indentation around that line.
-• **Need specific help?** Paste your exact code and error message here, and I will explain the exact fix!`;
+• **Need specific help?** Paste your exact code and error message here, and I will explain the exact fix!
+
+👉 **Next Step for QA:** Check the line highlighted in red in your code editor gutter and click "Run Code" after making the correction.`;
   }
 
   return null;
@@ -1115,7 +1857,7 @@ export function synthesizeDynamicAnswer(query: string): string {
 • **When to choose Java**: Only if your target company is an enterprise bank with a massive existing Selenium/TestNG codebase.
 • **When to choose Python**: If your engineering team uses Pytest or works heavily with data science/backend services.
 
-👉 *Next Step: Start with our "Playwright + TypeScript" track to build your first working test in under 10 minutes.*`;
+👉 **Next Step for QA:** Start with our "Playwright + TypeScript" track at \`/tracks/playwright-ts\` to build your first working test in under 10 minutes.`;
   }
 
   // 2. Timeline and study questions
@@ -1127,7 +1869,7 @@ export function synthesizeDynamicAnswer(query: string): string {
 • **Month 3**: API automation (REST Assured / Playwright API) and GitHub Actions CI/CD pipelines.
 • **Month 4**: Mock technical interviews, flakiness triage, and portfolio GitHub repositories.
 
-👉 *Consistency beats intensity: writing 10 lines of code every day builds 10x more confidence than weekend marathons.*`;
+👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` to generate your tailored SDET roadmap.`;
   }
 
   // 3. Coding fear / 0 coding background
@@ -1138,7 +1880,7 @@ export function synthesizeDynamicAnswer(query: string): string {
 • **Your Manual QA Acumen is an Advantage**: You already understand boundary values, edge cases, and business logic—skills that pure coders often lack.
 • **Zero-Risk Environment**: Practice in our built-in Web Playground (\`/sandbox/web\`) without setting up local drivers or configurations.
 
-👉 *Take our 1-Click Diagnostic Assessment at \`/assessment\` to get your personalized roadmap!*`;
+👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` or practice without setup in our Web Playground (\`/sandbox/web\`).`;
   }
 
   // 4. API Testing
@@ -1149,7 +1891,7 @@ export function synthesizeDynamicAnswer(query: string): string {
 • **Zero DOM Flakiness**: Immune to UI redesigns, missing buttons, or random frontend spinners.
 • **Industry Standard**: Modern microservice architectures place 70% of automated test coverage at the API layer.
 
-👉 *Explore our built-in Mock REST API at \`/sandbox/api\` to test JWT authentication, delay injection, and status codes live!*`;
+👉 **Next Step for QA:** Explore our built-in Mock REST API at \`/sandbox/api\` to test JWT authentication, delay injection, and status codes live!`;
   }
 
   // 5. Salary & Career
@@ -1161,7 +1903,7 @@ export function synthesizeDynamicAnswer(query: string): string {
 • **India Average**: Manual QA (4–8 LPA) vs SDET (12–25+ LPA).
 • **Key Differentiator**: Demonstrating a clean GitHub framework repo with automated CI test runs during your interview.
 
-👉 *Practice technical interview grilling in our AI Interview Griller at \`/interview-griller\`!*`;
+👉 **Next Step for QA:** Practice technical interview grilling in our AI Interview Griller at \`/interview-griller\` or explore 500+ questions at \`/interview-questions\`.`;
   }
 
   // 6. Automation Framework Setup & Architecture
@@ -1176,23 +1918,60 @@ A production-ready test automation framework consists of 5 modular layers:
 4. **Synchronization Layer**: Web-first auto-retrying assertions (Playwright) or custom FluentWait conditions (Selenium) with zero hardcoded sleeps.
 5. **CI/CD & Reporting Layer**: Allure / HTML reports published automatically on GitHub Actions / Jenkins with matrix parallelization.
 
-👉 *Explore our interactive Framework Design track under \`/tracks/playwright-ts\` or \`/tracks/selenium-java\`!*`;
+👉 **Next Step for QA:** Explore our interactive Framework Design tracks under \`/tracks/playwright-ts\` or \`/tracks/selenium-java\`.`;
   }
 
-  // 7. Generic synthesis addressing their exact terms
+  // 7. Event-Driven & Kafka Streams Testing
+  if (q.includes('kafka') || q.includes('rabbit') || q.includes('queue') || q.includes('event-driven') || q.includes('pubsub')) {
+    return `### 📨 Event-Driven & Kafka Stream Testing for SDETs
+
+When testing event-driven architectures (Apache Kafka, RabbitMQ):
+1. **Producer Contract Verification**: Assert that services publish messages matching strict Avro / JSON schemas.
+2. **Consumer Idempotency**: Verify consumers process duplicate messages gracefully without corrupting database state.
+3. **End-to-End Async Flow**: Trigger an event via REST API, await processing with Awaitility, and assert the resulting DB or outgoing topic state.
+
+👉 **Next Step for QA:** Test API triggers in our Mock REST API at \`/sandbox/api\` and explore our automated QA Agents at \`/qa-agents\`.`;
+  }
+
+  // 8. Performance & Load Testing
+  if (q.includes('load test') || q.includes('performance') || q.includes('jmeter') || q.includes('k6')) {
+    return `### ⚡ Performance & Load Testing Strategy for SDETs
+
+Modern SDETs leverage **k6 (JavaScript/TypeScript)** or **JMeter**:
+1. **Shift-Left Performance**: Write load tests as code (k6 scripts in the same repo as Playwright).
+2. **Threshold Assertions**: Enforce non-functional SLAs in CI (e.g. \`p(95) < 500ms\`).
+3. **Stress & Spike Testing**: Test how systems degrade under sudden traffic bursts.
+
+👉 **Next Step for QA:** Test API response times in our Mock REST API Sandbox at \`/sandbox/api\` or practice interview scenarios at \`/interview-questions\`.`;
+  }
+
+  // 9. Generic synthesis addressing their exact terms
   const cleanTerms = query.replace(/[^\w\s]/g, '').trim();
-  return `Here is direct SDET guidance regarding **"${cleanTerms}"**:
+  return `### 💡 SDET Technical Guidance: "${cleanTerms}"
 
 • **Core Principle**: In modern test engineering, quality is verified through automated shift-left pipelines (Playwright / REST Assured) rather than manual end-of-sprint verification.
-• **Best Practice**: Prioritize accessible locators (\`page.getByRole()\`) over brittle XPaths, and eliminate hardcoded sleeps with event-driven auto-waiting.
-• **Hands-On Next Step**: Try testing this concept in our interactive Web Sandbox (\`/sandbox/web\`) or ask our dedicated QA Agents (\`/qa-agents\`) to scaffold automated test code for you.`;
+• **Best Practice**: Prioritize accessible locators (\`page.getByRole()\`) over brittle XPaths, eliminate hardcoded sleeps with event-driven auto-waiting, and isolate test state.
+• **Implementation**: Keep tests independent, deterministic, and runnable in parallel CI/CD runners.
+
+👉 **Next Step for QA:** Try testing this concept in our interactive Web Sandbox (\`/sandbox/web\`), run API requests in \`/sandbox/api\`, or ask our dedicated QA Agents (\`/qa-agents\`) to scaffold code for you.`;
 }
 
 export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
   const cleanQuery = query.toLowerCase().trim();
   if (!cleanQuery) return QA_KNOWLEDGE_BASE.slice(0, 5);
 
-  const queryTerms = cleanQuery.split(/[\s,?.!-]+/).filter(Boolean);
+  const STOP_WORDS = new Set([
+    'how', 'to', 'in', 'the', 'a', 'an', 'is', 'what', 'do', 'does', 'did',
+    'i', 'you', 'my', 'can', 'should', 'why', 'who', 'with', 'and', 'or',
+    'of', 'for', 'on', 'at', 'by', 'from', 'about', 'as', 'into', 'like',
+    'through', 'after', 'over', 'between', 'out', 'against', 'during',
+    'without', 'before', 'under', 'around', 'among', 'test', 'tests', 'testing',
+    'sdet', 'qa', 'engineer', 'automated', 'automation'
+  ]);
+
+  const allTerms = cleanQuery.split(/[\s,?.!-]+/).filter(Boolean);
+  const meaningfulTerms = allTerms.filter(t => !STOP_WORDS.has(t) && t.length >= 3);
+  const searchTerms = meaningfulTerms.length > 0 ? meaningfulTerms : allTerms.filter(t => t.length >= 3);
 
   const scored = QA_KNOWLEDGE_BASE.map(entry => {
     let score = 0;
@@ -1201,25 +1980,32 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
     const shortAnswerMatch = entry.shortAnswer.toLowerCase();
     const keywords = entry.keywords.map(k => k.toLowerCase());
 
-    // Direct keyword match
-    if (keywords.some(k => cleanQuery.includes(k) || k.includes(cleanQuery))) {
-      score += 50;
+    // 1. Direct multi-word keyword match in query (strongest signal)
+    for (const kw of keywords) {
+      if (kw.length >= 4 && cleanQuery.includes(kw)) {
+        score += 80;
+      }
     }
 
-    // Term matches
-    for (const term of queryTerms) {
-      if (term.length < 3) continue;
-      if (titleMatch.includes(term)) score += 20;
-      if (questionMatch.includes(term)) score += 15;
+    // 2. Exact topic match
+    if (cleanQuery.includes(titleMatch) || titleMatch.includes(cleanQuery)) {
+      score += 60;
+    }
+
+    // 3. Meaningful term matches
+    for (const term of searchTerms) {
+      if (titleMatch.includes(term)) score += 30;
       if (keywords.some(k => k.includes(term))) score += 25;
+      if (questionMatch.includes(term)) score += 20;
       if (shortAnswerMatch.includes(term)) score += 5;
     }
 
     return { entry, score };
   });
 
+  // Relevance filter: Require a minimum threshold score (>= 30) so we never return false positives
   return scored
-    .filter(item => item.score > 0)
+    .filter(item => item.score >= 30)
     .sort((a, b) => b.score - a.score)
     .map(item => item.entry);
 }
