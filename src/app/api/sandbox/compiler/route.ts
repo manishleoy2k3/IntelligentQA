@@ -5,38 +5,70 @@ import path from 'path';
 import os from 'os';
 import vm from 'vm';
 
-// Helper to run shell command with spawn, timeout, and stdin support
+// Helper to run shell command with spawn, timeout, stdin support, and output capping
 function runSubprocess(
   cmd: string,
   args: string[],
-  options: { timeout?: number; cwd?: string; stdin?: string } = {}
+  options: { timeout?: number; cwd?: string; stdin?: string; maxBuffer?: number } = {}
 ): Promise<{ stdout: string; stderr: string; code: number }> {
+  const timeoutMs = options.timeout || 6000;
+  const maxBytes = options.maxBuffer || 512 * 1024; // 512 KB output cap
+
   return new Promise((resolve) => {
     try {
       const child = spawn(cmd, args, {
         cwd: options.cwd || process.cwd(),
-        timeout: options.timeout || 6000,
+        timeout: timeoutMs,
       });
 
       let stdout = '';
       let stderr = '';
+      let isTruncated = false;
 
       if (child.stdin) {
+        child.stdin.on('error', () => {
+          // Ignore EPIPE if child process exits early
+        });
         if (options.stdin) {
-          child.stdin.write(options.stdin);
+          const input = options.stdin.endsWith('\n') ? options.stdin : options.stdin + '\n';
+          try {
+            child.stdin.write(input);
+          } catch {
+            // ignore early write error
+          }
         }
-        child.stdin.end();
+        try {
+          child.stdin.end();
+        } catch {
+          // ignore
+        }
       }
 
       child.stdout.on('data', (chunk) => {
-        stdout += chunk.toString();
+        if (stdout.length + chunk.length > maxBytes) {
+          if (!isTruncated) {
+            stdout += chunk.toString().substring(0, Math.max(0, maxBytes - stdout.length));
+            stdout += '\n[Output truncated: exceeded 512KB limit]';
+            isTruncated = true;
+          }
+          child.kill();
+        } else {
+          stdout += chunk.toString();
+        }
       });
 
       child.stderr.on('data', (chunk) => {
-        stderr += chunk.toString();
+        if (stderr.length < maxBytes) {
+          stderr += chunk.toString();
+        }
       });
 
-      child.on('close', (code) => {
+      child.on('close', (code, signal) => {
+        if (isTruncated) {
+          stderr = (stderr ? stderr + '\n' : '') + 'Execution terminated: Output exceeded maximum allowed limit (512KB).';
+        } else if (child.killed || signal === 'SIGTERM' || signal === 'SIGKILL') {
+          stderr = (stderr ? stderr + '\n' : '') + `Execution timed out (process exceeded ${timeoutMs}ms limit). Possible infinite loop or excessive computation.`;
+        }
         resolve({ stdout, stderr, code: code === null ? 1 : code });
       });
 
@@ -92,17 +124,30 @@ function getPythonBinary(): { python: string; available: boolean } {
 }
 
 function extractJavaClassName(code: string): string {
+  // Strip block comments and single-line comments so comments do not falsely match
+  const cleanCode = code
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*/g, '');
+
   // 1. If there is a public class, JLS mandates the file name must match the public class
-  const publicMatch = code.match(/public\s+(?:final\s+)?class\s+([A-Za-z0-9_]+)/);
-  if (publicMatch) return publicMatch[1];
+  const publicMatch = cleanCode.match(/public\s+(?:final\s+|sealed\s+|non-sealed\s+)?(?:class|record)\s+([A-Za-z0-9_]+)/);
+  if (publicMatch && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(publicMatch[1])) {
+    return publicMatch[1];
+  }
 
   // 2. Otherwise find the class that declares main method
-  const mainMatch = code.match(/class\s+([A-Za-z0-9_]+)[^{]*\{[\s\S]*?public\s+static\s+void\s+main/);
-  if (mainMatch) return mainMatch[1];
+  const mainMatch = cleanCode.match(/(?:class|record)\s+([A-Za-z0-9_]+)[^{]*\{[\s\S]*?public\s+static\s+void\s+main/);
+  if (mainMatch && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(mainMatch[1])) {
+    return mainMatch[1];
+  }
 
   // 3. Match any non-abstract class
-  const classMatch = code.match(/(?:final\s+)?class\s+([A-Za-z0-9_]+)/);
-  return classMatch ? classMatch[1] : 'Main';
+  const classMatch = cleanCode.match(/(?:final\s+)?(?:class|record)\s+([A-Za-z0-9_]+)/);
+  if (classMatch && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(classMatch[1])) {
+    return classMatch[1];
+  }
+
+  return 'Main';
 }
 
 function safeRequire(modName: string) {
@@ -476,13 +521,15 @@ ${code}`;
 // IN-PROCESS VM SIMULATORS (Zero network dependency, works 100% on Vercel)
 // ---------------------------------------------------------------------------
 function simulateJavaInProcess(
-  javaCode: string
+  javaCode: string,
+  stdin?: string
 ): { stdout: string; stderr: string; code: number } {
   try {
+    const declaredClassName = extractJavaClassName(javaCode);
     let js = javaCode;
 
-    // 1. Strip package and import declarations
-    js = js.replace(/^\s*(?:package|import)\s+[^;]+;\s*$/gm, '');
+    // 1. Strip package and import declarations (including with trailing comments)
+    js = js.replace(/^\s*(?:package|import)\s+[^;]+;.*$/gm, '');
 
     // 2. Convert System.out
     js = js.replace(/System\.out\.println\s*\(/g, 'console.log(');
@@ -490,18 +537,36 @@ function simulateJavaInProcess(
     js = js.replace(/System\.out\.printf\s*\(/g, 'console.log(formatPrintf(');
 
     // 3. Arrays initialization
+    // 2D nested arrays: {{1, 2}, {3, 4}} -> [[1, 2], [3, 4]]
+    js = js.replace(
+      /\b(?:int|double|float|long|short|byte|char|boolean|String)\s*\[\s*\]\s*\[\s*\]\s*([A-Za-z0-9_]+)\s*=\s*\{/g,
+      'let $1 = ['
+    );
     js = js.replace(
       /\b(?:int|double|float|long|short|byte|char|boolean|String)\s*\[\s*\]\s*([A-Za-z0-9_]+)\s*=\s*\{([^}]+)\};/g,
       'let $1 = [$2];'
     );
     js = js.replace(
+      /\b(?:int|double|float|long|short|byte)\s*\[\s*\]\s*([A-Za-z0-9_]+)\s*=\s*new\s+[a-zA-Z0-9_]+\s*\[([^\]]+)\];/g,
+      'let $1 = new Array($2).fill(0);'
+    );
+    js = js.replace(
+      /\bboolean\s*\[\s*\]\s*([A-Za-z0-9_]+)\s*=\s*new\s+boolean\s*\[([^\]]+)\];/g,
+      'let $1 = new Array($2).fill(false);'
+    );
+    js = js.replace(
+      /\bString\s*\[\s*\]\s*([A-Za-z0-9_]+)\s*=\s*new\s+String\s*\[([^\]]+)\];/g,
+      'let $1 = new Array($2).fill(null);'
+    );
+    js = js.replace(
       /\bnew\s+(?:int|double|float|long|short|byte|char|boolean|String)\s*\[\s*\]\s*\{([^}]+)\}/g,
       '[$1]'
     );
+    js = js.replace(/new\s+([A-Za-z0-9_]+)\s*<[^>]*>\s*\(/g, 'new $1(');
 
     // 4. Primitive/Type declarations
     js = js.replace(
-      /\b(?:int|double|float|long|short|byte|char|boolean|String|var|final\s+[A-Za-z0-9_<>]+)\s+([A-Za-z0-9_]+)\s*(=|;)/g,
+      /\b(?:[A-Z][a-zA-Z0-9_<>]*|int|double|float|long|short|byte|char|boolean|var|final\s+[A-Za-z0-9_<>]+)\s+([A-Za-z0-9_]+)\s*(=|;)/g,
       'let $1 $2'
     );
 
@@ -521,36 +586,230 @@ function simulateJavaInProcess(
       'for (let $1 of $2)'
     );
 
-    // 7. Strip class wrapper and main method header
-    const classMatch = js.match(/(?:public\s+)?(?:final\s+)?class\s+[A-Za-z0-9_]+\s*\{/);
-    if (classMatch) {
-      const classIdx = js.indexOf(classMatch[0]);
-      js = js.substring(0, classIdx) + js.substring(classIdx + classMatch[0].length);
-    }
-    const mainMatch = js.match(/(?:public\s+)?static\s+void\s+main\s*\([^)]*\)\s*\{/);
-    if (mainMatch) {
-      const mainIdx = js.indexOf(mainMatch[0]);
-      js = js.substring(0, mainIdx) + js.substring(mainIdx + mainMatch[0].length);
-    }
+    // 7. Strip class wrapper opening and trailing closing brace while preserving function braces
+    js = js.replace(/(?:public\s+|final\s+|sealed\s+)*class\s+[A-Za-z0-9_]+[^{]*\{/, '// [class wrapper]');
+    js = js.replace(/\}\s*$/, '// [class end]');
 
-    // 8. Convert static helper methods
-    js = js.replace(
-      /(?:public\s+)?(?:private\s+)?static\s+[A-Za-z0-9_<>[\]]+\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*\{/g,
-      (_m, fnName, args) => {
-        const cleanArgs = args
-          .split(',')
-          .map((a: string) => a.trim().split(/\s+/).pop())
-          .filter(Boolean)
-          .join(', ');
-        return `function ${fnName}(${cleanArgs}) {`;
-      }
-    );
+    // 8. Convert main method: public static void main(...) throws ... { -> function main(args) {
+    js = js.replace(/(?:public\s+)?static\s+void\s+main\s*\([^)]*\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?[^{]*\{/, 'function main(args) {');
 
-    // 9. Strip closing class braces
-    js = js.trim().replace(/\}\s*\}\s*$/, '').replace(/\}\s*$/, '');
+    // 9. Convert helper methods: public static int add(int a, int b) -> function add(a, b) {
+    js = js.replace(/(?:public\s+|private\s+|protected\s+)?(?:static\s+)?[A-Za-z0-9_<>[\]]+\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?[^{]*\{/g, (_m, name, args) => {
+      if (['if', 'for', 'while', 'switch', 'catch'].includes(name)) return _m;
+      const cleanArgs = args.split(',').map((a: string) => a.trim().split(/\s+/).pop()).filter(Boolean).join(', ');
+      return `function ${name}(${cleanArgs}) {`;
+    });
+
+    js += '\nif (typeof main === "function") { main([]); }\n';
 
     let output = '';
-    const sandbox = {
+    const stdinTokens = (stdin || '').trim().split(/\s+/).filter(Boolean);
+    let tokenIdx = 0;
+
+    class Scanner {
+      next() {
+        return tokenIdx < stdinTokens.length ? stdinTokens[tokenIdx++] : '';
+      }
+      nextInt() {
+        return parseInt(this.next(), 10) || 0;
+      }
+      nextDouble() {
+        return parseFloat(this.next()) || 0;
+      }
+      nextLine() {
+        return stdin || '';
+      }
+      hasNext() {
+        return tokenIdx < stdinTokens.length;
+      }
+      hasNextInt() {
+        return this.hasNext() && !isNaN(parseInt(stdinTokens[tokenIdx], 10));
+      }
+      hasNextLine() {
+        return tokenIdx < stdinTokens.length || (tokenIdx === 0 && Boolean(stdin));
+      }
+      hasNextDouble() {
+        return this.hasNext() && !isNaN(parseFloat(stdinTokens[tokenIdx]));
+      }
+    }
+
+    class ArrayList extends Array {
+      add(x: any) {
+        this.push(x);
+        return true;
+      }
+      get(i: number) {
+        return this[i];
+      }
+      set(i: number, x: any) {
+        const old = this[i];
+        this[i] = x;
+        return old;
+      }
+      remove(i: number) {
+        return typeof i === 'number' ? this.splice(i, 1)[0] : false;
+      }
+      size() {
+        return this.length;
+      }
+      isEmpty() {
+        return this.length === 0;
+      }
+      contains(x: any) {
+        return this.includes(x);
+      }
+      clear() {
+        this.length = 0;
+      }
+    }
+
+    class HashMap {
+      private map = new Map<any, any>();
+      put(k: any, v: any) {
+        this.map.set(k, v);
+        return v;
+      }
+      get(k: any) {
+        return this.map.get(k);
+      }
+      containsKey(k: any) {
+        return this.map.has(k);
+      }
+      containsValue(v: any) {
+        return Array.from(this.map.values()).includes(v);
+      }
+      remove(k: any) {
+        const old = this.map.get(k);
+        this.map.delete(k);
+        return old;
+      }
+      size() {
+        return this.map.size;
+      }
+      isEmpty() {
+        return this.map.size === 0;
+      }
+      keySet() {
+        return Array.from(this.map.keys());
+      }
+      values() {
+        return Array.from(this.map.values());
+      }
+      getOrDefault(k: any, def: any) {
+        return this.map.has(k) ? this.map.get(k) : def;
+      }
+    }
+
+    class HashSet {
+      private set = new Set<any>();
+      add(x: any) {
+        this.set.add(x);
+        return true;
+      }
+      contains(x: any) {
+        return this.set.has(x);
+      }
+      remove(x: any) {
+        return this.set.delete(x);
+      }
+      size() {
+        return this.set.size;
+      }
+      isEmpty() {
+        return this.set.size === 0;
+      }
+    }
+
+    class LinkedList extends ArrayList {
+      addFirst(x: any) {
+        this.unshift(x);
+      }
+      addLast(x: any) {
+        this.push(x);
+      }
+      removeFirst() {
+        return this.shift();
+      }
+      removeLast() {
+        return this.pop();
+      }
+      peek() {
+        return this[0];
+      }
+      poll() {
+        return this.shift();
+      }
+    }
+
+    class Stack extends ArrayList {
+      push(x: any) {
+        super.add(x);
+        return x;
+      }
+      pop() {
+        return Array.prototype.pop.call(this);
+      }
+      peek() {
+        return this[this.length - 1];
+      }
+      empty() {
+        return this.length === 0;
+      }
+    }
+
+    class StringBuilder {
+      private str = '';
+      constructor(init = '') {
+        this.str = String(init);
+      }
+      append(val: any) {
+        this.str += String(val);
+        return this;
+      }
+      insert(offset: number, val: any) {
+        this.str = this.str.slice(0, offset) + String(val) + this.str.slice(offset);
+        return this;
+      }
+      delete(start: number, end: number) {
+        this.str = this.str.slice(0, start) + this.str.slice(end);
+        return this;
+      }
+      reverse() {
+        this.str = this.str.split('').reverse().join('');
+        return this;
+      }
+      length() {
+        return this.str.length;
+      }
+      charAt(i: number) {
+        return this.str[i];
+      }
+      toString() {
+        return this.str;
+      }
+    }
+
+    class ListNode {
+      val: any;
+      next: any;
+      constructor(val = 0, next = null) {
+        this.val = val;
+        this.next = next;
+      }
+    }
+
+    class TreeNode {
+      val: any;
+      left: any;
+      right: any;
+      constructor(val = 0, left = null, right = null) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+      }
+    }
+
+    const sandbox: Record<string, any> = {
       console: {
         log: (...args: any[]) => {
           output += args.map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a))).join(' ') + '\n';
@@ -564,18 +823,121 @@ function simulateJavaInProcess(
       },
       formatPrintf: (fmt: any, ...args: any[]) => {
         let i = 0;
-        return String(fmt).replace(/%[sdfb]/g, () => args[i++] ?? '');
+        let formatted = String(fmt).replace(/%n/g, '\n');
+        formatted = formatted.replace(/%(?:\.([0-9]+))?([sdfb])/g, (_m, prec, type) => {
+          const val = args[i++];
+          if (prec && type === 'f') {
+            return Number(val).toFixed(parseInt(prec, 10));
+          }
+          return val !== undefined ? String(val) : '';
+        });
+        return formatted;
       },
+      Integer: {
+        parseInt: (s: any, r = 10) => parseInt(s, r),
+        valueOf: (s: any) => parseInt(s, 10),
+        max: Math.max,
+        min: Math.min,
+        MAX_VALUE: 2147483647,
+        MIN_VALUE: -2147483648,
+      },
+      Double: {
+        parseDouble: (s: any) => parseFloat(s),
+        valueOf: (s: any) => parseFloat(s),
+        max: Math.max,
+        min: Math.min,
+        MAX_VALUE: Number.MAX_VALUE,
+        MIN_VALUE: Number.MIN_VALUE,
+      },
+      Boolean: {
+        parseBoolean: (s: any) => String(s).toLowerCase() === 'true',
+        valueOf: (s: any) => String(s).toLowerCase() === 'true',
+        TRUE: true,
+        FALSE: false,
+      },
+      Character: {
+        isDigit: (c: any) => /^[0-9]$/.test(String(c)),
+        isLetter: (c: any) => /^[a-zA-Z]$/.test(String(c)),
+        isLetterOrDigit: (c: any) => /^[a-zA-Z0-9]$/.test(String(c)),
+        isWhitespace: (c: any) => /^\s$/.test(String(c)),
+        toLowerCase: (c: any) => String(c).toLowerCase(),
+        toUpperCase: (c: any) => String(c).toUpperCase(),
+        isLowerCase: (c: any) => /^[a-z]$/.test(String(c)),
+        isUpperCase: (c: any) => /^[A-Z]$/.test(String(c)),
+      },
+      Arrays: {
+        sort: (arr: any[]) => {
+          if (Array.isArray(arr)) arr.sort((a, b) => a - b);
+        },
+        toString: (arr: any) => JSON.stringify(arr),
+        fill: (arr: any[], val: any) => {
+          if (Array.isArray(arr)) arr.fill(val);
+        },
+        equals: (a: any[], b: any[]) => JSON.stringify(a) === JSON.stringify(b),
+        asList: (...items: any[]) => items,
+      },
+      Collections: {
+        sort: (list: any[]) => {
+          if (Array.isArray(list)) list.sort((a, b) => a - b);
+        },
+        reverse: (list: any[]) => {
+          if (Array.isArray(list)) list.reverse();
+        },
+        max: (coll: any[]) => Math.max(...coll),
+        min: (coll: any[]) => Math.min(...coll),
+        swap: (list: any[], i: number, j: number) => {
+          const tmp = list[i];
+          list[i] = list[j];
+          list[j] = tmp;
+        },
+      },
+      Scanner,
+      ArrayList,
+      HashMap,
+      Map: HashMap,
+      HashSet,
+      Set: HashSet,
+      LinkedList,
+      Stack,
+      Queue: LinkedList,
+      StringBuilder,
+      StringBuffer: StringBuilder,
+      ListNode,
+      TreeNode,
+      System: { in: {} },
       Math,
       JSON,
       String,
       Number,
-      Boolean,
       Array,
     };
 
+    const javaPrelude = `
+      class SolutionProxy {
+        constructor() {
+          return new Proxy(this, {
+            get(target, prop) {
+              if (prop in target) return target[prop];
+              try {
+                return eval(String(prop));
+              } catch (e) {
+                return undefined;
+              }
+            },
+            set(target, prop, val) {
+              target[prop] = val;
+              return true;
+            }
+          });
+        }
+      }
+      var Solution = SolutionProxy;
+      var Main = SolutionProxy;
+      var ${declaredClassName} = SolutionProxy;
+    `;
+
     const context = vm.createContext(sandbox);
-    vm.runInContext(js, context, { timeout: 2500 });
+    vm.runInContext(javaPrelude + '\n' + js, context, { timeout: 2500 });
     return { stdout: output, stderr: '', code: 0 };
   } catch (err: any) {
     return { stdout: '', stderr: err.message || 'Simulation error', code: 1 };
@@ -584,17 +946,25 @@ function simulateJavaInProcess(
 
 // In-process Python Transpiler & Virtual Sandbox
 function simulatePythonInProcess(
-  pythonCode: string
+  pythonCode: string,
+  stdin?: string
 ): { stdout: string; stderr: string; code: number } {
   try {
     const lines = pythonCode.split(/\r?\n/);
     const jsLines: string[] = [];
     const indentStack = [0];
+    let currentClass: string | null = null;
+    let classIndent = 0;
 
     for (let rawLine of lines) {
       const trimmed = rawLine.trim();
       if (!trimmed || trimmed.startsWith('#')) {
         jsLines.push(trimmed.startsWith('#') ? `// ${trimmed.slice(1)}` : '');
+        continue;
+      }
+
+      if (trimmed === 'pass') {
+        jsLines.push('// pass');
         continue;
       }
 
@@ -607,8 +977,12 @@ function simulatePythonInProcess(
       const indent = (rawLine.match(/^(\s*)/)?.[1] || '').length;
 
       while (indentStack.length > 1 && indent < indentStack[indentStack.length - 1]) {
-        indentStack.pop();
+        const popped = indentStack.pop();
         jsLines.push('}'.padStart(indentStack[indentStack.length - 1] + 1, ' '));
+        if (currentClass && popped === classIndent + 4) {
+          jsLines.push(`${currentClass} = new Proxy(${currentClass}, { apply(t, th, args) { return new t(...args); } });`);
+          currentClass = null;
+        }
       }
 
       let line = trimmed;
@@ -616,15 +990,11 @@ function simulatePythonInProcess(
       // Handle class definitions
       if (line.match(/^class\s+([A-Za-z0-9_]+)(?:\(([^)]*)\))?\s*:/)) {
         const classMatch = line.match(/^class\s+([A-Za-z0-9_]+)(?:\(([^)]*)\))?\s*:/);
-        const className = classMatch?.[1];
+        currentClass = classMatch?.[1] || null;
         const baseClass = classMatch?.[2]?.trim();
-        if (baseClass) {
-          line = `class ${className} extends ${baseClass} {`;
-        } else {
-          line = `class ${className} {`;
-        }
+        classIndent = indent;
         indentStack.push(indent + 4);
-        jsLines.push(' '.repeat(indent) + line);
+        jsLines.push(' '.repeat(indent) + (baseClass ? `class ${currentClass} extends ${baseClass} {` : `class ${currentClass} {`));
         continue;
       }
 
@@ -649,6 +1019,24 @@ function simulatePythonInProcess(
         return `\`${converted}\``;
       });
 
+      // Python slices: s[:2] -> s.slice(0, 2), s[1:] -> s.slice(1), s[1:3] -> s.slice(1, 3)
+      line = line.replace(/([a-zA-Z0-9_]+)\[\s*:\s*([^\]]+)\]/g, '$1.slice(0, $2)');
+      line = line.replace(/([a-zA-Z0-9_]+)\[\s*([0-9a-zA-Z_]+)\s*:\s*\]/g, '$1.slice($2)');
+      line = line.replace(/([a-zA-Z0-9_]+)\[\s*([0-9a-zA-Z_]+)\s*:\s*([^\]]+)\]/g, '$1.slice($2, $3)');
+
+      // List comprehensions
+      line = line.replace(
+        /\[\s*([\s\S]+?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([\s\S]+?)\s+if\s+([\s\S]+?)\]/g,
+        '($3).filter($2 => $4).map($2 => $1)'
+      );
+      line = line.replace(
+        /\[\s*([\s\S]+?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([\s\S]+?)\]/g,
+        '($3).map($2 => $1)'
+      );
+
+      // Python integer division: (a + b) // 2 -> Math.floor((a + b) / 2)
+      line = line.replace(/(\([^)]+\)|[a-zA-Z0-9_.]+)\s*\/\/\s*([a-zA-Z0-9_.]+|\([^)]+\))/g, 'Math.floor($1 / $2)');
+
       // Replace boolean and None
       line = line.replace(/\bTrue\b/g, 'true');
       line = line.replace(/\bFalse\b/g, 'false');
@@ -660,38 +1048,49 @@ function simulatePythonInProcess(
       line = line.replace(/\bnot\b/g, '!');
 
       // Convert def
-      if (line.match(/^def\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*:/)) {
-        line = line.replace(/^def\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*:/, 'function $1($2) {');
+      const defMatch = line.match(/^def\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*:/);
+      if (defMatch) {
+        const name = defMatch[1];
+        let params = defMatch[2].split(',').map((p) => p.trim()).filter(Boolean);
         indentStack.push(indent + 4);
-        jsLines.push(' '.repeat(indent) + line);
+        if (currentClass) {
+          if (params[0] === 'self') params.shift();
+          if (name === '__init__') {
+            jsLines.push(' '.repeat(indent) + `constructor(${params.join(', ')}) { const self = this;`);
+          } else {
+            jsLines.push(' '.repeat(indent) + `${name}(${params.join(', ')}) { const self = this;`);
+          }
+        } else {
+          jsLines.push(' '.repeat(indent) + `function ${name}(${params.join(', ')}) {`);
+        }
         continue;
       }
 
-      // Convert for in range
-      if (line.match(/^for\s+([A-Za-z0-9_]+)\s+in\s+([^:]+):/)) {
-        line = line.replace(/^for\s+([A-Za-z0-9_]+)\s+in\s+([^:]+):/, 'for (let $1 of $2) {');
+      // Convert for in range / collection
+      if (line.match(/^for\s+([A-Za-z0-9_]+)\s+in\s+([\s\S]+):\s*(?:#.*)?$/)) {
+        line = line.replace(/^for\s+([A-Za-z0-9_]+)\s+in\s+([\s\S]+):\s*(?:#.*)?$/, 'for (var $1 of $2) {');
         indentStack.push(indent + 4);
         jsLines.push(' '.repeat(indent) + line);
         continue;
       }
 
       // Convert while
-      if (line.match(/^while\s+([^:]+):/)) {
-        line = line.replace(/^while\s+([^:]+):/, 'while ($1) {');
+      if (line.match(/^while\s+([\s\S]+):\s*(?:#.*)?$/)) {
+        line = line.replace(/^while\s+([\s\S]+):\s*(?:#.*)?$/, 'while ($1) {');
         indentStack.push(indent + 4);
         jsLines.push(' '.repeat(indent) + line);
         continue;
       }
 
       // Convert if / elif / else
-      if (line.match(/^if\s+([^:]+):/)) {
-        line = line.replace(/^if\s+([^:]+):/, 'if ($1) {');
+      if (line.match(/^if\s+([\s\S]+):\s*(?:#.*)?$/)) {
+        line = line.replace(/^if\s+([\s\S]+):\s*(?:#.*)?$/, 'if ($1) {');
         indentStack.push(indent + 4);
         jsLines.push(' '.repeat(indent) + line);
         continue;
       }
-      if (line.match(/^elif\s+([^:]+):/)) {
-        line = line.replace(/^elif\s+([^:]+):/, '} else if ($1) {');
+      if (line.match(/^elif\s+([\s\S]+):\s*(?:#.*)?$/)) {
+        line = line.replace(/^elif\s+([\s\S]+):\s*(?:#.*)?$/, '} else if ($1) {');
         jsLines.push(' '.repeat(indent) + line);
         continue;
       }
@@ -701,25 +1100,62 @@ function simulatePythonInProcess(
         continue;
       }
 
-      // Convert variable declarations: x = 10 -> let x = 10
+      // Convert print with end="" to sys.stdout.write
+      line = line.replace(/print\s*\((.*),\s*end\s*=\s*(?:""|'')\s*\)/g, 'sys.stdout.write($1)');
+
+      // Convert membership checks: val in coll -> pyIn(val, coll), val not in coll -> !pyIn(val, coll)
+      line = line.replace(/([a-zA-Z0-9_."']+(?:\([^)]*\))?)\s+not\s+in\s+([a-zA-Z0-9_."']+(?:\([^)]*\))?)/g, '!pyIn($1, $2)');
+      line = line.replace(/([a-zA-Z0-9_."']+(?:\([^)]*\))?)\s+in\s+([a-zA-Z0-9_."']+(?:\([^)]*\))?)/g, 'pyIn($1, $2)');
+
+      // Convert variable declarations using var to allow multi-reassignments in the same scope
       if (line.match(/^[a-zA-Z_][a-zA-Z0-9_]*\s*=[^=]/)) {
-        line = `let ${line}`;
+        line = `var ${line}`;
       }
 
       jsLines.push(' '.repeat(indent) + line + ';');
     }
 
     while (indentStack.length > 1) {
-      indentStack.pop();
+      const popped = indentStack.pop();
       jsLines.push('}');
+      if (currentClass && popped === classIndent + 4) {
+        jsLines.push(`${currentClass} = new Proxy(${currentClass}, { apply(t, th, args) { return new t(...args); } });`);
+        currentClass = null;
+      }
     }
 
     const transpiledJs = jsLines.join('\n');
     let output = '';
+    const stdinLines = (stdin || '').split(/\r?\n/);
+    let stdinIdx = 0;
 
-    const sandbox = {
+    class ListNode {
+      val: any;
+      next: any;
+      constructor(val = 0, next = null) {
+        this.val = val;
+        this.next = next;
+      }
+    }
+
+    class TreeNode {
+      val: any;
+      left: any;
+      right: any;
+      constructor(val = 0, left = null, right = null) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+      }
+    }
+
+    const sandbox: Record<string, any> = {
       print: (...args: any[]) => {
         output += args.map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a))).join(' ') + '\n';
+      },
+      input: (prompt?: string) => {
+        if (prompt) output += String(prompt);
+        return stdinIdx < stdinLines.length ? stdinLines[stdinIdx++] : '';
       },
       sum: (arr: any[]) => (Array.isArray(arr) ? arr.reduce((a, b) => a + b, 0) : 0),
       len: (obj: any) =>
@@ -737,6 +1173,64 @@ function simulatePythonInProcess(
         for (let i = start; i < end; i += step) res.push(i);
         return res;
       },
+      list: (iterable?: any) => (iterable ? Array.from(iterable) : []),
+      dict: (iterable?: any) => {
+        if (!iterable) return {};
+        if (Array.isArray(iterable)) return Object.fromEntries(iterable);
+        return { ...iterable };
+      },
+      set: (iterable?: any) => {
+        const s = new Set(iterable || []);
+        (s as any).add = function (x: any) {
+          Set.prototype.add.call(this, x);
+          return this;
+        };
+        return s;
+      },
+      tuple: (iterable?: any) => (iterable ? Array.from(iterable) : []),
+      sorted: (iterable: any, keyFn?: any, reverse = false) => {
+        const arr = Array.from(iterable || []);
+        if (typeof keyFn === 'function') {
+          arr.sort((a, b) => (keyFn(a) > keyFn(b) ? 1 : -1));
+        } else {
+          arr.sort((a: any, b: any) => (a > b ? 1 : a < b ? -1 : 0));
+        }
+        if (reverse) arr.reverse();
+        return arr;
+      },
+      reversed: (iterable: any) => Array.from(iterable || []).reverse(),
+      enumerate: (iterable: any, start = 0) => {
+        const arr = Array.from(iterable || []);
+        return arr.map((item, idx) => [idx + start, item]);
+      },
+      zip: (...iterables: any[]) => {
+        const minLen = Math.min(...iterables.map((it) => (it ? (it.length ?? 0) : 0)));
+        const res = [];
+        for (let i = 0; i < minLen; i++) {
+          res.push(iterables.map((it) => it[i]));
+        }
+        return res;
+      },
+      any: (iterable: any) => Array.from(iterable || []).some(Boolean),
+      all: (iterable: any) => Array.from(iterable || []).every(Boolean),
+      map: (fn: any, iterable: any) => Array.from(iterable || []).map(fn),
+      filter: (fn: any, iterable: any) => Array.from(iterable || []).filter(fn),
+      ord: (c: any) => String(c).charCodeAt(0),
+      chr: (n: any) => String.fromCharCode(Number(n)),
+      isinstance: (obj: any, type: any) => {
+        if (type === Number || type === 'int' || type === 'float') return typeof obj === 'number';
+        if (type === String || type === 'str') return typeof obj === 'string';
+        if (type === Boolean || type === 'bool') return typeof obj === 'boolean';
+        if (type === Array || type === 'list') return Array.isArray(obj);
+        if (typeof type === 'function') return obj instanceof type;
+        return false;
+      },
+      pyIn: (val: any, container: any) => {
+        if (container == null) return false;
+        if (Array.isArray(container) || typeof container === 'string') return container.includes(val);
+        if (container instanceof Set || container instanceof Map) return container.has(val);
+        return val in container;
+      },
       max: (...args: any[]) => (Array.isArray(args[0]) ? Math.max(...args[0]) : Math.max(...args)),
       min: (...args: any[]) => (Array.isArray(args[0]) ? Math.min(...args[0]) : Math.min(...args)),
       abs: Math.abs,
@@ -745,6 +1239,45 @@ function simulatePythonInProcess(
       int: (x: any) => parseInt(x, 10),
       float: (x: any) => parseFloat(x),
       bool: Boolean,
+      Counter: (iterable?: any) => {
+        const counts: Record<string, number> = {};
+        for (const item of iterable || []) {
+          counts[item] = (counts[item] || 0) + 1;
+        }
+        return counts;
+      },
+      defaultdict: (factory: any) => {
+        return new Proxy(
+          {},
+          {
+            get(target: any, prop: string | symbol) {
+              if (typeof prop === 'string' && !(prop in target)) {
+                target[prop] = typeof factory === 'function' ? factory() : 0;
+              }
+              return target[prop];
+            },
+          }
+        );
+      },
+      math: {
+        sqrt: Math.sqrt,
+        floor: Math.floor,
+        ceil: Math.ceil,
+        pow: Math.pow,
+        pi: Math.PI,
+        inf: Infinity,
+        gcd: (a: number, b: number) => {
+          while (b) {
+            [a, b] = [b, a % b];
+          }
+          return Math.abs(a);
+        },
+        factorial: (n: number) => {
+          let res = 1;
+          for (let i = 2; i <= n; i++) res *= i;
+          return res;
+        },
+      },
       random: {
         randint: (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min,
         choice: (arr: any[]) => (Array.isArray(arr) && arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined),
@@ -767,6 +1300,8 @@ function simulatePythonInProcess(
           },
         },
       },
+      ListNode,
+      TreeNode,
       __name__: '__main__',
       Math,
       JSON,
@@ -777,7 +1312,30 @@ function simulatePythonInProcess(
     };
 
     const context = vm.createContext(sandbox);
-    vm.runInContext(transpiledJs, context, { timeout: 2500 });
+
+    // Provide standard Python prototype methods for lists and strings
+    const prototypePrelude = `
+      Array.prototype.append = function(x) { this.push(x); };
+      Array.prototype.extend = function(it) { if (Array.isArray(it)) this.push(...it); };
+      Array.prototype.insert = function(i, x) { this.splice(i, 0, x); };
+      Array.prototype.count = function(x) { return this.filter(v => v === x).length; };
+      Array.prototype.remove = function(x) {
+        const idx = this.indexOf(x);
+        if (idx !== -1) this.splice(idx, 1);
+        else throw new Error("ValueError: list.remove(x): x not in list");
+      };
+      Array.prototype.clear = function() { this.length = 0; };
+      String.prototype.strip = function() { return this.trim(); };
+      String.prototype.lstrip = function() { return this.trimStart(); };
+      String.prototype.rstrip = function() { return this.trimEnd(); };
+      String.prototype.lower = function() { return this.toLowerCase(); };
+      String.prototype.upper = function() { return this.toUpperCase(); };
+      String.prototype.startswith = function(p) { return this.startsWith(p); };
+      String.prototype.endswith = function(s) { return this.endsWith(s); };
+      Object.prototype.get = function(k, d = null) { return this[k] !== undefined ? this[k] : d; };
+    `;
+
+    vm.runInContext(prototypePrelude + '\n' + transpiledJs, context, { timeout: 2500 });
     return { stdout: output, stderr: '', code: 0 };
   } catch (err: any) {
     return { stdout: '', stderr: err.message || 'Execution error', code: 1 };
@@ -826,12 +1384,12 @@ async function executeWithCloudCompiler(
   // 6. In-Process VM Simulation
   const normLang = language.toLowerCase();
   if (normLang === 'java') {
-    const simRes = simulateJavaInProcess(code);
+    const simRes = simulateJavaInProcess(code, stdin);
     if (simRes.code === 0 || simRes.stdout.length > 0) {
       return { ...simRes, engine: 'in-process-vm' };
     }
   } else if (normLang === 'python' || normLang === 'py') {
-    const simRes = simulatePythonInProcess(code);
+    const simRes = simulatePythonInProcess(code, stdin);
     if (simRes.code === 0 || simRes.stdout.length > 0) {
       return { ...simRes, engine: 'in-process-vm' };
     }
@@ -905,7 +1463,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Final VM fallback for Python
-      const vmResult = simulatePythonInProcess(code);
+      const vmResult = simulatePythonInProcess(code, stdin);
       return NextResponse.json({
         language: 'python',
         success: vmResult.code === 0,
@@ -977,7 +1535,19 @@ export async function POST(req: NextRequest) {
               jsCode = transformed.code;
             }
           }
-        } catch {
+        } catch (swcErr: any) {
+          if (swcErr && swcErr.message && !swcErr.message.includes('Cannot find module')) {
+            return NextResponse.json({
+              language: 'typescript',
+              success: false,
+              status: 'compilation_error',
+              stdout: '',
+              stderr: swcErr.message,
+              executionTimeMs: Date.now() - startTime,
+              exitCode: 1,
+              engine: 'swc-checker',
+            });
+          }
           jsCode = code;
         }
 
@@ -1120,7 +1690,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Final In-Process VM fallback execution
-      const vmResult = simulateJavaInProcess(code);
+      const vmResult = simulateJavaInProcess(code, stdin);
       return NextResponse.json({
         language: 'java',
         success: vmResult.code === 0,

@@ -43,6 +43,10 @@ function extractErrorLineNumber(errorText: string): number | null {
   if (pyMatch) return parseInt(pyMatch[1], 10);
   const javaMatch = errorText.match(/:(\d+):\s*error/i);
   if (javaMatch) return parseInt(javaMatch[1], 10);
+  const javaRuntimeMatch = errorText.match(/\.java:(\d+)\)/i);
+  if (javaRuntimeMatch) return parseInt(javaRuntimeMatch[1], 10);
+  const csMatch = errorText.match(/\((\d+),\d+\):\s*error/i);
+  if (csMatch) return parseInt(csMatch[1], 10);
   const jsMatch = errorText.match(/:(\d+):\d+/);
   if (jsMatch) return parseInt(jsMatch[1], 10);
   return null;
