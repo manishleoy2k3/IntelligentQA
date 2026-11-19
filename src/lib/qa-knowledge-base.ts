@@ -1806,12 +1806,162 @@ describe('Authentication Flow', () => {
       'Storing Cypress chained values in local const variables (Cypress commands are asynchronous)'
     ],
     interviewTips: 'Explain that Cypress commands are queued and execute asynchronously, which is why Cypress tests use chaining and built-in auto-retry assertions rather than async/await.'
+  },
+
+  // 38. BDD Cucumber Automation Framework Template
+  {
+    id: 'bdd-cucumber-framework-template',
+    topic: 'BDD Cucumber Automation Framework Template (Gherkin, Step Definitions & Test Runner)',
+    category: 'framework',
+    keywords: [
+      'cucumber',
+      'bdd',
+      'cucumber framework',
+      'gherkin',
+      'feature file',
+      'step definitions',
+      'cucumber runner',
+      'bdd framework',
+      'cucumber java',
+      'cucumber bdd',
+      'cucumber template',
+      'cucumber options'
+    ],
+    question: 'Can you provide a basic template of BDD Cucumber automation framework with feature files, step definitions, and test runner?',
+    shortAnswer: 'A production-ready BDD Cucumber framework structures tests into three core layers: 1) Business-readable Gherkin feature files (.feature) under src/test/resources/features; 2) Step definition classes mapping Given/When/Then steps to Page Objects under stepdefinitions/; and 3) A Cucumber Test Runner class with @CucumberOptions configuring plugins, tags, and parallel execution.',
+    detailedAnswer: `### 📁 Enterprise BDD Cucumber Project Layout:
+\`\`\`
+cucumber-bdd-framework/
+├── src/test/resources/
+│   └── features/
+│       └── login.feature           # Gherkin scenarios (Given, When, Then, Scenario Outline)
+├── src/main/java/
+│   ├── pages/
+│   │   └── LoginPage.java          # Encapsulated Page Object (By locators & actions)
+│   └── utils/
+│       └── DriverFactory.java      # ThreadLocal WebDriver management
+├── src/test/java/
+│   ├── stepdefinitions/
+│   │   ├── Hooks.java              # @Before, @After failure screenshot capture
+│   │   └── LoginSteps.java         # Step bindings delegating to Page Objects
+│   └── runners/
+│       └── TestRunner.java         # @CucumberOptions, TestNG / JUnit runner
+└── pom.xml                         # cucumber-java, cucumber-testng, selenium-java
+\`\`\``,
+    codeSnippet: {
+      selenium: `// 1. src/test/resources/features/login.feature (Gherkin Feature File)
+Feature: Customer Portal Authentication
+  As a registered user
+  I want to log in with valid credentials
+  So that I can access my dashboard
+
+  @smoke @p0
+  Scenario: Successful login with valid credentials
+    Given the user navigates to the login page
+    When the user enters username "standard_user" and password "secret_sauce"
+    And clicks the login button
+    Then the user should be redirected to the dashboard page
+    And the welcome heading should display "Welcome, SDET"
+
+  @regression
+  Scenario Outline: Failed login with invalid credentials displays error banner
+    Given the user navigates to the login page
+    When the user enters username "<username>" and password "<password>"
+    And clicks the login button
+    Then an error message should display "<expected_error>"
+
+    Examples:
+      | username     | password       | expected_error                 |
+      | locked_user  | wrong_pass     | Invalid username or password   |
+      | empty_user   |                | Username is required           |
+
+// 2. src/test/java/stepdefinitions/LoginSteps.java (Step Definitions)
+package stepdefinitions;
+
+import io.cucumber.java.en.*;
+import org.testng.Assert;
+import pages.LoginPage;
+import utils.DriverFactory;
+
+public class LoginSteps {
+    private LoginPage loginPage = new LoginPage(DriverFactory.getDriver());
+
+    @Given("the user navigates to the login page")
+    public void navigateToLoginPage() {
+        loginPage.open();
+    }
+
+    @When("the user enters username {string} and password {string}")
+    public void enterCredentials(String username, String password) {
+        loginPage.enterUsername(username);
+        loginPage.enterPassword(password);
+    }
+
+    @When("clicks the login button")
+    public void clickLogin() {
+        loginPage.clickSubmit();
+    }
+
+    @Then("the user should be redirected to the dashboard page")
+    public void verifyDashboardRedirect() {
+        Assert.assertTrue(DriverFactory.getDriver().getCurrentUrl().contains("/dashboard"));
+    }
+
+    @Then("an error message should display {string}")
+    public void verifyErrorMessage(String expectedError) {
+        Assert.assertEquals(loginPage.getErrorMessage(), expectedError);
+    }
+}
+
+// 3. src/test/java/runners/TestRunner.java (Cucumber Test Runner)
+package runners;
+
+import io.cucumber.testng.AbstractTestNGCucumberTests;
+import io.cucumber.testng.CucumberOptions;
+import org.testng.annotations.DataProvider;
+
+@CucumberOptions(
+    features = "src/test/resources/features",
+    glue = {"stepdefinitions"},
+    plugin = {
+        "pretty",
+        "html:target/cucumber-reports/cucumber.html",
+        "json:target/cucumber-reports/cucumber.json"
+    },
+    monochrome = true,
+    tags = "@smoke or @p0"
+)
+public class TestRunner extends AbstractTestNGCucumberTests {
+    // Enable parallel execution across feature files and scenarios
+    @Override
+    @DataProvider(parallel = true)
+    public Object[][] scenarios() {
+        return super.scenarios();
+    }
+}`
+    },
+    bestPractices: [
+      'Keep Step Definitions thin: never put raw driver.findElement() or complex logic in steps—delegate to Page Objects',
+      'Use Scenario Outline with Examples tables for data-driven testing instead of duplicating scenarios',
+      'Capture and attach screenshots inside Cucumber @After hooks on failure using scenario.attach(bytes, "image/png", name)',
+      'Tag scenarios (@smoke, @regression, @p0) to run targeted subsets in CI/CD pipelines'
+    ],
+    antiPatterns: [
+      'Writing procedural scripts disguised as Gherkin: "When I click button with xpath //button[@id=\'x\']"',
+      'Instantiating separate non-ThreadLocal WebDrivers inside Step Definition classes',
+      'Putting test assertions directly inside Page Object methods instead of Step Definitions'
+    ],
+    interviewTips: 'Emphasize that BDD Cucumber is primarily a collaboration tool between the Three Amigos (Product Owner, Developer, QA) to eliminate requirement ambiguity, NOT just an automated script runner.'
   }
 ];
 
 export function getNextStepSuggestion(category?: string, topic?: string): string {
   const t = (topic || '').toLowerCase();
   const c = (category || '').toLowerCase();
+
+  if (t.includes('cucumber') || t.includes('bdd') || t.includes('gherkin')) {
+    return `👉 **Next Step for QA:** Practice translating requirements into high-yield Gherkin features in our AI Prompt Lab (\`/prompt-lab\`) or execute automated test suites in \`/sandbox/web\`.`;
+  }
 
   if (c === 'playwright' || t.includes('playwright')) {
     return `👉 **Next Step for QA:** Practice this locator and action live in our interactive Web Automation Playground (\`/sandbox/web\`), or dive deeper into the Playwright + TypeScript Track at \`/tracks/playwright-ts\`.`;
@@ -2567,6 +2717,15 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
     if (cleanQuery.includes('cypress')) {
       if (titleMatch.includes('cypress') || keywords.some(k => k.includes('cypress'))) {
         score += 70;
+      } else {
+        score -= 40;
+      }
+    }
+
+    // If user asks for Cucumber or BDD, prioritize Cucumber BDD template
+    if (cleanQuery.includes('cucumber') || cleanQuery.includes('bdd') || cleanQuery.includes('gherkin')) {
+      if (entry.id === 'bdd-cucumber-framework-template' || titleMatch.includes('cucumber') || titleMatch.includes('bdd')) {
+        score += 80;
       } else {
         score -= 40;
       }

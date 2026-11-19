@@ -311,6 +311,31 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.ok(res.reply.includes('public class LoginScreenTest'), 'Must include LoginScreenTest');
     });
 
+    it('generates a complete, non-truncated BDD Cucumber framework template with feature files, step definitions, and test runner', () => {
+      const userPrompt = 'I want to create a BDD Cucumber framework for my web application. Can you help me with the basic template of feature files, step definitions, and test runner?';
+      const res = queryMentor(userPrompt);
+      assert.strictEqual(res.source, 'searchQAKnowledge');
+      assert.strictEqual(res.topic, 'BDD Cucumber Automation Framework Template (Gherkin, Step Definitions & Test Runner)');
+      assertFourPillars(res, {
+        relevantTerms: [
+          'Feature:',
+          'Scenario:',
+          'Given',
+          'When',
+          'Then',
+          'LoginSteps.java',
+          'TestRunner.java',
+          '@CucumberOptions'
+        ],
+        forbiddenInCode: ['Thread.sleep']
+      });
+
+      assert.ok(res.reply.includes('Scenario Outline:'), 'Must include Scenario Outline with Examples');
+      assert.ok(res.reply.includes('public class LoginSteps'), 'Must include LoginSteps class');
+      assert.ok(res.reply.includes('public class TestRunner'), 'Must include TestRunner class');
+      assert.ok(res.reply.includes('@CucumberOptions'), 'Must include @CucumberOptions annotation');
+    });
+
     it('explains Playwright Auto-Waiting Actionability Matrix', () => {
       const res = queryMentor('How does auto-waiting work in Playwright?');
       assert.strictEqual(res.source, 'searchQAKnowledge');
