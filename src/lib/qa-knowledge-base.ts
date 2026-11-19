@@ -975,17 +975,109 @@ else:
   if (q.includes('nullpointerexception') || q.includes('npe')) {
     return `### ☕ Java Error Diagnosis: NullPointerException (NPE)
 
-**Diagnosis**: Your code attempted to call a method or access an attribute on an object reference that is currently \`null\`.
+**Diagnosis**: Your code attempted to call a method or access an attribute on an object reference that is currently \`null\`. In automation frameworks, this commonly occurs when:
+1. \`driver\` is accessed before \`initDriver()\` was called in \`@BeforeMethod\`.
+2. Page Factory elements (\`@FindBy\`) were not initialized with \`PageFactory.initElements(driver, this)\`.
+3. Reading an uninitialized configuration file or null property key.
 
-• **The Fix**: Add a null check before calling methods:
+• **The Fix**: Ensure driver initialization runs first and check for null:
 \`\`\`java
-if (myObject != null) {
-    myObject.doSomething();
+// Check driver initialization
+if (driver == null) {
+    throw new IllegalStateException("WebDriver is not initialized. Verify @BeforeMethod / @BeforeEach setup.");
 }
 \`\`\``;
   }
 
-  // 11. Generic error / traceback detector
+  // 11. Selenium: ElementClickInterceptedException
+  if (q.includes('elementclickinterceptedexception') || (q.includes('element click') && q.includes('intercepted'))) {
+    return `### 🧭 Selenium Debugging: ElementClickInterceptedException
+
+**Diagnosis**: The target element is present in the DOM, but another element (sticky header, loading spinner, modal backdrop, or toast) is overlaying it at the click coordinates.
+
+• **Root Cause**: Modern SPAs render asynchronous overlays that temporarily block pointer events.
+• **The Fix**: Wait for the overlay to become invisible before clicking, or scroll the target into center view:
+\`\`\`java
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+// Step 1: Wait for any spinner overlay to vanish
+wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("spinner-overlay")));
+
+// Step 2: Scroll into view to avoid sticky header overlap
+WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.id("checkout-btn")));
+((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
+btn.click();
+\`\`\`
+• **Playwright Comparison**: In Playwright, \`await page.getByRole('button', { name: 'Checkout' }).click()\` automatically verifies the element receives pointer events and auto-waits for overlays to disappear.`;
+  }
+
+  // 12. Playwright: Timeout 30000ms exceeded waiting for locator
+  if (q.includes('timeout 30000ms exceeded') || (q.includes('waiting for locator') && q.includes('timeout'))) {
+    return `### 🎭 Playwright Debugging: Timeout 30000ms Exceeded Waiting for Locator
+
+**Diagnosis**: Playwright could not find an element matching your locator within the timeout period, or the element failed an actionability check (Visible, Enabled, Stable).
+
+• **Diagnostic Steps**:
+  1. **Run in UI / Trace Mode**: Run \`npx playwright test --ui\` or inspect the trace zip file to see DOM snapshots at the exact failure moment.
+  2. **Check for iFrame / Shadow DOM**: If the element is inside an iframe, Playwright must access it via frame locator: \`page.frameLocator('#my-frame').getByRole('button')\`.
+  3. **Verify Locator Uniqueness**: Use accessible locators:
+\`\`\`typescript
+// ❌ Fragile: easily broken by layout updates
+await page.locator('div > button.primary-btn').click();
+
+// ✅ Resilient: accessible role and user-facing name
+await page.getByRole('button', { name: 'Submit Order' }).click();
+\`\`\``;
+  }
+
+  // 13. REST Assured: Connection Refused / SSL Handshake Exception
+  if (q.includes('connection refused') || q.includes('sslhandshakeexception') || q.includes('pkix path building failed')) {
+    return `### 🌐 REST Assured Debugging: SSLHandshake / Connection Refused
+
+**Diagnosis**: Either the target API service is not running on the specified host/port, or the test environment rejected an untrusted/self-signed SSL certificate.
+
+• **The Fix for Self-Signed SSL Certificates**:
+\`\`\`java
+// Allow relaxed HTTPS validation for dev/staging environments
+RestAssured.useRelaxedHTTPSValidation();
+
+given()
+    .baseUri("https://dev-api.internal.net")
+    .relaxedHTTPSValidation()
+.when()
+    .get("/health")
+.then()
+    .statusCode(200);
+\`\`\`
+• **Connection Refused**: Verify the server port is listening (\`curl -i http://localhost:PORT/health\`) and check for missing proxy configurations.`;
+  }
+
+  // 14. REST Assured: UnrecognizedPropertyException / JSON Deserialization Error
+  if (q.includes('unrecognizedpropertyexception') || q.includes('cannot deserialize') || q.includes('jsonmappingexception')) {
+    return `### 🌐 REST Assured Debugging: JSON Deserialization / UnrecognizedPropertyException
+
+**Diagnosis**: The API response JSON payload contains fields that are not defined in your Java POJO class.
+
+• **The Fix**: Annotate your POJO with Jackson's \`@JsonIgnoreProperties\`:
+\`\`\`java
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class UserResponseDto {
+    private String id;
+    private String email;
+    // Getters and setters
+}
+\`\`\`
+• **Usage in Test**:
+\`\`\`java
+UserResponseDto user = given()
+    .get("/users/1")
+    .as(UserResponseDto.class);
+\`\`\``;
+  }
+
+  // 15. Generic error / traceback detector
   if (
     q.includes('traceback (most recent call last)') ||
     (q.includes('line ') && q.includes('error')) ||
@@ -1072,7 +1164,22 @@ export function synthesizeDynamicAnswer(query: string): string {
 👉 *Practice technical interview grilling in our AI Interview Griller at \`/interview-griller\`!*`;
   }
 
-  // 6. Generic synthesis addressing their exact terms
+  // 6. Automation Framework Setup & Architecture
+  if (q.includes('framework') || q.includes('pom') || q.includes('page object') || q.includes('architecture') || q.includes('scaffold') || q.includes('setup')) {
+    return `### 🏗️ Enterprise SDET Automation Framework Architecture
+
+A production-ready test automation framework consists of 5 modular layers:
+
+1. **Base & Driver Engine Layer**: ThreadLocal / isolated browser fixtures with automatic screenshot & video capture on failure.
+2. **Page Object / Screenplay Model**: Decouple page locators from test logic. Each page exposes user actions that return next page states.
+3. **Test Data Management Layer**: Environment-driven configurations (\`test.env\`, \`qa.env\`) with dynamic data generators (Faker / JSON factories).
+4. **Synchronization Layer**: Web-first auto-retrying assertions (Playwright) or custom FluentWait conditions (Selenium) with zero hardcoded sleeps.
+5. **CI/CD & Reporting Layer**: Allure / HTML reports published automatically on GitHub Actions / Jenkins with matrix parallelization.
+
+👉 *Explore our interactive Framework Design track under \`/tracks/playwright-ts\` or \`/tracks/selenium-java\`!*`;
+  }
+
+  // 7. Generic synthesis addressing their exact terms
   const cleanTerms = query.replace(/[^\w\s]/g, '').trim();
   return `Here is direct SDET guidance regarding **"${cleanTerms}"**:
 
