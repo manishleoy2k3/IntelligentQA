@@ -135,13 +135,21 @@ export async function POST(req: NextRequest) {
       };
 
       if (isFinal) {
-        // Generate final comprehensive scorecard
-        const technicalScore = Math.min(100, Math.max(50, evaluation.turnScore || 82));
-        const architectureScore = Math.min(100, Math.max(45, Math.floor(technicalScore * 0.95 + (Math.random() * 8))));
-        const communicationScore = Math.min(100, Math.max(50, Math.floor(technicalScore * 0.98 + (Math.random() * 6))));
+        // Calculate true average across all turns including turn 3
+        const turnScores: number[] = turns.map((t: any) => {
+          const match = t.feedback?.match(/\((\d+)%\)/);
+          return match ? parseInt(match[1], 10) : (typeof t.score === 'number' ? t.score : 60);
+        });
+        turnScores.push(evaluation.turnScore);
+
+        const avgTechnical = Math.round(turnScores.reduce((a, b) => a + b, 0) / turnScores.length);
+        const technicalScore = Math.min(100, Math.max(0, avgTechnical));
+        const architectureScore = Math.min(100, Math.max(0, Math.round(technicalScore * (evaluation.verdict === 'Incorrect' ? 0.8 : 0.95))));
+        const communicationScore = evaluation.turnScore === 0 ? 15 : Math.min(100, Math.max(15, Math.round(technicalScore * 0.98)));
         const overallScore = Math.round((technicalScore + architectureScore + communicationScore) / 3);
 
         const expLabel = experienceLevel || (typeof experienceYears === 'number' ? `${experienceYears} Years` : 'Mid-Level');
+        const verdictSummary = overallScore >= 80 ? 'strong' : overallScore >= 50 ? 'moderate' : 'insufficient';
 
         return NextResponse.json({
           isFinished: true,
@@ -153,7 +161,7 @@ export async function POST(req: NextRequest) {
             technicalScore,
             architectureScore,
             communicationScore,
-            summary: `Candidate completed the ${difficulty.toUpperCase()} Technical Mock Interview (${expLabel}). Demonstrated ${evaluation.verdict === 'Correct' ? 'strong' : evaluation.verdict === 'Partially Correct' ? 'moderate' : 'developing'} competence across test automation principles, synchronization, and defect lifecycle management.`,
+            summary: `Candidate completed the ${difficulty.toUpperCase()} Technical Mock Interview (${expLabel}). Overall performance showed ${verdictSummary} technical knowledge across test architecture, quality gates, and automation practices.`,
             strengths: [
               'Articulated root causes of test flakiness and avoided arbitrary sleep timers',
               'Demonstrated clear understanding of modular automation patterns and separation of concerns',
@@ -200,7 +208,91 @@ export async function POST(req: NextRequest) {
 }
 
 /**
+ * Detects whether the candidate admitted ignorance, passed, skipped, or submitted a non-answer.
+ */
+function isIgnoranceOrNonAnswer(answer: string, code: string): boolean {
+  const trimmedAnswer = (answer || '').trim();
+  const trimmedCode = (code || '').trim();
+
+  // If both answer and code are completely empty
+  if (!trimmedAnswer && !trimmedCode) return true;
+
+  // If code is provided with substantial syntax, it's not a non-answer
+  if (trimmedCode.length > 10 && /[{}();=><]/.test(trimmedCode)) {
+    return false;
+  }
+
+  const combined = (trimmedAnswer + ' ' + trimmedCode).toLowerCase();
+  const normalized = combined.replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  const totalWords = normalized.split(/\s+/).filter(Boolean).length;
+
+  const ignorancePhrases = [
+    'i do not know',
+    'i dont know',
+    'i don t know',
+    'do not know',
+    'dont know',
+    'don t know',
+    'idk',
+    'no idea',
+    'have no idea',
+    'i have no idea',
+    'no clue',
+    'have no clue',
+    'not sure',
+    'i am not sure',
+    'i m not sure',
+    'im not sure',
+    'do not have any idea',
+    'dont have any idea',
+    'cant answer',
+    'can t answer',
+    'cannot answer',
+    'unable to answer',
+    'never worked on this',
+    'never worked with this',
+    'not familiar with this',
+    'not familiar',
+    'no experience in this',
+    'no experience with this',
+    'no experience',
+    'skip',
+    'pass',
+    'next',
+    'no answer',
+    'none',
+    'nothing',
+    'na',
+    'n a',
+    'hello',
+    'hi',
+    'hey',
+    'test',
+  ];
+
+  for (const phrase of ignorancePhrases) {
+    if (
+      normalized === phrase ||
+      normalized.startsWith(phrase + ' ') ||
+      normalized.endsWith(' ' + phrase) ||
+      normalized.includes(' ' + phrase + ' ')
+    ) {
+      // If the answer is primarily this phrase without meaningful technical architecture
+      if (totalWords <= 12) return true;
+    }
+  }
+
+  // Very short response with zero technical code or depth
+  if (totalWords < 3 && !/[{}();=><]/.test(trimmedCode)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Heuristic evaluator when live Gemini API is unreachable or key is not provided.
+ * Uses the Questions Bank expectedFocus, answerSummary, bestPractice, and pitfallToAvoid.
  */
 function evaluateHeuristically(
   answer: string,
@@ -218,19 +310,39 @@ function evaluateHeuristically(
   const bestPractice = qMeta.bestPractice || 'Use event-driven assertions, explicit synchronization, and resilient locators.';
   const pitfallToAvoid = qMeta.pitfallToAvoid || 'Hardcoded sleep timers, brittle locators, and shared mutable state.';
 
-  // 1. Check for empty or missing response
+  // 1. Check for empty or missing response: SCORE 0
   if (!trimmedAnswer && !trimmedCode) {
     return {
       verdict: 'Incorrect',
-      turnScore: 35,
-      feedback: 'No answer or code was provided for this technical evaluation. Communication, thought process, and architectural rationale are critical for SDET roles.',
+      turnScore: 0,
+      feedback: 'No answer or code was provided for this technical evaluation. In an SDET or Test Architect interview, this receives a score of 0. Review the suggested model answer below to prepare.',
       mistakesAndGaps: [
         'No technical answer or explanation was submitted',
         'No code demonstration or design pattern was provided',
         `Did not address the expected focus: ${qMeta.expectedFocus || qMeta.question}`,
       ],
-      whatUserMissed: 'Complete technical explanation, architectural trade-offs, and code implementation.',
-      probingQuestion: `To evaluate your technical proficiency, please explain your approach to: ${qMeta.expectedFocus || qMeta.question}`,
+      whatUserMissed: idealAnswer,
+      probingQuestion: `To evaluate your technical proficiency, could you specifically walk through how you would address: ${qMeta.expectedFocus || qMeta.question}?`,
+      idealAnswer,
+      referenceCode,
+      bestPractice,
+      pitfallToAvoid,
+    };
+  }
+
+  // 2. Check for admission of ignorance, non-answer, skip, or junk: SCORE 0
+  if (isIgnoranceOrNonAnswer(trimmedAnswer, trimmedCode)) {
+    return {
+      verdict: 'Incorrect',
+      turnScore: 0,
+      feedback: 'Answer lacks technical depth and substance (candidate stated they do not know the answer). In an SDET or Test Architect interview, this receives a score of 0. Review the suggested model answer and reference implementation below to prepare.',
+      mistakesAndGaps: [
+        'Candidate stated they do not know the answer / no technical solution was submitted',
+        `Zero coverage of required architecture: ${qMeta.expectedFocus || qMeta.question}`,
+        'No implementation strategy, quality gate criteria, or code snippet provided',
+      ],
+      whatUserMissed: idealAnswer,
+      probingQuestion: `To evaluate your technical proficiency, could you specifically walk through how you would address: ${qMeta.expectedFocus || qMeta.question}?`,
       idealAnswer,
       referenceCode,
       bestPractice,
@@ -242,9 +354,9 @@ function evaluateHeuristically(
   if (/sleep|waitfortimeout/i.test(combined)) {
     const isVeryDetailed = totalWords > 50;
     return {
-      verdict: isVeryDetailed ? 'Partially Correct' : 'Incorrect',
-      turnScore: isVeryDetailed ? 55 : 46,
-      feedback: 'Flakiness risk detected: hardcoded sleep timers (e.g. Thread.sleep, waitForTimeout) introduce non-deterministic execution and severely slow down CI pipelines.',
+      verdict: 'Incorrect',
+      turnScore: isVeryDetailed ? 35 : 25,
+      feedback: 'Flakiness risk detected: hardcoded sleep timers (e.g. Thread.sleep, waitForTimeout) introduce non-deterministic execution and severely slow down CI pipelines. In SDET interviews, static sleeps are heavily penalized.',
       mistakesAndGaps: [
         'Introduced hardcoded sleep / static wait delay (critical anti-pattern)',
         'Failed to use event-driven synchronization or polling mechanisms',
@@ -259,12 +371,12 @@ function evaluateHeuristically(
     };
   }
 
-  // Check brittle locators
+  // 3. Check for brittle locators: absolute XPaths
   if (/\/html\/body|\/\/[a-z]+\[\d+\]/i.test(combined)) {
     return {
-      verdict: 'Partially Correct',
-      turnScore: 56,
-      feedback: 'Brittle locator risk: absolute XPaths break whenever the DOM layout or styling changes, causing high test maintenance overhead.',
+      verdict: 'Incorrect',
+      turnScore: 35,
+      feedback: 'Brittle locator risk: absolute XPaths break whenever the DOM layout or styling changes, causing high test maintenance overhead. Modern frameworks require user-facing accessible queries or semantic test IDs.',
       mistakesAndGaps: [
         'Used absolute XPath locator (/html/body...) which is highly brittle',
         'Ignored resilient locator strategies like accessible user-facing queries or semantic data-testids',
@@ -278,33 +390,12 @@ function evaluateHeuristically(
     };
   }
 
-  // 3. Check for trivial / junk / dismissive responses
-  const junkPatterns = ['idk', 'dont know', "don't know", 'no idea', 'skip', 'pass', 'n/a', 'na', 'test', 'hello', 'hi', 'yes', 'no', 'none', 'nothing'];
-  const isJunk = totalWords < 4 && junkPatterns.some(j => combined === j || combined.startsWith(j + ' ') || combined.endsWith(' ' + j));
-  if (isJunk || totalWords < 4) {
-    return {
-      verdict: 'Incorrect',
-      turnScore: 40,
-      feedback: 'Answer lacks technical substance, depth, and clarity. In technical interviews for SDET and Test Architect roles, you are expected to articulate your design decisions, trade-offs, and failure handling.',
-      mistakesAndGaps: [
-        'Answer is too brief or dismissive with zero architectural detail',
-        'Missed implementation details, locators/synchronization strategies, and test structure',
-      ],
-      whatUserMissed: `Missed fundamental concepts of ${qMeta.topic || qMeta.category || 'QA engineering'}: ${qMeta.expectedFocus || idealAnswer}`,
-      probingQuestion: `Could you specifically walk through how you would address: ${qMeta.expectedFocus || 'the core technical requirements'}?`,
-      idealAnswer,
-      referenceCode,
-      bestPractice,
-      pitfallToAvoid,
-    };
-  }
-
-  // 4. Check for candidate clarifying questions (positive engineering behavior)
+  // 4. Candidate asked clarifying questions (positive engineering behavior before design)
   const isClarification = (trimmedAnswer.endsWith('?') || /clarify|assume|assumption|requirement|constraint/i.test(trimmedAnswer)) && totalWords < 35;
   if (isClarification) {
     return {
       verdict: 'Partially Correct',
-      turnScore: 78,
+      turnScore: 65,
       feedback: 'Good initiative asking clarifying questions on requirements and constraints before committing to an architecture.',
       mistakesAndGaps: [
         'Candidate clarified requirements but has not yet specified the concrete design pattern or implementation code',
@@ -318,21 +409,27 @@ function evaluateHeuristically(
     };
   }
 
-  // 5. In-depth technical evaluation
-  const focusWords = (qMeta.expectedFocus || '').toLowerCase().split(/[\s,;]+/).filter((w: string) => w.length > 4);
-  const matchedWords = focusWords.filter((w: string) => combined.includes(w));
-  const hasArchKeywords = /sharding|storagestate|threadlocal|fluentwait|pom|actions api|contract testing|keda|idempotent|sliding window|hashmap|two pointers|allure|retry|pact/i.test(combined);
+  // 5. Concept coverage analysis against expectedFocus & answerSummary from Question Bank
+  const focusClean = (qMeta.expectedFocus || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+  const stopWords = new Set(['and', 'the', 'with', 'for', 'from', 'that', 'this', 'into', 'using', 'about', 'your', 'will', 'should', 'such', 'when', 'what', 'have']);
+  const focusKeywords = focusClean.split(/\s+/).filter((w: string) => w.length > 3 && !stopWords.has(w));
+  const matchedKeywords = focusKeywords.filter((w: string) => combined.includes(w));
+  const matchRatio = focusKeywords.length > 0 ? (matchedKeywords.length / focusKeywords.length) : 0;
 
-  if (hasArchKeywords || matchedWords.length >= 2) {
-    const turnScore = Math.min(96, Math.max(82, 82 + (matchedWords.length * 4) + (totalWords > 40 ? 4 : 0)));
+  const hasArchKeywords = /sharding|storagestate|threadlocal|fluentwait|pom|actions api|contract testing|keda|idempotent|sliding window|hashmap|two pointers|allure|retry|pact|sonarqube|quality gate|canary|synthetic|rollback/i.test(combined);
+  const hasCode = trimmedCode.length > 15 && /[{}();=><]/.test(trimmedCode);
+
+  // High coverage: candidate addressed >= 50% of expected criteria or strong arch patterns
+  if ((matchRatio >= 0.5 || matchedKeywords.length >= 3 || (hasArchKeywords && matchedKeywords.length >= 2)) && totalWords >= 20) {
+    const turnScore = Math.min(96, Math.max(82, 80 + (matchedKeywords.length * 3) + (hasCode ? 6 : 0) + (totalWords > 40 ? 4 : 0)));
     return {
       verdict: 'Correct',
       turnScore,
-      feedback: `Strong response directly addressing key focus areas including ${matchedWords.length > 0 ? matchedWords.slice(0, 2).join(' and ') : 'enterprise test architecture'}. Demonstrates solid grasp of synchronization and design patterns.`,
+      feedback: `Strong technical explanation directly addressing key requirements including ${matchedKeywords.slice(0, 3).join(', ')}. Demonstrates solid grasp of enterprise test architecture.`,
       mistakesAndGaps: [
-        'Minor edge case: Ensure handling of transient network latency spikes, database rollbacks, or browser worker crashes under extreme load.',
+        'Minor: Ensure automated failure isolation, alert thresholds, and distributed container recovery are documented.',
       ],
-      whatUserMissed: 'Deeper trade-off analysis between test execution speed and infrastructure cost.',
+      whatUserMissed: 'Deeper trade-off analysis between execution speed and cloud infrastructure cost.',
       probingQuestion: 'How does this solution handle edge cases such as network latency spikes, database transaction rollbacks, or browser crash recovery?',
       idealAnswer,
       referenceCode,
@@ -341,17 +438,19 @@ function evaluateHeuristically(
     };
   }
 
-  if (totalWords >= 30) {
+  // Moderate coverage: candidate understood the general concept but missed major criteria
+  if (matchedKeywords.length >= 1 || (totalWords >= 25 && hasArchKeywords)) {
+    const turnScore = Math.min(75, Math.max(50, 48 + (matchedKeywords.length * 7) + (hasCode ? 8 : 0)));
     return {
       verdict: 'Partially Correct',
-      turnScore: 72,
-      feedback: 'Solid foundational answer covering the basic concept. However, SDET roles require deeper architectural depth, failure isolation, and concrete code patterns.',
+      turnScore,
+      feedback: `Answer covers foundational elements (${matchedKeywords.join(', ') || 'general concepts'}) but lacks the full architectural depth, failure isolation, and quality gate triggers expected at this experience level.`,
       mistakesAndGaps: [
-        'Answer covers general concepts but lacks concrete enterprise-grade code implementation',
-        'Could demonstrate stronger edge case handling and CI container concurrency',
+        `Missed core criteria from expected focus: ${qMeta.expectedFocus || idealAnswer}`,
+        hasCode ? 'Code snippet lacks edge case and error handling' : 'No reference implementation code was provided',
       ],
       whatUserMissed: `Detailed implementation specifics for: ${qMeta.expectedFocus || idealAnswer}`,
-      probingQuestion: 'Could you elaborate on how this pattern performs under high-concurrency parallel test execution on multi-core CI agents?',
+      probingQuestion: `How would you handle failure isolation and recovery when applying this approach to ${qMeta.topic || 'production workloads'}?`,
       idealAnswer,
       referenceCode,
       bestPractice,
@@ -359,16 +458,17 @@ function evaluateHeuristically(
     };
   }
 
+  // Minimal / superficial / off-topic content (e.g. 5-15 words repeating the question or generic fluff)
   return {
-    verdict: 'Partially Correct',
-    turnScore: 64,
-    feedback: 'Basic answer provided, but lacks technical depth and precision expected at this experience level.',
+    verdict: 'Incorrect',
+    turnScore: Math.min(30, Math.max(10, totalWords * 2)),
+    feedback: 'Answer lacks technical depth and precision. In SDET and Test Architect interviews, candidate is expected to provide structured technical patterns, stage definitions, and failure handling.',
     mistakesAndGaps: [
-      'Explanation is high-level and lacks specific design patterns or code structure',
-      'Did not address synchronization or failure recovery',
+      `Did not cover the required architecture: ${qMeta.expectedFocus || idealAnswer}`,
+      'Explanation is too brief or generic with zero concrete implementation detail',
     ],
-    whatUserMissed: `Core architectural considerations: ${qMeta.expectedFocus || idealAnswer}`,
-    probingQuestion: `How would you handle failure isolation and recovery when applying this approach to ${qMeta.topic || 'production workloads'}?`,
+    whatUserMissed: idealAnswer,
+    probingQuestion: `Could you specifically walk through how you would address: ${qMeta.expectedFocus || 'the core technical requirements'}?`,
     idealAnswer,
     referenceCode,
     bestPractice,
@@ -391,14 +491,32 @@ async function evaluateWithGemini(params: {
   isFinal: boolean;
   qMeta: any;
 }): Promise<EvaluationResult> {
-  const prompt = `You are a Senior Principal SDET & Test Architect interviewer at a Tier-1 tech company conducting a high-stakes technical mock interview.
+  // Upfront check for non-answers or admission of ignorance: guarantees score 0 immediately
+  if (isIgnoranceOrNonAnswer(params.candidateAnswer, params.candidateCode)) {
+    return evaluateHeuristically(params.candidateAnswer, params.candidateCode, params.qMeta, params.difficulty);
+  }
+
+  const prompt = `You are a strict, Senior Principal SDET & Test Architect technical interviewer at a Tier-1 tech company.
+You are evaluating a candidate's answer against the Gold Standard Model Answer and criteria from our enterprise QA Knowledge Bank.
 Role target: ${params.experienceLevel} (${params.difficulty} difficulty).
 
 Interview Question Asked:
 "${params.question}"
 
-Expected Key Focus / Model Answer:
-"${params.expectedFocus || params.answerSummary}"
+Domain / Category:
+"${params.qMeta?.category || 'QA Engineering'}"
+
+Expected Key Focus:
+"${params.expectedFocus || params.qMeta?.expectedFocus || ''}"
+
+Gold Standard Model Answer:
+"${params.answerSummary || params.qMeta?.answerSummary || ''}"
+
+Recommended Best Practice:
+"${params.qMeta?.bestPractice || ''}"
+
+Pitfall to Avoid:
+"${params.qMeta?.pitfallToAvoid || ''}"
 
 Candidate's Answer:
 "${params.candidateAnswer || '(No explanation provided)'}"
@@ -406,15 +524,25 @@ Candidate's Answer:
 Candidate's Code Snippet:
 "${params.candidateCode || '(No code provided)'}"
 
-Evaluate the candidate's answer with rigorous technical standards:
-1. Determine the verdict: strictly one of "Correct", "Partially Correct", or "Incorrect".
-2. Assign a turnScore between 35 and 98 based on technical accuracy, completeness, and best practices.
-3. Provide constructive feedback (2-3 sentences) evaluating strengths and flaws.
-4. List 1 to 3 specific mistakes, anti-patterns, or gaps in "mistakesAndGaps" (e.g. sleeps, brittle locators, missing assertions, concurrency bugs).
-5. Briefly summarize in "whatUserMissed" what key concept or practice they omitted.
-6. Generate one incisive, probing follow-up question in "probingQuestion".
+CRITICAL RIGOROUS SCORING RULES:
+1. NON-ANSWER / IGNORANCE:
+   - If the candidate says "I do not know", "I don't know", "idk", "no idea", "not sure", "skip", "pass", or gives zero technical explanation, YOU MUST assign turnScore: 0 and verdict: "Incorrect".
+2. SEVERE ANTI-PATTERNS & CRITICAL FLAWS:
+   - If the candidate proposes hardcoded sleeps (Thread.sleep, waitForTimeout), brittle absolute XPaths, ignores thread-safety in parallel tests, or gives generic buzzword fluff with no technical substance, assign turnScore between 15 and 40 and verdict: "Incorrect".
+3. PARTIALLY CORRECT (HAS GAPS):
+   - If the candidate understands some concepts but misses major criteria from the Expected Focus / Model Answer (e.g. misses rollback strategies, synthetic smoke tests, container isolation, or code), assign turnScore between 45 and 75 and verdict: "Partially Correct".
+4. CORRECT:
+   - If the candidate provides a sound, production-grade explanation addressing the key criteria from the Model Answer, assign turnScore between 80 and 98 and verdict: "Correct".
 
-Respond strictly in valid JSON format with keys:
+Provide:
+1. "verdict": strictly "Correct", "Partially Correct", or "Incorrect".
+2. "turnScore": integer from 0 to 100 based strictly on the rules above.
+3. "feedback": direct, professional critique (2-3 sentences).
+4. "mistakesAndGaps": array of 1 to 3 specific mistakes, anti-patterns, or missing criteria when compared to the Model Answer.
+5. "whatUserMissed": clear summary of the core concepts omitted.
+6. "probingQuestion": incisive follow-up interview question.
+
+Respond strictly in valid JSON format:
 {
   "verdict": "Correct" | "Partially Correct" | "Incorrect",
   "turnScore": 85,
@@ -432,7 +560,7 @@ Respond strictly in valid JSON format with keys:
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.3,
+          temperature: 0.2,
           maxOutputTokens: 1024,
           responseMimeType: 'application/json',
         },
@@ -457,12 +585,12 @@ Respond strictly in valid JSON format with keys:
 
     return {
       verdict,
-      turnScore: typeof parsed.turnScore === 'number' ? parsed.turnScore : 82,
+      turnScore: typeof parsed.turnScore === 'number' ? parsed.turnScore : (verdict === 'Incorrect' ? 25 : 70),
       feedback: parsed.feedback || 'Technical explanation evaluated.',
       mistakesAndGaps: Array.isArray(parsed.mistakesAndGaps) && parsed.mistakesAndGaps.length > 0
         ? parsed.mistakesAndGaps
-        : ['Ensure full coverage of edge cases and concurrency'],
-      whatUserMissed: parsed.whatUserMissed || 'Deeper exploration of edge cases and failure recovery.',
+        : [`Did not cover expected criteria: ${params.qMeta?.expectedFocus || params.expectedFocus}`],
+      whatUserMissed: parsed.whatUserMissed || params.qMeta?.answerSummary || 'Core architectural considerations.',
       probingQuestion: parsed.probingQuestion || 'How would you scale this pattern under 100+ parallel test workers?',
       idealAnswer: params.qMeta?.answerSummary || '',
       referenceCode: params.qMeta?.codeSnippet || '',

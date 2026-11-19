@@ -401,22 +401,59 @@ export default function InterviewGriller() {
 
       const rawEval = data?.evaluation;
       const combined = (userAnswer + ' ' + userCode).toLowerCase();
+      const normalized = combined.replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      const totalWords = normalized.split(/\s+/).filter(Boolean).length;
       const hasSleep = /sleep|waitfortimeout/i.test(combined);
-      const isTooBrief = (userAnswer + ' ' + userCode).split(/\s+/).filter(Boolean).length < 4;
 
-      const fallbackVerdict = isTooBrief || hasSleep ? 'Incorrect' : (userAnswer.length > 60 ? 'Correct' : 'Partially Correct');
-      const fallbackScore = hasSleep ? 48 : isTooBrief ? 40 : (userAnswer.length > 60 ? 84 : 70);
+      const ignorancePhrases = [
+        'i do not know', 'i dont know', 'i don t know', 'do not know', 'dont know',
+        'idk', 'no idea', 'have no idea', 'no clue', 'not sure', 'i am not sure',
+        'skip', 'pass', 'next', 'no answer', 'none', 'nothing', 'na', 'n a',
+      ];
+      const isIgnorance = totalWords <= 10 && ignorancePhrases.some(p =>
+        normalized === p || normalized.startsWith(p + ' ') || normalized.endsWith(' ' + p) || normalized.includes(' ' + p + ' ')
+      );
+
+      const fallbackVerdict: 'Correct' | 'Partially Correct' | 'Incorrect' =
+        isIgnorance || !userAnswer.trim()
+          ? 'Incorrect'
+          : hasSleep
+          ? 'Incorrect'
+          : totalWords < 15
+          ? 'Incorrect'
+          : totalWords > 40
+          ? 'Correct'
+          : 'Partially Correct';
+
+      const fallbackScore = isIgnorance || !userAnswer.trim()
+        ? 0
+        : hasSleep
+        ? 25
+        : totalWords < 15
+        ? 20
+        : totalWords > 40
+        ? 85
+        : 65;
 
       const evalData: EvaluationResultState = {
         verdict: rawEval?.verdict || fallbackVerdict,
         turnScore: typeof rawEval?.turnScore === 'number' ? rawEval.turnScore : fallbackScore,
-        feedback: rawEval?.feedback || data?.feedbackOnPrevious || 'Technical assessment evaluated.',
+        feedback: rawEval?.feedback || (
+          isIgnorance
+            ? 'Candidate stated they do not know the answer / provided zero technical solution for this question. In an SDET or Test Architect interview, this receives a score of 0. Review the suggested model answer below to prepare.'
+            : data?.feedbackOnPrevious || 'Technical assessment evaluated.'
+        ),
         mistakesAndGaps: Array.isArray(rawEval?.mistakesAndGaps) && rawEval.mistakesAndGaps.length > 0
           ? rawEval.mistakesAndGaps
+          : isIgnorance
+          ? [
+              'Candidate stated they do not know the answer / no technical solution was submitted',
+              `Zero coverage of required architecture: ${currentQMeta.expectedFocus || currentQuestion}`,
+            ]
           : hasSleep
           ? ['Hardcoded sleep delays introduce non-deterministic execution in CI pipelines']
           : ['Ensure full coverage of edge cases, failure recovery, and parallel execution race conditions'],
-        whatUserMissed: rawEval?.whatUserMissed || 'Deeper architectural failure recovery and synchronization.',
+        whatUserMissed: rawEval?.whatUserMissed || (currentQMeta.answerSummary || currentQMeta.expectedFocus || 'Core architectural concepts and implementation.'),
         probingQuestion: rawEval?.probingQuestion || data?.probingQuestion || '',
         idealAnswer: rawEval?.idealAnswer || currentQMeta.answerSummary || expectedFocus || 'Standard test engineering best practices.',
         referenceCode: rawEval?.referenceCode || currentQMeta.codeSnippet || codeContext || '',
@@ -464,12 +501,19 @@ export default function InterviewGriller() {
     const isFinalRound = (questionNumber || 1) >= (totalQuestions || 3) || !!pendingScorecard;
 
     if (isFinalRound) {
+      const turnScores: number[] = updatedTurns.map((t: any) => {
+        const match = t.feedback?.match(/\((\d+)%\)/);
+        return match ? parseInt(match[1], 10) : (currentEvaluation.turnScore ?? 0);
+      });
+      const avgScore = Math.round(turnScores.reduce((acc, s) => acc + s, 0) / turnScores.length);
+      const technicalScore = currentEvaluation.turnScore ?? 0;
+
       const finalScorecard = pendingScorecard || {
-        overallScore: Math.round(updatedTurns.reduce((acc, t) => acc + (currentEvaluation.turnScore || 80), 0) / updatedTurns.length),
-        technicalScore: currentEvaluation.turnScore || 82,
-        architectureScore: Math.max(60, (currentEvaluation.turnScore || 82) - 4),
-        communicationScore: Math.min(98, (currentEvaluation.turnScore || 82) + 2),
-        summary: `Candidate completed the ${difficulty.toUpperCase()} Technical Mock Interview (${experienceTier}). Demonstrated ${currentEvaluation.verdict === 'Correct' ? 'strong' : 'solid'} competence in test engineering.`,
+        overallScore: avgScore,
+        technicalScore: technicalScore,
+        architectureScore: Math.max(0, technicalScore - 5),
+        communicationScore: technicalScore === 0 ? 15 : Math.min(98, technicalScore + 2),
+        summary: `Candidate completed the ${difficulty.toUpperCase()} Technical Mock Interview (${experienceTier}). Overall performance demonstrated ${avgScore >= 80 ? 'strong' : avgScore >= 50 ? 'solid' : 'insufficient'} technical knowledge.`,
         strengths: [
           'Articulated root causes of test flakiness and avoided arbitrary sleep timers',
           'Demonstrated clear understanding of modular automation patterns and separation of concerns',

@@ -488,6 +488,68 @@ describe('QA Interview Griller - Knowledge Base & Agent Training Suite', () => {
       assert(data.evaluation.pitfallToAvoid, 'pitfallToAvoid must be returned');
     });
 
+    it('should judge "I do not know" strictly as Incorrect with score of 0', async () => {
+      const ignoranceCases = [
+        'I do not know',
+        'i do not know',
+        'i dont know',
+        "don't know",
+        'idk',
+        'no idea',
+        'skip',
+        'pass',
+        'have no idea',
+        'not sure',
+      ];
+
+      for (const phrase of ignoranceCases) {
+        const testReq = {
+          json: async () => ({
+            action: 'submit_answer',
+            difficulty: 'Hard',
+            experienceYears: 8,
+            turns: [],
+            currentAnswer: phrase,
+            currentCode: '',
+            questionList: [
+              {
+                question: 'How do you design automated Quality Gates in a Continuous Deployment pipeline that automatically promotes code to production without manual QA sign-offs?',
+                category: 'CI/CD Pipelines',
+                expectedFocus: 'Automated test suite pyramid, SonarQube quality gate, synthetic smoke tests, automated rollback on APM error spike',
+                answerSummary: 'Stage gates: 1) PR Gate: Unit tests + contract tests + static linting pass 100%. 2) Build Gate: SonarQube code quality gate passes (zero vulnerabilities, 80% coverage). 3) Staging Gate: Ephemeral container deploy with synthetic API tests. 4) CD Gate: Canary 10% deploy with automated rollback if Datadog APM 5xx error rate spikes > 1%.',
+                bestPractice: 'Use ephemeral environments and telemetry-driven automated canary rollbacks.',
+                pitfallToAvoid: 'Relying on manual QA verification in a continuous deployment pipeline.',
+              },
+            ],
+          }),
+          headers: { get: () => null },
+        };
+
+        const res = await POST(testReq);
+        const data = await res.json();
+
+        assert(data.evaluation, `Evaluation required for "${phrase}"`);
+        assert.strictEqual(
+          data.evaluation.verdict,
+          'Incorrect',
+          `Verdict for "${phrase}" must be "Incorrect", got "${data.evaluation.verdict}"`
+        );
+        assert.strictEqual(
+          data.evaluation.turnScore,
+          0,
+          `Turn score for "${phrase}" must be 0, got ${data.evaluation.turnScore}`
+        );
+        assert(
+          data.evaluation.mistakesAndGaps.some(m => m.toLowerCase().includes('do not know') || m.toLowerCase().includes('zero')),
+          `mistakesAndGaps should note lack of technical solution for "${phrase}"`
+        );
+        assert(
+          data.evaluation.idealAnswer.includes('SonarQube'),
+          'idealAnswer must contain model answer for candidate to learn'
+        );
+      }
+    });
+
     it('should judge hardcoded sleeps as flawed and identify static sleep in mistakesAndGaps', async () => {
       const sleepReq = {
         json: async () => ({
@@ -514,13 +576,13 @@ describe('QA Interview Griller - Knowledge Base & Agent Training Suite', () => {
       const data = await res.json();
 
       assert(data.evaluation, 'Evaluation object required');
-      assert(data.evaluation.verdict === 'Incorrect' || data.evaluation.verdict === 'Partially Correct');
-      assert(data.evaluation.turnScore <= 55, `Score should be heavily penalized for sleep anti-pattern, got ${data.evaluation.turnScore}`);
+      assert.strictEqual(data.evaluation.verdict, 'Incorrect');
+      assert(data.evaluation.turnScore <= 35, `Score should be heavily penalized for sleep anti-pattern, got ${data.evaluation.turnScore}`);
       const mistakesText = data.evaluation.mistakesAndGaps.join(' ').toLowerCase();
       assert(mistakesText.includes('sleep') || mistakesText.includes('wait'), `mistakesAndGaps should flag sleep: ${mistakesText}`);
     });
 
-    it('should judge dismissive "idk" as Incorrect with low score and explain what user missed', async () => {
+    it('should judge dismissive "idk" as Incorrect with score of 0 and explain what user missed', async () => {
       const junkReq = {
         json: async () => ({
           action: 'submit_answer',
@@ -545,7 +607,7 @@ describe('QA Interview Griller - Knowledge Base & Agent Training Suite', () => {
 
       assert(data.evaluation, 'Evaluation object required');
       assert.strictEqual(data.evaluation.verdict, 'Incorrect');
-      assert(data.evaluation.turnScore <= 45, `Score should be <= 45, got ${data.evaluation.turnScore}`);
+      assert.strictEqual(data.evaluation.turnScore, 0, `Score for idk must be 0, got ${data.evaluation.turnScore}`);
       assert(data.evaluation.whatUserMissed && data.evaluation.whatUserMissed.length > 10);
     });
 
