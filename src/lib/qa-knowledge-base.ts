@@ -1280,6 +1280,532 @@ Awaitility.await()
       'Testing consumers without verifying DLQ (Dead Letter Queue) failure handling'
     ],
     interviewTips: 'Explaining consumer idempotency and using Awaitility for asynchronous assertions demonstrates advanced enterprise backend SDET maturity.'
+  },
+
+  // 33. Playwright TypeScript Page Object Model (POM) Framework Template
+  {
+    id: 'playwright-pom-template',
+    topic: 'Playwright Page Object Model (POM) TypeScript Framework Template',
+    category: 'playwright',
+    keywords: [
+      'playwright pom',
+      'page object model typescript',
+      'pom template',
+      'playwright framework template',
+      'playwright pom typescript',
+      'playwright basic template',
+      'page object model template',
+      'playwright framework',
+      'pom typescript'
+    ],
+    question: 'Can you provide a basic template of Page Object Model (POM) in Playwright using TypeScript?',
+    shortAnswer: 'A production-grade Playwright TypeScript Page Object Model framework decouples element locators and page actions into dedicated Page classes under pages/, keeps assertions in tests/ using web-first expect(), and manages global timeouts and browser execution in playwright.config.ts.',
+    detailedAnswer: `### 📁 Enterprise Framework Directory Structure:
+\`\`\`
+my-playwright-project/
+├── pages/
+│   ├── BasePage.ts         # Shared navigation and common utilities
+│   ├── LoginPage.ts        # Encapsulated locators and page user actions
+│   └── DashboardPage.ts    # Landing state after successful authentication
+├── tests/
+│   └── login.spec.ts       # Test specifications and web-first assertions
+├── fixtures/
+│   └── custom-test.ts      # Custom test fixtures with pre-instantiated page objects
+├── playwright.config.ts    # Global timeouts, reporters, parallel workers, traces
+├── package.json
+└── tsconfig.json
+\`\`\``,
+    codeSnippet: {
+      playwright: `// 1. pages/LoginPage.ts - Page Object Class
+import { Page, Locator } from '@playwright/test';
+
+export class LoginPage {
+  readonly page: Page;
+  readonly usernameInput: Locator;
+  readonly passwordInput: Locator;
+  readonly loginButton: Locator;
+  readonly errorMessage: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+    // Locators initialized lazily without await
+    this.usernameInput = page.getByLabel('Username');
+    this.passwordInput = page.getByLabel('Password');
+    this.loginButton = page.getByRole('button', { name: 'Sign in' });
+    this.errorMessage = page.getByRole('alert');
+  }
+
+  async goto() {
+    await this.page.goto('/login');
+  }
+
+  async login(username: string, pass: string) {
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(pass);
+    await this.loginButton.click();
+  }
+}
+
+// 2. tests/login.spec.ts - Clean Test Suite Consuming Page Object
+import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
+
+test.describe('Authentication Feature', () => {
+  let loginPage: LoginPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    await loginPage.goto();
+  });
+
+  test('valid credentials navigate user to dashboard', async ({ page }) => {
+    await loginPage.login('standard_user', 'secure_pass123');
+    await expect(page).toHaveURL(/.*dashboard/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Welcome, SDET');
+  });
+
+  test('invalid credentials display accessible error banner', async () => {
+    await loginPage.login('locked_out_user', 'wrong_pass');
+    await expect(loginPage.errorMessage).toBeVisible();
+    await expect(loginPage.errorMessage).toContainText('Invalid username or password');
+  });
+});`
+    },
+    bestPractices: [
+      'Never put assertions (expect()) inside Page Object methods; keep assertions in tests/*.spec.ts for clean Single Responsibility',
+      'Use user-facing accessible locators (page.getByRole(), page.getByLabel()) rather than brittle CSS or XPath',
+      'Initialize locators directly inside the constructor without await—Playwright locators are inherently lazy and auto-retrying',
+      'Configure trace: "on-first-retry" in playwright.config.ts to capture zip traces for CI debugging'
+    ],
+    antiPatterns: [
+      'Calling await this.page.locator() inside the constructor',
+      'Hardcoding arbitrary page.waitForTimeout(5000) inside Page Object methods'
+    ],
+    interviewTips: 'Explain that Playwright locators are lazy pointers that auto-wait upon action execution, meaning Page Objects in Playwright do not suffer from Selenium PageFactory StaleElementReferenceExceptions.'
+  },
+
+  // 34. Selenium Java Page Object Model (POM) Framework Template
+  {
+    id: 'selenium-pom-template',
+    topic: 'Selenium Java Page Object Model (POM) Framework Template',
+    category: 'selenium',
+    keywords: [
+      'selenium pom',
+      'selenium page object model',
+      'selenium framework template',
+      'selenium java template',
+      'selenium pom java',
+      'selenium template',
+      'selenium framework'
+    ],
+    question: 'Can you provide a basic template of Page Object Model (POM) in Selenium using Java?',
+    shortAnswer: 'A production-ready Selenium Java POM framework separates page locators (By objects) and user interaction methods into dedicated Page classes under src/main/java/pages, isolates WebDriver instances using ThreadLocal inside DriverFactory, and executes TestNG test classes under src/test/java/tests.',
+    detailedAnswer: `### 📁 Enterprise Selenium Java Maven/TestNG Structure:
+\`\`\`
+selenium-java-framework/
+├── src/main/java/
+│   ├── base/
+│   │   ├── DriverFactory.java     # ThreadLocal driver management
+│   │   └── BasePage.java          # Reusable explicit wait helpers
+│   └── pages/
+│       ├── LoginPage.java         # By locators & action methods
+│       └── DashboardPage.java     # Post-login destination
+├── src/test/java/
+│   ├── base/
+│   │   └── BaseTest.java          # @BeforeMethod setup & @AfterMethod quit
+│   └── tests/
+│       └── LoginTest.java         # TestNG test cases with assertions
+├── testng.xml                     # Parallel execution suite configuration
+└── pom.xml                        # Selenium 4, TestNG, WebdriverManager
+\`\`\``,
+    codeSnippet: {
+      selenium: `// 1. src/main/java/pages/LoginPage.java
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class LoginPage {
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    // Encapsulated By locators (avoids StaleElementReferenceException)
+    private By usernameField = By.id("username");
+    private By passwordField = By.id("password");
+    private By submitButton  = By.cssSelector("button[type='submit']");
+    private By errorAlert    = By.className("alert-danger");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public void enterUsername(String user) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField)).sendKeys(user);
+    }
+
+    public void enterPassword(String pass) {
+        driver.findElement(passwordField).sendKeys(pass);
+    }
+
+    public void clickSubmit() {
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton)).click();
+    }
+
+    public void login(String user, String pass) {
+        enterUsername(user);
+        enterPassword(pass);
+        clickSubmit();
+    }
+
+    public String getErrorMessage() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(errorAlert)).getText();
+    }
+}
+
+// 2. src/test/java/tests/LoginTest.java
+package tests;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import pages.LoginPage;
+
+public class LoginTest extends BaseTest {
+
+    @Test(description = "Verify successful login navigates to dashboard")
+    public void testValidLogin() {
+        LoginPage loginPage = new LoginPage(getDriver());
+        loginPage.login("standard_user", "valid_password123");
+        
+        Assert.assertTrue(getDriver().getCurrentUrl().contains("/dashboard"), "URL should redirect to dashboard");
+    }
+
+    @Test(description = "Verify error banner on invalid credentials")
+    public void testInvalidLoginShowsError() {
+        LoginPage loginPage = new LoginPage(getDriver());
+        loginPage.login("locked_user", "bad_pass");
+
+        String error = loginPage.getErrorMessage();
+        Assert.assertTrue(error.contains("Invalid username or password"), "Error alert should be displayed");
+    }
+}`
+    },
+    bestPractices: [
+      'Encapsulate By locators rather than caching WebElements to prevent StaleElementReferenceException',
+      'Use ThreadLocal<WebDriver> inside DriverFactory to enable thread-safe parallel test runs in TestNG',
+      'Never put hardcoded Thread.sleep() inside Page Objects; always use explicit WebDriverWait'
+    ],
+    antiPatterns: [
+      'Using deprecated PageFactory @FindBy with dynamic SPA applications',
+      'Putting TestNG Assertions directly inside Page Object methods'
+    ],
+    interviewTips: 'Explain how storing By locators instead of WebElements ensures Selenium dynamically queries the DOM right at the moment of interaction, completely avoiding StaleElementReferenceExceptions.'
+  },
+
+  // 35. REST Assured API Automation Framework Template
+  {
+    id: 'rest-assured-framework-template',
+    topic: 'REST Assured API Automation Framework Template',
+    category: 'api',
+    keywords: [
+      'rest assured framework',
+      'rest assured template',
+      'api automation framework template',
+      'rest assured pom',
+      'api framework setup',
+      'rest assured java',
+      'api framework template',
+      'api template'
+    ],
+    question: 'Can you provide a basic template of REST Assured API test automation framework in Java?',
+    shortAnswer: 'A production-grade REST Assured Java framework centralizes reusable HTTP specifications (Base URI, JWT Auth headers, JSON logging) in RequestSpecBuilder, models request and response payloads as typed Java POJOs using Jackson, and executes schema-validated Given-When-Then tests via TestNG.',
+    detailedAnswer: `### 📁 Enterprise REST Assured Project Layout:
+\`\`\`
+restassured-api-framework/
+├── src/main/java/
+│   ├── config/
+│   │   ├── ApiConfig.java          # Reads environment endpoints (qa.env, dev.env)
+│   │   └── RequestSpecs.java       # Shared Request/Response Specifications
+│   └── models/
+│       ├── request/
+│       │   └── CreateUserRequest.java # Jackson POJO serialized to JSON
+│       └── response/
+│           └── UserResponse.java   # Deserialized response POJO
+├── src/test/java/
+│   ├── base/
+│   │   └── BaseApiTest.java        # Base URI and Auth token initializers
+│   └── tests/
+│       └── UserApiTests.java       # Status code, schema, and contract tests
+├── src/test/resources/
+│   └── schemas/
+│       └── user-schema.json        # JSON Schema validation file
+├── testng.xml
+└── pom.xml                         # REST Assured, Jackson, JSON Schema Validator
+\`\`\``,
+    codeSnippet: {
+      restassured: `// 1. src/main/java/config/RequestSpecs.java - Centralized Reusable Specification
+package config;
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+import static org.hamcrest.Matchers.lessThan;
+
+public class RequestSpecs {
+    public static RequestSpecification getAuthSpec(String bearerToken) {
+        return new RequestSpecBuilder()
+            .setBaseUri("https://api.intelligentqa.io")
+            .setBasePath("/api/v1")
+            .addHeader("Authorization", "Bearer " + bearerToken)
+            .setContentType(ContentType.JSON)
+            .build();
+    }
+
+    public static ResponseSpecification getSuccessSpec() {
+        return new ResponseSpecBuilder()
+            .expectStatusCode(200)
+            .expectContentType(ContentType.JSON)
+            .expectResponseTime(lessThan(3000L))
+            .build();
+    }
+}
+
+// 2. src/test/java/tests/UserApiTests.java - Given-When-Then Test Suite
+package tests;
+
+import config.RequestSpecs;
+import models.request.CreateUserRequest;
+import models.response.UserResponse;
+import io.restassured.module.jsv.JsonSchemaValidator;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import static io.restassured.RestAssured.given;
+
+public class UserApiTests extends BaseApiTest {
+
+    @Test(description = "Create user with POJO and validate JSON Schema")
+    public void testCreateUserAndValidateContract() {
+        CreateUserRequest payload = new CreateUserRequest("Jane Doe", "jane@intelligentqa.io", "SDET_LEAD");
+
+        UserResponse createdUser = given()
+            .spec(RequestSpecs.getAuthSpec(authToken))
+            .body(payload)
+        .when()
+            .post("/users")
+        .then()
+            .spec(RequestSpecs.getSuccessSpec())
+            .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("schemas/user-schema.json"))
+            .extract()
+            .as(UserResponse.class);
+
+        Assert.assertNotNull(createdUser.getId(), "Generated user ID should not be null");
+        Assert.assertEquals(createdUser.getEmail(), "jane@intelligentqa.io");
+    }
+}`
+    },
+    bestPractices: [
+      'Define RequestSpecBuilder centrally to avoid hardcoding base URIs and auth tokens across test classes',
+      'Use Jackson POJO serialization instead of raw string JSON or HashMaps for type safety',
+      'Validate JSON schemas in regression pipelines to catch breaking backend API contract drift'
+    ],
+    antiPatterns: [
+      'Hardcoding Authorization headers repetitively in every single given() call',
+      'Writing tests that assert 200 OK without verifying response body payloads'
+    ],
+    interviewTips: 'Emphasize that using RequestSpecBuilder and ResponseSpecBuilder decouples HTTP configuration from test logic, making the suite maintainable across dev, QA, and staging environments.'
+  },
+
+  // 36. Appium Mobile Automation Framework Template
+  {
+    id: 'appium-framework-template',
+    topic: 'Appium Mobile Automation Framework Template (Java & TestNG)',
+    category: 'framework',
+    keywords: [
+      'appium framework',
+      'appium template',
+      'appium mobile framework',
+      'appium java',
+      'mobile automation template',
+      'appium pom',
+      'mobile framework'
+    ],
+    question: 'Can you provide a basic template of Appium mobile automation framework in Java?',
+    shortAnswer: 'A modern Appium 2.x Java mobile automation framework configures driver options via UiAutomator2Options (Android) or XCUITestOptions (iOS), encapsulates screen elements using AppiumBy in Page Objects, and executes tests across emulators, simulators, or physical devices using TestNG.',
+    detailedAnswer: `### 📁 Enterprise Appium 2.x Framework Layout:
+\`\`\`
+appium-mobile-framework/
+├── src/main/java/
+│   ├── driver/
+│   │   └── AppiumDriverManager.java # Manages AndroidDriver / IOSDriver instances
+│   └── screens/
+│       ├── LoginScreen.java         # AppiumBy locators & user gestures (tap, swipe)
+│       └── HomeScreen.java          # Post-authentication screen
+├── src/test/java/
+│   ├── base/
+│   │   └── BaseMobileTest.java      # Appium server connection & app launch
+│   └── tests/
+│       └── LoginScreenTest.java     # TestNG mobile execution scenarios
+├── apps/
+│   └── my-app.apk                   # Target native / hybrid mobile application
+└── testng-mobile.xml
+\`\`\``,
+    codeSnippet: {
+      selenium: `// 1. src/main/java/screens/LoginScreen.java - Screen Object Model
+package screens;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class LoginScreen {
+    private AndroidDriver driver;
+    private WebDriverWait wait;
+
+    // Accessible accessibility id locators (cross-platform friendly)
+    private By usernameInput = AppiumBy.accessibilityId("username-input");
+    private By passwordInput = AppiumBy.accessibilityId("password-input");
+    private By loginBtn      = AppiumBy.accessibilityId("login-button");
+    private By welcomeHeader = AppiumBy.xpath("//android.widget.TextView[@text='Dashboard']");
+
+    public LoginScreen(AndroidDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public void login(String user, String pass) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(usernameInput)).sendKeys(user);
+        driver.findElement(passwordInput).sendKeys(pass);
+        wait.until(ExpectedConditions.elementToBeClickable(loginBtn)).click();
+    }
+
+    public boolean isDashboardDisplayed() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(welcomeHeader)).isDisplayed();
+    }
+}
+
+// 2. src/test/java/tests/LoginScreenTest.java
+package tests;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import screens.LoginScreen;
+
+public class LoginScreenTest extends BaseMobileTest {
+
+    @Test(description = "Verify successful mobile login")
+    public void testSuccessfulMobileLogin() {
+        LoginScreen loginScreen = new LoginScreen(getDriver());
+        loginScreen.login("mobile_tester", "secure123");
+
+        Assert.assertTrue(loginScreen.isDashboardDisplayed(), "Dashboard should be visible after login");
+    }
+}`
+    },
+    bestPractices: [
+      'Prioritize AppiumBy.accessibilityId() for both Android and iOS over platform-specific XPaths',
+      'Migrate to Appium 2.x with decoupled drivers (appium driver install uiautomator2)',
+      'Use explicit WebDriverWait instead of hardcoded Thread.sleep for mobile animation stability'
+    ],
+    antiPatterns: [
+      'Using absolute XML XPaths like //android.widget.FrameLayout[1]/android.widget.LinearLayout[2]',
+      'Hardcoding local emulator device names in test files instead of configuration properties'
+    ],
+    interviewTips: 'Highlight that accessibilityId is the gold standard for mobile automation because it works seamlessly across both Android and iOS with high speed and zero OS-dependent brittleness.'
+  },
+
+  // 37. Cypress Web Automation Framework Template
+  {
+    id: 'cypress-framework-template',
+    topic: 'Cypress Web Automation Framework Template',
+    category: 'framework',
+    keywords: [
+      'cypress framework',
+      'cypress template',
+      'cypress pom',
+      'cypress page object model',
+      'cypress framework template'
+    ],
+    question: 'Can you provide a basic template of Cypress automation framework using Page Object Model?',
+    shortAnswer: 'A modern Cypress Page Object Model framework encapsulates DOM elements using cy.get() inside Page classes under cypress/pages/, structures test specs under cypress/e2e/, and configures base URLs, timeouts, and video recording inside cypress.config.js.',
+    detailedAnswer: `### 📁 Enterprise Cypress Project Layout:
+\`\`\`
+cypress-framework/
+├── cypress/
+│   ├── e2e/
+│   │   └── login.cy.js             # Test specifications
+│   ├── pages/
+│   │   └── LoginPage.js            # Encapsulated getters & actions
+│   ├── fixtures/
+│   │   └── users.json              # Mock test data
+│   └── support/
+│       ├── commands.js             # Custom Cypress commands (cy.login())
+│       └── e2e.js                  # Global hooks and event listeners
+├── cypress.config.js               # Environment config, viewport, retries
+└── package.json
+\`\`\``,
+    codeSnippet: {
+      playwright: `// 1. cypress/pages/LoginPage.js
+class LoginPage {
+  elements = {
+    usernameInput: () => cy.get('[data-testid="username"]'),
+    passwordInput: () => cy.get('[data-testid="password"]'),
+    submitBtn:     () => cy.get('button[type="submit"]'),
+    errorMessage:  () => cy.get('.error-banner'),
+  };
+
+  visit() {
+    cy.visit('/login');
+  }
+
+  login(username, password) {
+    this.elements.usernameInput().type(username);
+    this.elements.passwordInput().type(password);
+    this.elements.submitBtn().click();
+  }
+}
+
+export default new LoginPage();
+
+// 2. cypress/e2e/login.cy.js
+import loginPage from '../pages/LoginPage';
+
+describe('Authentication Flow', () => {
+  beforeEach(() => {
+    loginPage.visit();
+  });
+
+  it('navigates to dashboard on valid credentials', () => {
+    loginPage.login('standard_user', 'secret_sauce');
+    cy.url().should('include', '/dashboard');
+    cy.get('h1').should('contain', 'Welcome, SDET');
+  });
+
+  it('displays error on invalid credentials', () => {
+    loginPage.login('invalid_user', 'wrong_pass');
+    loginPage.elements.errorMessage()
+      .should('be.visible')
+      .and('contain', 'Invalid username or password');
+  });
+});`
+    },
+    bestPractices: [
+      'Use data-cy or data-testid attributes for stable locators',
+      'Leverage Cypress built-in auto-retry assertions (should, and) instead of manual waits',
+      'Export singleton page instances (export default new LoginPage()) for clean test imports'
+    ],
+    antiPatterns: [
+      'Using cy.wait(5000) instead of waiting on network aliases (cy.wait("@loginApi"))',
+      'Storing Cypress chained values in local const variables (Cypress commands are asynchronous)'
+    ],
+    interviewTips: 'Explain that Cypress commands are queued and execute asynchronously, which is why Cypress tests use chaining and built-in auto-retry assertions rather than async/await.'
   }
 ];
 
@@ -1998,6 +2524,52 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
       if (keywords.some(k => k.includes(term))) score += 25;
       if (questionMatch.includes(term)) score += 20;
       if (shortAnswerMatch.includes(term)) score += 5;
+    }
+
+    // Technology and framework affinity adjustments:
+    // If user asks for Selenium or Java, prioritize Selenium and penalize Playwright
+    if (cleanQuery.includes('selenium') || (cleanQuery.includes('java') && !cleanQuery.includes('javascript'))) {
+      if (entry.category === 'selenium' || titleMatch.includes('selenium') || titleMatch.includes('java')) {
+        score += 40;
+      } else if (entry.category === 'playwright' || titleMatch.includes('playwright')) {
+        score -= 50;
+      }
+    }
+
+    // If user asks for Playwright or TypeScript, prioritize Playwright and penalize Selenium
+    if (cleanQuery.includes('playwright') || cleanQuery.includes('typescript')) {
+      if (entry.category === 'playwright' || titleMatch.includes('playwright')) {
+        score += 40;
+      } else if (entry.category === 'selenium' || titleMatch.includes('selenium')) {
+        score -= 50;
+      }
+    }
+
+    // If user asks for REST Assured or API framework, prioritize API entries
+    if (cleanQuery.includes('rest assured') || cleanQuery.includes('api framework') || cleanQuery.includes('api automation')) {
+      if (entry.category === 'api' || titleMatch.includes('rest assured') || titleMatch.includes('api')) {
+        score += 50;
+      } else if (entry.category === 'playwright' || entry.category === 'selenium') {
+        score -= 30;
+      }
+    }
+
+    // If user asks for Appium or Mobile automation, prioritize Appium entries
+    if (cleanQuery.includes('appium') || cleanQuery.includes('mobile')) {
+      if (titleMatch.includes('appium') || keywords.some(k => k.includes('appium'))) {
+        score += 70;
+      } else {
+        score -= 40;
+      }
+    }
+
+    // If user asks for Cypress, prioritize Cypress entries
+    if (cleanQuery.includes('cypress')) {
+      if (titleMatch.includes('cypress') || keywords.some(k => k.includes('cypress'))) {
+        score += 70;
+      } else {
+        score -= 40;
+      }
     }
 
     return { entry, score };

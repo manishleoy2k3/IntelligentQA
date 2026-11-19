@@ -231,6 +231,86 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       });
     });
 
+    it('generates a complete, non-truncated Playwright Page Object Model template with TypeScript for framework setup', () => {
+      const userPrompt = 'I want to create Playwright framework for my web application. can you help me with the basic template of Page Object Model using typescript language';
+      const res = queryMentor(userPrompt);
+      assert.strictEqual(res.source, 'searchQAKnowledge');
+      assert.strictEqual(res.topic, 'Playwright Page Object Model (POM) TypeScript Framework Template');
+      assertFourPillars(res, {
+        relevantTerms: [
+          'LoginPage',
+          'login.spec.ts',
+          'getByLabel',
+          'getByRole',
+          'playwright.config.ts'
+        ],
+        forbiddenInCode: ['Thread.sleep']
+      });
+
+      // Assert complete code structure
+      assert.ok(res.reply.includes('class LoginPage'), 'Must include complete LoginPage class');
+      assert.ok(res.reply.includes('test.describe'), 'Must include complete test spec');
+      assert.ok(res.reply.includes('expect(page).toHaveURL'), 'Must include web-first assertions');
+    });
+
+    it('generates a complete, non-truncated Selenium Java POM template when requested', () => {
+      const userPrompt = 'I want to create a Selenium framework for my web application. Can you help me with the basic template of Page Object Model using Java?';
+      const res = queryMentor(userPrompt);
+      assert.strictEqual(res.source, 'searchQAKnowledge');
+      assert.strictEqual(res.topic, 'Selenium Java Page Object Model (POM) Framework Template');
+      assertFourPillars(res, {
+        relevantTerms: [
+          'LoginPage',
+          'LoginTest',
+          'WebDriverWait',
+          'TestNG',
+          'DriverFactory'
+        ],
+        forbiddenInCode: ['Thread.sleep']
+      });
+
+      assert.ok(res.reply.includes('public class LoginPage'), 'Must include LoginPage.java');
+      assert.ok(res.reply.includes('public class LoginTest'), 'Must include LoginTest.java');
+      assert.ok(res.reply.includes('Assert.assertTrue'), 'Must include TestNG assertions');
+    });
+
+    it('generates a complete, non-truncated Cypress framework template when requested', () => {
+      const userPrompt = 'Can you help me with a Cypress automation framework template?';
+      const res = queryMentor(userPrompt);
+      assert.strictEqual(res.source, 'searchQAKnowledge');
+      assert.strictEqual(res.topic, 'Cypress Web Automation Framework Template');
+      assertFourPillars(res, {
+        relevantTerms: [
+          'LoginPage.js',
+          'login.cy.js',
+          'cypress.config.js'
+        ],
+        forbiddenInCode: []
+      });
+
+      assert.ok(res.reply.includes('class LoginPage'), 'Must include LoginPage class');
+      assert.ok(res.reply.includes('cy.visit'), 'Must include Cypress commands');
+    });
+
+    it('generates a complete, non-truncated Appium Mobile Java framework template when requested', () => {
+      const userPrompt = 'Can you help me with an Appium mobile automation framework template in Java?';
+      const res = queryMentor(userPrompt);
+      assert.strictEqual(res.source, 'searchQAKnowledge');
+      assert.strictEqual(res.topic, 'Appium Mobile Automation Framework Template (Java & TestNG)');
+      assertFourPillars(res, {
+        relevantTerms: [
+          'LoginScreen.java',
+          'LoginScreenTest.java',
+          'AppiumBy',
+          'accessibilityId'
+        ],
+        forbiddenInCode: []
+      });
+
+      assert.ok(res.reply.includes('public class LoginScreen'), 'Must include LoginScreen');
+      assert.ok(res.reply.includes('public class LoginScreenTest'), 'Must include LoginScreenTest');
+    });
+
     it('explains Playwright Auto-Waiting Actionability Matrix', () => {
       const res = queryMentor('How does auto-waiting work in Playwright?');
       assert.strictEqual(res.source, 'searchQAKnowledge');
@@ -261,6 +341,27 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
         relevantTerms: ['JsonSchema', 'Jackson', 'POJO', 'Serialization'],
         forbiddenInCode: []
       });
+    });
+
+    it('generates a complete, non-truncated REST Assured API framework template when requested', () => {
+      const userPrompt = 'I want to create a REST Assured API framework. Can you help me with the basic template?';
+      const res = queryMentor(userPrompt);
+      assert.strictEqual(res.source, 'searchQAKnowledge');
+      assert.strictEqual(res.topic, 'REST Assured API Automation Framework Template');
+      assertFourPillars(res, {
+        relevantTerms: [
+          'RequestSpecs.java',
+          'UserApiTests.java',
+          'RequestSpecBuilder',
+          'ResponseSpecBuilder',
+          'user-schema.json'
+        ],
+        forbiddenInCode: []
+      });
+
+      assert.ok(res.reply.includes('public class RequestSpecs'), 'Must include RequestSpecs class');
+      assert.ok(res.reply.includes('public class UserApiTests'), 'Must include UserApiTests class');
+      assert.ok(res.reply.includes('JsonSchemaValidator'), 'Must include JSON schema validation');
     });
   });
 
@@ -367,6 +468,30 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.ok(
         qaChatContent.includes('Zero hallucinations'),
         'System prompt must enforce zero hallucinations'
+      );
+    });
+
+    it('verifies /api/ai/qa-chat provides ample output context window (maxOutputTokens >= 4096) to prevent code truncation', () => {
+      assert.strictEqual(
+        qaChatContent.includes('maxOutputTokens: 512'),
+        false,
+        'maxOutputTokens must NOT be throttled to 512 tokens'
+      );
+      assert.ok(
+        qaChatContent.includes('maxOutputTokens: 4096') || qaChatContent.includes('maxOutputTokens: 8192'),
+        'maxOutputTokens must be at least 4096 to accommodate complete framework templates'
+      );
+    });
+
+    it('verifies /api/ai/qa-chat timeout allows at least 25000ms for large code template generation', () => {
+      assert.strictEqual(
+        qaChatContent.includes('setTimeout(() => controller.abort(), 7000)'),
+        false,
+        'Timeout should not prematurely abort after only 7000ms'
+      );
+      assert.ok(
+        qaChatContent.includes('25000'),
+        'Timeout should be configured to 25000ms for large token generations'
       );
     });
   });
