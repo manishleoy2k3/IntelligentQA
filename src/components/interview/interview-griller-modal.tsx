@@ -42,6 +42,62 @@ import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import { getQuestionsByLevelAndDifficulty } from '@/lib/interview-questions-bank';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 
+export interface SkillOption {
+  id: string;
+  name: string;
+  category: 'Automation Frameworks' | 'Programming Languages' | 'API & Backend' | 'QA Strategy & Ops';
+  desc: string;
+}
+
+export const AVAILABLE_SKILLS: SkillOption[] = [
+  // Automation Frameworks
+  { id: 'Playwright', name: 'Playwright', category: 'Automation Frameworks', desc: 'Auto-waiting, network mocking via page.route(), storageState auth, web-first assertions' },
+  { id: 'Selenium', name: 'Selenium WebDriver', category: 'Automation Frameworks', desc: 'Selenium 4 Grid, WebDriver waits, Page Object Models, BiDi CDP network logging' },
+  { id: 'REST Assured', name: 'REST Assured', category: 'API & Backend', desc: 'Java BDD Given-When-Then, RequestSpecBuilder, JSON schema validation, POJO mapping' },
+  { id: 'Cypress', name: 'Cypress', category: 'Automation Frameworks', desc: 'Fast front-end runner, cy.intercept route stubbing, asynchronous command queue' },
+  { id: 'Appium', name: 'Appium (Mobile)', category: 'Automation Frameworks', desc: 'iOS & Android native and hybrid automation, WEBVIEW context, W3C touch actions' },
+  // Programming Languages
+  { id: 'TypeScript', name: 'TypeScript', category: 'Programming Languages', desc: 'Strict typing, modern async/await, interfaces, Playwright/Node runtime' },
+  { id: 'Java', name: 'Java', category: 'Programming Languages', desc: 'Project Loom virtual threads, ThreadLocal, TestNG/JUnit, Streams, concurrency' },
+  { id: 'Python', name: 'Python (Pytest)', category: 'Programming Languages', desc: 'Pytest fixtures, yield teardowns, pytest-xdist parallelization' },
+  { id: 'JavaScript', name: 'JavaScript (Node.js)', category: 'Programming Languages', desc: 'ES Modules, Promise concurrency, event loop, dynamic typing' },
+  // API & Backend
+  { id: 'Postman', name: 'Postman & Newman', category: 'API & Backend', desc: 'Collections, environment variables, pre-request scripts, CLI test runners' },
+  { id: 'Pact', name: 'Pact Contract Testing', category: 'API & Backend', desc: 'Consumer-driven contracts, provider verification, Pact broker matrix' },
+  // QA Strategy & Ops
+  { id: 'Manual QA', name: 'Manual QA & Strategy', category: 'QA Strategy & Ops', desc: 'Boundary Value Analysis, Equivalence Partitioning, Bug Triage, Test Charters' },
+  { id: 'CI/CD (GitHub Actions)', name: 'CI/CD & DevOps', category: 'QA Strategy & Ops', desc: 'Matrix sharding, caching node_modules/maven, artifact quarantine, Allure reports' },
+  { id: 'Performance (k6/JMeter)', name: 'Performance Testing', category: 'QA Strategy & Ops', desc: 'Distributed load, SLA latency gates, virtual user metrics, k6 scripts' },
+];
+
+export const SKILL_PRESETS = [
+  {
+    name: 'Playwright + TypeScript SDET',
+    desc: 'Modern web automation, TypeScript, REST Assured, and CI/CD pipelines',
+    skills: ['Playwright', 'TypeScript', 'REST Assured', 'CI/CD (GitHub Actions)'],
+  },
+  {
+    name: 'Enterprise Selenium + Java SDET',
+    desc: 'Selenium 4, Java, REST Assured, and CI/CD pipelines',
+    skills: ['Selenium', 'Java', 'REST Assured', 'CI/CD (GitHub Actions)'],
+  },
+  {
+    name: 'Python SDET Specialist',
+    desc: 'Pytest fixtures, Python, and Playwright / API test suites',
+    skills: ['Playwright', 'Python', 'CI/CD (GitHub Actions)'],
+  },
+  {
+    name: 'Mobile QE Specialist (Appium)',
+    desc: 'Appium, Mobile QA, Java/TypeScript, and cross-platform automation',
+    skills: ['Appium', 'Java', 'Manual QA'],
+  },
+  {
+    name: 'Manual QA & Test Lead',
+    desc: 'Test design (BVA/EP), bug triage, Postman API, and release gates',
+    skills: ['Manual QA', 'Postman', 'CI/CD (GitHub Actions)'],
+  },
+];
+
 interface Scorecard {
   overallScore: number;
   technicalScore: number;
@@ -103,6 +159,37 @@ export default function InterviewGriller() {
   const [experienceYears, setExperienceYears] = useState<number>(1);
   const [interviewMode, setInterviewMode] = useState<'chat' | 'audio'>('chat');
   const [selectedTrack, setSelectedTrack] = useState<string>('Test Automation');
+
+  // Candidate Tech Stack & Skills Multi-Select state
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(['Playwright', 'TypeScript', 'REST Assured']);
+  const [showSkillsModal, setShowSkillsModal] = useState<boolean>(false);
+
+  const toggleSkill = (skillId: string) => {
+    setSelectedSkills(prev => {
+      let next: string[];
+      if (prev.includes(skillId)) {
+        if (prev.length === 1) return prev; // Keep at least one skill selected
+        next = prev.filter(s => s !== skillId);
+      } else {
+        next = [...prev, skillId];
+      }
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('intelligentqa_selected_skills', JSON.stringify(next));
+        } catch {}
+      }
+      return next;
+    });
+  };
+
+  const applyPreset = (presetSkills: string[]) => {
+    setSelectedSkills(presetSkills);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('intelligentqa_selected_skills', JSON.stringify(presetSkills));
+      } catch {}
+    }
+  };
 
   // Modal / popover controls
   const [showTrackModal, setShowTrackModal] = useState<boolean>(false);
@@ -187,6 +274,15 @@ export default function InterviewGriller() {
         else if (user.experienceYears <= 5) setExperienceTier('3-5 Years');
         else if (user.experienceYears <= 9) setExperienceTier('6-9 Years');
         else setExperienceTier('10+ Years');
+      }
+      const savedSkills = localStorage.getItem('intelligentqa_selected_skills');
+      if (savedSkills) {
+        try {
+          const parsed = JSON.parse(savedSkills);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setSelectedSkills(parsed);
+          }
+        } catch {}
       }
     }
   }, []);
@@ -389,7 +485,7 @@ export default function InterviewGriller() {
   };
 
   // Start interview session
-  const startInterview = async () => {
+  const startInterview = async (overrideSkills?: string[]) => {
     if (currentUser && !geminiKey) {
       setShowKeyModal(true);
       return;
@@ -405,6 +501,7 @@ export default function InterviewGriller() {
     setMessages([]);
 
     try {
+      const activeSkills = overrideSkills || selectedSkills;
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (geminiKey) {
         headers['x-gemini-api-key'] = geminiKey;
@@ -422,6 +519,7 @@ export default function InterviewGriller() {
             experienceLevel: experienceTier,
             interviewMode,
             track: selectedTrack,
+            skills: activeSkills,
             count: 5,
             apiKey: geminiKey,
           }),
@@ -454,6 +552,7 @@ export default function InterviewGriller() {
           experienceTier,
           count: 5,
           track: selectedTrack,
+          skills: activeSkills,
         });
 
         loadedQuestions = localQuestions.map((q, idx) => ({
@@ -483,6 +582,8 @@ export default function InterviewGriller() {
       setCodeContext(q1Code);
       setQuestionList(loadedQuestions);
 
+      const skillsSummary = activeSkills.length > 0 ? activeSkills.join(', ') : selectedTrack;
+
       // Build initial chat messages matching AssertHired
       const initialMessages: ChatMessage[] = [
         {
@@ -490,7 +591,7 @@ export default function InterviewGriller() {
           sender: 'interviewer',
           senderName: 'Rahul',
           avatarText: 'R',
-          content: `Hello, thanks for joining today for the QA Engineer ${selectedTrack} interview.`,
+          content: `Hello, thanks for joining today for your Quality Engineering mock interview. We have calibrated your session for ${experienceTier} (${difficulty}) focusing on your declared tech stack: ${skillsSummary}.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
         {
@@ -510,7 +611,7 @@ export default function InterviewGriller() {
       setHasStarted(true);
 
       if (interviewMode === 'audio') {
-        setTimeout(() => speakText(`Hello, thanks for joining today for the QA Engineer ${selectedTrack} interview. Question 1: ${q1Text}`), 400);
+        setTimeout(() => speakText(`Hello, thanks for joining today for your QA interview. Question 1: ${q1Text}`), 400);
       }
     } catch (err) {
       console.error('Failed to start interview:', err);
@@ -617,6 +718,7 @@ export default function InterviewGriller() {
             currentAnswer: answerSnapshot,
             currentCode: codeSnapshot,
             questionList,
+            skills: selectedSkills,
             apiKey: geminiKey,
           }),
         });
@@ -906,7 +1008,7 @@ export default function InterviewGriller() {
     }
   };
 
-  const restartInterview = () => {
+  const restartInterview = (overrideSkills?: string[]) => {
     stopSpeaking();
     stopListening();
     setHasStarted(false);
@@ -920,7 +1022,7 @@ export default function InterviewGriller() {
     setUserCode('');
     baseSpeechTextRef.current = '';
     setProbingQuestion('');
-    startInterview();
+    startInterview(overrideSkills);
   };
 
   // Keyboard shortcut: Shift+Enter for new line, Enter to submit
@@ -949,7 +1051,7 @@ export default function InterviewGriller() {
             </Link>
           </div>
 
-          {/* Center: Track, Level & Question Progress Bar */}
+          {/* Center: Track, Skills, Level & Question Progress Bar */}
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Topic / Track Badge */}
             <button
@@ -959,6 +1061,20 @@ export default function InterviewGriller() {
             >
               <Edit3 className="w-3 h-3 text-emerald-400" />
               <span className="font-semibold">{selectedTrack}</span>
+            </button>
+
+            {/* Tech Stack & Skills Multi-Select Badge */}
+            <button
+              onClick={() => setShowSkillsModal(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#111f1c] border border-emerald-800/80 text-emerald-300 hover:bg-[#162a26] hover:border-emerald-600 transition-all cursor-pointer shadow-sm"
+              title="Configure Tech Stack & Skills (Playwright, Selenium, REST Assured, etc.)"
+            >
+              <Sliders className="w-3 h-3 text-emerald-400" />
+              <span className="font-semibold">
+                {selectedSkills.length <= 2
+                  ? selectedSkills.join(', ')
+                  : `${selectedSkills.slice(0, 2).join(', ')} (+${selectedSkills.length - 2})`}
+              </span>
             </button>
 
             {/* Seniority Level Badge */}
@@ -1518,7 +1634,7 @@ export default function InterviewGriller() {
                 Return to Dashboard
               </Link>
               <button
-                onClick={restartInterview}
+                onClick={() => restartInterview()}
                 className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-black text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -1667,6 +1783,19 @@ export default function InterviewGriller() {
                 </button>
               ))}
             </div>
+
+            <div className="pt-2 border-t border-emerald-950">
+              <button
+                onClick={() => {
+                  setShowTrackModal(false);
+                  setShowSkillsModal(true);
+                }}
+                className="w-full p-2.5 rounded-xl border border-dashed border-emerald-800/80 bg-[#091513] hover:bg-[#0e211e] text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Or customize exact Tech Stack &amp; Skills ({selectedSkills.length} selected)</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1703,6 +1832,35 @@ export default function InterviewGriller() {
                     <div>{tier === '0-2 Years' ? 'Entry Level' : tier === '3-5 Years' ? 'Mid Level' : tier === '6-9 Years' ? 'Senior' : 'Architect'}</div>
                     <div className="text-[10px] text-neutral-400">{tier}</div>
                   </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Tech Stack Skills Section */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                  Target Tech Stack ({selectedSkills.length} Skills)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowConfigModal(false);
+                    setShowSkillsModal(true);
+                  }}
+                  className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer"
+                >
+                  Edit Skills
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {selectedSkills.map(s => (
+                  <span
+                    key={s}
+                    className="px-2 py-0.5 rounded-md bg-[#0e211e] border border-emerald-900/80 text-emerald-300 text-[11px] font-mono"
+                  >
+                    {s}
+                  </span>
                 ))}
               </div>
             </div>
@@ -1769,6 +1927,134 @@ export default function InterviewGriller() {
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-black text-xs font-bold cursor-pointer"
               >
                 Apply &amp; Restart Round
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TECH STACK & SKILLS MULTI-SELECT MODAL
+         ========================================================================= */}
+      {showSkillsModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#0b1413] border border-emerald-900/60 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl text-neutral-100 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-emerald-950">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Sliders className="w-4 h-4 text-emerald-400" />
+                  <h3 className="text-base font-bold text-emerald-300">Select Your Tech Stack &amp; Skills</h3>
+                </div>
+                <p className="text-xs text-neutral-400 mt-1">
+                  The AI Interviewer Agent dynamically calibrates questions strictly to the tools and skills you select.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSkillsModal(false)}
+                className="text-neutral-400 hover:text-neutral-200 p-1 rounded-lg hover:bg-neutral-800 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-5 pr-1">
+              {/* Quick Presets */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                  Quick Role Presets
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {SKILL_PRESETS.map(preset => {
+                    const isMatch = preset.skills.length === selectedSkills.length && preset.skills.every(s => selectedSkills.includes(s));
+                    return (
+                      <button
+                        key={preset.name}
+                        onClick={() => applyPreset(preset.skills)}
+                        className={`p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
+                          isMatch
+                            ? 'border-emerald-500 bg-[#0e2420] text-emerald-200 ring-1 ring-emerald-500/50'
+                            : 'border-emerald-950/60 bg-[#070e0d] hover:bg-[#0c1615] text-neutral-300'
+                        }`}
+                      >
+                        <div className="font-bold text-xs text-neutral-200">{preset.name}</div>
+                        <div className="text-[10px] text-neutral-400 mt-0.5 line-clamp-1">{preset.desc}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Skills Multi-Select Grid Grouped by Category */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                    Choose Skills &amp; Frameworks ({selectedSkills.length} selected)
+                  </label>
+                  <span className="text-[11px] text-emerald-400/90 font-mono">
+                    Toggle any skill
+                  </span>
+                </div>
+
+                {(['Automation Frameworks', 'API & Backend', 'Programming Languages', 'QA Strategy & Ops'] as const).map(group => {
+                  const groupSkills = AVAILABLE_SKILLS.filter(s => s.category === group);
+                  return (
+                    <div key={group} className="space-y-1.5">
+                      <div className="text-[11px] font-semibold text-emerald-400/80 px-1">{group}</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {groupSkills.map(skill => {
+                          const isSelected = selectedSkills.includes(skill.id);
+                          return (
+                            <button
+                              key={skill.id}
+                              type="button"
+                              onClick={() => toggleSkill(skill.id)}
+                              className={`p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer flex items-start gap-2.5 ${
+                                isSelected
+                                  ? 'border-emerald-500 bg-[#0e211e] text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.15)]'
+                                  : 'border-emerald-950/60 bg-[#070e0d] hover:bg-[#0c1615] text-neutral-400'
+                              }`}
+                            >
+                              <div className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
+                                isSelected
+                                  ? 'bg-emerald-500 border-emerald-400 text-black'
+                                  : 'border-neutral-700 bg-neutral-900/60'
+                              }`}>
+                                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className={`font-semibold text-xs ${isSelected ? 'text-neutral-100' : 'text-neutral-300'}`}>
+                                  {skill.name}
+                                </div>
+                                <div className="text-[10px] text-neutral-400 mt-0.5 line-clamp-1">
+                                  {skill.desc}
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-emerald-950">
+              <button
+                onClick={() => applyPreset(['Playwright', 'TypeScript', 'REST Assured'])}
+                className="text-xs text-neutral-400 hover:text-neutral-200 cursor-pointer"
+              >
+                Reset to Default
+              </button>
+              <button
+                onClick={() => {
+                  setShowSkillsModal(false);
+                  restartInterview();
+                }}
+                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-lg hover:shadow-emerald-500/20 cursor-pointer flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Apply &amp; Generate Questions ({selectedSkills.length} Skills)</span>
               </button>
             </div>
           </div>

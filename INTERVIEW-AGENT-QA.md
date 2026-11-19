@@ -136,3 +136,25 @@ Upon completion, the agent synthesizes a comprehensive talent profile:
 
 * **Online AI Engine**: Runs on Google Gemini Flash Lite via user-provided personal API key (free tier: 15 RPM / 1,500 RPD).
 * **Offline Deterministic Fallback**: If no API key is provided or network is offline, the agent transparently serves curated questions from `INTERVIEW_KNOWLEDGE_BASE` and applies deterministic heuristic scoring, guaranteeing 100% platform uptime at zero cost.
+
+---
+
+## 9. Candidate Tech Stack & Skills Personalization
+
+Candidates are never forced into a generic one-size-fits-all QA question pool. Candidates can select the exact technologies and frameworks they have worked with:
+
+### Supported Skill Catalog:
+* **Automation Frameworks**: `Playwright`, `Selenium WebDriver`, `Cypress`, `Appium (Mobile)`
+* **Programming Languages**: `TypeScript`, `Java`, `Python (Pytest)`, `JavaScript (Node.js)`
+* **API & Backend**: `REST Assured`, `Postman & Newman`, `Pact Contract Testing`
+* **QA Strategy & Ops**: `Manual QA & Strategy`, `CI/CD (GitHub Actions)`, `Performance (k6/JMeter)`
+
+### Tailored Questioning Policy:
+1. **Strict Stack Confinement**: When a candidate selects specific skills (e.g. `['Selenium', 'Java', 'REST Assured']`), both the Gemini LLM prompt and the offline heuristic knowledge base filter ensure 100% of the questions focus on their chosen stack. Unrelated tools outside their stack (e.g. Cypress or Python) are excluded.
+2. **Quick Role Presets**:
+   * *Playwright + TypeScript SDET*
+   * *Enterprise Selenium + Java SDET*
+   * *Python SDET Specialist*
+   * *Mobile QE Specialist (Appium)*
+   * *Manual QA & Test Lead*
+3. **Persistent Profile**: Selected skills are persisted in `localStorage` across mock interview sessions and synced with the candidate's experience tier.

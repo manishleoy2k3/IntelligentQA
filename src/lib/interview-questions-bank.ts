@@ -1558,6 +1558,167 @@ AndroidDriver driver = new AndroidDriver(new URL("https://hub.browserstack.com/w
     codeSnippet: `public class TestConfigManager {\n  private static volatile TestConfigManager instance;\n  private TestConfigManager() { /* load configs */ }\n  \n  public static TestConfigManager getInstance() {\n    if (instance == null) {\n      synchronized (TestConfigManager.class) {\n        if (instance == null) {\n          instance = new TestConfigManager();\n        }\n      }\n    }\n    return instance;\n  }\n}`,
     bestPractice: 'Declare the singleton field as volatile so other threads see the fully initialized object immediately across CPU cache lines.',
     pitfallToAvoid: 'Omitting the volatile keyword with Double-Checked Locking, which can expose a partially initialized object reference to other threads.'
+  },
+  // ==========================================
+  // CANDIDATE TECH STACK & SKILLS SPECIALIZATION BANK
+  // ==========================================
+  {
+    id: 'sel-stale-elem-01',
+    technology: 'Selenium',
+    category: 'Selenium & Playwright Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 8,
+    topic: 'Handling StaleElementReferenceException in Dynamic Single Page Apps',
+    question: 'What causes StaleElementReferenceException in Selenium WebDriver, and what architectural strategies eliminate it in dynamic Single Page Applications (SPAs)?',
+    expectedFocus: 'DOM re-rendering, detached element node, Page Object re-lookup, FluentWait ignoring StaleElementReferenceException, dynamic By locators vs cached WebElement.',
+    answerSummary: 'A StaleElementReferenceException occurs when an element found earlier is no longer attached to the current DOM because JavaScript/React re-rendered or destroyed the node. Solutions: Avoid caching WebElements as class fields; store By locators and resolve dynamically. Use WebDriverWait with ExpectedConditions.refreshed() or FluentWait ignoring StaleElementReferenceException.class.',
+    codeSnippet: `// Dynamic retry with FluentWait ignoring StaleElementReferenceException\nWait<WebDriver> wait = new FluentWait<>(driver)\n    .withTimeout(Duration.ofSeconds(10))\n    .pollingEvery(Duration.ofMillis(300))\n    .ignoring(StaleElementReferenceException.class);\n\nWebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("submit-order")));\nsubmitBtn.click();`,
+    bestPractice: 'Store locators as By objects or page factory proxies rather than storing long-lived WebElement instances across UI state transitions.',
+    pitfallToAvoid: 'Wrapping the entire test step in a blunt try-catch block with Thread.sleep(3000) instead of using fluent explicit retry conditions.'
+  },
+  {
+    id: 'sel-bidi-cdp-01',
+    technology: 'Selenium',
+    category: 'Selenium & Playwright Automation',
+    difficulty: 'Hard',
+    experienceLevel: '6-9 Years',
+    minYears: 6,
+    maxYears: 12,
+    topic: 'Selenium 4 BiDi & Chrome DevTools Protocol (CDP) Network Logging',
+    question: 'How does Selenium 4 leverage the Chrome DevTools Protocol (CDP) and BiDirectional (BiDi) APIs to inspect network requests, capture console errors, and simulate network throttling?',
+    expectedFocus: 'DevTools session, Network.enable, listening for Network.requestWillBeSent and Network.responseReceived, Emulation.setDeviceMetricsOverride, BiDi standard vs CDP.',
+    answerSummary: 'Selenium 4 introduces native DevTools integration via driver.getDevTools(). You create a DevTools session, send Network.enable(), and register listeners on Network.requestWillBeSent and Network.responseReceived to capture API calls and status codes. You can also listen to Log.entryAdded to capture console JavaScript errors or simulate offline conditions using Network.emulateNetworkConditions().',
+    codeSnippet: `DevTools devTools = ((ChromeDriver) driver).getDevTools();\ndevTools.createSession();\ndevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));\n\ndevTools.addListener(Network.responseReceived(), response -> {\n    Response res = response.getResponse();\n    if (res.getStatus() >= 400) {\n        System.err.println("API Failure: " + res.getUrl() + " Code: " + res.getStatus());\n    }\n});`,
+    bestPractice: 'Close or clear DevTools listeners between tests to prevent memory leaks and thread collisions during parallel execution.',
+    pitfallToAvoid: 'Relying exclusively on third-party proxies (e.g. BrowserMob) for simple network inspection when native Selenium 4 CDP/BiDi provides zero-proxy capture.'
+  },
+  {
+    id: 'rest-specbuilders-01',
+    technology: 'REST Assured',
+    category: 'API Testing & Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 7,
+    topic: 'Enterprise RequestSpecBuilder & ResponseSpecBuilder Configuration',
+    question: 'How do you design a reusable API testing harness using REST Assured RequestSpecBuilder and ResponseSpecBuilder across multi-stage environments (dev, staging, prod)?',
+    expectedFocus: 'RequestSpecBuilder, ResponseSpecBuilder, RequestSpecification, ResponseSpecification, baseUri, headers, log filter, response time assertion, contentType.',
+    answerSummary: 'Use RequestSpecBuilder to define common base URI, base path, standard headers (Authorization Bearer, Content-Type, Accept), and logging filters once. Use ResponseSpecBuilder to define baseline assertions (e.g., response time under 2000ms, Content-Type JSON). Pass these specifications into RestAssured.given().spec(reqSpec).then().spec(resSpec).',
+    codeSnippet: `RequestSpecification reqSpec = new RequestSpecBuilder()\n    .setBaseUri("https://api.staging.company.com")\n    .setBasePath("/api/v2")\n    .addHeader("Authorization", "Bearer " + getAuthToken())\n    .setContentType(ContentType.JSON)\n    .addFilter(new AllureRestAssured())\n    .build();\n\nResponseSpecification resSpec = new ResponseSpecBuilder()\n    .expectContentType(ContentType.JSON)\n    .expectResponseTime(Matchers.lessThan(2500L))\n    .build();\n\nRestAssured.given().spec(reqSpec)\n    .when().get("/users/me")\n    .then().spec(resSpec).statusCode(200);`,
+    bestPractice: 'Centralize environment config URLs and global specs in a BaseApiTest class so individual test methods remain clean, declarative, and DRY.',
+    pitfallToAvoid: 'Hardcoding base URIs, auth tokens, and repetitive header setups in every single @Test method.'
+  },
+  {
+    id: 'rest-filters-allure-01',
+    technology: 'REST Assured',
+    category: 'API Testing & Automation',
+    difficulty: 'Hard',
+    experienceLevel: '6-9 Years',
+    minYears: 5,
+    maxYears: 10,
+    topic: 'REST Assured Custom Filters for Allure Logging & Sensitive Data Masking',
+    question: 'How do you implement a custom REST Assured Filter to automatically capture HTTP request/response payloads in reports while masking sensitive fields (passwords, tokens, credit card numbers)?',
+    expectedFocus: 'Filter interface, filter(FilterableRequestSpecification, FilterableResponseSpecification, FilterContext), ctx.next(req, res), masking regex, Allure attachment.',
+    answerSummary: 'Implement the io.restassured.filter.Filter interface. In the filter method, intercept request parameters, headers, and body. Use regex or Jackson to mask sensitive keys (e.g. "password": "***", "Authorization": "Bearer ***"). Call ctx.next(req, res) to execute the HTTP call, then log the sanitized request and response as an attachment in Allure or your reporting engine.',
+    codeSnippet: `public class SecurityMaskingFilter implements Filter {\n  @Override\n  public Response filter(FilterableRequestSpecification req, FilterableResponseSpecification res, FilterContext ctx) {\n    String sanitizedBody = maskSensitiveFields(req.getBody());\n    // Log sanitized body to test report\n    Response response = ctx.next(req, res);\n    // Log response status and headers\n    return response;\n  }\n  private String maskSensitiveFields(Object body) {\n    if (body == null) return "";\n    return body.toString().replaceAll("(?i)(\"password\"\\s*:\\s*\")[^\"]+(\")", "$1********$2");\n  }\n}`,
+    bestPractice: 'Apply the masking filter globally using RestAssured.filters(new SecurityMaskingFilter()) so developers cannot inadvertently leak credentials in CI logs.',
+    pitfallToAvoid: 'Printing raw un-sanitized API logs containing production-like customer PII or API secrets in publicly accessible CI console logs.'
+  },
+  {
+    id: 'rest-pojo-jackson-01',
+    technology: 'REST Assured',
+    category: 'API Testing & Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 2,
+    maxYears: 6,
+    topic: 'POJO Serialization & Deserialization with Jackson and Lombok',
+    question: 'How do you structure payload serialization and deserialization in REST Assured using Jackson POJOs, Lombok Builder, and @JsonIgnoreProperties?',
+    expectedFocus: 'ObjectMapper, Lombok @Data @Builder @Jacksonized, @JsonIgnoreProperties(ignoreUnknown = true), extract().as(UserResponse.class), type-safe assertions.',
+    answerSummary: 'Create strongly typed Java POJOs annotated with Lombok (@Data, @Builder, @Jacksonized) to build test request payloads cleanly. Annotate response POJOs with @JsonIgnoreProperties(ignoreUnknown = true) so non-breaking API schema additions do not break existing test runs. Deserialize HTTP responses directly with .extract().as(UserResponse.class) for type-safe assertions.',
+    codeSnippet: `@Data\n@Builder\n@Jacksonized\n@JsonIgnoreProperties(ignoreUnknown = true)\npublic class CreateUserRequest {\n    private String email;\n    private String role;\n    private List<String> permissions;\n}\n\nCreateUserRequest payload = CreateUserRequest.builder()\n    .email("qa-lead@test.com")\n    .role("ADMIN")\n    .permissions(List.of("READ", "WRITE"))\n    .build();\n\nUserResponse created = RestAssured.given()\n    .body(payload)\n    .when().post("/api/users")\n    .then().statusCode(201)\n    .extract().as(UserResponse.class);\n\nassertThat(created.getId()).isNotNull();`,
+    bestPractice: 'Use strongly typed POJOs rather than raw JSON strings or HashMaps to enable compile-time checking of API payload schemas.',
+    pitfallToAvoid: 'Omitting ignoreUnknown = true on response POJOs, causing UnrecognizedPropertyException whenever the backend team adds an optional field.'
+  },
+  {
+    id: 'cyp-intercept-01',
+    technology: 'Cypress',
+    category: 'Selenium & Playwright Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 7,
+    topic: 'cy.intercept() Route Stubbing, Spying, and Dynamic Responses',
+    question: 'How do you use cy.intercept() in Cypress to mock API error responses (500 Internal Server Error) and assert on UI error states without depending on live backend APIs?',
+    expectedFocus: 'cy.intercept() syntax, method and URL matching, route aliases (as("apiCall")), cy.wait("@apiCall"), statusCode and body mocking, req.reply().',
+    answerSummary: 'Use cy.intercept() to intercept outbound XHR/Fetch requests. Define route matching (method and URL glob) and supply a mock response with statusCode 500 and an error payload. Assign an alias using .as("getCartError"). Trigger the UI action, wait for the route using cy.wait("@getCartError"), and assert that the application displays the corresponding user-friendly error banner.',
+    codeSnippet: `it('displays error banner when cart API fails', () => {\n  cy.intercept('GET', '/api/v1/cart', {\n    statusCode: 500,\n    body: { error: 'Internal Server Error', code: 'CART_DOWN' },\n    delay: 200,\n  }).as('getCartFail');\n\n  cy.visit('/checkout');\n  cy.wait('@getCartFail');\n  cy.get('[data-testid="error-alert"]')\n    .should('be.visible')\n    .and('contain.text', 'Unable to load cart. Please try again.');\n});`,
+    bestPractice: 'Always alias intercepted requests (.as("routeAlias")) and explicitly cy.wait("@routeAlias") before asserting UI states to avoid race conditions.',
+    pitfallToAvoid: 'Setting up cy.intercept() after the page action has already been triggered, causing Cypress to miss the outbound network request.'
+  },
+  {
+    id: 'py-pytest-fixtures-01',
+    technology: 'Python',
+    category: 'Selenium & Playwright Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 7,
+    topic: 'Pytest Fixtures with Yield Teardown and Scoping in Test Frameworks',
+    question: 'How do Pytest fixtures with yield statements work for browser lifecycle setup and teardown, and what are the practical trade-offs between function, module, and session scopes?',
+    expectedFocus: 'pytest.fixture decorator, yield for cleanup, scope="function" vs scope="session", autouse fixtures, conftest.py, browser context isolation.',
+    answerSummary: 'In Pytest, code before the yield keyword runs as setup (e.g. launching browser, creating context, navigating), and code after yield runs as teardown (closing context, saving screenshots on failure, stopping video). Function scope ensures fresh state per test (highest isolation). Session scope shares an expensive resource (e.g. browser binary or database container) across all tests, but tests must avoid polluting shared state.',
+    codeSnippet: `import pytest\nfrom playwright.sync_api import sync_playwright\n\n@pytest.fixture(scope="session")\ndef browser():\n    with sync_playwright() as p:\n        browser = p.chromium.launch(headless=True)\n        yield browser\n        browser.close()\n\n@pytest.fixture(scope="function")\ndef page(browser):\n    context = browser.new_context()\n    page = context.new_page()\n    yield page\n    page.close()\n    context.close()`,
+    bestPractice: 'Share the browser instance at session scope, but isolate browser contexts and pages at function scope to balance performance with test purity.',
+    pitfallToAvoid: 'Using session-scoped pages where tests share cookies, local storage, and open tabs, leading to state pollution and order-dependent test failures.'
+  },
+  {
+    id: 'appium-contexts-01',
+    technology: 'Appium',
+    category: 'Mobile Automation (Appium)',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 8,
+    topic: 'Context Switching Between NATIVE_APP and WEBVIEW in Hybrid Mobile Apps',
+    question: 'How do you automate a hybrid mobile app in Appium that transitions from a native screen into an embedded WebView (e.g. payment gateway or terms page)?',
+    expectedFocus: 'driver.getContextHandles(), driver.context("WEBVIEW_..."), ChromeDriver executable mapping, switching back to NATIVE_APP, handling async context availability.',
+    answerSummary: 'In Appium, query available contexts via driver.getContextHandles(). When transitioning into a hybrid screen, poll until a context starting with "WEBVIEW_" appears. Call driver.context(webViewContext) to switch execution into the embedded Chromium/Safari engine. Use standard web locators (CSS/XPath) inside the WebView, and explicitly switch back via driver.context("NATIVE_APP") upon completion.',
+    codeSnippet: `// Switch from Native App to WebView\nWebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));\nwait.until(d -> driver.getContextHandles().size() > 1);\n\nSet<String> contexts = driver.getContextHandles();\nfor (String contextName : contexts) {\n    if (contextName.contains("WEBVIEW")) {\n        driver.context(contextName);\n        break;\n    }\n}\n// Execute web interactions inside the WebView\ndriver.findElement(By.cssSelector("button#pay-now")).click();\n\n// Switch back to Native App context\ndriver.context("NATIVE_APP");`,
+    bestPractice: 'Ensure the mobile app has setWebContentsDebuggingEnabled(true) enabled on Android; otherwise WebViews cannot be detected by Appium.',
+    pitfallToAvoid: 'Attempting to inspect WebView DOM elements while still in the NATIVE_APP context, resulting in NoSuchElementException.'
+  },
+  {
+    id: 'man-bva-ep-coupon-01',
+    technology: 'Manual QA',
+    category: 'Manual QA Processes',
+    difficulty: 'Easy',
+    experienceLevel: '0-2 Years',
+    minYears: 0,
+    maxYears: 3,
+    topic: 'Exhaustive Test Design using Boundary Value Analysis & Equivalence Partitioning',
+    question: 'A discount coupon applies 20% off only for cart totals between $50.00 and $250.00 (inclusive). How do you derive the exact Equivalence Classes and Boundary Values for this business rule?',
+    expectedFocus: 'Equivalence classes: Valid ($50-$250), Invalid Low (<$50), Invalid High (>$250), Non-numeric/Negative. Boundaries: $49.99, $50.00, $50.01, $249.99, $250.00, $250.01.',
+    answerSummary: 'Equivalence Partitioning splits values into: (1) Valid Range: $50.00 to $250.00; (2) Invalid Low: $0.00 to $49.99; (3) Invalid High: $250.01 and above; (4) Edge/Invalid: Negative amounts and non-numeric strings. Boundary Value Analysis tests: Lower boundaries: $49.99 (no discount), $50.00 (discount applies), $50.01 (discount applies). Upper boundaries: $249.99 (discount applies), $250.00 (discount applies), $250.01 (no discount).',
+    bestPractice: 'Test values immediately below, on, and immediately above each boundary point to catch off-by-one errors in condition expressions (e.g. > vs >=).',
+    pitfallToAvoid: 'Testing only arbitrary numbers in the middle of a range (e.g. $100) while failing to test the critical boundary transition points.'
+  },
+  {
+    id: 'man-defect-triage-01',
+    technology: 'Manual QA',
+    category: 'Manual QA Processes',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 2,
+    maxYears: 6,
+    topic: 'Defect Severity vs Priority Escalation and Bug Triage Decision Making',
+    question: 'Explain the difference between Defect Severity and Defect Priority. Provide concrete examples of: (1) High Severity with Low Priority, and (2) Low Severity with High Priority. How are these triaged before a major release?',
+    expectedFocus: 'Severity = technical/system impact; Priority = business urgency. High Sev / Low Pri: Crash in obscure legacy export on rare OS. Low Sev / High Pri: Company logo broken or typo on public landing page during marketing campaign.',
+    answerSummary: 'Severity measures the technical impact of the defect on system operation (Blocker, Critical, Major, Minor). Priority measures business urgency and how quickly the defect must be fixed (P1 Urgent, P2 High, P3 Medium, P4 Low). Example 1 (High Sev, Low Pri): System crashes with NullPointerException when exporting 100,000 records on an obsolete Windows 7 browser used by <0.01% of users. Example 2 (Low Sev, High Pri): Misspelled company brand name or broken logo on the homepage checkout button before Super Bowl campaign. In triage, Product, QA, and Engineering align on target fix milestones.',
+    bestPractice: 'Use a clear Defect Triage Matrix agreed upon across Engineering, QA, and Product Management to avoid subjective priority arguments.',
+    pitfallToAvoid: 'Letting QA mark every bug as P1/Blocker, which triggers triage fatigue and obscures true release-blocking incidents.'
   }
 ];
 
@@ -1579,12 +1740,67 @@ function matchesDifficulty(qDiff: string, target: 'Easy' | 'Medium' | 'Hard'): b
  * Filter questions by difficulty ('Easy' | 'Medium' | 'Hard') and experience tier ('0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years') or experience years.
  * Ensures random sampling across diverse categories so an interview touches multiple domains.
  */
+/**
+ * Helper to compute relevance score of a question against candidate's selected skills.
+ */
+function computeSkillRelevance(q: InterviewQuestionItem, skills: string[]): number {
+  if (!skills || skills.length === 0) return 0;
+  let score = 0;
+  const qTech = (q.technology || '').toLowerCase();
+  const qCat = (q.category || '').toLowerCase();
+  const qTopic = (q.topic || '').toLowerCase();
+  const qQuestion = (q.question || '').toLowerCase();
+  const qFocus = (q.expectedFocus || '').toLowerCase();
+  const qSnippet = (q.codeSnippet || '').toLowerCase();
+  const combined = `${qTech} ${qCat} ${qTopic} ${qQuestion} ${qFocus} ${qSnippet}`;
+
+  for (const rawSkill of skills) {
+    const s = rawSkill.toLowerCase().trim();
+    if (!s) continue;
+
+    // Exact or strong tech match
+    if (qTech === s) {
+      score += 30;
+    } else if (qTech.includes(s) || s.includes(qTech)) {
+      score += 20;
+    }
+
+    // Technology synonyms & aliases
+    if (s.includes('selenium') && (combined.includes('selenium') || combined.includes('webdriver'))) score += 25;
+    if (s.includes('playwright') && (combined.includes('playwright') || combined.includes('page.route') || combined.includes('getbyrole') || combined.includes('storagestate'))) score += 25;
+    if (s.includes('rest assured') || s.includes('restassured')) {
+      if (combined.includes('rest assured') || combined.includes('restassured') || combined.includes('requestspec') || combined.includes('given()') || qTech === 'rest api' || qTech === 'api testing') score += 25;
+    }
+    if (s.includes('cypress') && (combined.includes('cypress') || combined.includes('cy.intercept'))) score += 25;
+    if (s.includes('appium') && (combined.includes('appium') || combined.includes('mobile') || combined.includes('uiautomator'))) score += 25;
+    if (s.includes('manual') && (combined.includes('manual') || combined.includes('boundary value') || combined.includes('equivalence') || combined.includes('defect') || combined.includes('triage') || combined.includes('test case'))) score += 25;
+    if (s.includes('java') && (combined.includes('java') || qTech === 'java' || combined.includes('threadlocal') || combined.includes('virtual thread'))) score += 18;
+    if (s.includes('python') && (combined.includes('python') || combined.includes('pytest'))) score += 25;
+    if (s.includes('typescript') && (combined.includes('typescript') || combined.includes('ts'))) score += 18;
+    if (s.includes('ci/cd') && (combined.includes('ci/cd') || combined.includes('github actions') || combined.includes('pipeline') || combined.includes('sharding'))) score += 20;
+    if (s.includes('postman') && (combined.includes('postman') || combined.includes('newman'))) score += 20;
+    if (s.includes('performance') && (combined.includes('performance') || combined.includes('k6') || combined.includes('jmeter'))) score += 20;
+    if (s.includes('pact') && (combined.includes('pact') || combined.includes('contract'))) score += 25;
+
+    if (combined.includes(s)) {
+      score += 10;
+    }
+  }
+
+  return score;
+}
+
+/**
+ * Filter questions by difficulty ('Easy' | 'Medium' | 'Hard') and experience tier ('0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years') or experience years.
+ * Ensures random sampling across diverse categories so an interview touches multiple domains.
+ */
 export function getQuestionsByLevelAndDifficulty(options: {
   difficulty?: 'Easy' | 'Medium' | 'Hard' | string;
   experienceYears?: number;
   experienceTier?: '0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years' | string;
   count?: number;
   track?: string;
+  skills?: string[];
 }): InterviewQuestionItem[] {
   const {
     difficulty = 'Medium',
@@ -1592,6 +1808,7 @@ export function getQuestionsByLevelAndDifficulty(options: {
     experienceTier,
     count = 3,
     track,
+    skills = [],
   } = options;
 
   // Determine target tier
@@ -1637,8 +1854,33 @@ export function getQuestionsByLevelAndDifficulty(options: {
     matches = [...INTERVIEW_KNOWLEDGE_BASE];
   }
 
-  // Shuffle matches randomly, prioritizing track match if specified
+  const hasSkills = Array.isArray(skills) && skills.length > 0;
   const normTrack = (track || '').toLowerCase().trim();
+
+  // If candidate selected specific tech stack / skills, prioritize questions directly matching those skills
+  if (hasSkills) {
+    const scoredMatches = matches.map(q => ({
+      q,
+      score: computeSkillRelevance(q, skills),
+    }));
+
+    // Filter to questions that match at least one selected skill
+    const skillRelevant = scoredMatches.filter(item => item.score > 0);
+
+    if (skillRelevant.length >= count) {
+      // Sort by score descending with tie-break randomization
+      skillRelevant.sort((a, b) => b.score - a.score || Math.random() - 0.5);
+      return skillRelevant.slice(0, count).map(item => item.q);
+    } else if (skillRelevant.length > 0) {
+      // Pick all skill-matching questions first, then fill from general matches
+      const picked = skillRelevant.map(item => item.q);
+      const remaining = matches.filter(q => !picked.some(p => p.id === q.id));
+      remaining.sort(() => Math.random() - 0.5);
+      return [...picked, ...remaining.slice(0, count - picked.length)];
+    }
+  }
+
+  // Shuffle matches randomly, prioritizing track match if specified
   const shuffled = [...matches].sort((a, b) => {
     if (normTrack) {
       const aMatch =

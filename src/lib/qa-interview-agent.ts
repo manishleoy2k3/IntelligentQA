@@ -19,8 +19,10 @@ import {
 export interface CandidateProfile {
   experienceYears?: number;
   experienceLevel?: string;
+  experienceTier?: string;
   difficulty?: 'Easy' | 'Medium' | 'Hard' | string;
   track?: string;
+  skills?: string[];
   apiKey?: string;
   count?: number;
 }
@@ -162,6 +164,7 @@ export class QAInterviewAgent {
     const tier = (profile.experienceLevel as InterviewExperienceTier) ||
       (typeof profile.experienceYears === 'number' ? mapYearsToExperienceTier(profile.experienceYears) : '3-5 Years');
     const track = profile.track || 'Test Automation';
+    const skills = profile.skills || [];
 
     const apiKey = sanitizeGeminiKey(profile.apiKey || '');
     if (apiKey && validateGeminiKeySyntax(apiKey).valid) {
@@ -172,6 +175,7 @@ export class QAInterviewAgent {
           experienceTier: tier,
           experienceYears: profile.experienceYears,
           track,
+          skills,
           count,
         });
 
@@ -199,6 +203,7 @@ export class QAInterviewAgent {
       experienceTier: tier,
       count,
       track,
+      skills,
     });
 
     if (!sampled || sampled.length === 0) {
@@ -236,15 +241,24 @@ export class QAInterviewAgent {
     experienceTier: string;
     experienceYears?: number;
     track: string;
+    skills?: string[];
     count: number;
   }): Promise<any[]> {
+    const hasSkills = Array.isArray(params.skills) && params.skills.length > 0;
+    const skillsList = hasSkills ? params.skills!.join(', ') : params.track;
+
     const prompt = `You are the Lead Quality Engineering & SDET Interviewer at a premier technology company.
 Generate an authentic, high-impact ${params.count}-turn technical mock interview plan for a candidate in Quality Engineering.
 
 Candidate Calibration:
-- Role Track: ${params.track} (Manual QA, SDET, Test Automation, API Testing, Mobile QA, Test Architecture)
+- Candidate Selected Tech Stack & Skills: ${skillsList}
+- Role Track: ${params.track}
 - Seniority Tier: ${params.experienceTier} (${params.experienceYears ? `${params.experienceYears} Years Experience` : 'Mid-Level'})
 - Target Difficulty: ${params.difficulty}
+
+STRICT INSTRUCTION:
+Every interview question MUST evaluate the candidate's proficiency in their selected skills (${skillsList}).
+Do not generate questions on tools or frameworks that are unrelated to their declared tech stack.
 
 DESIGN 3 DISTINCT SEQUENTIAL INTERVIEW TURNS:
 Turn 1: Core Test Design / Architecture / Strategy (Scenario-based challenge, real-world context)
@@ -330,6 +344,7 @@ The candidate just completed Turn ${params.nextIndex} of ${params.totalQuestions
 Candidate Background:
 - Experience: ${params.candidateProfile.experienceLevel || 'Mid-Level SDET'} (${params.candidateProfile.difficulty || 'Medium'})
 - Target Track: ${params.candidateProfile.track || 'Test Automation'}
+${params.candidateProfile.skills && params.candidateProfile.skills.length > 0 ? `- Selected Tech Stack: ${params.candidateProfile.skills.join(', ')}` : ''}
 
 Previous Turn Summary:
 - Candidate Score: ${params.previousEvaluation.turnScore}% (${params.previousEvaluation.verdict})

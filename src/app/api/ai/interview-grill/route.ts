@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       currentAnswer = '',
       currentCode = '',
       questionList = [],
+      skills = [],
     } = body;
 
     // Strictly user-provided Gemini API Key
@@ -43,11 +44,13 @@ export async function POST(req: NextRequest) {
     if (action === 'start') {
       const count = typeof body.count === 'number' && body.count > 0 ? body.count : 3;
       const track = body.track || body.category || '';
+      const candidateSkills = Array.isArray(skills) && skills.length > 0 ? skills : Array.isArray(body.skills) ? body.skills : [];
       const initialSession = await QAInterviewAgent.generateInitialSession({
         difficulty,
         experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
         experienceLevel,
         track,
+        skills: candidateSkills,
         apiKey: effectiveApiKey,
         count,
       });
@@ -235,6 +238,7 @@ export async function POST(req: NextRequest) {
             experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
             experienceLevel,
             track: body.track || body.category,
+            skills: Array.isArray(skills) && skills.length > 0 ? skills : Array.isArray(body.skills) ? body.skills : [],
           },
         });
 
@@ -270,6 +274,7 @@ export async function POST(req: NextRequest) {
           experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
           experienceLevel,
           track: body.track || body.category,
+          skills: Array.isArray(skills) && skills.length > 0 ? skills : Array.isArray(body.skills) ? body.skills : [],
         },
         fallbackQuestion: fallbackQ,
       });
