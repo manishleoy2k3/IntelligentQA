@@ -572,8 +572,8 @@ function AdminDashboardContent() {
   const handleOpenEditInterview = (item: InterviewQuestionItem) => {
     setEditingQuestion(item);
     setIqQuestion(item.question);
-    setIqTech(item.technology);
-    setIqDifficulty(item.difficulty);
+    setIqTech((item.technology as any) || 'Playwright');
+    setIqDifficulty((item.difficulty as any) || 'Mid');
     setIqTopic(item.topic || 'General');
     setIqAnswer(item.answerSummary);
     setIqCode(item.codeSnippet || '');
@@ -1399,7 +1399,7 @@ function AdminDashboardContent() {
             <div className="space-y-3">
               {interviewQuestions
                 .filter(q => {
-                  if (techFilter !== 'All' && !q.technology.toLowerCase().includes(techFilter.toLowerCase()) && q.difficulty !== techFilter) return false;
+                  if (techFilter !== 'All' && !(q.technology || '').toLowerCase().includes(techFilter.toLowerCase()) && q.difficulty !== techFilter) return false;
                   if (searchQuery.trim()) {
                     const query = searchQuery.toLowerCase();
                     return q.question.toLowerCase().includes(query) || (q.topic && q.topic.toLowerCase().includes(query));

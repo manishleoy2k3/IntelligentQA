@@ -7,6 +7,7 @@ import {
   QAAgentSession,
   InterviewSession,
   QuestionBookmark,
+  InterviewQuestionItem,
   TrackId,
   Track,
   Module,
@@ -20,6 +21,10 @@ import { QA_TRACKS } from '@/lib/qa-curriculum';
 import { saveCustomGuide, ConceptGuide } from '@/lib/concept-guides';
 import { saveCustomProblem, CodingProblem } from '@/lib/coding-problems';
 import { validateGeminiKeySyntax } from '@/lib/gemini-validator';
+import {
+  INTERVIEW_KNOWLEDGE_BASE,
+  getQuestionsByLevelAndDifficulty,
+} from '@/lib/interview-questions-bank';
 
 // Helper to compute initials from first letter of First Name and first letter of Last Name
 export function getInitials(name?: string): string {
@@ -941,6 +946,35 @@ export const QADatabase = {
     }
     // Strict RLS check
     return list.filter(i => i.userId === userId);
+  },
+
+  // Knowledge Base & Interview Question Bank
+  getInterviewKnowledgeBase(filter?: {
+    difficulty?: string;
+    experienceLevel?: string;
+    category?: string;
+  }): InterviewQuestionItem[] {
+    let questions = INTERVIEW_KNOWLEDGE_BASE;
+    if (filter?.difficulty) {
+      const d = filter.difficulty.toLowerCase();
+      questions = questions.filter(q => q.difficulty.toLowerCase() === d);
+    }
+    if (filter?.experienceLevel) {
+      questions = questions.filter(q => q.experienceLevel === filter.experienceLevel);
+    }
+    if (filter?.category) {
+      questions = questions.filter(q => q.category === filter.category);
+    }
+    return questions;
+  },
+
+  sampleInterviewQuestions(options: {
+    difficulty?: string;
+    experienceYears?: number;
+    experienceTier?: string;
+    count?: number;
+  }): InterviewQuestionItem[] {
+    return getQuestionsByLevelAndDifficulty(options);
   },
 
   // Question Bookmarks

@@ -154,7 +154,9 @@ export interface InterviewSession {
   userId: string;
   trackId: TrackId;
   title: string;
-  difficulty: 'junior-sdet' | 'mid-sdet' | 'senior-sdet' | 'architect';
+  difficulty: string;
+  experienceLevel?: string;
+  interviewMode?: 'chat' | 'audio';
   overallScore?: number;
   technicalScore?: number;
   communicationScore?: number;
@@ -182,12 +184,30 @@ export interface QuestionBookmark {
   createdAt: string;
 }
 
+export type InterviewDifficulty = 'Easy' | 'Medium' | 'Hard' | 'Junior' | 'Mid' | 'Senior' | 'Architect';
+export type InterviewExperienceTier = '0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years';
+export type InterviewDomainCategory =
+  | 'Manual QA Processes'
+  | 'Coding & DSA'
+  | 'Selenium & Playwright Automation'
+  | 'Reporting'
+  | 'CI/CD Pipelines'
+  | 'API Testing & Automation'
+  | 'Mobile Manual Testing (Android & iOS)'
+  | 'Mobile Automation (Appium)'
+  | string;
+
 export interface InterviewQuestionItem {
   id: string;
-  technology: 'Playwright' | 'Selenium' | 'Java' | 'TypeScript' | 'API Testing' | 'AI & LLM' | 'Framework Design';
-  difficulty: 'Junior' | 'Mid' | 'Senior' | 'Architect';
+  technology?: string;
+  category?: InterviewDomainCategory;
+  difficulty: InterviewDifficulty;
+  experienceLevel?: InterviewExperienceTier;
+  minYears?: number;
+  maxYears?: number;
   topic: string;
   question: string;
+  expectedFocus?: string;
   answerSummary: string;
   codeSnippet?: string;
   bestPractice: string;
