@@ -252,6 +252,31 @@ describe('QA Interview Griller - Knowledge Base & Agent Training Suite', () => {
       assert(Array.isArray(data.questionList) && data.questionList.length === 3);
     });
 
+    it('should verify start action returns non-empty questions for Hard + 3-5 Years (user screenshot scenario)', async () => {
+      const mockReq = {
+        json: async () => ({
+          action: 'start',
+          difficulty: 'Hard',
+          experienceYears: 4,
+          experienceLevel: '3-5 Years',
+          interviewMode: 'chat',
+        }),
+        headers: { get: () => null },
+      };
+
+      const res = await POST(mockReq);
+      assert.strictEqual(res.status, 200);
+      const data = await res.json();
+
+      assert.strictEqual(data.questionNumber, 1, 'Question number must be 1');
+      assert.strictEqual(data.totalQuestions, 3, 'Total questions must be 3');
+      assert(data.question && data.question.trim().length > 20, 'Question text must NEVER be empty');
+      assert(data.category && data.category !== '', 'Category must be defined');
+      assert(data.expectedFocus && data.expectedFocus.trim().length > 10, 'Expected focus must be defined');
+      assert(Array.isArray(data.questionList) && data.questionList.length === 3);
+      assert(data.questionList[0].question === data.question);
+    });
+
     it('should evaluate candidate answer on turn 1 and return feedback with probing question', async () => {
       const mockReq = {
         json: async () => ({
@@ -424,6 +449,130 @@ describe('QA Interview Griller - Knowledge Base & Agent Training Suite', () => {
       assert.strictEqual(res.status, 400);
       const data = await res.json();
       assert.strictEqual(data.error, 'Unknown interview action');
+    });
+
+    it('should return structured judgment evaluation with verdict, turnScore, mistakesAndGaps, and idealAnswer', async () => {
+      const testReq = {
+        json: async () => ({
+          action: 'submit_answer',
+          difficulty: 'Medium',
+          experienceYears: 4,
+          experienceLevel: '3-5 Years',
+          turns: [],
+          currentAnswer: 'In my framework I design Page Object Models where pages expose user actions returning other pages, and assertions verify business outcomes rather than DOM implementation details.',
+          currentCode: 'export class LoginPage { async login(u: string, p: string) { ... } }',
+          questionList: [
+            {
+              question: 'How do you structure Page Object Model in Playwright?',
+              expectedFocus: 'Page Object Models, locators, and clean code',
+              answerSummary: 'Encapsulate page locators and user actions within dedicated page classes while asserting business flows.',
+              codeSnippet: 'export class DashboardPage { ... }',
+              bestPractice: 'Use event-driven assertions and resilient user-facing locators',
+              pitfallToAvoid: 'Exposing raw locator handles and hardcoded sleeps',
+            },
+          ],
+        }),
+        headers: { get: () => null },
+      };
+
+      const res = await POST(testReq);
+      assert.strictEqual(res.status, 200);
+      const data = await res.json();
+
+      assert(data.evaluation, 'Evaluation object must be present in response');
+      assert(['Correct', 'Partially Correct', 'Incorrect'].includes(data.evaluation.verdict), `Invalid verdict: ${data.evaluation.verdict}`);
+      assert(typeof data.evaluation.turnScore === 'number' && data.evaluation.turnScore >= 0 && data.evaluation.turnScore <= 100);
+      assert(Array.isArray(data.evaluation.mistakesAndGaps), 'mistakesAndGaps must be an array');
+      assert(data.evaluation.idealAnswer && data.evaluation.idealAnswer.length > 20, 'idealAnswer must be returned for candidate comparison');
+      assert(data.evaluation.bestPractice, 'bestPractice must be returned');
+      assert(data.evaluation.pitfallToAvoid, 'pitfallToAvoid must be returned');
+    });
+
+    it('should judge hardcoded sleeps as flawed and identify static sleep in mistakesAndGaps', async () => {
+      const sleepReq = {
+        json: async () => ({
+          action: 'submit_answer',
+          difficulty: 'Hard',
+          experienceYears: 8,
+          turns: [],
+          currentAnswer: 'I just put Thread.sleep(5000) or page.waitForTimeout(5000) whenever the element is loading slowly',
+          currentCode: 'Thread.sleep(5000);',
+          questionList: [
+            {
+              question: 'How do you handle dynamic element synchronization in CI?',
+              expectedFocus: 'Web-first assertions, explicit waits, event-driven polling',
+              answerSummary: 'Never use hardcoded sleeps; use polling conditions and web-first assertions.',
+              bestPractice: 'Always use event-driven synchronization',
+              pitfallToAvoid: 'Static sleeps cause flakiness and slow pipelines',
+            },
+          ],
+        }),
+        headers: { get: () => null },
+      };
+
+      const res = await POST(sleepReq);
+      const data = await res.json();
+
+      assert(data.evaluation, 'Evaluation object required');
+      assert(data.evaluation.verdict === 'Incorrect' || data.evaluation.verdict === 'Partially Correct');
+      assert(data.evaluation.turnScore <= 55, `Score should be heavily penalized for sleep anti-pattern, got ${data.evaluation.turnScore}`);
+      const mistakesText = data.evaluation.mistakesAndGaps.join(' ').toLowerCase();
+      assert(mistakesText.includes('sleep') || mistakesText.includes('wait'), `mistakesAndGaps should flag sleep: ${mistakesText}`);
+    });
+
+    it('should judge dismissive "idk" as Incorrect with low score and explain what user missed', async () => {
+      const junkReq = {
+        json: async () => ({
+          action: 'submit_answer',
+          difficulty: 'Medium',
+          experienceYears: 4,
+          turns: [],
+          currentAnswer: 'idk',
+          currentCode: '',
+          questionList: [
+            {
+              question: 'Explain how you test REST APIs using Rest Assured',
+              expectedFocus: 'given/when/then, JSON schema validation, status codes',
+              answerSummary: 'Use given().when().then() BDD structure to validate payload and headers.',
+            },
+          ],
+        }),
+        headers: { get: () => null },
+      };
+
+      const res = await POST(junkReq);
+      const data = await res.json();
+
+      assert(data.evaluation, 'Evaluation object required');
+      assert.strictEqual(data.evaluation.verdict, 'Incorrect');
+      assert(data.evaluation.turnScore <= 45, `Score should be <= 45, got ${data.evaluation.turnScore}`);
+      assert(data.evaluation.whatUserMissed && data.evaluation.whatUserMissed.length > 10);
+    });
+
+    it('should verify UI code has Judgment & Comparison card and explicit Next Question button before advancing', () => {
+      const modalPath = path.resolve(process.cwd(), 'src/components/interview/interview-griller-modal.tsx');
+      const modalCode = fs.readFileSync(modalPath, 'utf8');
+
+      // 1. Must have currentEvaluation state
+      assert(modalCode.includes('currentEvaluation'), 'Must track currentEvaluation state in modal');
+
+      // 2. Must render verdict badges
+      assert(modalCode.includes('Interviewer Judgment'), 'Must display Interviewer Judgment section');
+      assert(modalCode.includes('Verdict: Correct'), 'Must support Correct verdict');
+      assert(modalCode.includes('Verdict: Partially Correct'), 'Must support Partially Correct verdict');
+      assert(modalCode.includes('Verdict: Incorrect'), 'Must support Incorrect verdict');
+
+      // 3. Must render mistakes & gaps and suggested correct answer
+      assert(modalCode.includes('What You Missed / Mistakes'), 'Must show identified mistakes & gaps');
+      assert(modalCode.includes('Suggested Correct Answer'), 'Must show suggested correct answer comparison');
+      assert(modalCode.includes('Side-by-Side Comparison'), 'Must render side-by-side comparison');
+
+      // 4. Must provide explicit Proceed to Next Question button
+      assert(modalCode.includes('Proceed to Next Question'), 'Must include explicit "Proceed to Next Question" button');
+      assert(modalCode.includes('handleProceedToNextQuestion'), 'Must have handleProceedToNextQuestion callback');
+
+      // 5. Must NOT auto-advance without user clicking next
+      assert(!modalCode.includes('setCurrentQuestion(data.nextQuestion.question); setUserAnswer(\'\');'), 'Must not auto-advance question on submit');
     });
   });
 });

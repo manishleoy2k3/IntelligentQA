@@ -1247,6 +1247,20 @@ AndroidDriver driver = new AndroidDriver(new URL("https://hub.browserstack.com/w
 ];
 
 /**
+ * Helper to match difficulty values flexibly across standard and legacy tiers.
+ */
+function matchesDifficulty(qDiff: string, target: 'Easy' | 'Medium' | 'Hard'): boolean {
+  const normQ = (qDiff || '').toLowerCase();
+  if (target === 'Easy') {
+    return normQ === 'easy' || normQ === 'junior';
+  }
+  if (target === 'Hard') {
+    return normQ === 'hard' || normQ === 'senior' || normQ === 'architect';
+  }
+  return normQ === 'medium' || normQ === 'mid';
+}
+
+/**
  * Filter questions by difficulty ('Easy' | 'Medium' | 'Hard') and experience tier ('0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years') or experience years.
  * Ensures random sampling across diverse categories so an interview touches multiple domains.
  */
@@ -1273,7 +1287,7 @@ export function getQuestionsByLevelAndDifficulty(options: {
 
   // Normalize difficulty
   let targetDiff: 'Easy' | 'Medium' | 'Hard' = 'Medium';
-  const normDiff = difficulty.toLowerCase();
+  const normDiff = (difficulty || '').toLowerCase();
   if (normDiff.includes('easy') || normDiff.includes('junior')) {
     targetDiff = 'Easy';
   } else if (normDiff.includes('hard') || normDiff.includes('senior') || normDiff.includes('architect')) {
@@ -1284,13 +1298,13 @@ export function getQuestionsByLevelAndDifficulty(options: {
 
   // 1. Exact match by difficulty AND experience tier
   let matches = INTERVIEW_KNOWLEDGE_BASE.filter(
-    q => q.difficulty === targetDiff && q.experienceLevel === targetTier
+    q => matchesDifficulty(q.difficulty, targetDiff) && q.experienceLevel === targetTier
   );
 
-  // 2. If insufficient exact matches, include adjacent difficulty or tier
+  // 2. If insufficient exact matches, include tier matches then difficulty matches
   if (matches.length < count) {
     const tierMatches = INTERVIEW_KNOWLEDGE_BASE.filter(q => q.experienceLevel === targetTier);
-    const diffMatches = INTERVIEW_KNOWLEDGE_BASE.filter(q => q.difficulty === targetDiff);
+    const diffMatches = INTERVIEW_KNOWLEDGE_BASE.filter(q => matchesDifficulty(q.difficulty, targetDiff));
     const combined = [...matches, ...tierMatches, ...diffMatches];
     // Deduplicate by id
     const seen = new Set<string>();
@@ -1326,6 +1340,16 @@ export function getQuestionsByLevelAndDifficulty(options: {
   // Pass 2: Fill remaining if needed
   if (selected.length < count) {
     for (const q of shuffled) {
+      if (!selected.some(s => s.id === q.id)) {
+        selected.push(q);
+        if (selected.length >= count) break;
+      }
+    }
+  }
+
+  // Guaranteed fallback: If somehow still under count, slice from base knowledge
+  if (selected.length < count) {
+    for (const q of INTERVIEW_KNOWLEDGE_BASE) {
       if (!selected.some(s => s.id === q.id)) {
         selected.push(q);
         if (selected.length >= count) break;
