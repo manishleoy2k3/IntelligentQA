@@ -51,7 +51,9 @@ interface Scorecard {
   strengths: string[];
   areasForImprovement: string[];
   hiringRecommendation?: 'Strong Hire' | 'Hire' | 'Leaning Hire' | 'Needs Practice' | string;
+  seniorityCalibration?: string;
   actionableDrills?: string[];
+  learningRoadmap?: string[];
   questionBreakdown?: {
     questionNumber: number;
     question: string;
@@ -1349,9 +1351,15 @@ export default function InterviewGriller() {
               </div>
             </div>
 
-            {/* Summary */}
-            <div className="bg-[#0e1c18] border border-emerald-900/40 p-4 rounded-2xl text-xs leading-relaxed text-neutral-200">
+            {/* Summary & Seniority Calibration */}
+            <div className="bg-[#0e1c18] border border-emerald-900/40 p-4 rounded-2xl text-xs leading-relaxed text-neutral-200 space-y-2">
               <p>{scorecard.summary}</p>
+              {scorecard.seniorityCalibration && (
+                <div className="flex items-center gap-2 pt-2 border-t border-emerald-950/80 text-emerald-300 font-semibold text-[11px]">
+                  <Compass className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Seniority Calibration: {scorecard.seniorityCalibration}</span>
+                </div>
+              )}
             </div>
 
             {/* Strengths & Improvements */}
@@ -1390,6 +1398,21 @@ export default function InterviewGriller() {
                 <ul className="space-y-1.5 list-disc list-inside text-neutral-300">
                   {scorecard.actionableDrills.map((drill, idx) => (
                     <li key={idx}>{drill}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Next-Tier QA Learning Roadmap */}
+            {scorecard.learningRoadmap && scorecard.learningRoadmap.length > 0 && (
+              <div className="bg-[#081311] border border-emerald-950 p-4 rounded-2xl text-xs space-y-2">
+                <h4 className="font-bold text-emerald-400 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  Personalized QA Growth Roadmap
+                </h4>
+                <ul className="space-y-1 list-disc list-inside text-neutral-300 text-[11px]">
+                  {scorecard.learningRoadmap.map((topic, idx) => (
+                    <li key={idx}>{topic}</li>
                   ))}
                 </ul>
               </div>

@@ -6,6 +6,7 @@ import {
   INTERVIEW_KNOWLEDGE_BASE,
   InterviewQuestionItem,
 } from '@/lib/interview-questions-bank';
+import { QAInterviewAgent } from '@/lib/qa-interview-agent';
 
 interface EvaluationResult {
   verdict: 'Correct' | 'Partially Correct' | 'Incorrect';
@@ -38,42 +39,19 @@ export async function POST(req: NextRequest) {
     const rawApiKey = req.headers.get('x-gemini-api-key') || body.apiKey;
     const effectiveApiKey = sanitizeGeminiKey(rawApiKey || '');
 
-    // Action 1: Start interview / sample initial questions
+    // Action 1: Start interview via Autonomous Quality Engineering Interviewer Agent
     if (action === 'start') {
       const count = typeof body.count === 'number' && body.count > 0 ? body.count : 3;
       const track = body.track || body.category || '';
-      let sampledQuestions = getQuestionsByLevelAndDifficulty({
+      const initialSession = await QAInterviewAgent.generateInitialSession({
         difficulty,
         experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
-        experienceTier: experienceLevel,
-        count,
+        experienceLevel,
         track,
+        apiKey: effectiveApiKey,
+        count,
       });
-
-      if (!sampledQuestions || sampledQuestions.length === 0) {
-        sampledQuestions = INTERVIEW_KNOWLEDGE_BASE.slice(0, count);
-      }
-
-      const initialQ = sampledQuestions[0] || INTERVIEW_KNOWLEDGE_BASE[0];
-      return NextResponse.json({
-        questionNumber: 1,
-        totalQuestions: Math.max(1, sampledQuestions.length),
-        question: initialQ.question,
-        category: initialQ.category || 'QA Engineering',
-        expectedFocus: initialQ.expectedFocus || initialQ.answerSummary || 'Core architectural and testing principles',
-        codeContext: initialQ.codeSnippet || '',
-        questionList: sampledQuestions.map((q, idx) => ({
-          id: q.id || `q-${idx}`,
-          category: q.category || 'QA Engineering',
-          topic: q.topic || 'Technical Assessment',
-          question: q.question,
-          expectedFocus: q.expectedFocus || q.answerSummary || '',
-          codeSnippet: q.codeSnippet || '',
-          answerSummary: q.answerSummary || '',
-          bestPractice: q.bestPractice || '',
-          pitfallToAvoid: q.pitfallToAvoid || '',
-        })),
-      });
+      return NextResponse.json(initialSession);
     }
 
     // Action 1.5: Real-time PREP / STAR Live Coach (Freemockinterview dynamic rubric)
@@ -247,106 +225,18 @@ export async function POST(req: NextRequest) {
       };
 
       if (isFinal) {
-        // Calculate true average across all turns including the final turn
-        const turnScores: number[] = turns.map((t: any) => {
-          const match = t.feedback?.match(/\((\d+)%\)/);
-          return match ? parseInt(match[1], 10) : (typeof t.score === 'number' ? t.score : 60);
+        const report = await QAInterviewAgent.generateComprehensiveReport({
+          apiKey: effectiveApiKey,
+          turns,
+          finalEvaluation: evaluation,
+          questionList,
+          candidateProfile: {
+            difficulty,
+            experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
+            experienceLevel,
+            track: body.track || body.category,
+          },
         });
-        turnScores.push(evaluation.turnScore);
-
-        const avgTechnical = Math.round(turnScores.reduce((a, b) => a + b, 0) / turnScores.length);
-        const technicalScore = Math.min(100, Math.max(0, avgTechnical));
-        const architectureScore = Math.min(100, Math.max(0, Math.round(technicalScore * (evaluation.verdict === 'Incorrect' ? 0.8 : 0.95))));
-        const communicationScore = evaluation.turnScore === 0 ? 15 : Math.min(100, Math.max(15, Math.round(technicalScore * 0.98)));
-        const overallScore = Math.round((technicalScore + architectureScore + communicationScore) / 3);
-
-        const expLabel = experienceLevel || (typeof experienceYears === 'number' ? `${experienceYears} Years` : 'Mid-Level');
-        const verdictSummary = overallScore >= 80 ? 'strong' : overallScore >= 50 ? 'moderate' : 'insufficient';
-
-        // Freemockinterview-inspired dynamic metrics & readiness
-        const hiringRecommendation = overallScore >= 88 ? 'Strong Hire' : overallScore >= 75 ? 'Hire' : overallScore >= 55 ? 'Leaning Hire' : 'Needs Practice';
-
-        // Collect all gaps and mistakes across turns
-        const allGaps: string[] = [];
-        turns.forEach((t: any) => {
-          if (t.mistakesAndGaps && Array.isArray(t.mistakesAndGaps)) {
-            allGaps.push(...t.mistakesAndGaps);
-          } else if (t.feedback && t.feedback.includes('(')) {
-            const gapPart = t.feedback.split('):')[1];
-            if (gapPart) allGaps.push(gapPart.trim());
-          }
-        });
-        if (evaluation.mistakesAndGaps && evaluation.mistakesAndGaps.length > 0) {
-          allGaps.push(...evaluation.mistakesAndGaps);
-        }
-
-        // Deduplicate gaps
-        const uniqueGaps = Array.from(new Set(allGaps.filter(g => g && g.length > 10))).slice(0, 4);
-
-        // Dynamically build tailored strengths
-        const dynamicStrengths: string[] = [];
-        if (technicalScore >= 70) {
-          dynamicStrengths.push('Demonstrated solid grasp of modern QA automation principles and design patterns');
-        } else {
-          dynamicStrengths.push('Identified fundamental testing objectives and problem context');
-        }
-        if (overallScore >= 75) {
-          dynamicStrengths.push('Articulated root causes of test flakiness and avoided arbitrary sleep timers');
-          dynamicStrengths.push('Applied appropriate locator and synchronization strategies for reliable execution');
-        } else if (overallScore >= 50) {
-          dynamicStrengths.push('Understood basic component interaction and verification workflow');
-        } else {
-          dynamicStrengths.push('Completed technical interview simulation across multi-turn assessment');
-        }
-
-        // Dynamically build areas for improvement
-        const dynamicAreasForImprovement: string[] = uniqueGaps.length > 0 ? uniqueGaps : [
-          'Further optimize parallel CI sharding and ephemeral cloud browser container scaling',
-          'Deepen contract testing (Pact) and synthetic monitoring practices for distributed microservices',
-        ];
-
-        // Actionable drills (Freemockinterview "What to tighten")
-        const actionableDrills: string[] = [];
-        if (overallScore < 75) {
-          actionableDrills.push('Study the Gold Standard model answers in the side-by-side comparison modal');
-          actionableDrills.push('Structure responses using PREP (Point -> Reason -> Example -> Impact) or STAR');
-        }
-        if (allGaps.some(g => /sleep|wait|flak/i.test(g))) {
-          actionableDrills.push('Refactor test cases to use event-driven web-first polling (expect.toBeVisible) instead of sleep');
-        }
-        if (allGaps.some(g => /assert/i.test(g))) {
-          actionableDrills.push('Add explicit multi-condition assertions to prevent silent test passes on UI regressions');
-        }
-        if (actionableDrills.length < 2) {
-          actionableDrills.push('Practice articulating trade-offs between execution speed and infrastructure cost in CI/CD');
-          actionableDrills.push('Implement contract testing (Pact) and synthetic monitoring for distributed services');
-        }
-
-        // Detailed question-by-question breakdown
-        const questionBreakdown = [
-          ...turns.map((t: any, idx: number) => {
-            const qMeta = questionList[idx] || {};
-            const scoreMatch = t.feedback?.match(/\((\d+)%\)/);
-            const score = scoreMatch ? parseInt(scoreMatch[1], 10) : 65;
-            const verdict = score >= 80 ? 'Correct' : score >= 50 ? 'Partially Correct' : 'Incorrect';
-            return {
-              questionNumber: idx + 1,
-              question: t.question || qMeta.question || `Question ${idx + 1}`,
-              category: qMeta.category || 'QA Engineering',
-              verdict: verdict as 'Correct' | 'Partially Correct' | 'Incorrect',
-              score,
-              keyGap: t.mistakesAndGaps?.[0] || 'Minor gaps identified in design pattern.',
-            };
-          }),
-          {
-            questionNumber: turns.length + 1,
-            question: currentQ.question,
-            category: currentQ.category || 'QA Engineering',
-            verdict: evaluation.verdict,
-            score: evaluation.turnScore,
-            keyGap: evaluation.mistakesAndGaps?.[0] || evaluation.whatUserMissed || 'Addressed core technical criteria.',
-          }
-        ];
 
         return NextResponse.json({
           isFinished: true,
@@ -354,28 +244,35 @@ export async function POST(req: NextRequest) {
           feedbackOnPrevious: evaluation.feedback,
           probingQuestion: evaluation.probingQuestion,
           evaluation: evaluationPayload,
-          scorecard: {
-            overallScore,
-            technicalScore,
-            architectureScore,
-            communicationScore,
-            summary: `Candidate completed the ${difficulty.toUpperCase()} Technical Mock Interview (${expLabel}). Overall performance showed ${verdictSummary} technical knowledge across test architecture, quality gates, and automation practices.`,
-            strengths: dynamicStrengths,
-            areasForImprovement: dynamicAreasForImprovement,
-            hiringRecommendation,
-            actionableDrills,
-            questionBreakdown,
-          },
+          scorecard: report,
         });
       }
 
-      // Next question
+      // Adaptive next question dynamically evolved by the QA Interviewer Agent
       const nextQIndex = turnIndex + 1;
-      const nextQ = questionList[nextQIndex] || {
+      const fallbackQ = questionList[nextQIndex] || {
         question: 'How do you design a resilient test automation architecture?',
         expectedFocus: 'Page Object Models, thread safety, and CI integration.',
         codeSnippet: '',
+        category: 'Selenium & Playwright Automation',
       };
+
+      const nextAdaptiveQuestion = await QAInterviewAgent.generateAdaptiveNextQuestion({
+        apiKey: effectiveApiKey,
+        turns,
+        currentAnswer,
+        currentCode,
+        previousEvaluation: evaluation,
+        nextIndex: nextQIndex,
+        totalQuestions: questionList.length || 3,
+        candidateProfile: {
+          difficulty,
+          experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
+          experienceLevel,
+          track: body.track || body.category,
+        },
+        fallbackQuestion: fallbackQ,
+      });
 
       return NextResponse.json({
         isFinished: false,
@@ -383,14 +280,7 @@ export async function POST(req: NextRequest) {
         feedbackOnPrevious: evaluation.feedback,
         probingQuestion: evaluation.probingQuestion,
         evaluation: evaluationPayload,
-        nextQuestion: {
-          questionNumber: nextQIndex + 1,
-          totalQuestions: questionList.length || 3,
-          question: nextQ.question,
-          category: nextQ.category || 'QA Engineering',
-          expectedFocus: nextQ.expectedFocus || nextQ.answerSummary,
-          codeContext: nextQ.codeSnippet || '',
-        },
+        nextQuestion: nextAdaptiveQuestion,
       });
     }
 
