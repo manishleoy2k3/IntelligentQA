@@ -28,6 +28,13 @@ import {
   getAllProblems,
 } from '@/lib/coding-problems';
 import { QADatabase } from '@/lib/qa-db';
+import {
+  getCompletions,
+  getCaretCoordinates,
+  handleSmartEditorKeys,
+  CompletionItem,
+} from '@/lib/intellisense';
+import { IntelliSenseOverlay } from '@/components/sandbox/code-intellisense-overlay';
 
 // Extract error line number from compiler diagnostic or exception traceback
 function extractErrorLineNumber(errorText: string): number | null {
@@ -116,10 +123,91 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
   const lineNumbersRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const rightColumnRef = useRef<HTMLDivElement>(null);
+  const editorAreaRef = useRef<HTMLDivElement>(null);
+
+  // IntelliSense state
+  const [intellisenseEnabled, setIntellisenseEnabled] = useState<boolean>(true);
+  const [autoCloseBrackets, setAutoCloseBrackets] = useState<boolean>(true);
+  const [suggestions, setSuggestions] = useState<CompletionItem[]>([]);
+  const [selectedSuggestionIdx, setSelectedSuggestionIdx] = useState<number>(0);
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState<boolean>(false);
+  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [matchedPrefix, setMatchedPrefix] = useState<string>('');
+  const [replaceRange, setReplaceRange] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+
+  const updateIntelliSense = (newCode: string, cursorPos: number) => {
+    if (!intellisenseEnabled || !textareaRef.current) {
+      setIsSuggestionsOpen(false);
+      return;
+    }
+
+    const result = getCompletions({
+      code: newCode,
+      cursorPos,
+      lang: language,
+    });
+
+    if (result && result.suggestions.length > 0) {
+      setSuggestions(result.suggestions);
+      setSelectedSuggestionIdx(0);
+      setMatchedPrefix(result.matchedPrefix);
+      setReplaceRange(result.replaceRange);
+
+      const coords = getCaretCoordinates(textareaRef.current, cursorPos);
+      const gutterWidth = lineNumbersRef.current ? lineNumbersRef.current.offsetWidth : 48;
+      const top = coords.top - textareaRef.current.scrollTop + coords.height + 4;
+      const left = coords.left - textareaRef.current.scrollLeft + gutterWidth;
+
+      setSuggestionPosition({ top, left });
+      setIsSuggestionsOpen(true);
+    } else {
+      setIsSuggestionsOpen(false);
+    }
+  };
+
+  const applyCompletion = (item: CompletionItem) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = replaceRange.start;
+    const end = replaceRange.end;
+    const insert = item.insertText;
+
+    const before = code.substring(0, start);
+    const after = code.substring(end);
+    const updatedCode = before + insert + after;
+
+    setCode(updatedCode);
+    setIsSuggestionsOpen(false);
+
+    let nextPos = start + insert.length;
+    if (typeof item.cursorOffset === 'number') {
+      nextPos = start + item.cursorOffset;
+    }
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = nextPos;
+    }, 0);
+  };
+
+  const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    const pos = e.target.selectionStart;
+    setCode(val);
+    updateIntelliSense(val, pos);
+  };
 
   const handleEditorScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
     if (lineNumbersRef.current) {
       lineNumbersRef.current.scrollTop = e.currentTarget.scrollTop;
+    }
+    if (isSuggestionsOpen && textareaRef.current) {
+      const coords = getCaretCoordinates(textareaRef.current, textareaRef.current.selectionStart);
+      const gutterWidth = lineNumbersRef.current ? lineNumbersRef.current.offsetWidth : 48;
+      const top = coords.top - textareaRef.current.scrollTop + coords.height + 4;
+      const left = coords.left - textareaRef.current.scrollLeft + gutterWidth;
+      setSuggestionPosition({ top, left });
     }
   };
 
@@ -204,6 +292,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     setTerminalOutput('');
     setTerminalError('');
     setExecutionStats(null);
+    setIsSuggestionsOpen(false);
   };
 
   // User requirement 2: When user clicks on Solutions, paste solution code in the compiler section
@@ -211,6 +300,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     if (currentProblem && currentProblem.starterTemplates) {
       const solutionCode = currentProblem.starterTemplates[language] || '';
       setCode(solutionCode);
+      setIsSuggestionsOpen(false);
       setFeedback(`✨ Solution code pasted into compiler (${LANG_LABELS[language]})! Click 'Run' to test.`);
       setTimeout(() => setFeedback(null), 3500);
 
@@ -223,6 +313,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
   // User requirement 4: Reset should reset the solution code pasted back to normal Compiler
   const handleReset = () => {
     setCode(DEFAULT_COMPILER_CODE[language]);
+    setIsSuggestionsOpen(false);
     setFeedback('Code reset back to normal compiler starter template.');
     setTimeout(() => setFeedback(null), 2500);
     setTerminalOutput('');
@@ -260,8 +351,61 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     }
   };
 
-  // Keyboard shortcut: 4 spaces on Tab, Ctrl/Cmd + Enter to Run
+  // Indentation support, IntelliSense autocomplete, bracket auto-closing & Ctrl/Cmd+Enter to run
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // If suggestions are open, handle navigation & selection
+    if (isSuggestionsOpen && suggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedSuggestionIdx((prev) => (prev + 1) % suggestions.length);
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedSuggestionIdx((prev) => (prev - 1 + suggestions.length) % suggestions.length);
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        applyCompletion(suggestions[selectedSuggestionIdx]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setIsSuggestionsOpen(false);
+        return;
+      }
+    }
+
+    // Manual trigger with Ctrl+Space or Alt+/
+    if (
+      ((e.ctrlKey || e.metaKey) && (e.key === ' ' || e.key === 'Spacebar')) ||
+      (e.altKey && e.key === '/')
+    ) {
+      e.preventDefault();
+      const textarea = textareaRef.current;
+      if (textarea) {
+        updateIntelliSense(code, textarea.selectionStart);
+      }
+      return;
+    }
+
+    // Smart editor keys: auto-closing pairs, skip-over, auto-indent on Enter
+    const smartResult = handleSmartEditorKeys(e, code, autoCloseBrackets);
+    if (smartResult.handled) {
+      if (smartResult.newCode !== undefined) {
+        setCode(smartResult.newCode);
+      }
+      if (smartResult.newCursorPos !== undefined) {
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = textareaRef.current.selectionEnd = smartResult.newCursorPos!;
+          }
+        }, 0);
+      }
+      return;
+    }
+
     if (e.key === 'Tab') {
       e.preventDefault();
       const textarea = textareaRef.current;
@@ -275,6 +419,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd = start + 4;
       }, 0);
+      return;
     }
 
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -626,6 +771,30 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                 >
                   Stdin {showStdin ? '▲' : '▼'}
                 </button>
+
+                {/* IntelliSense Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setIntellisenseEnabled(!intellisenseEnabled)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer flex items-center gap-1.5 ${
+                    intellisenseEnabled
+                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25'
+                      : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-400 hover:text-slate-200'
+                  }`}
+                  title={
+                    intellisenseEnabled
+                      ? 'IntelliSense Active (Ctrl+Space for suggestions). Click to disable.'
+                      : 'IntelliSense Disabled. Click to enable.'
+                  }
+                >
+                  <Sparkles className={`w-3.5 h-3.5 ${intellisenseEnabled ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  <span className="hidden sm:inline">IntelliSense</span>
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      intellisenseEnabled ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]' : 'bg-slate-500'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
 
@@ -654,7 +823,10 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
             )}
 
             {/* Code Textarea Editor with Line Numbers */}
-            <div className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs relative min-h-[240px]">
+            <div
+              ref={editorAreaRef}
+              className="flex-1 flex overflow-hidden bg-slate-950 font-mono text-xs relative min-h-[240px]"
+            >
               {/* Line Numbers */}
               <div
                 ref={lineNumbersRef}
@@ -682,12 +854,25 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
               <textarea
                 ref={textareaRef}
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
+                onChange={handleCodeChange}
                 onKeyDown={handleKeyDown}
                 onScroll={handleEditorScroll}
                 spellCheck={false}
                 className="flex-1 w-full p-4 bg-transparent text-slate-200 font-mono text-xs leading-6 resize-none focus:outline-none focus:ring-0 whitespace-pre overflow-auto"
                 placeholder="Write your code solution here..."
+              />
+
+              {/* Floating Code IntelliSense Dropdown Overlay */}
+              <IntelliSenseOverlay
+                isOpen={isSuggestionsOpen}
+                suggestions={suggestions}
+                selectedIndex={selectedSuggestionIdx}
+                matchedPrefix={matchedPrefix}
+                position={suggestionPosition}
+                onSelect={applyCompletion}
+                onHover={setSelectedSuggestionIdx}
+                onClose={() => setIsSuggestionsOpen(false)}
+                containerRef={editorAreaRef}
               />
             </div>
 
@@ -697,6 +882,14 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   Runtime: <strong className="text-slate-300">{LANG_LABELS[language]}</strong>
+                </span>
+                <span className="text-slate-600">|</span>
+                <span className="flex items-center gap-1 text-slate-300">
+                  <Sparkles className="w-3 h-3 text-emerald-400" />
+                  IntelliSense:{' '}
+                  <span className={intellisenseEnabled ? 'text-emerald-400 font-semibold' : 'text-slate-500'}>
+                    {intellisenseEnabled ? 'Active' : 'Off'}
+                  </span>
                 </span>
                 <span className="text-slate-600">|</span>
                 <span>{lineCount} lines</span>
