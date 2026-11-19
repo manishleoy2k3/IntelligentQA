@@ -165,6 +165,7 @@ export default function InterviewGriller() {
   const [isListening, setIsListening] = useState<boolean>(false);
   const [speechSupported, setSpeechSupported] = useState<boolean>(true);
   const recognitionRef = useRef<any>(null);
+  const baseSpeechTextRef = useRef<string>('');
 
   // Auth and Gemini Key state
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -292,16 +293,30 @@ export default function InterviewGriller() {
     }
   };
 
-  // Audio Speech-to-Text Handler
+  // Stop Speech Recognition cleanly and cancel any pending callbacks
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        if (typeof recognitionRef.current.abort === 'function') {
+          recognitionRef.current.abort();
+        } else if (typeof recognitionRef.current.stop === 'function') {
+          recognitionRef.current.stop();
+        }
+      } catch {}
+      recognitionRef.current = null;
+    }
+    setIsListening(false);
+    baseSpeechTextRef.current = '';
+  }, []);
+
+  // Audio Speech-to-Text Handler with de-duplication of interim speech results
   const toggleListening = () => {
     if (typeof window === 'undefined') return;
     if (isListening) {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch {}
-      }
-      setIsListening(false);
+      stopListening();
       return;
     }
 
@@ -312,32 +327,50 @@ export default function InterviewGriller() {
     }
 
     try {
+      // Snapshot any existing text in the answer box before speech starts
+      baseSpeechTextRef.current = userAnswer.trim();
+
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = 'en-US';
 
       recognition.onstart = () => setIsListening(true);
+
       recognition.onresult = (event: any) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
+        let finalTranscript = '';
+        let interimTranscript = '';
+
+        for (let i = 0; i < event.results.length; i++) {
+          const resultItem = event.results[i];
+          if (resultItem.isFinal) {
+            finalTranscript += resultItem[0].transcript + ' ';
+          } else {
+            interimTranscript += resultItem[0].transcript;
+          }
         }
-        if (transcript.trim()) {
-          setUserAnswer(prev => {
-            const trimmed = prev.trim();
-            return trimmed ? `${trimmed} ${transcript.trim()}` : transcript.trim();
-          });
+
+        const currentSpoken = (finalTranscript + interimTranscript).trim();
+        if (currentSpoken) {
+          const base = baseSpeechTextRef.current;
+          const combined = base ? `${base} ${currentSpoken}` : currentSpoken;
+          setUserAnswer(combined);
         }
       };
-      recognition.onerror = () => setIsListening(false);
-      recognition.onend = () => setIsListening(false);
+
+      recognition.onerror = () => {
+        stopListening();
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
 
       recognition.start();
       recognitionRef.current = recognition;
     } catch (err) {
       console.error('Speech recognition error:', err);
-      setIsListening(false);
+      stopListening();
     }
   };
 
@@ -508,8 +541,11 @@ export default function InterviewGriller() {
         body: JSON.stringify({
           action: 'coach',
           currentAnswer: userAnswer,
+          question: currentQuestion,
           currentQuestion,
           expectedFocus,
+          turns,
+          questionList,
         }),
       });
       if (res.ok) {
@@ -532,11 +568,12 @@ export default function InterviewGriller() {
       return;
     }
 
-    if (isListening) toggleListening();
+    // Immediately stop audio recording & cancel pending audio buffer flushes
+    stopListening();
     stopSpeaking();
 
-    const answerSnapshot = userAnswer;
-    const codeSnapshot = userCode;
+    const answerSnapshot = userAnswer.trim();
+    const codeSnapshot = userCode.trim();
     const timeSpentSnapshot = formatTimer(answerSeconds);
 
     // Append Candidate message to stream
@@ -551,8 +588,11 @@ export default function InterviewGriller() {
     };
 
     setMessages(prev => [...prev, candidateMsg]);
+
+    // Force clear input box and speech reference baseline so no delayed text reappears
     setUserAnswer('');
     setUserCode('');
+    baseSpeechTextRef.current = '';
     setShowCodeEditor(false);
     setAnswerSeconds(0);
     setCoachingResult(null);
@@ -853,9 +893,11 @@ export default function InterviewGriller() {
       totalQuestions: totalQuestions || 5,
     };
 
+    stopListening();
     setMessages(prev => [...prev, nextMsg]);
     setUserAnswer('');
     setUserCode('');
+    baseSpeechTextRef.current = '';
     setCurrentEvaluation(null);
     setPendingNextQuestion(null);
 
@@ -866,7 +908,7 @@ export default function InterviewGriller() {
 
   const restartInterview = () => {
     stopSpeaking();
-    if (isListening) toggleListening();
+    stopListening();
     setHasStarted(false);
     setScorecard(null);
     setCurrentEvaluation(null);
@@ -876,6 +918,7 @@ export default function InterviewGriller() {
     setCurrentQuestion('');
     setUserAnswer('');
     setUserCode('');
+    baseSpeechTextRef.current = '';
     setProbingQuestion('');
     startInterview();
   };

@@ -56,19 +56,19 @@ export async function POST(req: NextRequest) {
 
     // Action 1.5: Real-time PREP / STAR Live Coach (Freemockinterview dynamic rubric)
     if (action === 'coach') {
-      const candidateDraft = (currentAnswer || '').trim();
+      const candidateDraft = (currentAnswer || body.currentAnswer || '').trim();
       const wordCount = candidateDraft.split(/\s+/).filter(Boolean).length;
       const currentQIndex = turns.length;
       const activeQ = questionList[currentQIndex] || {};
-      const questionText = body.question || activeQ.question || '';
-      const isBehavioral = /tell me about|describe a time|describe a scenario|how did you handle|how do you handle conflict|give an example of when|disagree|challenging bug|difficult deadline|production incident/i.test(questionText) || (activeQ.category && activeQ.category.includes('Behavioral'));
+      const questionText = body.question || body.currentQuestion || activeQ.question || '';
+      const isBehavioral = /tell me about|describe a time|describe a scenario|how did you handle|how do you handle conflict|give an example of when|disagree|challenging bug|difficult deadline|production incident|major production defect/i.test(questionText) || (activeQ.category && activeQ.category.includes('Behavioral'));
 
       if (isBehavioral) {
         // STAR Evaluation: Situation, Task, Action, Result
-        const hasSituation = /(when i was|at my previous|in our project|in my team|during a release|we were working on|our architecture|at the time|in a past role)/i.test(candidateDraft) || wordCount >= 8;
-        const hasTask = /(my task was|the goal was|the challenge was|needed to|we had to|responsible for|objective was|the issue was|the problem was)/i.test(candidateDraft);
+        const hasSituation = /(when i was|at my previous|in our project|in my team|during a release|we were working on|our architecture|at the time|in a past role|in our)/i.test(candidateDraft) || wordCount >= 8;
+        const hasTask = /(my task was|the goal was|the challenge was|needed to|we had to|responsible for|objective was|the issue was|the problem was|our task was)/i.test(candidateDraft);
         const hasAction = /(i implemented|i designed|i created|i analyzed|i investigated|i introduced|i refactored|i coordinated|i scheduled|first i|then i|my approach was)/i.test(candidateDraft);
-        const hasResult = /(resulted in|reduced|increased|improved|saved|achieved|prevented|zero bugs|decreased flakiness|%|percent|successfully delivered|learned that|outcome was)/i.test(candidateDraft);
+        const hasResult = /(resulted in|reduced|reduction|increased|improved|saved|achieved|prevented|zero bugs|decreased flakiness|%|percent|successfully delivered|learned that|outcome was)/i.test(candidateDraft);
 
         let prepStage: 'Point' | 'Reason' | 'Example' | 'Impact' | 'Polished' = 'Point';
         let prepAdvice = 'Structure your response using the STAR method: Situation, Task, Action, and Result.';
@@ -109,9 +109,9 @@ export async function POST(req: NextRequest) {
 
       // PREP Evaluation: Point, Reason, Example, Impact
       const hasPoint = /^(in\s+practice|the\s+difference|primarily|to\s+start|by\s+default|page\.|i\s+would|firstly|overall|page\.getbyrole)/i.test(candidateDraft) || wordCount >= 6;
-      const hasReason = /(because|since|as\s+a\s+result|queries|mirror|exposes|structure|re-query|architecture|tradeoff|tree|accessibility|dom)/i.test(candidateDraft);
-      const hasExample = /(page\.|driver\.|locator|getbyrole|css|xpath|assert|expect|ci\/cd|pipeline|for\s+example|e\.g\.|const|await|refactor)/i.test(candidateDraft);
-      const hasImpact = /(flakiness|resilien|refactor|ci|break|fail|false.positive|speed|maintain|regression|reliability)/i.test(candidateDraft);
+      const hasReason = /(because|since|as\s+a\s+result|queries|mirror|exposes|structure|re-query|architecture|tradeoff|tree|accessibility|dom|encapsulat|isolat|decoupl|modular|in\s+order\s+to|enables|allows|separat|why)/i.test(candidateDraft);
+      const hasExample = /(page\.|driver\.|locator|getbyrole|css|xpath|assert|expect|ci\/cd|pipeline|for\s+example|e\.g\.|const|await|refactor|class|function|method|test\()/i.test(candidateDraft);
+      const hasImpact = /(flakiness|resilien|refactor|ci|break|fail|false.positive|speed|maintain|regression|reliability|prevent|save|reduc|cost)/i.test(candidateDraft);
 
       let prepAdvice = 'Lead with your main point, then back it up with architectural reason and concrete examples.';
       let prepStage: 'Point' | 'Reason' | 'Example' | 'Impact' | 'Polished' = 'Point';
