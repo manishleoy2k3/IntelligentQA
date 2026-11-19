@@ -131,6 +131,38 @@ export const INTERVIEW_KNOWLEDGE_BASE: InterviewQuestionItem[] = [
     pitfallToAvoid: 'Creating a monolithic shared repository where any change by one team breaks the test runs of 49 other squads.'
   },
   {
+    "id": "ah-pw-1",
+    "technology": "Playwright",
+    "category": "Selenium & Playwright Automation",
+    "difficulty": "Easy",
+    "experienceLevel": "0-2 Years",
+    "minYears": 0,
+    "maxYears": 3,
+    "topic": "getByRole vs CSS Selectors & Accessibility Tree",
+    "question": "To start, what is the difference between using page.getByRole() and page.locator() with a CSS selector in Playwright, and when would you choose one over the other?",
+    "expectedFocus": "Accessibility Tree vs raw HTML DOM, ARIA roles and accessible names, UI refactoring resilience, mirroring real user interactions.",
+    "answerSummary": "page.getByRole() queries the browser's Accessibility Tree (exposed via ARIA roles and accessible names), mirroring how a real user or screen reader perceives and interacts with the page. In contrast, page.locator() with a CSS selector queries the raw HTML DOM structure (tags, classes, attributes, and hierarchy). In a CI/CD pipeline, CSS locators break on harmless UI refactoring, while role-based locators remain resilient.",
+    "codeSnippet": "// Accessible role-based locator:\nawait page.getByRole('button', { name: 'Submit Order' }).click();\n\n// Raw CSS locator (brittle on redesign):\nawait page.locator('button.btn-primary.submit-btn').click();",
+    "bestPractice": "Prioritize user-facing role locators (getByRole, getByLabel, getByText) to ensure test resilience and promote web accessibility.",
+    "pitfallToAvoid": "Coupling tests to internal DOM classes or tag hierarchies that change during frontend refactoring."
+  },
+  {
+    "id": "ah-pw-2",
+    "technology": "Playwright",
+    "category": "Selenium & Playwright Automation",
+    "difficulty": "Easy",
+    "experienceLevel": "0-2 Years",
+    "minYears": 0,
+    "maxYears": 3,
+    "topic": "Playwright Auto-Waiting & Web-First Assertions",
+    "question": "How does Playwright's auto-waiting work when you click a button or fill in a field, and when would you still need an explicit wait or assertion?",
+    "expectedFocus": "Actionability checks (attached, visible, stable, receives events, enabled), web-first assertions expect(locator).toBeVisible(), avoiding Thread.sleep/waitForTimeout.",
+    "answerSummary": "Playwright performs automatic actionability checks prior to executing actions like click() or fill(). It ensures the element is attached to DOM, visible, stable (not animating), enabled, and receives pointer events. Explicit waits or web-first assertions (e.g. expect(locator).toHaveText()) are only needed when verifying an asynchronous state change, delayed API response, or navigation event.",
+    "codeSnippet": "// Auto-waited action (checks attached, visible, stable, enabled):\nawait page.getByRole('button', { name: 'Save Changes' }).click();\n\n// Web-first polling assertion for async state:\nawait expect(page.getByText('Saved successfully')).toBeVisible({ timeout: 5000 });",
+    "bestPractice": "Rely on Playwright's built-in actionability checks and web-first expect() assertions; never inject hardcoded sleep timeouts.",
+    "pitfallToAvoid": "Using page.waitForTimeout() or Thread.sleep() to guess network timing."
+  },
+  {
     "id": "kb-j-med-01",
     "category": "Coding & DSA",
     "difficulty": "Medium",
@@ -1243,6 +1275,289 @@ AndroidDriver driver = new AndroidDriver(new URL("https://hub.browserstack.com/w
     answerSummary: 'Design an on-premise mobile device rack: 1) Hardware: Industrial USB hubs with per-port power management (Cambrionix) to cycle power and prevent battery swelling. 2) Device management: Deploy DeviceFarmer / OpenSTF or Selenium Grid 4 with Appium Relay nodes. 3) Teardown hooks: Automatically uninstall test apps, clear app data, reset permissions, and release ADB server locks after every test run. 4) iOS provisioning: Automate signing using fastlane match to synchronize wildcard development provisioning profiles.',
     bestPractice: 'Limit device charging to 80% capacity via hardware timers or smart plugs to prevent lithium battery swelling in 24/7 test racks.',
     pitfallToAvoid: 'Plugging 20 phones into standard consumer unpowered USB hubs, which causes random disconnects and USB bus resets.'
+  },
+  // ==========================================
+  // FREEMOCKINTERVIEW CURATED KNOWLEDGE BASE
+  // ==========================================
+  {
+    id: 'fmi-pw-route-01',
+    technology: 'Playwright',
+    category: 'Selenium & Playwright Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 6,
+    topic: 'Network Mocking & Error State Injection via page.route()',
+    question: 'How do you intercept third-party payment gateway or analytics APIs in Playwright using page.route(), and how do you simulate 500 Internal Server Errors and slow 3G network latency without relying on external sandbox backends?',
+    expectedFocus: 'page.route() interception, route.fulfill() with mock JSON, route.abort(), simulating latency with route.continue() or delayed fulfill, eliminating third-party flakiness.',
+    answerSummary: 'Use page.route() to intercept matching network patterns. Call route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "Gateway Timeout" }) }) to verify client error handling. To test latency or slow connections, inject a delay before fulfilling or modify network emulation via CDP.',
+    codeSnippet: `// Mock failed payment gateway response in Playwright\nawait page.route('**/api/v1/checkout/pay', async route => {\n  await route.fulfill({\n    status: 500,\n    contentType: 'application/json',\n    body: JSON.stringify({ error: 'CardProcessorDeclined' })\n  });\n});\nawait page.getByRole('button', { name: 'Submit Payment' }).click();\nawait expect(page.getByText('Payment failed. Please try again.')).toBeVisible();`,
+    bestPractice: 'Mock flaky external 3rd-party services (Stripe, Twilio, Google Analytics) to keep CI deterministic and avoid burning live sandbox quotas.',
+    pitfallToAvoid: 'Hitting real production third-party APIs during automated test runs, which introduces flakiness and security token leakage.'
+  },
+  {
+    id: 'fmi-pw-storage-01',
+    technology: 'Playwright',
+    category: 'Selenium & Playwright Automation',
+    difficulty: 'Hard',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 6,
+    topic: 'StorageState Global Setup & Multi-Role Session Re-use',
+    question: 'In large Playwright test suites, repeated UI logins waste up to 40% of test execution time. How do you implement a global authentication setup using storageState for multiple user personas (Admin, Customer, Guest)?',
+    expectedFocus: 'Playwright global-setup.ts, browserContext.storageState({ path }), project dependencies in playwright.config.ts, cookies and localStorage persistence, bypassing UI login on every test.',
+    answerSummary: 'Configure a setup project in playwright.config.ts that logs in once per persona (Admin, Customer) via UI or direct API, then saves session storage and cookies to disk using page.context().storageState({ path: "auth/admin.json" }). Feature test projects declare dependencies: ["setup"] and set storageState: "auth/admin.json" to start pre-authenticated.',
+    codeSnippet: `// playwright.config.ts multi-role setup\nexport default defineConfig({\n  projects: [\n    { name: 'setup', testMatch: /.*\\.setup\\.ts/ },\n    {\n      name: 'admin-tests',\n      dependencies: ['setup'],\n      use: { storageState: 'playwright/.auth/admin.json' },\n    },\n  ],\n});`,
+    bestPractice: 'Log in via backend API requests (request.post) inside setup to generate auth cookies in milliseconds rather than automating slow UI forms.',
+    pitfallToAvoid: 'Re-authenticating through the UI login form in a beforeEach hook for every single test specification.'
+  },
+  {
+    id: 'fmi-qa-bva-01',
+    technology: 'Test Design',
+    category: 'Manual QA Processes',
+    difficulty: 'Easy',
+    experienceLevel: '0-2 Years',
+    minYears: 0,
+    maxYears: 2,
+    topic: 'Boundary Value Analysis & Equivalence Partitioning',
+    question: 'An e-commerce discount code field accepts coupon codes that grant discounts for order values between $20.00 and $500.00 inclusive. Design test cases using 2-value Boundary Value Analysis (BVA) and Equivalence Partitioning (EP).',
+    expectedFocus: 'Equivalence Classes: Valid ($20-$500), Invalid (<$20), Invalid (>$500). BVA values: $19.99, $20.00, $20.01, $499.99, $500.00, $500.01, plus negative numbers and non-numeric inputs.',
+    answerSummary: '1) Equivalence Partitioning creates 3 partitions: Valid ($20-$500), Below Minimum (<$20), Above Maximum (>$500). 2) 2-value Boundary Value Analysis tests boundaries: $19.99 (invalid), $20.00 (valid min), $500.00 (valid max), $500.01 (invalid). Also test extreme edge cases like $0.00, negative values (-$5.00), and alphanumeric strings.',
+    bestPractice: 'Test off-by-one boundary conditions because off-by-one errors (> vs >=) account for the majority of conditional logic bugs.',
+    pitfallToAvoid: 'Only testing happy path numbers like $100 and missing boundary points like $19.99 and $500.01.'
+  },
+  {
+    id: 'fmi-qa-triage-01',
+    technology: 'Defect Management',
+    category: 'Manual QA Processes',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 5,
+    topic: 'Bug Severity vs Priority Matrix & Defect Triage Workflow',
+    question: 'Explain the difference between Bug Severity and Bug Priority with concrete examples. When would a defect have High Severity but Low Priority, or Low Severity but High Priority?',
+    expectedFocus: 'Severity = technical/system impact (crashes, data corruption). Priority = business/urgency impact. High Sev/Low Prio: Crash in deprecated legacy feature used by <0.1% users. Low Sev/High Prio: Typo in company legal name or CEO logo on homepage.',
+    answerSummary: 'Severity measures technical impact on application stability (Blocker, Critical, Major, Minor). Priority measures urgency of business fix (P0/Immediate, P1, P2, P3). High Severity/Low Priority: Memory crash occurring only on obsolete OS version with minimal traffic. Low Severity/High Priority: Misspelled brand name or incorrect pricing currency symbol on checkout header.',
+    bestPractice: 'Conduct regular cross-functional Bug Triage meetings with Product Managers and Tech Leads to align on priority based on user blast radius.',
+    pitfallToAvoid: 'Marking every bug as P0/Blocker without evaluating customer impact, causing alert fatigue and friction with dev teams.'
+  },
+  {
+    id: 'fmi-qa-flaky-01',
+    technology: 'Quality Engineering',
+    category: 'Manual QA Processes',
+    difficulty: 'Hard',
+    experienceLevel: '6-9 Years',
+    minYears: 6,
+    maxYears: 9,
+    topic: 'Flaky Test Quarantine Strategy & Root Cause Analysis (RCA)',
+    question: 'How do you architect a Flaky Test Quarantine and Governance program in an enterprise CI/CD pipeline running 10,000+ daily automated tests, preventing broken builds while avoiding swept-under-the-rug test debt?',
+    expectedFocus: 'Quarantine pipeline / test tagging (@flaky), Flakiness Index calculation, automatic Jira creation, SLA for resolution (e.g. 72 hours), root causes (race conditions, shared state, network latency, static sleeps).',
+    answerSummary: 'Implement a zero-tolerance flaky test policy: 1) Automated detection: If a test fails and passes on retry in CI, tag it as flaky and calculate Flakiness Index (flaky runs / total runs). 2) Quarantine: Automatically route flaky tests to an asynchronous quarantine suite so they do not block master PR merges. 3) SLA: Generate Jira tickets assigned to the authoring squad with a strict 72-hour SLA to fix or permanently delete.',
+    bestPractice: 'Quarantine tests to protect developer velocity, but track quarantined test count on team KPI dashboards to prevent test debt buildup.',
+    pitfallToAvoid: 'Setting retry count to 3+ in CI to mask flakiness without investigating root causes like race conditions and shared database state.'
+  },
+  {
+    id: 'fmi-api-idempotency-01',
+    technology: 'REST API',
+    category: 'API Testing & Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 6,
+    topic: 'API Idempotency & Duplicate Request Prevention Testing',
+    question: 'What is API idempotency? Which HTTP methods are inherently idempotent, and how do you test idempotency keys in financial and payment processing APIs using automated API frameworks?',
+    expectedFocus: 'Idempotency definition (f(f(x)) = f(x)), GET/PUT/DELETE/HEAD are idempotent, POST is not. Idempotency-Key header, asserting identical response body and status code on duplicate requests, verifying database record count equals 1.',
+    answerSummary: 'An operation is idempotent if executing it multiple times produces the same system state as executing it once. GET, PUT, and DELETE are idempotent; POST is not. To test payment APIs: send POST /checkout with header "Idempotency-Key: uuid-123", assert HTTP 201. Immediately resend the exact same request with the same header: assert HTTP 200/201, identical transactionId, and verify via DB query that only 1 charge record was created.',
+    codeSnippet: `// RestAssured Idempotency Test\nString idempotencyKey = UUID.randomUUID().toString();\nResponse res1 = given().header("Idempotency-Key", idempotencyKey)\n  .body(orderPayload).post("/api/orders");\nString orderId = res1.jsonPath().getString("id");\n\n// Second identical request with same key\nResponse res2 = given().header("Idempotency-Key", idempotencyKey)\n  .body(orderPayload).post("/api/orders");\nassertEquals(res2.jsonPath().getString("id"), orderId);\n// Verify DB charge count is strictly 1`,
+    bestPractice: 'Verify both immediate network retries (simulating network dropouts) and delayed retries with the same idempotency key.',
+    pitfallToAvoid: 'Assuming PUT is always idempotent in practice without testing if backend triggers non-idempotent side effects (e.g. email notifications).'
+  },
+  {
+    id: 'fmi-api-contract-01',
+    technology: 'Pact Contract Testing',
+    category: 'API Testing & Automation',
+    difficulty: 'Hard',
+    experienceLevel: '6-9 Years',
+    minYears: 6,
+    maxYears: 9,
+    topic: 'Consumer-Driven Contract Testing with Pact vs End-to-End E2E Testing',
+    question: 'How does Consumer-Driven Contract Testing (Pact) solve the scalability bottlenecks of end-to-end integration environments in a microservices ecosystem of 50+ services?',
+    expectedFocus: 'Consumer contract generation (pact file), Pact Broker, Provider verification, can-i-deploy CLI, eliminating flaky shared staging environments, fast isolated PR checks.',
+    answerSummary: 'Consumer-Driven Contracts allow consumers (Web/Mobile) to define expectations of provider APIs as contract JSON files. Contracts are published to Pact Broker. During provider CI builds, provider runs unit-level tests against consumer contracts without spinning up consumer instances. The pact-broker "can-i-deploy" tool gates deployments, catching breaking API changes in seconds without fragile multi-service staging clusters.',
+    bestPractice: 'Integrate pact-broker can-i-deploy into your CI/CD quality gate before triggering canary deployments.',
+    pitfallToAvoid: 'Relying exclusively on massive, fragile end-to-end staging environments that break whenever one unrelated service is down.'
+  },
+  {
+    id: 'fmi-api-ratelimit-01',
+    technology: 'REST API',
+    category: 'API Testing & Automation',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 5,
+    topic: 'API Rate Limiting, HTTP 429 & Retry-After Header Testing',
+    question: 'How do you design automated tests to validate API rate-limiting policies (e.g. 100 requests per minute per IP), including HTTP 429 Too Many Requests, X-RateLimit headers, and Retry-After backoff headers?',
+    expectedFocus: 'Concurrent request burst testing, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, HTTP 429 status code, Retry-After header compliance, exponential backoff.',
+    answerSummary: 'Send a burst of concurrent HTTP requests (using CompletableFuture or Promise.all) exceeding the quota threshold. Assert that the first N requests return HTTP 200 with decrementing X-RateLimit-Remaining headers. Assert that request N+1 returns HTTP 429 Too Many Requests with a valid Retry-After header. Then sleep for Retry-After duration and assert that subsequent requests return HTTP 200 again.',
+    codeSnippet: `// Validate rate limit with Playwright API request\nconst responses = await Promise.all(\n  Array.from({ length: 105 }).map(() => request.get('/api/v1/search?q=test'))\n);\nconst rateLimited = responses.filter(r => r.status() === 429);\nexpect(rateLimited.length).toBeGreaterThan(0);\nexpect(rateLimited[0].headers()['retry-after']).toBeDefined();`,
+    bestPractice: 'Test both IP-based and authenticated user API token rate limits across distinct endpoint tiers.',
+    pitfallToAvoid: 'Running unthrottled rate-limit tests in parallel CI pipelines against shared dev servers, which inadvertently blocks teammate test runs.'
+  },
+  {
+    id: 'fmi-mob-webview-01',
+    technology: 'Appium',
+    category: 'Mobile Automation (Appium)',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 6,
+    topic: 'Hybrid App WebView Automation & Context Switching in Appium 2.x',
+    question: 'How do you automate a Hybrid Mobile Application in Appium 2.x where a native screen embeds an in-app browser or payment WebView, including context switching and ChromeDriver mapping?',
+    expectedFocus: 'driver.getContextHandles(), driver.context("WEBVIEW_com.example"), chromedriverExecutable or appium:chromedriverChromeMappingFile, switching back to NATIVE_APP, mobile web inspector.',
+    answerSummary: 'In hybrid apps, elements inside a WebView are inaccessible via NATIVE_APP locators. 1) Call driver.getContextHandles() to retrieve available contexts. 2) Switch context using driver.context("WEBVIEW_com.example"). 3) Interact with elements using standard CSS/XPath web locators. 4) Switch back to native using driver.context("NATIVE_APP") to continue native mobile actions.',
+    codeSnippet: `// Appium Java WebView Context Switch\nSet<String> contexts = driver.getContextHandles();\nfor (String context : contexts) {\n  if (context.contains("WEBVIEW")) {\n    driver.context(context);\n    break;\n  }\n}\ndriver.findElement(By.cssSelector("#card-number")).sendKeys("4242424242424242");\ndriver.context("NATIVE_APP"); // Return to native context`,
+    bestPractice: 'Configure chromedriverAutodownload=true in Appium 2.x UiAutomator2Options to prevent Chrome version mismatch errors.',
+    pitfallToAvoid: 'Trying to inspect WebView internal DOM elements using UiAutomator2 native locators, which results in NoSuchElementException.'
+  },
+  {
+    id: 'fmi-mob-biometrics-01',
+    technology: 'Appium',
+    category: 'Mobile Automation (Appium)',
+    difficulty: 'Hard',
+    experienceLevel: '6-9 Years',
+    minYears: 6,
+    maxYears: 9,
+    topic: 'Biometric Authentication (FaceID / Fingerprint) Mocking in iOS and Android',
+    question: 'How do you automate biometric login (FaceID on iOS and BiometricPrompt on Android) across emulators and simulators in an automated Appium mobile test suite?',
+    expectedFocus: 'iOS: driver.executeScript("mobile: enrollBiometric", Map.of("isEnabled", true)) and "mobile: sendBiometricMatch", Android: driver.fingerPrint(fingerprintId), handling permission prompts and biometric failure fallbacks.',
+    answerSummary: 'On iOS simulators: use executeScript("mobile: enrollBiometric", Map.of("isEnabled", true)) to simulate enrolled FaceID, then call executeScript("mobile: sendBiometricMatch", Map.of("type", "faceId", "match", true)) to simulate successful match (or match: false for failed attempt). On Android emulators: call driver.fingerPrint(1) to simulate enrolled fingerprint sensor trigger.',
+    codeSnippet: `// iOS FaceID Match in Appium\ndriver.executeScript("mobile: enrollBiometric", Map.of("isEnabled", true));\ndriver.findElement(AppiumBy.accessibilityId("BiometricLoginBtn")).click();\ndriver.executeScript("mobile: sendBiometricMatch", Map.of("type", "faceId", "match", true));\n// Android Fingerprint Match\n// ((AndroidDriver) driver).fingerPrint(1);`,
+    bestPractice: 'Test both biometric success and fallback passcode paths (e.g. when FaceID fails 3 times, verify passcode pin pad opens).',
+    pitfallToAvoid: 'Hardcoding real physical biometric authentication tests in automated regression runs without mocking APIs.'
+  },
+  {
+    id: 'fmi-mob-crash-01',
+    technology: 'Mobile QA',
+    category: 'Mobile Manual Testing (Android & iOS)',
+    difficulty: 'Easy',
+    experienceLevel: '0-2 Years',
+    minYears: 0,
+    maxYears: 2,
+    topic: 'Mobile ANR (Application Not Responding) & Logcat Triage',
+    question: 'What is an ANR (Application Not Responding) error on Android? How do you extract and diagnose ANR traces using ADB Logcat, and how do you differentiate an ANR from an app crash?',
+    expectedFocus: 'Main thread (UI thread) blocked for > 5 seconds, broadcast receiver > 10s. Difference: Crash exits immediately (uncaught exception), ANR shows system dialog "App isn\'t responding". Pulling /data/anr/traces.txt using adb bugreport or adb logcat.',
+    answerSummary: 'An ANR occurs when an Android app freezes the main UI thread for longer than 5 seconds (e.g. performing heavy database queries or network calls on main thread). A crash terminates the app immediately with an uncaught exception stack trace. To diagnose: run "adb logcat -v time *:E" or pull traces using "adb pull /data/anr/traces.txt" to identify which method locked the main thread.',
+    bestPractice: 'Filter Logcat by package name and error tag to avoid getting lost in thousands of system log lines: adb logcat --pid=$(adb shell pidof -s com.example.app).',
+    pitfallToAvoid: 'Submitting a bug ticket stating "app is stuck" without attaching Logcat traces, device OS version, and memory usage details.'
+  },
+  {
+    id: 'fmi-mob-deeplink-01',
+    technology: 'Mobile QA',
+    category: 'Mobile Manual Testing (Android & iOS)',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 5,
+    topic: 'Deep Links & Universal Links End-to-End Validation',
+    question: 'How do you test Deep Links (custom URL schemes) and Universal Links / Android App Links across both fresh install, existing installed app, and browser fallback scenarios?',
+    expectedFocus: 'Testing 3 states: 1) App installed and closed, 2) App installed in background, 3) App not installed (App Store / Play Store fallback). Testing parameters (UTM tags, auth tokens). ADB command: adb shell am start -W -a android.intent.action.VIEW -d "scheme://path".',
+    answerSummary: 'Test across 3 user states: 1) App Installed & Terminated: verify tapping link launches app and navigates directly to the target product screen. 2) App in Background: verify onNewIntent handles URL parameters without resetting state. 3) App Not Installed: verify deferred deep link routes user to App Store, and after installation, restores original deep link context. Use ADB: adb shell am start -W -a android.intent.action.VIEW -d "myapp://products/123".',
+    bestPractice: 'Verify that deep links containing user-specific tokens expire gracefully and redirect unauthenticated users to login before navigating to target screen.',
+    pitfallToAvoid: 'Testing only inside the simulator browser and forgetting to test links opened from third-party apps like Slack, WhatsApp, or Gmail.'
+  },
+  {
+    id: 'fmi-cicd-matrix-01',
+    technology: 'GitHub Actions',
+    category: 'CI/CD Pipelines',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 6,
+    topic: 'GitHub Actions Dynamic Matrix Sharding & Playwright Blob Reports',
+    question: 'How do you configure GitHub Actions matrix strategy to shard a Playwright suite across 4 parallel Linux runners, merge individual shard blob reports, and upload a single unified HTML dashboard to GitHub Pages or S3?',
+    expectedFocus: 'strategy.matrix.shard: [1/4, 2/4, 3/4, 4/4], npx playwright test --shard=\${{ matrix.shard }}, reporter: "blob", merge-reports command (npx playwright merge-reports), uploading unified HTML artifact.',
+    answerSummary: '1) Run matrix jobs: configure matrix: { shard: [1/4, 2/4, 3/4, 4/4] } with playwright test --shard=\${{ matrix.shard }}. Set reporter: [["blob"]] to write test results to blob files. 2) Upload blob artifacts: actions/upload-artifact with path: blob-report/*. 3) Consolidation job: runs on needs: [test], downloads all blob artifacts into all-blob-reports/, and runs "npx playwright merge-reports --reporter html ./all-blob-reports".',
+    codeSnippet: `// GitHub Actions Sharding Job\njobs:\n  test:\n    strategy:\n      matrix:\n        shard: [1/4, 2/4, 3/4, 4/4]\n    steps:\n      - run: npx playwright test --shard=\${{ matrix.shard }}\n        env: { CI: true }\n      - uses: actions/upload-artifact@v4\n        with: { name: blob-report-\${{ strategy.job-index }}, path: blob-report/ }`,
+    bestPractice: 'Use fail-fast: false in matrix strategy so one failing test in shard 1 does not cancel the test runs of shards 2, 3, and 4.',
+    pitfallToAvoid: 'Attempting to generate standard HTML reports inside individual matrix shards and ending up with 4 disjointed reports.'
+  },
+  {
+    id: 'fmi-cicd-testcontainers-01',
+    technology: 'Testcontainers',
+    category: 'CI/CD Pipelines',
+    difficulty: 'Hard',
+    experienceLevel: '6-9 Years',
+    minYears: 6,
+    maxYears: 9,
+    topic: 'Ephemeral Test Environments using Testcontainers in CI/CD',
+    question: 'How do you use Testcontainers (Java/TypeScript/Python) to spin up ephemeral, production-identical database (PostgreSQL) and message broker (Kafka) instances during automated integration tests in CI pipelines?',
+    expectedFocus: 'Docker container lifecycle managed by test runner (@Container / GenericContainer), dynamic port mapping (getMappedPort), schema migrations (Flyway/Liquibase), teardown on completion, eliminating shared database conflicts in CI.',
+    answerSummary: 'Testcontainers manages Docker containers directly from code. When test suite launches, Testcontainers pulls official Docker images (PostgreSQL, Kafka), starts containers on random ephemeral host ports, runs schema migrations via Flyway, and injects dynamic connection strings into test configuration. When test process finishes, Testcontainers Ryuk daemon kills all containers, leaving zero lingering state.',
+    bestPractice: 'Use reusable containers (.withReuse(true)) in local development for sub-second startup times while keeping CI containers strictly ephemeral.',
+    pitfallToAvoid: 'Hardcoding static database ports (e.g. 5432) in CI integration tests, which causes port bind collisions when parallel workers run on the same CI agent.'
+  },
+  {
+    id: 'fmi-rep-allure-01',
+    technology: 'Allure Report',
+    category: 'Reporting',
+    difficulty: 'Easy',
+    experienceLevel: '0-2 Years',
+    minYears: 0,
+    maxYears: 2,
+    topic: 'Allure Metadata Annotations & Visual Evidence Attachments',
+    question: 'In Allure Reporting, how do you categorize tests by feature and story, attach failure screenshots or network logs, and configure severity levels (Blocker, Critical, Normal)?',
+    expectedFocus: '@Feature, @Story, @Severity, @Step annotations, Allure.addAttachment("Screenshot", bytes), allure-results directory, generating interactive HTML report with allure generate.',
+    answerSummary: 'Annotate test methods with @Feature("User Authentication"), @Story("Password Reset"), and @Severity(SeverityLevel.CRITICAL). Inside test steps or afterEach failure hooks, attach visual artifacts using Allure.addAttachment("Failure Screenshot", new ByteArrayInputStream(screenshotBytes)). Run "allure generate allure-results --clean -o allure-report" to build the interactive HTML report.',
+    codeSnippet: `// Allure Annotations in TestNG / JUnit\n@Test\n@Feature("Payment Gateway")\n@Story("Stripe 3DS Verification")\n@Severity(SeverityLevel.BLOCKER)\npublic void testStripeThreeDS() {\n  Allure.step("Initiate payment with 3DS card", () -> { ... });\n}`,
+    bestPractice: 'Attach both failure screenshots and network HAR or console logs to give developers instant context without needing to reproduce locally.',
+    pitfallToAvoid: 'Attaching massive video files for every passing test, which balloons CI artifact storage to hundreds of gigabytes.'
+  },
+  {
+    id: 'fmi-rep-slack-01',
+    technology: 'Slack / Teams Webhooks',
+    category: 'Reporting',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 5,
+    topic: 'Automated CI Test Failure Notifications & Slack Bot Triage',
+    question: 'How do you design an automated CI test listener that sends structured Slack or Microsoft Teams webhook alerts when master pipeline regression tests fail, including failure diffs, author mentions, and direct links to reports?',
+    expectedFocus: 'Incoming Webhooks, Block Kit / Adaptive Cards, parsing test runner failure summary, extracting Git commit author from CI environment variables, linking directly to Allure or Playwright HTML artifacts.',
+    answerSummary: 'Implement a test runner listener (e.g. Playwright custom reporter or TestNG ITestListener) that executes on test run completion. If failureCount > 0, format a Slack Block Kit payload containing: 1) Job status badge (red), 2) Pass rate percentage and failure count, 3) Top 3 failing spec names with error messages, 4) Git commit SHA, branch, and author mention, 5) One-click button linking to the hosted HTML report.',
+    bestPractice: 'Route notifications intelligently: only notify public engineering channels on main branch failures; route PR branch failures directly to the PR author.',
+    pitfallToAvoid: 'Spamming the main developer channel with alert messages on every passing build, which trains developers to mute the channel.'
+  },
+  {
+    id: 'fmi-dsa-sliding-01',
+    technology: 'Algorithms',
+    category: 'Coding & DSA',
+    difficulty: 'Medium',
+    experienceLevel: '3-5 Years',
+    minYears: 3,
+    maxYears: 6,
+    topic: 'Sliding Window: Longest Substring Without Repeating Characters',
+    question: 'In automation log analysis, you need to find the length of the longest contiguous sub-sequence of unique log event tokens. Solve the Longest Substring Without Repeating Characters problem with optimal time and space complexity.',
+    expectedFocus: 'Sliding window technique with two pointers (left, right), Set or Map storing character -> last seen index, O(N) time complexity, O(min(N, M)) space complexity.',
+    answerSummary: 'Use a sliding window with two pointers (left and right) and a HashMap mapping character -> last seen index. As right pointer expands across the string, if s[right] exists in the map and its index >= left, jump left to map.get(s[right]) + 1. Update max length as right - left + 1, and update map. Time: O(N) single pass, Space: O(min(N, alphabet size)).',
+    codeSnippet: `function lengthOfLongestSubstring(s: string): number {\n  const map = new Map<string, number>();\n  let maxLen = 0, left = 0;\n  for (let right = 0; right < s.length; right++) {\n    const char = s[right];\n    if (map.has(char) && map.get(char)! >= left) {\n      left = map.get(char)! + 1;\n    }\n    map.set(char, right);\n    maxLen = Math.max(maxLen, right - left + 1);\n  }\n  return maxLen;\n}`,
+    bestPractice: 'Store the last seen index in a Map to jump the left pointer forward in O(1) rather than sliding one step at a time.',
+    pitfallToAvoid: 'Using nested loops to check all substrings, which degrades to O(N^3) time complexity.'
+  },
+  {
+    id: 'fmi-dsa-concurrency-01',
+    technology: 'Java Concurrency',
+    category: 'Coding & DSA',
+    difficulty: 'Hard',
+    experienceLevel: '6-9 Years',
+    minYears: 6,
+    maxYears: 9,
+    topic: 'Thread-Safe Singleton with Double-Checked Locking in Automation',
+    question: 'Why is standard Singleton implementation dangerous in multi-threaded parallel test execution? How do you implement a thread-safe Singleton using Double-Checked Locking with volatile keyword in Java?',
+    expectedFocus: 'Thread collision during lazy instantiation, synchronized performance overhead, Double-Checked Locking (DCL), volatile keyword preventing instruction reordering by JVM/CPU, memory visibility.',
+    answerSummary: 'Without synchronization, two parallel test threads checking instance == null simultaneously will create two distinct objects. Synchronizing the entire getInstance() method creates an execution bottleneck. Double-Checked Locking checks instance == null twice: once outside synchronized block (for fast path) and once inside synchronized block. The instance variable MUST be declared "volatile" to prevent CPU instruction reordering.',
+    codeSnippet: `public class TestConfigManager {\n  private static volatile TestConfigManager instance;\n  private TestConfigManager() { /* load configs */ }\n  \n  public static TestConfigManager getInstance() {\n    if (instance == null) {\n      synchronized (TestConfigManager.class) {\n        if (instance == null) {\n          instance = new TestConfigManager();\n        }\n      }\n    }\n    return instance;\n  }\n}`,
+    bestPractice: 'Declare the singleton field as volatile so other threads see the fully initialized object immediately across CPU cache lines.',
+    pitfallToAvoid: 'Omitting the volatile keyword with Double-Checked Locking, which can expose a partially initialized object reference to other threads.'
   }
 ];
 
@@ -1269,12 +1584,14 @@ export function getQuestionsByLevelAndDifficulty(options: {
   experienceYears?: number;
   experienceTier?: '0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years' | string;
   count?: number;
+  track?: string;
 }): InterviewQuestionItem[] {
   const {
     difficulty = 'Medium',
     experienceYears,
     experienceTier,
     count = 3,
+    track,
   } = options;
 
   // Determine target tier
@@ -1320,29 +1637,53 @@ export function getQuestionsByLevelAndDifficulty(options: {
     matches = [...INTERVIEW_KNOWLEDGE_BASE];
   }
 
-  // Shuffle matches randomly
-  const shuffled = [...matches].sort(() => Math.random() - 0.5);
+  // Shuffle matches randomly, prioritizing track match if specified
+  const normTrack = (track || '').toLowerCase().trim();
+  const shuffled = [...matches].sort((a, b) => {
+    if (normTrack) {
+      const aMatch =
+        (a.technology && a.technology.toLowerCase().includes(normTrack)) ||
+        (a.category && a.category.toLowerCase().includes(normTrack)) ||
+        (a.topic && a.topic.toLowerCase().includes(normTrack)) ||
+        (normTrack.includes('automation') && (Boolean(a.category?.includes('Automation')) || a.technology === 'Playwright' || a.technology === 'Selenium'));
+      const bMatch =
+        (b.technology && b.technology.toLowerCase().includes(normTrack)) ||
+        (b.category && b.category.toLowerCase().includes(normTrack)) ||
+        (b.topic && b.topic.toLowerCase().includes(normTrack)) ||
+        (normTrack.includes('automation') && (Boolean(b.category?.includes('Automation')) || b.technology === 'Playwright' || b.technology === 'Selenium'));
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+    }
+    return Math.random() - 0.5;
+  });
 
-  // Pick questions ensuring diverse categories if possible
+  // Pick questions ensuring diverse categories if possible (unless track is explicitly specified)
   const selected: InterviewQuestionItem[] = [];
   const usedCategories = new Set<string>();
 
-  // Pass 1: Try picking items with unique categories
-  for (const q of shuffled) {
-    const cat = q.category || 'General';
-    if (!usedCategories.has(cat)) {
+  if (normTrack) {
+    for (const q of shuffled) {
       selected.push(q);
-      usedCategories.add(cat);
       if (selected.length >= count) break;
     }
-  }
-
-  // Pass 2: Fill remaining if needed
-  if (selected.length < count) {
+  } else {
+    // Pass 1: Try picking items with unique categories
     for (const q of shuffled) {
-      if (!selected.some(s => s.id === q.id)) {
+      const cat = q.category || 'General';
+      if (!usedCategories.has(cat)) {
         selected.push(q);
+        usedCategories.add(cat);
         if (selected.length >= count) break;
+      }
+    }
+
+    // Pass 2: Fill remaining if needed
+    if (selected.length < count) {
+      for (const q of shuffled) {
+        if (!selected.some(s => s.id === q.id)) {
+          selected.push(q);
+          if (selected.length >= count) break;
+        }
       }
     }
   }
