@@ -196,17 +196,34 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <span className="sr-only">Ask SDET AI</span>
         </button>
 
-        {/* Add Guide Button (replaces Suggest Question) */}
-        <button
-          type="button"
-          onClick={() => setShowAddGuideModal(true)}
-          aria-label="Add Guide"
-          className="flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 bg-[#181818] hover:bg-[#222222] text-zinc-200 hover:text-white border border-[#2B2B2B] hover:border-[#81FF89]/50 rounded-full font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
-          title="Add Guide: Create architecture guides, import JSON/CSV, or download templates"
-        >
-          <BookPlus className="w-4 h-4 text-[#81FF89] shrink-0" />
-          <span className="font-bold tracking-tight">Add Guide</span>
-        </button>
+        {/* Add Guide Button (Navigates to dedicated Add & Import Guide page) */}
+        {(() => {
+          // Detect current track from URL if user is viewing a track or guide, otherwise default to user's primary track or selenium
+          let currentGuideTrack = 'selenium';
+          if (pathname?.includes('/tracks/playwright') || pathname?.includes('/guides/playwright')) {
+            currentGuideTrack = 'playwright';
+          } else if (pathname?.includes('/tracks/api-testing') || pathname?.includes('/guides/api-testing')) {
+            currentGuideTrack = 'api-testing';
+          } else if (pathname?.includes('/tracks/ai-qa') || pathname?.includes('/guides/ai-qa')) {
+            currentGuideTrack = 'ai-qa';
+          } else if (pathname?.includes('/tracks/selenium') || pathname?.includes('/guides/selenium')) {
+            currentGuideTrack = 'selenium';
+          } else if (currentUser?.primaryTrack) {
+            currentGuideTrack = currentUser.primaryTrack.includes('playwright') ? 'playwright' : currentUser.primaryTrack.includes('api') ? 'api-testing' : currentUser.primaryTrack.includes('ai') ? 'ai-qa' : 'selenium';
+          }
+
+          return (
+            <Link
+              href={`/guides/${currentGuideTrack}?tab=import`}
+              aria-label="Add Guide"
+              className="flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 bg-[#181818] hover:bg-[#222222] text-zinc-200 hover:text-white border border-[#2B2B2B] hover:border-[#81FF89]/50 rounded-full font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
+              title="Add Guide: Create architecture guides, import JSON/CSV, or download templates"
+            >
+              <BookPlus className="w-4 h-4 text-[#81FF89] shrink-0" />
+              <span className="font-bold tracking-tight">Add Guide</span>
+            </Link>
+          );
+        })()}
 
         {/* 2. Notifications Bell & Popover */}
         <div ref={notifRef} className="relative">

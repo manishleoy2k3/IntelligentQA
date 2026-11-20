@@ -70,7 +70,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
       const u = QADatabase.getCurrentUser();
       const adminStatus = QADatabase.isAdmin(u);
       setIsAdmin(adminStatus);
-      if (adminStatus && searchParams.get('tab') === 'import') {
+      if (searchParams.get('tab') === 'import') {
         setActiveTab('import-staging');
       }
       const handleAuth = () => {
