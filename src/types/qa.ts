@@ -92,7 +92,8 @@ export interface UserProfile {
   streakCount: number;
   lastActiveDate: string;
   geminiApiKey?: string;
-  authProvider?: 'google' | 'email';
+  authProvider?: 'google' | 'email' | 'phone';
+  phoneNumber?: string;
   aiPreference?: 'enabled' | 'opted_out';
   role?: 'admin' | 'user';
   profileCompleted?: boolean;

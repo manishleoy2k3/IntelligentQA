@@ -73,15 +73,18 @@ export default function Header({
     const handleAuthChange = () => syncAuthAndKey();
     const handleKeyChange = () => syncAuthAndKey();
     const handleAiPrefChange = () => syncAuthAndKey();
+    const handleOpenProfileModal = () => setShowProfileModal(true);
 
     window.addEventListener('intelligentqa_auth_changed', handleAuthChange);
     window.addEventListener('intelligentqa_key_changed', handleKeyChange);
     window.addEventListener('intelligentqa_ai_pref_changed', handleAiPrefChange);
+    window.addEventListener('intelligentqa_open_profile_modal', handleOpenProfileModal);
 
     return () => {
       window.removeEventListener('intelligentqa_auth_changed', handleAuthChange);
       window.removeEventListener('intelligentqa_key_changed', handleKeyChange);
       window.removeEventListener('intelligentqa_ai_pref_changed', handleAiPrefChange);
+      window.removeEventListener('intelligentqa_open_profile_modal', handleOpenProfileModal);
     };
   }, [syncAuthAndKey]);
 

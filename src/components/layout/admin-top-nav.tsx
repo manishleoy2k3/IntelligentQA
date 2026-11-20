@@ -55,11 +55,15 @@ export default function AdminTopNav({
         setCurrentUser(updated);
       };
 
+      const handleOpenProfileModal = () => setShowProfileModal(true);
+
       window.addEventListener('intelligentqa_auth_changed', handleAuth);
       window.addEventListener('intelligentqa_role_changed', handleAuth);
+      window.addEventListener('intelligentqa_open_profile_modal', handleOpenProfileModal);
       return () => {
         window.removeEventListener('intelligentqa_auth_changed', handleAuth);
         window.removeEventListener('intelligentqa_role_changed', handleAuth);
+        window.removeEventListener('intelligentqa_open_profile_modal', handleOpenProfileModal);
       };
     }
   }, []);

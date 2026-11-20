@@ -48,6 +48,13 @@ export default function AscentAuthCard({
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [showPhoneForm, setShowPhoneForm] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneCountryCode, setPhoneCountryCode] = useState('+1');
+  const [phoneOtpStep, setPhoneOtpStep] = useState<'phone' | 'otp'>('phone');
+  const [phoneOtpDigits, setPhoneOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
+  const [phoneGeneratedOtp, setPhoneGeneratedOtp] = useState<string>('');
+  const [phoneTimer, setPhoneTimer] = useState(30);
+  const [formattedMobileNumber, setFormattedMobileNumber] = useState('');
+  const phoneOtpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [activeSocialProvider, setActiveSocialProvider] = useState<SocialProvider | null>(null);
 
   // Form Fields
@@ -80,6 +87,15 @@ export default function AscentAuthCard({
     }
     return () => clearInterval(interval);
   }, [showOtpModal, otpStep, timer]);
+
+  // Phone OTP Timer countdown
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showPhoneForm && phoneOtpStep === 'otp' && phoneTimer > 0) {
+      interval = setInterval(() => setPhoneTimer(prev => prev - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [showPhoneForm, phoneOtpStep, phoneTimer]);
 
   const handleClose = () => {
     if (onClose) {
@@ -283,6 +299,100 @@ export default function AscentAuthCard({
     setShowOtpModal(true);
   };
 
+  // Helper to validate and normalize international mobile number
+  const validatePhone = (rawInput: string, selectedCode: string): { isValid: boolean; formatted: string; error?: string } => {
+    const trimmed = rawInput.trim();
+    if (!trimmed) {
+      return { isValid: false, formatted: '', error: 'Please enter your mobile phone number.' };
+    }
+
+    let countryCode = selectedCode.trim();
+    let localNumber = trimmed;
+
+    // If user typed + in the input itself, extract the country code
+    if (trimmed.startsWith('+')) {
+      const match = trimmed.match(/^(\+\d{1,4})[\s.-]?(.*)$/);
+      if (match) {
+        countryCode = match[1];
+        localNumber = match[2];
+      }
+    }
+
+    // Ensure country code has + followed by 1-4 digits
+    if (!/^\+\d{1,4}$/.test(countryCode)) {
+      return { isValid: false, formatted: '', error: 'Country code must start with "+" followed by 1 to 4 digits (e.g. +1, +91, +44).' };
+    }
+
+    const digitsOnly = localNumber.replace(/\D/g, '');
+    if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+      return {
+        isValid: false,
+        formatted: '',
+        error: `Invalid phone number length (${digitsOnly.length} digits). Standard international mobile numbers have 7 to 15 digits.`,
+      };
+    }
+
+    const formatted = `${countryCode} ${digitsOnly}`;
+    return { isValid: true, formatted };
+  };
+
+  // Phone Step 1: Send verification code to mobile phone
+  const handleSendPhoneCode = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    const validation = validatePhone(phoneNumber, phoneCountryCode);
+    if (!validation.isValid) {
+      setError(validation.error || 'Please enter a valid phone number with country code.');
+      return;
+    }
+
+    const fullPhone = validation.formatted;
+    setFormattedMobileNumber(fullPhone);
+
+    // Generate real 6-digit OTP stored in QADatabase
+    const otp = QADatabase.generateOtp(fullPhone);
+    setPhoneGeneratedOtp(otp);
+    setPhoneOtpDigits(['', '', '', '', '', '']);
+    setPhoneTimer(30);
+    setPhoneOtpStep('otp');
+  };
+
+  // Phone Step 2: Strictly verify 6-digit code and authenticate
+  const handleVerifyPhoneCode = async () => {
+    const entered = phoneOtpDigits.join('');
+    if (entered.length < 6) {
+      setError('Please enter all 6 digits of the phone verification code.');
+      return;
+    }
+    setError(null);
+
+    const isValid = QADatabase.verifyOtp(formattedMobileNumber, entered);
+    if (!isValid) {
+      setError('Invalid or expired verification code. Please check the code or use Auto-Fill test code.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (accountType === 'admin') {
+        QADatabase.switchToAdminSession();
+        router.push('/admin');
+      } else {
+        await QADatabase.loginWithPhone(formattedMobileNumber);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('intelligentqa_open_profile_modal'));
+        }
+        router.push(redirectTo);
+      }
+    } catch (err) {
+      console.error('Phone login error:', err);
+      setError('Phone authentication failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col items-center justify-center font-sans">
       {/* CARD CONTAINER: Emergent-style Floating Dark Window */}
@@ -396,8 +506,13 @@ export default function AscentAuthCard({
           <button
             type="button"
             onClick={() => {
-              setShowPhoneForm(!showPhoneForm);
+              const nextState = !showPhoneForm;
+              setShowPhoneForm(nextState);
               setShowEmailForm(false);
+              setError(null);
+              if (!nextState) {
+                setPhoneOtpStep('phone');
+              }
             }}
             className="w-full py-3.5 px-6 rounded-full bg-[#181818] hover:bg-[#222222] border border-[#282828] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-sm active:scale-[0.99]"
           >
@@ -551,43 +666,175 @@ export default function AscentAuthCard({
           </form>
         )}
 
-        {/* REVEALABLE PHONE INPUT FORM */}
+        {/* REVEALABLE PHONE INPUT & VERIFICATION FLOW */}
         {showPhoneForm && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (phoneNumber.trim().length >= 10) {
-                if (accountType === 'admin') {
-                  QADatabase.switchToAdminSession();
-                  router.push('/admin');
-                } else {
-                  QADatabase.login(`${phoneNumber.replace(/\D/g, '')}@phone.intelligentqa.io`, 'Phone User');
-                  router.push(redirectTo);
-                }
-              } else {
-                setError('Please enter a valid phone number with country code.');
-              }
-            }}
-            className="mt-6 pt-5 border-t border-[#262626] space-y-4 text-left animate-in fade-in duration-200 relative z-10"
-          >
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-zinc-300">Mobile Phone Number</label>
-              <input
-                type="tel"
-                required
-                value={phoneNumber}
-                onChange={e => setPhoneNumber(e.target.value)}
-                placeholder="+1 (555) 000-0000"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#81FF89]"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-3 rounded-full bg-white hover:bg-zinc-100 text-black font-bold text-xs transition-all cursor-pointer shadow-md"
-            >
-              Send Verification Code
-            </button>
-          </form>
+          <div className="mt-6 pt-5 border-t border-[#262626] space-y-4 text-left animate-in fade-in duration-200 relative z-10">
+            {phoneOtpStep === 'phone' ? (
+              <form onSubmit={handleSendPhoneCode} className="space-y-4">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">Sign In with Mobile</span>
+                  <span className="text-[11px] text-zinc-400">SMS Verification</span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-zinc-300">
+                    Mobile Phone Number
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {/* Country Code Selector / Input */}
+                    <div className="relative shrink-0 w-28">
+                      <select
+                        aria-label="Country Code"
+                        value={phoneCountryCode}
+                        onChange={e => setPhoneCountryCode(e.target.value)}
+                        className="w-full px-2.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white appearance-none focus:outline-none focus:border-[#81FF89] cursor-pointer"
+                      >
+                        <option value="+1">🇺🇸 +1 (US)</option>
+                        <option value="+91">🇮🇳 +91 (IN)</option>
+                        <option value="+44">🇬🇧 +44 (UK)</option>
+                        <option value="+61">🇦🇺 +61 (AU)</option>
+                        <option value="+49">🇩🇪 +49 (DE)</option>
+                        <option value="+33">🇫🇷 +33 (FR)</option>
+                        <option value="+81">🇯🇵 +81 (JP)</option>
+                        <option value="+65">🇸🇬 +65 (SG)</option>
+                        <option value="+971">🇦🇪 +971 (AE)</option>
+                        <option value="+86">🇨🇳 +86 (CN)</option>
+                      </select>
+                    </div>
+
+                    {/* Local Mobile Input */}
+                    <div className="relative flex-1">
+                      <input
+                        type="tel"
+                        required
+                        value={phoneNumber}
+                        onChange={e => {
+                          setPhoneNumber(e.target.value);
+                          if (error) setError(null);
+                        }}
+                        placeholder="555-0199 or +1 555-0199"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#81FF89]"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-zinc-400">
+                    Select your country code or include it with a <span className="text-white font-mono font-semibold">+</span> (e.g. +91 9876543210).
+                  </p>
+                </div>
+
+                {error && (
+                  <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-900 text-xs text-rose-300">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-full bg-white hover:bg-zinc-100 text-black font-bold text-xs transition-all cursor-pointer shadow-md active:scale-[0.99]"
+                >
+                  Send Verification Code
+                </button>
+              </form>
+            ) : (
+              /* Phone OTP Step: Verify 6-digit Code */
+              <div className="space-y-4 animate-in fade-in duration-150">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <h3 className="text-sm font-bold text-white">Enter Verification Code</h3>
+                    <p className="text-[11px] text-zinc-400">
+                      Code sent to <span className="text-white font-medium">{formattedMobileNumber}</span>
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhoneOtpStep('phone');
+                      setError(null);
+                    }}
+                    className="text-xs text-[#81FF89] hover:underline cursor-pointer"
+                  >
+                    Edit Number
+                  </button>
+                </div>
+
+                {/* 6-Digit Verification Inputs */}
+                <div className="flex justify-between gap-1.5 sm:gap-2">
+                  {phoneOtpDigits.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      ref={el => {
+                        phoneOtpInputsRef.current[idx] = el;
+                      }}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={e => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        const copy = [...phoneOtpDigits];
+                        copy[idx] = val;
+                        setPhoneOtpDigits(copy);
+                        if (val && idx < 5) {
+                          phoneOtpInputsRef.current[idx + 1]?.focus();
+                        }
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Backspace' && !phoneOtpDigits[idx] && idx > 0) {
+                          phoneOtpInputsRef.current[idx - 1]?.focus();
+                        }
+                      }}
+                      className="w-10 sm:w-11 h-12 text-center text-lg font-bold rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-white focus:outline-none focus:border-[#81FF89]"
+                    />
+                  ))}
+                </div>
+
+                {error && (
+                  <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-900 text-xs text-rose-300">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (phoneGeneratedOtp) {
+                        setPhoneOtpDigits(phoneGeneratedOtp.split(''));
+                        setError(null);
+                      }
+                    }}
+                    className="text-[#81FF89] hover:underline font-bold text-left cursor-pointer"
+                  >
+                    Auto-Fill Test Code ({phoneGeneratedOtp})
+                  </button>
+                  {phoneTimer > 0 ? (
+                    <span className="text-zinc-500 text-[11px]">Resend in {phoneTimer}s</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newOtp = QADatabase.generateOtp(formattedMobileNumber);
+                        setPhoneGeneratedOtp(newOtp);
+                        setPhoneTimer(30);
+                        setError(null);
+                      }}
+                      className="text-zinc-300 hover:text-white underline text-[11px] cursor-pointer"
+                    >
+                      Resend Code
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleVerifyPhoneCode}
+                  disabled={loading}
+                  className="w-full py-3 rounded-full bg-[#81FF89] hover:bg-[#72eb7a] text-black font-bold text-xs transition-all cursor-pointer shadow-md active:scale-[0.99]"
+                >
+                  {loading ? 'Verifying Code...' : 'Verify & Sign In'}
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Emergent Footer Terms Disclaimer (Exact from Image) */}
@@ -612,6 +859,8 @@ export default function AscentAuthCard({
         <span className="sr-only">Verify Your Email</span>
         <span className="sr-only">Auto-Fill</span>
         <span className="sr-only">Sign in with 6-digit OTP instead</span>
+        <span className="sr-only">Enter Verification Code</span>
+        <span className="sr-only">Verify &amp; Sign In</span>
       </div>
 
       {/* OTP RECOVERY MODAL */}

@@ -74,11 +74,13 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         if (e.detail?.mode) setPortalMode(e.detail.mode);
         else setPortalMode(QADatabase.getPortalMode());
       };
+      const handleOpenProfileModal = () => setShowProfileModal(true);
 
       window.addEventListener("intelligentqa_auth_changed", handleAuth);
       window.addEventListener("intelligentqa_role_changed", handleAuth);
       window.addEventListener("intelligentqa_key_changed", handleKey);
       window.addEventListener("intelligentqa_portal_changed", handlePortal);
+      window.addEventListener("intelligentqa_open_profile_modal", handleOpenProfileModal);
       return () => {
         window.removeEventListener("intelligentqa_auth_changed", handleAuth);
         window.removeEventListener("intelligentqa_role_changed", handleAuth);
@@ -87,6 +89,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           "intelligentqa_portal_changed",
           handlePortal,
         );
+        window.removeEventListener("intelligentqa_open_profile_modal", handleOpenProfileModal);
       };
     }
   }, [pathname]);

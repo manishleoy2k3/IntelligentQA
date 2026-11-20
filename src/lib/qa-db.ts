@@ -482,6 +482,61 @@ export const QADatabase = {
     return user;
   },
 
+  async loginWithPhone(formattedPhone: string): Promise<UserProfile> {
+    const rawDigits = formattedPhone.replace(/\D/g, '');
+    const cleanEmail = `${rawDigits}@phone.intelligentqa.io`;
+    const safeEmailId = cleanEmail.replace(/[^a-zA-Z0-9]/g, '_');
+    const id = `usr_p_${safeEmailId}`;
+
+    const previousUser = this.getCurrentUser();
+    if (previousUser && previousUser.email.toLowerCase() !== cleanEmail) {
+      if (isBrowser()) {
+        window.localStorage.removeItem('intelligentqa_gemini_key');
+      }
+    }
+
+    let user = getStoredItem<UserProfile | null>(`intelligentqa_profile_${id}`, null);
+    if (!user) {
+      user = {
+        id,
+        displayName: formattedPhone,
+        email: cleanEmail,
+        phoneNumber: formattedPhone,
+        targetRole: 'Manual QA',
+        primaryTrack: 'playwright-ts',
+        experienceYears: undefined,
+        streakCount: 0,
+        profileCompleted: false,
+        authProvider: 'phone',
+        lastActiveDate: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    } else {
+      user.updatedAt = new Date().toISOString();
+      user.phoneNumber = formattedPhone;
+      // If displayName was previously generic 'Phone User', upgrade to formattedPhone
+      if (!user.displayName || user.displayName === 'Phone User') {
+        user.displayName = formattedPhone;
+      }
+    }
+
+    const adminEmails = this.getAdminEmails().map(e => e.toLowerCase().trim());
+    const isExplicitAdmin = adminEmails.includes(cleanEmail) || cleanEmail === 'admin@intelligentqa.io';
+    const computedRole: 'admin' | 'user' = isExplicitAdmin ? 'admin' : (user.role === 'admin' && adminEmails.includes(cleanEmail) ? 'admin' : 'user');
+    user.role = computedRole;
+
+    memoryDb.profiles.set(id, user);
+    if (isBrowser()) {
+      window.localStorage.removeItem('intelligentqa_gemini_key');
+      setStoredItem('intelligentqa_current_user', user);
+      setStoredItem(`intelligentqa_profile_${id}`, user);
+      window.dispatchEvent(new Event('intelligentqa_auth_changed'));
+      window.dispatchEvent(new Event('intelligentqa_key_changed'));
+    }
+    return user;
+  },
+
   getAiPreference(userId?: string): 'enabled' | 'opted_out' | 'unset' {
     if (!isBrowser()) return 'unset';
     const user = this.getCurrentUser();
