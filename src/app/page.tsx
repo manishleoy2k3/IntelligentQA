@@ -220,7 +220,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2 text-sm">
             <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-[#81FF89]/40 transition-colors">
               <span className="font-bold text-[#81FF89] text-base block">🟢 Playwright TS Track</span>
               <span className="text-[#D4D4D8] text-sm">12 interactive lessons &amp; code editor</span>
@@ -232,10 +232,6 @@ export default function HomePage() {
             <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-purple-400/40 transition-colors">
               <span className="font-bold text-purple-400 text-base block">🟣 API Mock Lab</span>
               <span className="text-[#D4D4D8] text-sm">REST Assured, JWT &amp; latency testing</span>
-            </div>
-            <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-[#80FFF9]/40 transition-colors">
-              <span className="font-bold text-[#80FFF9] text-base block">🔵 Architecture &amp; POM Lab</span>
-              <span className="text-[#D4D4D8] text-sm">Page Object Models &amp; CI/CD test workflows</span>
             </div>
             <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-[#81FF89]/40 transition-colors">
               <span className="font-bold text-[#81FF89] text-base block">⚡ Autonomous QA Agents</span>

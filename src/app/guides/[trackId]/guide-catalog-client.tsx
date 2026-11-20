@@ -412,7 +412,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
           </div>
 
           {/* Quick Header Actions */}
-          {isAdmin ? (
+          {isAdmin && (
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 type="button"
@@ -441,18 +441,6 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
               >
                 <Plus className="w-4 h-4 text-slate-400" />
                 <span>Add Guide</span>
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-2 shadow-md transition cursor-pointer"
-                title="Contribute a guide for Admin review"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Contribute a Guide</span>
               </button>
             </div>
           )}
