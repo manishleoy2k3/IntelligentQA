@@ -105,7 +105,7 @@ export default function GuideCatalogClient({
 
   // Modals
   const [showTemplateModal, setShowTemplateModal] = useState<boolean>(false);
-  const [templateFormat, setTemplateFormat] = useState<"json" | "csv">("json");
+  const [templateFormat, setTemplateFormat] = useState<"excel" | "word" | "json" | "csv">("excel");
   const [templateCopied, setTemplateCopied] = useState<boolean>(false);
 
   const [showImportModal, setShowImportModal] = useState<boolean>(false);
@@ -173,11 +173,11 @@ export default function GuideCatalogClient({
   // Handle URL query action params (e.g. ?action=template or ?action=import)
   useEffect(() => {
     const action = searchParams?.get("action");
-    if (action === "template") {
+    if (action === 'template') {
       setShowTemplateModal(true);
-    } else if (action === "import") {
+    } else if (action === 'import') {
       setShowImportModal(true);
-    } else if (action === "add") {
+    } else if (action === 'add') {
       setShowAddModal(true);
     }
   }, [searchParams]);
@@ -463,95 +463,12 @@ export default function GuideCatalogClient({
       {/* Main Content Area */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
         {/* ======================================================== */}
-        {/* TAB 1: IMPORT & STAGING (Requirements 3, 4, 5, 6)       */}
+        {/* TAB 1: IMPORT & STAGING (Requirements 1, 2, 3, 4, 5, 6)  */}
         {/* ======================================================== */}
         {activeTab === "import-staging" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column: Import Controls & Template Guide */}
-            <div className="lg:col-span-1 space-y-5">
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm">
-                <div className="flex items-center gap-2">
-                  <UploadCloud className="w-5 h-5 text-blue-400" />
-                  <h3 className="text-sm font-bold text-white">
-                    Import Concept Guides
-                  </h3>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Upload your architecture guides or interview concepts using
-                  the standardized template. Imported items will appear on the
-                  right for review, editing, and confirmation.
-                </p>
-
-                {/* Import Buttons */}
-                <div className="space-y-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setShowImportModal(true)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>Upload JSON / CSV Guides</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowTemplateModal(true)}
-                    className="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 border border-slate-700 transition cursor-pointer"
-                  >
-                    <Download className="w-4 h-4 text-emerald-400" />
-                    <span>Download Import Template</span>
-                  </button>
-                </div>
-
-                {/* Template Fields Card */}
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-                  <div className="font-semibold text-slate-300">
-                    Mandatory Fields in Template:
-                  </div>
-                  <ul className="list-disc list-inside text-slate-400 space-y-0.5 text-[11px]">
-                    <li>
-                      <strong className="text-slate-200">title</strong>: Name of
-                      the architecture concept
-                    </li>
-                    <li>
-                      <strong className="text-slate-200">category</strong>:
-                      Domain or module group
-                    </li>
-                    <li>
-                      <strong className="text-slate-200">level</strong>:
-                      Beginner | Intermediate | Advanced
-                    </li>
-                    <li>
-                      <strong className="text-slate-200">summary</strong>:
-                      Concise 1-2 sentence definition
-                    </li>
-                    <li>
-                      <strong className="text-slate-200">overview</strong>:
-                      Detailed explanation
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Status Note */}
-              <div className="p-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl space-y-2 text-xs text-slate-400">
-                <div className="flex items-center gap-2 font-semibold text-slate-300">
-                  <Lightbulb className="w-4 h-4 text-amber-400" />
-                  <span>Staging Workflow</span>
-                </div>
-                <p className="text-[11px] leading-relaxed">
-                  Imported guides remain in this staging list until you click{" "}
-                  <strong>Confirm &amp; Submit</strong>. You can edit any field
-                  or remove incorrect guides before saving. Once confirmed, they
-                  are permanently saved into your{" "}
-                  <strong>{trackInfo.name} Guide List</strong> and cleared from
-                  this import page.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Column: SHOW ONLY IMPORTED GUIDES (Requirement 3) */}
-            <div className="lg:col-span-2 space-y-4">
+          <div className="space-y-6">
+            {/* Top / Main Section: IMPORTED GUIDES PENDING REVIEW (Full Width) */}
+            <div className="space-y-4">
               {/* Header Bar for Staged List */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-800 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
@@ -563,77 +480,93 @@ export default function GuideCatalogClient({
                   </span>
                 </div>
 
-                {/* Confirm & Submit All Button (Requirement 5) */}
-                {stagedGuides.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        clearStagedGuides(activeTrack);
-                        setStagedGuides([]);
-                      }}
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 text-xs font-semibold border border-slate-700 transition cursor-pointer"
-                      title="Discard all staged items"
-                    >
-                      Clear Staging
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleConfirmAndSubmitAll}
-                      className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
-                      title="Save all staged guides into confirmed guide list"
-                    >
-                      <CheckCheck className="w-4 h-4" />
-                      <span>
-                        Confirm &amp; Submit All ({stagedGuides.length})
-                      </span>
-                    </button>
-                  </div>
-                )}
+                {/* Header Action Buttons */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setShowTemplateModal(true)}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Download Excel / Word Template</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowImportModal(true)}
+                    className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-md"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Import Excel / Word Guides</span>
+                  </button>
+
+                  {/* Confirm & Submit All Button (Requirement 5) */}
+                  {stagedGuides.length > 0 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          clearStagedGuides(activeTrack);
+                          setStagedGuides([]);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 text-xs font-semibold border border-slate-700 transition cursor-pointer"
+                        title="Discard all staged items"
+                      >
+                        Clear Staging
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleConfirmAndSubmitAll}
+                        className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
+                        title="Save all staged guides into confirmed guide list"
+                      >
+                        <CheckCheck className="w-4 h-4" />
+                        <span>
+                          Confirm &amp; Submit All ({stagedGuides.length})
+                        </span>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* EMPTY STATE */}
               {stagedGuides.length === 0 ? (
-                <div className="space-y-6">
-                  {/* Notice card */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-3">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-800 text-blue-400 flex items-center justify-center mx-auto border border-slate-700">
-                      <UploadCloud className="w-6 h-6" />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-sm font-bold text-white">
-                        No Imported Guides Pending Review
-                      </h3>
-                      <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                        Your staging area is empty. Click{" "}
-                        <strong>Import Guide</strong> to upload a JSON or CSV
-                        file of concepts, or download the template to prepare
-                        your questions.
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setShowTemplateModal(true)}
-                        className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition cursor-pointer"
-                      >
-                        Download Template
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowImportModal(true)}
-                        className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
-                      >
-                        <Upload className="w-4 h-4" />
-                        <span>Import Guides</span>
-                      </button>
-                    </div>
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-800 text-blue-400 flex items-center justify-center mx-auto border border-slate-700">
+                    <UploadCloud className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-bold text-white">
+                      No Imported Guides Pending Review
+                    </h3>
+                    <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                      Your staging area is empty. Download the Excel (.XLS) or Word (.DOC) template below to prepare your concepts, or click <strong>Import Excel / Word Guides</strong> to upload and review.
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowTemplateModal(true)}
+                      className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Download className="w-4 h-4 text-emerald-400" />
+                      <span>Download Template (.XLS / .DOC)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowImportModal(true)}
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
+                    >
+                      <Upload className="w-4 h-4" />
+                      <span>Import Excel / Word Guides</span>
+                    </button>
                   </div>
                 </div>
               ) : (
                 /* LIST OF IMPORTED GUIDES WITH EDIT & DELETE (Requirements 3 & 4) */
                 <div className="space-y-3">
-                  {stagedGuides.map((guide, idx) => (
+                  {stagedGuides.map((guide) => (
                     <div
                       key={guide.id}
                       className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition space-y-3 shadow-xs"
@@ -727,6 +660,57 @@ export default function GuideCatalogClient({
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Bottom 2-Column Section (Below Imported Guides Pending Review) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              {/* Left Card: Mandatory Fields in Template */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xs">
+                <div className="flex items-center gap-2 text-white font-bold text-sm">
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                  <span>Mandatory Fields in Template:</span>
+                </div>
+                <ul className="list-disc list-inside text-slate-400 space-y-1.5 text-xs">
+                  <li>
+                    <strong className="text-slate-200">title</strong>: Name of the architecture concept or interview topic
+                  </li>
+                  <li>
+                    <strong className="text-slate-200">category</strong>: Domain or module group (e.g., Synchronization, Architecture, POM)
+                  </li>
+                  <li>
+                    <strong className="text-slate-200">level</strong>: Beginner | Intermediate | Advanced
+                  </li>
+                  <li>
+                    <strong className="text-slate-200">summary</strong>: Concise 1-2 sentence definition explaining why it matters
+                  </li>
+                  <li>
+                    <strong className="text-slate-200">overview</strong>: Detailed explanation, tradeoffs, and architectural concepts
+                  </li>
+                  <li>
+                    <strong className="text-slate-200">codeSnippet</strong>: Implementation snippet in Java, TypeScript, or Python
+                  </li>
+                  <li>
+                    <strong className="text-slate-200">interviewTips</strong>: High-value SDET interview talking points &amp; watchouts
+                  </li>
+                </ul>
+              </div>
+
+              {/* Right Card: Staging Workflow */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xs text-xs text-slate-400">
+                <div className="flex items-center gap-2 font-bold text-white text-sm">
+                  <Lightbulb className="w-4 h-4 text-amber-400" />
+                  <span>Staging Workflow</span>
+                </div>
+                <p className="leading-relaxed">
+                  Imported guides from Excel or Word remain in this staging list until you click <strong>Confirm &amp; Submit</strong>. You can edit any field or remove incorrect guides before saving. Once confirmed, they are permanently saved into your <strong>{trackInfo.name} Guide List</strong> and cleared from this import page.
+                </p>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1 text-slate-300">
+                  <div className="font-semibold text-emerald-400">✓ Safe Staging Process:</div>
+                  <div>1. Download the Excel (.XLS) or Word (.DOC) template.</div>
+                  <div>2. Fill in your concepts or paste interview guides.</div>
+                  <div>3. Upload or paste into IntelligentQA to preview, edit &amp; confirm.</div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1384,32 +1368,32 @@ export default function GuideCatalogClient({
               </button>
             </div>
 
-            {/* Format Toggle */}
-            <div className="flex items-center justify-between">
+            {/* Format Toggle: Excel and Word */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="inline-flex rounded-xl p-1 bg-slate-950 border border-slate-800 text-xs">
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat("json")}
-                  className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition ${
-                    templateFormat === "json"
+                  onClick={() => setTemplateFormat("excel")}
+                  className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition cursor-pointer ${
+                    templateFormat === "excel"
                       ? "bg-blue-600 text-white shadow-xs"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>JSON Template</span>
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Excel Template (.XLS)</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat("csv")}
-                  className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition ${
-                    templateFormat === "csv"
+                  onClick={() => setTemplateFormat("word")}
+                  className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition cursor-pointer ${
+                    templateFormat === "word"
                       ? "bg-blue-600 text-white shadow-xs"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  <FileSpreadsheet className="w-3.5 h-3.5" />
-                  <span>CSV Template</span>
+                  <FileText className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Word Template (.DOC)</span>
                 </button>
               </div>
 
@@ -1437,10 +1421,10 @@ export default function GuideCatalogClient({
                   onClick={() =>
                     downloadConceptGuideTemplate(templateFormat, activeTrack)
                   }
-                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                  className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download .{templateFormat.toUpperCase()}</span>
+                  <span>Download .{templateFormat === "excel" ? "XLS" : templateFormat === "word" ? "DOC" : templateFormat.toUpperCase()}</span>
                 </button>
               </div>
             </div>
@@ -1456,7 +1440,7 @@ export default function GuideCatalogClient({
               <button
                 type="button"
                 onClick={() => setShowTemplateModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold cursor-pointer"
               >
                 Close
               </button>
@@ -1466,7 +1450,7 @@ export default function GuideCatalogClient({
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 3: IMPORT GUIDE (File Upload & Raw Paste)          */}
+      {/* MODAL 3: IMPORT GUIDE (Excel & Word Upload & Paste)      */}
       {/* ======================================================== */}
       {showImportModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
@@ -1475,7 +1459,7 @@ export default function GuideCatalogClient({
               <div className="flex items-center gap-2">
                 <Upload className="w-5 h-5 text-blue-400" />
                 <h3 className="text-base font-bold text-white">
-                  Import Concept Guides
+                  Import Excel / Word Concept Guides
                 </h3>
               </div>
               <button
@@ -1508,16 +1492,16 @@ export default function GuideCatalogClient({
             >
               <UploadCloud className="w-8 h-8 text-blue-400 mx-auto" />
               <div className="text-xs text-slate-300">
-                <span className="font-bold text-white">Click to upload</span> or
+                <span className="font-bold text-white">Click to upload Excel or Word document</span> or
                 drag and drop
               </div>
               <p className="text-[11px] text-slate-500">
-                Supports JSON array of guides or CSV file
+                Supports Excel (.xlsx, .xls) and Word (.docx, .doc) files or tables
               </p>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".json,.csv"
+                accept=".xlsx,.xls,.docx,.doc,.txt,.csv,.json"
                 onChange={handleFileUpload}
                 className="hidden"
               />
@@ -1526,13 +1510,13 @@ export default function GuideCatalogClient({
             {/* Or Paste Raw Text */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-slate-300 block">
-                Or paste JSON / CSV text directly:
+                Or paste rows from Excel / Word directly:
               </label>
               <textarea
                 rows={5}
                 value={importText}
                 onChange={(e) => setImportText(e.target.value)}
-                placeholder='Paste raw JSON like [{"title": "...", "category": "...", "summary": "..."}] or CSV content'
+                placeholder="Paste rows directly from Excel cells (table) or Word document, or raw text"
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -1544,17 +1528,17 @@ export default function GuideCatalogClient({
                   setShowImportModal(false);
                   setShowTemplateModal(true);
                 }}
-                className="text-xs font-bold text-blue-400 hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Need a template?</span>
+                <span>Need an Excel or Word template?</span>
               </button>
 
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setShowImportModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1562,7 +1546,7 @@ export default function GuideCatalogClient({
                   type="button"
                   disabled={!importText.trim()}
                   onClick={() => handleParseImport(importText)}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold cursor-pointer shadow-md"
                 >
                   Parse &amp; Stage
                 </button>
