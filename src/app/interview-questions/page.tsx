@@ -276,8 +276,24 @@ export default function InterviewQuestionsPage() {
       q.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.answerSummary.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesTech = selectedTech === 'All' || q.technology === selectedTech;
-    const matchesDifficulty = selectedDifficulty === 'All' || q.difficulty === selectedDifficulty;
+    const matchesTech =
+      selectedTech === 'All' ||
+      q.technology === selectedTech ||
+      (selectedTech === 'Java' && (q.technology === 'Java' || q.technology === 'Java Concurrency')) ||
+      (selectedTech === 'API Testing' && (q.technology === 'API Testing' || q.technology === 'REST API' || q.technology === 'REST Assured' || q.technology === 'Pact Contract Testing')) ||
+      (selectedTech === 'AI & LLM' && q.technology === 'AI & LLM') ||
+      (selectedTech === 'Manual QA' && (q.technology === 'Manual QA' || q.technology === 'Test Design' || q.technology === 'Defect Management')) ||
+      (selectedTech === 'Appium' && (q.technology === 'Appium' || q.technology === 'Mobile QA')) ||
+      (selectedTech === 'CI/CD' && (q.technology === 'CI/CD' || q.technology === 'GitHub Actions' || q.technology === 'Testcontainers')) ||
+      (selectedTech === 'Reporting' && (q.technology === 'Reporting' || q.technology === 'Allure Report' || q.technology === 'Slack / Teams Webhooks')) ||
+      (selectedTech === 'DSA for SDET' && (q.technology === 'DSA for SDET' || q.technology === 'Coding & DSA' || q.technology === 'Algorithms'));
+    const matchesDifficulty =
+      selectedDifficulty === 'All' ||
+      q.difficulty === selectedDifficulty ||
+      (selectedDifficulty === 'Junior' && (q.difficulty === 'Easy' || q.difficulty === 'Junior')) ||
+      (selectedDifficulty === 'Mid' && (q.difficulty === 'Medium' || q.difficulty === 'Mid')) ||
+      (selectedDifficulty === 'Senior' && (q.difficulty === 'Hard' || q.difficulty === 'Senior')) ||
+      (selectedDifficulty === 'Architect' && q.difficulty === 'Architect');
     const matchesBookmark = !showOnlyBookmarks || bookmarkedIds.includes(q.id);
 
     return matchesSearch && matchesTech && matchesDifficulty && matchesBookmark;
@@ -351,12 +367,16 @@ export default function InterviewQuestionsPage() {
             onChange={e => setSelectedTech(e.target.value)}
             className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
           >
-            <option value="All">All Tech Stacks (500+)</option>
-            <option value="Playwright">Playwright</option>
-            <option value="Selenium">Selenium</option>
-            <option value="Java">Java</option>
-            <option value="API Testing">API Testing</option>
-            <option value="AI & LLM">AI &amp; LLM</option>
+            <option value="All">All Tech Stacks (565 Questions)</option>
+            <option value="Manual QA">Manual QA &amp; Methodologies</option>
+            <option value="Playwright">Playwright &amp; TypeScript</option>
+            <option value="Selenium">Selenium &amp; Java</option>
+            <option value="API Testing">API Testing &amp; REST Assured</option>
+            <option value="Appium">Mobile &amp; Appium</option>
+            <option value="CI/CD">CI/CD &amp; Docker</option>
+            <option value="Reporting">Reporting &amp; Observability</option>
+            <option value="DSA for SDET">DSA for SDET</option>
+            <option value="AI & LLM">AI &amp; LLM in QA</option>
             <option value="Framework Design">Framework Design</option>
           </select>
 
