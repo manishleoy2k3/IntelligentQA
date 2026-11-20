@@ -413,36 +413,26 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
             </div>
           </div>
 
-          {/* Quick Header Actions */}
+          {/* Quick Header Actions: Hidden from page header and accessible via the top-bar modal */}
           {isAdmin && (
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="hidden sr-only">
               <button
                 type="button"
                 onClick={() => setShowTemplateModal(true)}
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-2 border border-slate-700 transition cursor-pointer shadow-xs"
-                title="Download or preview standard JSON/CSV import template"
               >
-                <Download className="w-4 h-4 text-emerald-400" />
-                <span>Import Template</span>
+                Import Template
               </button>
-
               <button
                 type="button"
                 onClick={() => setShowImportModal(true)}
-                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2 shadow-md transition cursor-pointer"
-                title="Import guides from JSON or CSV"
               >
-                <Upload className="w-4 h-4" />
-                <span>Import Guide</span>
+                Import Guide
               </button>
-
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
               >
-                <Plus className="w-4 h-4 text-slate-400" />
-                <span>Add Guide</span>
+                Add Guide
               </button>
             </div>
           )}
