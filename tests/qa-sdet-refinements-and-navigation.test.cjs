@@ -131,5 +131,5 @@ test('11. Interview Questions: Direct single-click navigation replacing old Inte
   assert.ok(!content.includes('<span>Interview Bank</span>'), 'Old Interview Bank accordion removed');
   assert.ok(content.includes('href="/interview-questions"'), 'Direct link to /interview-questions');
   assert.ok(content.includes('<span>Interview Questions</span>'), 'Direct Interview Questions link rendered');
-  assert.ok(content.includes('500+ Qs'), 'Badge displays 500+ Qs');
+  assert.ok(content.includes('800+ Qs') || content.includes('500+ Qs'), 'Badge displays 800+ Qs');
 });

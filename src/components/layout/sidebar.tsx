@@ -696,14 +696,14 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             href="/interview-questions"
             onClick={onCloseMobile}
             className={`w-full ${navItemClass(pathname === '/interview-questions')} justify-between`}
-            title="500+ Curated SDET & Automation Interview Question Bank"
+            title="800+ Curated SDET & Automation Interview Question Bank"
           >
             <div className="flex items-center gap-3">
               <HelpCircle className="w-4 h-4 shrink-0 text-sky-500" />
               <span>Interview Questions</span>
             </div>
             <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold">
-              500+ Qs
+              800+ Qs
             </span>
           </Link>
         </div>

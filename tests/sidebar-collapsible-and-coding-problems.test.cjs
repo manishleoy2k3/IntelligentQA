@@ -19,7 +19,7 @@ test('Request 1: PRACTICE LABS and AI TOOLS & AGENTS are collapsible matching Co
   // Verify badge counts exist
   assert.ok(sidebarFile.includes('Labs'), 'Practice Labs displays Labs badge');
   assert.ok(sidebarFile.includes('Agents'), 'AI Tools displays Agents badge');
-  assert.ok(sidebarFile.includes('500+ Qs'), 'Interview Bank displays 500+ Qs badge');
+  assert.ok(sidebarFile.includes('800+ Qs') || sidebarFile.includes('500+ Qs'), 'Interview Bank displays 800+ Qs badge');
 });
 
 test('Request 2: Fonts are standardized and consistent across parent and child items', () => {

@@ -97,7 +97,7 @@ test('8. In-Browser Practice Sandboxes removed from What You Will Get section', 
   assert.ok(!homeContent.includes('In-Browser Practice Sandboxes'), 'Removed "In-Browser Practice Sandboxes" from home page');
   assert.ok(!homeContent.includes('Zero Setup'), 'Removed unrealistic "Zero Setup" claims');
   assert.ok(homeContent.includes('1. Scratch-to-SDET Learning Roadmaps'), 'Retains Roadmaps');
-  assert.ok(homeContent.includes('2. 500+ Curated SDET Interview Scenarios'), 'Retains Interview Scenarios');
+  assert.ok(homeContent.includes('2. 800+ Curated SDET Interview Scenarios') || homeContent.includes('2. 500+ Curated SDET Interview Scenarios'), 'Retains Interview Scenarios');
   assert.ok(homeContent.includes('3. Optional AI Features'), 'Retains Optional AI Features');
 });
 

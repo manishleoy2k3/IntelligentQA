@@ -304,7 +304,7 @@ export default function InterviewQuestionsPage() {
   return (
     <AuthGuard
       featureName="800+ QA & SDET Interview Question Bank"
-      description="Sign in to access 500+ scenario-based SDET interview questions with code snippets, architecture best practices, and search filters."
+      description="Sign in to access 800+ scenario-based SDET interview questions with code snippets, architecture best practices, and search filters."
     >
       <div className="w-full max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         {/* Header */}
@@ -312,10 +312,10 @@ export default function InterviewQuestionsPage() {
           <div>
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400 mb-2">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>800+ Question Repository · Verified Solutions (500+ Bank)</span>
+              <span>800+ Question Repository · Verified Solutions</span>
             </div>
             <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Curated 500+ SDET Interview Question Bank
+              Curated 800+ SDET Interview Question Bank
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-2xl">
               Search real-world technical scenarios across Playwright, Selenium, Java OOPs, API Testing, and Framework Architecture spanning Junior to Test Architect.
@@ -420,7 +420,7 @@ export default function InterviewQuestionsPage() {
         </div>
 
         {/* Questions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col space-y-6">
           {displayedQuestions.map(item => {
             const isBookmarked = bookmarkedIds.includes(item.id);
             return (

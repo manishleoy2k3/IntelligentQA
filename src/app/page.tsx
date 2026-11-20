@@ -25,7 +25,7 @@ const FAQ_LIST: FaqItem[] = [
   {
     question: 'What is IntelligentQA and how does it work?',
     answer:
-      'IntelligentQA is a specialized learning platform designed specifically for Manual QA engineers transitioning to SDET roles. It provides practical, hands-on tracks in Playwright (TypeScript), Selenium (Java), and API Automation, coupled with 500+ curated SDET interview scenarios and optional AI-guided mentoring.',
+      'IntelligentQA is a specialized learning platform designed specifically for Manual QA engineers transitioning to SDET roles. It provides practical, hands-on tracks in Playwright (TypeScript), Selenium (Java), and API Automation, coupled with 800+ curated SDET interview scenarios and optional AI-guided mentoring.',
   },
   {
     question: 'Can I become an SDET if I have zero coding experience?',
@@ -171,7 +171,7 @@ export default function HomePage() {
             </div>
             <div className="space-y-3">
               <h3 className="text-xl font-bold text-white">
-                2. 500+ Curated SDET Interview Scenarios
+                2. 800+ Curated SDET Interview Scenarios
               </h3>
               <p className="text-base text-zinc-300 leading-relaxed">
                 Eliminate interview dread with practical, non-DSA interview questions. Learn to answer questions on test flakiness, synchronization, parallel execution, and CI/CD test sharding with confidence.
@@ -319,16 +319,17 @@ export default function HomePage() {
       {/* 5. START LEARNING ON INTELLIGENTQA TODAY (Emergent-style Sky Landscape Banner) */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div
-          className="relative w-full rounded-[32px] sm:rounded-[44px] overflow-hidden min-h-[500px] sm:min-h-[580px] md:min-h-[640px] flex flex-col items-center justify-start text-center px-4 sm:px-8 pt-16 sm:pt-24 pb-12 shadow-2xl border border-white/20 bg-cover bg-center bg-no-repeat"
+          className="relative w-full rounded-[32px] sm:rounded-[44px] overflow-hidden min-h-[500px] sm:min-h-[580px] md:min-h-[640px] flex flex-col items-center md:items-start justify-start text-center md:text-left px-6 sm:px-12 md:px-16 pt-16 sm:pt-24 pb-12 shadow-2xl border border-white/20 bg-cover bg-no-repeat"
           style={{
             backgroundImage: "url('/images/start-learning-intelligentqa-bg.jpg')",
+            backgroundPosition: 'center right',
           }}
         >
           {/* Subtle atmospheric vignette for text clarity */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent pointer-events-none" />
 
           {/* Center Call to Action */}
-          <div className="relative z-10 py-6 sm:py-8 space-y-6 sm:space-y-8 max-w-3xl flex flex-col items-center">
+          <div className="relative z-10 py-6 sm:py-8 space-y-6 sm:space-y-8 max-w-2xl flex flex-col items-center md:items-start">
             <h2 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight drop-shadow-xl leading-[1.12] max-w-2xl">
               Start Learning on IntelligentQA today.
             </h2>

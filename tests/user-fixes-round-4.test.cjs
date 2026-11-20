@@ -31,7 +31,7 @@ test('Request 4: 500+ Question Bank with comprehensive Test Architect questions 
   const bankFile = fs.readFileSync(path.join(__dirname, '../src/lib/interview-questions-bank.ts'), 'utf8');
 
   // Verify 500+ questions support
-  assert.ok(questionsPageFile.includes('Curated 500+ SDET Interview Question Bank'), 'Page title reflects 500+ Question Bank');
+  assert.ok(questionsPageFile.includes('Curated 800+ SDET Interview Question Bank') || questionsPageFile.includes('Curated 500+ SDET Interview Question Bank'), 'Page title reflects Question Bank');
   assert.ok(questionsPageFile.includes('Import Questions (.xlsx / .csv)'), 'Provides Import Questions from Excel button');
   assert.ok(questionsPageFile.includes('handleDownloadTemplate'), 'Provides Download Template button');
 

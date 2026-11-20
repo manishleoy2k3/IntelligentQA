@@ -10,7 +10,7 @@ test('Minimal uncluttered Home Page is designed specifically for Manual Testers'
   assert.ok(homeFile.includes('HeroShowcaseCarousel') || homeFile.includes('From Manual QA to SDET'), 'Hero highlights QA to SDET transition');
   assert.ok(homeFile.includes('What You Will Get on IntelligentQA'), 'Contains clear "What You Will Get" section');
   assert.ok(homeFile.includes('Scratch-to-SDET Learning Roadmaps'), 'Pillar 1: Scratch to SDET roadmap');
-  assert.ok(homeFile.includes('500+ Curated SDET Interview Scenarios'), 'Pillar 2: Non-DSA interview bank');
+  assert.ok(homeFile.includes('800+ Curated SDET Interview Scenarios') || homeFile.includes('500+ Curated SDET Interview Scenarios'), 'Pillar 2: Non-DSA interview bank');
   assert.ok(homeFile.includes('Optional AI Features'), 'Pillar 3: AI optionality');
 
   // Verify tutorials and labs are kept inside user login

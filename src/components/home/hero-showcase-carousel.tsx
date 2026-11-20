@@ -77,7 +77,7 @@ const SHOWCASE_SLIDES: ShowcaseSlide[] = [
   },
   {
     id: 'interview-bank',
-    badge: '500+ Real Scenarios',
+    badge: '800+ Real Scenarios',
     title: 'Curated Interview Bank',
     subtitle: 'Master high-frequency SDET and Test Architect interview scenarios with production answers and diagrams.',
     mockup: {
@@ -85,7 +85,7 @@ const SHOWCASE_SLIDES: ShowcaseSlide[] = [
       headline: 'Lead & Test Architect Scenarios',
       subheadline: 'Solve real-world challenges on test concurrency, CI/CD sharding, flaky locators, and memory leak prevention.',
       codePreview: `Q: How do you design an enterprise automation framework that scales to 1,000+ daily builds without flakiness?\n\nKey Pillars:\n1. Strict decoupling of Page Objects from test action logic\n2. Dynamic sharding across CI GitHub Actions workers\n3. Web-first auto-waiting assertions (Zero Thread.sleep())`,
-      statusBadge: '🎯 Architect Verified · 500+ Scenarios',
+      statusBadge: '🎯 Architect Verified · 800+ Scenarios',
       tags: ['Test Architecture', 'CI/CD Sharding', 'System Design'],
     },
   },

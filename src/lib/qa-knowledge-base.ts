@@ -1976,7 +1976,7 @@ export function getNextStepSuggestion(category?: string, topic?: string): string
     return `👉 **Next Step for QA:** Experiment with autonomous QA workflows in our QA Agents Workspace at \`/qa-agents\`, or practice technical interview grilling at \`/interview-griller\`.`;
   }
   if (c === 'career-faq' || t.includes('salary') || t.includes('timeline') || t.includes('zero coding')) {
-    return `👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` to get your personalized SDET roadmap, or practice questions in our 500+ Question Bank at \`/interview-questions\`.`;
+    return `👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` to get your personalized SDET roadmap, or practice questions in our 800+ Question Bank at \`/interview-questions\`.`;
   }
   return `👉 **Next Step for QA:** Try applying this concept in our Coding Sandbox (\`/sandbox/code\`) or ask our dedicated QA Agents (\`/qa-agents\`) to generate boilerplate code for you.`;
 }
@@ -2579,7 +2579,7 @@ export function synthesizeDynamicAnswer(query: string): string {
 • **India Average**: Manual QA (4–8 LPA) vs SDET (12–25+ LPA).
 • **Key Differentiator**: Demonstrating a clean GitHub framework repo with automated CI test runs during your interview.
 
-👉 **Next Step for QA:** Practice technical interview grilling in our AI Interview Griller at \`/interview-griller\` or explore 500+ questions at \`/interview-questions\`.`;
+👉 **Next Step for QA:** Practice technical interview grilling in our AI Interview Griller at \`/interview-griller\` or explore 800+ questions at \`/interview-questions\`.`;
   }
 
   // 6. Automation Framework Setup & Architecture
