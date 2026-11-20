@@ -757,7 +757,22 @@ export default function AscentAuthCard({
                   </button>
                 </div>
 
-                {/* 6-Digit Verification Inputs */}
+                {/* SMS Simulation Toast Banner */}
+                <div className="p-3 rounded-2xl bg-gradient-to-r from-emerald-950/60 to-[#122216] border border-emerald-500/30 text-xs space-y-1.5 shadow-lg">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-[#81FF89] flex items-center gap-1.5">
+                      <Smartphone className="w-3.5 h-3.5 text-[#81FF89]" />
+                      SMS Code Dispatched
+                    </span>
+                    <span className="text-[10px] text-zinc-400 font-mono">Just Now</span>
+                  </div>
+                  <p className="text-zinc-300 text-[11px] leading-relaxed">
+                    Your verification code is{' '}
+                    <span className="font-mono font-black text-sm text-white bg-black/60 px-2 py-0.5 rounded-lg border border-emerald-400/40 select-all">
+                      {phoneGeneratedOtp}
+                    </span>
+                  </p>
+                </div>
                 <div className="flex justify-between gap-1.5 sm:gap-2">
                   {phoneOtpDigits.map((digit, idx) => (
                     <input
