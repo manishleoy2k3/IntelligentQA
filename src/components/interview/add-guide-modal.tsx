@@ -195,8 +195,8 @@ export default function AddGuideModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#121212] border border-[#262626] w-full max-w-3xl rounded-[28px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] text-white">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 pt-14 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#121212] border border-[#262626] w-full max-w-3xl rounded-[28px] shadow-2xl overflow-hidden flex flex-col max-h-[82vh] text-white">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 border-b border-[#222222] bg-[#161616] gap-3">
           <div className="flex items-center gap-3">
@@ -219,42 +219,42 @@ export default function AddGuideModal({
               <button
                 type="button"
                 onClick={() => setActiveTab('template')}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   activeTab === 'template'
-                    ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-500/50 shadow-sm ring-1 ring-emerald-400/30'
+                    : 'text-zinc-300 hover:text-white bg-[#131C2E] hover:bg-[#1C283E] border border-slate-700/60'
                 }`}
-                title="Download or preview guide import template"
+                title="Download or copy guide import template"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="hidden sm:inline">Import Template</span>
+                <Download className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="font-medium">Import Template</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('import')}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md ${
                   activeTab === 'import'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-blue-600/80 hover:bg-blue-500 text-white'
+                    ? 'bg-blue-600 text-white ring-2 ring-blue-400/40 shadow-blue-500/20'
+                    : 'bg-blue-600 hover:bg-blue-500 text-white'
                 }`}
-                title="Upload or paste JSON/CSV guides"
+                title="Upload JSON/CSV guide or paste text"
               >
-                <Upload className="w-3.5 h-3.5 text-white" />
+                <Upload className="w-4 h-4 text-white shrink-0" />
                 <span>Import Guide</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('manual')}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   activeTab === 'manual'
-                    ? 'bg-slate-800 text-white border border-slate-700'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-slate-800 text-white border border-slate-600 shadow-sm ring-1 ring-slate-400/30'
+                    : 'text-zinc-300 hover:text-white bg-[#131C2E] hover:bg-[#1C283E] border border-slate-700/60'
                 }`}
-                title="Manually create a new guide"
+                title="Manually author a new guide"
               >
-                <Plus className="w-3.5 h-3.5 text-zinc-400" />
+                <Plus className="w-4 h-4 text-zinc-400 shrink-0" />
                 <span>Add Guide</span>
               </button>
             </div>
@@ -268,48 +268,6 @@ export default function AddGuideModal({
               <X className="w-4 h-4" />
             </button>
           </div>
-        </div>
-
-        {/* Tab Navigation: Add Guide Form | Import Guide | Import Guide Template */}
-        <div className="flex items-center border-b border-[#222222] bg-[#141414] px-5 pt-3 gap-4 sm:gap-6 overflow-x-auto">
-          <button
-            type="button"
-            onClick={() => setActiveTab('manual')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer shrink-0 ${
-              activeTab === 'manual'
-                ? 'border-[#81FF89] text-[#81FF89]'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Guide</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('import')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer shrink-0 ${
-              activeTab === 'import'
-                ? 'border-[#81FF89] text-[#81FF89]'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Upload className="w-4 h-4" />
-            <span>Import Guide</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('template')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer shrink-0 ${
-              activeTab === 'template'
-                ? 'border-[#81FF89] text-[#81FF89]'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Download className="w-4 h-4" />
-            <span>Import Guide Template</span>
-          </button>
         </div>
 
         {/* Body Content */}

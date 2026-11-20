@@ -1241,26 +1241,72 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
       {/* MODAL 4: ADD MANUAL GUIDE                                */}
       {/* ======================================================== */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 pt-14 overflow-y-auto">
           <form
             onSubmit={handleAddManualGuide}
-            className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl my-8"
+            className="bg-[#121212] border border-[#262626] rounded-[28px] max-w-3xl w-full p-5 sm:p-6 space-y-4 shadow-2xl my-auto max-h-[82vh] overflow-hidden flex flex-col text-white"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#222222] gap-3">
               <div className="flex items-center gap-2">
-                <Plus className="w-5 h-5 text-blue-400" />
-                <h3 className="text-base font-bold text-white">Add Manual Concept Guide</h3>
+                <div className="w-9 h-9 rounded-xl bg-[#1F1F1F] border border-[#2B2B2B] flex items-center justify-center text-[#81FF89]">
+                  <Plus className="w-5 h-5 text-[#81FF89]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Add Guide &amp; Management</h3>
+                  <p className="text-xs text-zinc-400">Author custom guides, import from file, or download templates</p>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowAddModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              {/* Action buttons matching the modal requirement */}
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <div className="flex items-center gap-2 p-1 rounded-xl bg-[#0B0F19] border border-[#1E293B]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setShowTemplateModal(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 text-zinc-300 hover:text-white bg-[#131C2E] hover:bg-[#1C283E] border border-slate-700/60 transition cursor-pointer"
+                    title="Download guide template"
+                  >
+                    <Download className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Import Template</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setShowImportModal(true);
+                    }}
+                    className="px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white shadow-md transition cursor-pointer"
+                    title="Import JSON/CSV guide"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-white" />
+                    <span>Import Guide</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-slate-800 text-white border border-slate-600 cursor-default"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-zinc-400" />
+                    <span>Add Guide</span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="w-8 h-8 rounded-full bg-[#1F1F1F] hover:bg-[#282828] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+            <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
               <div>
                 <label className="text-xs font-semibold text-slate-300 block mb-1">Concept Title (Mandatory)</label>
                 <input
@@ -1269,7 +1315,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   placeholder="e.g., Dynamic Locators & Resilience in Single Page Apps"
                   value={newTitle}
                   onChange={e => setNewTitle(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89]"
                 />
               </div>
 
@@ -1281,7 +1327,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                     placeholder="e.g., Synchronization, POM, Network"
                     value={newCategory}
                     onChange={e => setNewCategory(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89]"
                   />
                 </div>
                 <div>
@@ -1289,7 +1335,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   <select
                     value={newLevel}
                     onChange={e => setNewLevel(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89] cursor-pointer"
                   >
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate">Intermediate</option>
@@ -1306,18 +1352,18 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   placeholder="Concise overview explaining why this concept matters"
                   value={newSummary}
                   onChange={e => setNewSummary(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-slate-300 block mb-1">Full Overview &amp; Explanation</label>
                 <textarea
-                  rows={4}
+                  rows={3}
                   placeholder="In-depth explanation, tradeoffs, and architectural concepts..."
                   value={newOverview}
                   onChange={e => setNewOverview(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
 
@@ -1328,7 +1374,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   placeholder="How it works under the hood..."
                   value={newMechanism}
                   onChange={e => setNewMechanism(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
 
@@ -1338,7 +1384,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   <select
                     value={newCodeLang}
                     onChange={e => setNewCodeLang(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89]"
                   >
                     <option value="java">Java</option>
                     <option value="typescript">TypeScript</option>
@@ -1349,11 +1395,11 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                 <div className="col-span-2">
                   <label className="text-xs font-semibold text-slate-300 block mb-1">Code Implementation</label>
                   <textarea
-                    rows={4}
+                    rows={3}
                     placeholder="// Add working code implementation"
                     value={newCode}
                     onChange={e => setNewCode(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 font-mono text-[11px] text-emerald-300 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-2.5 font-mono text-[11px] text-[#81FF89] focus:outline-none focus:border-[#81FF89] resize-none"
                   />
                 </div>
               </div>
@@ -1365,22 +1411,22 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   placeholder="Common interview questions or architectural tradeoffs..."
                   value={newInterviewTips}
                   onChange={e => setNewInterviewTips(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#222222]">
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold"
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold cursor-pointer shadow-md"
               >
                 Stage Guide
               </button>
