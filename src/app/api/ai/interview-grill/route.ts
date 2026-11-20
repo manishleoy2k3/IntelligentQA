@@ -40,6 +40,20 @@ export async function POST(req: NextRequest) {
     const rawApiKey = req.headers.get('x-gemini-api-key') || body.apiKey;
     const effectiveApiKey = sanitizeGeminiKey(rawApiKey || '');
 
+    if (effectiveApiKey) {
+      const syntaxCheck = validateGeminiKeySyntax(effectiveApiKey);
+      if (!syntaxCheck.valid) {
+        return NextResponse.json(
+          {
+            error: 'INVALID_GEMINI_KEY',
+            message: syntaxCheck.error || 'The provided Gemini API key is malformed or invalid.',
+            details: syntaxCheck.details,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Action 1: Start interview via Autonomous Quality Engineering Interviewer Agent
     if (action === 'start') {
       const count = typeof body.count === 'number' && body.count > 0 ? body.count : 3;

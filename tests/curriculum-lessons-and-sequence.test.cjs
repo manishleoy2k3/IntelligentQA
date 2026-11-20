@@ -74,33 +74,27 @@ test('Requirement 3: Proper sequential progression for Manual QA Transition', ()
   assert.ok(tracksPage.includes('Stage 4'), 'Has Stage 4');
 });
 
-test('Requirement 4: Practice Labs section has Online Compilers first, then Coding Library, Selenium, Playwright, API, AI', () => {
+test('Requirement 4: Practice Labs section has Online Compilers first, then Coding Library, API, AI', () => {
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
 
-  // Verify sequential order in Practice Labs section: Online Compilers, Coding Library, Selenium, Playwright, API, AI
+  // Verify sequential order in Practice Labs section: Online Compilers, Coding Library, API, AI
   const pOnlineCompilersIdx = sidebarFile.indexOf('Online Compilers');
   const pCodingLibraryIdx = sidebarFile.indexOf('Coding Library');
-  const pSeleniumIdx = sidebarFile.indexOf('Selenium Web Lab');
-  const pPlaywrightIdx = sidebarFile.indexOf('Playwright Web Lab');
-  const pApiIdx = sidebarFile.indexOf('Rest Assured / API Lab');
-  const pAiIdx = sidebarFile.indexOf('AI for QA &amp; Prompt Lab');
+  const pApiIdx = sidebarFile.indexOf('API Testing Lab');
+  const pAiIdx = sidebarFile.indexOf('AI Prompt Lab');
 
   assert.ok(pOnlineCompilersIdx !== -1, 'Practice Labs contains Online Compilers');
   assert.ok(pCodingLibraryIdx !== -1, 'Practice Labs contains Coding Library');
-  assert.ok(pSeleniumIdx !== -1, 'Practice Labs contains Selenium Web Lab');
-  assert.ok(pPlaywrightIdx !== -1, 'Practice Labs contains Playwright Web Lab');
-  assert.ok(pApiIdx !== -1, 'Practice Labs contains Rest Assured / API Lab');
-  assert.ok(pAiIdx !== -1, 'Practice Labs contains AI for QA & Prompt Lab');
+  assert.ok(pApiIdx !== -1, 'Practice Labs contains API Testing Lab');
+  assert.ok(pAiIdx !== -1, 'Practice Labs contains AI Prompt Lab');
 
   assert.ok(pOnlineCompilersIdx < pCodingLibraryIdx, 'Online Compilers is first, preceding Coding Library');
-  assert.ok(pCodingLibraryIdx < pSeleniumIdx, 'Coding Library precedes Selenium Lab');
-  assert.ok(pSeleniumIdx < pPlaywrightIdx, 'Selenium Lab precedes Playwright Lab');
-  assert.ok(pPlaywrightIdx < pApiIdx, 'Playwright Lab precedes API Lab');
+  assert.ok(pCodingLibraryIdx < pApiIdx, 'Coding Library precedes API Lab');
   assert.ok(pApiIdx < pAiIdx, 'API Lab precedes AI Lab');
 
-  // Verify Web Automation Lab and API Testing Lab text are preserved for test suite backwards compatibility
-  assert.ok(sidebarFile.includes('Web Automation Lab'), 'Preserves Web Automation Lab text');
-  assert.ok(sidebarFile.includes('API Testing Lab'), 'Preserves API Testing Lab text');
-  assert.ok(sidebarFile.includes('/sandbox/web'), 'Links to /sandbox/web');
+  // Verify active lab routes
+  assert.ok(sidebarFile.includes('/sandbox/code'), 'Links to /sandbox/code');
+  assert.ok(sidebarFile.includes('/sandbox/code/problems'), 'Links to /sandbox/code/problems');
   assert.ok(sidebarFile.includes('/sandbox/api'), 'Links to /sandbox/api');
+  assert.ok(sidebarFile.includes('/prompt-lab'), 'Links to /prompt-lab');
 });

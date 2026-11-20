@@ -29,7 +29,7 @@ test('Dedicated Concept Guide pages exist for Selenium, Playwright, API Testing 
   const guideDynamicRoute = fs.readFileSync(path.join(__dirname, '../src/app/guides/[trackId]/page.tsx'), 'utf8');
   const guidesHomeRoute = fs.readFileSync(path.join(__dirname, '../src/app/guides/page.tsx'), 'utf8');
   const conceptGuidesLib = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
-  const trackOverviewPage = fs.readFileSync(path.join(__dirname, '../src/app/tracks/[trackId]/page.tsx'), 'utf8');
+  const trackOverviewPage = fs.readFileSync(path.join(__dirname, '../src/components/tracks/track-overview-client.tsx'), 'utf8');
 
   // Verify dynamic route generates static params for all key tracks
   assert.ok(guideDynamicRoute.includes("{ trackId: 'selenium' }"), 'Generates route for selenium');
@@ -63,7 +63,7 @@ test('Dedicated Concept Guide pages exist for Selenium, Playwright, API Testing 
   assert.ok(conceptGuidesLib.includes('parseImportedGuides'), 'Provides parseImportedGuides');
 
   // Verify track overview page integrates Concept Guides and Import options
-  assert.ok(trackOverviewPage.includes('Concept Guides & Architecture Library'), 'Track page links to Concept Guides library');
+  assert.ok(trackOverviewPage.includes('Concept Guides'), 'Track page links to Concept Guides library');
   assert.ok(trackOverviewPage.includes('action=template'), 'Track page has direct link to Import Template');
   assert.ok(trackOverviewPage.includes('action=import'), 'Track page has direct link to Import Guide');
 });

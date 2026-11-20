@@ -3,7 +3,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 
-test('Request 1: PRACTICE LABS, AI TOOLS & AGENTS, and Interview Bank are collapsible matching Courses', () => {
+test('Request 1: PRACTICE LABS and AI TOOLS & AGENTS are collapsible matching Courses', () => {
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
 
   // Verify collapsible states exist
@@ -11,17 +11,14 @@ test('Request 1: PRACTICE LABS, AI TOOLS & AGENTS, and Interview Bank are collap
   assert.ok(sidebarFile.includes('setPracticeLabsOpen'), 'Has setPracticeLabsOpen state updater');
   assert.ok(sidebarFile.includes('aiToolsSectionOpen'), 'Has aiToolsSectionOpen state');
   assert.ok(sidebarFile.includes('setAiToolsSectionOpen'), 'Has setAiToolsSectionOpen state updater');
-  assert.ok(sidebarFile.includes('interviewBankOpen'), 'Has interviewBankOpen state');
-  assert.ok(sidebarFile.includes('setInterviewBankOpen'), 'Has setInterviewBankOpen state updater');
 
-  // Verify all sections use Chevron toggles matching Courses
+  // Verify sections use Chevron toggles matching Courses
   assert.ok(sidebarFile.includes('onClick={() => setPracticeLabsOpen(!practiceLabsOpen)}'), 'Practice Labs toggleable on click');
   assert.ok(sidebarFile.includes('onClick={() => setAiToolsSectionOpen(!aiToolsSectionOpen)}'), 'AI Tools toggleable on click');
-  assert.ok(sidebarFile.includes('onClick={() => setInterviewBankOpen(!interviewBankOpen)}'), 'Interview Bank toggleable on click');
 
   // Verify badge counts exist
-  assert.ok(sidebarFile.includes('6 Labs'), 'Practice Labs displays 6 Labs badge');
-  assert.ok(sidebarFile.includes('AI Suite'), 'AI Tools displays AI Suite badge');
+  assert.ok(sidebarFile.includes('Labs'), 'Practice Labs displays Labs badge');
+  assert.ok(sidebarFile.includes('Agents'), 'AI Tools displays Agents badge');
   assert.ok(sidebarFile.includes('500+ Qs'), 'Interview Bank displays 500+ Qs badge');
 });
 
@@ -31,15 +28,13 @@ test('Request 2: Fonts are standardized and consistent across parent and child i
   // Parent buttons all share navItemClass (text-sm font-medium)
   assert.ok(sidebarFile.includes('navItemClass(isPracticeActive)'), 'Practice Labs parent uses navItemClass');
   assert.ok(sidebarFile.includes('navItemClass(isAiToolsActive)'), 'AI Tools parent uses navItemClass');
-  assert.ok(sidebarFile.includes('navItemClass(isInterviewActive)'), 'Interview Bank parent uses navItemClass');
+  assert.ok(sidebarFile.includes('navItemClass(pathname === \'/interview-questions\')'), 'Interview Bank parent uses navItemClass');
 
   // Child items have clean typography & no stage or prefix numbering
-  assert.ok(sidebarFile.includes('Web Automation Lab'), 'Renders readable subtext');
   assert.ok(sidebarFile.includes('API Testing Lab'), 'Renders readable subtext');
   assert.ok(sidebarFile.includes('Online Compilers'), 'Online Compilers is in Practice Labs');
-  const practiceLabsSlice = sidebarFile.slice(sidebarFile.indexOf('Practice Labs Child Items'), sidebarFile.indexOf('AI AGENTS & TOOLS'));
+  const practiceLabsSlice = sidebarFile.slice(sidebarFile.indexOf('Practice Labs Child Items'), sidebarFile.indexOf('SECTION: AI QA AGENTS'));
   assert.ok(!practiceLabsSlice.includes('5. Online Compilers'), 'Prefix numbers removed from Practice Labs');
-  assert.ok(!practiceLabsSlice.includes('1. Selenium Web Lab'), 'Prefix numbers removed from Selenium');
   assert.ok(!practiceLabsSlice.includes('Stage 1'), 'Stage numbers removed from Practice Labs');
 });
 

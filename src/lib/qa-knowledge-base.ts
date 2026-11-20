@@ -1960,14 +1960,14 @@ export function getNextStepSuggestion(category?: string, topic?: string): string
   const c = (category || '').toLowerCase();
 
   if (t.includes('cucumber') || t.includes('bdd') || t.includes('gherkin')) {
-    return `👉 **Next Step for QA:** Practice translating requirements into high-yield Gherkin features in our AI Prompt Lab (\`/prompt-lab\`) or execute automated test suites in \`/sandbox/web\`.`;
+    return `👉 **Next Step for QA:** Practice translating requirements into high-yield Gherkin features in our AI Prompt Lab (\`/prompt-lab\`) or execute automated test suites in \`/sandbox/code\`.`;
   }
 
   if (c === 'playwright' || t.includes('playwright')) {
-    return `👉 **Next Step for QA:** Practice this locator and action live in our interactive Web Automation Playground (\`/sandbox/web\`), or dive deeper into the Playwright + TypeScript Track at \`/tracks/playwright-ts\`.`;
+    return `👉 **Next Step for QA:** Practice this locator and action live in our Coding Library (\`/sandbox/code/problems\`), or dive deeper into the Playwright + TypeScript Track at \`/tracks/playwright-ts\`.`;
   }
   if (c === 'selenium' || t.includes('selenium')) {
-    return `👉 **Next Step for QA:** Implement this pattern in your local automation suite or explore the enterprise Selenium track at \`/tracks/selenium-java\`. Try testing locators live in \`/sandbox/web\`.`;
+    return `👉 **Next Step for QA:** Implement this pattern in your local automation suite or explore the enterprise Selenium track at \`/tracks/selenium-java\`. Try testing solutions live in \`/sandbox/code\`.`;
   }
   if (c === 'api' || t.includes('api') || t.includes('rest assured')) {
     return `👉 **Next Step for QA:** Test request headers, status codes, and schema validations live in our built-in Mock REST API Sandbox at \`/sandbox/api\`.`;
@@ -1978,7 +1978,7 @@ export function getNextStepSuggestion(category?: string, topic?: string): string
   if (c === 'career-faq' || t.includes('salary') || t.includes('timeline') || t.includes('zero coding')) {
     return `👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` to get your personalized SDET roadmap, or practice questions in our 500+ Question Bank at \`/interview-questions\`.`;
   }
-  return `👉 **Next Step for QA:** Try applying this concept in our Web Playground (\`/sandbox/web\`) or ask our dedicated QA Agents (\`/qa-agents\`) to generate boilerplate code for you.`;
+  return `👉 **Next Step for QA:** Try applying this concept in our Coding Sandbox (\`/sandbox/code\`) or ask our dedicated QA Agents (\`/qa-agents\`) to generate boilerplate code for you.`;
 }
 
 export function formatCrispChatAnswer(entry: QAKnowledgeEntry): string {
@@ -2284,7 +2284,7 @@ btn.click();
 \`\`\`
 • **Playwright Comparison**: In Playwright, \`await page.getByRole('button', { name: 'Checkout' }).click()\` automatically verifies the element receives pointer events and auto-waits for overlays to disappear.
 
-👉 **Next Step for QA:** Practice overlay synchronization and explicit waits in our Web Automation Sandbox at \`/sandbox/web\`.`;
+👉 **Next Step for QA:** Practice overlay synchronization and explicit waits in our Playwright and Selenium tracks at \`/tracks\`.`;
   }
 
   // 12. Playwright: Timeout 30000ms exceeded waiting for locator
@@ -2382,7 +2382,7 @@ element.click();
 \`\`\`
 • **Anti-Pattern to Avoid**: Never use \`Thread.sleep(5000)\`—always use explicit WebDriverWait with \`visibilityOfElementLocated\` or \`presenceOfElementLocated\`.
 
-👉 **Next Step for QA:** Test your selector in our interactive Web Playground at \`/sandbox/web\` to verify DOM visibility and inspect element attributes.`;
+👉 **Next Step for QA:** Test your selector logic in our Coding Sandbox at \`/sandbox/code\` or explore best practices in the Playwright track at \`/tracks/playwright-ts\`.`;
   }
 
   // 16. Selenium: NoSuchSessionException / Session ID is null
@@ -2490,7 +2490,7 @@ const email = data?.user?.email ?? 'default@test.com'; // Optional chaining & nu
 await expect(page.getByRole('heading', { level: 1 })).toHaveText('Welcome, SDET', { timeout: 5000 });
 \`\`\`
 
-👉 **Next Step for QA:** Practice web-first assertions and debugging in our Web Playground (\`/sandbox/web\`) or report the defect using our QA defect templates.`;
+👉 **Next Step for QA:** Practice web-first assertions and debugging in our Coding Sandbox (\`/sandbox/code\`) or report the defect using our QA defect templates.`;
   }
 
   // 20. Generic error / traceback detector
@@ -2554,9 +2554,9 @@ export function synthesizeDynamicAnswer(query: string): string {
 
 • **Test Automation is Not Rocket Science**: You do not need complex algorithms or calculus. You only need basic logic: find element &rarr; perform action (click/fill) &rarr; assert outcome.
 • **Your Manual QA Acumen is an Advantage**: You already understand boundary values, edge cases, and business logic—skills that pure coders often lack.
-• **Zero-Risk Environment**: Practice in our built-in Web Playground (\`/sandbox/web\`) without setting up local drivers or configurations.
+• **Zero-Risk Environment**: Practice in our built-in Coding Sandbox (\`/sandbox/code\`) without setting up local runtimes or configurations.
 
-👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` or practice without setup in our Web Playground (\`/sandbox/web\`).`;
+👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` or practice without setup in our Coding Sandbox (\`/sandbox/code\`).`;
   }
 
   // 4. API Testing
@@ -2629,7 +2629,7 @@ Modern SDETs leverage **k6 (JavaScript/TypeScript)** or **JMeter**:
 • **Best Practice**: Prioritize accessible locators (\`page.getByRole()\`) over brittle XPaths, eliminate hardcoded sleeps with event-driven auto-waiting, and isolate test state.
 • **Implementation**: Keep tests independent, deterministic, and runnable in parallel CI/CD runners.
 
-👉 **Next Step for QA:** Try testing this concept in our interactive Web Sandbox (\`/sandbox/web\`), run API requests in \`/sandbox/api\`, or ask our dedicated QA Agents (\`/qa-agents\`) to scaffold code for you.`;
+👉 **Next Step for QA:** Try testing this concept in our interactive Coding Sandbox (\`/sandbox/code\`), run API requests in \`/sandbox/api\`, or ask our dedicated QA Agents (\`/qa-agents\`) to scaffold code for you.`;
 }
 
 export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {

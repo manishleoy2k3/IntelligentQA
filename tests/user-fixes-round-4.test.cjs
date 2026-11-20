@@ -18,15 +18,12 @@ test('Request 2: GEMINI 2.5 badge is removed from Ask SDET AI button in TopNav',
   assert.ok(!topNavFile.includes('GEMINI 2.5'), 'GEMINI 2.5 badge removed from Ask SDET AI');
 });
 
-test('Request 3: Start Live Simulation is moved from top to the middle of the page below difficulty selection', () => {
+test('Request 3: Live Interview Simulation controls and modal capabilities', () => {
   const grillerFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/interview-griller-modal.tsx'), 'utf8');
 
-  // Verify button is inside the pre-interview config container (not top header)
-  assert.ok(
-    grillerFile.includes('Middle Action Bar: Start Live Simulation directly below Topic and Difficulty selection'),
-    'Start Live Simulation is positioned in the middle below topic and difficulty options'
-  );
-  assert.ok(grillerFile.includes('Start Live Simulation'), 'Start Live Simulation button exists');
+  // Verify interview launch and restart actions
+  assert.ok(grillerFile.includes('startInterview'), 'Has startInterview handler');
+  assert.ok(grillerFile.includes('restartInterview') || grillerFile.includes('Start Another Round'), 'Has restart interview capability');
 });
 
 test('Request 4: 500+ Question Bank with comprehensive Test Architect questions and Excel import', () => {

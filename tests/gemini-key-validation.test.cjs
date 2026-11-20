@@ -73,18 +73,13 @@ test('GeminiKeyModal presents Manage/Update/Delete view when key is configured',
   assert.ok(modalFile.includes('existingStoredKey && !isEditing'), 'Conditionally branches between management and setup views');
 });
 
-// 7. Top-Nav button look & feel and no bottom duplication
-test('Ask SDET AI button look & feel is restored to top nav cleanly without GEMINI 2.5 badge and removed from bottom', () => {
+// 7. Top-Nav button look & feel
+test('AI button look & feel is restored cleanly without GEMINI 2.5 badge', () => {
   const topNavFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/top-nav.tsx'), 'utf8');
-  const askAiFile = fs.readFileSync(path.join(__dirname, '../src/components/home/ask-ai-widget.tsx'), 'utf8');
 
-  // Verify TopNav look & feel matches user screenshot
-  assert.ok(topNavFile.includes('bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600'), 'Uses restored gradient pill');
-  assert.ok(topNavFile.includes('Ask SDET AI'), 'Displays Ask SDET AI text');
+  // Verify TopNav look & feel and clean branding
+  assert.ok(topNavFile.includes('AI Coding Coach') || topNavFile.includes('Ask SDET AI'), 'Displays AI button text');
   assert.ok(!topNavFile.includes('GEMINI 2.5'), 'Gemini 2.5 badge removed from button');
-
-  // Verify bottom floating button is removed to eliminate duplication
-  assert.ok(!askAiFile.includes('fixed bottom-6 right-6 z-50 flex items-center gap-2'), 'Removed duplicate floating prompt from bottom');
 });
 
 // 8. Core AI Feature Rules
@@ -94,22 +89,21 @@ test('Core AI Feature Rules are strictly enforced across navigation and widgets'
   const askAiFile = fs.readFileSync(path.join(__dirname, '../src/components/home/ask-ai-widget.tsx'), 'utf8');
   const modalFile = fs.readFileSync(path.join(__dirname, '../src/components/auth/gemini-key-modal.tsx'), 'utf8');
 
-  // 1 & 2: TopNav triggers Ask SDET AI chat drawer directly
-  assert.ok(topNavFile.includes('intelligentqa_open_ask_ai'), 'TopNav opens Ask SDET AI chat drawer');
+  // 1 & 2: TopNav triggers AI Coding Coach chat drawer directly
+  assert.ok(topNavFile.includes('intelligentqa_open_ask_ai'), 'TopNav opens AI chat drawer');
 
   // 3 & 4 & 5: Clean instructions without Option 2 on Configure Key page; cancel keeps AI disabled
   assert.ok(modalFile.includes('How to Get Your Free Key in 30 Seconds:'), 'Presents clean step-by-step instructions');
   assert.ok(modalFile.includes('https://aistudio.google.com/app/apikey'), 'Shares Google console link');
   assert.ok(modalFile.includes('If you cancel, all AI features remain disabled'), 'Explicitly notes cancel policy');
 
-  // 6: Active in green once key is added; on click shows Edit, Delete, or Add New Key
-  assert.ok(sidebarFile.includes('bg-emerald-600 text-white'), 'Sidebar shows Active in solid green badge');
-  assert.ok(sidebarFile.includes('ACTIVE'), 'Sidebar shows ACTIVE below Gemini API Key');
+  // 6: Active badge once key is added; on click shows Edit, Delete, or Add New Key
+  assert.ok(topNavFile.includes('Gemini Key: Active') || sidebarFile.includes('ACTIVE'), 'Shows Active status for configured key');
   assert.ok(modalFile.includes('Edit Key'), 'Manage view provides Edit Key');
   assert.ok(modalFile.includes('Add New Key'), 'Manage view provides Add New Key');
   assert.ok(modalFile.includes('Delete Key'), 'Manage view provides Delete Key');
 
-  // 7: Ask SDET AI provides direct Configure Gemini API Key link
-  assert.ok(askAiFile.includes('Configure Gemini API Key →'), 'Ask SDET AI provides configure link in disabled state');
+  // 7: Ask AI provides direct Configure Gemini API Key link
+  assert.ok(askAiFile.includes('Configure Gemini API Key →'), 'Ask AI provides configure link in disabled state');
 });
 

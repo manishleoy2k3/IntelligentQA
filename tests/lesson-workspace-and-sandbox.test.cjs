@@ -47,21 +47,16 @@ test('Points 4 & 5: Course text explains concepts (OOPs pillars) and directs to 
   assert.ok(workspaceFile.includes('Manual QA to Modern SDET Transition Bridge'), 'Has manual-to-SDET transition comparative bridge');
 });
 
-test('Point 1: Web Playground Sandbox is expanded with rich, working automation challenges', () => {
-  const playgroundFile = fs.readFileSync(path.join(__dirname, '../src/components/sandbox/web-playground.tsx'), 'utf8');
+test('Point 1: Practice Sandboxes focus on active Code Compilers and safe redirect for retired web playground', () => {
+  const nextConfig = fs.readFileSync(path.join(__dirname, '../next.config.mjs'), 'utf8');
+  const codeSandboxPage = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/page.tsx'), 'utf8');
 
-  // Verify expanded interactive challenges
-  assert.ok(playgroundFile.includes('Dynamic AJAX Delays &amp; Explicit Waits'), 'Has dynamic AJAX delays challenge');
-  assert.ok(playgroundFile.includes('Open Shadow DOM Traversal'), 'Has open shadow DOM traversal');
-  assert.ok(playgroundFile.includes('Segmented 6-Digit OTP Box'), 'Has segmented OTP PIN box');
-  assert.ok(playgroundFile.includes('File Upload &amp; Drop Zone'), 'Has file upload & drop zone');
-  assert.ok(playgroundFile.includes('JS Alerts, Confirms &amp; Prompts'), 'Has JS dialogs');
-  assert.ok(playgroundFile.includes('Nested iFrames &amp; Popup Windows'), 'Has nested iframes & popups');
-  assert.ok(playgroundFile.includes('StaleElementReference Simulator'), 'Has StaleElementReference simulator');
-  assert.ok(playgroundFile.includes('Broken Images &amp; HTTP 404 Audit'), 'Has broken links & images 404 audit');
-  assert.ok(playgroundFile.includes('Dynamic Data Table with Search &amp; Sort'), 'Has dynamic filterable data table');
+  // Verify /sandbox/web safely redirects to /sandbox/code
+  assert.ok(nextConfig.includes('/sandbox/web'), 'Configures /sandbox/web redirect');
+  assert.ok(nextConfig.includes('/sandbox/code'), 'Redirects /sandbox/web to /sandbox/code');
 
-  // Verify real-time automation interaction stream console
-  assert.ok(playgroundFile.includes('Live Automation Interaction Stream'), 'Has live automation interaction stream');
-  assert.ok(playgroundFile.includes('eventLogs'), 'Tracks event logs');
+  // Verify Code Sandbox supports multi-language execution
+  assert.ok(codeSandboxPage.includes('java'), 'Supports Java');
+  assert.ok(codeSandboxPage.includes('python'), 'Supports Python');
+  assert.ok(codeSandboxPage.includes('javascript'), 'Supports JavaScript');
 });

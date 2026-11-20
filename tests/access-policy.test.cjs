@@ -58,7 +58,7 @@ test('Header provides instant access to Gemini Key, Login, and Signup', () => {
   const headerFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/header.tsx'), 'utf8');
 
   assert.ok(headerFile.includes('Gemini Key'), 'Header displays Gemini key management pill');
-  assert.ok(headerFile.includes('Sign Up Free'), 'Header shows Sign Up Free button for guests');
+  assert.ok(headerFile.includes('/signup') && (headerFile.includes('Get Started') || headerFile.includes('Sign Up Free')), 'Header shows signup CTA for guests');
   assert.ok(headerFile.includes('Log In'), 'Header shows Log In link for guests');
   assert.ok(headerFile.includes('intelligentqa_auth_changed'), 'Header reacts to auth changes');
   assert.ok(headerFile.includes('intelligentqa_key_changed'), 'Header reacts to key changes');

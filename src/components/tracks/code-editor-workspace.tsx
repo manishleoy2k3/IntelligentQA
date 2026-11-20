@@ -1138,11 +1138,9 @@ export default function CodeEditorWorkspace({
           const practiceLabHref =
             track.id === 'api-testing'
               ? '/sandbox/api'
-              : track.id === 'playwright-ts'
-              ? '/sandbox/web?stack=playwright'
               : track.id === 'ai-qa'
               ? '/qa-agents'
-              : '/sandbox/web?stack=selenium';
+              : '/sandbox/code';
 
           return (
             <div className="p-3.5 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 flex-wrap">

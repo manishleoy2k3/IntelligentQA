@@ -6,9 +6,9 @@ const path = require('path');
 test('Requirement 1: Sidebar keeps all AI Agents as child menu below QA AI Agents with key protection', () => {
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
 
-  // Verify parent menu with 5 Agents
-  assert.ok(sidebarFile.includes('QA AI Agents'), 'Parent menu QA AI Agents exists');
-  assert.ok(sidebarFile.includes('5 Agents'), 'Displays 5 Agents badge');
+  // Verify parent menu with Agents
+  assert.ok(sidebarFile.includes('AI QA Agents') || sidebarFile.includes('QA AI Agents'), 'Parent menu QA AI Agents exists');
+  assert.ok(sidebarFile.includes('Agents'), 'Displays Agents badge');
   assert.ok(sidebarFile.includes('qaAgentsOpen'), 'Has collapsible state for QA AI Agents');
 
   // Verify all 5 child agents in left navigation

@@ -35,8 +35,8 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/sandbox/web" className="hover:text-neutral-900 transition-colors">
-                    Practice Labs
+                  <Link href="/sandbox/code/problems" className="hover:text-neutral-900 transition-colors">
+                    Coding Library
                   </Link>
                 </li>
                 <li>
