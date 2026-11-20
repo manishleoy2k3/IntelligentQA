@@ -400,10 +400,10 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                 <span>/</span>
                 <span className="text-slate-300 font-semibold">{activeTrack === 'selenium' || activeTrack === 'selenium-java' ? 'Selenium (Java)' : trackInfo.name}</span>
                 <span>/</span>
-                <span className="text-blue-400 font-bold">Guide Import &amp; Management</span>
+                <span className="text-blue-400 font-bold">Architecture &amp; Concepts Library</span>
               </div>
               <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 mt-0.5">
-                {activeTrack === 'selenium' || activeTrack === 'selenium-java' ? 'Selenium (Java)' : `${trackInfo.name} - Guide Import & Management`}
+                {activeTrack === 'selenium' || activeTrack === 'selenium-java' ? 'Selenium (Java)' : trackInfo.name}
                 {trackInfo.tag && (
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${trackInfo.badgeClass}`}>
                     {trackInfo.tag}
@@ -438,46 +438,7 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
           )}
         </div>
 
-        {/* Tab Switcher: Import & Staging vs Confirmed Guide List */}
-        {isAdmin && (
-          <div className="max-w-7xl mx-auto flex items-center gap-3 mt-4 pt-3 border-t border-slate-800/80">
-            <button
-              type="button"
-              onClick={() => setActiveTab('import-staging')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
-                activeTab === 'import-staging'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700'
-              }`}
-            >
-              <UploadCloud className="w-4 h-4" />
-              <span>Import &amp; Staging</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                activeTab === 'import-staging' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'
-              }`}>
-                {stagedGuides.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('confirmed-guides')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
-                activeTab === 'confirmed-guides'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>{trackInfo.name} Guides List</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                activeTab === 'confirmed-guides' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'
-              }`}>
-                {confirmedGuides.length}
-              </span>
-            </button>
-          </div>
-        )}
+        {/* Tab Switcher: Import & Staging vs Confirmed Guide List - REMOVED per user request */}
       </div>
 
       {/* Main Content Area */}

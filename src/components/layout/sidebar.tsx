@@ -428,52 +428,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                       {/* All Individual Lessons with total hours of each individual lesson */}
                       {isExpanded && (
                         <div className="pl-3 pr-0.5 py-0.5 space-y-0.5 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
-                          {/* Selenium Concept Guides Sub-group */}
-                          {track.id === 'selenium-java' && (
-                            <div className="space-y-0.5 mb-1 pb-1 border-b border-slate-200/60 dark:border-neutral-800/60">
-                              <div className="px-2 py-0.5 text-[10px] font-bold text-amber-500 uppercase tracking-wider flex items-center gap-1">
-                                <BookOpen className="w-2.5 h-2.5" />
-                                <span>Architecture Guides</span>
-                              </div>
-                              <Link
-                                href={`/guides/${guideSlug}?guide=sel-dynamic-waits`}
-                                onClick={onCloseMobile}
-                                className={`flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all group ${
-                                  pathname?.includes('sel-dynamic-waits')
-                                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold shadow-xs'
-                                    : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
-                                }`}
-                                title="Dynamic Synchronization: Explicit vs FluentWait"
-                              >
-                                <span className="truncate pr-1.5">1. Dynamic Synchronization</span>
-                              </Link>
-                              <Link
-                                href={`/guides/${guideSlug}?guide=sel-threadlocal-driver`}
-                                onClick={onCloseMobile}
-                                className={`flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all group ${
-                                  pathname?.includes('sel-threadlocal-driver')
-                                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold shadow-xs'
-                                    : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
-                                }`}
-                                title="ThreadLocal WebDriver for Parallel Execution"
-                              >
-                                <span className="truncate pr-1.5">2. ThreadLocal WebDriver</span>
-                              </Link>
-                              <Link
-                                href={`/guides/${guideSlug}?guide=sel-pom-pattern`}
-                                onClick={onCloseMobile}
-                                className={`flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all group ${
-                                  pathname?.includes('sel-pom-pattern')
-                                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold shadow-xs'
-                                    : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
-                                }`}
-                                title="Page Object Model (POM) Architecture"
-                              >
-                                <span className="truncate pr-1.5">3. Page Object Model (POM)</span>
-                              </Link>
-                            </div>
-                          )}
-
                           {track.lessons.map((lesson: Lesson) => {
                             const isLessonActive = pathname === `/tracks/${track.id}/${lesson.id}`;
                             const hours = getLessonHours(lesson.durationMinutes);
