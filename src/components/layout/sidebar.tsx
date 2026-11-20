@@ -349,6 +349,16 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <span>Dashboard</span>
               </Link>
 
+              {/* Learning Tracks & Curriculum */}
+              <Link
+                href="/tracks"
+                onClick={onCloseMobile}
+                className={navItemClass(pathname === '/tracks')}
+              >
+                <Layers className="w-4 h-4 shrink-0 text-sky-400" />
+                <span>Learning Tracks &amp; Curriculum</span>
+              </Link>
+
               {/* COURSES (Parent Menu with Child / Sub-Menu items) */}
           <div className="space-y-1 pt-1">
             <button
@@ -453,18 +463,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                     </div>
                   );
                 })}
-
-                {/* Overview / All Tracks */}
-                <Link
-                  href="/tracks"
-                  onClick={onCloseMobile}
-                  className={childItemClass(pathname === '/tracks')}
-                >
-                  <div className="flex items-center gap-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
-                    <Layers className="w-3.5 h-3.5 shrink-0" />
-                    <span>All Courses &amp; Roadmaps</span>
-                  </div>
-                </Link>
               </div>
             )}
           </div>
