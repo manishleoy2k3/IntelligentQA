@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { QADatabase, getInitials } from "@/lib/qa-db";
 import ProfileModal from "@/components/profile/profile-modal";
 import GeminiKeyModal from "@/components/auth/gemini-key-modal";
+import SuggestQuestionModal from "@/components/interview/suggest-question-modal";
 import { UserProfile } from "@/types/qa";
 import {
   Sparkles,
@@ -21,6 +22,7 @@ import {
   Lock,
   X,
   Key,
+  HelpCircle,
 } from "lucide-react";
 
 interface TopNavProps {
@@ -36,6 +38,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showKeyModal, setShowKeyModal] = useState(false);
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [showAdminUnlockModal, setShowAdminUnlockModal] = useState(false);
   const [adminPasscode, setAdminPasscode] = useState("");
   const [adminUnlockStatus, setAdminUnlockStatus] = useState<{
@@ -188,6 +191,18 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <span className="font-extrabold tracking-tight">AI Coding Coach</span>
           <span className="sr-only">Ask AI</span>
           <span className="sr-only">Ask SDET AI</span>
+        </button>
+
+        {/* Suggest Question Button beside AI Coding Coach */}
+        <button
+          type="button"
+          onClick={() => setShowSuggestModal(true)}
+          aria-label="Suggest Question"
+          className="flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 bg-[#181818] hover:bg-[#222222] text-zinc-200 hover:text-white border border-[#2B2B2B] hover:border-[#81FF89]/50 rounded-full font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
+          title="Suggest Question: Submit or import community interview questions via template or manual typing"
+        >
+          <HelpCircle className="w-4 h-4 text-[#81FF89] shrink-0" />
+          <span className="font-bold tracking-tight">Suggest Question</span>
         </button>
 
         {/* 2. Notifications Bell & Popover */}
@@ -494,6 +509,12 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           </div>
         </div>
       )}
+      {/* Suggest Question Modal */}
+      <SuggestQuestionModal
+        isOpen={showSuggestModal}
+        onClose={() => setShowSuggestModal(false)}
+      />
+
       {/* Gemini Key Modal */}
       <GeminiKeyModal
         isOpen={showKeyModal}
