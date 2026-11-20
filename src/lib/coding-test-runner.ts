@@ -22,8 +22,9 @@ export interface TestCaseResult {
 
 // Compare actual output with expected output using smart formatting (whitespace & JSON normalization)
 export function areOutputsEqual(actual?: string, expected?: string): boolean {
-  if (!actual && !expected) return true;
-  if (!actual || !expected) return false;
+  if (actual === undefined || actual === null || expected === undefined || expected === null) {
+    return actual === expected;
+  }
 
   const aClean = actual.trim();
   const eClean = expected.trim();
@@ -31,6 +32,16 @@ export function areOutputsEqual(actual?: string, expected?: string): boolean {
 
   // Case-insensitive boolean comparison: "True" == "true"
   if (aClean.toLowerCase() === eClean.toLowerCase()) return true;
+
+  // Quote-insensitive string comparison: "fl" == "\"fl\""
+  if (aClean.replace(/^["']|["']$/g, '') === eClean.replace(/^["']|["']$/g, '')) return true;
+
+  // Float & Number tolerance comparison: 32.0 == 32
+  const aNum = Number(aClean);
+  const eNum = Number(eClean);
+  if (!isNaN(aNum) && !isNaN(eNum) && Math.abs(aNum - eNum) < 1e-6) {
+    return true;
+  }
 
   // Whitespace-insensitive comparison: "[0, 1]" == "[0,1]"
   const aNoSpace = aClean.replace(/\s+/g, '');
@@ -43,14 +54,63 @@ export function areOutputsEqual(actual?: string, expected?: string): boolean {
     const eJson = JSON.parse(eClean);
     if (JSON.stringify(aJson) === JSON.stringify(eJson)) return true;
 
-    // Numeric/String array sorting for unordered collections (e.g. Two Sum indices or duplicates)
+    // Check if 2D array (e.g. Group Anagrams or 3Sum where group order & inner order can be arbitrary)
+    if (
+      Array.isArray(aJson) &&
+      Array.isArray(eJson) &&
+      aJson.length === eJson.length &&
+      aJson.every((sub) => Array.isArray(sub)) &&
+      eJson.every((sub) => Array.isArray(sub))
+    ) {
+      const sort2D = (arr: any[][]) =>
+        arr
+          .map((sub) => [...sub].sort((x, y) => (x < y ? -1 : x > y ? 1 : 0)))
+          .sort((x, y) => JSON.stringify(x).localeCompare(JSON.stringify(y)));
+      if (JSON.stringify(sort2D(aJson)) === JSON.stringify(sort2D(eJson))) {
+        return true;
+      }
+    }
+
+    // Numeric/String 1D array sorting for unordered collections (e.g. Two Sum indices or duplicates)
     if (Array.isArray(aJson) && Array.isArray(eJson) && aJson.length === eJson.length) {
       const aSorted = [...aJson].sort();
       const eSorted = [...eJson].sort();
       if (JSON.stringify(aSorted) === JSON.stringify(eSorted)) return true;
     }
   } catch {
-    // Ignore JSON parse errors
+    // Lenient 2D unquoted parsing for Java collections: e.g. "[[eat, tea, ate], [bat], [tan, nat]]"
+    try {
+      const parseLenient2D = (str: string): string[][] | null => {
+        if (!str.startsWith('[[') || !str.endsWith(']]')) return null;
+        const inner = str.slice(1, -1).trim();
+        const groupMatches = inner.match(/\[[^\]]*\]/g);
+        if (!groupMatches) return null;
+        return groupMatches.map((g) =>
+          g
+            .slice(1, -1)
+            .split(',')
+            .map((item) => item.trim().replace(/^["']|["']$/g, ''))
+            .filter(Boolean)
+        );
+      };
+
+      const a2D = parseLenient2D(aClean);
+      const e2D = eClean.startsWith('[[')
+        ? (Array.isArray(JSON.parse(eClean)) ? JSON.parse(eClean) : parseLenient2D(eClean))
+        : null;
+
+      if (a2D && e2D && a2D.length === e2D.length) {
+        const sort2D = (arr: string[][]) =>
+          arr
+            .map((sub) => [...sub].sort())
+            .sort((x, y) => JSON.stringify(x).localeCompare(JSON.stringify(y)));
+        if (JSON.stringify(sort2D(a2D)) === JSON.stringify(sort2D(e2D))) {
+          return true;
+        }
+      }
+    } catch {
+      // Ignore parse errors
+    }
   }
 
   return false;
@@ -206,6 +266,10 @@ if __name__ == '__main__':
 
   // 3. JAVA
   if (lang === 'java') {
+    let cleanCode = userCode;
+    if (!cleanCode.includes('import java.util')) {
+      cleanCode = 'import java.util.*;\nimport java.io.*;\nimport java.math.*;\n' + cleanCode;
+    }
     let invocations = '';
     testCases.forEach((tc, idx) => {
       const args = extractArgsFromInput(tc.input);
@@ -234,7 +298,7 @@ ${invocations}
     }
 `;
     // Strip existing main method
-    let strippedCode = userCode.replace(
+    let strippedCode = cleanCode.replace(
       /(?:public\s+)?static\s+void\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\s*\}\s*(?=\n\s*\}\s*$|\s*$)/,
       ''
     );

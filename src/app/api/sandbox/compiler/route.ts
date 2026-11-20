@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -90,6 +90,7 @@ function getJavaBinaries(): { javac: string; java: string; available: boolean } 
     '/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin',
     process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, 'bin') : '',
     '/usr/local/bin',
+    '/opt/homebrew/bin',
     '/usr/bin',
   ].filter(Boolean);
 
@@ -97,6 +98,16 @@ function getJavaBinaries(): { javac: string; java: string; available: boolean } 
     const javacPath = path.join(dir, 'javac');
     const javaPath = path.join(dir, 'java');
     if (fs.existsSync(javacPath) && fs.existsSync(javaPath)) {
+      if (dir === '/usr/bin' && process.platform === 'darwin') {
+        try {
+          const testProc = spawnSync(javacPath, ['-version'], { timeout: 1000 });
+          if (testProc.status !== 0 || (testProc.stderr && testProc.stderr.toString().includes('Unable to locate a Java Runtime'))) {
+            continue;
+          }
+        } catch {
+          continue;
+        }
+      }
       return { javac: javacPath, java: javaPath, available: true };
     }
   }
@@ -173,6 +184,9 @@ function isInfrastructureError(output?: string): boolean {
     output.includes('daemon error') ||
     output.includes('container init failed') ||
     output.includes('fork/exec') ||
+    output.includes('Unable to locate a Java Runtime') ||
+    output.includes('No Java runtime present') ||
+    output.includes('visit http://www.java.com') ||
     (output.includes('No such file or directory') && output.includes('pid1'))
   );
 }
@@ -536,6 +550,15 @@ function simulateJavaInProcess(
     js = js.replace(/System\.out\.print\s*\(/g, 'stdoutWrite(');
     js = js.replace(/System\.out\.printf\s*\(/g, 'console.log(formatPrintf(');
 
+    // Convert toCharArray
+    js = js.replace(/\.toCharArray\s*\(\)/g, '.split("")');
+
+    // Convert new String(chars) where chars is an array
+    js = js.replace(/new\s+String\s*\(([^)]+)\)/g, '(Array.isArray($1) ? ($1).join("") : String($1))');
+
+    // Convert Java lambda -> into JS arrow =>
+    js = js.replace(/(\b[a-zA-Z0-9_]+\s*|\([^)]*\)\s*)->/g, '$1=>');
+
     // 3. Arrays initialization
     // 2D nested arrays: {{1, 2}, {3, 4}} -> [[1, 2], [3, 4]]
     js = js.replace(
@@ -566,7 +589,7 @@ function simulateJavaInProcess(
 
     // 4. Primitive/Type declarations
     js = js.replace(
-      /\b(?:[A-Z][a-zA-Z0-9_<>, \t\[\]]*|int|double|float|long|short|byte|char|boolean|var|final\s+[A-Za-z0-9_<>, \t\[\]]+)\s+([A-Za-z0-9_]+)\s*(=|;)/g,
+      /\b(?:[A-Z][a-zA-Z0-9_<>, \t\[\]]*|(?:int|double|float|long|short|byte|char|boolean|var)(?:\s*\[\s*\])*|final\s+[A-Za-z0-9_<>, \t\[\]]+)\s+([A-Za-z0-9_]+)\s*(=|;)/g,
       'let $1 $2'
     );
 
@@ -582,7 +605,7 @@ function simulateJavaInProcess(
 
     // 6. Enhanced for loop
     js = js.replace(
-      /for\s*\(\s*(?:int|double|String|var)\s+([A-Za-z0-9_]+)\s*:\s*([^)]+)\)/g,
+      /for\s*\(\s*(?:final\s+)?[A-Za-z0-9_<>[\]]+(?:\s*\[\s*\])*\s+([A-Za-z0-9_]+)\s*:\s*([^)]+)\)/g,
       'for (let $1 of $2)'
     );
 
@@ -594,10 +617,10 @@ function simulateJavaInProcess(
     js = js.replace(/(?:public\s+)?static\s+void\s+main\s*\([^)]*\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?[^{]*\{/, 'function main(args) {');
 
     // 9. Convert helper methods: public static int add(int a, int b) -> function add(a, b) {
-    js = js.replace(/(?:public\s+|private\s+|protected\s+)?(?:static\s+)?[A-Za-z0-9_<>[\]]+\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?[^{]*\{/g, (_m, name, args) => {
+    js = js.replace(/(?:^|[;\n}])\s*(?:(?:public|private|protected|static|final)\s+)+[A-Za-z0-9_<>[\]]+\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?\s*\{/g, (_m, name, args) => {
       if (['if', 'for', 'while', 'switch', 'catch'].includes(name)) return _m;
       const cleanArgs = args.split(',').map((a: string) => a.trim().split(/\s+/).pop()).filter(Boolean).join(', ');
-      return `function ${name}(${cleanArgs}) {`;
+      return `\nfunction ${name}(${cleanArgs}) {`;
     });
 
     js += '\nif (typeof main === "function") { main([]); }\n';
@@ -634,8 +657,24 @@ function simulateJavaInProcess(
     }
 
     class ArrayList extends Array {
+      constructor(...args: any[]) {
+        if (args.length === 1 && (Array.isArray(args[0]) || args[0] instanceof Set || args[0] instanceof Map)) {
+          const items = Array.from(args[0]);
+          super(...items);
+        } else if (args.length === 1 && typeof args[0] === 'number') {
+          super();
+        } else {
+          super(...args);
+        }
+      }
       add(x: any) {
         this.push(x);
+        return true;
+      }
+      addAll(items: any) {
+        if (Array.isArray(items) || items instanceof Set) {
+          for (const item of items) this.push(item);
+        }
         return true;
       }
       get(i: number) {
@@ -646,8 +685,14 @@ function simulateJavaInProcess(
         this[i] = x;
         return old;
       }
-      remove(i: number) {
-        return typeof i === 'number' ? this.splice(i, 1)[0] : false;
+      remove(i: any) {
+        if (typeof i === 'number') return this.splice(i, 1)[0];
+        const idx = this.indexOf(i);
+        if (idx !== -1) {
+          this.splice(idx, 1);
+          return true;
+        }
+        return false;
       }
       size() {
         return this.length;
@@ -660,6 +705,9 @@ function simulateJavaInProcess(
       }
       clear() {
         this.length = 0;
+      }
+      toArray() {
+        return Array.from(this);
       }
     }
 
@@ -697,6 +745,29 @@ function simulateJavaInProcess(
       }
       getOrDefault(k: any, def: any) {
         return this.map.has(k) ? this.map.get(k) : def;
+      }
+      computeIfAbsent(k: any, mappingFn: any) {
+        if (!this.map.has(k)) {
+          const val = typeof mappingFn === 'function' ? mappingFn(k) : mappingFn;
+          this.map.set(k, val);
+          return val;
+        }
+        return this.map.get(k);
+      }
+      putIfAbsent(k: any, v: any) {
+        if (!this.map.has(k)) {
+          this.map.set(k, v);
+          return null;
+        }
+        return this.map.get(k);
+      }
+      entrySet() {
+        return Array.from(this.map.entries()).map(([key, value]) => ({
+          getKey: () => key,
+          getValue: () => value,
+          key,
+          value,
+        }));
       }
     }
 
@@ -867,7 +938,13 @@ function simulateJavaInProcess(
       },
       Arrays: {
         sort: (arr: any[]) => {
-          if (Array.isArray(arr)) arr.sort((a, b) => a - b);
+          if (Array.isArray(arr)) {
+            if (arr.length > 0 && typeof arr[0] === 'string') {
+              arr.sort((a, b) => a.localeCompare(b));
+            } else {
+              arr.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+            }
+          }
         },
         toString: (arr: any) => JSON.stringify(arr),
         fill: (arr: any[], val: any) => {
@@ -878,7 +955,13 @@ function simulateJavaInProcess(
       },
       Collections: {
         sort: (list: any[]) => {
-          if (Array.isArray(list)) list.sort((a, b) => a - b);
+          if (Array.isArray(list)) {
+            if (list.length > 0 && typeof list[0] === 'string') {
+              list.sort((a, b) => a.localeCompare(b));
+            } else {
+              list.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+            }
+          }
         },
         reverse: (list: any[]) => {
           if (Array.isArray(list)) list.reverse();
@@ -1607,10 +1690,13 @@ export async function POST(req: NextRequest) {
         const javaFilePath = path.join(tmpDir, `${className}.java`);
 
         try {
-          const sanitizedCode = code.replace(
+          let sanitizedCode = code.replace(
             /^\s*package\s+[^;]+;\s*/m,
             '// package declaration removed for standalone compilation\n'
           );
+          if (!sanitizedCode.includes('import java.util')) {
+            sanitizedCode = 'import java.util.*;\nimport java.io.*;\nimport java.math.*;\n' + sanitizedCode;
+          }
           fs.writeFileSync(javaFilePath, sanitizedCode, 'utf8');
 
           // 1. Compile with javac
@@ -1627,44 +1713,40 @@ export async function POST(req: NextRequest) {
               )
               .trim();
 
-            return NextResponse.json({
-              language: 'java',
-              success: false,
-              status: 'compilation_error',
-              stdout: '',
-              stderr: cleanedStderr || 'Compilation failed.',
-              executionTimeMs: Date.now() - startTime,
-              exitCode: compileRes.code,
+            if (!isInfrastructureError(cleanedStderr)) {
+              return NextResponse.json({
+                language: 'java',
+                success: false,
+                status: 'compilation_error',
+                stdout: '',
+                stderr: cleanedStderr || 'Compilation failed.',
+                executionTimeMs: Date.now() - startTime,
+                exitCode: compileRes.code,
+              });
+            }
+          } else {
+            // 2. Execute compiled class with java
+            const runRes = await runSubprocess(javaBins.java, ['-cp', tmpDir, className], {
+              cwd: tmpDir,
+              timeout: 6000,
+              stdin,
             });
+
+            if (!isInfrastructureError(runRes.stderr)) {
+              return NextResponse.json({
+                language: 'java',
+                success: runRes.code === 0,
+                status: runRes.code === 0 ? 'success' : 'runtime_error',
+                stdout: runRes.stdout,
+                stderr: runRes.stderr,
+                executionTimeMs: Date.now() - startTime,
+                exitCode: runRes.code,
+                engine: 'local-jdk',
+              });
+            }
           }
-
-          // 2. Execute compiled class with java
-          const runRes = await runSubprocess(javaBins.java, ['-cp', tmpDir, className], {
-            cwd: tmpDir,
-            timeout: 6000,
-            stdin,
-          });
-
-          return NextResponse.json({
-            language: 'java',
-            success: runRes.code === 0,
-            status: runRes.code === 0 ? 'success' : 'runtime_error',
-            stdout: runRes.stdout,
-            stderr: runRes.stderr,
-            executionTimeMs: Date.now() - startTime,
-            exitCode: runRes.code,
-            engine: 'local-jdk',
-          });
         } catch (execErr: any) {
-          return NextResponse.json({
-            language: 'java',
-            success: false,
-            status: 'runtime_error',
-            stdout: '',
-            stderr: execErr.message || 'Execution failed.',
-            executionTimeMs: Date.now() - startTime,
-            exitCode: 1,
-          });
+          // Fall through to cloud and in-process VM
         } finally {
           try {
             fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -1675,7 +1757,11 @@ export async function POST(req: NextRequest) {
       }
 
       // Cloud & In-Process VM fallback on serverless (Vercel)
-      const cloudResult = await executeWithCloudCompiler('java', code, stdin, clientApiKey);
+      let cloudCode = code;
+      if (!cloudCode.includes('import java.util')) {
+        cloudCode = 'import java.util.*;\nimport java.io.*;\nimport java.math.*;\n' + cloudCode;
+      }
+      const cloudResult = await executeWithCloudCompiler('java', cloudCode, stdin, clientApiKey);
       if (cloudResult) {
         return NextResponse.json({
           language: 'java',

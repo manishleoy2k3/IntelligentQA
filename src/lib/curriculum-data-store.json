@@ -2842,14 +2842,14 @@
       ],
       "examples": [
         {
-          "input": "Item 1: $10.50, Item 2: $20.25, Tax: $1.25",
+          "input": "text = \"Cart: $10.50, Shipping: $20.25, Tax: $1.25\"",
           "output": "32.0",
           "explanation": "10.50 + 20.25 + 1.25 = 32.0"
         }
       ],
       "starterTemplates": {
         "java": "import java.util.regex.Matcher;\nimport java.util.regex.Pattern;\n\npublic class Main {\n    // Problem: Extract Numbers & Sum Them\n    public static double sumAmounts(String text) {\n        Pattern pattern = Pattern.compile(\"\\\\d+(?:\\\\.\\\\d+)?\");\n        Matcher matcher = pattern.matcher(text);\n        double total = 0.0;\n        while (matcher.find()) {\n            total += Double.parseDouble(matcher.group());\n        }\n        return total;\n    }\n\n    public static void main(String[] args) {\n        String receipt = \"Item 1: $10.50, Item 2: $20.25, Tax: $1.25\";\n        System.out.println(\"Total calculated sum: $\" + sumAmounts(receipt));\n        // Expected: 32.0\n    }\n}\n",
-        "python": "import re\n\ndef sum_amounts(text: str) -> float:\n    numbers = re.findall(r'd+(?:.d+)?', text)\n    return sum(float(n) for n in numbers)\n\nif __name__ == \"__main__\":\n    receipt = \"Item 1: $10.50, Item 2: $20.25, Tax: $1.25\"\n    print(\"Total calculated: \" + str(sum_amounts(receipt))) # 32.00\n",
+        "python": "import re\n\ndef sum_amounts(text: str) -> float:\n    numbers = re.findall(r'\\d+(?:\\.\\d+)?', text)\n    return sum(float(n) for n in numbers)\n\nif __name__ == \"__main__\":\n    receipt = \"Cart: $10.50, Shipping: $20.25, Tax: $1.25\"\n    print(\"Total calculated: \" + str(sum_amounts(receipt))) # 32.00\n",
         "typescript": "function sumAmounts(text: string): number {\n  const matches = text.match(/\\d+(?:\\.\\d+)?/g);\n  if (!matches) return 0;\n  return matches.reduce((acc, curr) => acc + parseFloat(curr), 0);\n}\n\nconst receipt = \"Item 1: $10.50, Item 2: $20.25, Tax: $1.25\";\nconsole.log(\"Total:\", sumAmounts(receipt)); // 32\n",
         "javascript": "function sumAmounts(text) {\n  const matches = text.match(/\\d+(?:\\.\\d+)?/g);\n  if (!matches) return 0;\n  return matches.reduce((acc, curr) => acc + parseFloat(curr), 0);\n}\n\nconst receipt = \"Item 1: $10.50, Item 2: $20.25, Tax: $1.25\";\nconsole.log(\"Total:\", sumAmounts(receipt)); // 32\n",
         "csharp": "using System;\nusing System.Text.RegularExpressions;\n\nclass Program {\n    public static double SumAmounts(string text) {\n        MatchCollection matches = Regex.Matches(text, @\"d+(?:.d+)?\");\n        double sum = 0.0;\n        foreach (Match m in matches) {\n            sum += double.Parse(m.Value);\n        }\n        return sum;\n    }\n\n    static void Main(string[] args) {\n        string receipt = \"Item 1: $10.50, Item 2: $20.25, Tax: $1.25\";\n        Console.WriteLine(\"Total: $\" + SumAmounts(receipt));\n    }\n}\n"
@@ -3172,6 +3172,323 @@
         "typescript": "function largestRectangleArea(heights: number[]): number {\n    let maxArea = 0;\n    const stack: number[] = [];\n    const n = heights.length;\n\n    for (let i = 0; i <= n; i++) {\n        const currentHeight = i === n ? 0 : heights[i];\n        while (stack.length > 0 && currentHeight < heights[stack[stack.length - 1]]) {\n            const h = heights[stack.pop()!];\n            const w = stack.length === 0 ? i : i - stack[stack.length - 1] - 1;\n            maxArea = Math.max(maxArea, h * w);\n        }\n        stack.push(i);\n    }\n    return maxArea;\n}\n\nconsole.log(\"Test Case 1 (Expected 10):\", largestRectangleArea([2, 1, 5, 6, 2, 3]));\nconsole.log(\"Test Case 2 (Expected 4):\", largestRectangleArea([2, 4]));",
         "javascript": "function largestRectangleArea(heights) {\n    let maxArea = 0;\n    const stack = [];\n    const n = heights.length;\n\n    for (let i = 0; i <= n; i++) {\n        const currentHeight = i === n ? 0 : heights[i];\n        while (stack.length > 0 && currentHeight < heights[stack[stack.length - 1]]) {\n            const h = heights[stack.pop()];\n            const w = stack.length === 0 ? i : i - stack[stack.length - 1] - 1;\n            maxArea = Math.max(maxArea, h * w);\n        }\n        stack.push(i);\n    }\n    return maxArea;\n}\n\nconsole.log(\"Test Case 1 (Expected 10):\", largestRectangleArea([2, 1, 5, 6, 2, 3]));\nconsole.log(\"Test Case 2 (Expected 4):\", largestRectangleArea([2, 4]));",
         "csharp": "using System;\nusing System.Collections.Generic;\n\nclass Program {\n    public static int LargestRectangleArea(int[] heights) {\n        int maxArea = 0;\n        Stack<int> stack = new Stack<int>();\n        int n = heights.Length;\n\n        for (int i = 0; i <= n; i++) {\n            int currentHeight = (i == n) ? 0 : heights[i];\n            while (stack.Count > 0 && currentHeight < heights[stack.Peek()]) {\n                int h = heights[stack.Pop()];\n                int w = stack.Count == 0 ? i : i - stack.Peek() - 1;\n                maxArea = Math.Max(maxArea, h * w);\n            }\n            stack.Push(i);\n        }\n        return maxArea;\n    }\n\n    static void Main() {\n        int[] heights = { 2, 1, 5, 6, 2, 3 };\n        Console.WriteLine(\"Test Case 1 (Expected 10): \" + LargestRectangleArea(heights));\n    }\n}"
+      }
+    },
+    {
+      "id": "best-time-to-buy-and-sell-stock",
+      "title": "11. Best Time to Buy and Sell Stock",
+      "difficulty": "Easy",
+      "category": "Arrays & Dynamic Programming",
+      "description": "You are given an array prices where prices[i] is the price of a given stock on the ith day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock. Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.",
+      "constraints": [
+        "1 <= prices.length <= 10^5",
+        "0 <= prices[i] <= 10^4"
+      ],
+      "examples": [
+        {
+          "input": "prices = [7, 1, 5, 3, 6, 4]",
+          "output": "5",
+          "explanation": "Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6 - 1 = 5."
+        },
+        {
+          "input": "prices = [7, 6, 4, 3, 1]",
+          "output": "0",
+          "explanation": "In this case, no transactions are done and max profit = 0."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Best Time to Buy and Sell Stock\n    public static int maxProfit(int[] prices) {\n        int minPrice = Integer.MAX_VALUE;\n        int maxProfit = 0;\n        for (int price : prices) {\n            if (price < minPrice) {\n                minPrice = price;\n            } else if (price - minPrice > maxProfit) {\n                maxProfit = price - minPrice;\n            }\n        }\n        return maxProfit;\n    }\n\n    public static void main(String[] args) {\n        int[] prices = {7, 1, 5, 3, 6, 4};\n        System.out.println(\"Max Profit: \" + maxProfit(prices)); // 5\n    }\n}\n",
+        "python": "def max_profit(prices: list[int]) -> int:\n    min_price = float('inf')\n    max_p = 0\n    for price in prices:\n        if price < min_price:\n            min_price = price\n        elif price - min_price > max_p:\n            max_p = price - min_price\n    return max_p\n\nif __name__ == \"__main__\":\n    prices = [7, 1, 5, 3, 6, 4]\n    print(\"Max Profit:\", max_profit(prices)) # 5\n",
+        "typescript": "function maxProfit(prices: number[]): number {\n  let minPrice = Infinity;\n  let maxProfit = 0;\n  for (const price of prices) {\n    if (price < minPrice) {\n      minPrice = price;\n    } else if (price - minPrice > maxProfit) {\n      maxProfit = price - minPrice;\n    }\n  }\n  return maxProfit;\n}\n\nconsole.log(\"Max Profit:\", maxProfit([7, 1, 5, 3, 6, 4])); // 5\n",
+        "javascript": "function maxProfit(prices) {\n  let minPrice = Infinity;\n  let maxProfit = 0;\n  for (const price of prices) {\n    if (price < minPrice) {\n      minPrice = price;\n    } else if (price - minPrice > maxProfit) {\n      maxProfit = price - minPrice;\n    }\n  }\n  return maxProfit;\n}\n\nconsole.log(\"Max Profit:\", maxProfit([7, 1, 5, 3, 6, 4])); // 5\n",
+        "csharp": "using System;\n\nclass Program {\n    public static int MaxProfit(int[] prices) {\n        int minPrice = int.MaxValue;\n        int maxProfit = 0;\n        foreach (int price in prices) {\n            if (price < minPrice) minPrice = price;\n            else if (price - minPrice > maxProfit) maxProfit = price - minPrice;\n        }\n        return maxProfit;\n    }\n\n    static void Main(string[] args) {\n        int[] prices = {7, 1, 5, 3, 6, 4};\n        Console.WriteLine(\"Max Profit: \" + MaxProfit(prices)); // 5\n    }\n}\n"
+      }
+    },
+    {
+      "id": "binary-search",
+      "title": "12. Binary Search",
+      "difficulty": "Easy",
+      "category": "Arrays & Binary Search",
+      "description": "Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1. You must write an algorithm with O(log n) runtime complexity.",
+      "constraints": [
+        "1 <= nums.length <= 10^4",
+        "-10^4 < nums[i], target < 10^4",
+        "All integers in nums are unique and sorted in ascending order."
+      ],
+      "examples": [
+        {
+          "input": "nums = [-1, 0, 3, 5, 9, 12], target = 9",
+          "output": "4",
+          "explanation": "9 exists in nums and its index is 4."
+        },
+        {
+          "input": "nums = [-1, 0, 3, 5, 9, 12], target = 2",
+          "output": "-1",
+          "explanation": "2 does not exist in nums so return -1."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Binary Search in O(log n)\n    public static int search(int[] nums, int target) {\n        int left = 0, right = nums.length - 1;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            if (nums[mid] == target) return mid;\n            if (nums[mid] < target) left = mid + 1;\n            else right = mid - 1;\n        }\n        return -1;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {-1, 0, 3, 5, 9, 12};\n        System.out.println(\"Index of 9: \" + search(nums, 9)); // 4\n        System.out.println(\"Index of 2: \" + search(nums, 2)); // -1\n    }\n}\n",
+        "python": "def search(nums: list[int], target: int) -> int:\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n\nif __name__ == \"__main__\":\n    nums = [-1, 0, 3, 5, 9, 12]\n    print(\"Index of 9:\", search(nums, 9)) # 4\n    print(\"Index of 2:\", search(nums, 2)) # -1\n",
+        "typescript": "function search(nums: number[], target: number): number {\n  let left = 0, right = nums.length - 1;\n  while (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n    if (nums[mid] === target) return mid;\n    if (nums[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}\n\nconsole.log(\"Index:\", search([-1, 0, 3, 5, 9, 12], 9)); // 4\n",
+        "javascript": "function search(nums, target) {\n  let left = 0, right = nums.length - 1;\n  while (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n    if (nums[mid] === target) return mid;\n    if (nums[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}\n\nconsole.log(\"Index:\", search([-1, 0, 3, 5, 9, 12], 9)); // 4\n",
+        "csharp": "using System;\n\nclass Program {\n    public static int Search(int[] nums, int target) {\n        int left = 0, right = nums.Length - 1;\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n            if (nums[mid] == target) return mid;\n            if (nums[mid] < target) left = mid + 1;\n            else right = mid - 1;\n        }\n        return -1;\n    }\n\n    static void Main(string[] args) {\n        int[] nums = {-1, 0, 3, 5, 9, 12};\n        Console.WriteLine(\"Index: \" + Search(nums, 9)); // 4\n    }\n}\n"
+      }
+    },
+    {
+      "id": "maximum-subarray",
+      "title": "13. Maximum Subarray (Kadane's Algorithm)",
+      "difficulty": "Medium",
+      "category": "Arrays & Dynamic Programming",
+      "description": "Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum. An optimal solution runs in O(n) linear time using Kadane's algorithm.",
+      "constraints": [
+        "1 <= nums.length <= 10^5",
+        "-10^4 <= nums[i] <= 10^4"
+      ],
+      "examples": [
+        {
+          "input": "nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]",
+          "output": "6",
+          "explanation": "The subarray [4, -1, 2, 1] has the largest sum 6."
+        },
+        {
+          "input": "nums = [5, 4, -1, 7, 8]",
+          "output": "23",
+          "explanation": "The subarray [5, 4, -1, 7, 8] has the largest sum 23."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Maximum Subarray using Kadane's Algorithm\n    public static int maxSubArray(int[] nums) {\n        int maxSoFar = nums[0];\n        int currentMax = nums[0];\n        for (int i = 1; i < nums.length; i++) {\n            currentMax = Math.max(nums[i], currentMax + nums[i]);\n            maxSoFar = Math.max(maxSoFar, currentMax);\n        }\n        return maxSoFar;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};\n        System.out.println(\"Maximum Subarray Sum: \" + maxSubArray(nums)); // 6\n    }\n}\n",
+        "python": "def max_sub_array(nums: list[int]) -> int:\n    max_so_far = nums[0]\n    current_max = nums[0]\n    for x in nums[1:]:\n        current_max = max(x, current_max + x)\n        max_so_far = max(max_so_far, current_max)\n    return max_so_far\n\nif __name__ == \"__main__\":\n    nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]\n    print(\"Maximum Subarray Sum:\", max_sub_array(nums)) # 6\n",
+        "typescript": "function maxSubArray(nums: number[]): number {\n  let maxSoFar = nums[0];\n  let currentMax = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    currentMax = Math.max(nums[i], currentMax + nums[i]);\n    maxSoFar = Math.max(maxSoFar, currentMax);\n  }\n  return maxSoFar;\n}\n\nconsole.log(\"Max Sum:\", maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])); // 6\n",
+        "javascript": "function maxSubArray(nums) {\n  let maxSoFar = nums[0];\n  let currentMax = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    currentMax = Math.max(nums[i], currentMax + nums[i]);\n    maxSoFar = Math.max(maxSoFar, currentMax);\n  }\n  return maxSoFar;\n}\n\nconsole.log(\"Max Sum:\", maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])); // 6\n",
+        "csharp": "using System;\n\nclass Program {\n    public static int MaxSubArray(int[] nums) {\n        int maxSoFar = nums[0];\n        int currentMax = nums[0];\n        for (int i = 1; i < nums.Length; i++) {\n            currentMax = Math.Max(nums[i], currentMax + nums[i]);\n            maxSoFar = Math.Max(maxSoFar, currentMax);\n        }\n        return maxSoFar;\n    }\n\n    static void Main(string[] args) {\n        int[] nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};\n        Console.WriteLine(\"Max Sum: \" + MaxSubArray(nums)); // 6\n    }\n}\n"
+      }
+    },
+    {
+      "id": "product-of-array-except-self",
+      "title": "14. Product of Array Except Self",
+      "difficulty": "Medium",
+      "category": "Arrays & Prefix Sum",
+      "description": "Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]. The algorithm must run in O(n) time without using the division operation.",
+      "constraints": [
+        "2 <= nums.length <= 10^5",
+        "-30 <= nums[i] <= 30",
+        "The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer."
+      ],
+      "examples": [
+        {
+          "input": "nums = [1, 2, 3, 4]",
+          "output": "[24, 12, 8, 6]",
+          "explanation": "Each element is the product of all others: 2*3*4=24, 1*3*4=12, 1*2*4=8, 1*2*3=6."
+        },
+        {
+          "input": "nums = [-1, 1, 0, -3, 3]",
+          "output": "[0, 0, 9, 0, 0]",
+          "explanation": "Product except element 0 is (-1)*1*(-3)*3 = 9."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Product of Array Except Self in O(n)\n    public static int[] productExceptSelf(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        res[0] = 1;\n        for (int i = 1; i < n; i++) {\n            res[i] = res[i - 1] * nums[i - 1];\n        }\n        int right = 1;\n        for (int i = n - 1; i >= 0; i--) {\n            res[i] *= right;\n            right *= nums[i];\n        }\n        return res;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4};\n        System.out.println(\"Result: \" + java.util.Arrays.toString(productExceptSelf(nums))); // [24, 12, 8, 6]\n    }\n}\n",
+        "python": "def product_except_self(nums: list[int]) -> list[int]:\n    n = len(nums)\n    res = [1] * n\n    for i in range(1, n):\n        res[i] = res[i - 1] * nums[i - 1]\n    right = 1\n    for i in range(n - 1, -1, -1):\n        res[i] *= right\n        right *= nums[i]\n    return res\n\nif __name__ == \"__main__\":\n    nums = [1, 2, 3, 4]\n    print(\"Result:\", product_except_self(nums)) # [24, 12, 8, 6]\n",
+        "typescript": "function productExceptSelf(nums: number[]): number[] {\n  const n = nums.length;\n  const res: number[] = new Array(n).fill(1);\n  for (let i = 1; i < n; i++) {\n    res[i] = res[i - 1] * nums[i - 1];\n  }\n  let right = 1;\n  for (let i = n - 1; i >= 0; i--) {\n    res[i] *= right;\n    right *= nums[i];\n  }\n  return res;\n}\n\nconsole.log(\"Result:\", productExceptSelf([1, 2, 3, 4])); // [24, 12, 8, 6]\n",
+        "javascript": "function productExceptSelf(nums) {\n  const n = nums.length;\n  const res = new Array(n).fill(1);\n  for (let i = 1; i < n; i++) {\n    res[i] = res[i - 1] * nums[i - 1];\n  }\n  let right = 1;\n  for (let i = n - 1; i >= 0; i--) {\n    res[i] *= right;\n    right *= nums[i];\n  }\n  return res;\n}\n\nconsole.log(\"Result:\", productExceptSelf([1, 2, 3, 4])); // [24, 12, 8, 6]\n",
+        "csharp": "using System;\n\nclass Program {\n    public static int[] ProductExceptSelf(int[] nums) {\n        int n = nums.Length;\n        int[] res = new int[n];\n        res[0] = 1;\n        for (int i = 1; i < n; i++) res[i] = res[i - 1] * nums[i - 1];\n        int right = 1;\n        for (int i = n - 1; i >= 0; i--) {\n            res[i] *= right;\n            right *= nums[i];\n        }\n        return res;\n    }\n\n    static void Main(string[] args) {\n        int[] nums = {1, 2, 3, 4};\n        Console.WriteLine(\"Result: [\" + string.Join(\", \", ProductExceptSelf(nums)) + \"]\");\n    }\n}\n"
+      }
+    },
+    {
+      "id": "longest-substring-without-repeating",
+      "title": "15. Longest Substring Without Repeating Characters",
+      "difficulty": "Medium",
+      "category": "Strings & Sliding Window",
+      "description": "Given a string s, find the length of the longest substring without repeating characters.",
+      "constraints": [
+        "0 <= s.length <= 5 * 10^4",
+        "s consists of English letters, digits, symbols and spaces."
+      ],
+      "examples": [
+        {
+          "input": "s = \"abcabcbb\"",
+          "output": "3",
+          "explanation": "The answer is \"abc\", with the length of 3."
+        },
+        {
+          "input": "s = \"bbbbb\"",
+          "output": "1",
+          "explanation": "The answer is \"b\", with the length of 1."
+        },
+        {
+          "input": "s = \"pwwkew\"",
+          "output": "3",
+          "explanation": "The answer is \"wke\", with the length of 3."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Longest Substring Without Repeating Characters (Sliding Window)\n    public static int lengthOfLongestSubstring(String s) {\n        int[] lastIndex = new int[128];\n        java.util.Arrays.fill(lastIndex, -1);\n        int maxLen = 0, start = 0;\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (c < 128 && lastIndex[c] >= start) {\n                start = lastIndex[c] + 1;\n            }\n            if (c < 128) lastIndex[c] = i;\n            maxLen = Math.max(maxLen, i - start + 1);\n        }\n        return maxLen;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(\"Length for 'abcabcbb': \" + lengthOfLongestSubstring(\"abcabcbb\")); // 3\n        System.out.println(\"Length for 'bbbbb': \" + lengthOfLongestSubstring(\"bbbbb\"));       // 1\n        System.out.println(\"Length for 'pwwkew': \" + lengthOfLongestSubstring(\"pwwkew\"));     // 3\n    }\n}\n",
+        "python": "def length_of_longest_substring(s: str) -> int:\n    char_map = {}\n    max_len = 0\n    start = 0\n    for i, char in enumerate(s):\n        if char in char_map and char_map[char] >= start:\n            start = char_map[char] + 1\n        char_map[char] = i\n        max_len = max(max_len, i - start + 1)\n    return max_len\n\nif __name__ == \"__main__\":\n    print(\"Length for 'abcabcbb':\", length_of_longest_substring(\"abcabcbb\")) # 3\n    print(\"Length for 'bbbbb':\", length_of_longest_substring(\"bbbbb\"))       # 1\n    print(\"Length for 'pwwkew':\", length_of_longest_substring(\"pwwkew\"))     # 3\n",
+        "typescript": "function lengthOfLongestSubstring(s: string): number {\n  const map = new Map<string, number>();\n  let maxLen = 0;\n  let start = 0;\n  for (let i = 0; i < s.length; i++) {\n    const char = s[i];\n    if (map.has(char) && map.get(char)! >= start) {\n      start = map.get(char)! + 1;\n    }\n    map.set(char, i);\n    maxLen = Math.max(maxLen, i - start + 1);\n  }\n  return maxLen;\n}\n\nconsole.log(\"Length:\", lengthOfLongestSubstring(\"abcabcbb\")); // 3\n",
+        "javascript": "function lengthOfLongestSubstring(s) {\n  const map = new Map();\n  let maxLen = 0;\n  let start = 0;\n  for (let i = 0; i < s.length; i++) {\n    const char = s[i];\n    if (map.has(char) && map.get(char) >= start) {\n      start = map.get(char) + 1;\n    }\n    map.set(char, i);\n    maxLen = Math.max(maxLen, i - start + 1);\n  }\n  return maxLen;\n}\n\nconsole.log(\"Length:\", lengthOfLongestSubstring(\"abcabcbb\")); // 3\n",
+        "csharp": "using System;\nusing System.Collections.Generic;\n\nclass Program {\n    public static int LengthOfLongestSubstring(string s) {\n        Dictionary<char, int> map = new Dictionary<char, int>();\n        int maxLen = 0, start = 0;\n        for (int i = 0; i < s.Length; i++) {\n            char c = s[i];\n            if (map.ContainsKey(c) && map[c] >= start) start = map[c] + 1;\n            map[c] = i;\n            maxLen = Math.Max(maxLen, i - start + 1);\n        }\n        return maxLen;\n    }\n\n    static void Main(string[] args) {\n        Console.WriteLine(\"Length: \" + LengthOfLongestSubstring(\"abcabcbb\")); // 3\n    }\n}\n"
+      }
+    },
+    {
+      "id": "three-sum",
+      "title": "16. 3Sum (Three Integer Target Sum)",
+      "difficulty": "Medium",
+      "category": "Arrays & Two Pointers",
+      "description": "Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0. Notice that the solution set must not contain duplicate triplets.",
+      "constraints": [
+        "3 <= nums.length <= 3000",
+        "-10^5 <= nums[i] <= 10^5"
+      ],
+      "examples": [
+        {
+          "input": "nums = [-1, 0, 1, 2, -1, -4]",
+          "output": "[[-1, -1, 2], [-1, 0, 1]]",
+          "explanation": "Triplets summing to 0 are [-1, 0, 1] and [-1, -1, 2]."
+        },
+        {
+          "input": "nums = [0, 0, 0]",
+          "output": "[[0, 0, 0]]",
+          "explanation": "The only possible triplet sums to 0."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: 3Sum in O(n^2) time using Sorting & Two Pointers\n    public static List<List<Integer>> threeSum(int[] nums) {\n        List<List<Integer>> res = new ArrayList<>();\n        java.util.Arrays.sort(nums);\n        for (int i = 0; i < nums.length - 2; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue;\n            int left = i + 1, right = nums.length - 1;\n            while (left < right) {\n                int sum = nums[i] + nums[left] + nums[right];\n                if (sum == 0) {\n                    res.add(java.util.Arrays.asList(nums[i], nums[left], nums[right]));\n                    while (left < right && nums[left] == nums[left + 1]) left++;\n                    while (left < right && nums[right] == nums[right - 1]) right--;\n                    left++;\n                    right--;\n                } else if (sum < 0) {\n                    left++;\n                } else {\n                    right--;\n                }\n            }\n        }\n        return res;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {-1, 0, 1, 2, -1, -4};\n        System.out.println(\"Triplets: \" + threeSum(nums)); // [[-1, -1, 2], [-1, 0, 1]]\n    }\n}\n",
+        "python": "def three_sum(nums: list[int]) -> list[list[int]]:\n    nums.sort()\n    res = []\n    for i in range(len(nums) - 2):\n        if i > 0 and nums[i] == nums[i - 1]:\n            continue\n        left, right = i + 1, len(nums) - 1\n        while left < right:\n            total = nums[i] + nums[left] + nums[right]\n            if total == 0:\n                res.append([nums[i], nums[left], nums[right]])\n                while left < right and nums[left] == nums[left + 1]:\n                    left += 1\n                while left < right and nums[right] == nums[right - 1]:\n                    right -= 1\n                left += 1\n                right -= 1\n            elif total < 0:\n                left += 1\n            else:\n                right -= 1\n    return res\n\nif __name__ == \"__main__\":\n    nums = [-1, 0, 1, 2, -1, -4]\n    print(\"Triplets:\", three_sum(nums)) # [[-1, -1, 2], [-1, 0, 1]]\n",
+        "typescript": "function threeSum(nums: number[]): number[][] {\n  nums.sort((a, b) => a - b);\n  const res: number[][] = [];\n  for (let i = 0; i < nums.length - 2; i++) {\n    if (i > 0 && nums[i] === nums[i - 1]) continue;\n    let left = i + 1, right = nums.length - 1;\n    while (left < right) {\n      const sum = nums[i] + nums[left] + nums[right];\n      if (sum === 0) {\n        res.push([nums[i], nums[left], nums[right]]);\n        while (left < right && nums[left] === nums[left + 1]) left++;\n        while (left < right && nums[right] === nums[right - 1]) right--;\n        left++;\n        right--;\n      } else if (sum < 0) {\n        left++;\n      } else {\n        right--;\n      }\n    }\n  }\n  return res;\n}\n\nconsole.log(\"Triplets:\", threeSum([-1, 0, 1, 2, -1, -4]));\n",
+        "javascript": "function threeSum(nums) {\n  nums.sort((a, b) => a - b);\n  const res = [];\n  for (let i = 0; i < nums.length - 2; i++) {\n    if (i > 0 && nums[i] === nums[i - 1]) continue;\n    let left = i + 1, right = nums.length - 1;\n    while (left < right) {\n      const sum = nums[i] + nums[left] + nums[right];\n      if (sum === 0) {\n        res.push([nums[i], nums[left], nums[right]]);\n        while (left < right && nums[left] === nums[left + 1]) left++;\n        while (left < right && nums[right] === nums[right - 1]) right--;\n        left++;\n        right--;\n      } else if (sum < 0) {\n        left++;\n      } else {\n        right--;\n      }\n    }\n  }\n  return res;\n}\n\nconsole.log(\"Triplets:\", threeSum([-1, 0, 1, 2, -1, -4]));\n",
+        "csharp": "using System;\nusing System.Collections.Generic;\n\nclass Program {\n    public static List<List<int>> ThreeSum(int[] nums) {\n        Array.Sort(nums);\n        List<List<int>> res = new List<List<int>>();\n        for (int i = 0; i < nums.Length - 2; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue;\n            int left = i + 1, right = nums.Length - 1;\n            while (left < right) {\n                int sum = nums[i] + nums[left] + nums[right];\n                if (sum == 0) {\n                    res.Add(new List<int> { nums[i], nums[left], nums[right] });\n                    while (left < right && nums[left] == nums[left + 1]) left++;\n                    while (left < right && nums[right] == nums[right - 1]) right--;\n                    left++;\n                    right--;\n                } else if (sum < 0) left++;\n                else right--;\n            }\n        }\n        return res;\n    }\n\n    static void Main(string[] args) {\n        int[] nums = {-1, 0, 1, 2, -1, -4};\n        Console.WriteLine(\"Triplets count: \" + ThreeSum(nums).Count);\n    }\n}\n"
+      }
+    },
+    {
+      "id": "container-with-most-water",
+      "title": "17. Container With Most Water",
+      "difficulty": "Medium",
+      "category": "Arrays & Two Pointers",
+      "description": "You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]). Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.",
+      "constraints": [
+        "n == height.length",
+        "2 <= n <= 10^5",
+        "0 <= height[i] <= 10^4"
+      ],
+      "examples": [
+        {
+          "input": "height = [1, 8, 6, 2, 5, 4, 8, 3, 7]",
+          "output": "49",
+          "explanation": "The max area is between index 1 and index 8: min(8, 7) * (8 - 1) = 7 * 7 = 49."
+        },
+        {
+          "input": "height = [1, 1]",
+          "output": "1",
+          "explanation": "min(1, 1) * (1 - 0) = 1."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Container With Most Water in O(n) Two Pointers\n    public static int maxArea(int[] height) {\n        int maxWater = 0;\n        int left = 0, right = height.length - 1;\n        while (left < right) {\n            int h = Math.min(height[left], height[right]);\n            maxWater = Math.max(maxWater, h * (right - left));\n            if (height[left] < height[right]) left++;\n            else right--;\n        }\n        return maxWater;\n    }\n\n    public static void main(String[] args) {\n        int[] height = {1, 8, 6, 2, 5, 4, 8, 3, 7};\n        System.out.println(\"Max Water: \" + maxArea(height)); // 49\n    }\n}\n",
+        "python": "def max_area(height: list[int]) -> int:\n    max_water = 0\n    left, right = 0, len(height) - 1\n    while left < right:\n        h = min(height[left], height[right])\n        max_water = max(max_water, h * (right - left))\n        if height[left] < height[right]:\n            left += 1\n        else:\n            right -= 1\n    return max_water\n\nif __name__ == \"__main__\":\n    height = [1, 8, 6, 2, 5, 4, 8, 3, 7]\n    print(\"Max Water:\", max_area(height)) # 49\n",
+        "typescript": "function maxArea(height: number[]): number {\n  let maxWater = 0;\n  let left = 0, right = height.length - 1;\n  while (left < right) {\n    const h = Math.min(height[left], height[right]);\n    maxWater = Math.max(maxWater, h * (right - left));\n    if (height[left] < height[right]) left++;\n    else right--;\n  }\n  return maxWater;\n}\n\nconsole.log(\"Max Water:\", maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7])); // 49\n",
+        "javascript": "function maxArea(height) {\n  let maxWater = 0;\n  let left = 0, right = height.length - 1;\n  while (left < right) {\n    const h = Math.min(height[left], height[right]);\n    maxWater = Math.max(maxWater, h * (right - left));\n    if (height[left] < height[right]) left++;\n    else right--;\n  }\n  return maxWater;\n}\n\nconsole.log(\"Max Water:\", maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7])); // 49\n",
+        "csharp": "using System;\n\nclass Program {\n    public static int MaxArea(int[] height) {\n        int maxWater = 0;\n        int left = 0, right = height.Length - 1;\n        while (left < right) {\n            int h = Math.Min(height[left], height[right]);\n            maxWater = Math.Max(maxWater, h * (right - left));\n            if (height[left] < height[right]) left++;\n            else right--;\n        }\n        return maxWater;\n    }\n\n    static void Main(string[] args) {\n        int[] height = {1, 8, 6, 2, 5, 4, 8, 3, 7};\n        Console.WriteLine(\"Max Water: \" + MaxArea(height)); // 49\n    }\n}\n"
+      }
+    },
+    {
+      "id": "top-k-frequent-elements",
+      "title": "18. Top K Frequent Elements",
+      "difficulty": "Medium",
+      "category": "HashMaps & Bucket Sort",
+      "description": "Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order. An optimal solution runs in O(n) time using Bucket Sort.",
+      "constraints": [
+        "1 <= nums.length <= 10^5",
+        "-10^4 <= nums[i] <= 10^4",
+        "k is in the range [1, the number of unique elements in the array].",
+        "It is guaranteed that the answer is unique."
+      ],
+      "examples": [
+        {
+          "input": "nums = [1, 1, 1, 2, 2, 3], k = 2",
+          "output": "[1, 2]",
+          "explanation": "1 occurs 3 times, 2 occurs 2 times, so top 2 are [1, 2]."
+        },
+        {
+          "input": "nums = [1], k = 1",
+          "output": "[1]",
+          "explanation": "The only element occurs 1 time."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Top K Frequent Elements using Bucket Sort in O(n)\n    public static int[] topKFrequent(int[] nums, int k) {\n        Map<Integer, Integer> countMap = new HashMap<>();\n        for (int n : nums) countMap.put(n, countMap.getOrDefault(n, 0) + 1);\n\n        List<Integer>[] bucket = new List[nums.length + 1];\n        for (int key : countMap.keySet()) {\n            int freq = countMap.get(key);\n            if (bucket[freq] == null) bucket[freq] = new ArrayList<>();\n            bucket[freq].add(key);\n        }\n\n        int[] res = new int[k];\n        int idx = 0;\n        for (int pos = bucket.length - 1; pos >= 0 && idx < k; pos--) {\n            if (bucket[pos] != null) {\n                for (int num : bucket[pos]) {\n                    res[idx++] = num;\n                    if (idx == k) break;\n                }\n            }\n        }\n        return res;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {1, 1, 1, 2, 2, 3};\n        System.out.println(\"Top 2: \" + java.util.Arrays.toString(topKFrequent(nums, 2))); // [1, 2]\n    }\n}\n",
+        "python": "from collections import Counter\n\ndef top_k_frequent(nums: list[int], k: int) -> list[int]:\n    count = Counter(nums)\n    return [item for item, _ in count.most_common(k)]\n\nif __name__ == \"__main__\":\n    nums = [1, 1, 1, 2, 2, 3]\n    print(\"Top 2:\", top_k_frequent(nums, 2)) # [1, 2]\n",
+        "typescript": "function topKFrequent(nums: number[], k: number): number[] {\n  const map = new Map<number, number>();\n  for (const n of nums) map.set(n, (map.get(n) || 0) + 1);\n  return Array.from(map.entries())\n    .sort((a, b) => b[1] - a[1])\n    .slice(0, k)\n    .map(e => e[0]);\n}\n\nconsole.log(\"Top 2:\", topKFrequent([1, 1, 1, 2, 2, 3], 2)); // [1, 2]\n",
+        "javascript": "function topKFrequent(nums, k) {\n  const map = new Map();\n  for (const n of nums) map.set(n, (map.get(n) || 0) + 1);\n  return Array.from(map.entries())\n    .sort((a, b) => b[1] - a[1])\n    .slice(0, k)\n    .map(e => e[0]);\n}\n\nconsole.log(\"Top 2:\", topKFrequent([1, 1, 1, 2, 2, 3], 2)); // [1, 2]\n",
+        "csharp": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nclass Program {\n    public static int[] TopKFrequent(int[] nums, int k) {\n        var map = new Dictionary<int, int>();\n        foreach (int n in nums) {\n            if (!map.ContainsKey(n)) map[n] = 0;\n            map[n]++;\n        }\n        return map.OrderByDescending(x => x.Value).Take(k).Select(x => x.Key).ToArray();\n    }\n\n    static void Main(string[] args) {\n        int[] nums = {1, 1, 1, 2, 2, 3};\n        Console.WriteLine(\"Top 2: [\" + string.Join(\", \", TopKFrequent(nums, 2)) + \"]\");\n    }\n}\n"
+      }
+    },
+    {
+      "id": "merge-k-sorted-lists",
+      "title": "23. Merge K Sorted Arrays",
+      "difficulty": "Hard",
+      "category": "Arrays & Min-Heap",
+      "description": "You are given an array of k sorted integer arrays lists. Merge all the arrays into one sorted array and return it. The optimal solution runs in O(N log k) time using a divide-and-conquer merge approach or a Min-Heap (PriorityQueue).",
+      "constraints": [
+        "k == lists.length",
+        "0 <= k <= 10^4",
+        "0 <= lists[i].length <= 500",
+        "-10^4 <= lists[i][j] <= 10^4",
+        "lists[i] is sorted in ascending order."
+      ],
+      "examples": [
+        {
+          "input": "lists = [[1, 4, 5], [1, 3, 4], [2, 6]]",
+          "output": "[1, 1, 2, 3, 4, 4, 5, 6]",
+          "explanation": "All lists merged in ascending order."
+        },
+        {
+          "input": "lists = [[], [1]]",
+          "output": "[1]",
+          "explanation": "Empty array merged with [1] gives [1]."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Merge K Sorted Arrays in O(N log k)\n    public static int[] mergeKArrays(int[][] lists) {\n        if (lists == null || lists.length == 0) return new int[0];\n        return mergeRange(lists, 0, lists.length - 1);\n    }\n\n    private static int[] mergeRange(int[][] lists, int left, int right) {\n        if (left == right) return lists[left];\n        int mid = left + (right - left) / 2;\n        int[] l1 = mergeRange(lists, left, mid);\n        int[] l2 = mergeRange(lists, mid + 1, right);\n        return mergeTwo(l1, l2);\n    }\n\n    private static int[] mergeTwo(int[] a, int[] b) {\n        int[] res = new int[a.length + b.length];\n        int i = 0, j = 0, k = 0;\n        while (i < a.length && j < b.length) {\n            if (a[i] <= b[j]) res[k++] = a[i++];\n            else res[k++] = b[j++];\n        }\n        while (i < a.length) res[k++] = a[i++];\n        while (j < b.length) res[k++] = b[j++];\n        return res;\n    }\n\n    public static void main(String[] args) {\n        int[][] lists = {{1, 4, 5}, {1, 3, 4}, {2, 6}};\n        System.out.println(\"Merged: \" + java.util.Arrays.toString(mergeKArrays(lists))); // [1, 1, 2, 3, 4, 4, 5, 6]\n    }\n}\n",
+        "python": "def merge_k_arrays(lists: list[list[int]]) -> list[int]:\n    if not lists:\n        return []\n    def merge_two(a, b):\n        res = []\n        i, j = 0, 0\n        while i < len(a) and j < len(b):\n            if a[i] <= b[j]:\n                res.append(a[i])\n                i += 1\n            else:\n                res.append(b[j])\n                j += 1\n        res.extend(a[i:])\n        res.extend(b[j:])\n        return res\n\n    def merge_range(l, r):\n        if l == r:\n            return lists[l]\n        mid = (l + r) // 2\n        return merge_two(merge_range(l, mid), merge_range(mid + 1, r))\n\n    return merge_range(0, len(lists) - 1)\n\nif __name__ == \"__main__\":\n    lists = [[1, 4, 5], [1, 3, 4], [2, 6]]\n    print(\"Merged:\", merge_k_arrays(lists)) # [1, 1, 2, 3, 4, 4, 5, 6]\n",
+        "typescript": "function mergeKArrays(lists: number[][]): number[] {\n  if (!lists.length) return [];\n  const mergeTwo = (a: number[], b: number[]): number[] => {\n    const res: number[] = [];\n    let i = 0, j = 0;\n    while (i < a.length && j < b.length) {\n      if (a[i] <= b[j]) res.push(a[i++]);\n      else res.push(b[j++]);\n    }\n    return [...res, ...a.slice(i), ...b.slice(j)];\n  };\n  const mergeRange = (l: number, r: number): number[] => {\n    if (l === r) return lists[l];\n    const mid = Math.floor((l + r) / 2);\n    return mergeTwo(mergeRange(l, mid), mergeRange(mid + 1, r));\n  };\n  return mergeRange(0, lists.length - 1);\n}\n\nconsole.log(\"Merged:\", mergeKArrays([[1, 4, 5], [1, 3, 4], [2, 6]]));\n",
+        "javascript": "function mergeKArrays(lists) {\n  if (!lists.length) return [];\n  const mergeTwo = (a, b) => {\n    const res = [];\n    let i = 0, j = 0;\n    while (i < a.length && j < b.length) {\n      if (a[i] <= b[j]) res.push(a[i++]);\n      else res.push(b[j++]);\n    }\n    return [...res, ...a.slice(i), ...b.slice(j)];\n  };\n  const mergeRange = (l, r) => {\n    if (l === r) return lists[l];\n    const mid = Math.floor((l + r) / 2);\n    return mergeTwo(mergeRange(l, mid), mergeRange(mid + 1, r));\n  };\n  return mergeRange(0, lists.length - 1);\n}\n\nconsole.log(\"Merged:\", mergeKArrays([[1, 4, 5], [1, 3, 4], [2, 6]]));\n",
+        "csharp": "using System;\nusing System.Collections.Generic;\n\nclass Program {\n    public static int[] MergeKArrays(int[][] lists) {\n        if (lists == null || lists.Length == 0) return new int[0];\n        return MergeRange(lists, 0, lists.Length - 1);\n    }\n\n    private static int[] MergeRange(int[][] lists, int l, int r) {\n        if (l == r) return lists[l];\n        int mid = (l + r) / 2;\n        return MergeTwo(MergeRange(lists, l, mid), MergeRange(lists, mid + 1, r));\n    }\n\n    private static int[] MergeTwo(int[] a, int[] b) {\n        int[] res = new int[a.Length + b.Length];\n        int i = 0, j = 0, k = 0;\n        while (i < a.Length && j < b.Length) {\n            if (a[i] <= b[j]) res[k++] = a[i++];\n            else res[k++] = b[j++];\n        }\n        while (i < a.Length) res[k++] = a[i++];\n        while (j < b.Length) res[k++] = b[j++];\n        return res;\n    }\n\n    static void Main(string[] args) {\n        int[][] lists = new int[][] { new int[]{1, 4, 5}, new int[]{1, 3, 4}, new int[]{2, 6} };\n        Console.WriteLine(\"Merged: [\" + string.Join(\", \", MergeKArrays(lists)) + \"]\");\n    }\n}\n"
+      }
+    },
+    {
+      "id": "median-of-two-sorted-arrays",
+      "title": "24. Median of Two Sorted Arrays",
+      "difficulty": "Hard",
+      "category": "Arrays & Binary Search",
+      "description": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).",
+      "constraints": [
+        "nums1.length == m",
+        "nums2.length == n",
+        "0 <= m <= 1000",
+        "0 <= n <= 1000",
+        "1 <= m + n <= 2000",
+        "-10^6 <= nums1[i], nums2[i] <= 10^6"
+      ],
+      "examples": [
+        {
+          "input": "nums1 = [1, 3], nums2 = [2]",
+          "output": "2.0",
+          "explanation": "Merged array = [1, 2, 3] and median is 2.0."
+        },
+        {
+          "input": "nums1 = [1, 2], nums2 = [3, 4]",
+          "output": "2.5",
+          "explanation": "Merged array = [1, 2, 3, 4] and median is (2 + 3) / 2 = 2.5."
+        }
+      ],
+      "starterTemplates": {
+        "java": "public class Main {\n    // Problem: Median of Two Sorted Arrays in O(log(min(m, n)))\n    public static double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        if (nums1.length > nums2.length) {\n            return findMedianSortedArrays(nums2, nums1);\n        }\n        int m = nums1.length, n = nums2.length;\n        int low = 0, high = m;\n\n        while (low <= high) {\n            int partitionX = (low + high) / 2;\n            int partitionY = (m + n + 1) / 2 - partitionX;\n\n            int maxX = (partitionX == 0) ? Integer.MIN_VALUE : nums1[partitionX - 1];\n            int minX = (partitionX == m) ? Integer.MAX_VALUE : nums1[partitionX];\n\n            int maxY = (partitionY == 0) ? Integer.MIN_VALUE : nums2[partitionY - 1];\n            int minY = (partitionY == n) ? Integer.MAX_VALUE : nums2[partitionY];\n\n            if (maxX <= minY && maxY <= minX) {\n                if ((m + n) % 2 == 0) {\n                    return ((double) Math.max(maxX, maxY) + Math.min(minX, minY)) / 2.0;\n                } else {\n                    return (double) Math.max(maxX, maxY);\n                }\n            } else if (maxX > minY) {\n                high = partitionX - 1;\n            } else {\n                low = partitionX + 1;\n            }\n        }\n        return 0.0;\n    }\n\n    public static void main(String[] args) {\n        int[] nums1 = {1, 3};\n        int[] nums2 = {2};\n        System.out.println(\"Median: \" + findMedianSortedArrays(nums1, nums2)); // 2.0\n    }\n}\n",
+        "python": "def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    if len(nums1) > len(nums2):\n        nums1, nums2 = nums2, nums1\n    m, n = len(nums1), len(nums2)\n    low, high = 0, m\n\n    while low <= high:\n        part_x = (low + high) // 2\n        part_y = (m + n + 1) // 2 - part_x\n\n        max_x = float('-inf') if part_x == 0 else nums1[part_x - 1]\n        min_x = float('inf') if part_x == m else nums1[part_x]\n\n        max_y = float('-inf') if part_y == 0 else nums2[part_y - 1]\n        min_y = float('inf') if part_y == n else nums2[part_y]\n\n        if max_x <= min_y and max_y <= min_x:\n            if (m + n) % 2 == 0:\n                return (max(max_x, max_y) + min(min_x, min_y)) / 2.0\n            else:\n                return float(max(max_x, max_y))\n        elif max_x > min_y:\n            high = part_x - 1\n        else:\n            low = part_x + 1\n    return 0.0\n\nif __name__ == \"__main__\":\n    print(\"Median:\", find_median_sorted_arrays([1, 3], [2])) # 2.0\n    print(\"Median:\", find_median_sorted_arrays([1, 2], [3, 4])) # 2.5\n",
+        "typescript": "function findMedianSortedArrays(nums1: number[], nums2: number[]): number {\n  if (nums1.length > nums2.length) return findMedianSortedArrays(nums2, nums1);\n  const m = nums1.length, n = nums2.length;\n  let low = 0, high = m;\n  while (low <= high) {\n    const partX = Math.floor((low + high) / 2);\n    const partY = Math.floor((m + n + 1) / 2) - partX;\n\n    const maxX = partX === 0 ? -Infinity : nums1[partX - 1];\n    const minX = partX === m ? Infinity : nums1[partX];\n\n    const maxY = partY === 0 ? -Infinity : nums2[partY - 1];\n    const minY = partY === n ? Infinity : nums2[partY];\n\n    if (maxX <= minY && maxY <= minX) {\n      if ((m + n) % 2 === 0) {\n        return (Math.max(maxX, maxY) + Math.min(minX, minY)) / 2;\n      } else {\n        return Math.max(maxX, maxY);\n      }\n    } else if (maxX > minY) {\n      high = partX - 1;\n    } else {\n      low = partX + 1;\n    }\n  }\n  return 0;\n}\n\nconsole.log(\"Median:\", findMedianSortedArrays([1, 3], [2])); // 2.0\n",
+        "javascript": "function findMedianSortedArrays(nums1, nums2) {\n  if (nums1.length > nums2.length) return findMedianSortedArrays(nums2, nums1);\n  const m = nums1.length, n = nums2.length;\n  let low = 0, high = m;\n  while (low <= high) {\n    const partX = Math.floor((low + high) / 2);\n    const partY = Math.floor((m + n + 1) / 2) - partX;\n\n    const maxX = partX === 0 ? -Infinity : nums1[partX - 1];\n    const minX = partX === m ? Infinity : nums1[partX];\n\n    const maxY = partY === 0 ? -Infinity : nums2[partY - 1];\n    const minY = partY === n ? Infinity : nums2[partY];\n\n    if (maxX <= minY && maxY <= minX) {\n      if ((m + n) % 2 === 0) {\n        return (Math.max(maxX, maxY) + Math.min(minX, minY)) / 2;\n      } else {\n        return Math.max(maxX, maxY);\n      }\n    } else if (maxX > minY) {\n      high = partX - 1;\n    } else {\n      low = partX + 1;\n    }\n  }\n  return 0;\n}\n\nconsole.log(\"Median:\", findMedianSortedArrays([1, 3], [2])); // 2.0\n",
+        "csharp": "using System;\n\nclass Program {\n    public static double FindMedianSortedArrays(int[] nums1, int[] nums2) {\n        if (nums1.Length > nums2.Length) return FindMedianSortedArrays(nums2, nums1);\n        int m = nums1.Length, n = nums2.Length;\n        int low = 0, high = m;\n\n        while (low <= high) {\n            int partX = (low + high) / 2;\n            int partY = (m + n + 1) / 2 - partX;\n\n            int maxX = (partX == 0) ? int.MinValue : nums1[partX - 1];\n            int minX = (partX == m) ? int.MaxValue : nums1[partX];\n\n            int maxY = (partY == 0) ? int.MinValue : nums2[partY - 1];\n            int minY = (partY == n) ? int.MaxValue : nums2[partY];\n\n            if (maxX <= minY && maxY <= minX) {\n                if ((m + n) % 2 == 0) return ((double)Math.Max(maxX, maxY) + Math.Min(minX, minY)) / 2.0;\n                else return (double)Math.Max(maxX, maxY);\n            } else if (maxX > minY) high = partX - 1;\n            else low = partX + 1;\n        }\n        return 0.0;\n    }\n\n    static void Main(string[] args) {\n        int[] nums1 = {1, 3};\n        int[] nums2 = {2};\n        Console.WriteLine(\"Median: \" + FindMedianSortedArrays(nums1, nums2)); // 2.0\n    }\n}\n"
       }
     }
   ]
