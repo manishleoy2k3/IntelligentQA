@@ -49,6 +49,8 @@ import {
   extractTextFromOfficeZip,
 } from "@/lib/concept-guides";
 import { QADatabase } from "@/lib/qa-db";
+import TrackTutorialView from "@/components/guides/track-tutorial-view";
+import { TRACK_TUTORIALS } from "@/lib/track-tutorials";
 
 export default function GuideCatalogClient({
   initialTrackId = "selenium",
@@ -77,25 +79,42 @@ export default function GuideCatalogClient({
 
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
 
-  // Tabs: 'import-staging' (Import & Staged Review) vs 'confirmed-guides' (Guide List like Selenium / Playwright)
+  // Tabs: 'tutorial' (Step-by-Step Tutorial & Setup) vs 'confirmed-guides' (Guide List) vs 'import-staging' (Import & Staged Review)
   const [activeTab, setActiveTab] = useState<
-    "import-staging" | "confirmed-guides"
-  >("confirmed-guides");
+    "tutorial" | "import-staging" | "confirmed-guides"
+  >(() => {
+    if (typeof window !== "undefined") {
+      const tabParam = new URLSearchParams(window.location.search).get("tab");
+      if (tabParam === "import") return "import-staging";
+      if (tabParam === "guides") return "confirmed-guides";
+    }
+    return "tutorial";
+  });
+
+  const currentTutorial =
+    TRACK_TUTORIALS[activeTrack] ||
+    (activeTrack === "selenium-java" ? TRACK_TUTORIALS["selenium"] : undefined) ||
+    (activeTrack === "playwright-ts" ? TRACK_TUTORIALS["playwright"] : undefined);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const u = QADatabase.getCurrentUser();
       const adminStatus = QADatabase.isAdmin(u);
       setIsAdmin(adminStatus);
-      if (searchParams.get("tab") === "import") {
+      const tabParam = searchParams.get("tab");
+      if (tabParam === "import") {
         setActiveTab("import-staging");
+      } else if (tabParam === "guides") {
+        setActiveTab("confirmed-guides");
+      } else if (tabParam === "tutorial") {
+        setActiveTab("tutorial");
       }
       const handleAuth = () => {
         const updated = QADatabase.getCurrentUser();
         const nextAdmin = QADatabase.isAdmin(updated);
         setIsAdmin(nextAdmin);
-        if (!nextAdmin) {
-          setActiveTab("confirmed-guides");
+        if (!nextAdmin && activeTab === "import-staging") {
+          setActiveTab("tutorial");
         }
       };
       window.addEventListener("intelligentqa_auth_changed", handleAuth);
@@ -498,11 +517,71 @@ export default function GuideCatalogClient({
           )}
         </div>
 
-        {/* Tab Switcher: Import & Staging vs Confirmed Guide List - REMOVED per user request */}
+        {/* Tab Switcher: Step-by-Step Tutorial vs Concept Guides vs Import/Staging */}
+        <div className="flex items-center gap-2 border-b border-slate-800 pt-3 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setActiveTab("tutorial")}
+            className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === "tutorial"
+                ? "bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm"
+                : "text-slate-400 hover:text-white hover:bg-slate-900/40"
+            }`}
+          >
+            <BookOpen className="w-4 h-4 text-emerald-400" />
+            <span>Step-by-Step Tutorial &amp; Setup</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+              GfG / Docs
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("confirmed-guides")}
+            className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === "confirmed-guides"
+                ? "bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm"
+                : "text-slate-400 hover:text-white hover:bg-slate-900/40"
+            }`}
+          >
+            <Layers className="w-4 h-4 text-sky-400" />
+            <span>Architecture Concept Guides</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 font-mono">
+              Library
+            </span>
+          </button>
+
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("import-staging")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all flex items-center gap-2 cursor-pointer ${
+                activeTab === "import-staging"
+                  ? "bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-slate-900/40"
+              }`}
+            >
+              <UploadCloud className="w-4 h-4 text-purple-400" />
+              <span>Import &amp; Review Staging</span>
+              {stagedGuides.length > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-mono font-bold">
+                  {stagedGuides.length}
+                </span>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+        {/* ======================================================== */}
+        {/* TAB 0: STEP-BY-STEP TUTORIAL & SETUP (GfG / Docs Edition) */}
+        {/* ======================================================== */}
+        {activeTab === "tutorial" && currentTutorial && (
+          <TrackTutorialView tutorial={currentTutorial} />
+        )}
+
         {/* ======================================================== */}
         {/* TAB 1: IMPORT & STAGING (Requirements 1, 2, 3, 4, 5, 6)  */}
         {/* ======================================================== */}
