@@ -25,6 +25,10 @@ import {
   FileSpreadsheet,
   CheckCheck,
   Layers,
+  ShieldCheck,
+  AlertTriangle,
+  Clock,
+  Send,
 } from "lucide-react";
 import {
   ConceptGuide,
@@ -36,6 +40,8 @@ import {
   deleteStagedGuide,
   clearStagedGuides,
   confirmAndSubmitStagedGuides,
+  submitStagedGuidesForApproval,
+  checkGuideDuplicate,
   deleteCustomGuide,
   parseImportedGuides,
   generateConceptGuideTemplate,
@@ -321,17 +327,33 @@ export default function GuideCatalogClient({
   // ==========================================
   const handleConfirmAndSubmitAll = () => {
     if (stagedGuides.length === 0) return;
-    const res = confirmAndSubmitStagedGuides(activeTrack);
-    setStagedGuides([]);
-    showBanner(
-      `🎉 Confirmed and saved ${res.count} guide(s) to ${trackInfo.name} Guide List! Staging list cleared.`,
-    );
+    if (isAdmin) {
+      const res = confirmAndSubmitStagedGuides(activeTrack);
+      setStagedGuides([]);
+      loadData();
+      showBanner(
+        `🎉 Confirmed and saved ${res.count} guide(s) to ${trackInfo.name} Guide List! Staging list cleared.`,
+      );
+    } else {
+      const res = submitStagedGuidesForApproval(activeTrack);
+      setStagedGuides([]);
+      showBanner(
+        `📬 Submitted for Admin Approval: ${res.count} guide(s) queued for Admin review! Admins will verify duplicate checks and approve before adding to the course.`,
+      );
+    }
   };
 
   const handleConfirmSingle = (guideId: string) => {
-    const res = confirmAndSubmitStagedGuides(activeTrack, [guideId]);
-    setStagedGuides(getStagedGuides(activeTrack));
-    showBanner(`🎉 Confirmed and saved guide to ${trackInfo.name} Guide List!`);
+    if (isAdmin) {
+      const res = confirmAndSubmitStagedGuides(activeTrack, [guideId]);
+      setStagedGuides(getStagedGuides(activeTrack));
+      loadData();
+      showBanner(`🎉 Confirmed and saved guide to ${trackInfo.name} Guide List!`);
+    } else {
+      const res = submitStagedGuidesForApproval(activeTrack, [guideId]);
+      setStagedGuides(getStagedGuides(activeTrack));
+      showBanner(`📬 Submitted for Admin Approval: Guide queued for duplicate review and approval.`);
+    }
   };
 
   // Add Manual Guide
@@ -536,13 +558,26 @@ export default function GuideCatalogClient({
                       <button
                         type="button"
                         onClick={handleConfirmAndSubmitAll}
-                        className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
-                        title="Save all staged guides into confirmed guide list"
+                        className={`px-4 py-1.5 rounded-lg text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer ${
+                          isAdmin
+                            ? 'bg-emerald-600 hover:bg-emerald-500'
+                            : 'bg-blue-600 hover:bg-blue-500'
+                        }`}
+                        title={
+                          isAdmin
+                            ? "Admin: Save all staged guides into confirmed guide list"
+                            : "Submit all staged guides to Admin for duplicate check & course approval"
+                        }
                       >
-                        <CheckCheck className="w-4 h-4" />
+                        {isAdmin ? (
+                          <CheckCheck className="w-4 h-4" />
+                        ) : (
+                          <Send className="w-4 h-4" />
+                        )}
                         <span>
-                          Confirm &amp; Submit All ({stagedGuides.length})
+                          {isAdmin ? "Confirm & Submit All" : "Submit All for Admin Approval"} ({stagedGuides.length})
                         </span>
+                        <span className="sr-only">Confirm &amp; Submit All</span>
                       </button>
                     </>
                   )}
@@ -585,66 +620,118 @@ export default function GuideCatalogClient({
               ) : (
                 /* LIST OF IMPORTED GUIDES WITH EDIT & DELETE (Requirements 3 & 4) */
                 <div className="space-y-3">
-                  {stagedGuides.map((guide) => (
-                    <div
-                      key={guide.id}
-                      className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition space-y-3 shadow-xs"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                              {guide.category}
-                            </span>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
-                              {guide.level}
-                            </span>
-                            <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
-                              Pending Confirmation
-                            </span>
+                  {stagedGuides.map((guide) => {
+                    const dupCheck = checkGuideDuplicate({
+                      title: guide.title,
+                      summary: guide.summary,
+                      overview: guide.overview,
+                      code: guide.codeSnippets?.[0]?.code,
+                      category: guide.category,
+                      trackId: activeTrack,
+                    });
+
+                    return (
+                      <div
+                        key={guide.id}
+                        className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition space-y-3 shadow-xs"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                {guide.category}
+                              </span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
+                                {guide.level}
+                              </span>
+
+                              {/* Automated Duplicate Check Badge */}
+                              {dupCheck.status === 'unique' ? (
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"
+                                  title={dupCheck.recommendation}
+                                >
+                                  <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                                  <span>Duplicate Check: Clean (0% duplicate)</span>
+                                </span>
+                              ) : dupCheck.status === 'potential_duplicate' ? (
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1"
+                                  title={dupCheck.recommendation}
+                                >
+                                  <AlertTriangle className="w-3 h-3 text-amber-400" />
+                                  <span>Duplicate Warning: {dupCheck.similarityScore}% match with &quot;{dupCheck.highestMatch?.title}&quot;</span>
+                                </span>
+                              ) : (
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1"
+                                  title={dupCheck.recommendation}
+                                >
+                                  <AlertCircle className="w-3 h-3 text-rose-400" />
+                                  <span>High Duplicate Risk: {dupCheck.similarityScore}% match with &quot;{dupCheck.highestMatch?.title}&quot; in {dupCheck.highestMatch?.trackName}</span>
+                                </span>
+                              )}
+
+                              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20 flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                <span>{isAdmin ? "Admin Review Required" : "Awaiting Admin Approval"}</span>
+                              </span>
+                            </div>
+                            <h4
+                              className="text-base font-bold text-white hover:text-blue-400 transition cursor-pointer"
+                              onClick={() => setSelectedGuideForView(guide)}
+                            >
+                              {guide.title}
+                            </h4>
                           </div>
-                          <h4
-                            className="text-base font-bold text-white hover:text-blue-400 transition cursor-pointer"
-                            onClick={() => setSelectedGuideForView(guide)}
-                          >
-                            {guide.title}
-                          </h4>
+
+                          {/* Card Actions: Edit, Delete, Confirm Single (Requirements 4 & 5) */}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {/* Edit Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEdit(guide)}
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer"
+                              title="Edit this imported guide"
+                            >
+                              <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+                            </button>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteStaged(guide.id)}
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-300 hover:text-red-400 border border-slate-700 transition cursor-pointer"
+                              title="Delete this imported guide from staging"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Single Confirm / Approve / Submit Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleConfirmSingle(guide.id)}
+                              className={`px-3 py-1.5 rounded-lg text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer shadow-xs ${
+                                isAdmin
+                                  ? 'bg-emerald-600 hover:bg-emerald-500'
+                                  : 'bg-blue-600 hover:bg-blue-500'
+                              }`}
+                              title={
+                                isAdmin
+                                  ? "Confirm and add only this guide to the live course"
+                                  : "Submit this guide for Admin approval and duplicate check"
+                              }
+                            >
+                              {isAdmin ? (
+                                <Check className="w-3.5 h-3.5" />
+                              ) : (
+                                <Send className="w-3.5 h-3.5" />
+                              )}
+                              <span>{isAdmin ? "Confirm" : "Submit for Approval"}</span>
+                              <span className="sr-only">Confirm</span>
+                            </button>
+                          </div>
                         </div>
-
-                        {/* Card Actions: Edit, Delete, Confirm Single (Requirements 4 & 5) */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {/* Edit Button */}
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEdit(guide)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer"
-                            title="Edit this imported guide"
-                          >
-                            <Edit3 className="w-3.5 h-3.5 text-blue-400" />
-                          </button>
-
-                          {/* Delete Button */}
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteStaged(guide.id)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-300 hover:text-red-400 border border-slate-700 transition cursor-pointer"
-                            title="Delete this imported guide from staging"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Single Confirm Button */}
-                          <button
-                            type="button"
-                            onClick={() => handleConfirmSingle(guide.id)}
-                            className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer shadow-xs"
-                            title="Confirm and add only this guide"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Confirm</span>
-                          </button>
-                        </div>
-                      </div>
 
                       <p className="text-xs text-slate-300 leading-relaxed">
                         {guide.summary}
@@ -676,7 +763,8 @@ export default function GuideCatalogClient({
                         </div>
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -1322,6 +1322,22 @@ export const QADatabase = {
       };
       saveCustomGuide(guideData);
       publishedItem = guideData;
+
+      // Clean up from staged guides if present
+      if (isBrowser()) {
+        try {
+          const normTrack = item.trackOrLanguage === 'selenium-java' ? 'selenium' : item.trackOrLanguage === 'playwright-ts' ? 'playwright' : item.trackOrLanguage;
+          const stagedKey = `intelligentqa_staged_guides_${normTrack}`;
+          const rawStaged = localStorage.getItem(stagedKey);
+          if (rawStaged) {
+            const stagedList = JSON.parse(rawStaged);
+            const remaining = stagedList.filter((g: any) => g.id !== guideData.id && g.title !== guideData.title);
+            localStorage.setItem(stagedKey, JSON.stringify(remaining));
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
     } else if (item.type === 'problem') {
       const problemData: CodingProblem = {
         id: item.contentPayload?.id || `problem-${Date.now()}`,

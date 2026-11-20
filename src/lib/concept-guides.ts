@@ -1,3 +1,8 @@
+import { QADatabase } from './qa-db';
+import { checkGuideDuplicate, DuplicateCheckReport } from './guide-duplicate-detector';
+export { checkGuideDuplicate };
+export type { DuplicateCheckReport };
+
 export interface CodeSnippet {
   language: string; // 'java' | 'typescript' | 'python' | 'json' | 'csharp';
   code: string;
@@ -18,6 +23,17 @@ export interface ConceptGuide {
   antiPatterns?: string[];
   interviewTips?: string;
   isCustom?: boolean;
+  status?: 'pending_admin_approval' | 'approved' | 'rejected' | 'draft';
+  submittedBy?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  submittedAt?: string;
+  adminFeedback?: string;
+  duplicateScore?: number;
+  duplicateStatus?: 'unique' | 'potential_duplicate' | 'duplicate';
+  highestMatchTitle?: string;
 }
 
 export const TRACK_META: Record<string, { id: string; name: string; tag: string; color: string; badgeClass: string }> = {
@@ -656,7 +672,7 @@ export function confirmAndSubmitStagedGuides(
 
   // Save to confirmed list
   const existingConfirmed = getStoredCustomGuides(normTrack);
-  const newConfirmed = toConfirm.map(g => ({ ...g, isCustom: true }));
+  const newConfirmed = toConfirm.map(g => ({ ...g, isCustom: true, status: 'approved' as const }));
   const updatedConfirmed = [...newConfirmed, ...existingConfirmed.filter(e => !newConfirmed.some(n => n.id === e.id))];
   localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updatedConfirmed));
 
@@ -668,6 +684,74 @@ export function confirmAndSubmitStagedGuides(
   }
 
   return { count: toConfirm.length, saved: toConfirm };
+}
+
+// Submit staged guides for Admin review & approval (with real-time duplicate detection)
+export function submitStagedGuidesForApproval(
+  trackId?: string,
+  guideIds?: string[],
+  user?: any
+): { count: number; submitted: ConceptGuide[] } {
+  if (typeof window === 'undefined') return { count: 0, submitted: [] };
+  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const staged = getStagedGuides(normTrack);
+  if (staged.length === 0) return { count: 0, submitted: [] };
+
+  const toSubmit = guideIds ? staged.filter(g => guideIds.includes(g.id)) : staged;
+  const remaining = guideIds ? staged.filter(g => !guideIds.includes(g.id)) : [];
+
+  const currentUser = user || QADatabase.getCurrentUser();
+  const submittedList: ConceptGuide[] = [];
+
+  for (const guide of toSubmit) {
+    const dupReport = checkGuideDuplicate({
+      title: guide.title,
+      summary: guide.summary,
+      overview: guide.overview,
+      code: guide.codeSnippets?.[0]?.code,
+      category: guide.category,
+      trackId: normTrack,
+    });
+
+    const enrichedGuide: ConceptGuide = {
+      ...guide,
+      status: 'pending_admin_approval',
+      submittedAt: new Date().toISOString(),
+      submittedBy: {
+        id: currentUser?.id || 'guest-author',
+        name: currentUser?.name || 'Community SDET Contributor',
+        email: currentUser?.email || 'contributor@intelligentqa.io',
+      },
+      duplicateScore: dupReport.similarityScore,
+      duplicateStatus: dupReport.status,
+      highestMatchTitle: dupReport.highestMatch?.title,
+    };
+
+    // Push into Admin Moderation Queue
+    QADatabase.submitContentForReview({
+      type: 'guide',
+      title: guide.title,
+      trackOrLanguage: normTrack || 'selenium',
+      category: guide.category,
+      summary: guide.summary,
+      submittedBy: enrichedGuide.submittedBy!,
+      contentPayload: {
+        ...enrichedGuide,
+        duplicateReport: dupReport,
+      },
+    });
+
+    submittedList.push(enrichedGuide);
+  }
+
+  // Update staged guides with status or clear
+  if (remaining.length > 0) {
+    localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(remaining));
+  } else {
+    localStorage.removeItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`);
+  }
+
+  return { count: submittedList.length, submitted: submittedList };
 }
 
 export function getStoredCustomGuides(trackId?: string): ConceptGuide[] {

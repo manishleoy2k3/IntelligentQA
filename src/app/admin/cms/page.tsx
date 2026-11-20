@@ -33,6 +33,7 @@ import { QADatabase } from '@/lib/qa-db';
 import { Track, Lesson, ModerationItem } from '@/types/qa';
 import { CodingProblem, DEFAULT_CODING_PROBLEMS, getStoredCustomProblems, saveCustomProblem, deleteCustomProblem } from '@/lib/coding-problems';
 import { getLessonDoc, LessonDoc } from '@/lib/qa-learning-docs';
+import { checkGuideDuplicate } from '@/lib/guide-duplicate-detector';
 
 
 export default function CourseCMSPage() {
@@ -1138,6 +1139,32 @@ export default function CourseCMSPage() {
                               <div className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">
                                 Target: {item.trackOrLanguage}
                               </div>
+                              {item.type === 'guide' && (() => {
+                                const dup = checkGuideDuplicate({
+                                  title: item.title,
+                                  summary: item.summary,
+                                  overview: item.contentPayload?.overview,
+                                  code: item.contentPayload?.codeSnippets?.[0]?.code || item.contentPayload?.code,
+                                  trackId: item.trackOrLanguage,
+                                });
+                                return (
+                                  <div className="mt-1">
+                                    {dup.status === 'unique' ? (
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                        Duplicate: Clean (0% match)
+                                      </span>
+                                    ) : dup.status === 'potential_duplicate' ? (
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                        Duplicate Warning: {dup.similarityScore}%
+                                      </span>
+                                    ) : (
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                                        Duplicate Risk: {dup.similarityScore}%
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })()}
                             </td>
                             <td className="py-3.5 px-4">
                               <div className="font-semibold text-slate-200">{item.submittedBy.name}</div>

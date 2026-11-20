@@ -60,8 +60,9 @@ import {
 } from '@/lib/interview-questions-bank';
 import { getLessonDoc, LessonDoc } from '@/lib/qa-learning-docs';
 import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
+import { checkGuideDuplicate, DuplicateCheckReport } from '@/lib/guide-duplicate-detector';
 
-type AdminSection = 'overview' | 'course' | 'labs' | 'agents' | 'interviews' | 'team';
+type AdminSection = 'overview' | 'course' | 'labs' | 'agents' | 'interviews' | 'team' | 'approvals';
 
 function AdminDashboardContent() {
   const router = useRouter();
@@ -72,7 +73,8 @@ function AdminDashboardContent() {
     rawSection === 'labs' ||
     rawSection === 'agents' ||
     rawSection === 'interviews' ||
-    rawSection === 'team'
+    rawSection === 'team' ||
+    rawSection === 'approvals'
       ? rawSection
       : 'overview';
 
@@ -90,6 +92,10 @@ function AdminDashboardContent() {
   const [adminEmails, setAdminEmails] = useState<string[]>([]);
   const [adminSecret, setAdminSecret] = useState<string>('');
   const [submissions, setSubmissions] = useState<ModerationItem[]>([]);
+  const [approvalsFilter, setApprovalsFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [previewSubmission, setPreviewSubmission] = useState<ModerationItem | null>(null);
+  const [rejectingSubmission, setRejectingSubmission] = useState<ModerationItem | null>(null);
+  const [rejectionReasonInput, setRejectionReasonInput] = useState<string>('');
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -206,6 +212,7 @@ function AdminDashboardContent() {
       window.addEventListener('intelligentqa_agent_configs_changed', reloadData);
       window.addEventListener('intelligentqa_interview_questions_changed', reloadData);
       window.addEventListener('intelligentqa_admin_list_changed', reloadData);
+      window.addEventListener('intelligentqa_moderation_updated', reloadData);
 
       return () => {
         window.removeEventListener('intelligentqa_auth_changed', syncHandler);
@@ -215,6 +222,7 @@ function AdminDashboardContent() {
         window.removeEventListener('intelligentqa_agent_configs_changed', reloadData);
         window.removeEventListener('intelligentqa_interview_questions_changed', reloadData);
         window.removeEventListener('intelligentqa_admin_list_changed', reloadData);
+        window.removeEventListener('intelligentqa_moderation_updated', reloadData);
       };
     }
   }, []);
@@ -766,6 +774,7 @@ function AdminDashboardContent() {
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: Layers },
             { id: 'course', label: 'Course', icon: BookOpen, count: tracks.reduce((acc, t) => acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0), 0) },
+            { id: 'approvals', label: 'Guide Approvals', icon: ShieldCheck, count: submissions.filter((s) => s.status === 'pending').length },
             { id: 'labs', label: 'Practice Labs', icon: Terminal, count: codingProblems.length },
             { id: 'agents', label: 'AI Tools and Agents', icon: Bot, count: agentConfigs.length },
             { id: 'interviews', label: 'Interview Banks', icon: HelpCircle, count: interviewQuestions.length },
@@ -975,6 +984,42 @@ function AdminDashboardContent() {
                     </div>
                     <span className="text-xs font-bold text-amber-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                       <span>Edit &amp; Delete Details</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
+                  </div>
+                </div>
+
+                {/* 5. GUIDE APPROVALS & MODERATION TILE */}
+                <div
+                  onClick={() => handleSelectSection('approvals')}
+                  className="p-6 rounded-3xl bg-[#161616] border border-[#2A2A2A] hover:border-emerald-500/60 hover:bg-[#1A1A1A] transition-all cursor-pointer group shadow-lg space-y-4 md:col-span-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      {submissions.filter((s) => s.status === 'pending').length} Pending Admin Approval
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">
+                      Guide Approvals &amp; Duplicate Moderation
+                    </h3>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Review community &amp; user-submitted guides, inspect automated duplicate checks across existing lessons &amp; guides, and publish approved content directly to courses.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Automated Duplicate Check</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Similarity Scoring</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Course Publishing</span>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      <span>Review &amp; Approve Details</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
@@ -1582,7 +1627,522 @@ function AdminDashboardContent() {
             </div>
           </div>
         )}
+
+        {/* =================================================================== */}
+        {/* VIEW 7: GUIDE APPROVALS & DUPLICATE MODERATION SECTION              */}
+        {/* =================================================================== */}
+        {activeSection === 'approvals' && (
+          <div className="space-y-6 animate-in fade-in duration-150">
+            {/* Header & Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <button
+                  type="button"
+                  onClick={() => handleSelectSection('overview')}
+                  className="text-xs text-zinc-400 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer mb-2"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Dashboard Overview</span>
+                </button>
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-extrabold text-white tracking-tight">
+                    Course Guide Approvals &amp; Duplicate Check
+                  </h2>
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    {submissions.filter((s) => s.status === 'pending').length} Pending
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-400 mt-1">
+                  Review incoming concept guides, verify automated duplicate similarity reports, and approve guides to publish directly into course libraries.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={reloadData}
+                  className="px-3.5 py-2 rounded-xl bg-[#161616] hover:bg-[#202020] text-zinc-300 text-xs font-bold border border-[#2B2B2B] flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Refresh Queue</span>
+                </button>
+              </div>
+            </div>
+
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 rounded-2xl bg-[#161616] border border-[#262626]">
+                <div className="text-xs text-zinc-400">Total Submissions</div>
+                <div className="text-2xl font-black text-white mt-1">{submissions.length}</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+                <div className="text-xs text-amber-400 font-bold">Pending Approval</div>
+                <div className="text-2xl font-black text-amber-300 mt-1">
+                  {submissions.filter((s) => s.status === 'pending').length}
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+                <div className="text-xs text-emerald-400 font-bold">Approved &amp; Live</div>
+                <div className="text-2xl font-black text-emerald-300 mt-1">
+                  {submissions.filter((s) => s.status === 'approved').length}
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30">
+                <div className="text-xs text-rose-400 font-bold">Rejected</div>
+                <div className="text-2xl font-black text-rose-300 mt-1">
+                  {submissions.filter((s) => s.status === 'rejected').length}
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Tabs & Search */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#161616] border border-[#262626] p-3 rounded-2xl">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {(['all', 'pending', 'approved', 'rejected'] as const).map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => setApprovalsFilter(filter)}
+                    className={`py-1.5 px-3.5 rounded-xl text-xs font-bold capitalize transition cursor-pointer ${
+                      approvalsFilter === filter
+                        ? 'bg-purple-600 text-white shadow-sm'
+                        : 'bg-[#1E1E1E] text-zinc-400 hover:text-white border border-[#2B2B2B]'
+                    }`}
+                  >
+                    {filter === 'all' ? 'All' : filter === 'pending' ? 'Pending Review' : filter} (
+                    {filter === 'all'
+                      ? submissions.length
+                      : submissions.filter((s) => s.status === filter).length}
+                    )
+                  </button>
+                ))}
+              </div>
+
+              <div className="relative w-full sm:w-64">
+                <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search submissions by title or author..."
+                  className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50"
+                />
+              </div>
+            </div>
+
+            {/* Submissions Queue Cards */}
+            <div className="space-y-3">
+              {submissions.filter((s) => (approvalsFilter === 'all' ? true : s.status === approvalsFilter))
+                .filter((s) =>
+                  searchQuery
+                    ? s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      s.submittedBy?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      s.submittedBy?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                    : true
+                ).length === 0 ? (
+                <div className="p-12 text-center rounded-3xl bg-[#161616] border border-[#262626] space-y-3">
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center mx-auto">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white">No Submissions Found</h4>
+                  <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+                    There are no guides matching the selected filter ({approvalsFilter}). New user imports and submissions will appear here.
+                  </p>
+                </div>
+              ) : (
+                submissions
+                  .filter((s) => (approvalsFilter === 'all' ? true : s.status === approvalsFilter))
+                  .filter((s) =>
+                    searchQuery
+                      ? s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        s.submittedBy?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        s.submittedBy?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                      : true
+                  )
+                  .map((sub) => {
+                    // Compute automated duplicate check
+                    const dupCheck = checkGuideDuplicate({
+                      title: sub.title,
+                      summary: sub.summary,
+                      overview: sub.contentPayload?.overview,
+                      code: sub.contentPayload?.codeSnippets?.[0]?.code || sub.contentPayload?.code,
+                      category: sub.category,
+                      trackId: sub.trackOrLanguage,
+                    });
+
+                    return (
+                      <div
+                        key={sub.id}
+                        className="p-5 rounded-2xl bg-[#161616] border border-[#262626] hover:border-[#333333] transition-all space-y-3 shadow-sm"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                          <div className="space-y-1.5 max-w-2xl">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                                {sub.type === 'guide' ? 'Concept Guide' : 'Coding Problem'}
+                              </span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#202020] text-zinc-300">
+                                Track: {sub.trackOrLanguage}
+                              </span>
+                              {sub.category && (
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                  {sub.category}
+                                </span>
+                              )}
+
+                              {/* Automated Duplicate Check Badge */}
+                              {dupCheck.status === 'unique' ? (
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"
+                                  title={dupCheck.recommendation}
+                                >
+                                  <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                                  <span>Duplicate Check: Clean (0% match - Unique Content)</span>
+                                </span>
+                              ) : dupCheck.status === 'potential_duplicate' ? (
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1"
+                                  title={dupCheck.recommendation}
+                                >
+                                  <AlertCircle className="w-3 h-3 text-amber-400" />
+                                  <span>
+                                    Duplicate Warning: {dupCheck.similarityScore}% match with &quot;{dupCheck.highestMatch?.title}&quot;
+                                  </span>
+                                </span>
+                              ) : (
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1"
+                                  title={dupCheck.recommendation}
+                                >
+                                  <AlertCircle className="w-3 h-3 text-rose-400" />
+                                  <span>
+                                    High Duplicate Risk: {dupCheck.similarityScore}% match with &quot;{dupCheck.highestMatch?.title}&quot; ({dupCheck.highestMatch?.trackName})
+                                  </span>
+                                </span>
+                              )}
+
+                              {/* Status Badge */}
+                              <span
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                  sub.status === 'approved'
+                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                    : sub.status === 'rejected'
+                                    ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                                    : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                                }`}
+                              >
+                                {sub.status.toUpperCase()}
+                              </span>
+                            </div>
+
+                            <h3 className="text-base font-bold text-white">{sub.title}</h3>
+
+                            <p className="text-xs text-zinc-300 leading-relaxed line-clamp-2">
+                              {sub.summary}
+                            </p>
+
+                            <div className="flex items-center gap-3 text-[11px] text-zinc-500 pt-1">
+                              <span>
+                                Submitted by: <strong className="text-zinc-300">{sub.submittedBy?.name || 'Community Member'}</strong> ({sub.submittedBy?.email || 'user@example.com'})
+                              </span>
+                              <span>•</span>
+                              <span>Date: {new Date(sub.submittedAt).toLocaleDateString()}</span>
+                              {sub.rejectionReason && (
+                                <>
+                                  <span>•</span>
+                                  <span className="text-rose-400 font-semibold">
+                                    Reason: {sub.rejectionReason}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Admin Moderation Actions */}
+                          <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                            {/* Review Full Content */}
+                            <button
+                              type="button"
+                              onClick={() => setPreviewSubmission(sub)}
+                              className="px-3 py-1.5 rounded-xl bg-[#222222] hover:bg-[#2A2A2A] text-zinc-200 text-xs font-semibold flex items-center gap-1.5 border border-[#333333] transition cursor-pointer"
+                              title="Review full guide content & duplicate comparison"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-blue-400" />
+                              <span>Review Content</span>
+                            </button>
+
+                            {sub.status === 'pending' && (
+                              <>
+                                {/* Reject Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setRejectingSubmission(sub);
+                                    setRejectionReasonInput('');
+                                  }}
+                                  className="px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 text-xs font-semibold flex items-center gap-1.5 border border-rose-800/50 transition cursor-pointer"
+                                  title="Reject this submission with feedback"
+                                >
+                                  <X className="w-3.5 h-3.5 text-rose-400" />
+                                  <span>Reject</span>
+                                </button>
+
+                                {/* Approve & Publish Button (User requirement: added to course only after approval) */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const res = QADatabase.approveSubmission(sub.id, currentUser?.email);
+                                    if (res.success) {
+                                      triggerBanner(`🎉 ${res.message}`);
+                                      reloadData();
+                                    } else {
+                                      triggerBanner(res.message, 'error');
+                                    }
+                                  }}
+                                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
+                                  title="Approve guide and add it directly into the live course curriculum"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>Approve &amp; Add to Course</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+              )}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* =================================================================== */}
+      {/* MODAL: SUBMISSION PREVIEW & DUPLICATE COMPARISON MODAL              */}
+      {/* =================================================================== */}
+      {previewSubmission && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-3xl bg-[#161616] border border-[#2B2B2B] rounded-3xl p-6 sm:p-8 space-y-5 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#262626]">
+              <div>
+                <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                  Submission Details &amp; Duplicate Check
+                </span>
+                <h3 className="font-bold text-white text-lg mt-0.5">{previewSubmission.title}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewSubmission(null)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-[#222222] cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Duplicate Check Report Banner */}
+            {(() => {
+              const report = checkGuideDuplicate({
+                title: previewSubmission.title,
+                summary: previewSubmission.summary,
+                overview: previewSubmission.contentPayload?.overview,
+                code: previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code,
+                category: previewSubmission.category,
+                trackId: previewSubmission.trackOrLanguage,
+              });
+
+              return (
+                <div
+                  className={`p-4 rounded-2xl border ${
+                    report.status === 'unique'
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      : report.status === 'potential_duplicate'
+                      ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                      : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                  } space-y-2`}
+                >
+                  <div className="flex items-center gap-2 font-bold text-sm">
+                    {report.status === 'unique' ? (
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-amber-400" />
+                    )}
+                    <span>
+                      {report.status === 'unique'
+                        ? 'Automated Duplicate Check: PASSED'
+                        : `Duplicate Alert: ${report.similarityScore}% Similarity Found`}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-300 leading-relaxed">{report.recommendation}</p>
+
+                  {report.highestMatch && (
+                    <div className="text-[11px] bg-black/40 p-2.5 rounded-xl border border-white/10 mt-2 space-y-1">
+                      <div className="font-semibold text-white">
+                        Closest Existing Item: {report.highestMatch.title} ({report.highestMatch.type === 'guide' ? 'Concept Guide' : 'Curriculum Lesson'})
+                      </div>
+                      <div className="text-zinc-400">
+                        Course Track: <span className="text-zinc-200">{report.highestMatch.trackName}</span> • Reason: {report.highestMatch.matchReason}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Guide Core Info */}
+            <div className="space-y-4 text-xs">
+              <div>
+                <label className="text-[11px] font-bold text-zinc-400 uppercase">Summary</label>
+                <p className="text-zinc-200 mt-1 leading-relaxed bg-[#0F0F0F] p-3 rounded-xl border border-[#262626]">
+                  {previewSubmission.summary}
+                </p>
+              </div>
+
+              {previewSubmission.contentPayload?.overview && (
+                <div>
+                  <label className="text-[11px] font-bold text-zinc-400 uppercase">Full Overview</label>
+                  <div className="text-zinc-200 mt-1 leading-relaxed bg-[#0F0F0F] p-3 rounded-xl border border-[#262626] whitespace-pre-wrap max-h-48 overflow-y-auto">
+                    {previewSubmission.contentPayload.overview}
+                  </div>
+                </div>
+              )}
+
+              {/* Code Snippet Preview */}
+              {(previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code) && (
+                <div>
+                  <label className="text-[11px] font-bold text-zinc-400 uppercase">
+                    Code Snippet ({previewSubmission.contentPayload?.codeSnippets?.[0]?.language || 'code'})
+                  </label>
+                  <pre className="text-zinc-200 font-mono text-[11px] mt-1 bg-[#0A0A0A] p-3 rounded-xl border border-[#262626] overflow-x-auto max-h-48">
+                    {previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code}
+                  </pre>
+                </div>
+              )}
+
+              {/* Best Practices & Anti-patterns */}
+              {previewSubmission.contentPayload?.bestPractices?.length > 0 && (
+                <div>
+                  <label className="text-[11px] font-bold text-emerald-400 uppercase">Best Practices</label>
+                  <ul className="list-disc list-inside mt-1 text-zinc-300 space-y-1">
+                    {previewSubmission.contentPayload.bestPractices.map((bp: string, i: number) => (
+                      <li key={i}>{bp}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {previewSubmission.contentPayload?.interviewTips && (
+                <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-amber-200">
+                  <strong className="text-amber-400 font-bold">Interview Tips:</strong> {previewSubmission.contentPayload.interviewTips}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-between pt-4 border-t border-[#262626]">
+              <button
+                type="button"
+                onClick={() => setPreviewSubmission(null)}
+                className="px-4 py-2 rounded-xl bg-[#222222] hover:bg-[#2A2A2A] text-zinc-300 text-xs font-semibold cursor-pointer"
+              >
+                Close
+              </button>
+
+              {previewSubmission.status === 'pending' && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRejectingSubmission(previewSubmission);
+                      setPreviewSubmission(null);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 text-xs font-bold border border-rose-800/50 cursor-pointer"
+                  >
+                    Reject Submission
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const res = QADatabase.approveSubmission(previewSubmission.id, currentUser?.email);
+                      if (res.success) {
+                        triggerBanner(`🎉 ${res.message}`);
+                        setPreviewSubmission(null);
+                        reloadData();
+                      } else {
+                        triggerBanner(res.message, 'error');
+                      }
+                    }}
+                    className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Approve &amp; Publish to Course</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* MODAL: REJECT SUBMISSION WITH FEEDBACK REASON                       */}
+      {/* =================================================================== */}
+      {rejectingSubmission && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#161616] border border-[#2B2B2B] rounded-3xl p-6 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#262626]">
+              <h3 className="font-bold text-white text-base">Reject Guide Submission</h3>
+              <button
+                type="button"
+                onClick={() => setRejectingSubmission(null)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-[#222222] cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-zinc-400">
+              Provide feedback for rejecting &quot;<strong className="text-zinc-200">{rejectingSubmission.title}</strong>&quot;.
+            </p>
+
+            <textarea
+              rows={3}
+              value={rejectionReasonInput}
+              onChange={(e) => setRejectionReasonInput(e.target.value)}
+              placeholder="e.g. Duplicate of existing lesson, incomplete code example, or missing architectural explanations."
+              className="w-full p-3 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50"
+            />
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#262626]">
+              <button
+                type="button"
+                onClick={() => setRejectingSubmission(null)}
+                className="px-3.5 py-1.5 rounded-xl bg-[#222222] text-zinc-300 text-xs font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const res = QADatabase.rejectSubmission(
+                    rejectingSubmission.id,
+                    rejectionReasonInput || 'Content does not meet site requirements.',
+                    currentUser?.email
+                  );
+                  if (res.success) {
+                    triggerBanner(`Rejected "${rejectingSubmission.title}".`);
+                    setRejectingSubmission(null);
+                    reloadData();
+                  }
+                }}
+                className="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer"
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* =================================================================== */}
       {/* MODAL 1: LESSON EDIT / ADD MODAL                                    */}

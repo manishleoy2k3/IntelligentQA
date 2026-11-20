@@ -1,0 +1,79 @@
+const { test } = require('node:test');
+const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
+
+test('Duplicate Detection Engine (guide-duplicate-detector.ts)', () => {
+  const detectorFile = fs.readFileSync(path.join(__dirname, '../src/lib/guide-duplicate-detector.ts'), 'utf8');
+
+  // 1. Core function and types exist
+  assert.ok(detectorFile.includes('export function checkGuideDuplicate'), 'Exports checkGuideDuplicate');
+  assert.ok(detectorFile.includes('export interface DuplicateCheckReport'), 'Exports DuplicateCheckReport');
+  assert.ok(detectorFile.includes('jaccardSimilarity'), 'Includes Jaccard keyword similarity calculation');
+  assert.ok(detectorFile.includes('phraseSimilarity'), 'Includes phrase & title similarity calculation');
+  assert.ok(detectorFile.includes('normalizeCode'), 'Includes code normalization');
+
+  // 2. Checks against both existing Concept Guides and Curriculum Lessons
+  assert.ok(detectorFile.includes('getAllGuides'), 'Compares against all confirmed concept guides');
+  assert.ok(detectorFile.includes('QADatabase.getTracks'), 'Compares against all course curriculum lessons');
+
+  // 3. Classifications
+  assert.ok(detectorFile.includes("'unique'"), 'Has unique status for clean guides');
+  assert.ok(detectorFile.includes("'potential_duplicate'"), 'Has potential_duplicate status');
+  assert.ok(detectorFile.includes("'duplicate'"), 'Has duplicate status for high similarity');
+});
+
+test('Concept Guides submission & admin approval workflow in concept-guides.ts', () => {
+  const guidesLib = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
+
+  // 1. ConceptGuide has moderation and duplicate fields
+  assert.ok(guidesLib.includes('status?:'), 'ConceptGuide has status field');
+  assert.ok(guidesLib.includes('pending_admin_approval'), 'Supports pending_admin_approval status');
+  assert.ok(guidesLib.includes('duplicateScore?:'), 'Supports duplicateScore field');
+  assert.ok(guidesLib.includes('duplicateStatus?:'), 'Supports duplicateStatus field');
+
+  // 2. submitStagedGuidesForApproval function exists and queues for review
+  assert.ok(guidesLib.includes('export function submitStagedGuidesForApproval'), 'Provides submitStagedGuidesForApproval');
+  assert.ok(guidesLib.includes('QADatabase.submitContentForReview'), 'Queues into QADatabase moderation queue');
+  assert.ok(guidesLib.includes('checkGuideDuplicate'), 'Runs checkGuideDuplicate before submission');
+});
+
+test('Guide Catalog Staging UI displays duplicate check badges and requires admin approval', () => {
+  const guideClient = fs.readFileSync(path.join(__dirname, '../src/app/guides/[trackId]/guide-catalog-client.tsx'), 'utf8');
+
+  // 1. Displays Duplicate Check Badges
+  assert.ok(guideClient.includes('checkGuideDuplicate'), 'Computes duplicate check for each staged guide');
+  assert.ok(guideClient.includes('Duplicate Check: Clean'), 'Displays Clean badge for unique content');
+  assert.ok(guideClient.includes('Duplicate Warning:'), 'Displays Warning badge for similar content');
+
+  // 2. Shows Awaiting Admin Approval
+  assert.ok(guideClient.includes('Awaiting Admin Approval') || guideClient.includes('Admin Review Required'), 'Shows admin approval status');
+
+  // 3. Actions distinguish Admin vs User
+  assert.ok(guideClient.includes('Submit for Approval'), 'Non-admin users submit for approval');
+  assert.ok(guideClient.includes('submitStagedGuidesForApproval'), 'Invokes submitStagedGuidesForApproval on submit');
+});
+
+test('Admin Control Center (/admin) provides dedicated Guide Approvals & Duplicate Verification section', () => {
+  const adminPage = fs.readFileSync(path.join(__dirname, '../src/app/admin/page.tsx'), 'utf8');
+
+  // 1. Section definition includes approvals
+  assert.ok(adminPage.includes("'approvals'"), 'Includes approvals in AdminSection');
+
+  // 2. Overview has Guide Approvals tile
+  assert.ok(adminPage.includes('Guide Approvals & Duplicate Moderation') || adminPage.includes('Course Guide Approvals'), 'Has Approvals tile in Overview');
+  assert.ok(adminPage.includes("handleSelectSection('approvals')"), 'Navigates to approvals section');
+
+  // 3. Approvals Section view displays duplicate report and course publishing
+  assert.ok(adminPage.includes("activeSection === 'approvals'"), 'Renders activeSection === approvals view');
+  assert.ok(adminPage.includes('checkGuideDuplicate'), 'Runs automated duplicate check on pending submissions');
+  assert.ok(
+    adminPage.includes('Approve &amp; Add to Course') ||
+    adminPage.includes('Approve & Add to Course') ||
+    adminPage.includes('Approve &amp; Publish to Course') ||
+    adminPage.includes('Approve & Publish to Course'),
+    'Provides 1-click Approve & Add to Course action'
+  );
+  assert.ok(adminPage.includes('QADatabase.approveSubmission'), 'Approves submission into live course database');
+  assert.ok(adminPage.includes('QADatabase.rejectSubmission'), 'Provides rejection action with feedback');
+});
