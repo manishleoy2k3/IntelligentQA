@@ -86,6 +86,120 @@ export const DEFAULT_CONCEPT_GUIDES: ConceptGuide[] = [
   // SELENIUM GUIDES
   // ==========================================
   {
+    id: 'sel-framework-from-scratch',
+    trackId: 'selenium',
+    title: 'Selenium WebDriver Architecture & Complete Framework Setup from Scratch',
+    category: 'Foundations & Setup',
+    level: 'Beginner',
+    summary: 'Understand why WebDriver is required under the W3C protocol and build a complete enterprise Maven + TestNG framework from scratch.',
+    overview: `Manual testers often ask: "Why can't Java just click buttons in Chrome directly?"
+Browsers run in isolated OS sandboxes for user security. An external program cannot reach into Chrome's memory to click elements.
+
+The W3C WebDriver Architecture bridges this gap:
+1. Java Code (Language Bindings) creates HTTP requests conforming to W3C WebDriver standard.
+2. ChromeDriver Binary (the Driver) acts as a local lightweight HTTP server on port 9515.
+3. Native Browser Process receives commands from the driver binary over internal browser debugging pipes.
+
+Starting a framework from scratch requires setting up Maven, establishing standard Maven directory layouts (src/main/java and src/test/java), and managing browser binaries automatically via Selenium 4 Selenium Manager.`,
+    architectureOrMechanism: `Test Script (Java) ===[W3C REST/BiDi Protocols]===> ChromeDriver Server (Port 9515) ===[Native DevTools/CDP]===> Chrome Browser Process. Selenium 4 eliminates legacy JSON Wire Protocol overhead.`,
+    codeSnippets: [
+      {
+        language: 'xml',
+        caption: 'pom.xml: Enterprise Dependencies for Selenium 4 & TestNG',
+        code: `<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.intelligentqa</groupId>
+    <artifactId>selenium-enterprise-framework</artifactId>
+    <version>1.0.0</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <selenium.version>4.21.0</selenium.version>
+        <testng.version>7.10.2</testng.version>
+        <allure.version>2.27.0</allure.version>
+    </properties>
+
+    <dependencies>
+        <!-- Selenium 4 Java Bindings -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>\${selenium.version}</version>
+        </dependency>
+
+        <!-- TestNG Test Runner -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>\${testng.version}</version>
+        </dependency>
+
+        <!-- Allure TestNG Reporting -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>\${allure.version}</version>
+        </dependency>
+    </dependencies>
+</project>`,
+      },
+      {
+        language: 'java',
+        caption: 'Java: DriverFactory with Clean Browser Setup',
+        code: `package com.intelligentqa.factory;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+
+import java.time.Duration;
+
+public class DriverFactory {
+    public static WebDriver createDriver(String browser) {
+        WebDriver driver;
+        switch (browser.toLowerCase().trim()) {
+            case "firefox":
+                FirefoxOptions ffOptions = new FirefoxOptions();
+                ffOptions.addArguments("-headless");
+                driver = new FirefoxDriver(ffOptions);
+                break;
+            case "chrome":
+            default:
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("--headless=new"); // Modern headless mode
+                options.addArguments("--disable-gpu");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
+                options.addArguments("--window-size=1920,1080");
+                driver = new ChromeDriver(options);
+                break;
+        }
+
+        // Standard timeouts
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+        return driver;
+    }
+}`,
+      },
+    ],
+    bestPractices: [
+      'Always program to the WebDriver interface (WebDriver driver = new ChromeDriver()) to switch browsers via polymorphism.',
+      'Rely on Selenium 4 Selenium Manager for automated binary resolution instead of downloading chromedriver.exe manually.',
+      'Organize your repository into: src/main/java (pages, components, factory, utils) and src/test/java (tests, listeners).',
+    ],
+    antiPatterns: [
+      'Hardcoding System.setProperty("webdriver.chrome.driver", "C:/chromedriver.exe") which breaks on different machines/CI.',
+      'Instantiating ChromeDriver directly inside test methods instead of using a centralized Factory pattern.',
+    ],
+    interviewTips: 'Test Architects love asking: "Explain what happens under the hood when you run WebDriver driver = new ChromeDriver()?" Explain the W3C HTTP session creation, port binding, and binary handshake.',
+  },
+  {
     id: 'sel-dynamic-waits',
     trackId: 'selenium',
     title: 'Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep',
@@ -179,7 +293,7 @@ public abstract class BaseTest {
     @BeforeMethod
     @Parameters({"browser"})
     public void setUp(@Optional("chrome") String browser) {
-        WebDriver driver = DriverFactory.createInstance(browser);
+        WebDriver driver = DriverFactory.createDriver(browser);
         DriverManager.setDriver(driver);
     }
 
@@ -188,19 +302,6 @@ public abstract class BaseTest {
         DriverManager.quitDriver();
     }
 }`,
-      },
-      {
-        language: 'python',
-        caption: 'Python: Pytest function-scoped fixture isolation',
-        code: `# In pytest, function-scoped fixtures guarantee independent driver lifecycle per test
-import pytest
-from selenium import webdriver
-
-@pytest.fixture(scope="function")
-def driver():
-    driver = webdriver.Chrome()
-    yield driver
-    driver.quit() # Guaranteed teardown per test`,
       },
     ],
     bestPractices: [
@@ -252,20 +353,179 @@ This drastically reduces maintenance costs: when a developer alters a button ID 
       },
     ],
     bestPractices: [
-      'Page Objects should NEVER contain assertions. Assertions belong exclusively in test methods.',
-      'Use By locators instead of @FindBy PageFactory in modern Selenium 4 for thread safety.',
-      'Return next Page Object on navigation actions for fluent method chaining.',
+      'Never write test assertions inside Page Objects (assert in @Test classes).',
+      'Keep locators private final By to enforce encapsulation.',
     ],
     antiPatterns: [
-      'Putting Assert.assertEquals inside Page class methods.',
-      'Exposing raw WebElement objects to test classes.',
+      'Overusing PageFactory @FindBy in modern Selenium (can cause StaleElementReferenceException during dynamic DOM rerenders).',
     ],
-    interviewTips: 'Highlight that Page Objects represent services offered by the UI, not just a 1:1 dump of HTML tags.',
+    interviewTips: 'Explain how returning next Page Objects creates a Fluent API and why assertions belong strictly in test classes.',
+  },
+  {
+    id: 'sel-listeners-reports-cicd',
+    trackId: 'selenium',
+    title: 'TestNG Listeners & Extent / Allure Reports with Automated Failure Screenshots',
+    category: 'Enterprise Observability & CI/CD',
+    level: 'Advanced',
+    summary: 'Intercept test outcomes via TestNG ITestListener, capture automatic failure screenshots, and publish visual Allure reports in CI/CD.',
+    overview: `Manual testers take screenshots manually whenever a test fails. In unattended CI/CD runs (GitHub Actions, Jenkins), if a test fails and leaves no visual evidence, debugging requires hours of guessing.
+
+TestNG Listeners implement the Observer pattern: they listen for lifecycle events (onTestStart, onTestSuccess, onTestFailure, onTestSkipped). When onTestFailure fires, the listener automatically grabs the active ThreadLocal WebDriver, captures a timestamped screenshot, and embeds it directly into the Allure or Extent report.`,
+    architectureOrMechanism: `Test Method Fails ===> TestNG Runner triggers ITestListener.onTestFailure() ===> TakesScreenshot cast ===> PNG byte array attached to Allure report attachment.`,
+    codeSnippets: [
+      {
+        language: 'java',
+        caption: 'Java: TestListener with TakesScreenshot & Allure Attachment',
+        code: `package com.intelligentqa.listeners;
+
+import com.intelligentqa.factory.DriverManager;
+import io.qameta.allure.Attachment;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+
+public class TestListener implements ITestListener {
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        WebDriver driver = DriverManager.getDriver();
+        if (driver != null) {
+            saveScreenshotToReport(driver);
+        }
+        System.err.println("Test Failed: " + result.getMethod().getMethodName());
+    }
+
+    @Attachment(value = "Failure Screenshot", type = "image/png")
+    public byte[] saveScreenshotToReport(WebDriver driver) {
+        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+    }
+}`,
+      },
+      {
+        language: 'xml',
+        caption: 'testng.xml: Suite Configuration with Listeners & Parallel Threads',
+        code: `<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Enterprise Regression Suite" parallel="methods" thread-count="4">
+    <listeners>
+        <listener class-name="com.intelligentqa.listeners.TestListener" />
+    </listeners>
+    <test name="Chrome Regression">
+        <parameter name="browser" value="chrome" />
+        <packages>
+            <package name="com.intelligentqa.tests.*" />
+        </packages>
+    </test>
+</suite>`,
+      },
+    ],
+    bestPractices: [
+      'Attach screenshots as raw byte arrays directly to reporting contexts to avoid disk I/O bottlenecks.',
+      'Declare listeners globally in testng.xml rather than annotating every individual test class with @Listeners.',
+    ],
+    antiPatterns: [
+      'Writing try-catch blocks with screenshot logic inside test methods.',
+      'Taking screenshots on successful tests, filling CI runner disk storage unnecessarily.',
+    ],
+    interviewTips: 'Explain the difference between ITestListener, IAnnotationTransformer (dynamic retry), and ISuiteListener in TestNG architecture.',
   },
 
   // ==========================================
   // PLAYWRIGHT GUIDES
   // ==========================================
+  {
+    id: 'pw-framework-from-scratch',
+    trackId: 'playwright',
+    title: 'Playwright Framework Architecture & Setup from Scratch',
+    category: 'Foundations & Architecture',
+    level: 'Beginner',
+    summary: 'Why Browser vs BrowserContext vs Page matters for speed and isolation, and how to build a complete TypeScript automation framework from scratch.',
+    overview: `Manual testers migrating to Playwright often wonder: "Why does Playwright have Browser, BrowserContext, AND Page instead of just a WebDriver?"
+
+In legacy Selenium, launching a new browser window for every test creates a heavy operating system process that takes 3 to 4 seconds and consumes 300MB+ RAM. If you run 20 tests in parallel, your machine runs out of memory.
+
+Playwright revolutionizes this with a 3-tier hierarchy:
+1. Browser: A single Chromium, Firefox, or WebKit process launched once.
+2. BrowserContext: A lightweight, in-memory incognito sandbox created in ~5 milliseconds. Each context has its own cookies, localStorage, session cache, and permissions.
+3. Page: A single tab within that context.
+
+This architecture enables true parallel test execution with complete data isolation at near-instant speed.`,
+    architectureOrMechanism: `Node.js Test Runner <== Bi-directional WebSocket (Chrome DevTools Protocol) ==> Browser Process -> [Context 1 (User A)] + [Context 2 (User B)]. Zero HTTP polling latency.`,
+    codeSnippets: [
+      {
+        language: 'typescript',
+        caption: 'playwright.config.ts: Enterprise Configuration Blueprint',
+        code: `import { defineConfig, devices } from '@playwright/test';
+
+/**
+ * See https://playwright.dev/docs/test-configuration.
+ */
+export default defineConfig({
+  testDir: './tests',
+  fullyParallel: true, // Run all tests in parallel worker processes
+  forbidOnly: !!process.env.CI, // Fail build if test.only was left in code
+  retries: process.env.CI ? 2 : 0, // Auto-retry flaky tests in CI
+  workers: process.env.CI ? 4 : undefined, // Scale workers based on hardware
+  reporter: [
+    ['html', { open: 'never' }],
+    ['list'],
+  ],
+  use: {
+    baseURL: process.env.BASE_URL || 'https://staging.intelligentqa.io',
+    trace: 'on-first-retry', // Capture full DOM snapshots on failure
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    actionTimeout: 10_000,
+    navigationTimeout: 15_000,
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+  ],
+});`,
+      },
+      {
+        language: 'typescript',
+        caption: 'TypeScript: First Test with Page Object Model & Web-First Assertions',
+        code: `import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
+
+test.describe('Authentication Flow', () => {
+  test('User successfully logs in with valid credentials', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+
+    await loginPage.navigate();
+    await loginPage.login('qa.architect@intelligentqa.io', 'SecurePass123!');
+
+    // Web-first assertion: auto-waits until element passes condition
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible({ timeout: 5000 });
+    await expect(page).toHaveURL(/.*dashboard/);
+  });
+});`,
+      },
+    ],
+    bestPractices: [
+      'Scaffold using npm init playwright@latest with TypeScript for type safety and auto-completion.',
+      'Always use Web-First Assertions (expect(locator).toBeVisible()) which feature built-in auto-retry polling.',
+      'Organize your repository into tests/, pages/, fixtures/, and utils/ directories.',
+    ],
+    antiPatterns: [
+      'Using page.waitForTimeout(5000) instead of relying on Playwright built-in auto-waiting.',
+      'Launching separate browser.launch() instances inside individual test methods.',
+    ],
+    interviewTips: 'Explain the difference between Browser, BrowserContext, and Page, and how BrowserContext achieves 10x faster isolation than Selenium WebDriver restarts.',
+  },
   {
     id: 'pw-browser-context',
     trackId: 'playwright',
@@ -434,10 +694,297 @@ test('Mock third-party payment gateway response', async ({ page }) => {
     ],
     interviewTips: 'Explain how network mocking allows testing edge-case errors (e.g. HTTP 429 Rate Limited, 502 Bad Gateway) that are impossible to reliably trigger in live staging.',
   },
+  {
+    id: 'pw-storagestate-auth',
+    trackId: 'playwright',
+    title: 'Authentication Reuse with storageState & Global Setup',
+    category: 'State Management & Performance',
+    level: 'Intermediate',
+    summary: 'Eliminate repetitive UI logins across 100+ tests by authenticating once and caching session tokens/cookies with storageState.',
+    overview: `Manual testers and junior automation engineers often write login steps into every single test: visit login page, enter email, enter password, submit, and wait for 2FA.
+In an enterprise suite of 250 tests, logging in 250 times wastes 35+ minutes of pipeline run time and frequently triggers account lockout or rate-limiting in test environments.
+
+Playwright's storageState feature completely eliminates this overhead:
+1. A setup project runs once before all tests, performs the UI login, and captures browser cookies and localStorage into a JSON file (\`playwright/.auth/user.json\`).
+2. Subsequent tests inject this storageState file directly into their BrowserContext in 2ms, launching the page already authenticated.`,
+    architectureOrMechanism: `Setup Project (Logs in via UI) ===> writes auth/user.json ===> Test Projects inject storageState: 'playwright/.auth/user.json' ===> Tests navigate directly to protected pages.`,
+    codeSnippets: [
+      {
+        language: 'typescript',
+        caption: 'auth.setup.ts: Global Authentication Script',
+        code: `import { test as setup, expect } from '@playwright/test';
+
+const authFile = 'playwright/.auth/user.json';
+
+setup('authenticate user once', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Email address').fill(process.env.TEST_USER_EMAIL || 'sdet@intelligentqa.io');
+  await page.getByLabel('Password').fill(process.env.TEST_USER_PASSWORD || 'Password123!');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+
+  // Wait for login redirect to complete
+  await expect(page).toHaveURL(/.*dashboard/);
+
+  // Save session cookies & localStorage to disk
+  await page.context().storageState({ path: authFile });
+});`,
+      },
+      {
+        language: 'typescript',
+        caption: 'playwright.config.ts: Setup Dependency Configuration',
+        code: `import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  projects: [
+    // Setup project runs first
+    {
+      name: 'setup',
+      testMatch: /.*\\.setup\\.ts/,
+    },
+    // Main test project depends on setup
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json', // Reuses saved auth state
+      },
+      dependencies: ['setup'],
+    },
+  ],
+});`,
+      },
+    ],
+    bestPractices: [
+      'Store saved session files in playwright/.auth/ and add that directory to .gitignore.',
+      'Create separate setup files for different user roles (e.g., admin.setup.ts, buyer.setup.ts).',
+      'Use API login requests in setup where possible to speed up authentication even further.',
+    ],
+    antiPatterns: [
+      'Logging in via UI in a beforeEach hook for every test method.',
+      'Checking hardcoded credentials into source control.',
+    ],
+    interviewTips: 'Explain how storageState works under the hood (persisting cookies and localStorage) and how project dependencies enforce execution order.',
+  },
+  {
+    id: 'pw-sharding-cicd',
+    trackId: 'playwright',
+    title: 'Enterprise Test Sharding & GitHub Actions CI/CD Pipeline',
+    category: 'Enterprise CI/CD & Scaling',
+    level: 'Advanced',
+    summary: 'Distribute 1,000+ tests across parallel cloud runners using Playwright --shard and merge blob reports into a single unified dashboard.',
+    overview: `When an automation test suite grows beyond 500 tests, running them on a single CI machine takes 40+ minutes, delaying development feedback loops.
+
+Playwright provides native test sharding: by passing \`--shard=x/y\`, Playwright slices the test suite into equal parts across independent CI runners. For instance, with 4 shards, each runner executes 25% of the suite simultaneously, slashing total pipeline duration from 40 minutes to under 10 minutes.
+
+Each shard produces a binary \`blob-report\`. A final CI job downloads all blob reports and merges them into a single comprehensive HTML report with traces and video recordings.`,
+    architectureOrMechanism: `GitHub Actions Matrix [Runner 1/4, 2/4, 3/4, 4/4] ===> blob reports uploaded as artifacts ===> Merge Job executes 'npx playwright merge-reports' ===> Unified HTML Report published to GitHub Pages.`,
+    codeSnippets: [
+      {
+        language: 'yaml',
+        caption: '.github/workflows/playwright.yml: Matrix Sharding Pipeline',
+        code: `name: Playwright Tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - name: Run Sharded Tests
+        run: npx playwright test --shard=\${{ matrix.shardIndex }}/\${{ matrix.shardTotal }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: blob-report-\${{ matrix.shardIndex }}
+          path: blob-report/
+          retention-days: 1
+
+  merge-reports:
+    if: always()
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+      - name: Merge Blob Reports
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/`,
+      },
+    ],
+    bestPractices: [
+      'Set fail-fast: false in CI matrix so all shards run even if one encounters a test failure.',
+      'Always merge blob reports into a single consolidated HTML report for dev team inspection.',
+      'Shard only when test suites take longer than 15 minutes locally or on a single agent.',
+    ],
+    antiPatterns: [
+      'Creating 20+ shards on small test suites (CI VM boot time will exceed actual test run time).',
+      'Discarding blob reports on failure, losing trace artifacts needed for root cause analysis.',
+    ],
+    interviewTips: 'Explain the difference between worker parallelization (threads on one machine) and test sharding (distributing across multiple separate CI machines).',
+  },
 
   // ==========================================
   // REST ASSURED & API GUIDES
   // ==========================================
+  {
+    id: 'api-framework-from-scratch',
+    trackId: 'api-testing',
+    title: 'REST Assured Enterprise Framework Architecture from Scratch',
+    category: 'Foundations & Architecture',
+    level: 'Beginner',
+    summary: 'Transition from manual Postman clicking to code: complete Maven pom.xml, Given-When-Then BDD syntax, and enterprise directory structure.',
+    overview: `Manual testers often rely on Postman GUI to test APIs by manually clicking "Send", verifying JSON tabs, and copying tokens. While Postman is great for exploratory testing, it struggles with enterprise CI/CD automation:
+- Postman collections are stored as bulky JSON files that cause painful Git merge conflicts.
+- Automating complex database verification, message queues (Kafka), or multi-step business logic requires cumbersome JavaScript workarounds.
+- Postman runs sequentially in Newman, while code frameworks run hundreds of tests concurrently.
+
+REST Assured brings API automation into Java/Kotlin using clean Given-When-Then BDD syntax. It integrates seamlessly with TestNG for parallel execution, Jackson for typed POJO mapping, and Allure for enterprise reporting.`,
+    architectureOrMechanism: `given() [Headers, Auth, QueryParams, Body] .when() [GET/POST/PUT/DELETE HTTP Request] .then() [Status Code, JSONPath Assertions, Response Time].`,
+    codeSnippets: [
+      {
+        language: 'xml',
+        caption: 'pom.xml: Maven Dependencies for REST Assured + Jackson + TestNG',
+        code: `<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.intelligentqa</groupId>
+    <artifactId>rest-assured-framework</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <rest-assured.version>5.4.0</rest-assured.version>
+        <testng.version>7.9.0</testng.version>
+        <jackson.version>2.17.0</jackson.version>
+        <allure.version>2.27.0</allure.version>
+    </properties>
+
+    <dependencies>
+        <!-- REST Assured Core -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>\${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Jackson Databind for POJO Serialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>\${jackson.version}</version>
+        </dependency>
+
+        <!-- TestNG Test Runner -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>\${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JSON Schema Validator -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>\${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Allure REST Assured Filter -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>\${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>`,
+      },
+      {
+        language: 'java',
+        caption: 'Java: End-to-End CRUD Test with Given-When-Then BDD Syntax',
+        code: `package com.intelligentqa.api.tests;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class UserApiTests {
+
+    @BeforeClass
+    public void setup() {
+        RestAssured.baseURI = "https://api.intelligentqa.io";
+        RestAssured.basePath = "/api/v1";
+    }
+
+    @Test
+    public void testCreateAndRetrieveUser() {
+        String requestBody = "{\\"name\\": \\"Jane SDET\\", \\"role\\": \\"Architect\\"}";
+
+        // Step 1: POST Create User
+        int userId = given()
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/users")
+        .then()
+            .statusCode(201)
+            .body("name", equalTo("Jane SDET"))
+            .extract()
+            .path("id");
+
+        // Step 2: GET Retrieve Created User
+        given()
+            .pathParam("id", userId)
+        .when()
+            .get("/users/{id}")
+        .then()
+            .statusCode(200)
+            .body("id", equalTo(userId))
+            .body("role", equalTo("Architect"))
+            .time(lessThan(2000L)); // Performance SLA verification
+    }
+}`,
+      },
+    ],
+    bestPractices: [
+      'Structure the framework cleanly: client/, models/, config/, and tests/ packages.',
+      'Always assert HTTP status codes first before parsing JSON response bodies.',
+      'Add response time assertions (e.g. time(lessThan(2000L))) to enforce API SLAs.',
+    ],
+    antiPatterns: [
+      'Hardcoding API base URLs inside individual test methods instead of a central configuration file.',
+      'Relying on manual Postman runs for pull-request regression gates.',
+    ],
+    interviewTips: 'Explain the Given-When-Then BDD DSL in REST Assured and why compiling tests in Maven/Gradle is superior to Newman runner scripts.',
+  },
   {
     id: 'api-req-res-spec',
     trackId: 'api-testing',
@@ -558,6 +1105,187 @@ public void verifyUserPayloadContract() {
     ],
     interviewTips: 'Emphasize that JSON Schema validation is true contract testing that catches subtle breaking API changes before mobile or web frontend teams are impacted.',
   },
+  {
+    id: 'api-pojo-jackson',
+    trackId: 'api-testing',
+    title: 'POJO Serialization & Deserialization with Jackson & Java Records',
+    category: 'Payload & Data Modeling',
+    level: 'Intermediate',
+    summary: 'Replace brittle JSON string concatenation with type-safe Jackson POJOs and Java Records for resilient API automation.',
+    overview: `Manual testers starting automation often build JSON payloads using raw String concatenation:
+\`String payload = "{\\"username\\": \\"" + user + "\\", \\"age\\": " + age + "}";\`
+
+This creates fragile syntax errors (escaped quotes, missing commas), offers zero IDE auto-completion or compile-time safety, and becomes impossible to maintain when payload schemas evolve.
+
+Jackson Object Mapper automates this completely:
+1. Serialization: Converts Java objects (POJOs or Java Records) into JSON strings sent in HTTP request bodies.
+2. Deserialization: Parses HTTP JSON response bodies directly into strongly typed Java objects, allowing getters like \`response.getOrderId()\` with full type safety.`,
+    architectureOrMechanism: `Java Object (POJO / Record) === Jackson Serializer ===> HTTP Request Body (JSON String) === Network ===> HTTP Response (JSON String) === Jackson Deserializer ===> Java Object.`,
+    codeSnippets: [
+      {
+        language: 'java',
+        caption: 'Java: Immutable Request Model with Jackson Annotations',
+        code: `package com.intelligentqa.api.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class CreateUserRequest {
+
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("job")
+    private String job;
+
+    public CreateUserRequest() {}
+
+    public CreateUserRequest(String name, String job) {
+        this.name = name;
+        this.job = job;
+    }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getJob() { return job; }
+    public void setJob(String job) { this.job = job; }
+}`,
+      },
+      {
+        language: 'java',
+        caption: 'Java: Type-Safe Test with Serialization & Deserialization',
+        code: `package com.intelligentqa.api.tests;
+
+import com.intelligentqa.api.models.CreateUserRequest;
+import com.intelligentqa.api.models.CreateUserResponse;
+import io.restassured.http.ContentType;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+
+public class UserPojoTests {
+
+    @Test
+    public void testCreateUserWithPojo() {
+        CreateUserRequest requestBody = new CreateUserRequest("Sarah SDET", "Automation Architect");
+
+        CreateUserResponse response = given()
+            .baseUri("https://api.intelligentqa.io")
+            .contentType(ContentType.JSON)
+            .body(requestBody) // Jackson automatically serializes object to JSON
+        .when()
+            .post("/api/v1/users")
+        .then()
+            .statusCode(201)
+            .extract()
+            .as(CreateUserResponse.class); // Deserializes JSON into Java object
+
+        Assert.assertNotNull(response.getId(), "User ID must not be null");
+        Assert.assertEquals(response.getName(), "Sarah SDET");
+        Assert.assertEquals(response.getJob(), "Automation Architect");
+    }
+}`,
+      },
+    ],
+    bestPractices: [
+      'Always add @JsonIgnoreProperties(ignoreUnknown = true) to prevent test breakage when new optional fields are added to backend APIs.',
+      'Use Lombok (@Getter, @Builder, @Jacksonized) or Java Records to eliminate boilerplate getters and constructors.',
+      'Store models in a dedicated com.intelligentqa.api.models package for team reusability.',
+    ],
+    antiPatterns: [
+      'Using manual string concatenation to construct JSON payloads.',
+      'Relying on fragile HashMap<String, Object> structures that lack compile-time field validation.',
+    ],
+    interviewTips: 'Explain the difference between Jackson ObjectMapper serialization and deserialization, and why @JsonIgnoreProperties is crucial for API backward compatibility.',
+  },
+  {
+    id: 'api-allure-cicd',
+    trackId: 'api-testing',
+    title: 'Allure Reporting & TestNG Listeners for REST Assured CI/CD',
+    category: 'Enterprise Observability & CI/CD',
+    level: 'Advanced',
+    summary: 'Intercept every HTTP request/response with AllureRestAssured filter to capture full payloads and headers in CI/CD test reports.',
+    overview: `When an API test fails in an unattended CI/CD pipeline (e.g. Jenkins, GitHub Actions) with a generic error like:
+\`java.lang.AssertionError: 1 expectation failed. Expected status code <200> but was <500>.\`
+Without seeing the exact HTTP request URL, query parameters, authorization headers, and backend response body, engineers waste hours trying to reproduce the failure.
+
+The \`AllureRestAssured\` filter acts as an automated network interceptor. It records:
+- Complete HTTP Method and URL
+- Request Headers and Request Body (formatted JSON)
+- Response Headers, Status Code, and Response Body
+- Curl command to reproduce the issue in one click.`,
+    architectureOrMechanism: `Rest Assured Request ===> AllureRestAssured Filter intercepts ===> Attaches Request & Response to Allure Lifecycle ===> mvn clean test generates allure-results ===> Allure CLI renders interactive HTML report.`,
+    codeSnippets: [
+      {
+        language: 'java',
+        caption: 'Java: BaseApiTest with Automatic Allure Network Logging',
+        code: `package com.intelligentqa.api.base;
+
+import io.qameta.allure.restassured.AllureRestAssured;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import org.testng.annotations.BeforeSuite;
+
+public abstract class BaseApiTest {
+    protected static RequestSpecification reqSpec;
+
+    @BeforeSuite(alwaysRun = true)
+    public void setupAllureLogging() {
+        reqSpec = new RequestSpecBuilder()
+            .setBaseUri(System.getProperty("base.url", "https://api.intelligentqa.io"))
+            .setContentType(ContentType.JSON)
+            // Automatically attaches request & response details to Allure report
+            .addFilter(new AllureRestAssured())
+            .build();
+
+        RestAssured.requestSpecification = reqSpec;
+    }
+}`,
+      },
+      {
+        language: 'yaml',
+        caption: '.github/workflows/api-tests.yml: CI/CD Execution & Allure Report Hosting',
+        code: `name: API Automation Regression
+on: [push, pull_request]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: Run REST Assured Regression
+        run: mvn clean test -DsuiteXmlFile=testng-api.xml
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          mvn allure:report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-api-report
+          path: target/site/allure-maven-plugin/`,
+      },
+    ],
+    bestPractices: [
+      'Register AllureRestAssured filter globally in a BaseApiTest class so all test classes inherit logging automatically.',
+      'Pass environment variables via Maven flags: mvn test -Denv=staging -Dbase.url=https://stage-api.company.com.',
+      'Configure testng.xml with parallel="methods" and thread-count="5" for fast multi-threaded API execution.',
+    ],
+    antiPatterns: [
+      'Manually adding System.out.println() for request and response bodies in test methods.',
+      'Discarding report artifacts when builds fail in CI/CD.',
+    ],
+    interviewTips: 'Explain how TestNG Listeners and REST Assured Filters work together to give 100% transparency into HTTP transactions during unattended CI/CD test runs.',
+  },
 
   // ==========================================
   // AI FOR QA GUIDES
@@ -608,6 +1336,125 @@ Ad-hoc casual prompts like "write tests for login" produce shallow, repetitive t
       'Using open-ended prose prompts that require manual reformatting.',
     ],
     interviewTips: 'Discuss how you combine prompt engineering with autonomous validation agents to continuously verify generated requirements against live systems.',
+  },
+  {
+    id: 'ai-self-healing-locators',
+    trackId: 'ai-qa',
+    title: 'Self-Healing Locator Architecture & AST DOM Recovery',
+    category: 'Autonomous Agents & AI',
+    level: 'Advanced',
+    summary: 'How AI algorithms compute multi-attribute DOM fingerprints to heal broken locators in real-time without failing CI builds.',
+    overview: `In agile software development, frontend engineers frequently modify button IDs, CSS classes, or DOM hierarchy during rapid UI redesigns. In traditional automation, a renamed class instantly causes NoSuchElementException or TimeoutError, halting entire CI/CD test runs.
+
+Self-healing test automation resolves this:
+1. When a test first succeeds, the healing engine captures a comprehensive multi-attribute fingerprint of the element (tag, text, aria-role, parent hierarchy, bounding box, sibling tags, and data attributes).
+2. If the primary locator fails in a future test run, the engine computes a weighted cosine / Jaccard similarity score across all DOM nodes to locate the element with > 85% confidence.
+3. The test continues without failure, and the engine logs a pull-request recommendation to update the test script.`,
+    architectureOrMechanism: `Locator Fails ===> Extract DOM Tree Snapshot ===> Compute Multi-Attribute Similarity (Tag 20%, Text 30%, Hierarchy 30%, ARIA 20%) ===> Match Best Candidate (Confidence > 85%) ===> Execute Action & Auto-Create PR.`,
+    codeSnippets: [
+      {
+        language: 'typescript',
+        caption: 'TypeScript: Self-Healing Element Finder Algorithm',
+        code: `export interface ElementFingerprint {
+  tag: string;
+  text: string;
+  ariaRole?: string;
+  testId?: string;
+  classes: string[];
+}
+
+export function computeElementSimilarity(
+  baseline: ElementFingerprint,
+  candidate: ElementFingerprint
+): number {
+  let score = 0;
+
+  // 1. Tag match (20 points)
+  if (baseline.tag === candidate.tag) score += 0.20;
+
+  // 2. Exact or substring text match (35 points)
+  if (baseline.text && candidate.text) {
+    if (baseline.text.trim() === candidate.text.trim()) score += 0.35;
+    else if (candidate.text.includes(baseline.text)) score += 0.20;
+  }
+
+  // 3. Accessibility role match (25 points)
+  if (baseline.ariaRole && baseline.ariaRole === candidate.ariaRole) {
+    score += 0.25;
+  }
+
+  // 4. Shared CSS classes (20 points)
+  const sharedClasses = baseline.classes.filter(c => candidate.classes.includes(c));
+  if (baseline.classes.length > 0) {
+    score += 0.20 * (sharedClasses.length / baseline.classes.length);
+  }
+
+  return Math.round(score * 100); // Returns confidence 0-100%
+}`,
+      },
+    ],
+    bestPractices: [
+      'Prioritize accessible semantic attributes (role, aria-label) over volatile CSS utility classes (Tailwind).',
+      'Never silently heal tests without notifying engineers; always flag healed locators for human review in PRs.',
+    ],
+    antiPatterns: [
+      'Relying on brittle absolute XPaths like /html/body/div[2]/div/div[3]/button.',
+      'Allowing self-healing to click wrong elements when confidence falls below 80%.',
+    ],
+    interviewTips: 'Explain the difference between heuristic fallback locators and ML-driven AST semantic healing in modern SDET frameworks.',
+  },
+  {
+    id: 'ai-synthetic-test-data',
+    trackId: 'ai-qa',
+    title: 'Autonomous Synthetic Test Data Generation & Edge Case Coverage',
+    category: 'Test Data Management',
+    level: 'Intermediate',
+    summary: 'Generate production-realistic, GDPR-compliant synthetic test data with complex relational constraints using LLMs.',
+    overview: `Test automation frequently breaks or produces false positives due to corrupted, stale, or shared test data. Using production data backups violates privacy regulations (GDPR, HIPAA, CCPA) and risks data leaks.
+
+AI-driven synthetic data generation creates realistic datasets that adhere to strict relational schemas, edge cases (boundary values, special Unicode characters, extreme date formats), and business validation rules with zero real customer PII.`,
+    architectureOrMechanism: `Schema Definition (JSON/SQL) + Constraints ===> LLM Few-Shot Generation with Faker Seeds ===> Relational Constraint Validation ===> In-Memory Test DB Pre-Population.`,
+    codeSnippets: [
+      {
+        language: 'typescript',
+        caption: 'TypeScript: Generating Validated Test Personas with LLM & Zod',
+        code: `import { z } from 'zod';
+
+export const UserRegistrationSchema = z.object({
+  id: z.string().uuid(),
+  fullName: z.string().min(3),
+  email: z.string().email(),
+  role: z.enum(['admin', 'member', 'auditor']),
+  creditLimit: z.number().min(100).max(50_000),
+  birthDate: z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/),
+});
+
+export type UserRegistration = z.infer<typeof UserRegistrationSchema>;
+
+// Mock AI Data Generator function
+export function generateSyntheticUser(overrides: Partial<UserRegistration> = {}): UserRegistration {
+  const timestamp = Date.now();
+  return UserRegistrationSchema.parse({
+    id: '550e8400-e29b-41d4-a716-446655440000',
+    fullName: 'Jane SDET',
+    email: \`test.user.\${timestamp}@intelligentqa.io\`,
+    role: 'member',
+    creditLimit: 15_000,
+    birthDate: '1992-05-18',
+    ...overrides,
+  });
+}`,
+      },
+    ],
+    bestPractices: [
+      'Validate synthetic data against runtime schema validators (Zod, Pydantic, or Hibernate Validator).',
+      'Generate deterministic unique test emails with timestamps or UUIDs to avoid collision in parallel test runs.',
+    ],
+    antiPatterns: [
+      'Reusing the exact same test account across multiple parallel threads.',
+      'Copying unmasked production customer databases into development or staging environments.',
+    ],
+    interviewTips: 'Discuss the risks of test data pollution in parallel automation suites and how automated data teardown or synthetic generation resolves it.',
   },
 ];
 
