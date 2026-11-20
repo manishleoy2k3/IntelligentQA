@@ -888,6 +888,315 @@ export default function GuideCatalogClient({
                 </div>
               </div>
             )}
+
+            {/* Playwright Enterprise Framework Architecture */}
+            {(activeTrack === 'playwright' || activeTrack === 'playwright-ts') && (
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
+                <div className="border-b border-slate-800 pb-4">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
+                    <span>Enterprise Architecture Overview</span>
+                  </div>
+                  <h3 className="text-lg font-extrabold text-white tracking-tight">
+                    Playwright + TypeScript Modern Automation Architecture
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Modern high-velocity end-to-end testing platform utilizing direct WebSocket Chrome DevTools Protocol (CDP), isolated BrowserContexts, built-in auto-waiting fixtures, and multi-machine CI sharding.
+                  </p>
+                </div>
+
+                {/* Architecture Workflow Diagram */}
+                <div className="space-y-2">
+                  <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    Layered Framework Pipeline
+                  </div>
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3 font-sans">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
+                      {/* Layer 1 */}
+                      <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 1</span>
+                        <div className="font-bold text-white text-xs">Test Runner</div>
+                        <div className="text-[10px] text-slate-400">Playwright Runner · Parallel Workers</div>
+                      </div>
+                      {/* Layer 2 */}
+                      <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 2</span>
+                        <div className="font-bold text-white text-xs">Fixtures &amp; Pages</div>
+                        <div className="text-[10px] text-slate-400">Custom Fixtures · POM · Locators</div>
+                      </div>
+                      {/* Layer 3 */}
+                      <div className="bg-slate-900 border border-amber-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-amber-400">LAYER 3</span>
+                        <div className="font-bold text-white text-xs">Browser Engine</div>
+                        <div className="text-[10px] text-slate-400">CDP WebSockets · Isolated Contexts</div>
+                      </div>
+                      {/* Layer 4 */}
+                      <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 4</span>
+                        <div className="font-bold text-white text-xs">Trace &amp; CI/CD</div>
+                        <div className="text-[10px] text-slate-400">Trace Viewer · Sharding · GitHub Actions</div>
+                      </div>
+                    </div>
+
+                    {/* Visual Connector Flow */}
+                    <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
+                      <div className="text-emerald-400 font-bold">Execution Lifecycle Flow:</div>
+                      <div className="text-slate-400">
+                        Test Specs (.spec.ts) ➔ Worker Fixture (Browser) ➔ Isolated BrowserContext (storageState) ➔ Page Actions ➔ Built-in Auto-Waiting ➔ Web-First Assertions (expect) ➔ Trace Viewer (.zip) ➔ HTML Report
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Framework Pillars Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>1. Zero-Sleep Dynamic Auto-Waiting</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Eliminates test flakiness by verifying 5 actionability criteria (visible, stable, enabled, editable, receiving events) before every click or fill action automatically.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-blue-400" />
+                      <span>2. Sub-Millisecond BrowserContext Isolation</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Creates lightweight incognito browser contexts per test in milliseconds, sharing authenticated session states via <code className="text-blue-400">storageState.json</code> without repetitive logins.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-400" />
+                      <span>3. Native Network Interception &amp; Mocking</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Intercepts HTTP/REST requests directly with <code className="text-amber-400">page.route()</code> to stub responses, mock network latency, or simulate 500 error scenarios without external proxies.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-purple-400" />
+                      <span>4. Time-Travel Trace Viewer Diagnostics</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Captures full DOM snapshots, action filmstrips, console messages, and network HAR recordings with <code className="text-purple-400">trace: &apos;on-first-retry&apos;</code> with 0% overhead on passing tests.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* REST Assured Enterprise API Architecture */}
+            {activeTrack === 'api-testing' && (
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
+                <div className="border-b border-slate-800 pb-4">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-2">
+                    <span>Enterprise Architecture Overview</span>
+                  </div>
+                  <h3 className="text-lg font-extrabold text-white tracking-tight">
+                    REST Assured + Java Enterprise API Architecture
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Industry-standard layered API automation architecture leveraging Given-When-Then BDD syntax, Request/Response Specifications, Jackson POJO serialization, and JSON Schema contract validation.
+                  </p>
+                </div>
+
+                {/* Architecture Workflow Diagram */}
+                <div className="space-y-2">
+                  <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    Layered Framework Pipeline
+                  </div>
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3 font-sans">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
+                      {/* Layer 1 */}
+                      <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 1</span>
+                        <div className="font-bold text-white text-xs">Test Runner</div>
+                        <div className="text-[10px] text-slate-400">TestNG / JUnit 5 · Data Providers</div>
+                      </div>
+                      {/* Layer 2 */}
+                      <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 2</span>
+                        <div className="font-bold text-white text-xs">API Services</div>
+                        <div className="text-[10px] text-slate-400">Given-When-Then BDD · Endpoints</div>
+                      </div>
+                      {/* Layer 3 */}
+                      <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 3</span>
+                        <div className="font-bold text-white text-xs">Specs &amp; POJOs</div>
+                        <div className="text-[10px] text-slate-400">RequestSpecBuilder · Jackson SerDe</div>
+                      </div>
+                      {/* Layer 4 */}
+                      <div className="bg-slate-900 border border-amber-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-amber-400">LAYER 4</span>
+                        <div className="font-bold text-white text-xs">Contracts &amp; CI/CD</div>
+                        <div className="text-[10px] text-slate-400">JsonSchemaValidator · Allure Gates</div>
+                      </div>
+                    </div>
+
+                    {/* Visual Connector Flow */}
+                    <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
+                      <div className="text-purple-400 font-bold">Execution Lifecycle Flow:</div>
+                      <div className="text-slate-400">
+                        Test Suites (@Test) ➔ BaseApiTest (reqSpec) ➔ Request Body POJO (Serialization) ➔ HTTP Client Wire ➔ Response (HTTP 200) ➔ JSON Schema Validator ➔ JSONPath / AssertJ ➔ Allure Reports
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Framework Pillars Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-purple-400" />
+                      <span>1. Declarative Given-When-Then BDD</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Structures API tests into fluent, readable blocks separating preconditions (<code className="text-purple-400">given()</code>), HTTP verbs (<code className="text-purple-400">when()</code>), and assertions (<code className="text-purple-400">then()</code>).
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-blue-400" />
+                      <span>2. Reusable Specification Builders</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Consolidates base URIs, Bearer tokens, headers, and SLA response time checks into reusable <code className="text-blue-400">RequestSpecification</code> &amp; <code className="text-blue-400">ResponseSpecification</code> templates.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>3. Type-Safe POJO Serialization</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Leverages Jackson / Gson object mappers to serialize Java objects into JSON payloads and deserialize responses into typed objects, avoiding fragile string parsing.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-400" />
+                      <span>4. Automated Schema Contract Guardrails</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Validates 100% of the JSON response payload against RFC Draft-07 schemas using <code className="text-amber-400">matchesJsonSchemaInClasspath</code> to block contract breaking changes in CI/CD.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* AI for QA Enterprise Architecture */}
+            {activeTrack === 'ai-qa' && (
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
+                <div className="border-b border-slate-800 pb-4">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-2">
+                    <span>Enterprise Architecture Overview</span>
+                  </div>
+                  <h3 className="text-lg font-extrabold text-white tracking-tight">
+                    AI for QA &amp; Autonomous Agentic Testing Architecture
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Next-generation intelligent quality engineering leveraging LLM reasoning loops, autonomous test generation agents, dynamic locator self-healing, and automated root cause analysis (RCA).
+                  </p>
+                </div>
+
+                {/* Architecture Workflow Diagram */}
+                <div className="space-y-2">
+                  <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    Layered Framework Pipeline
+                  </div>
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3 font-sans">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
+                      {/* Layer 1 */}
+                      <div className="bg-slate-900 border border-cyan-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-cyan-400">LAYER 1</span>
+                        <div className="font-bold text-white text-xs">Agentic Planner</div>
+                        <div className="text-[10px] text-slate-400">ReAct Loop · Task Decomposition</div>
+                      </div>
+                      {/* Layer 2 */}
+                      <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 2</span>
+                        <div className="font-bold text-white text-xs">Prompt &amp; RAG</div>
+                        <div className="text-[10px] text-slate-400">DOM Tree Reduction · Few-Shot QA</div>
+                      </div>
+                      {/* Layer 3 */}
+                      <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 3</span>
+                        <div className="font-bold text-white text-xs">Self-Healing Engine</div>
+                        <div className="text-[10px] text-slate-400">Playwright/Selenium · Semantic Recovery</div>
+                      </div>
+                      {/* Layer 4 */}
+                      <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 4</span>
+                        <div className="font-bold text-white text-xs">Vision &amp; RCA</div>
+                        <div className="text-[10px] text-slate-400">Multimodal Diff · Defect Reporting</div>
+                      </div>
+                    </div>
+
+                    {/* Visual Connector Flow */}
+                    <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
+                      <div className="text-cyan-400 font-bold">Execution Lifecycle Flow:</div>
+                      <div className="text-slate-400">
+                        User Story / Requirement ➔ QA Agent Planner ➔ Reduced DOM Snapshot ➔ LLM Reasoning (Gemini / Claude) ➔ Action Dispatch (Playwright/Selenium) ➔ Self-Healing Recovery ➔ Vision Diff ➔ Jira Bug Report
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Framework Pillars Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                      <span>1. Autonomous Scenario Generation</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Converts acceptance criteria and Jira user stories directly into executable BDD test scenarios and Playwright/Selenium suites using targeted QA system prompts.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>2. Semantic Self-Healing Locators</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Dynamically recalculates broken locators at runtime by matching element visual positions, accessibility roles, and semantic parent trees without manual test maintenance.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-blue-400" />
+                      <span>3. Synthetic Test Data Synthesis</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Generates edge-case, localized, and privacy-compliant (PII-safe) synthetic payloads on demand to stress test validation constraints and boundary conditions.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-purple-400" />
+                      <span>4. Automated Root Cause Analysis (RCA)</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Analyzes failure stack traces, browser console errors, and network HAR recordings to automatically classify whether failures are real product bugs or transient network flakiness.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -171,15 +171,15 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         <button
           type="button"
           onClick={() => setShowKeyModal(true)}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm transition-all border shadow-sm cursor-pointer active:scale-95 select-none ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-white ${
             hasGeminiKey
-              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
-              : "bg-[#1E1E1E] hover:bg-[#282828] text-amber-400 border-amber-500/30"
+              ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 shadow-[0_0_18px_rgba(245,158,11,0.35)] border border-amber-400/40 hover:opacity-95"
+              : "bg-gradient-to-r from-zinc-800 via-amber-950 to-zinc-800 text-amber-200 border border-amber-500/40 hover:bg-zinc-800"
           }`}
           title="Gemini API Key: Configure your free Google AI Studio key"
         >
-          <Key className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span>{hasGeminiKey ? "Gemini Key: Active" : "Add Gemini Key"}</span>
+          <Key className="w-4 h-4 text-white shrink-0" />
+          <span className="font-extrabold tracking-tight">{hasGeminiKey ? "Gemini Key: Active" : "Add Gemini Key"}</span>
         </button>
 
         {/* 1. "AI Coding Coach" Button (formerly "Ask AI") */}
@@ -187,7 +187,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           type="button"
           onClick={handleOpenAskAI}
           aria-label="AI Coding Coach"
-          className="flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(129,255,137,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm"
+          className="flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(129,255,137,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm border border-emerald-400/30"
           title="AI Coding Coach: Coding queries, algorithms, syntax, and programming help (Ask AI)"
         >
           <Sparkles className="w-4 h-4 text-white shrink-0" />
@@ -216,11 +216,11 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
             <Link
               href={`/guides/${currentGuideTrack}?tab=import`}
               aria-label="Add Guide"
-              className="flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 bg-[#181818] hover:bg-[#222222] text-zinc-200 hover:text-white border border-[#2B2B2B] hover:border-[#81FF89]/50 rounded-full font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
+              className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:opacity-95 text-white border border-purple-400/40 rounded-full font-extrabold text-xs sm:text-sm shadow-[0_0_18px_rgba(168,85,247,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
               title="Add Guide: Create architecture guides, import JSON/CSV, or download templates"
             >
-              <BookPlus className="w-4 h-4 text-[#81FF89] shrink-0" />
-              <span className="font-bold tracking-tight">Add Guide</span>
+              <BookPlus className="w-4 h-4 text-white shrink-0" />
+              <span className="font-extrabold tracking-tight">Add Guide</span>
             </Link>
           );
         })()}
