@@ -27,7 +27,7 @@ export default function Footer() {
           </div>
 
           {/* Right Columns: Product, Solutions, Resources, Company (Span 8) */}
-          <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+          <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-8">
             {/* Column 1: Product */}
             <div className="space-y-3.5">
               <h4 className="font-bold text-neutral-900 text-sm tracking-tight">
@@ -142,64 +142,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Column 3: Resources */}
-            <div className="space-y-3.5">
-              <h4 className="font-bold text-neutral-900 text-sm tracking-tight">
-                Resources
-              </h4>
-              <ul className="space-y-2.5 text-sm text-neutral-500">
-                <li>
-                  <Link
-                    href="/guides"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
-                    Documentation &amp; Concept Guides
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/prompt-lab"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
-                    QA Prompt Engineering Library
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/interview-questions"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
-                    800+ SDET Interview Bank
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/interview-griller"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
-                    AI Mock Interview Simulator
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="#faq"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
-                    Frequently Asked Questions (FAQs)
-                  </a>
-                </li>
-                <li>
-                  <Link
-                    href="/sandbox/api"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
-                    Interactive API Mock Sandbox
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 4: Company */}
+            {/* Column 3: Company */}
             <div className="space-y-3.5">
               <h4 className="font-bold text-neutral-900 text-sm tracking-tight">
                 Company
@@ -228,14 +171,6 @@ export default function Footer() {
                   >
                     Skills Benchmark
                   </Link>
-                </li>
-                <li>
-                  <a
-                    href="#faq"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
-                    Free AI Studio Access
-                  </a>
                 </li>
                 <li>
                   <Link

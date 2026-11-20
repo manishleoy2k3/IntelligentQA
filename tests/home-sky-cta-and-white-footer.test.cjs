@@ -51,7 +51,8 @@ test('2. Footer: White background matching Emergent reference design', () => {
   // Verify categorized columns
   assert.ok(footerFile.includes('Product'), 'Footer has Product column');
   assert.ok(footerFile.includes('Solutions'), 'Footer has Solutions column');
-  assert.ok(footerFile.includes('Resources'), 'Footer has Resources column');
+  // Resources column removed per user request
+  // assert.ok(footerFile.includes('Resources'), 'Footer has Resources column');
   assert.ok(footerFile.includes('Company'), 'Footer has Company column');
 
   // Verify copyright and design credit line
