@@ -594,32 +594,136 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
               {/* EMPTY STATE */}
               {stagedGuides.length === 0 ? (
-                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-10 text-center space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-800 text-slate-400 flex items-center justify-center mx-auto border border-slate-700">
-                    <UploadCloud className="w-7 h-7" />
+                <div className="space-y-6">
+                  {/* Notice card */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-800 text-blue-400 flex items-center justify-center mx-auto border border-slate-700">
+                      <UploadCloud className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-sm font-bold text-white">No Imported Guides Pending Review</h3>
+                      <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                        Your staging area is empty. Click <strong>Import Guide</strong> to upload a JSON or CSV file of concepts, or download the template to prepare your questions.
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowTemplateModal(true)}
+                        className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition cursor-pointer"
+                      >
+                        Download Template
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowImportModal(true)}
+                        className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
+                      >
+                        <Upload className="w-4 h-4" />
+                        <span>Import Guides</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <h3 className="text-base font-bold text-white">No Imported Guides Pending Review</h3>
-                    <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                      Your staging area is empty. Click <strong>Import Guide</strong> to upload a JSON or CSV file of concepts, or download the template to prepare your questions.
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowTemplateModal(true)}
-                      className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition cursor-pointer"
-                    >
-                      Download Template
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowImportModal(true)}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
-                    >
-                      <Upload className="w-4 h-4" />
-                      <span>Import Guides</span>
-                    </button>
+
+                  {/* Generic details of Selenium Java Automation Framework with architectural diagram */}
+                  <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
+                    <div className="border-b border-slate-800 pb-4">
+                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-2">
+                        <span>Enterprise Architecture Overview</span>
+                      </div>
+                      <h3 className="text-lg font-extrabold text-white tracking-tight">
+                        Selenium WebDriver + Java Enterprise Framework Architecture
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                        Industry-standard layered test automation architecture utilizing Core Java, Selenium 4 W3C WebDriver, TestNG multi-threading, and Page Object Model (POM) with decoupled reporting and continuous delivery.
+                      </p>
+                    </div>
+
+                    {/* Architecture Workflow Diagram */}
+                    <div className="space-y-2">
+                      <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                        Layered Framework Pipeline
+                      </div>
+                      <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3 font-sans">
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
+                          {/* Layer 1 */}
+                          <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
+                            <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 1</span>
+                            <div className="font-bold text-white text-xs">Test Runner</div>
+                            <div className="text-[10px] text-slate-400">TestNG / JUnit 5 · Parallel Execution</div>
+                          </div>
+                          {/* Layer 2 */}
+                          <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
+                            <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 2</span>
+                            <div className="font-bold text-white text-xs">Page Objects</div>
+                            <div className="text-[10px] text-slate-400">POM · Encapsulated Locators &amp; Actions</div>
+                          </div>
+                          {/* Layer 3 */}
+                          <div className="bg-slate-900 border border-amber-500/30 rounded-xl p-3 space-y-1">
+                            <span className="text-[10px] font-mono font-bold text-amber-400">LAYER 3</span>
+                            <div className="font-bold text-white text-xs">Driver Factory</div>
+                            <div className="text-[10px] text-slate-400">ThreadLocal&lt;WebDriver&gt; · W3C Protocols</div>
+                          </div>
+                          {/* Layer 4 */}
+                          <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
+                            <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 4</span>
+                            <div className="font-bold text-white text-xs">Reports &amp; CI/CD</div>
+                            <div className="text-[10px] text-slate-400">Allure · Docker Grid · GitHub Actions</div>
+                          </div>
+                        </div>
+
+                        {/* Visual Connector Flow */}
+                        <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
+                          <div className="text-emerald-400 font-bold">Execution Lifecycle Flow:</div>
+                          <div className="text-slate-400">
+                            Test Suites (testng.xml) ➔ BaseTest (@BeforeMethod) ➔ ThreadLocal DriverFactory ➔ Page Action ➔ Explicit WebDriverWait ➔ Assertions (AssertJ) ➔ Listeners (@AfterMethod) ➔ Allure Reports
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Framework Pillars Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                          <span>1. Robust Dynamic Synchronization</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Eliminates test flakiness by replacing rigid <code className="text-rose-400">Thread.sleep()</code> with dynamic <code className="text-emerald-400">WebDriverWait</code> &amp; <code className="text-emerald-400">FluentWait</code> polling against expected conditions.
+                        </p>
+                      </div>
+
+                      <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-blue-400" />
+                          <span>2. Thread-Safe Parallel Scaling</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Utilizes <code className="text-blue-400">ThreadLocal&lt;WebDriver&gt;</code> ensuring each parallel test runs isolated in its own JVM thread without race conditions or browser cross-contamination.
+                        </p>
+                      </div>
+
+                      <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-amber-400" />
+                          <span>3. Clean Page Object Model</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Decouples UI locators (<code className="text-amber-400">By.id</code>, <code className="text-amber-400">By.xpath</code>) and user actions from test validations, providing single-point maintenance when application DOM updates.
+                        </p>
+                      </div>
+
+                      <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-1.5">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-purple-400" />
+                          <span>4. Cross-Browser &amp; Headless Ready</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Integrates Selenium 4 Selenium Manager for automated browser driver resolution across Chrome, Firefox, and Edge with containerized CI execution.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (

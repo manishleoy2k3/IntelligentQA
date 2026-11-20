@@ -195,31 +195,79 @@ export default function AddGuideModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#121212] border border-[#262626] w-full max-w-2xl rounded-[28px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] text-white">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#121212] border border-[#262626] w-full max-w-3xl rounded-[28px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] text-white">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[#222222] bg-[#161616]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 border-b border-[#222222] bg-[#161616] gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-[#81FF89] flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-[#81FF89] flex items-center justify-center shadow-xs shrink-0">
               <BookOpen className="w-5 h-5 text-[#81FF89]" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight">
-                Add Concept Guide
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                Import Guide &amp; Management
               </h2>
               <p className="text-xs text-zinc-400">
-                Author a new architecture guide, import via file, or download templates
+                Author new architecture guides, import JSON/CSV files, or download templates
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#1F1F1F] hover:bg-[#282828] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {/* Quick action button pills matching 2nd image */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0F0F0F] border border-[#262626]">
+              <button
+                type="button"
+                onClick={() => setActiveTab('template')}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                  activeTab === 'template'
+                    ? 'bg-slate-800 text-emerald-400 border border-slate-700'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+                title="Download or preview guide import template"
+              >
+                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden sm:inline">Import Template</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('import')}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer ${
+                  activeTab === 'import'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-blue-600/80 hover:bg-blue-500 text-white'
+                }`}
+                title="Upload or paste JSON/CSV guides"
+              >
+                <Upload className="w-3.5 h-3.5 text-white" />
+                <span>Import Guide</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('manual')}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                  activeTab === 'manual'
+                    ? 'bg-slate-800 text-white border border-slate-700'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+                title="Manually create a new guide"
+              >
+                <Plus className="w-3.5 h-3.5 text-zinc-400" />
+                <span>Add Guide</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-[#1F1F1F] hover:bg-[#282828] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 ml-1"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation: Add Guide Form | Import Guide | Import Guide Template */}
