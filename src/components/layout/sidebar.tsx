@@ -444,48 +444,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                       {/* All Individual Lessons with total hours of each individual lesson */}
                       {isExpanded && (
                         <div className="pl-3 pr-0.5 py-0.5 space-y-0.5 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
-                          {/* 1. Track Overview & Architect Setup Blueprint */}
-                          <Link
-                            href={`/tracks/${track.id}`}
-                            onClick={onCloseMobile}
-                            className={`flex items-center justify-between px-2 py-1.5 rounded-md text-[11px] font-semibold transition-all group ${
-                              pathname === `/tracks/${track.id}`
-                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold'
-                                : 'text-emerald-600/90 dark:text-emerald-400/90 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-500/10'
-                            }`}
-                            title={`${track.displayTitle}: Architect Blueprint & Setup from Scratch`}
-                          >
-                            <span className="truncate flex items-center gap-1.5">
-                              <Compass className="w-3 h-3 text-emerald-500 shrink-0" />
-                              <span>Architect Blueprint &amp; Setup</span>
-                            </span>
-                            <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-mono">
-                              Guide
-                            </span>
-                          </Link>
-
-                          {/* 2. Architecture Concept Guides Library */}
-                          <Link
-                            href={`/guides/${guideSlug}`}
-                            onClick={onCloseMobile}
-                            className={`flex items-center justify-between px-2 py-1.5 rounded-md text-[11px] font-semibold transition-all group ${
-                              pathname === `/guides/${guideSlug}` || pathname?.startsWith(`/guides/${guideSlug}/`)
-                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold'
-                                : 'text-sky-600/90 dark:text-sky-400/90 hover:text-sky-600 dark:hover:text-sky-300 hover:bg-sky-500/10'
-                            }`}
-                            title={`${track.displayTitle}: Concept Guides & Architecture Library`}
-                          >
-                            <span className="truncate flex items-center gap-1.5">
-                              <BookOpen className="w-3 h-3 text-sky-500 shrink-0" />
-                              <span>Concept Guides Library</span>
-                            </span>
-                            <span className="text-[9px] px-1 py-0.2 rounded bg-sky-500/10 text-sky-500 border border-sky-500/20 font-mono">
-                              Docs
-                            </span>
-                          </Link>
-
-                          {/* Divider between Guides and Curriculum Lessons */}
-                          <div className="pt-1 pb-0.5 px-2 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-slate-400 dark:text-neutral-500 border-t border-slate-200/60 dark:border-neutral-800/60 mt-1">
+                          {/* Header showing lesson count and admin badge */}
+                          <div className="pt-0.5 pb-1 px-2 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-slate-400 dark:text-neutral-500">
                             <span>Step-by-Step Lessons</span>
                             <div className="flex items-center gap-1">
                               {isAdmin && (
