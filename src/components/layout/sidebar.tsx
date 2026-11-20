@@ -275,7 +275,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       id: 'api-testing',
       displayTitle: 'Rest Assured (API)',
       stage: 'Stage 3',
-      totalHours: '18h',
+      totalHours: '22h',
       tag: 'API',
       icon: Server,
       iconColor: 'text-purple-500',

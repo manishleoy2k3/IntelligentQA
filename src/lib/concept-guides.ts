@@ -58,8 +58,8 @@ export const TRACK_META: Record<string, { id: string; name: string; tag: string;
   },
   'ai-qa': {
     id: 'ai-qa',
-    name: 'AI for QA & Autonomous Agents',
-    tag: 'AI & LLM Tools',
+    name: 'AI for QA',
+    tag: '',
     color: 'cyan',
     badgeClass: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
   },

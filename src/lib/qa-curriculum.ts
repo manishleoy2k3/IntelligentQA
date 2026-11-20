@@ -1289,8 +1289,8 @@ export const QA_TRACKS: Track[] = [
     color: 'purple',
     badgeColor: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-800',
     iconName: 'Server',
-    totalLessons: 8,
-    estimatedHours: 18,
+    totalLessons: 10,
+    estimatedHours: 22,
     modules: [
       {
         id: 'api-fundamentals',
@@ -1639,6 +1639,92 @@ export const QA_TRACKS: Track[] = [
                   requiredPatterns: ["matchesJsonSchemaInClasspath(\"schemas/product.json\")"],
                   forbiddenPatterns: ['Thread.sleep'],
                   description: 'Validates required patterns'
+                }
+              ]
+            }
+          },
+          {
+            id: 'api-json-schema',
+            moduleId: 'api-fundamentals',
+            trackId: 'api-testing',
+            title: "9. JSON Schema Validation & Contract Testing",
+            description: "Verify API response payloads against strict JSON schema definitions to catch breaking contract regressions before clients fail.",
+            durationMinutes: 120,
+            badge: 'api-testing',
+            level: 'Intermediate',
+            manualContext: {
+              title: "Contract & Schema Verification",
+              steps: ["Manual tester compares JSON response in Postman against Swagger/OpenAPI documentation."],
+              painPoints: ["Checking 50 fields across complex JSON payloads manually is error-prone and misses datatype regressions."]
+            },
+            automationContext: {
+              playwrightTs: "// Validate API response schema using AJV or jsonschema",
+              seleniumJava: 'given().when().get("/users/101").then().assertThat().body(matchesJsonSchemaInClasspath("schemas/user-schema.json"));',
+              explanation: "JSON Schema Validation checks the entire response payload against a predefined Draft v7/v12 JSON Schema definition, validating field types, mandatory properties, and allowed values in one assertion.",
+              bestPractices: ["Store JSON Schema files in src/test/resources/schemas/", "Validate schema on all critical endpoints in CI"],
+              antiPatterns: ["Asserting 50 individual fields manually instead of enforcing schema contracts"]
+            },
+            aiAugmentation: {
+              promptExample: "Generate a Draft-07 JSON Schema definition for a user profile API response.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Assert that the response body matches the JSON schema user-schema.json using matchesJsonSchemaInClasspath.",
+              starterCode: {
+                java: "public class SchemaValidationLab {\n    public void validateContract(Response response) {\n        // Assert schema\n    }\n}"
+              },
+              solutionCode: {
+                java: "public class SchemaValidationLab {\n    public void validateContract(Response response) {\n        response.then().assertThat().body(matchesJsonSchemaInClasspath(\"schemas/user-schema.json\"));\n    }\n}"
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["matchesJsonSchemaInClasspath", "user-schema.json"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates JSON Schema assertion pattern'
+                }
+              ]
+            }
+          },
+          {
+            id: 'api-req-res-spec',
+            moduleId: 'api-fundamentals',
+            trackId: 'api-testing',
+            title: "10. RequestSpecification & ResponseSpecification Architecture",
+            description: "Build clean, reusable API automation suites using specifications to eliminate boilerplate header and auth configuration.",
+            durationMinutes: 120,
+            badge: 'api-testing',
+            level: 'Intermediate',
+            manualContext: {
+              title: "Global Request Headers & Environment Setup",
+              steps: ["Tester configures base URLs, Bearer tokens, and Content-Type in Postman collection variables."],
+              painPoints: ["Repeating base URLs and headers across 100 test methods in code causes massive maintenance overhead."]
+            },
+            automationContext: {
+              playwrightTs: "// Use request.newContext({ baseURL, extraHTTPHeaders }) for shared request specifications",
+              seleniumJava: 'RequestSpecification reqSpec = new RequestSpecBuilder().setBaseUri("https://api.intelligentqa.io/v1").setContentType(ContentType.JSON).build();\\nResponseSpecification resSpec = new ResponseSpecBuilder().expectStatusCode(200).build();\\ngiven().spec(reqSpec).when().get("/users").then().spec(resSpec);',
+              explanation: "RequestSpecification and ResponseSpecification decouple boilerplate HTTP headers, base URIs, and standard assertions into centralized reusable specifications.",
+              bestPractices: ["Define specifications in a common BaseApiTest class", "Include SLA response time validations in ResponseSpecification"],
+              antiPatterns: ["Hardcoding base URLs and headers into every individual test method"]
+            },
+            aiAugmentation: {
+              promptExample: "Create reusable RequestSpecification and ResponseSpecification builders in REST Assured.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Build a RequestSpecification with base URI and JSON content type using RequestSpecBuilder.",
+              starterCode: {
+                java: "public class SpecBuilderLab {\n    public RequestSpecification createSpec() {\n        // Build RequestSpecification\n    }\n}"
+              },
+              solutionCode: {
+                java: 'public class SpecBuilderLab {\\n    public RequestSpecification createSpec() {\\n        return new RequestSpecBuilder().setBaseUri("https://api.intelligentqa.io/v1").setContentType(ContentType.JSON).build();\\n    }\\n}'
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["RequestSpecBuilder", "setBaseUri", "setContentType", "build()"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates RequestSpecification builder'
                 }
               ]
             }

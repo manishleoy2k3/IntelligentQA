@@ -7814,6 +7814,274 @@ public class JsonSchemaValidationTest {
     };
   }
 
+  // 9. JSON Schema Validation & Contract Testing
+  if (lessonId === 'api-json-schema') {
+    return {
+      title: '9. JSON Schema Validation & Contract Testing',
+      category,
+      tagline: 'Verify API Response Payloads Against Strict JSON Schema Definitions to Catch Breaking Changes',
+      overview: 'Validating specific fields (like body("id", equalTo(1))) only checks values, not contract integrity. If a backend developer changes a field from an Integer to a String, alters a date format, or removes a required array, simple field assertions might pass while client applications crash. JSON Schema Validation checks the entire response payload against a predefined Draft v7/v12 JSON Schema definition, validating field types, mandatory properties, regex patterns, and allowed values in one single assertion.',
+      whyItMattersForManualQA: 'In manual testing, checking that all 50 fields of an e-commerce API response match expected types and nullability rules is exhausting and error-prone. With JSON Schema Validation, a single line of code verifies 100% of the payload structure in under 10 milliseconds, catching contract regressions instantly.',
+      architectureUnderTheHood: {
+        title: 'JSON Schema Validator Engine & AST Verification',
+        flowOrMechanism: 'API Response Stream => Rest Assured JsonSchemaValidator (NetworkNT / Jackson) => Reads Contract Schema from classpath (user-schema.json) => Recursive AST Tree Validation (Types, Required Fields, Format RegEx, Enums) => Passes or Throws Detailed Contract Violation Report',
+        keyTakeaway: 'Matches the entire JSON response against an RFC-standard schema contract, guaranteeing frontend and mobile client compatibility.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Define JSON Schema Contract Specification',
+          badge: 'Schema Design',
+          summary: 'Place schema definition file in src/test/resources/schemas/user-schema.json.',
+          explanation: 'JSON Schema standardizes requirements for data types, mandatory keys, and value boundaries.',
+          codeSnippet: {
+            language: 'json',
+            code: `{\n  "$schema": "http://json-schema.org/draft-07/schema#",\n  "type": "object",\n  "required": ["id", "name", "email", "role"],\n  "properties": {\n    "id": { "type": "string" },\n    "name": { "type": "string", "minLength": 2 },\n    "email": { "type": "string", "format": "email" },\n    "role": { "type": "string", "enum": ["ADMIN", "SDET", "VIEWER"] }\n  }\n}`,
+            caption: 'user-schema.json Draft-07 specification'
+          },
+          proTip: 'Generate schema files directly from Swagger/OpenAPI specs to ensure accuracy.'
+        },
+        {
+          stepNumber: 2,
+          title: isPython ? 'Validate Schema in Python using jsonschema' : 'Validate Schema in Java with matchesJsonSchemaInClasspath',
+          badge: 'Assertion',
+          summary: 'Assert the complete response payload matches the schema in one line.',
+          explanation: 'Rest Assured uses JsonSchemaValidator to parse and validate against the schema on the classpath.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython ? `import jsonschema\n\nresponse = requests.get("https://api.intelligentqa.io/v1/users/usr-101")\njsonschema.validate(instance=response.json(), schema=user_schema)` : `import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;\n\ngiven()\n    .baseUri("https://api.intelligentqa.io/v1")\n.when()\n    .get("/users/usr-101")\n.then()\n    .statusCode(200)\n    .body(matchesJsonSchemaInClasspath("schemas/user-schema.json"));`,
+            caption: isPython ? 'Python jsonschema validation' : 'REST Assured matchesJsonSchemaInClasspath'
+          },
+          proTip: 'matchesJsonSchemaInClasspath looks automatically inside src/test/resources/.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual QA visually checks Postman response fields against Swagger spec one-by-one',
+          automatedApproach: 'response.then().body(matchesJsonSchemaInClasspath("schemas/user-schema.json"))',
+          whyItMatters: 'Mathematical proof of 100% schema contract compliance in 10ms.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production JSON Schema Validation (Python)' : 'Production JSON Schema Validation (Java REST Assured)',
+        description: isPython ? 'Python requests with jsonschema validation.' : 'REST Assured test validating full response against classpath JSON schema.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Requests JSON Schema Validation
+# ==========================================
+import requests
+import jsonschema
+from jsonschema import validate
+
+USER_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["id", "name", "email", "role"],
+    "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "role": {"type": "string", "enum": ["ADMIN", "SDET", "VIEWER"]}
+    }
+}
+
+def test_user_json_schema_contract():
+    response = requests.get("https://api.intelligentqa.io/v1/users/usr-101")
+    assert response.status_code == 200
+    validate(instance=response.json(), schema=USER_SCHEMA)
+    print("✔ Contract schema validation passed!")` : `// ==========================================
+// Java REST Assured JSON Schema Validation
+// ==========================================
+package com.intelligentqa.api.contracts;
+
+import org.testng.annotations.Test;
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
+public class UserContractValidationTest {
+
+    @Test(description = "Verify User Profile Response Conforms to Strict JSON Schema Contract")
+    public void testUserResponseJsonSchema() {
+        given()
+            .baseUri("https://api.intelligentqa.io/v1")
+            .header("Authorization", "Bearer valid_sdet_token")
+            .header("Accept", "application/json")
+        .when()
+            .get("/users/usr-101")
+        .then()
+            .statusCode(200)
+            .body(matchesJsonSchemaInClasspath("schemas/user-schema.json"));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'matchesJsonSchemaInClasspath', explanation: 'Validates entire JSON body against classpath schema file.' },
+          { lineOrPattern: 'statusCode(200)', explanation: 'Verifies successful HTTP 200 status before schema validation.' }
+        ]
+      },
+      bestPractices: [
+        'Store JSON Schema definitions in src/test/resources/schemas/ with versioned names',
+        'Generate schema files directly from OpenAPI/Swagger specs to prevent drift',
+        'Use draft-07 or draft-2020-12 standards with strict additionalProperties: false where applicable'
+      ],
+      antiPatterns: [
+        'Writing 50 individual body() assertions instead of one schema validation',
+        'Accepting dynamic null values without explicit nullable: true in schema',
+        'Hardcoding JSON schemas as giant strings inside test classes'
+      ],
+      interviewQnA: {
+        question: 'What is the difference between field-level assertion and JSON Schema validation in Rest Assured?',
+        answer: 'Field-level assertions (e.g. body("id", equalTo(1))) only verify values of specific attributes you write tests for. JSON Schema validation validates the structural contract of the entire payload: data types, required fields, formats, regex patterns, and allowed enum values. If a backend developer changes an ID from an int to a string or deletes a required field, field-level assertions might not catch it, whereas schema validation catches it immediately.'
+      }
+    };
+  }
+
+  // 10. RequestSpecification & ResponseSpecification Architecture
+  if (lessonId === 'api-req-res-spec') {
+    return {
+      title: '10. RequestSpecification & ResponseSpecification Architecture',
+      category,
+      tagline: 'Build Clean, Reusable API Automation Suites Using Request & Response Specifications',
+      overview: 'In large-scale enterprise API test suites with 500+ endpoints, repeating base URLs, Bearer tokens, Content-Type headers, logging filters, and status code assertions in every test method creates thousands of lines of duplicate code. Rest Assured\'s RequestSpecBuilder and ResponseSpecBuilder consolidate shared HTTP configurations into reusable templates that can be applied across test classes or whole suites.',
+      whyItMattersForManualQA: "In Postman, you configure authorization and base URLs at the Collection folder level so every request inherits them automatically. RequestSpecification and ResponseSpecification provide this exact inheritance in code, ensuring DRY (Don't Repeat Yourself) architecture.",
+      architectureUnderTheHood: {
+        title: 'SpecBuilder Composite Architecture',
+        flowOrMechanism: 'RequestSpecBuilder (baseUri + headers + auth + filters) => RequestSpecification Template => Injected into given().spec(requestSpec) => ResponseSpecification (statusCode + contentType + responseTime) => Validated in then().spec(responseSpec)',
+        keyTakeaway: 'Decouples boilerplate HTTP configurations from business validation logic.',
+      },
+      stepByStepGuide: [
+        {
+          stepNumber: 1,
+          title: 'Building Reusable RequestSpecification',
+          badge: 'RequestSpec',
+          summary: 'Configure RequestSpecBuilder with shared baseURI, headers, and filters.',
+          explanation: 'RequestSpecification captures global headers, credentials, and base paths.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython ? `class ApiClient:\n    def __init__(self, base_url="https://api.intelligentqa.io/v1", token="prod_token"):\n        self.session = requests.Session()\n        self.session.headers.update({"Authorization": f"Bearer {token}", "Content-Type": "application/json"})` : `RequestSpecification reqSpec = new RequestSpecBuilder()\n    .setBaseUri("https://api.intelligentqa.io/v1")\n    .addHeader("Authorization", "Bearer prod_sdet_token")\n    .setContentType(ContentType.JSON)\n    .build();`,
+            caption: 'RequestSpecification Builder'
+          },
+          proTip: 'Call .log(LogDetail.URI) in RequestSpecBuilder to log requested endpoints.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Building Standard ResponseSpecification',
+          badge: 'ResponseSpec',
+          summary: 'Configure ResponseSpecBuilder with standard expectations (status code, content type, SLA).',
+          explanation: 'ResponseSpecification unifies expected status codes, headers, and maximum response times.',
+          codeSnippet: {
+            language: isPython ? 'python' : 'java',
+            code: isPython ? `def assert_standard_response(res):\n    assert res.status_code == 200\n    assert res.headers["Content-Type"].startswith("application/json")\n    assert res.elapsed.total_seconds() < 2.0` : `ResponseSpecification resSpec = new ResponseSpecBuilder()\n    .expectStatusCode(200)\n    .expectContentType(ContentType.JSON)\n    .expectResponseTime(lessThan(2000L))\n    .build();`,
+            caption: 'ResponseSpecification Builder'
+          },
+          proTip: 'Include response time SLA checks in ResponseSpecification to catch latency regressions.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Tester configures Postman Collection Variables and Pre-request Scripts',
+          automatedApproach: 'Reusable RequestSpecification in BaseApiTest with automatic token injection',
+          whyItMatters: 'One place to update base URLs, API versions, or authentication headers across 1,000 tests.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production API Client & Specifications (Python)' : 'Production Request & Response Specifications (Java REST Assured)',
+        description: isPython ? 'Python requests session with centralized headers and response checks.' : 'Java REST Assured suite with RequestSpecBuilder and ResponseSpecBuilder.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Session & Standard Response Specification
+# ==========================================
+import requests
+
+class ApiClient:
+    def __init__(self, base_url="https://api.intelligentqa.io/v1", token="prod_sdet_token"):
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.session.headers.update({
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        })
+
+    def get(self, endpoint, **kwargs):
+        response = self.session.get(f"{self.base_url}{endpoint}", **kwargs)
+        assert response.status_code == 200, f"Expected 200 but got {response.status_code}"
+        assert response.elapsed.total_seconds() < 2.0, "Performance SLA exceeded"
+        return response
+
+def test_get_user_with_client():
+    client = ApiClient()
+    response = client.get("/users/usr-101")
+    assert response.json()["role"] == "SDET"` : `// ==========================================
+// Java REST Assured Specifications Suite
+// ==========================================
+package com.intelligentqa.api.specs;
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class ApiSpecificationSuiteTest {
+    protected static RequestSpecification reqSpec;
+    protected static ResponseSpecification resSpec;
+
+    @BeforeClass
+    public void setupSpecifications() {
+        reqSpec = new RequestSpecBuilder()
+            .setBaseUri("https://api.intelligentqa.io/v1")
+            .addHeader("Authorization", "Bearer prod_sdet_token")
+            .setContentType(ContentType.JSON)
+            .setAccept(ContentType.JSON)
+            .log(LogDetail.URI)
+            .build();
+
+        resSpec = new ResponseSpecBuilder()
+            .expectStatusCode(200)
+            .expectContentType(ContentType.JSON)
+            .expectResponseTime(lessThan(2000L))
+            .build();
+    }
+
+    @Test(description = "Execute API request with injected specifications")
+    public void testGetUserWithSpec() {
+        given()
+            .spec(reqSpec)
+            .pathParam("id", "usr-101")
+        .when()
+            .get("/users/{id}")
+        .then()
+            .spec(resSpec)
+            .body("role", equalTo("SDET"));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'RequestSpecBuilder', explanation: 'Assembles reusable request headers, base URL, and auth.' },
+          { lineOrPattern: 'ResponseSpecBuilder', explanation: 'Predefines standard assertions including status code and response time SLA.' }
+        ]
+      },
+      bestPractices: [
+        'Define RequestSpecification and ResponseSpecification in a common BaseApiTest class',
+        'Include logging filters (log(LogDetail.URI)) only for debug or on-failure modes',
+        'Combine ResponseSpecification with response time SLAs (< 2000ms)'
+      ],
+      antiPatterns: [
+        'Copy-pasting setBaseUri and Authorization headers into every individual test method',
+        'Over-constraining ResponseSpecification with tight assertions that break error tests (e.g. 404 tests)',
+        'Hardcoding environment URLs directly in specs instead of loading from config.properties'
+      ],
+      interviewQnA: {
+        question: 'How do RequestSpecification and ResponseSpecification improve framework maintainability?',
+        answer: "They implement the DRY (Don't Repeat Yourself) principle for API testing. Instead of duplicating base URIs, auth tokens, content-type headers, and standard status/time assertions across hundreds of tests, we encapsulate them in centralized specification objects. If the API version changes from /v1 to /v2 or the auth scheme changes, we update one spec builder and the entire suite reflects the change."
+      }
+    };
+  }
+
   // Fallback for any unanticipated lesson in API track
   return {
     title: cleanTitle,
@@ -9270,6 +9538,13 @@ export function getConceptCodeSnippet(
   if (trackId === 'selenium-java') {
     const doc = getSeleniumLessonDoc(lessonId, lang === 'python', lessonTitle);
     return doc.productionCodeExample.code;
+  }
+
+  if (trackId === 'api-testing') {
+    const doc = getRestAssuredLessonDoc(lessonId, lang === 'python', lessonTitle);
+    if (doc?.productionCodeExample?.code) {
+      return doc.productionCodeExample.code;
+    }
   }
 
   // 1. Core Java OOPs Framework
