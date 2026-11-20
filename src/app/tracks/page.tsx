@@ -58,7 +58,7 @@ export default function TracksDirectoryPage() {
       </div>
 
       {/* Manual Tester Transition Roadmap Guide (Emergent Card) */}
-      <div className="p-6 rounded-[24px] bg-[#161616] border border-[#262626] text-white shadow-xl space-y-4">
+      <div id="manual-qa-roadmap" className="p-6 rounded-[24px] bg-[#161616] border border-[#262626] text-white shadow-xl space-y-4 scroll-mt-24">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-[#81FF89] text-black">

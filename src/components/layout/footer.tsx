@@ -93,7 +93,7 @@ export default function Footer() {
               <ul className="space-y-2.5 text-sm text-neutral-500">
                 <li>
                   <Link
-                    href="/tracks"
+                    href="/tracks#manual-qa-roadmap"
                     className="hover:text-neutral-900 transition-colors"
                   >
                     Manual QA to SDET Roadmap
@@ -149,12 +149,12 @@ export default function Footer() {
               </h4>
               <ul className="space-y-2.5 text-sm text-neutral-500">
                 <li>
-                  <a
-                    href="#what-you-get"
+                  <Link
+                    href="/#what-you-get"
                     className="hover:text-neutral-900 transition-colors"
                   >
                     About IntelligentQA
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <Link
