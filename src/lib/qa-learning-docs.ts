@@ -3313,6 +3313,567 @@ public class ProductionTestListener implements ITestListener {
     };
   }
 
+  // 11. Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep
+  if (lessonId === 'sel-dynamic-waits') {
+    return {
+      title: '11. Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep',
+      category,
+      tagline: 'Master Dynamic Synchronization to Eliminate Flaky Tests and Replace Brittle Sleep Calls',
+      overview: 'Synchronization is the #1 cause of flaky automation tests in enterprise CI/CD pipelines. Modern web applications use asynchronous AJAX calls, React state hydration, and animations where elements exist in the DOM but cannot receive click actions yet. Using Thread.sleep() freezes the JVM thread unconditionally, dramatically slowing down suites. Selenium provides WebDriverWait (Explicit Wait) and FluentWait to poll the DOM dynamically until ExpectedConditions evaluate to true, proceeding instantly without unnecessary delays.',
+      whyItMattersForManualQA: 'A manual tester sees a loading spinner and naturally waits for it to vanish before clicking. If an automated script clicks while the spinner is active, the click is intercepted or fails. Using Thread.sleep(5000) wastes 5 seconds even if the spinner vanishes in 200ms. Dynamic synchronization clicks the exact millisecond the button becomes clickable!',
+      architectureUnderTheHood: {
+        title: 'WebDriverWait & FluentWait Polling Mechanism Under the Hood',
+        flowOrMechanism: 'Test Thread => Initial DOM Check => If Condition Met: Return Element Immediately => Else: Sleep for Polling Interval (e.g. 250ms/500ms) => Re-evaluate ExpectedCondition => If Max Timeout Reached: Throw TimeoutException',
+        keyTakeaway: 'WebDriverWait polls the browser every 500ms by default and ignores NoSuchElementException. FluentWait allows custom polling intervals (e.g., 250ms) and custom ignored exception lists (e.g., StaleElementReferenceException).',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Configuring Explicit WebDriverWait (Python)',
+          badge: 'Explicit Wait',
+          summary: 'Use WebDriverWait with expected_conditions for dynamic polling.',
+          explanation: 'WebDriverWait continually executes expected conditions at poll_frequency intervals until true or timeout.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python WebDriverWait with Expected Conditions',
+            code: `from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Dynamic explicit wait with 10s timeout and 250ms polling
+wait = WebDriverWait(driver, 10, poll_frequency=0.25)
+submit_btn = wait.until(EC.element_to_be_clickable((By.ID, "submit-order")))
+submit_btn.click()`
+          },
+          proTip: 'Never mix implicit wait with explicit wait: it leads to unpredictable compounded timeouts in WebDriver.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Custom FluentWait with Ignored Exceptions (Python)',
+          badge: 'Fluent Wait',
+          summary: 'Configure fine-grained polling and custom exception suppression.',
+          explanation: 'Suppresses StaleElementReferenceException during DOM re-rendering.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Custom Polling & Ignored Exceptions',
+            code: `from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+
+wait = WebDriverWait(
+    driver,
+    timeout=15,
+    poll_frequency=0.2,
+    ignored_exceptions=[NoSuchElementException, StaleElementReferenceException]
+)
+status = wait.until(lambda d: d.find_element(By.ID, "txn-status").text != "")`
+          },
+          proTip: 'Use lambda conditions for custom business checks like waiting for text to not be empty.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Enterprise WebDriverWait & ExpectedConditions (Java)',
+          badge: 'WebDriverWait',
+          summary: 'Wait dynamically for elementToBeClickable instead of hardcoded Thread.sleep.',
+          explanation: 'WebDriverWait polls every 500ms and immediately resumes execution as soon as the element is clickable.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java WebDriverWait Implementation',
+            code: `import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+// Dynamic Explicit Wait: 10 seconds max timeout
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+WebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("submit-order")));
+submitBtn.click();`
+          },
+          proTip: 'Use elementToBeClickable for buttons/links and visibilityOfElementLocated for content verification.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Configuring Enterprise FluentWait (Java)',
+          badge: 'FluentWait',
+          summary: 'Fine-tune polling frequency and ignore transient StaleElementReferenceExceptions.',
+          explanation: 'FluentWait allows setting custom polling intervals (e.g. 250ms) and suppressing specific exceptions.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java FluentWait with Custom Polling',
+            code: `import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+import java.time.Duration;
+
+Wait<WebDriver> fluentWait = new FluentWait<>(driver)
+    .withTimeout(Duration.ofSeconds(15))
+    .pollingEvery(Duration.ofMillis(250))
+    .ignoring(NoSuchElementException.class)
+    .ignoring(StaleElementReferenceException.class);
+
+WebElement status = fluentWait.until(d -> d.findElement(By.id("txn-status")));`
+          },
+          proTip: 'FluentWait is ideal for high-throughput microservices or high-velocity UI state changes.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual QA pauses 3-4 seconds visually until loading spinner disappears and button enables',
+          automatedApproach: 'WebDriverWait.until(ExpectedConditions.invisibilityOfElementLocated(spinner)) followed by elementToBeClickable(button)',
+          whyItMatters: 'Advances the exact millisecond the DOM transitions, saving hundreds of hours across daily test suites.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Dynamic Synchronization (Python)' : 'Production Dynamic Synchronization (Java)',
+        description: isPython ? 'Complete WebDriverWait & Fluent synchronization module.' : 'Complete Synchronization utility with WebDriverWait & FluentWait.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Selenium Dynamic Synchronization
+# ==========================================
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
+
+class SyncUtils:
+    @staticmethod
+    def wait_and_click(driver, locator, timeout=10):
+        wait = WebDriverWait(driver, timeout, poll_frequency=0.25, ignored_exceptions=[StaleElementReferenceException])
+        element = wait.until(EC.element_to_be_clickable(locator))
+        element.click()
+        return element` : `// ==========================================
+// Java Selenium Dynamic Synchronization Suite
+// ==========================================
+package com.intelligentqa.utils;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class DynamicWaitManager {
+    public static WebElement waitForClickable(WebDriver driver, By locator, int timeoutSec) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSec));
+        return wait.until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
+    public static WebElement waitForElementFluent(WebDriver driver, By locator, int timeoutSec, int pollingMs) {
+        Wait<WebDriver> wait = new FluentWait<>(driver)
+            .withTimeout(Duration.ofSeconds(timeoutSec))
+            .pollingEvery(Duration.ofMillis(pollingMs))
+            .ignoring(NoSuchElementException.class)
+            .ignoring(StaleElementReferenceException.class);
+        return wait.until(d -> d.findElement(locator));
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'WebDriverWait', explanation: 'Dynamic explicit wait with default 500ms polling.' },
+          { lineOrPattern: 'elementToBeClickable', explanation: 'Guarantees element is attached, visible, and enabled.' }
+        ]
+      },
+      bestPractices: [
+        'Always favor Explicit Waits over Implicit Waits. Mixing both causes unpredictable timeout compounding in Selenium.',
+        'Use ExpectedConditions.elementToBeClickable before click() and visibilityOf for assertions.',
+        'Never commit Thread.sleep() in production framework suites.'
+      ],
+      antiPatterns: [
+        'Setting a global implicit wait of 30 seconds and using Thread.sleep(5000) for animations.',
+        'Catching TimeoutException silently and continuing test execution without assertion.'
+      ],
+      interviewQnA: {
+        question: 'What is the key difference between Explicit Wait and FluentWait in Selenium?',
+        answer: 'Both are explicit waits that poll the DOM dynamically. WebDriverWait is a specialized subclass of FluentWait with default 500ms polling and NoSuchElementException suppression. FluentWait is the generic base class that allows defining custom polling frequencies (e.g. 100ms or 250ms) and suppressing custom exception classes (e.g. StaleElementReferenceException, ElementClickInterceptedException).'
+      }
+    };
+  }
+
+  // 12. ThreadLocal WebDriver for Parallel Test Execution
+  if (lessonId === 'sel-threadlocal-driver') {
+    return {
+      title: '12. ThreadLocal WebDriver for Parallel Test Execution',
+      category,
+      tagline: 'Design Thread-Safe WebDriver Architectures for High-Speed Multi-Threaded Parallel Suites',
+      overview: 'When executing tests in parallel using TestNG (parallel="methods" or parallel="classes"), sharing a single static WebDriver instance results in race conditions, session collisions, and tests failing unpredictably. ThreadLocal<WebDriver> isolates each browser instance to its own dedicated worker thread, allowing 10+ parallel tests on a multi-core machine or grid node without cross-test state leakage.',
+      whyItMattersForManualQA: 'Imagine 5 manual testers trying to type into the exact same browser window at the same time: chaos. In parallel automated testing, if you share a static WebDriver, all 5 threads send keystrokes into the same browser. ThreadLocal gives every single test its own private browser window and JVM thread.',
+      architectureUnderTheHood: {
+        title: 'ThreadLocal Architecture & Memory Isolation',
+        flowOrMechanism: 'TestNG ThreadPool (Worker 1, Worker 2, Worker 3) => Each Thread invokes DriverManager.getDriver() => JVM ThreadLocalMap returns isolated WebDriver instance => @AfterMethod invokes driver.quit() & driverThread.remove() to avoid memory leaks',
+        keyTakeaway: 'ThreadLocal stores values scoped strictly to the current executing Java Thread. Calling remove() in teardown prevents JVM thread-pool memory leaks.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Function-Scoped Pytest Fixtures for Isolation (Python)',
+          badge: 'Pytest Scope',
+          summary: 'Leverage pytest function scope to create clean isolated browser sessions per test.',
+          explanation: 'In Python pytest, function-scoped fixtures automatically provide independent browser instances per thread with pytest-xdist.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Isolated Fixture per Worker',
+            code: `import pytest
+from selenium import webdriver
+
+@pytest.fixture(scope="function")
+def driver():
+    # Fresh browser session per test worker thread
+    driver = webdriver.Chrome()
+    yield driver
+    driver.quit() # Guaranteed teardown per test`
+          },
+          proTip: 'Run parallel tests with pytest -n 4 to execute across 4 worker processes simultaneously.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Creating Thread-Safe DriverManager (Java)',
+          badge: 'DriverManager',
+          summary: 'Encapsulate ThreadLocal<WebDriver> with getDriver, setDriver, and quitDriver methods.',
+          explanation: 'ThreadLocal<WebDriver> ensures each thread accesses only its own browser session.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java DriverManager Implementation',
+            code: `package com.intelligentqa.driver;
+
+import org.openqa.selenium.WebDriver;
+
+public class DriverManager {
+    private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();
+
+    public static WebDriver getDriver() {
+        return driverThread.get();
+    }
+
+    public static void setDriver(WebDriver driver) {
+        driverThread.set(driver);
+    }
+
+    public static void quitDriver() {
+        if (driverThread.get() != null) {
+            driverThread.get().quit();
+            driverThread.remove(); // CRITICAL: Prevent JVM ThreadLocal memory leak
+        }
+    }
+}`
+          },
+          proTip: 'Always call driverThread.remove() after driver.quit() to prevent PermGen / Metaspace memory leaks.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Integrating with BaseTest Lifecycle & TestNG (Java)',
+          badge: 'BaseTest',
+          summary: 'Set driver in @BeforeMethod and clean up in @AfterMethod.',
+          explanation: 'Each test method gets a fresh isolated driver initialized by the DriverFactory.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java BaseTest with ThreadLocal',
+            code: `package com.intelligentqa.base;
+
+import com.intelligentqa.driver.DriverManager;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+
+public abstract class BaseTest {
+    @BeforeMethod
+    public void setUp() {
+        DriverManager.setDriver(new ChromeDriver());
+        DriverManager.getDriver().manage().window().maximize();
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        DriverManager.quitDriver();
+    }
+}`
+          },
+          proTip: 'In testng.xml set <suite name="Suite" parallel="methods" thread-count="4">.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Two testers run Test Case A and Test Case B in separate browser windows on their own laptops',
+          automatedApproach: 'TestNG runs Thread 1 and Thread 2 in parallel, each accessing its own isolated WebDriver via ThreadLocal',
+          whyItMatters: 'Reduces an 8-hour nightly regression test run down to 45 minutes.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Parallel Driver Architecture (Python)' : 'Production ThreadLocal DriverManager Architecture (Java)',
+        description: isPython ? 'Production pytest-xdist isolated fixture architecture.' : 'Production-grade ThreadLocal DriverManager and BaseTest integration.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Parallel WebDriver Architecture
+# ==========================================
+import pytest
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+@pytest.fixture(scope="function")
+def driver():
+    options = Options()
+    options.add_argument("--headless=new")
+    driver = webdriver.Chrome(options=options)
+    yield driver
+    driver.quit()` : `// ==========================================
+// Java ThreadLocal Driver Architecture
+// ==========================================
+package com.intelligentqa.driver;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+public final class DriverManager {
+    private static final ThreadLocal<WebDriver> tlDriver = new ThreadLocal<>();
+
+    private DriverManager() {}
+
+    public static WebDriver getDriver() {
+        return tlDriver.get();
+    }
+
+    public static void setDriver(WebDriver driver) {
+        tlDriver.set(driver);
+    }
+
+    public static void quitDriver() {
+        WebDriver driver = tlDriver.get();
+        if (driver != null) {
+            try {
+                driver.quit();
+            } finally {
+                tlDriver.remove(); // Guaranteed cleanup to prevent memory leaks
+            }
+        }
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'ThreadLocal<WebDriver>', explanation: 'Thread-scoped memory container for WebDriver.' },
+          { lineOrPattern: 'tlDriver.remove()', explanation: 'Cleans up thread-local storage to prevent memory leaks.' }
+        ]
+      },
+      bestPractices: [
+        'Always call driverThread.remove() after driver.quit() to prevent PermGen / Metaspace memory leaks.',
+        'Wrap driver initialization inside a Factory pattern (e.g. DriverFactory).',
+        'Use parallel="methods" or parallel="classes" in testng.xml with a sensible thread-count matching CPU cores.'
+      ],
+      antiPatterns: [
+        'Using public static WebDriver driver across base classes in parallel suites.',
+        'Forgetting to invoke remove(), causing zombie browser sessions on CI runners.'
+      ],
+      interviewQnA: {
+        question: 'How do you handle parallel test execution in Selenium without session collisions?',
+        answer: 'We use ThreadLocal<WebDriver> in our DriverManager. Each worker thread spawned by TestNG has its own isolated copy of the WebDriver instance. In @BeforeMethod, a new driver is instantiated and saved to the ThreadLocal variable. In @AfterMethod, driver.quit() is called followed by driverThread.remove() to avoid thread-pool memory leaks.'
+      }
+    };
+  }
+
+  // 13. Page Object Model (POM) & Component Architecture
+  if (lessonId === 'sel-pom-pattern') {
+    return {
+      title: '13. Page Object Model (POM) & Component Architecture',
+      category,
+      tagline: 'Build Scalable, Maintainable Test Architectures by Decoupling UI Locators from Assertions',
+      overview: 'Page Object Model (POM) is the industry-standard design pattern for test automation. Each web page is represented as a Java/Python class, encapsulating web elements (locators) and business actions (methods) while hiding WebDriver implementation details from test scripts. This drastically reduces maintenance costs: when a developer alters a button ID or DOM structure, changes are made in only one place (the Page class), without modifying 50 test cases.',
+      whyItMattersForManualQA: 'In manual testing, if the Login button changes color or moves, you still know what to click without rewriting the entire test scenario. POM provides this same separation: your test case says "loginPage.loginAs(user, pass)" while the Page Object handles the underlying DOM details.',
+      architectureUnderTheHood: {
+        title: 'POM Layered Decoupling Architecture',
+        flowOrMechanism: 'Test Case (Business Logic & Assertions) => Page Object (Encapsulated Locators & Actions) => Method Chaining (Returns next Page Object) => Selenium WebDriver (DOM Interaction)',
+        keyTakeaway: 'Page Objects encapsulate HOW to interact with the UI; Test methods define WHAT is being verified. Page Objects should never contain assertions.',
+      },
+      stepByStepGuide: isPython ? [
+        {
+          stepNumber: 1,
+          title: 'Encapsulated Page Object Class (Python)',
+          badge: 'Python POM',
+          summary: 'Define private locators and public business action methods.',
+          explanation: 'Use tuple locators and expose clean action methods returning the next page object.',
+          codeSnippet: {
+            language: 'python',
+            caption: 'Python Page Object Implementation',
+            code: `from selenium.webdriver.common.by import By
+
+class LoginPage:
+    def __init__(self, driver):
+        self._driver = driver
+        self._username = (By.ID, "user-email")
+        self._password = (By.ID, "user-password")
+        self._login_btn = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def login_as(self, email: str, password: str):
+        self._driver.find_element(*self._username).send_keys(email)
+        self._driver.find_element(*self._password).send_keys(password)
+        self._driver.find_element(*self._login_btn).click()
+        return DashboardPage(self._driver)`
+          },
+          proTip: 'Return DashboardPage(self._driver) to enable fluent method chaining.'
+        }
+      ] : [
+        {
+          stepNumber: 1,
+          title: 'Creating Fluent Page Object with Encapsulated Locators (Java)',
+          badge: 'Page Object',
+          summary: 'Encapsulate By locators privately and expose public business action methods.',
+          explanation: 'Keep locators private to prevent tests from directly accessing raw WebElements.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Fluent Page Object',
+            code: `package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class LoginPage {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    // Encapsulated locators: hidden from test classes
+    private final By emailInput = By.id("user-email");
+    private final By passwordInput = By.id("user-password");
+    private final By loginBtn = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public DashboardPage loginAs(String email, String password) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(emailInput)).sendKeys(email);
+        driver.findElement(passwordInput).sendKeys(password);
+        driver.findElement(loginBtn).click();
+        return new DashboardPage(driver); // Fluent transition
+    }
+}`
+          },
+          proTip: 'Use By locators instead of @FindBy PageFactory in modern Selenium 4 for thread safety.'
+        },
+        {
+          stepNumber: 2,
+          title: 'Writing Declarative Test Cases with Assertions (Java)',
+          badge: 'Test Class',
+          summary: 'Keep test cases readable, declarative, and focused solely on assertions.',
+          explanation: 'The test method calls Page Object methods and uses AssertJ or TestNG Assert for validations.',
+          codeSnippet: {
+            language: 'java',
+            caption: 'Java Test Case Using POM',
+            code: `package com.intelligentqa.tests;
+
+import com.intelligentqa.base.BaseTest;
+import com.intelligentqa.pages.LoginPage;
+import com.intelligentqa.pages.DashboardPage;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class LoginTest extends BaseTest {
+    @Test
+    public void testValidUserLogin() {
+        LoginPage loginPage = new LoginPage(getDriver());
+        DashboardPage dashboard = loginPage.loginAs("admin@intelligentqa.io", "Pass123!");
+        
+        Assert.assertTrue(dashboard.isWelcomeBannerDisplayed(), "Dashboard should be visible after login");
+    }
+}`
+          },
+          proTip: 'Page Objects should NEVER contain assertions. Assertions belong exclusively in test methods.'
+        }
+      ],
+      manualToAutomatedBridge: [
+        {
+          manualAction: 'Manual QA follows a test script: "Navigate to Login, enter credentials, verify Dashboard"',
+          automatedApproach: 'Test method mirrors human narrative: loginPage.loginAs(user, pass); Assert.assertTrue(dashboard.isDisplayed())',
+          whyItMatters: 'Anyone reading the test immediately understands business intent without getting lost in CSS selectors.',
+        }
+      ],
+      productionCodeExample: {
+        title: isPython ? 'Production Page Object Architecture (Python)' : 'Production Page Object Architecture (Java)',
+        description: isPython ? 'Complete Python Page Object Model with fluent transitions.' : 'Complete Java Page Object Model implementation with By locators.',
+        language: isPython ? 'python' : 'java',
+        code: isPython ? `# ==========================================
+# Python Production Page Object
+# ==========================================
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+class LoginPage:
+    def __init__(self, driver):
+        self._driver = driver
+        self._wait = WebDriverWait(driver, 10)
+        self._email = (By.ID, "user-email")
+        self._password = (By.ID, "user-password")
+        self._submit = (By.CSS_SELECTOR, "button[type='submit']")
+
+    def login_as(self, email: str, password: str):
+        self._wait.until(EC.visibility_of_element_located(self._email)).send_keys(email)
+        self._driver.find_element(*self._password).send_keys(password)
+        self._driver.find_element(*self._submit).click()
+        return DashboardPage(self._driver)` : `// ==========================================
+// Java Production Page Object Architecture
+// ==========================================
+package com.intelligentqa.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class LoginPage {
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    // Encapsulated locators
+    private final By emailField = By.id("user-email");
+    private final By passwordField = By.id("user-password");
+    private final By submitButton = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public DashboardPage loginAs(String email, String password) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(emailField)).sendKeys(email);
+        driver.findElement(passwordField).sendKeys(password);
+        driver.findElement(submitButton).click();
+        return new DashboardPage(driver);
+    }
+}`,
+        annotations: [
+          { lineOrPattern: 'By.id', explanation: 'Encapsulated private locator.' },
+          { lineOrPattern: 'return new DashboardPage', explanation: 'Fluent interface transitioning to next page.' }
+        ]
+      },
+      bestPractices: [
+        'Page Objects should NEVER contain assertions. Assertions belong exclusively in test methods.',
+        'Use By locators instead of @FindBy PageFactory in modern Selenium 4 for thread safety.',
+        'Return next Page Object on navigation actions for fluent method chaining.'
+      ],
+      antiPatterns: [
+        'Putting Assert.assertEquals inside Page class methods.',
+        'Exposing raw WebElement objects to test classes.',
+        'Hardcoding Thread.sleep() inside page action methods.'
+      ],
+      interviewQnA: {
+        question: 'Why should Page Objects never contain assertions in enterprise frameworks?',
+        answer: 'Assertions represent test verification criteria, whereas Page Objects represent the services and actions offered by the UI. If a Page Object contains assertions, it cannot be reused across scenarios expecting different outcomes (e.g. valid login vs invalid login vs locked account), and makes test failures harder to diagnose.'
+      }
+    };
+  }
+
   // Fallback for any unknown Selenium lesson
   return {
     title: cleanTitle,

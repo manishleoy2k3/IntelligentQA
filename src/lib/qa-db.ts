@@ -1538,6 +1538,35 @@ export const QADatabase = {
     if (!isBrowser()) return memoryDb.sdetTracks;
     const stored = getStoredItem<Track[] | null>('intelligentqa_db_sdet_tracks', null);
     if (stored && Array.isArray(stored) && stored.length > 0) {
+      // Reconcile with QA_TRACKS so newly added lessons/curriculum items are synced to browser storage
+      let updated = false;
+      for (const defaultTrack of QA_TRACKS) {
+        const storedTrack = stored.find(t => t.id === defaultTrack.id);
+        if (!storedTrack) {
+          stored.push(defaultTrack);
+          updated = true;
+          continue;
+        }
+        for (const defaultModule of defaultTrack.modules) {
+          const storedModule = storedTrack.modules.find(m => m.id === defaultModule.id);
+          if (!storedModule) {
+            storedTrack.modules.push(defaultModule);
+            updated = true;
+            continue;
+          }
+          for (const defaultLesson of defaultModule.lessons) {
+            const hasLesson = storedModule.lessons.some(l => l.id === defaultLesson.id);
+            if (!hasLesson) {
+              storedModule.lessons.push(defaultLesson);
+              updated = true;
+            }
+          }
+        }
+        storedTrack.totalLessons = storedTrack.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+      }
+      if (updated) {
+        setStoredItem('intelligentqa_db_sdet_tracks', stored);
+      }
       return stored;
     }
     // Seed database with initial curriculum

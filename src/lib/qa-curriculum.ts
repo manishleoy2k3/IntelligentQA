@@ -14,8 +14,8 @@ export const QA_TRACKS: Track[] = [
     color: 'amber',
     badgeColor: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800',
     iconName: 'Terminal',
-    totalLessons: 10,
-    estimatedHours: 26,
+    totalLessons: 13,
+    estimatedHours: 32,
     modules: [
       {
         id: 'java-oops-qa',
@@ -450,6 +450,135 @@ export const QA_TRACKS: Track[] = [
                   requiredPatterns: ["TakesScreenshot", "getScreenshotAs(OutputType.FILE)"],
                   forbiddenPatterns: ['Thread.sleep'],
                   description: 'Validates required patterns'
+                }
+              ]
+            }
+          },
+          {
+            id: 'sel-dynamic-waits',
+            moduleId: 'java-oops-qa',
+            trackId: 'selenium-java',
+            title: "11. Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep",
+            description: "Master dynamic synchronization to eliminate flaky tests, configure WebDriverWait, customize FluentWait polling intervals, and replace brittle sleep calls.",
+            durationMinutes: 120,
+            badge: 'selenium',
+            level: 'Intermediate',
+            manualContext: {
+              title: "Asynchronous UI Loading",
+              steps: ["Wait for AJAX spinners to vanish and verify submit button transitions to enabled state."],
+              painPoints: ["Using hardcoded Thread.sleep() either slows the suite down drastically or fails intermittently on slow CI runners."]
+            },
+            automationContext: {
+              playwrightTs: "// Playwright handles auto-waiting; Selenium uses explicit WebDriverWait\nawait page.locator('#submit-order').click();",
+              seleniumJava: "WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\nWebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id(\"submit-order\")));\nsubmitBtn.click();",
+              explanation: "WebDriverWait polls the DOM dynamically at 500ms intervals until the expected condition evaluates to true, proceeding instantly without artificial delay.",
+              bestPractices: ["Always favor Explicit/Fluent waits over Implicit waits", "Never use hardcoded Thread.sleep in production suites"],
+              antiPatterns: ["Mixing implicit and explicit waits causing unpredictable timeout compounding"]
+            },
+            aiAugmentation: {
+              promptExample: "Write a Selenium Java FluentWait with 250ms polling and NoSuchElementException ignoring.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Create a WebDriverWait with 10 seconds timeout and wait for an element to be clickable.",
+              starterCode: {
+                java: "public class SynchronizationLab {\n    public void clickWhenReady(WebDriver driver, By locator) {\n        // Implement WebDriverWait\n    }\n}"
+              },
+              solutionCode: {
+                java: "public class SynchronizationLab {\n    public void clickWhenReady(WebDriver driver, By locator) {\n        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\n        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));\n        element.click();\n    }\n}"
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["WebDriverWait", "ExpectedConditions.elementToBeClickable"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates dynamic explicit wait implementation'
+                }
+              ]
+            }
+          },
+          {
+            id: 'sel-threadlocal-driver',
+            moduleId: 'java-oops-qa',
+            trackId: 'selenium-java',
+            title: "12. ThreadLocal WebDriver for Parallel Test Execution",
+            description: "Design thread-safe WebDriver architectures for multi-threaded parallel execution in TestNG and CI/CD pipelines.",
+            durationMinutes: 120,
+            badge: 'selenium',
+            level: 'Advanced',
+            manualContext: {
+              title: "Concurrent Test Execution",
+              steps: ["Multiple testers executing tests in separate browser windows simultaneously."],
+              painPoints: ["Running parallel tests with a single shared driver instance causes cross-test interference, race conditions, and session crashes."]
+            },
+            automationContext: {
+              playwrightTs: "// Playwright isolates BrowserContext per test by default\ntest('isolated test', async ({ page }) => { ... });",
+              seleniumJava: "public class DriverManager {\n    private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();\n    public static WebDriver getDriver() { return driverThread.get(); }\n    public static void setDriver(WebDriver driver) { driverThread.set(driver); }\n    public static void quitDriver() {\n        if (driverThread.get() != null) {\n            driverThread.get().quit();\n            driverThread.remove();\n        }\n    }\n}",
+              explanation: "ThreadLocal scopes each browser instance strictly to the current executing JVM worker thread, ensuring clean parallel execution without race conditions.",
+              bestPractices: ["Always invoke driverThread.remove() in teardown to prevent thread-pool memory leaks", "Combine with TestNG parallel='methods'"],
+              antiPatterns: ["Using static WebDriver driver; shared across test classes in parallel suites"]
+            },
+            aiAugmentation: {
+              promptExample: "Generate a thread-safe DriverManager class in Java using ThreadLocal<WebDriver>.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Implement a thread-safe DriverManager with ThreadLocal<WebDriver> and proper remove() teardown.",
+              starterCode: {
+                java: "public class DriverManager {\n    private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();\n    // Implement getDriver, setDriver, and quitDriver\n}"
+              },
+              solutionCode: {
+                java: "public class DriverManager {\n    private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();\n    public static WebDriver getDriver() {\n        return driverThread.get();\n    }\n    public static void setDriver(WebDriver driver) {\n        driverThread.set(driver);\n    }\n    public static void quitDriver() {\n        if (driverThread.get() != null) {\n            driverThread.get().quit();\n            driverThread.remove();\n        }\n    }\n}"
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["ThreadLocal", "driverThread.get()", "driverThread.remove()"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates thread-safe driver management'
+                }
+              ]
+            }
+          },
+          {
+            id: 'sel-pom-pattern',
+            moduleId: 'java-oops-qa',
+            trackId: 'selenium-java',
+            title: "13. Page Object Model (POM) & Component Architecture",
+            description: "Build scalable, maintainable test architectures by cleanly decoupling page locators and user actions from assertions.",
+            durationMinutes: 120,
+            badge: 'selenium',
+            level: 'Intermediate',
+            manualContext: {
+              title: "Decoupling Test Logic from UI Elements",
+              steps: ["When a button locator changes in a new release, manual test steps remain the same."],
+              painPoints: ["If locators are hardcoded in test scripts, changing a single DOM element breaks 50 individual test cases."]
+            },
+            automationContext: {
+              playwrightTs: "export class LoginPage {\n  readonly page: Page;\n  constructor(page: Page) { this.page = page; }\n  async login(user: string, pass: string) { ... }\n}",
+              seleniumJava: "public class LoginPage {\n    private final WebDriver driver;\n    private final By emailInput = By.id(\"user-email\");\n    private final By passwordInput = By.id(\"user-password\");\n    private final By loginBtn = By.cssSelector(\"button[type='submit']\");\n    public LoginPage(WebDriver driver) { this.driver = driver; }\n    public DashboardPage loginAs(String email, String password) {\n        driver.findElement(emailInput).sendKeys(email);\n        driver.findElement(passwordInput).sendKeys(password);\n        driver.findElement(loginBtn).click();\n        return new DashboardPage(driver);\n    }\n}",
+              explanation: "Page Object Model encapsulates page locators and interaction methods inside dedicated page classes, decoupling DOM changes from test business logic.",
+              bestPractices: ["Never place assertions inside Page Object classes; keep assertions in test methods", "Use By locators for modern thread safety"],
+              antiPatterns: ["Exposing raw WebElement objects to test classes", "Mixing test assertions inside Page classes"]
+            },
+            aiAugmentation: {
+              promptExample: "Create a Selenium Java Page Object for a Checkout page using By locators and method chaining.",
+              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
+              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
+            },
+            challenge: {
+              instruction: "Create a LoginPage class with encapsulated By locators and a loginAs action method.",
+              starterCode: {
+                java: "public class LoginPage {\n    private final WebDriver driver;\n    // Define locators and loginAs method\n}"
+              },
+              solutionCode: {
+                java: "public class LoginPage {\n    private final WebDriver driver;\n    private final By usernameField = By.id(\"username\");\n    private final By passwordField = By.id(\"password\");\n    private final By submitBtn = By.cssSelector(\"button[type='submit']\");\n    public LoginPage(WebDriver driver) { this.driver = driver; }\n    public void loginAs(String user, String pass) {\n        driver.findElement(usernameField).sendKeys(user);\n        driver.findElement(passwordField).sendKeys(pass);\n        driver.findElement(submitBtn).click();\n    }\n}"
+              },
+              validationRules: [
+                {
+                  requiredPatterns: ["By.id", "loginAs", "driver.findElement"],
+                  forbiddenPatterns: ['Thread.sleep'],
+                  description: 'Validates Page Object encapsulation'
                 }
               ]
             }
