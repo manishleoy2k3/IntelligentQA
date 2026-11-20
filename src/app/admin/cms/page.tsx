@@ -20,6 +20,9 @@ import {
   ArrowRight,
   Search,
   Eye,
+  EyeOff,
+  ArrowUp,
+  ArrowDown,
   Check,
   X,
   FileText,
@@ -869,10 +872,22 @@ export default function CourseCMSPage() {
                           : true
                       )
                       .map((les, idx) => (
-                        <tr key={les.id} className="hover:bg-slate-850/50 transition">
-                          <td className="py-3.5 px-4 font-mono text-slate-500">{idx + 1}</td>
+                        <tr
+                          key={les.id}
+                          className={`hover:bg-slate-850/50 transition ${
+                            les.disabled ? 'opacity-75 bg-amber-950/10' : ''
+                          }`}
+                        >
+                          <td className="py-3.5 px-4 font-mono text-slate-500">#{idx + 1}</td>
                           <td className="py-3.5 px-4">
-                            <div className="font-bold text-white text-xs">{les.title}</div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-white text-xs">{les.title}</span>
+                              {les.disabled && (
+                                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                  Disabled
+                                </span>
+                              )}
+                            </div>
                             <div className="text-[11px] text-purple-400 font-mono mt-0.5">{mod.title}</div>
                           </td>
                           <td className="py-3.5 px-4 text-slate-400 max-w-md truncate">
@@ -885,6 +900,67 @@ export default function CourseCMSPage() {
                           </td>
                           <td className="py-3.5 px-4 text-right">
                             <div className="flex items-center justify-end gap-1.5">
+                              {/* Move Up */}
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => {
+                                  const ok = QADatabase.moveLesson(selectedSdetTrackId, les.id, 'up');
+                                  if (ok) {
+                                    reloadData();
+                                    triggerBanner(`↕️ Moved up "${les.title}".`);
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-20 cursor-pointer"
+                                title="Move Up in sequence"
+                              >
+                                <ArrowUp className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* Move Down */}
+                              <button
+                                type="button"
+                                disabled={idx === mod.lessons.length - 1}
+                                onClick={() => {
+                                  const ok = QADatabase.moveLesson(selectedSdetTrackId, les.id, 'down');
+                                  if (ok) {
+                                    reloadData();
+                                    triggerBanner(`↕️ Moved down "${les.title}".`);
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-20 cursor-pointer"
+                                title="Move Down in sequence"
+                              >
+                                <ArrowDown className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* Disable / Enable Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const ok = QADatabase.toggleLessonDisabled(selectedSdetTrackId, les.id);
+                                  if (ok) {
+                                    reloadData();
+                                    triggerBanner(
+                                      les.disabled
+                                        ? `👁️ Enabled "${les.title}" (visible to students).`
+                                        : `👁️ Disabled "${les.title}" (hidden while updating).`
+                                    );
+                                  }
+                                }}
+                                className={`p-1.5 rounded-lg hover:bg-slate-800 transition cursor-pointer ${
+                                  les.disabled ? 'text-amber-400' : 'text-slate-400 hover:text-emerald-400'
+                                }`}
+                                title={
+                                  les.disabled
+                                    ? 'Enable lesson (make visible to learners)'
+                                    : 'Disable lesson (hide while content is under update)'
+                                }
+                              >
+                                {les.disabled ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                              </button>
+
+                              {/* Edit */}
                               <button
                                 type="button"
                                 onClick={() => handleOpenEdit(les, mod.id)}
@@ -893,11 +969,13 @@ export default function CourseCMSPage() {
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
+
+                              {/* Delete */}
                               <button
                                 type="button"
                                 onClick={() => setShowDeleteConfirmId(les.id)}
                                 className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition cursor-pointer"
-                                title="Delete lesson from database"
+                                title="Delete lesson permanently from database"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>

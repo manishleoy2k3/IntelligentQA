@@ -18,6 +18,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Eye,
+  EyeOff,
+  ArrowUp,
+  ArrowDown,
   Check,
   X,
   FileText,
@@ -411,6 +414,22 @@ function AdminDashboardContent() {
     triggerBanner(`🗑️ Deleted lesson from track.`);
     reloadData();
     setDeleteConfirm(null);
+  };
+
+  const handleMoveLesson = (trackId: string, lessonId: string, direction: 'up' | 'down') => {
+    const success = QADatabase.moveLesson(trackId, lessonId, direction);
+    if (success) {
+      reloadData();
+      triggerBanner(`↕️ Sequence updated for lesson.`);
+    }
+  };
+
+  const handleToggleLessonDisabled = (trackId: string, lessonId: string) => {
+    const success = QADatabase.toggleLessonDisabled(trackId, lessonId);
+    if (success) {
+      reloadData();
+      triggerBanner(`👁️ Visibility status updated for lesson.`);
+    }
   };
 
   // =========================================================================
@@ -1098,22 +1117,80 @@ function AdminDashboardContent() {
                     </div>
 
                     <div className="divide-y divide-[#222222] border border-[#262626] rounded-2xl bg-[#1A1A1A] overflow-hidden">
-                      {module.lessons.map((lesson) => (
+                      {module.lessons.map((lesson, lessonIdx) => (
                         <div
                           key={lesson.id}
-                          className="p-4 flex items-center justify-between gap-4 hover:bg-[#202020] transition-colors"
+                          className={`p-4 flex items-center justify-between gap-4 hover:bg-[#202020] transition-colors ${
+                            lesson.disabled ? 'opacity-75 bg-amber-950/10 border-l-2 border-l-amber-500' : ''
+                          }`}
                         >
                           <div className="min-w-0 space-y-1">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-mono text-xs text-zinc-500 font-bold">#{lessonIdx + 1}</span>
                               <span className="font-bold text-sm text-white truncate">{lesson.title}</span>
                               <span className="text-[10px] px-2 py-0.5 rounded bg-[#262626] text-zinc-300 font-mono">
                                 {lesson.durationMinutes}m
                               </span>
+                              {lesson.disabled ? (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                                  <EyeOff className="w-3 h-3 text-amber-400" />
+                                  <span>Disabled (Hidden from Students)</span>
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                  <Eye className="w-3 h-3 text-emerald-400" />
+                                  <span>Active</span>
+                                </span>
+                              )}
                             </div>
                             <p className="text-xs text-zinc-400 line-clamp-1">{lesson.description}</p>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {/* MOVE UP */}
+                            <button
+                              type="button"
+                              disabled={lessonIdx === 0}
+                              onClick={() => handleMoveLesson(selectedTrackId, lesson.id, 'up')}
+                              className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed border border-zinc-700 transition cursor-pointer"
+                              title="Move Up in sequence"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* MOVE DOWN */}
+                            <button
+                              type="button"
+                              disabled={lessonIdx === module.lessons.length - 1}
+                              onClick={() => handleMoveLesson(selectedTrackId, lesson.id, 'down')}
+                              className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed border border-zinc-700 transition cursor-pointer"
+                              title="Move Down in sequence"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* DISABLE / ENABLE TOGGLE */}
+                            <button
+                              type="button"
+                              onClick={() => handleToggleLessonDisabled(selectedTrackId, lesson.id)}
+                              className={`p-2 rounded-xl border transition cursor-pointer ${
+                                lesson.disabled
+                                  ? 'bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border-amber-500/30'
+                                  : 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border-emerald-500/30'
+                              }`}
+                              title={
+                                lesson.disabled
+                                  ? 'Enable Lesson (make visible to students)'
+                                  : 'Disable Lesson (hide while content is under update)'
+                              }
+                            >
+                              {lesson.disabled ? (
+                                <EyeOff className="w-3.5 h-3.5" />
+                              ) : (
+                                <Eye className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+
                             {/* EDIT BUTTON */}
                             <button
                               type="button"
@@ -1121,7 +1198,7 @@ function AdminDashboardContent() {
                               className="p-2 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 border border-sky-500/30 transition-colors cursor-pointer"
                               title="Edit Lesson"
                             >
-                              <Edit2 className="w-4 h-4" />
+                              <Edit2 className="w-3.5 h-3.5" />
                             </button>
 
                             {/* DELETE BUTTON */}
@@ -1129,9 +1206,9 @@ function AdminDashboardContent() {
                               type="button"
                               onClick={() => handleConfirmDeleteLesson(selectedTrackId, lesson.id, lesson.title)}
                               className="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-colors cursor-pointer"
-                              title="Delete Lesson"
+                              title="Delete Lesson permanently"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>

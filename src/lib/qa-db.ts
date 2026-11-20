@@ -1553,6 +1553,7 @@ export const QADatabase = {
   getTracks(): Track[] {
     if (!isBrowser()) return memoryDb.sdetTracks;
     const stored = getStoredItem<Track[] | null>('intelligentqa_db_sdet_tracks', null);
+    const deletedLessons = getStoredItem<string[]>('intelligentqa_db_deleted_lessons', []);
     if (stored && Array.isArray(stored) && stored.length > 0) {
       // Reconcile with QA_TRACKS so newly added lessons/curriculum items are synced to browser storage
       let updated = false;
@@ -1571,6 +1572,7 @@ export const QADatabase = {
             continue;
           }
           for (const defaultLesson of defaultModule.lessons) {
+            if (deletedLessons.includes(defaultLesson.id)) continue;
             const hasLesson = storedModule.lessons.some(l => l.id === defaultLesson.id);
             if (!hasLesson) {
               storedModule.lessons.push(defaultLesson);
@@ -1657,7 +1659,91 @@ export const QADatabase = {
     });
 
     track.totalLessons = track.modules.reduce((sum, m) => sum + m.lessons.length, 0);
+
+    if (isBrowser()) {
+      const deletedLessons = getStoredItem<string[]>('intelligentqa_db_deleted_lessons', []);
+      if (!deletedLessons.includes(lessonId)) {
+        setStoredItem('intelligentqa_db_deleted_lessons', [...deletedLessons, lessonId]);
+      }
+    }
+
     this.saveTrack(track);
+  },
+
+  // Move lesson up or down in the sequence
+  moveLesson(trackId: string, lessonId: string, direction: 'up' | 'down'): boolean {
+    const tracks = this.getTracks();
+    const track = tracks.find(t => t.id === trackId);
+    if (!track) return false;
+
+    // Look for module containing the lesson
+    for (const mod of track.modules) {
+      const idx = mod.lessons.findIndex(l => l.id === lessonId);
+      if (idx !== -1) {
+        if (direction === 'up' && idx > 0) {
+          const temp = mod.lessons[idx];
+          mod.lessons[idx] = mod.lessons[idx - 1];
+          mod.lessons[idx - 1] = temp;
+          this.saveTrack(track);
+          return true;
+        } else if (direction === 'down' && idx < mod.lessons.length - 1) {
+          const temp = mod.lessons[idx];
+          mod.lessons[idx] = mod.lessons[idx + 1];
+          mod.lessons[idx + 1] = temp;
+          this.saveTrack(track);
+          return true;
+        }
+      }
+    }
+    return false;
+  },
+
+  // Toggle or set disabled state of a lesson (disabling hides it from students while preserving it for admin updates)
+  toggleLessonDisabled(trackId: string, lessonId: string, forceDisabled?: boolean): boolean {
+    const tracks = this.getTracks();
+    const track = tracks.find(t => t.id === trackId);
+    if (!track) return false;
+
+    for (const mod of track.modules) {
+      const lesson = mod.lessons.find(l => l.id === lessonId);
+      if (lesson) {
+        lesson.disabled = forceDisabled !== undefined ? forceDisabled : !lesson.disabled;
+        this.saveTrack(track);
+        return true;
+      }
+    }
+    return false;
+  },
+
+  // Custom reordering of all lessons in a track
+  reorderLessons(trackId: string, orderedLessonIds: string[]): boolean {
+    const tracks = this.getTracks();
+    const track = tracks.find(t => t.id === trackId);
+    if (!track || !Array.isArray(orderedLessonIds)) return false;
+
+    const allLessonsMap = new Map<string, Lesson>();
+    track.modules.forEach(m => {
+      m.lessons.forEach(l => allLessonsMap.set(l.id, l));
+    });
+
+    if (track.modules.length > 0) {
+      const targetMod = track.modules[0];
+      const reordered: Lesson[] = [];
+      orderedLessonIds.forEach(id => {
+        const found = allLessonsMap.get(id);
+        if (found) reordered.push(found);
+      });
+      // Append any unmentioned lessons at the end
+      allLessonsMap.forEach((l, id) => {
+        if (!orderedLessonIds.includes(id)) {
+          reordered.push(l);
+        }
+      });
+      targetMod.lessons = reordered;
+      this.saveTrack(track);
+      return true;
+    }
+    return false;
   },
 
   deleteTrack(trackId: string): void {
@@ -1673,6 +1759,7 @@ export const QADatabase = {
   resetTracksToDefault(): void {
     if (isBrowser()) {
       setStoredItem('intelligentqa_db_sdet_tracks', QA_TRACKS);
+      setStoredItem('intelligentqa_db_deleted_lessons', []);
       window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
     } else {
       memoryDb.sdetTracks = QA_TRACKS;

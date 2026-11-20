@@ -38,6 +38,11 @@ import {
   MessageSquare,
   Gamepad2,
   Compass,
+  Eye,
+  EyeOff,
+  ArrowUp,
+  ArrowDown,
+  Trash2,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -482,29 +487,131 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           {/* Divider between Guides and Curriculum Lessons */}
                           <div className="pt-1 pb-0.5 px-2 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-slate-400 dark:text-neutral-500 border-t border-slate-200/60 dark:border-neutral-800/60 mt-1">
                             <span>Step-by-Step Lessons</span>
-                            <span>{track.lessons.length}</span>
+                            <div className="flex items-center gap-1">
+                              {isAdmin && (
+                                <span className="text-[8px] font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded border border-amber-500/20" title="Admin controls: Reorder, Disable, Delete">
+                                  Admin
+                                </span>
+                              )}
+                              <span>
+                                {isAdmin
+                                  ? track.lessons.length
+                                  : track.lessons.filter((l: Lesson) => !l.disabled).length}
+                              </span>
+                            </div>
                           </div>
 
-                          {track.lessons.map((lesson: Lesson) => {
-                            const isLessonActive = pathname === `/tracks/${track.id}/${lesson.id}`;
-                            const hours = getLessonHours(lesson.durationMinutes);
+                          {(() => {
+                            const displayedLessons = isAdmin
+                              ? track.lessons
+                              : track.lessons.filter((l: Lesson) => !l.disabled);
 
-                            return (
-                              <Link
-                                key={lesson.id}
-                                href={`/tracks/${track.id}/${lesson.id}`}
-                                onClick={onCloseMobile}
-                                className={`flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all group ${
-                                  isLessonActive
-                                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold shadow-xs'
-                                    : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
-                                }`}
-                                title={lesson.title}
-                              >
-                                <span className="truncate pr-1.5">{lesson.title}</span>
-                              </Link>
-                            );
-                          })}
+                            return displayedLessons.map((lesson: Lesson, lessonIdx: number) => {
+                              const isLessonActive = pathname === `/tracks/${track.id}/${lesson.id}`;
+                              const hours = getLessonHours(lesson.durationMinutes);
+                              const isFirst = lessonIdx === 0;
+                              const isLast = lessonIdx === displayedLessons.length - 1;
+
+                              return (
+                                <div
+                                  key={lesson.id}
+                                  className={`group flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
+                                    lesson.disabled ? 'opacity-65 bg-amber-500/5' : ''
+                                  } ${
+                                    isLessonActive
+                                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold shadow-xs'
+                                      : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
+                                  }`}
+                                >
+                                  <Link
+                                    href={`/tracks/${track.id}/${lesson.id}`}
+                                    onClick={onCloseMobile}
+                                    className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1"
+                                    title={lesson.title}
+                                  >
+                                    <span className="truncate">{lesson.title}</span>
+                                    {lesson.disabled && (
+                                      <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 font-bold">
+                                        Disabled
+                                      </span>
+                                    )}
+                                  </Link>
+
+                                  {/* Admin Controls: Reorder (Up/Down), Disable/Enable, Delete */}
+                                  {isAdmin && (
+                                    <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity bg-neutral-900/95 dark:bg-black/95 p-0.5 rounded border border-neutral-700/60 shadow-xs">
+                                      <button
+                                        type="button"
+                                        disabled={isFirst}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          QADatabase.moveLesson(track.id, lesson.id, 'up');
+                                        }}
+                                        className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
+                                        title="Move Up in sequence"
+                                      >
+                                        <ArrowUp className="w-2.5 h-2.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        disabled={isLast}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          QADatabase.moveLesson(track.id, lesson.id, 'down');
+                                        }}
+                                        className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
+                                        title="Move Down in sequence"
+                                      >
+                                        <ArrowDown className="w-2.5 h-2.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          QADatabase.toggleLessonDisabled(track.id, lesson.id);
+                                        }}
+                                        className={`p-0.5 rounded hover:bg-neutral-700 transition cursor-pointer ${
+                                          lesson.disabled ? 'text-amber-400' : 'text-neutral-400 hover:text-emerald-400'
+                                        }`}
+                                        title={
+                                          lesson.disabled
+                                            ? "Enable lesson (visible to learners)"
+                                            : "Disable lesson (hide while updating content)"
+                                        }
+                                      >
+                                        {lesson.disabled ? (
+                                          <EyeOff className="w-2.5 h-2.5" />
+                                        ) : (
+                                          <Eye className="w-2.5 h-2.5" />
+                                        )}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          if (
+                                            window.confirm(
+                                              `Are you sure you want to permanently delete "${lesson.title}"?`
+                                            )
+                                          ) {
+                                            QADatabase.deleteLesson(track.id, lesson.id);
+                                          }
+                                        }}
+                                        className="p-0.5 rounded hover:bg-rose-950/80 text-neutral-400 hover:text-rose-400 transition cursor-pointer"
+                                        title="Delete lesson permanently"
+                                      >
+                                        <Trash2 className="w-2.5 h-2.5" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            });
+                          })()}
                         </div>
                       )}
                     </div>

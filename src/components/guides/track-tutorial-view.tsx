@@ -50,16 +50,6 @@ export default function TrackTutorialView({ tutorial }: TrackTutorialViewProps) 
             <BookOpen className="w-3.5 h-3.5" />
             <span>Masterclass Tutorial &amp; Setup Guide</span>
           </div>
-
-          <a
-            href={tutorial.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-slate-400 hover:text-emerald-400 bg-slate-800/80 border border-slate-700 hover:border-emerald-500/40 transition-colors"
-          >
-            <span>{tutorial.sourceAttribution}</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight relative z-10">

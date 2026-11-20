@@ -23,6 +23,8 @@ export interface Lesson {
   durationMinutes: number;
   badge: TechnologyBadge;
   level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Senior' | 'Architect';
+  disabled?: boolean;
+  order?: number;
   manualContext: {
     title: string;
     steps: string[];

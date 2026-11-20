@@ -26,8 +26,8 @@ export interface TrackTutorial {
   trackId: string;
   title: string;
   subtitle: string;
-  sourceAttribution: string;
-  sourceUrl: string;
+  sourceAttribution?: string;
+  sourceUrl?: string;
   overview: string;
   architectureDiagram: {
     title: string;
@@ -39,14 +39,12 @@ export interface TrackTutorial {
 
 export const TRACK_TUTORIALS: Record<string, TrackTutorial> = {
   // ==========================================
-  // SELENIUM WITH JAVA TUTORIAL (GEEKSFORGEEKS EDITION)
+  // SELENIUM WITH JAVA TUTORIAL
   // ==========================================
   selenium: {
     trackId: 'selenium',
     title: 'Selenium with Java Complete Step-by-Step Tutorial & Setup',
     subtitle: 'Comprehensive guide covering environment setup, IDE configuration, W3C WebDriver architecture, locators, dynamic synchronization, and framework design.',
-    sourceAttribution: 'Inspired by GeeksforGeeks: Selenium with Java Tutorial',
-    sourceUrl: 'https://www.geeksforgeeks.org/software-testing/selenium-with-java-tutorial/',
     overview: `Selenium is the world's most widely adopted open-source web browser automation tool. Combined with Java, it provides enterprise-grade scalability, type safety, and seamless integration with continuous delivery pipelines. This tutorial guides you from initial JDK setup and IDE configuration through writing your first script, mastering dynamic locators, and architecting Page Object Model test suites.`,
     architectureDiagram: {
       title: 'Selenium 4 W3C WebDriver Architecture',
@@ -541,8 +539,6 @@ public class LoginPage {
     trackId: 'playwright',
     title: 'Playwright with TypeScript: Complete Guide to Writing Tests',
     subtitle: 'Step-by-step masterclass covering Playwright test runner, resilient user-facing locators, auto-waiting actionability, web-first assertions, and interactive UI mode.',
-    sourceAttribution: 'Inspired by Playwright Official Docs: Writing Tests',
-    sourceUrl: 'https://playwright.dev/docs/writing-tests',
     overview: `Playwright was created by Microsoft to deliver reliable, fast, and evergreen end-to-end automation. It communicates directly with Chromium, Firefox, and WebKit rendering engines via WebSocket using the Chrome DevTools Protocol (CDP), completely bypassing legacy HTTP proxy overhead. This tutorial covers everything from CLI initialization to resilient locators and time-travel UI debugging.`,
     architectureDiagram: {
       title: 'Playwright WebSocket CDP Architecture',
@@ -784,8 +780,6 @@ In UI Mode:
     trackId: 'api-testing',
     title: 'API Testing with REST Assured: Complete Step-by-Step Tutorial',
     subtitle: 'Comprehensive guide covering BDD Given-When-Then DSL, Maven dependencies, CRUD request execution, Hamcrest assertions, POJO serialization, and JSON schema validation.',
-    sourceAttribution: 'Inspired by GeeksforGeeks: API Testing with REST Assured',
-    sourceUrl: 'https://www.geeksforgeeks.org/software-testing/api-testing-with-rest-assured/',
     overview: `REST Assured is an open-source Java library that brings clean, readable Behavior-Driven Development (BDD) syntax to API automation. It eliminates the limitations of manual Postman testing by integrating directly into your Java/Maven build cycle, running hundreds of concurrent requests in seconds, and enforcing strict JSON contract integrity.`,
     architectureDiagram: {
       title: 'REST Assured BDD Architecture Pipeline',
