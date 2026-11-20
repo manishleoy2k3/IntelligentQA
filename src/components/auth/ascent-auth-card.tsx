@@ -9,6 +9,13 @@ import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import SocialOAuthModal, { SocialProvider } from '@/components/auth/social-oauth-modal';
 import {
+  getFirebaseAuth,
+  isFirebaseConfigured,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  ConfirmationResult,
+} from '@/lib/firebase';
+import {
   ShieldCheck,
   Key,
   Mail,
@@ -54,6 +61,9 @@ export default function AscentAuthCard({
   const [phoneGeneratedOtp, setPhoneGeneratedOtp] = useState<string>('');
   const [phoneTimer, setPhoneTimer] = useState(30);
   const [formattedMobileNumber, setFormattedMobileNumber] = useState('');
+  const [isFirebaseMode, setIsFirebaseMode] = useState<boolean>(false);
+  const confirmationResultRef = useRef<ConfirmationResult | null>(null);
+  const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const phoneOtpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [activeSocialProvider, setActiveSocialProvider] = useState<SocialProvider | null>(null);
 
@@ -337,7 +347,7 @@ export default function AscentAuthCard({
   };
 
   // Phone Step 1: Send verification code to mobile phone
-  const handleSendPhoneCode = (e: React.FormEvent) => {
+  const handleSendPhoneCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -349,13 +359,52 @@ export default function AscentAuthCard({
 
     const fullPhone = validation.formatted;
     setFormattedMobileNumber(fullPhone);
+    setLoading(true);
 
-    // Generate real 6-digit OTP stored in QADatabase
-    const otp = QADatabase.generateOtp(fullPhone);
-    setPhoneGeneratedOtp(otp);
-    setPhoneOtpDigits(['', '', '', '', '', '']);
-    setPhoneTimer(30);
-    setPhoneOtpStep('otp');
+    try {
+      const auth = getFirebaseAuth();
+      if (auth && isFirebaseConfigured()) {
+        // E.164 phone format for Firebase (+1234567890)
+        const e164Phone = fullPhone.replace(/\s+/g, '');
+        
+        // Initialize invisible reCAPTCHA verifier if not already present
+        if (!recaptchaVerifierRef.current) {
+          recaptchaVerifierRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            size: 'invisible',
+            callback: () => {
+              // reCAPTCHA solved
+            },
+            'expired-callback': () => {
+              setError('reCAPTCHA expired. Please try sending the verification code again.');
+            },
+          });
+        }
+
+        const confirmationResult = await signInWithPhoneNumber(
+          auth,
+          e164Phone,
+          recaptchaVerifierRef.current
+        );
+        confirmationResultRef.current = confirmationResult;
+        setIsFirebaseMode(true);
+        setPhoneGeneratedOtp('');
+      } else {
+        // Fallback: Simulation / development mode
+        const otp = QADatabase.generateOtp(fullPhone);
+        setPhoneGeneratedOtp(otp);
+        setIsFirebaseMode(false);
+      }
+
+      setPhoneOtpDigits(['', '', '', '', '', '']);
+      setPhoneTimer(30);
+      setPhoneOtpStep('otp');
+    } catch (err: any) {
+      console.error('Phone SMS dispatch error:', err);
+      // If reCAPTCHA or Firebase dispatch fails, provide helpful error or fallback
+      setError(err?.message || 'Failed to dispatch SMS code. Please check your number.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Phone Step 2: Strictly verify 6-digit code and authenticate
@@ -366,15 +415,22 @@ export default function AscentAuthCard({
       return;
     }
     setError(null);
-
-    const isValid = QADatabase.verifyOtp(formattedMobileNumber, entered);
-    if (!isValid) {
-      setError('Invalid or expired verification code. Please check the code or use Auto-Fill test code.');
-      return;
-    }
-
     setLoading(true);
+
     try {
+      if (isFirebaseMode && confirmationResultRef.current) {
+        // Real Firebase SMS OTP verification
+        await confirmationResultRef.current.confirm(entered);
+      } else {
+        // Development / simulation verification
+        const isValid = QADatabase.verifyOtp(formattedMobileNumber, entered);
+        if (!isValid) {
+          setError('Invalid or expired verification code. Please check the code.');
+          setLoading(false);
+          return;
+        }
+      }
+
       if (accountType === 'admin') {
         QADatabase.switchToAdminSession();
         router.push('/admin');
@@ -385,9 +441,9 @@ export default function AscentAuthCard({
         }
         router.push(redirectTo);
       }
-    } catch (err) {
-      console.error('Phone login error:', err);
-      setError('Phone authentication failed. Please try again.');
+    } catch (err: any) {
+      console.error('Phone verification error:', err);
+      setError(err?.message || 'Verification failed. Please check the 6-digit code.');
     } finally {
       setLoading(false);
     }
@@ -728,11 +784,15 @@ export default function AscentAuthCard({
                   </div>
                 )}
 
+                {/* Invisible reCAPTCHA container for Firebase Phone Auth */}
+                <div id="recaptcha-container" />
+
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-full bg-white hover:bg-zinc-100 text-black font-bold text-xs transition-all cursor-pointer shadow-md active:scale-[0.99]"
+                  disabled={loading}
+                  className="w-full py-3 rounded-full bg-white hover:bg-zinc-100 text-black font-bold text-xs transition-all cursor-pointer shadow-md active:scale-[0.99] disabled:opacity-50"
                 >
-                  Send Verification Code
+                  {loading ? 'Sending Code...' : 'Send Verification Code'}
                 </button>
               </form>
             ) : (
@@ -757,20 +817,28 @@ export default function AscentAuthCard({
                   </button>
                 </div>
 
-                {/* SMS Simulation Toast Banner */}
+                {/* Banner: Dispatched SMS indicator */}
                 <div className="p-3 rounded-2xl bg-gradient-to-r from-emerald-950/60 to-[#122216] border border-emerald-500/30 text-xs space-y-1.5 shadow-lg">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-[#81FF89] flex items-center gap-1.5">
                       <Smartphone className="w-3.5 h-3.5 text-[#81FF89]" />
-                      SMS Code Dispatched
+                      {isFirebaseMode ? 'Real SMS Dispatched to Mobile' : 'SMS Code Dispatched (Dev Mode)'}
                     </span>
                     <span className="text-[10px] text-zinc-400 font-mono">Just Now</span>
                   </div>
                   <p className="text-zinc-300 text-[11px] leading-relaxed">
-                    Your verification code is{' '}
-                    <span className="font-mono font-black text-sm text-white bg-black/60 px-2 py-0.5 rounded-lg border border-emerald-400/40 select-all">
-                      {phoneGeneratedOtp}
-                    </span>
+                    {isFirebaseMode ? (
+                      <>
+                        Check your physical mobile phone SMS inbox for the 6-digit verification code.
+                      </>
+                    ) : (
+                      <>
+                        Your verification code is{' '}
+                        <span className="font-mono font-black text-sm text-white bg-black/60 px-2 py-0.5 rounded-lg border border-emerald-400/40 select-all">
+                          {phoneGeneratedOtp}
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
                 <div className="flex justify-between gap-1.5 sm:gap-2">
@@ -809,28 +877,46 @@ export default function AscentAuthCard({
                 )}
 
                 <div className="flex items-center justify-between text-xs pt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (phoneGeneratedOtp) {
-                        setPhoneOtpDigits(phoneGeneratedOtp.split(''));
-                        setError(null);
-                      }
-                    }}
-                    className="text-[#81FF89] hover:underline font-bold text-left cursor-pointer"
-                  >
-                    Auto-Fill Test Code ({phoneGeneratedOtp})
-                  </button>
+                  {!isFirebaseMode && phoneGeneratedOtp ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (phoneGeneratedOtp) {
+                          setPhoneOtpDigits(phoneGeneratedOtp.split(''));
+                          setError(null);
+                        }
+                      }}
+                      className="text-[#81FF89] hover:underline font-bold text-left cursor-pointer"
+                    >
+                      Auto-Fill Test Code ({phoneGeneratedOtp})
+                    </button>
+                  ) : (
+                    <span className="text-zinc-500 text-[11px]">SMS sent to phone</span>
+                  )}
                   {phoneTimer > 0 ? (
                     <span className="text-zinc-500 text-[11px]">Resend in {phoneTimer}s</span>
                   ) : (
                     <button
                       type="button"
-                      onClick={() => {
-                        const newOtp = QADatabase.generateOtp(formattedMobileNumber);
-                        setPhoneGeneratedOtp(newOtp);
-                        setPhoneTimer(30);
+                      onClick={async () => {
                         setError(null);
+                        if (isFirebaseMode) {
+                          const auth = getFirebaseAuth();
+                          if (auth && recaptchaVerifierRef.current) {
+                            try {
+                              const e164 = formattedMobileNumber.replace(/\s+/g, '');
+                              const res = await signInWithPhoneNumber(auth, e164, recaptchaVerifierRef.current);
+                              confirmationResultRef.current = res;
+                              setPhoneTimer(30);
+                            } catch (e: any) {
+                              setError(e?.message || 'Failed to resend code');
+                            }
+                          }
+                        } else {
+                          const newOtp = QADatabase.generateOtp(formattedMobileNumber);
+                          setPhoneGeneratedOtp(newOtp);
+                          setPhoneTimer(30);
+                        }
                       }}
                       className="text-zinc-300 hover:text-white underline text-[11px] cursor-pointer"
                     >
