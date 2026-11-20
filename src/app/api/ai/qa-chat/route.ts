@@ -96,6 +96,80 @@ ERROR & DEBUGGING RULES:
   c. THE FIX: Provide the exact working fix with a before/after code snippet or immediate next steps.
   d. NEXT STEP: Conclude with a clear "👉 **Next Step for QA:**" guiding the user on how to verify the fix or proceed with testing.`;
 
+      // Build multi-turn conversational contents for Gemini
+      const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+
+      // Filter and sanitize history if provided (limiting to last 10 turns to protect token limits)
+      const sanitizedHistory: Array<{ role: 'user' | 'model'; text: string }> = [];
+      if (Array.isArray(history) && history.length > 0) {
+        const recentHistory = history.slice(-10);
+        for (const item of recentHistory) {
+          if (!item || typeof item.content !== 'string' || !item.content.trim()) continue;
+          const mappedRole: 'user' | 'model' = item.role === 'assistant' ? 'model' : 'user';
+          // Merge consecutive same-role messages to satisfy Gemini strict alternating role format
+          if (sanitizedHistory.length > 0 && sanitizedHistory[sanitizedHistory.length - 1].role === mappedRole) {
+            sanitizedHistory[sanitizedHistory.length - 1].text += `\n\n${item.content.trim()}`;
+          } else {
+            sanitizedHistory.push({ role: mappedRole, text: item.content.trim() });
+          }
+        }
+      }
+
+      if (sanitizedHistory.length > 0) {
+        // Ensure first turn is user so system prompt is anchored properly
+        if (sanitizedHistory[0].role === 'user') {
+          contents.push({
+            role: 'user',
+            parts: [{ text: `${systemPrompt}\n\nContext: ${context || 'General SDET Advisory'}\n\nUser Question: ${sanitizedHistory[0].text}` }],
+          });
+        } else {
+          contents.push({
+            role: 'user',
+            parts: [{ text: `${systemPrompt}\n\nContext: ${context || 'General SDET Advisory'}` }],
+          });
+          contents.push({
+            role: 'model',
+            parts: [{ text: sanitizedHistory[0].text }],
+          });
+        }
+
+        // Add remaining history turns
+        for (let i = 1; i < sanitizedHistory.length; i++) {
+          const item = sanitizedHistory[i];
+          // Ensure strict alternation
+          const lastTurnRole = contents[contents.length - 1].role;
+          if (lastTurnRole === item.role) {
+            contents[contents.length - 1].parts[0].text += `\n\n${item.text}`;
+          } else {
+            contents.push({
+              role: item.role,
+              parts: [{ text: item.text }],
+            });
+          }
+        }
+
+        // Add current query as final user turn
+        const lastTurnRole = contents[contents.length - 1].role;
+        if (lastTurnRole === 'user') {
+          contents[contents.length - 1].parts[0].text += `\n\nFollow-up Question: ${query}`;
+        } else {
+          contents.push({
+            role: 'user',
+            parts: [{ text: query }],
+          });
+        }
+      } else {
+        // Single turn
+        contents.push({
+          role: 'user',
+          parts: [
+            {
+              text: `${systemPrompt}\n\nContext: ${context || 'General SDET Advisory'}\n\nUser Question: ${query}`,
+            },
+          ],
+        });
+      }
+
       for (const model of modelsToTry) {
         try {
           const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeApiKey}`;
@@ -107,16 +181,7 @@ ERROR & DEBUGGING RULES:
             headers: { 'Content-Type': 'application/json' },
             signal: controller.signal,
             body: JSON.stringify({
-              contents: [
-                {
-                  role: 'user',
-                  parts: [
-                    {
-                      text: `${systemPrompt}\n\nContext: ${context || 'General SDET Advisory'}\n\nUser Question: ${query}`,
-                    },
-                  ],
-                },
-              ],
+              contents,
               generationConfig: {
                 temperature: 0.3,
                 maxOutputTokens: 4096,
@@ -155,8 +220,20 @@ ERROR & DEBUGGING RULES:
     }
 
     // 3. Deterministic Local Knowledge Engine Response (Zero-Cost, Zero-Latency Fallback)
-    const localMatches = searchQAKnowledge(query);
-    const bestMatch = localMatches.length > 0 ? localMatches[0] : null;
+    let localMatches = searchQAKnowledge(query);
+    let bestMatch = localMatches.length > 0 ? localMatches[0] : null;
+
+    // Contextual continuation for follow-up questions in local engine
+    if (!bestMatch && Array.isArray(history) && history.length > 0) {
+      const lastUserTurn = [...history].reverse().find((h) => h.role === 'user' && h.content?.trim());
+      if (lastUserTurn) {
+        const contextualQuery = `${lastUserTurn.content.trim()} ${query}`;
+        const contextualMatches = searchQAKnowledge(contextualQuery);
+        if (contextualMatches.length > 0) {
+          bestMatch = contextualMatches[0];
+        }
+      }
+    }
 
     if (bestMatch) {
       const crispAnswer = formatCrispChatAnswer(bestMatch);

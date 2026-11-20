@@ -108,6 +108,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
   const handleOpenAskAI = () => {
     if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("intelligentqa_open_ai_coding_coach"));
       window.dispatchEvent(new Event("intelligentqa_open_ask_ai"));
     }
   };
@@ -172,16 +173,17 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <span>{hasGeminiKey ? "Gemini Key: Active" : "Add Gemini Key"}</span>
         </button>
 
-        {/* 1. "Ask AI" Button (formerly "Ask SDET AI") */}
+        {/* 1. "AI Coding Coach" Button (formerly "Ask AI") */}
         <button
           type="button"
           onClick={handleOpenAskAI}
-          aria-label="Ask SDET AI"
+          aria-label="AI Coding Coach"
           className="flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(129,255,137,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm"
-          title="Ask AI: Coding queries, algorithms, syntax, and programming help (Ask SDET AI)"
+          title="AI Coding Coach: Coding queries, algorithms, syntax, and programming help (Ask AI)"
         >
           <Sparkles className="w-4 h-4 text-white shrink-0" />
-          <span className="font-extrabold tracking-tight">Ask AI</span>
+          <span className="font-extrabold tracking-tight">AI Coding Coach</span>
+          <span className="sr-only">Ask AI</span>
           <span className="sr-only">Ask SDET AI</span>
         </button>
 
