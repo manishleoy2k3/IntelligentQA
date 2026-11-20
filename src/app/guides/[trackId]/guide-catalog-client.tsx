@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   BookOpen,
   Search,
@@ -25,7 +25,7 @@ import {
   FileSpreadsheet,
   CheckCheck,
   Layers,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   ConceptGuide,
   TRACK_META,
@@ -40,99 +40,117 @@ import {
   parseImportedGuides,
   generateConceptGuideTemplate,
   downloadConceptGuideTemplate,
-} from '@/lib/concept-guides';
-import { QADatabase } from '@/lib/qa-db';
+} from "@/lib/concept-guides";
+import { QADatabase } from "@/lib/qa-db";
 
-export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { initialTrackId: string }) {
+export default function GuideCatalogClient({
+  initialTrackId = "selenium",
+}: {
+  initialTrackId: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Normalize trackId strictly to the current course
   const normalizedTrack =
-    initialTrackId === 'selenium-java' ? 'selenium' : initialTrackId === 'playwright-ts' ? 'playwright' : initialTrackId;
+    initialTrackId === "selenium-java"
+      ? "selenium"
+      : initialTrackId === "playwright-ts"
+        ? "playwright"
+        : initialTrackId;
 
   const [activeTrack] = useState<string>(normalizedTrack);
   const trackInfo = TRACK_META[activeTrack] || {
     id: activeTrack,
-    name: 'Automation',
-    tag: 'Core',
-    color: 'emerald',
-    badgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    name: "Automation",
+    tag: "Core",
+    color: "emerald",
+    badgeClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
   };
 
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
 
   // Tabs: 'import-staging' (Import & Staged Review) vs 'confirmed-guides' (Guide List like Selenium / Playwright)
-  const [activeTab, setActiveTab] = useState<'import-staging' | 'confirmed-guides'>('confirmed-guides');
+  const [activeTab, setActiveTab] = useState<
+    "import-staging" | "confirmed-guides"
+  >("confirmed-guides");
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const u = QADatabase.getCurrentUser();
       const adminStatus = QADatabase.isAdmin(u);
       setIsAdmin(adminStatus);
-      if (searchParams.get('tab') === 'import') {
-        setActiveTab('import-staging');
+      if (searchParams.get("tab") === "import") {
+        setActiveTab("import-staging");
       }
       const handleAuth = () => {
         const updated = QADatabase.getCurrentUser();
         const nextAdmin = QADatabase.isAdmin(updated);
         setIsAdmin(nextAdmin);
         if (!nextAdmin) {
-          setActiveTab('confirmed-guides');
+          setActiveTab("confirmed-guides");
         }
       };
-      window.addEventListener('intelligentqa_auth_changed', handleAuth);
-      window.addEventListener('intelligentqa_role_changed', handleAuth);
+      window.addEventListener("intelligentqa_auth_changed", handleAuth);
+      window.addEventListener("intelligentqa_role_changed", handleAuth);
       return () => {
-        window.removeEventListener('intelligentqa_auth_changed', handleAuth);
-        window.removeEventListener('intelligentqa_role_changed', handleAuth);
+        window.removeEventListener("intelligentqa_auth_changed", handleAuth);
+        window.removeEventListener("intelligentqa_role_changed", handleAuth);
       };
     }
   }, [searchParams]);
 
-  // Staged (Imported) Guides vs Confirmed Guides
+  // Staged (Imported) Guides
   const [stagedGuides, setStagedGuides] = useState<ConceptGuide[]>([]);
-  const [confirmedGuides, setConfirmedGuides] = useState<ConceptGuide[]>([]);
-
-  // Search in Confirmed Guides
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Modals
   const [showTemplateModal, setShowTemplateModal] = useState<boolean>(false);
-  const [templateFormat, setTemplateFormat] = useState<'json' | 'csv'>('json');
+  const [templateFormat, setTemplateFormat] = useState<"json" | "csv">("json");
   const [templateCopied, setTemplateCopied] = useState<boolean>(false);
 
   const [showImportModal, setShowImportModal] = useState<boolean>(false);
-  const [importText, setImportText] = useState<string>('');
-  const [importStatus, setImportStatus] = useState<{ error?: string; success?: string } | null>(null);
+  const [importText, setImportText] = useState<string>("");
+  const [importStatus, setImportStatus] = useState<{
+    error?: string;
+    success?: string;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Edit Staged Guide Modal
   const [editingGuide, setEditingGuide] = useState<ConceptGuide | null>(null);
-  const [editTitle, setEditTitle] = useState<string>('');
-  const [editCategory, setEditCategory] = useState<string>('');
-  const [editLevel, setEditLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
-  const [editSummary, setEditSummary] = useState<string>('');
-  const [editOverview, setEditOverview] = useState<string>('');
-  const [editMechanism, setEditMechanism] = useState<string>('');
-  const [editCode, setEditCode] = useState<string>('');
-  const [editCodeLang, setEditCodeLang] = useState<string>('java');
-  const [editInterviewTips, setEditInterviewTips] = useState<string>('');
+  const [editTitle, setEditTitle] = useState<string>("");
+  const [editCategory, setEditCategory] = useState<string>("");
+  const [editLevel, setEditLevel] = useState<
+    "Beginner" | "Intermediate" | "Advanced"
+  >("Intermediate");
+  const [editSummary, setEditSummary] = useState<string>("");
+  const [editOverview, setEditOverview] = useState<string>("");
+  const [editMechanism, setEditMechanism] = useState<string>("");
+  const [editCode, setEditCode] = useState<string>("");
+  const [editCodeLang, setEditCodeLang] = useState<string>("java");
+  const [editInterviewTips, setEditInterviewTips] = useState<string>("");
 
   // Add Manual Guide Modal
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
-  const [newTitle, setNewTitle] = useState<string>('');
-  const [newCategory, setNewCategory] = useState<string>('Framework Architecture');
-  const [newLevel, setNewLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
-  const [newSummary, setNewSummary] = useState<string>('');
-  const [newOverview, setNewOverview] = useState<string>('');
-  const [newMechanism, setNewMechanism] = useState<string>('');
-  const [newCode, setNewCode] = useState<string>('');
-  const [newCodeLang, setNewCodeLang] = useState<string>(activeTrack === 'playwright' ? 'typescript' : 'java');
-  const [newInterviewTips, setNewInterviewTips] = useState<string>('');
+  const [newTitle, setNewTitle] = useState<string>("");
+  const [newCategory, setNewCategory] = useState<string>(
+    "Framework Architecture",
+  );
+  const [newLevel, setNewLevel] = useState<
+    "Beginner" | "Intermediate" | "Advanced"
+  >("Intermediate");
+  const [newSummary, setNewSummary] = useState<string>("");
+  const [newOverview, setNewOverview] = useState<string>("");
+  const [newMechanism, setNewMechanism] = useState<string>("");
+  const [newCode, setNewCode] = useState<string>("");
+  const [newCodeLang, setNewCodeLang] = useState<string>(
+    activeTrack === "playwright" ? "typescript" : "java",
+  );
+  const [newInterviewTips, setNewInterviewTips] = useState<string>("");
 
   // View Details Modal
-  const [selectedGuideForView, setSelectedGuideForView] = useState<ConceptGuide | null>(null);
+  const [selectedGuideForView, setSelectedGuideForView] =
+    useState<ConceptGuide | null>(null);
   const [copiedCodeIndex, setCopiedCodeIndex] = useState<number | null>(null);
 
   // Feedback Banner
@@ -143,10 +161,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     setTimeout(() => setBannerFeedback(null), 4000);
   };
 
-  // Load Staged and Confirmed guides
+  // Load Staged guides
   const loadData = () => {
     setStagedGuides(getStagedGuides(activeTrack));
-    setConfirmedGuides(getAllGuides(activeTrack));
   };
 
   useEffect(() => {
@@ -155,12 +172,12 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
   // Handle URL query action params (e.g. ?action=template or ?action=import)
   useEffect(() => {
-    const action = searchParams?.get('action');
-    if (action === 'template') {
+    const action = searchParams?.get("action");
+    if (action === "template") {
       setShowTemplateModal(true);
-    } else if (action === 'import') {
+    } else if (action === "import") {
       setShowImportModal(true);
-    } else if (action === 'add') {
+    } else if (action === "add") {
       setShowAddModal(true);
     }
   }, [searchParams]);
@@ -181,15 +198,15 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
       const u = QADatabase.getCurrentUser();
       result.guides.forEach((g) => {
         QADatabase.submitContentForReview({
-          type: 'guide',
+          type: "guide",
           title: g.title,
           trackOrLanguage: activeTrack,
           category: g.category,
           summary: g.summary,
           submittedBy: {
-            id: u?.id || 'guest',
-            name: u?.displayName || 'Community Student',
-            email: u?.email || 'student@intelligentqa.io',
+            id: u?.id || "guest",
+            name: u?.displayName || "Community Student",
+            email: u?.email || "student@intelligentqa.io",
           },
           contentPayload: g,
         });
@@ -197,8 +214,10 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
       setImportStatus({
         success: `🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`,
       });
-      setImportText('');
-      showBanner(`🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`);
+      setImportText("");
+      showBanner(
+        `🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`,
+      );
       return;
     }
 
@@ -206,9 +225,11 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     setImportStatus({
       success: `Successfully parsed ${result.guides.length} guide(s) into staging! Review them below, edit or delete as needed, then Confirm & Submit.`,
     });
-    setImportText('');
-    setActiveTab('import-staging');
-    showBanner(`📥 ${result.guides.length} guide(s) loaded into staging review.`);
+    setImportText("");
+    setActiveTab("import-staging");
+    showBanner(
+      `📥 ${result.guides.length} guide(s) loaded into staging review.`,
+    );
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -216,12 +237,12 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = event => {
+    reader.onload = (event) => {
       const content = event.target?.result as string;
       handleParseImport(content);
     };
     reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   // ==========================================
@@ -234,10 +255,13 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     setEditLevel(guide.level);
     setEditSummary(guide.summary);
     setEditOverview(guide.overview || guide.summary);
-    setEditMechanism(guide.architectureOrMechanism || '');
-    setEditCode(guide.codeSnippets?.[0]?.code || '');
-    setEditCodeLang(guide.codeSnippets?.[0]?.language || (activeTrack === 'playwright' ? 'typescript' : 'java'));
-    setEditInterviewTips(guide.interviewTips || '');
+    setEditMechanism(guide.architectureOrMechanism || "");
+    setEditCode(guide.codeSnippets?.[0]?.code || "");
+    setEditCodeLang(
+      guide.codeSnippets?.[0]?.language ||
+        (activeTrack === "playwright" ? "typescript" : "java"),
+    );
+    setEditInterviewTips(guide.interviewTips || "");
   };
 
   const handleSaveEdit = () => {
@@ -264,13 +288,13 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     updateStagedGuide(updated);
     setStagedGuides(getStagedGuides(activeTrack));
     setEditingGuide(null);
-    showBanner('✔ Imported guide updated successfully in staging!');
+    showBanner("✔ Imported guide updated successfully in staging!");
   };
 
   const handleDeleteStaged = (id: string) => {
     deleteStagedGuide(id, activeTrack);
     setStagedGuides(getStagedGuides(activeTrack));
-    showBanner('🗑 Removed guide from import staging.');
+    showBanner("🗑 Removed guide from import staging.");
   };
 
   // ==========================================
@@ -280,38 +304,22 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     if (stagedGuides.length === 0) return;
     const res = confirmAndSubmitStagedGuides(activeTrack);
     setStagedGuides([]);
-    setConfirmedGuides(getAllGuides(activeTrack));
-    showBanner(`🎉 Confirmed and saved ${res.count} guide(s) to ${trackInfo.name} Guide List! Staging list cleared.`);
+    showBanner(
+      `🎉 Confirmed and saved ${res.count} guide(s) to ${trackInfo.name} Guide List! Staging list cleared.`,
+    );
   };
 
   const handleConfirmSingle = (guideId: string) => {
     const res = confirmAndSubmitStagedGuides(activeTrack, [guideId]);
     setStagedGuides(getStagedGuides(activeTrack));
-    setConfirmedGuides(getAllGuides(activeTrack));
     showBanner(`🎉 Confirmed and saved guide to ${trackInfo.name} Guide List!`);
   };
-
-  // Delete from Confirmed List
-  const handleDeleteConfirmed = (id: string) => {
-    deleteCustomGuide(id, activeTrack);
-    setConfirmedGuides(getAllGuides(activeTrack));
-    showBanner('🗑 Deleted custom guide from guide list.');
-  };
-
-  // Filter confirmed guides for search
-  const filteredConfirmedGuides = useMemo(() => {
-    if (!searchQuery.trim()) return confirmedGuides;
-    const q = searchQuery.toLowerCase();
-    return confirmedGuides.filter(
-      g => g.title.toLowerCase().includes(q) || g.summary.toLowerCase().includes(q) || g.category.toLowerCase().includes(q)
-    );
-  }, [confirmedGuides, searchQuery]);
 
   // Add Manual Guide
   const handleAddManualGuide = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newSummary.trim()) {
-      showBanner('Title and Summary are mandatory.');
+      showBanner("Title and Summary are mandatory.");
       return;
     }
 
@@ -319,13 +327,19 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
       id: `custom-guide-${Date.now()}`,
       trackId: activeTrack,
       title: newTitle.trim(),
-      category: newCategory.trim() || 'General',
+      category: newCategory.trim() || "General",
       level: newLevel,
       summary: newSummary.trim(),
       overview: newOverview.trim() || newSummary.trim(),
       architectureOrMechanism: newMechanism.trim(),
       codeSnippets: newCode.trim()
-        ? [{ language: newCodeLang, code: newCode.trim(), caption: `${newTitle.trim()} Implementation` }]
+        ? [
+            {
+              language: newCodeLang,
+              code: newCode.trim(),
+              caption: `${newTitle.trim()} Implementation`,
+            },
+          ]
         : [],
       interviewTips: newInterviewTips.trim(),
       isCustom: true,
@@ -334,40 +348,42 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
     if (!isAdmin) {
       const u = QADatabase.getCurrentUser();
       QADatabase.submitContentForReview({
-        type: 'guide',
+        type: "guide",
         title: newGuide.title,
         trackOrLanguage: activeTrack,
         category: newGuide.category,
         summary: newGuide.summary,
         submittedBy: {
-          id: u?.id || 'guest',
-          name: u?.displayName || 'Community Student',
-          email: u?.email || 'student@intelligentqa.io',
+          id: u?.id || "guest",
+          name: u?.displayName || "Community Student",
+          email: u?.email || "student@intelligentqa.io",
         },
         contentPayload: newGuide,
       });
       setShowAddModal(false);
-      setNewTitle('');
-      setNewSummary('');
-      setNewOverview('');
-      setNewMechanism('');
-      setNewCode('');
-      setNewInterviewTips('');
-      showBanner(`🎉 Guide "${newGuide.title}" submitted for Admin review and approval!`);
+      setNewTitle("");
+      setNewSummary("");
+      setNewOverview("");
+      setNewMechanism("");
+      setNewCode("");
+      setNewInterviewTips("");
+      showBanner(
+        `🎉 Guide "${newGuide.title}" submitted for Admin review and approval!`,
+      );
       return;
     }
 
     saveStagedGuide(newGuide);
     setStagedGuides(getStagedGuides(activeTrack));
     setShowAddModal(false);
-    setNewTitle('');
-    setNewSummary('');
-    setNewOverview('');
-    setNewMechanism('');
-    setNewCode('');
-    setNewInterviewTips('');
-    setActiveTab('import-staging');
-    showBanner('✔ Guide added to staging review list.');
+    setNewTitle("");
+    setNewSummary("");
+    setNewOverview("");
+    setNewMechanism("");
+    setNewCode("");
+    setNewInterviewTips("");
+    setActiveTab("import-staging");
+    showBanner("✔ Guide added to staging review list.");
   };
 
   const handleCopyTemplate = () => {
@@ -396,16 +412,28 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
             </div>
             <div>
               <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                <Link href="/dashboard" className="hover:text-white transition">Dashboard</Link>
+                <Link href="/dashboard" className="hover:text-white transition">
+                  Dashboard
+                </Link>
                 <span>/</span>
-                <span className="text-slate-300 font-semibold">{activeTrack === 'selenium' || activeTrack === 'selenium-java' ? 'Selenium (Java)' : trackInfo.name}</span>
+                <span className="text-slate-300 font-semibold">
+                  {activeTrack === "selenium" || activeTrack === "selenium-java"
+                    ? "Selenium (Java)"
+                    : trackInfo.name}
+                </span>
                 <span>/</span>
-                <span className="text-blue-400 font-bold">Architecture &amp; Concepts Library</span>
+                <span className="text-blue-400 font-bold">
+                  Architecture &amp; Concepts Library
+                </span>
               </div>
               <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 mt-0.5">
-                {activeTrack === 'selenium' || activeTrack === 'selenium-java' ? 'Selenium (Java)' : trackInfo.name}
+                {activeTrack === "selenium" || activeTrack === "selenium-java"
+                  ? "Selenium (Java)"
+                  : trackInfo.name}
                 {trackInfo.tag && (
-                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${trackInfo.badgeClass}`}>
+                  <span
+                    className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${trackInfo.badgeClass}`}
+                  >
                     {trackInfo.tag}
                   </span>
                 )}
@@ -416,22 +444,13 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
           {/* Quick Header Actions: Hidden from page header and accessible via the top-bar modal */}
           {isAdmin && (
             <div className="hidden sr-only">
-              <button
-                type="button"
-                onClick={() => setShowTemplateModal(true)}
-              >
+              <button type="button" onClick={() => setShowTemplateModal(true)}>
                 Import Template
               </button>
-              <button
-                type="button"
-                onClick={() => setShowImportModal(true)}
-              >
+              <button type="button" onClick={() => setShowImportModal(true)}>
                 Import Guide
               </button>
-              <button
-                type="button"
-                onClick={() => setShowAddModal(true)}
-              >
+              <button type="button" onClick={() => setShowAddModal(true)}>
                 Add Guide
               </button>
             </div>
@@ -446,17 +465,21 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
         {/* ======================================================== */}
         {/* TAB 1: IMPORT & STAGING (Requirements 3, 4, 5, 6)       */}
         {/* ======================================================== */}
-        {activeTab === 'import-staging' && (
+        {activeTab === "import-staging" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column: Import Controls & Template Guide */}
             <div className="lg:col-span-1 space-y-5">
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm">
                 <div className="flex items-center gap-2">
                   <UploadCloud className="w-5 h-5 text-blue-400" />
-                  <h3 className="text-sm font-bold text-white">Import Concept Guides</h3>
+                  <h3 className="text-sm font-bold text-white">
+                    Import Concept Guides
+                  </h3>
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Upload your architecture guides or interview concepts using the standardized template. Imported items will appear on the right for review, editing, and confirmation.
+                  Upload your architecture guides or interview concepts using
+                  the standardized template. Imported items will appear on the
+                  right for review, editing, and confirmation.
                 </p>
 
                 {/* Import Buttons */}
@@ -482,13 +505,30 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
                 {/* Template Fields Card */}
                 <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-                  <div className="font-semibold text-slate-300">Mandatory Fields in Template:</div>
+                  <div className="font-semibold text-slate-300">
+                    Mandatory Fields in Template:
+                  </div>
                   <ul className="list-disc list-inside text-slate-400 space-y-0.5 text-[11px]">
-                    <li><strong className="text-slate-200">title</strong>: Name of the architecture concept</li>
-                    <li><strong className="text-slate-200">category</strong>: Domain or module group</li>
-                    <li><strong className="text-slate-200">level</strong>: Beginner | Intermediate | Advanced</li>
-                    <li><strong className="text-slate-200">summary</strong>: Concise 1-2 sentence definition</li>
-                    <li><strong className="text-slate-200">overview</strong>: Detailed explanation</li>
+                    <li>
+                      <strong className="text-slate-200">title</strong>: Name of
+                      the architecture concept
+                    </li>
+                    <li>
+                      <strong className="text-slate-200">category</strong>:
+                      Domain or module group
+                    </li>
+                    <li>
+                      <strong className="text-slate-200">level</strong>:
+                      Beginner | Intermediate | Advanced
+                    </li>
+                    <li>
+                      <strong className="text-slate-200">summary</strong>:
+                      Concise 1-2 sentence definition
+                    </li>
+                    <li>
+                      <strong className="text-slate-200">overview</strong>:
+                      Detailed explanation
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -500,7 +540,12 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   <span>Staging Workflow</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
-                  Imported guides remain in this staging list until you click <strong>Confirm &amp; Submit</strong>. You can edit any field or remove incorrect guides before saving. Once confirmed, they are permanently saved into your <strong>{trackInfo.name} Guide List</strong> and cleared from this import page.
+                  Imported guides remain in this staging list until you click{" "}
+                  <strong>Confirm &amp; Submit</strong>. You can edit any field
+                  or remove incorrect guides before saving. Once confirmed, they
+                  are permanently saved into your{" "}
+                  <strong>{trackInfo.name} Guide List</strong> and cleared from
+                  this import page.
                 </p>
               </div>
             </div>
@@ -510,7 +555,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
               {/* Header Bar for Staged List */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-800 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold text-white">Imported Guides Pending Review</h2>
+                  <h2 className="text-base font-bold text-white">
+                    Imported Guides Pending Review
+                  </h2>
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30 font-mono">
                     {stagedGuides.length} Pending
                   </span>
@@ -537,7 +584,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       title="Save all staged guides into confirmed guide list"
                     >
                       <CheckCheck className="w-4 h-4" />
-                      <span>Confirm &amp; Submit All ({stagedGuides.length})</span>
+                      <span>
+                        Confirm &amp; Submit All ({stagedGuides.length})
+                      </span>
                     </button>
                   </div>
                 )}
@@ -552,9 +601,14 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       <UploadCloud className="w-6 h-6" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-sm font-bold text-white">No Imported Guides Pending Review</h3>
+                      <h3 className="text-sm font-bold text-white">
+                        No Imported Guides Pending Review
+                      </h3>
                       <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                        Your staging area is empty. Click <strong>Import Guide</strong> to upload a JSON or CSV file of concepts, or download the template to prepare your questions.
+                        Your staging area is empty. Click{" "}
+                        <strong>Import Guide</strong> to upload a JSON or CSV
+                        file of concepts, or download the template to prepare
+                        your questions.
                       </p>
                     </div>
                     <div className="flex items-center justify-center gap-2 pt-1">
@@ -575,8 +629,6 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       </button>
                     </div>
                   </div>
-
-
                 </div>
               ) : (
                 /* LIST OF IMPORTED GUIDES WITH EDIT & DELETE (Requirements 3 & 4) */
@@ -599,7 +651,10 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                               Pending Confirmation
                             </span>
                           </div>
-                          <h4 className="text-base font-bold text-white hover:text-blue-400 transition cursor-pointer" onClick={() => setSelectedGuideForView(guide)}>
+                          <h4
+                            className="text-base font-bold text-white hover:text-blue-400 transition cursor-pointer"
+                            onClick={() => setSelectedGuideForView(guide)}
+                          >
                             {guide.title}
                           </h4>
                         </div>
@@ -647,16 +702,25 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       {guide.codeSnippets?.[0] && (
                         <div className="bg-slate-950 rounded-xl p-3 border border-slate-800/80 font-mono text-[11px] text-slate-300 overflow-x-auto max-h-28">
                           <div className="text-[10px] text-slate-500 font-sans mb-1 uppercase font-bold">
-                            {guide.codeSnippets[0].language}: {guide.codeSnippets[0].caption || 'Snippet Preview'}
+                            {guide.codeSnippets[0].language}:{" "}
+                            {guide.codeSnippets[0].caption || "Snippet Preview"}
                           </div>
-                          <pre>{guide.codeSnippets[0].code.slice(0, 300)}{guide.codeSnippets[0].code.length > 300 ? '...' : ''}</pre>
+                          <pre>
+                            {guide.codeSnippets[0].code.slice(0, 300)}
+                            {guide.codeSnippets[0].code.length > 300
+                              ? "..."
+                              : ""}
+                          </pre>
                         </div>
                       )}
 
                       {guide.interviewTips && (
                         <div className="text-[11px] text-amber-300/90 flex items-start gap-1.5 bg-amber-500/5 p-2 rounded-lg border border-amber-500/10">
                           <Lightbulb className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                          <span><strong>Interview Tip:</strong> {guide.interviewTips}</span>
+                          <span>
+                            <strong>Interview Tip:</strong>{" "}
+                            {guide.interviewTips}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -670,10 +734,11 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
         {/* ======================================================== */}
         {/* TAB 2: CONFIRMED GUIDES LIST (Requirement 5)             */}
         {/* ======================================================== */}
-        {activeTab === 'confirmed-guides' && (
+        {activeTab === "confirmed-guides" && (
           <div className="space-y-5">
             {/* Generic details of Selenium Java Automation Framework with architectural diagram */}
-            {(activeTrack === 'selenium' || activeTrack === 'selenium-java') && (
+            {(activeTrack === "selenium" ||
+              activeTrack === "selenium-java") && (
               <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
                 <div className="border-b border-slate-800 pb-4">
                   <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-2">
@@ -683,7 +748,10 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                     Selenium WebDriver + Java Enterprise Framework Architecture
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    Industry-standard layered test automation architecture utilizing Core Java, Selenium 4 W3C WebDriver, TestNG multi-threading, and Page Object Model (POM) with decoupled reporting and continuous delivery.
+                    Industry-standard layered test automation architecture
+                    utilizing Core Java, Selenium 4 W3C WebDriver, TestNG
+                    multi-threading, and Page Object Model (POM) with decoupled
+                    reporting and continuous delivery.
                   </p>
                 </div>
 
@@ -696,35 +764,64 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
                       {/* Layer 1 */}
                       <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 1</span>
-                        <div className="font-bold text-white text-xs">Test Runner</div>
-                        <div className="text-[10px] text-slate-400">TestNG / JUnit 5 · Parallel Execution</div>
+                        <span className="text-[10px] font-mono font-bold text-blue-400">
+                          LAYER 1
+                        </span>
+                        <div className="font-bold text-white text-xs">
+                          Test Runner
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          TestNG / JUnit 5 · Parallel Execution
+                        </div>
                       </div>
                       {/* Layer 2 */}
                       <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 2</span>
-                        <div className="font-bold text-white text-xs">Page Objects</div>
-                        <div className="text-[10px] text-slate-400">POM · Encapsulated Locators &amp; Actions</div>
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">
+                          LAYER 2
+                        </span>
+                        <div className="font-bold text-white text-xs">
+                          Page Objects
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          POM · Encapsulated Locators &amp; Actions
+                        </div>
                       </div>
                       {/* Layer 3 */}
                       <div className="bg-slate-900 border border-amber-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-amber-400">LAYER 3</span>
-                        <div className="font-bold text-white text-xs">Driver Factory</div>
-                        <div className="text-[10px] text-slate-400">ThreadLocal&lt;WebDriver&gt; · W3C Protocols</div>
+                        <span className="text-[10px] font-mono font-bold text-amber-400">
+                          LAYER 3
+                        </span>
+                        <div className="font-bold text-white text-xs">
+                          Driver Factory
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          ThreadLocal&lt;WebDriver&gt; · W3C Protocols
+                        </div>
                       </div>
                       {/* Layer 4 */}
                       <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 4</span>
-                        <div className="font-bold text-white text-xs">Reports &amp; CI/CD</div>
-                        <div className="text-[10px] text-slate-400">Allure · Docker Grid · GitHub Actions</div>
+                        <span className="text-[10px] font-mono font-bold text-purple-400">
+                          LAYER 4
+                        </span>
+                        <div className="font-bold text-white text-xs">
+                          Reports &amp; CI/CD
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          Allure · Docker Grid · GitHub Actions
+                        </div>
                       </div>
                     </div>
 
                     {/* Visual Connector Flow */}
                     <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
-                      <div className="text-emerald-400 font-bold">Execution Lifecycle Flow:</div>
+                      <div className="text-emerald-400 font-bold">
+                        Execution Lifecycle Flow:
+                      </div>
                       <div className="text-slate-400">
-                        Test Suites (testng.xml) ➔ BaseTest (@BeforeMethod) ➔ ThreadLocal DriverFactory ➔ Page Action ➔ Explicit WebDriverWait ➔ Assertions (AssertJ) ➔ Listeners (@AfterMethod) ➔ Allure Reports
+                        Test Suites (testng.xml) ➔ BaseTest (@BeforeMethod) ➔
+                        ThreadLocal DriverFactory ➔ Page Action ➔ Explicit
+                        WebDriverWait ➔ Assertions (AssertJ) ➔ Listeners
+                        (@AfterMethod) ➔ Allure Reports
                       </div>
                     </div>
                   </div>
@@ -738,7 +835,12 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       <span>1. Robust Dynamic Synchronization</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Eliminates test flakiness by replacing rigid <code className="text-rose-400">Thread.sleep()</code> with dynamic <code className="text-emerald-400">WebDriverWait</code> &amp; <code className="text-emerald-400">FluentWait</code> polling against expected conditions.
+                      Eliminates test flakiness by replacing rigid{" "}
+                      <code className="text-rose-400">Thread.sleep()</code> with
+                      dynamic{" "}
+                      <code className="text-emerald-400">WebDriverWait</code>{" "}
+                      &amp; <code className="text-emerald-400">FluentWait</code>{" "}
+                      polling against expected conditions.
                     </p>
                   </div>
 
@@ -748,7 +850,13 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       <span>2. Thread-Safe Parallel Scaling</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Utilizes <code className="text-blue-400">ThreadLocal&lt;WebDriver&gt;</code> ensuring each parallel test runs isolated in its own JVM thread without race conditions or browser cross-contamination.
+                      Utilizes{" "}
+                      <code className="text-blue-400">
+                        ThreadLocal&lt;WebDriver&gt;
+                      </code>{" "}
+                      ensuring each parallel test runs isolated in its own JVM
+                      thread without race conditions or browser
+                      cross-contamination.
                     </p>
                   </div>
 
@@ -758,7 +866,11 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       <span>3. Clean Page Object Model</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Decouples UI locators (<code className="text-amber-400">By.id</code>, <code className="text-amber-400">By.xpath</code>) and user actions from test validations, providing single-point maintenance when application DOM updates.
+                      Decouples UI locators (
+                      <code className="text-amber-400">By.id</code>,{" "}
+                      <code className="text-amber-400">By.xpath</code>) and user
+                      actions from test validations, providing single-point
+                      maintenance when application DOM updates.
                     </p>
                   </div>
 
@@ -768,7 +880,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       <span>4. Cross-Browser &amp; Headless Ready</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Integrates Selenium 4 Selenium Manager for automated browser driver resolution across Chrome, Firefox, and Edge with containerized CI execution.
+                      Integrates Selenium 4 Selenium Manager for automated
+                      browser driver resolution across Chrome, Firefox, and Edge
+                      with containerized CI execution.
                     </p>
                   </div>
                 </div>
@@ -787,7 +901,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-5 h-5 text-blue-400" />
-                <h3 className="text-base font-bold text-white">Edit Imported Guide</h3>
+                <h3 className="text-base font-bold text-white">
+                  Edit Imported Guide
+                </h3>
               </div>
               <button
                 type="button"
@@ -800,30 +916,36 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
             <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Concept Title (Mandatory)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Concept Title (Mandatory)
+                </label>
                 <input
                   type="text"
                   value={editTitle}
-                  onChange={e => setEditTitle(e.target.value)}
+                  onChange={(e) => setEditTitle(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Category / Group</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Category / Group
+                  </label>
                   <input
                     type="text"
                     value={editCategory}
-                    onChange={e => setEditCategory(e.target.value)}
+                    onChange={(e) => setEditCategory(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Level</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Level
+                  </label>
                   <select
                     value={editLevel}
-                    onChange={e => setEditLevel(e.target.value as any)}
+                    onChange={(e) => setEditLevel(e.target.value as any)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="Beginner">Beginner</option>
@@ -834,41 +956,49 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Summary (1-2 sentences)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Summary (1-2 sentences)
+                </label>
                 <textarea
                   rows={2}
                   value={editSummary}
-                  onChange={e => setEditSummary(e.target.value)}
+                  onChange={(e) => setEditSummary(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Full Overview &amp; Explanation</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Full Overview &amp; Explanation
+                </label>
                 <textarea
                   rows={4}
                   value={editOverview}
-                  onChange={e => setEditOverview(e.target.value)}
+                  onChange={(e) => setEditOverview(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Underlying Mechanism / Architecture</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Underlying Mechanism / Architecture
+                </label>
                 <textarea
                   rows={2}
                   value={editMechanism}
-                  onChange={e => setEditMechanism(e.target.value)}
+                  onChange={(e) => setEditMechanism(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-1">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Code Language</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Code Language
+                  </label>
                   <select
                     value={editCodeLang}
-                    onChange={e => setEditCodeLang(e.target.value)}
+                    onChange={(e) => setEditCodeLang(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="java">Java</option>
@@ -878,22 +1008,26 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Code Snippet</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Code Snippet
+                  </label>
                   <textarea
                     rows={4}
                     value={editCode}
-                    onChange={e => setEditCode(e.target.value)}
+                    onChange={(e) => setEditCode(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 font-mono text-[11px] text-emerald-300 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">SDET Interview Tips</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  SDET Interview Tips
+                </label>
                 <textarea
                   rows={2}
                   value={editInterviewTips}
-                  onChange={e => setEditInterviewTips(e.target.value)}
+                  onChange={(e) => setEditInterviewTips(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
@@ -946,11 +1080,11 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
               <div className="inline-flex rounded-xl p-1 bg-slate-950 border border-slate-800 text-xs">
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat('json')}
+                  onClick={() => setTemplateFormat("json")}
                   className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition ${
-                    templateFormat === 'json'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white'
+                    templateFormat === "json"
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
                   <FileText className="w-3.5 h-3.5" />
@@ -958,11 +1092,11 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat('csv')}
+                  onClick={() => setTemplateFormat("csv")}
                   className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition ${
-                    templateFormat === 'csv'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white'
+                    templateFormat === "csv"
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -991,7 +1125,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
                 <button
                   type="button"
-                  onClick={() => downloadConceptGuideTemplate(templateFormat, activeTrack)}
+                  onClick={() =>
+                    downloadConceptGuideTemplate(templateFormat, activeTrack)
+                  }
                   className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -1029,7 +1165,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Upload className="w-5 h-5 text-blue-400" />
-                <h3 className="text-base font-bold text-white">Import Concept Guides</h3>
+                <h3 className="text-base font-bold text-white">
+                  Import Concept Guides
+                </h3>
               </div>
               <button
                 type="button"
@@ -1061,9 +1199,12 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
             >
               <UploadCloud className="w-8 h-8 text-blue-400 mx-auto" />
               <div className="text-xs text-slate-300">
-                <span className="font-bold text-white">Click to upload</span> or drag and drop
+                <span className="font-bold text-white">Click to upload</span> or
+                drag and drop
               </div>
-              <p className="text-[11px] text-slate-500">Supports JSON array of guides or CSV file</p>
+              <p className="text-[11px] text-slate-500">
+                Supports JSON array of guides or CSV file
+              </p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -1075,11 +1216,13 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
             {/* Or Paste Raw Text */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 block">Or paste JSON / CSV text directly:</label>
+              <label className="text-xs font-semibold text-slate-300 block">
+                Or paste JSON / CSV text directly:
+              </label>
               <textarea
                 rows={5}
                 value={importText}
-                onChange={e => setImportText(e.target.value)}
+                onChange={(e) => setImportText(e.target.value)}
                 placeholder='Paste raw JSON like [{"title": "...", "category": "...", "summary": "..."}] or CSV content'
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-blue-500"
               />
@@ -1135,8 +1278,13 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   <Plus className="w-5 h-5 text-[#81FF89]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Add Guide &amp; Management</h3>
-                  <p className="text-xs text-zinc-400">Author custom guides, import from file, or download templates</p>
+                  <h3 className="text-base font-bold text-white">
+                    Add Guide &amp; Management
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Author custom guides, import from file, or download
+                    templates
+                  </p>
                 </div>
               </div>
 
@@ -1191,33 +1339,39 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
             <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Concept Title (Mandatory)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Concept Title (Mandatory)
+                </label>
                 <input
                   type="text"
                   required
                   placeholder="e.g., Dynamic Locators & Resilience in Single Page Apps"
                   value={newTitle}
-                  onChange={e => setNewTitle(e.target.value)}
+                  onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Category / Group</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Category / Group
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g., Synchronization, POM, Network"
                     value={newCategory}
-                    onChange={e => setNewCategory(e.target.value)}
+                    onChange={(e) => setNewCategory(e.target.value)}
                     className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89]"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Difficulty Level</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Difficulty Level
+                  </label>
                   <select
                     value={newLevel}
-                    onChange={e => setNewLevel(e.target.value as any)}
+                    onChange={(e) => setNewLevel(e.target.value as any)}
                     className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89] cursor-pointer"
                   >
                     <option value="Beginner">Beginner</option>
@@ -1228,45 +1382,53 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Summary (1-2 sentences)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Summary (1-2 sentences)
+                </label>
                 <textarea
                   required
                   rows={2}
                   placeholder="Concise overview explaining why this concept matters"
                   value={newSummary}
-                  onChange={e => setNewSummary(e.target.value)}
+                  onChange={(e) => setNewSummary(e.target.value)}
                   className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Full Overview &amp; Explanation</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Full Overview &amp; Explanation
+                </label>
                 <textarea
                   rows={3}
                   placeholder="In-depth explanation, tradeoffs, and architectural concepts..."
                   value={newOverview}
-                  onChange={e => setNewOverview(e.target.value)}
+                  onChange={(e) => setNewOverview(e.target.value)}
                   className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Underlying Mechanism / Architecture</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Underlying Mechanism / Architecture
+                </label>
                 <textarea
                   rows={2}
                   placeholder="How it works under the hood..."
                   value={newMechanism}
-                  onChange={e => setNewMechanism(e.target.value)}
+                  onChange={(e) => setNewMechanism(e.target.value)}
                   className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-1">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Code Language</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Code Language
+                  </label>
                   <select
                     value={newCodeLang}
-                    onChange={e => setNewCodeLang(e.target.value)}
+                    onChange={(e) => setNewCodeLang(e.target.value)}
                     className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#81FF89]"
                   >
                     <option value="java">Java</option>
@@ -1276,24 +1438,28 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Code Implementation</label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Code Implementation
+                  </label>
                   <textarea
                     rows={3}
                     placeholder="// Add working code implementation"
                     value={newCode}
-                    onChange={e => setNewCode(e.target.value)}
+                    onChange={(e) => setNewCode(e.target.value)}
                     className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-2.5 font-mono text-[11px] text-[#81FF89] focus:outline-none focus:border-[#81FF89] resize-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">SDET Interview Tips</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  SDET Interview Tips
+                </label>
                 <textarea
                   rows={2}
                   placeholder="Common interview questions or architectural tradeoffs..."
                   value={newInterviewTips}
-                  onChange={e => setNewInterviewTips(e.target.value)}
+                  onChange={(e) => setNewInterviewTips(e.target.value)}
                   className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
                 />
               </div>
@@ -1349,12 +1515,16 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
             <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1 text-xs leading-relaxed text-slate-300">
               <div>
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Summary</h4>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Summary
+                </h4>
                 <p className="text-slate-200">{selectedGuideForView.summary}</p>
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Architectural Overview</h4>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Architectural Overview
+                </h4>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 whitespace-pre-wrap text-slate-300">
                   {selectedGuideForView.overview}
                 </div>
@@ -1362,7 +1532,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
 
               {selectedGuideForView.architectureOrMechanism && (
                 <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Underlying Mechanism</h4>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    Underlying Mechanism
+                  </h4>
                   <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-indigo-300 whitespace-pre-wrap">
                     {selectedGuideForView.architectureOrMechanism}
                   </div>
@@ -1372,7 +1544,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
               {selectedGuideForView.codeSnippets?.map((snip, sIdx) => (
                 <div key={sIdx} className="space-y-1.5">
                   <div className="flex items-center justify-between text-[11px] text-slate-400">
-                    <span className="font-semibold uppercase">{snip.language}: {snip.caption || 'Code Example'}</span>
+                    <span className="font-semibold uppercase">
+                      {snip.language}: {snip.caption || "Code Example"}
+                    </span>
                     <button
                       type="button"
                       onClick={() => {
@@ -1382,8 +1556,14 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                       }}
                       className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1 transition"
                     >
-                      {copiedCodeIndex === sIdx ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                      <span>{copiedCodeIndex === sIdx ? 'Copied!' : 'Copy'}</span>
+                      {copiedCodeIndex === sIdx ? (
+                        <Check className="w-3 h-3 text-emerald-400" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
+                      <span>
+                        {copiedCodeIndex === sIdx ? "Copied!" : "Copy"}
+                      </span>
                     </button>
                   </div>
                   <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-emerald-300 overflow-x-auto">
@@ -1398,7 +1578,9 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
                     <Lightbulb className="w-4 h-4" />
                     <span>SDET Interview Tips &amp; Tradeoffs</span>
                   </div>
-                  <p className="text-slate-300 text-[11px]">{selectedGuideForView.interviewTips}</p>
+                  <p className="text-slate-300 text-[11px]">
+                    {selectedGuideForView.interviewTips}
+                  </p>
                 </div>
               )}
             </div>
