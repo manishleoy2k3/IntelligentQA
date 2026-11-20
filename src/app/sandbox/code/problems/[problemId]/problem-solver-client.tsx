@@ -35,6 +35,14 @@ import {
   CompletionItem,
 } from '@/lib/intellisense';
 import { IntelliSenseOverlay } from '@/components/sandbox/code-intellisense-overlay';
+import {
+  TestCaseItem,
+  TestCaseResult,
+  detectFunctionName,
+  buildTestHarness,
+  parseTestResults,
+} from '@/lib/coding-test-runner';
+import { CodingTestcasePanel } from '@/components/sandbox/coding-testcase-panel';
 
 // Extract error line number from compiler diagnostic or exception traceback
 function extractErrorLineNumber(errorText: string): number | null {
@@ -115,6 +123,49 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
   } | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  // LeetCode Testcases & Results State
+  const [testCases, setTestCases] = useState<TestCaseItem[]>([]);
+  const [selectedCaseId, setSelectedCaseId] = useState<string>('case-1');
+  const [testResults, setTestResults] = useState<TestCaseResult[] | null>(null);
+  const [activeBottomTab, setActiveBottomTab] = useState<'testcase' | 'result'>('testcase');
+
+  const handleUpdateCaseInput = (id: string, newInput: string) => {
+    setTestCases((prev) =>
+      prev.map((tc) => (tc.id === id ? { ...tc, input: newInput } : tc))
+    );
+  };
+
+  const handleUpdateCaseExpected = (id: string, newExpected: string) => {
+    setTestCases((prev) =>
+      prev.map((tc) => (tc.id === id ? { ...tc, expected: newExpected } : tc))
+    );
+  };
+
+  const handleAddTestCase = () => {
+    const newNum = testCases.length + 1;
+    const newCase: TestCaseItem = {
+      id: `custom-${Date.now()}`,
+      name: `Case ${newNum}`,
+      input: testCases[0]?.input || '',
+      expected: '',
+      isCustom: true,
+    };
+    setTestCases((prev) => [...prev, newCase]);
+    setSelectedCaseId(newCase.id);
+    setActiveBottomTab('testcase');
+  };
+
+  const handleRemoveTestCase = (id: string) => {
+    if (testCases.length <= 1) return;
+    setTestCases((prev) => {
+      const nextCases = prev.filter((tc) => tc.id !== id);
+      if (selectedCaseId === id && nextCases.length > 0) {
+        setSelectedCaseId(nextCases[0].id);
+      }
+      return nextCases;
+    });
+  };
 
   // Resizing state
   const [descriptionWidthPct, setDescriptionWidthPct] = useState<number>(40);
@@ -278,12 +329,31 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     window.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Load problems and initialize with normal compiler starter code
+  // Load problems and initialize with normal compiler starter code and LeetCode test cases
   useEffect(() => {
     const list = getAllProblems();
     setAllProblems(list);
-    // User requirement: Keep it blank / same as normal compiler
     setCode(DEFAULT_COMPILER_CODE[language]);
+
+    const prob =
+      list.find((p) => p.id === problemId) ||
+      DEFAULT_CODING_PROBLEMS.find((p) => p.id === problemId) ||
+      DEFAULT_CODING_PROBLEMS[0];
+
+    const initialCases: TestCaseItem[] = (prob?.examples || []).map((ex, idx) => ({
+      id: `case-${idx + 1}`,
+      name: `Case ${idx + 1}`,
+      input: ex.input,
+      expected: ex.output,
+      isCustom: false,
+    }));
+    if (initialCases.length === 0) {
+      initialCases.push({ id: 'case-1', name: 'Case 1', input: '', expected: '', isCustom: false });
+    }
+    setTestCases(initialCases);
+    setSelectedCaseId(initialCases[0].id);
+    setTestResults(null);
+    setActiveBottomTab('testcase');
   }, [problemId, language]);
 
   const currentProblem = allProblems.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS[0];
@@ -297,6 +367,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     setTerminalError('');
     setExecutionStats(null);
     setIsSuggestionsOpen(false);
+    setTestResults(null);
   };
 
   // User requirement 2: When user clicks on Solutions, paste solution code in the compiler section
@@ -324,6 +395,20 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     setTerminalError('');
     setExecutionStats(null);
     setStdinInput('');
+    setTestResults(null);
+
+    const initialCases: TestCaseItem[] = (currentProblem?.examples || []).map((ex, idx) => ({
+      id: `case-${idx + 1}`,
+      name: `Case ${idx + 1}`,
+      input: ex.input,
+      expected: ex.output,
+      isCustom: false,
+    }));
+    if (initialCases.length > 0) {
+      setTestCases(initialCases);
+      setSelectedCaseId(initialCases[0].id);
+    }
+    setActiveBottomTab('testcase');
 
     if (textareaRef.current) {
       textareaRef.current.focus();
@@ -432,14 +517,23 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     }
   };
 
-  // Execute compiler API call
+  // Execute compiler API call with LeetCode testcase harness
   const handleRunCode = async () => {
     if (isRunning) return;
     setIsRunning(true);
-    setTerminalOutput('Compiling and executing...');
+    setActiveBottomTab('result'); // Switch to Test Result tab immediately
+    setTerminalOutput('Compiling and executing test cases...');
     setTerminalError('');
 
     try {
+      const fnName = detectFunctionName(code, language);
+      let executionCode = code;
+
+      // If the function is detected and test cases exist, inject the multi-testcase runner harness
+      if (fnName && testCases.length > 0) {
+        executionCode = buildTestHarness(code, language, fnName, testCases);
+      }
+
       const geminiKey = QADatabase.getUserGeminiKey() || '';
       const res = await fetch('/api/sandbox/compiler', {
         method: 'POST',
@@ -449,7 +543,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
         },
         body: JSON.stringify({
           language,
-          code,
+          code: executionCode,
           stdin: stdinInput,
         }),
       });
@@ -457,15 +551,29 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
       const data = await res.json();
 
       if (res.ok) {
+        const stdout = data.stdout || '';
+        const stderr = data.stderr || '';
+
         setTerminalOutput(
-          data.stdout || (data.success ? 'Program executed successfully with no output.' : '')
+          stdout || (data.success ? 'Program executed successfully with no output.' : '')
         );
-        setTerminalError(data.stderr || '');
+        setTerminalError(stderr);
         setExecutionStats({
           durationMs: data.executionTimeMs,
           status: data.status,
           exitCode: data.exitCode,
         });
+
+        // Parse structured LeetCode test results
+        if (fnName && testCases.length > 0 && stdout && stdout.includes('__TESTCASE_BEGIN_')) {
+          const { results, allPassed, rawStdout } = parseTestResults(stdout, testCases);
+          setTestResults(results);
+          if (rawStdout) {
+            setTerminalOutput(rawStdout);
+          }
+        } else {
+          setTestResults(null);
+        }
       } else {
         setTerminalOutput('');
         setTerminalError(data.error || 'Failed to compile and execute code.');
@@ -473,6 +581,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
           status: 'error',
           exitCode: 1,
         });
+        setTestResults(null);
       }
     } catch (err: any) {
       setTerminalOutput('');
@@ -481,6 +590,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
         status: 'network_error',
         exitCode: 1,
       });
+      setTestResults(null);
     } finally {
       setIsRunning(false);
     }
@@ -916,80 +1026,31 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
             <div className={`h-1 w-20 rounded-full transition-colors ${isVResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`} />
           </div>
 
-          {/* OUTPUT / RESULT SECTION (POSITIONED DIRECTLY BELOW COMPILER) */}
+          {/* LEETCODE TESTCASE & TEST RESULT SECTION (DIRECTLY BELOW COMPILER) */}
           <div
             style={isDesktop ? { height: `calc(${100 - compilerHeightPct}% - 0.625rem)` } : undefined}
-            className="flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-h-[140px] shrink-0"
+            className="flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-h-[160px] shrink-0"
           >
-            {/* Header */}
-            <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-bold text-white tracking-wide">Output / Result</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {executionStats && (
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      executionStats.status === 'success'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                    }`}
-                  >
-                    {executionStats.status === 'success' ? '✔ Finished' : '✖ Error'}
-                    {executionStats.durationMs !== undefined && ` (${executionStats.durationMs}ms)`}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Terminal Output Body */}
-            <div className="flex-1 bg-black/95 p-3.5 font-mono text-xs overflow-auto min-h-[120px] leading-relaxed">
-              {isRunning && (
-                <div className="flex items-center gap-2 text-emerald-400 py-2">
-                  <div className="w-3.5 h-3.5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-                  <span>Compiling and executing {FILE_NAMES[language]}...</span>
-                </div>
-              )}
-
-              {!isRunning && !terminalOutput && !terminalError && (
-                <div className="text-slate-500 italic py-5 text-center flex flex-col items-center gap-1.5">
-                  <Terminal className="w-6 h-6 opacity-40" />
-                  <p>Click &quot;Run&quot; to execute your solution against sample test inputs.</p>
-                </div>
-              )}
-
-              {/* Standard Output */}
-              {terminalOutput && (
-                <pre className="text-emerald-400 whitespace-pre-wrap font-mono select-text">
-                  {terminalOutput}
-                </pre>
-              )}
-
-              {/* Error Output */}
-              {terminalError && (
-                <div className="mt-2 p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 text-rose-300 whitespace-pre-wrap font-mono">
-                  <div className="flex items-center gap-1.5 font-bold text-rose-400 mb-1">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>Compilation / Runtime Diagnostic:</span>
-                  </div>
-                  {terminalError}
-                </div>
-              )}
-            </div>
-
-            {/* Terminal Footer */}
-            <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-              <span className="text-slate-500">Execution Engine:</span>
-              <span className="text-slate-300 font-mono text-[11px]">
-                {language === 'java' && 'OpenJDK 17 / JVM'}
-                {language === 'python' && 'Python 3.13'}
-                {language === 'typescript' && 'TypeScript 5.x / Node.js'}
-                {language === 'javascript' && 'Node.js v20 (V8)'}
-                {language === 'csharp' && '.NET 8 / C# Compiler'}
-              </span>
-            </div>
+            <CodingTestcasePanel
+              testCases={testCases}
+              selectedCaseId={selectedCaseId}
+              onSelectCase={setSelectedCaseId}
+              onUpdateCaseInput={handleUpdateCaseInput}
+              onUpdateCaseExpected={handleUpdateCaseExpected}
+              onAddTestCase={handleAddTestCase}
+              onRemoveTestCase={handleRemoveTestCase}
+              testResults={testResults}
+              isRunning={isRunning}
+              terminalOutput={terminalOutput}
+              terminalError={terminalError}
+              executionStats={executionStats}
+              stdinInput={stdinInput}
+              onChangeStdin={setStdinInput}
+              showStdin={showStdin}
+              onToggleStdin={() => setShowStdin(!showStdin)}
+              activeTab={activeBottomTab}
+              setActiveTab={setActiveBottomTab}
+            />
           </div>
         </div>
       </div>

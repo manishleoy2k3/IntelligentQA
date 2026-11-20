@@ -566,7 +566,7 @@ function simulateJavaInProcess(
 
     // 4. Primitive/Type declarations
     js = js.replace(
-      /\b(?:[A-Z][a-zA-Z0-9_<>]*|int|double|float|long|short|byte|char|boolean|var|final\s+[A-Za-z0-9_<>]+)\s+([A-Za-z0-9_]+)\s*(=|;)/g,
+      /\b(?:[A-Z][a-zA-Z0-9_<>, \t\[\]]*|int|double|float|long|short|byte|char|boolean|var|final\s+[A-Za-z0-9_<>, \t\[\]]+)\s+([A-Za-z0-9_]+)\s*(=|;)/g,
       'let $1 $2'
     );
 
