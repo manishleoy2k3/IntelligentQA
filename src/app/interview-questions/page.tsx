@@ -303,7 +303,7 @@ export default function InterviewQuestionsPage() {
 
   return (
     <AuthGuard
-      featureName="500+ SDET Interview Question Bank"
+      featureName="800+ QA & SDET Interview Question Bank"
       description="Sign in to access 500+ scenario-based SDET interview questions with code snippets, architecture best practices, and search filters."
     >
       <div className="w-full max-w-7xl mx-auto p-4 md:p-6 space-y-6">
@@ -312,7 +312,7 @@ export default function InterviewQuestionsPage() {
           <div>
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400 mb-2">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>500+ Question Repository · Verified Solutions</span>
+              <span>800+ Question Repository · Verified Solutions (500+ Bank)</span>
             </div>
             <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Curated 500+ SDET Interview Question Bank
@@ -356,7 +356,7 @@ export default function InterviewQuestionsPage() {
               type="text"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Search 500+ questions by keyword, topic, or error name (e.g. StaleElement, Flakiness, Sharding, Architect)..."
+              placeholder="Search 800+ questions by keyword, topic, or error name (e.g. StaleElement, Flakiness, Sharding, Architect)..."
               className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm sm:text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -367,7 +367,7 @@ export default function InterviewQuestionsPage() {
             onChange={e => setSelectedTech(e.target.value)}
             className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
           >
-            <option value="All">All Tech Stacks (565 Questions)</option>
+            <option value="All">All Tech Stacks (800+ Questions)</option>
             <option value="Manual QA">Manual QA &amp; Methodologies</option>
             <option value="Playwright">Playwright &amp; TypeScript</option>
             <option value="Selenium">Selenium &amp; Java</option>
