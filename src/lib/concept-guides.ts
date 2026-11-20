@@ -23,15 +23,15 @@ export interface ConceptGuide {
 export const TRACK_META: Record<string, { id: string; name: string; tag: string; color: string; badgeClass: string }> = {
   selenium: {
     id: 'selenium',
-    name: 'Selenium WebDriver',
-    tag: 'Java & Python',
+    name: 'Selenium',
+    tag: '',
     color: 'amber',
     badgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
   },
   'selenium-java': {
     id: 'selenium',
-    name: 'Selenium WebDriver',
-    tag: 'Java & Python',
+    name: 'Selenium',
+    tag: '',
     color: 'amber',
     badgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
   },

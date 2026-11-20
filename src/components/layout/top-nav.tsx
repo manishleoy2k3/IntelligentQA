@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { QADatabase, getInitials } from "@/lib/qa-db";
 import ProfileModal from "@/components/profile/profile-modal";
 import GeminiKeyModal from "@/components/auth/gemini-key-modal";
+import AddGuideModal from "@/components/interview/add-guide-modal";
 import SuggestQuestionModal from "@/components/interview/suggest-question-modal";
 import { UserProfile } from "@/types/qa";
 import {
@@ -23,6 +24,7 @@ import {
   X,
   Key,
   HelpCircle,
+  BookPlus,
 } from "lucide-react";
 
 interface TopNavProps {
@@ -38,6 +40,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showKeyModal, setShowKeyModal] = useState(false);
+  const [showAddGuideModal, setShowAddGuideModal] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [showAdminUnlockModal, setShowAdminUnlockModal] = useState(false);
   const [adminPasscode, setAdminPasscode] = useState("");
@@ -193,16 +196,16 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <span className="sr-only">Ask SDET AI</span>
         </button>
 
-        {/* Suggest Question Button beside AI Coding Coach */}
+        {/* Add Guide Button (replaces Suggest Question) */}
         <button
           type="button"
-          onClick={() => setShowSuggestModal(true)}
-          aria-label="Suggest Question"
+          onClick={() => setShowAddGuideModal(true)}
+          aria-label="Add Guide"
           className="flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 bg-[#181818] hover:bg-[#222222] text-zinc-200 hover:text-white border border-[#2B2B2B] hover:border-[#81FF89]/50 rounded-full font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
-          title="Suggest Question: Submit or import community interview questions via template or manual typing"
+          title="Add Guide: Create architecture guides, import JSON/CSV, or download templates"
         >
-          <HelpCircle className="w-4 h-4 text-[#81FF89] shrink-0" />
-          <span className="font-bold tracking-tight">Suggest Question</span>
+          <BookPlus className="w-4 h-4 text-[#81FF89] shrink-0" />
+          <span className="font-bold tracking-tight">Add Guide</span>
         </button>
 
         {/* 2. Notifications Bell & Popover */}
@@ -509,6 +512,12 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           </div>
         </div>
       )}
+      {/* Add Guide Modal (with Import Guide & Import Guide Template) */}
+      <AddGuideModal
+        isOpen={showAddGuideModal}
+        onClose={() => setShowAddGuideModal(false)}
+      />
+
       {/* Suggest Question Modal */}
       <SuggestQuestionModal
         isOpen={showSuggestModal}

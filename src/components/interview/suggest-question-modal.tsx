@@ -195,7 +195,7 @@ export default function SuggestQuestionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div className="bg-[#121212] border border-[#262626] w-full max-w-2xl rounded-[28px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] text-white">
         {/* Header */}
         <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[#222222] bg-[#161616]">

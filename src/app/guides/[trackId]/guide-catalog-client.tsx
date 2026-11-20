@@ -398,15 +398,17 @@ export default function GuideCatalogClient({ initialTrackId = 'selenium' }: { in
               <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
                 <Link href="/dashboard" className="hover:text-white transition">Dashboard</Link>
                 <span>/</span>
-                <span className="text-slate-300 font-semibold">{trackInfo.name}</span>
+                <span className="text-slate-300 font-semibold">{activeTrack === 'selenium' || activeTrack === 'selenium-java' ? 'Selenium (Java)' : trackInfo.name}</span>
                 <span>/</span>
                 <span className="text-blue-400 font-bold">Guide Import &amp; Management</span>
               </div>
               <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 mt-0.5">
-                {trackInfo.name} - Guide Import &amp; Management
-                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${trackInfo.badgeClass}`}>
-                  {trackInfo.tag}
-                </span>
+                {activeTrack === 'selenium' || activeTrack === 'selenium-java' ? 'Selenium (Java)' : `${trackInfo.name} - Guide Import & Management`}
+                {trackInfo.tag && (
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${trackInfo.badgeClass}`}>
+                    {trackInfo.tag}
+                  </span>
+                )}
               </h1>
             </div>
           </div>
