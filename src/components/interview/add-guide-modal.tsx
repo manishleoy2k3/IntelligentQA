@@ -158,18 +158,18 @@ export default function AddGuideModal({
     setImportSuccessMsg('');
 
     try {
-      const parsed = parseImportedGuides(text, selectedTrack);
-      if (!parsed || parsed.length === 0) {
-        setImportError('Could not find valid guides. Please verify your JSON array or CSV headers.');
+      const result = parseImportedGuides(text, selectedTrack);
+      if (result.error || !result.guides || result.guides.length === 0) {
+        setImportError(result.error || 'Could not find valid guides. Please verify your JSON array or CSV headers.');
         setIsImporting(false);
         return;
       }
 
-      parsed.forEach(g => saveStagedGuide(g));
-      setImportSuccessMsg(`Successfully staged ${parsed.length} guide(s) for ${TRACK_META[selectedTrack]?.name || selectedTrack}!`);
+      result.guides.forEach((g: ConceptGuide) => saveStagedGuide(g));
+      setImportSuccessMsg(`Successfully staged ${result.guides.length} guide(s) for ${TRACK_META[selectedTrack]?.name || selectedTrack}!`);
       setTimeout(() => {
         onClose();
-        if (onSuccess) onSuccess(`🎉 Imported and staged ${parsed.length} guide(s)!`);
+        if (onSuccess) onSuccess(`🎉 Imported and staged ${result.guides.length} guide(s)!`);
       }, 1500);
     } catch (err: any) {
       setImportError(err?.message || 'Failed to parse guide import.');
