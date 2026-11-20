@@ -40,6 +40,7 @@ import {
   parseImportedGuides,
   generateConceptGuideTemplate,
   downloadConceptGuideTemplate,
+  extractTextFromOfficeZip,
 } from "@/lib/concept-guides";
 import { QADatabase } from "@/lib/qa-db";
 
@@ -105,7 +106,7 @@ export default function GuideCatalogClient({
 
   // Modals
   const [showTemplateModal, setShowTemplateModal] = useState<boolean>(false);
-  const [templateFormat, setTemplateFormat] = useState<"excel" | "word" | "json" | "csv">("excel");
+  const [templateFormat, setTemplateFormat] = useState<"xlsx" | "docx" | "excel" | "word" | "json" | "csv">("xlsx");
   const [templateCopied, setTemplateCopied] = useState<boolean>(false);
 
   const [showImportModal, setShowImportModal] = useState<boolean>(false);
@@ -232,9 +233,27 @@ export default function GuideCatalogClient({
     );
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const lowerName = file.name.toLowerCase();
+    if (lowerName.endsWith(".xlsx") || lowerName.endsWith(".docx")) {
+      try {
+        const buffer = await file.arrayBuffer();
+        const extracted = await extractTextFromOfficeZip(
+          buffer,
+          lowerName.endsWith(".docx") ? "docx" : "xlsx"
+        );
+        if (extracted) {
+          handleParseImport(extracted);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          return;
+        }
+      } catch (err) {
+        console.warn("Office ZIP extraction fallback:", err);
+      }
+    }
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -541,7 +560,7 @@ export default function GuideCatalogClient({
                       No Imported Guides Pending Review
                     </h3>
                     <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                      Your staging area is empty. Download the Excel (.XLS) or Word (.DOC) template below to prepare your concepts, or click <strong>Import Excel / Word Guides</strong> to upload and review.
+                      Your staging area is empty. Download the Excel (.XLSX) or Word (.DOCX) template below to prepare your concepts, or click <strong>Import Excel / Word Guides</strong> to upload and review.
                     </p>
                   </div>
                   <div className="flex items-center justify-center gap-3 pt-2">
@@ -551,7 +570,7 @@ export default function GuideCatalogClient({
                       className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition cursor-pointer flex items-center gap-1.5"
                     >
                       <Download className="w-4 h-4 text-emerald-400" />
-                      <span>Download Template (.XLS / .DOC)</span>
+                      <span>Download Template (.XLSX / .DOCX)</span>
                     </button>
                     <button
                       type="button"
@@ -664,51 +683,80 @@ export default function GuideCatalogClient({
 
             {/* Bottom 2-Column Section (Below Imported Guides Pending Review) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              {/* Left Card: Mandatory Fields in Template */}
+              {/* Left Card: Mandatory & Optional Fields in Template */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xs">
                 <div className="flex items-center gap-2 text-white font-bold text-sm">
                   <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-                  <span>Mandatory Fields in Template:</span>
+                  <span>Template Field Specification (Mandatory &amp; Optional):</span>
                 </div>
-                <ul className="list-disc list-inside text-slate-400 space-y-1.5 text-xs">
-                  <li>
-                    <strong className="text-slate-200">title</strong>: Name of the architecture concept or interview topic
-                  </li>
-                  <li>
-                    <strong className="text-slate-200">category</strong>: Domain or module group (e.g., Synchronization, Architecture, POM)
-                  </li>
-                  <li>
-                    <strong className="text-slate-200">level</strong>: Beginner | Intermediate | Advanced
-                  </li>
-                  <li>
-                    <strong className="text-slate-200">summary</strong>: Concise 1-2 sentence definition explaining why it matters
-                  </li>
-                  <li>
-                    <strong className="text-slate-200">overview</strong>: Detailed explanation, tradeoffs, and architectural concepts
-                  </li>
-                  <li>
-                    <strong className="text-slate-200">codeSnippet</strong>: Implementation snippet in Java, TypeScript, or Python
-                  </li>
-                  <li>
-                    <strong className="text-slate-200">interviewTips</strong>: High-value SDET interview talking points &amp; watchouts
-                  </li>
-                </ul>
+                
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                      Mandatory Fields (Required for Submission)
+                    </span>
+                    <ul className="list-disc list-inside text-slate-400 space-y-1 mt-1.5 text-[11px]">
+                      <li>
+                        <strong className="text-slate-200">title</strong>: Name of the architecture concept or interview topic
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">category</strong>: Domain or module group (e.g., Synchronization, Architecture, POM)
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">level</strong>: Beginner | Intermediate | Advanced
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">summary</strong>: Concise 1-2 sentence definition explaining why it matters
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">overview</strong>: Detailed explanation, tradeoffs, and architectural concepts
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">codeSnippet &amp; codeLanguage</strong>: Complete code implementation in Java, TypeScript, or Python
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      Optional Fields (For 1-Click Admin Approval)
+                    </span>
+                    <ul className="list-disc list-inside text-slate-400 space-y-1 mt-1.5 text-[11px]">
+                      <li>
+                        <strong className="text-slate-200">architectureOrMechanism</strong>: Deep-dive into internal mechanics or diagram explanation
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">codeCaption</strong>: Descriptive label for the implementation snippet
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">bestPractices</strong>: Bullet points or semicolon-separated recommendations
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">antiPatterns</strong>: Common mistakes and architectural pitfalls to avoid
+                      </li>
+                      <li>
+                        <strong className="text-slate-200">interviewTips</strong>: High-value SDET interview talking points &amp; watchouts
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
-              {/* Right Card: Staging Workflow */}
+              {/* Right Card: Staging Workflow & Admin Approval */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xs text-xs text-slate-400">
                 <div className="flex items-center gap-2 font-bold text-white text-sm">
                   <Lightbulb className="w-4 h-4 text-amber-400" />
-                  <span>Staging Workflow</span>
+                  <span>Staging &amp; Admin Approval Workflow</span>
                 </div>
                 <p className="leading-relaxed">
-                  Imported guides from Excel or Word remain in this staging list until you click <strong>Confirm &amp; Submit</strong>. You can edit any field or remove incorrect guides before saving. Once confirmed, they are permanently saved into your <strong>{trackInfo.name} Guide List</strong> and cleared from this import page.
+                  Downloaded Excel (.XLS) and Word (.DOC) templates come pre-populated with all mandatory and optional fields plus complete sample values. Filling in this exact format ensures the guide meets site standards and enables the Admin to review and approve without manual formatting edits.
                 </p>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1 text-slate-300">
-                  <div className="font-semibold text-emerald-400">✓ Safe Staging Process:</div>
-                  <div>1. Download the Excel (.XLS) or Word (.DOC) template.</div>
-                  <div>2. Fill in your concepts or paste interview guides.</div>
-                  <div>3. Upload or paste into IntelligentQA to preview, edit &amp; confirm.</div>
+                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-[11px] space-y-1.5 text-slate-300">
+                  <div className="font-semibold text-emerald-400">✓ Standardized Submission Process:</div>
+                  <div>1. Download the Excel (.XLS) or Word (.DOC) template with sample values.</div>
+                  <div>2. Keep the mandatory fields and populate optional sections to enrich the guide.</div>
+                  <div>3. Upload or paste the completed file into Staging to preview, verify, and submit.</div>
+                  <div>4. Admin approves with 0 formatting modifications.</div>
                 </div>
               </div>
             </div>
@@ -1368,36 +1416,36 @@ export default function GuideCatalogClient({
               </button>
             </div>
 
-            {/* Format Toggle: Excel and Word */}
+            {/* Format Toggle: Excel (.XLSX) and Word (.DOCX) */}
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="inline-flex rounded-xl p-1 bg-slate-950 border border-slate-800 text-xs">
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat("excel")}
+                  onClick={() => setTemplateFormat("xlsx")}
                   className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition cursor-pointer ${
-                    templateFormat === "excel"
-                      ? "bg-blue-600 text-white shadow-xs"
+                    templateFormat === "xlsx" || templateFormat === "excel"
+                      ? "bg-emerald-600 text-white shadow-xs"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Excel Template (.XLS)</span>
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Excel Template (.XLSX)</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat("word")}
+                  onClick={() => setTemplateFormat("docx")}
                   className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition cursor-pointer ${
-                    templateFormat === "word"
+                    templateFormat === "docx" || templateFormat === "word"
                       ? "bg-blue-600 text-white shadow-xs"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  <FileText className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Word Template (.DOC)</span>
+                  <FileText className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Word Template (.DOCX)</span>
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
                   onClick={handleCopyTemplate}
@@ -1416,15 +1464,30 @@ export default function GuideCatalogClient({
                   )}
                 </button>
 
+                {/* Direct Download .XLSX Button */}
                 <button
                   type="button"
                   onClick={() =>
-                    downloadConceptGuideTemplate(templateFormat, activeTrack)
+                    downloadConceptGuideTemplate("xlsx", activeTrack)
                   }
                   className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                  title="Download genuine Microsoft Excel (.xlsx) file"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download .{templateFormat === "excel" ? "XLS" : templateFormat === "word" ? "DOC" : templateFormat.toUpperCase()}</span>
+                  <span>Download .XLSX</span>
+                </button>
+
+                {/* Direct Download .DOCX Button */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    downloadConceptGuideTemplate("docx", activeTrack)
+                  }
+                  className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                  title="Download genuine Microsoft Word (.docx) file"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download .DOCX</span>
                 </button>
               </div>
             </div>

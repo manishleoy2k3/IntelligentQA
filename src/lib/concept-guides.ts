@@ -705,25 +705,36 @@ export function deleteCustomGuide(id: string, trackId?: string): void {
   localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
 }
 
-// Helper to get track sample data for Excel and Word templates
+import { downloadOfficeTemplate, extractTextFromOfficeZip, SampleGuideData } from './office-documents';
+export { extractTextFromOfficeZip };
 function getTrackSampleData(normTrack: string) {
   if (normTrack === 'playwright') {
     return {
       title: 'Auto-Waiting Engine & Actionability Assertions',
-      category: 'Core Mechanics',
+      category: 'Core Mechanics & Synchronization',
       level: 'Intermediate',
-      summary: 'How Playwright eliminates flaky tests through automated actionability state verification.',
-      overview: 'Playwright automatically verifies that elements are attached to DOM, visible, stable (not animating), enabled, and receive events before performing actions like click() or fill(). This eliminates flaky tests without manual wait logic.',
-      architecture: 'Actionability checks run repeatedly within the actionTimeout until all checks pass simultaneously before firing the browser event.',
+      summary: 'How Playwright eliminates flaky tests through automated actionability state verification before executing user actions.',
+      overview: 'Playwright automatically verifies that elements are attached to the DOM, visible, stable (not animating), enabled, and receive pointer events before performing actions like click() or fill(). This eliminates flaky tests without manual wait logic.\n\nUnlike legacy tools that require explicit Thread.sleep or polling loops, Playwright checks the actionability status of target elements continuously until the timeout is reached.',
+      architecture: 'Actionability checks run repeatedly within the actionTimeout window (default 30s) until all checks pass simultaneously before firing the browser CDP event.',
       language: 'typescript',
+      caption: 'TypeScript: Playwright Auto-Waiting & Expect Assertions',
       code: `import { test, expect } from '@playwright/test';
 
 test('resilient checkout action', async ({ page }) => {
   await page.goto('/checkout');
-  // Playwright automatically verifies actionability before clicking
+  // Playwright automatically verifies actionability (visible, stable, enabled)
   await page.locator('#confirm-order-btn').click();
   await expect(page.locator('.order-success-badge')).toBeVisible();
 });`,
+      bestPractices: [
+        'Prefer user-facing locators (getByRole, getByText) over brittle CSS/XPath',
+        'Use web-first assertions like await expect(locator).toBeVisible()',
+        'Avoid page.waitForTimeout() in automated CI pipelines'
+      ],
+      antiPatterns: [
+        'Using manual page.waitForTimeout(5000) for UI animation delays',
+        'Mixing Playwright locators with legacy page.$ query selectors'
+      ],
       interviewTips: 'Explain why Playwright does not require explicit sleep or wait statements and how auto-waiting differs from Selenium Implicit Wait.',
     };
   }
@@ -734,9 +745,10 @@ test('resilient checkout action', async ({ page }) => {
       category: 'API Framework Architecture',
       level: 'Advanced',
       summary: 'Centralizing base URIs, OAuth authentication headers, and response status code validation into reusable specifications.',
-      overview: 'Large API test suites often duplicate headers, tokens, and base paths across hundreds of tests. RequestSpecBuilder and ResponseSpecBuilder consolidate configurations into immutable specifications that can be injected across all test endpoints.',
+      overview: 'Large API test suites often duplicate headers, tokens, and base paths across hundreds of tests. RequestSpecBuilder and ResponseSpecBuilder consolidate configurations into immutable specifications that can be injected across all test endpoints.\n\nThis enforces contract consistency and enables seamless switching between staging, QA, and production environments.',
       architecture: 'Specifications decouple environment configuration from test assertions, allowing global filter logging and environment switching.',
       language: 'java',
+      caption: 'Java: RequestSpecification & Logging Filters with REST Assured',
       code: `RequestSpecification baseReq = new RequestSpecBuilder()
     .setBaseUri("https://api.enterprise.com/v2")
     .addHeader("Authorization", "Bearer " + authToken)
@@ -749,6 +761,15 @@ ResponseSpecification baseRes = new ResponseSpecBuilder()
     .build();
 
 given().spec(baseReq).when().get("/users").then().spec(baseRes);`,
+      bestPractices: [
+        'Build specifications once in a BaseApiTest class and reuse across tests',
+        'Attach RequestLoggingFilter and ResponseLoggingFilter for CI diagnostic traces',
+        'Use POJOs for serialization instead of raw string JSON bodies'
+      ],
+      antiPatterns: [
+        'Hardcoding authorization headers or URLs inside individual @Test methods',
+        'Asserting HTTP status codes manually with if-statements instead of then().statusCode()'
+      ],
       interviewTips: 'Explain how Specifications decouple environment configuration from test assertions and how filters intercept HTTP traffic for logging.',
     };
   }
@@ -759,40 +780,71 @@ given().spec(baseReq).when().get("/users").then().spec(baseRes);`,
       category: 'Autonomous QA Agents',
       level: 'Advanced',
       summary: 'Using vector embeddings to resolve broken locators when UI designs change dynamically.',
-      overview: 'When an element ID or class name changes in a release, self-healing agents compute semantic similarity between the old DOM node attributes and new candidate elements to continue execution without test suite failures.',
-      architecture: 'Vector embeddings compare tag, text, and accessibility role against historical baseline snapshots with confidence score thresholds.',
+      overview: 'When an element ID or class name changes in a release, self-healing agents compute semantic similarity between the old DOM node attributes and new candidate elements to continue execution without test suite failures.\n\nThe agent captures historical attribute snapshots and uses cosine similarity to identify the closest match.',
+      architecture: 'Vector embeddings compare tag, text, and accessibility role against historical baseline snapshots with confidence score thresholds (>0.85).',
       language: 'python',
+      caption: 'Python: Self-Healing Element Resolution Workflow',
       code: `def self_heal_locator(driver, failed_locator, dom_snapshot):
     candidate = agent.find_semantic_match(failed_locator, dom_snapshot)
     if candidate.confidence > 0.88:
         driver.find_element(By.XPATH, candidate.xpath).click()`,
+      bestPractices: [
+        'Set high confidence score thresholds (e.g., >0.85) to prevent clicking wrong elements',
+        'Log all self-healing mutations to a dashboard so developers can update baseline locators',
+        'Keep self-healing enabled on regression suites but disabled on strict unit tests'
+      ],
+      antiPatterns: [
+        'Silently self-healing without notifying the test reporter or team',
+        'Relying on self-healing as an excuse for writing brittle locators'
+      ],
       interviewTips: 'Discuss latency trade-offs and confidence thresholds in self-healing engines compared to strict assertions.',
     };
   }
 
   // Default Selenium
   return {
-    title: 'StaleElementReferenceException Resilience',
-    category: 'Error Handling & Synchronization',
+    title: 'Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep',
+    category: 'Synchronization & Waits',
     level: 'Intermediate',
-    summary: 'Root cause of stale element reference exceptions and implementing dynamic polling retry mechanisms.',
-    overview: 'In Single Page Applications (SPAs) built with React or Angular, DOM elements are constantly torn down and rebuilt during state changes. Even if an element was located moments earlier, interacting with it after a state re-render throws StaleElementReferenceException. Using dynamic retry wrappers with WebDriverWait(ExpectedConditions.refreshed(...)) guarantees test stability.',
-    architecture: 'ExpectedConditions.refreshed() catches StaleElementReferenceException and re-locates the By locator within the polling interval instead of terminating test execution.',
+    summary: 'Master dynamic synchronization to eliminate flaky tests, understand polling intervals, and replace brittle sleep calls.',
+    overview: 'Synchronization is the #1 cause of flaky automation tests in enterprise CI/CD pipelines.\n\nModern web applications use asynchronous AJAX calls, React state hydration, and animations where elements exist in the DOM but cannot receive click actions yet. Using Thread.sleep() freezes the JVM thread unconditionally, dramatically slowing down suites.\n\nSelenium provides WebDriverWait (Explicit Wait) and FluentWait to poll the DOM dynamically until ExpectedConditions evaluate to true, proceeding instantly without unnecessary delays.',
+    architecture: 'WebDriverWait polls the browser every 500ms by default and ignores NoSuchElementException. FluentWait allows custom polling intervals (e.g., 250ms) and custom ignored exception lists (e.g., StaleElementReferenceException).',
     language: 'java',
-    code: `public WebElement waitForRefreshedElement(WebDriver driver, By locator) {
-    return new WebDriverWait(driver, Duration.ofSeconds(10))
-        .pollingEvery(Duration.ofMillis(250))
-        .ignoring(StaleElementReferenceException.class)
-        .until(ExpectedConditions.refreshed(ExpectedConditions.elementToBeClickable(locator)));
-}`,
-    interviewTips: 'Explain the difference between NoSuchElementException (element not in DOM) vs StaleElementReferenceException (element was in DOM but destroyed/re-created), and why sleep does not guarantee fix.',
+    caption: 'Java: WebDriverWait & FluentWait Implementation',
+    code: `// Enterprise Explicit Wait
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+WebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("submit-order")));
+submitBtn.click();
+
+// Custom FluentWait with fine-grained polling
+Wait<WebDriver> fluentWait = new FluentWait<>(driver)
+    .withTimeout(Duration.ofSeconds(15))
+    .pollingEvery(Duration.ofMillis(250))
+    .ignoring(NoSuchElementException.class)
+    .ignoring(StaleElementReferenceException.class);
+
+WebElement status = fluentWait.until(d -> d.findElement(By.id("txn-status")));`,
+    bestPractices: [
+      'Always favor Explicit Waits over Implicit Waits. Mixing both causes unexpected timeout compounding in Selenium.',
+      'Use expected condition elementToBeClickable before click() and visibilityOf for assertions.',
+      'Never commit Thread.sleep() in production framework suites.'
+    ],
+    antiPatterns: [
+      'Setting a global implicit wait of 30 seconds and using Thread.sleep(5000) for animations.',
+      'Catching TimeoutException silently and continuing test execution without assertion.'
+    ],
+    interviewTips: 'In interviews, emphasize why mixing Implicit and Explicit waits is undefined behavior in WebDriver specifications, and explain how FluentWait customizes polling intervals.',
   };
 }
 
-// Generate Excel Spreadsheet (.xls XML/HTML format)
+// Generate Excel Spreadsheet (.xls XML/HTML format) with all Mandatory and Optional fields
 export function generateExcelTemplate(trackId: string = 'selenium'): string {
   const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
+  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI for QA';
+
+  const bestPracticesStr = sample.bestPractices.join('; ');
+  const antiPatternsStr = sample.antiPatterns.join('; ');
 
   return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
 <head>
@@ -812,48 +864,72 @@ export function generateExcelTemplate(trackId: string = 'selenium'): string {
 </xml>
 <![endif]-->
 <style>
-  th { background-color: #1e3a8a; color: #ffffff; font-weight: bold; border: 1px solid #94a3b8; padding: 10px; font-family: Calibri, Arial, sans-serif; font-size: 11pt; text-align: left; }
+  .guide-header { font-family: Calibri, Arial, sans-serif; font-size: 14pt; font-weight: bold; color: #1e3a8a; }
+  .guide-note { font-family: Calibri, Arial, sans-serif; font-size: 10pt; color: #475569; font-style: italic; }
+  th.mandatory { background-color: #1e3a8a; color: #ffffff; font-weight: bold; border: 1px solid #94a3b8; padding: 10px; font-family: Calibri, Arial, sans-serif; font-size: 10.5pt; text-align: left; }
+  th.optional { background-color: #334155; color: #ffffff; font-weight: bold; border: 1px solid #94a3b8; padding: 10px; font-family: Calibri, Arial, sans-serif; font-size: 10.5pt; text-align: left; }
   td { border: 1px solid #cbd5e1; padding: 8px; font-family: Calibri, Arial, sans-serif; font-size: 10pt; vertical-align: top; }
-  .code { font-family: Consolas, monospace; background-color: #f8fafc; }
+  td.placeholder { color: #64748b; font-style: italic; }
+  .code { font-family: Consolas, monospace; background-color: #f8fafc; white-space: pre-wrap; }
 </style>
 </head>
 <body>
 <table>
+  <tr>
+    <td colspan="12" class="guide-header">IntelligentQA - ${trackName} Guide Import Template</td>
+  </tr>
+  <tr>
+    <td colspan="12" class="guide-note">
+      Blue headers = [MANDATORY] fields. Gray headers = [OPTIONAL] fields. Filling all fields ensures automatic, seamless Admin approval. Semicolons (;) can be used to separate multiple Best Practices or Anti-Patterns.
+    </td>
+  </tr>
+  <tr><td></td></tr>
   <thead>
     <tr>
-      <th style="width: 220px;">Title</th>
-      <th style="width: 160px;">Category</th>
-      <th style="width: 100px;">Level</th>
-      <th style="width: 250px;">Summary</th>
-      <th style="width: 350px;">Overview</th>
-      <th style="width: 250px;">ArchitectureOrMechanism</th>
-      <th style="width: 110px;">CodeLanguage</th>
-      <th style="width: 400px;">CodeSnippet</th>
-      <th style="width: 250px;">InterviewTips</th>
+      <th class="mandatory" style="width: 220px;">Title [MANDATORY]</th>
+      <th class="mandatory" style="width: 160px;">Category [MANDATORY]</th>
+      <th class="mandatory" style="width: 110px;">Level [MANDATORY]</th>
+      <th class="mandatory" style="width: 260px;">Summary [MANDATORY]</th>
+      <th class="mandatory" style="width: 360px;">Overview [MANDATORY]</th>
+      <th class="optional" style="width: 260px;">ArchitectureOrMechanism [OPTIONAL]</th>
+      <th class="mandatory" style="width: 110px;">CodeLanguage [MANDATORY]</th>
+      <th class="optional" style="width: 220px;">CodeCaption [OPTIONAL]</th>
+      <th class="mandatory" style="width: 420px;">CodeSnippet [MANDATORY]</th>
+      <th class="optional" style="width: 280px;">BestPractices [OPTIONAL]</th>
+      <th class="optional" style="width: 280px;">AntiPatterns [OPTIONAL]</th>
+      <th class="optional" style="width: 260px;">InterviewTips [OPTIONAL]</th>
     </tr>
   </thead>
   <tbody>
+    <!-- Sample Guide 1 with All Mandatory & Optional Fields Populated -->
     <tr>
       <td>${sample.title}</td>
       <td>${sample.category}</td>
       <td>${sample.level}</td>
       <td>${sample.summary}</td>
-      <td>${sample.overview}</td>
-      <td>${sample.architecture}</td>
+      <td>${sample.overview.replace(/\n/g, '<br/>')}</td>
+      <td>${sample.architecture.replace(/\n/g, '<br/>')}</td>
       <td>${sample.language}</td>
+      <td>${sample.caption}</td>
       <td class="code">${sample.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+      <td>${bestPracticesStr}</td>
+      <td>${antiPatternsStr}</td>
       <td>${sample.interviewTips}</td>
     </tr>
+    <!-- Blank Template Row Ready for User Input -->
     <tr>
-      <td>[Enter Guide 2 Title Here]</td>
-      <td>[Category]</td>
-      <td>Intermediate</td>
-      <td>[1-2 sentence concise summary explaining why it matters]</td>
-      <td>[Full multi-paragraph explanation, tradeoffs, architecture]</td>
-      <td>[Underlying mechanics or flow]</td>
-      <td>${sample.language}</td>
-      <td class="code">// Add your code implementation here</td>
-      <td>[Key points to mention in SDET interviews]</td>
+      <td class="placeholder">[Enter Guide Title - MANDATORY]</td>
+      <td class="placeholder">[Category / Module Group - MANDATORY]</td>
+      <td class="placeholder">Beginner | Intermediate | Advanced</td>
+      <td class="placeholder">[1-2 sentence concise definition - MANDATORY]</td>
+      <td class="placeholder">[Multi-paragraph in-depth technical explanation, tradeoffs, architecture - MANDATORY]</td>
+      <td class="placeholder">[Internal engine mechanics, lifecycle, or diagram flow - OPTIONAL]</td>
+      <td class="placeholder">${sample.language}</td>
+      <td class="placeholder">[Caption for snippet - OPTIONAL]</td>
+      <td class="code">// Add runnable code snippet here - MANDATORY</td>
+      <td class="placeholder">[Recommendation 1; Recommendation 2 - OPTIONAL]</td>
+      <td class="placeholder">[Common pitfall 1; Common mistake 2 - OPTIONAL]</td>
+      <td class="placeholder">[Key SDET interview questions &amp; talking points - OPTIONAL]</td>
     </tr>
   </tbody>
 </table>
@@ -861,7 +937,7 @@ export function generateExcelTemplate(trackId: string = 'selenium'): string {
 </html>`;
 }
 
-// Generate Word Document (.doc HTML format)
+// Generate Word Document (.doc HTML format) with all Mandatory and Optional fields
 export function generateWordTemplate(trackId: string = 'selenium'): string {
   const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
@@ -873,65 +949,247 @@ export function generateWordTemplate(trackId: string = 'selenium'): string {
 <title>SDET Concept Guides Template - ${trackName}</title>
 <style>
   body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1e293b; line-height: 1.5; margin: 30px; }
-  h1 { color: #1e3a8a; font-size: 18pt; border-bottom: 2px solid #3b82f6; padding-bottom: 6px; margin-bottom: 8px; }
-  p.instructions { color: #475569; font-size: 10pt; margin-bottom: 20px; }
+  h1 { color: #1e3a8a; font-size: 18pt; border-bottom: 2px solid #3b82f6; padding-bottom: 6px; margin-bottom: 6px; }
+  .instructions-box { background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 12px; margin-bottom: 24px; font-size: 10pt; color: #166534; }
   h2 { color: #0f172a; font-size: 13pt; margin-top: 24px; margin-bottom: 8px; border-left: 4px solid #2563eb; padding-left: 8px; }
-  table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 28px; }
   th { background-color: #2563eb; color: #ffffff; padding: 8px 10px; font-weight: bold; border: 1px solid #94a3b8; text-align: left; }
   td { border: 1px solid #cbd5e1; padding: 8px 10px; vertical-align: top; }
-  td.label { background-color: #f1f5f9; font-weight: bold; width: 22%; color: #1e293b; }
-  td.val { width: 78%; }
+  td.label-mandatory { background-color: #eff6ff; font-weight: bold; width: 26%; color: #1e3a8a; }
+  td.label-optional { background-color: #f8fafc; font-weight: bold; width: 26%; color: #475569; }
+  td.val { width: 74%; }
+  .badge-mandatory { background-color: #dbeafe; color: #1e40af; font-size: 8.5pt; padding: 2px 5px; border-radius: 3px; font-weight: bold; }
+  .badge-optional { background-color: #e2e8f0; color: #475569; font-size: 8.5pt; padding: 2px 5px; border-radius: 3px; font-weight: bold; }
   pre, code { font-family: Consolas, monospace; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px; display: block; white-space: pre-wrap; font-size: 9.5pt; color: #0f172a; }
+  .bullet-list { margin: 0; padding-left: 18px; }
+  .placeholder-text { color: #64748b; font-style: italic; }
 </style>
 </head>
 <body>
-  <h1>IntelligentQA - Concept Guides Import Template (${trackName})</h1>
-  <p class="instructions">
-    <strong>Instructions:</strong> Use the tables below to document your SDET architecture and concept guides. You can duplicate the table to add more guides. When finished, save this document and upload it via the <strong>Import Excel / Word Guides</strong> button in IntelligentQA, or copy and paste the contents into the import dialog.
-  </p>
+  <h1>IntelligentQA - Concept Guides Submission Template (${trackName})</h1>
+  <div class="instructions-box">
+    <strong>Admin Submission Guidelines:</strong><br/>
+    • Use this standardized document to prepare your QA / SDET concept guides before submitting.<br/>
+    • <strong>[MANDATORY]</strong> fields must be filled for successful submission and validation.<br/>
+    • <strong>[OPTIONAL]</strong> fields enrich the guide (Best Practices, Anti-Patterns, Interview Tips). Filling them allows the Admin to approve the guide directly with 0 manual modifications.<br/>
+    • When finished, save this document and upload it via <strong>Import Excel / Word Guides</strong> in IntelligentQA.
+  </div>
 
-  <h2>Guide 1: Sample Completed Guide</h2>
+  <h2>Table 1: Complete Production Sample Guide (All Fields Demonstrated)</h2>
   <table>
-    <tr><td class="label">Title</td><td class="val">${sample.title}</td></tr>
-    <tr><td class="label">Category</td><td class="val">${sample.category}</td></tr>
-    <tr><td class="label">Level</td><td class="val">${sample.level}</td></tr>
-    <tr><td class="label">Summary</td><td class="val">${sample.summary}</td></tr>
-    <tr><td class="label">Overview</td><td class="val">${sample.overview}</td></tr>
-    <tr><td class="label">Architecture / Mechanism</td><td class="val">${sample.architecture}</td></tr>
-    <tr><td class="label">Code Language</td><td class="val">${sample.language}</td></tr>
-    <tr><td class="label">Code Snippet</td><td class="val"><pre>${sample.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre></td></tr>
-    <tr><td class="label">Interview Tips</td><td class="val">${sample.interviewTips}</td></tr>
+    <tr>
+      <td class="label-mandatory">Title <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val"><strong>${sample.title}</strong></td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Category <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val">${sample.category}</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Level <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val">${sample.level}</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Summary <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val">${sample.summary}</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Overview <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val">${sample.overview.replace(/\n/g, '<br/>')}</td>
+    </tr>
+    <tr>
+      <td class="label-optional">Architecture / Mechanism <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val">${sample.architecture.replace(/\n/g, '<br/>')}</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Code Language <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val">${sample.language}</td>
+    </tr>
+    <tr>
+      <td class="label-optional">Code Snippet Caption <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val">${sample.caption}</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Code Snippet <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val"><pre>${sample.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre></td>
+    </tr>
+    <tr>
+      <td class="label-optional">Best Practices <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val">
+        <ul class="bullet-list">
+          ${sample.bestPractices.map(bp => `<li>${bp}</li>`).join('')}
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="label-optional">Anti-Patterns <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val">
+        <ul class="bullet-list">
+          ${sample.antiPatterns.map(ap => `<li>${ap}</li>`).join('')}
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="label-optional">Interview Tips <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val">${sample.interviewTips}</td>
+    </tr>
   </table>
 
-  <h2>Guide 2: [Your New Guide Title Here]</h2>
+  <h2>Table 2: Blank Guide Template (Fill in Your Concept Details Here)</h2>
   <table>
-    <tr><td class="label">Title</td><td class="val">[Enter Guide Title]</td></tr>
-    <tr><td class="label">Category</td><td class="val">[Enter Category / Domain]</td></tr>
-    <tr><td class="label">Level</td><td class="val">Beginner | Intermediate | Advanced</td></tr>
-    <tr><td class="label">Summary</td><td class="val">[Concise 1-2 sentence overview explaining why it matters]</td></tr>
-    <tr><td class="label">Overview</td><td class="val">[Detailed multi-paragraph explanation, pain points, architectural solution]</td></tr>
-    <tr><td class="label">Architecture / Mechanism</td><td class="val">[Internal mechanics or flow]</td></tr>
-    <tr><td class="label">Code Language</td><td class="val">${sample.language}</td></tr>
-    <tr><td class="label">Code Snippet</td><td class="val"><pre>// Add code implementation here</pre></td></tr>
-    <tr><td class="label">Interview Tips</td><td class="val">[Key interview questions or architectural tradeoffs]</td></tr>
+    <tr>
+      <td class="label-mandatory">Title <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val placeholder-text">[Enter the clear, descriptive concept or architecture title]</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Category <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val placeholder-text">[e.g., Synchronization, Framework Architecture, POM, API Testing]</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Level <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val placeholder-text">Beginner | Intermediate | Advanced</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Summary <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val placeholder-text">[Concise 1-2 sentence definition explaining why this concept matters for SDETs]</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Overview <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val placeholder-text">[Detailed multi-paragraph explanation, architectural solution, and tradeoffs]</td>
+    </tr>
+    <tr>
+      <td class="label-optional">Architecture / Mechanism <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val placeholder-text">[Internal engine mechanics, polling lifecycle, or diagram flow]</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Code Language <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val placeholder-text">${sample.language} (or java / typescript / python / csharp)</td>
+    </tr>
+    <tr>
+      <td class="label-optional">Code Snippet Caption <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val placeholder-text">[e.g., Primary Implementation Snippet]</td>
+    </tr>
+    <tr>
+      <td class="label-mandatory">Code Snippet <span class="badge-mandatory">MANDATORY</span></td>
+      <td class="val"><pre>// Paste your complete, working code snippet here</pre></td>
+    </tr>
+    <tr>
+      <td class="label-optional">Best Practices <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val placeholder-text">• Best practice recommendation 1<br/>• Best practice recommendation 2</td>
+    </tr>
+    <tr>
+      <td class="label-optional">Anti-Patterns <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val placeholder-text">• Common pitfall or anti-pattern to avoid 1<br/>• Common anti-pattern 2</td>
+    </tr>
+    <tr>
+      <td class="label-optional">Interview Tips <span class="badge-optional">OPTIONAL</span></td>
+      <td class="val placeholder-text">[Key talking points, tricky interview questions, and architect-level watchouts]</td>
+    </tr>
   </table>
+  <p class="placeholder-text"><em>Tip: To add additional guides in this document, simply copy Table 2 above and paste it below.</em></p>
 </body>
 </html>`;
 }
 
-// Generate standardized Concept Guide Import Template (Excel, Word, JSON, CSV)
+// Generate standardized Concept Guide Import Template (Excel .XLSX, Word .DOCX, JSON, CSV)
 export function generateConceptGuideTemplate(
-  format: 'excel' | 'word' | 'json' | 'csv' = 'excel',
+  format: 'xlsx' | 'docx' | 'excel' | 'word' | 'json' | 'csv' = 'xlsx',
   trackId: string = 'selenium'
 ): string {
   const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const sample = getTrackSampleData(normTrack);
 
-  if (format === 'excel') {
-    return generateExcelTemplate(normTrack);
+  if (format === 'xlsx' || format === 'excel') {
+    return `================================================================================
+IntelligentQA Concept Guide Import Template: Excel (.XLSX) Format
+Blue Headers = [MANDATORY] | Gray Headers = [OPTIONAL]
+================================================================================
+
+[SPREADSHEET COLUMNS]:
+1. Title [MANDATORY]
+2. Category [MANDATORY]
+3. Level [MANDATORY] (Beginner | Intermediate | Advanced)
+4. Summary [MANDATORY] (1-2 sentence concise definition)
+5. Overview [MANDATORY] (Multi-paragraph architecture & conceptual explanation)
+6. ArchitectureOrMechanism [OPTIONAL] (Engine mechanics, polling loop, diagram flow)
+7. CodeLanguage [MANDATORY] (${sample.language})
+8. CodeCaption [OPTIONAL] (Short label for code snippet)
+9. CodeSnippet [MANDATORY] (Complete, runnable implementation)
+10. BestPractices [OPTIONAL] (Semicolon-separated recommendations)
+11. AntiPatterns [OPTIONAL] (Semicolon-separated pitfalls to avoid)
+12. InterviewTips [OPTIONAL] (Senior SDET interview talking points)
+
+--------------------------------------------------------------------------------
+[SAMPLE ROW 1 - FULLY POPULATED]:
+Title: ${sample.title}
+Category: ${sample.category}
+Level: ${sample.level}
+Summary: ${sample.summary}
+Overview: ${sample.overview.replace(/\n/g, ' ')}
+Architecture: ${sample.architecture}
+Language: ${sample.language}
+Caption: ${sample.caption}
+Code:
+${sample.code}
+Best Practices: ${sample.bestPractices.join('; ')}
+Anti-Patterns: ${sample.antiPatterns.join('; ')}
+Interview Tips: ${sample.interviewTips}
+
+--------------------------------------------------------------------------------
+[TEMPLATE ROW 2 - FILL IN YOUR DETAILS]:
+Title: [Enter Guide Title - MANDATORY]
+Category: [Category / Module Group - MANDATORY]
+Level: Beginner | Intermediate | Advanced
+Summary: [1-2 sentence concise definition - MANDATORY]
+Overview: [Multi-paragraph architectural explanation & tradeoffs - MANDATORY]
+Architecture: [Internal engine mechanics or diagram flow - OPTIONAL]
+Language: ${sample.language}
+Caption: [Caption for snippet - OPTIONAL]
+Code: // Paste runnable code snippet here - MANDATORY
+Best Practices: [Recommendation 1; Recommendation 2 - OPTIONAL]
+Anti-Patterns: [Common pitfall 1; Anti-pattern 2 - OPTIONAL]
+Interview Tips: [Key SDET interview talking points & watchouts - OPTIONAL]`;
   }
 
-  if (format === 'word') {
-    return generateWordTemplate(normTrack);
+  if (format === 'docx' || format === 'word') {
+    return `================================================================================
+IntelligentQA Concept Guide Import Template: Word (.DOCX) Format
+================================================================================
+
+[TABLE 1: COMPLETE PRODUCTION SAMPLE GUIDE]
+• Title [MANDATORY]: ${sample.title}
+• Category [MANDATORY]: ${sample.category}
+• Level [MANDATORY]: ${sample.level}
+• Summary [MANDATORY]: ${sample.summary}
+• Overview [MANDATORY]:
+  ${sample.overview}
+• Architecture / Mechanism [OPTIONAL]:
+  ${sample.architecture}
+• Code Language [MANDATORY]: ${sample.language}
+• Code Snippet Caption [OPTIONAL]: ${sample.caption}
+• Code Snippet [MANDATORY]:
+${sample.code}
+• Best Practices [OPTIONAL]:
+  ${sample.bestPractices.map(b => `• ${b}`).join('\n  ')}
+• Anti-Patterns [OPTIONAL]:
+  ${sample.antiPatterns.map(a => `• ${a}`).join('\n  ')}
+• Interview Tips [OPTIONAL]:
+  ${sample.interviewTips}
+
+--------------------------------------------------------------------------------
+[TABLE 2: BLANK GUIDE TEMPLATE (READY TO FILL)]
+• Title [MANDATORY]: [Enter Guide Title]
+• Category [MANDATORY]: [e.g., Synchronization, Framework Architecture, POM, API Testing]
+• Level [MANDATORY]: Beginner | Intermediate | Advanced
+• Summary [MANDATORY]: [Concise 1-2 sentence definition explaining why this concept matters for SDETs]
+• Overview [MANDATORY]: [Detailed multi-paragraph explanation, architectural solution, and tradeoffs]
+• Architecture / Mechanism [OPTIONAL]: [Internal engine mechanics, polling lifecycle, or diagram flow]
+• Code Language [MANDATORY]: ${sample.language} (or java / typescript / python / csharp)
+• Code Snippet Caption [OPTIONAL]: [e.g., Primary Implementation Snippet]
+• Code Snippet [MANDATORY]: // Paste your complete, working code snippet here
+• Best Practices [OPTIONAL]: • Best practice recommendation 1; • Best practice recommendation 2
+• Anti-Patterns [OPTIONAL]: • Common pitfall or anti-pattern to avoid 1; • Common anti-pattern 2
+• Interview Tips [OPTIONAL]: [Key talking points, tricky interview questions, and architect-level watchouts]`;
   }
 
   if (format === 'csv') {
@@ -972,39 +1230,24 @@ export function generateConceptGuideTemplate(
   return JSON.stringify(sampleTemplate, null, 2);
 }
 
-// Download Concept Guide Template (Excel, Word, JSON, CSV)
+// Download Concept Guide Template as Genuine Binary .xlsx or .docx
 export function downloadConceptGuideTemplate(
-  format: 'excel' | 'word' | 'json' | 'csv' = 'excel',
+  format: 'xlsx' | 'docx' | 'excel' | 'word' | 'json' | 'csv' = 'xlsx',
   trackId: string = 'selenium'
 ): void {
-  const content = generateConceptGuideTemplate(format, trackId);
-  let mimeType = 'application/vnd.ms-excel';
-  let extension = 'xls';
+  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const sample = getTrackSampleData(normTrack);
 
-  if (format === 'excel') {
-    mimeType = 'application/vnd.ms-excel';
-    extension = 'xls';
-  } else if (format === 'word') {
-    mimeType = 'application/msword';
-    extension = 'doc';
-  } else if (format === 'json') {
-    mimeType = 'application/json';
-    extension = 'json';
-  } else if (format === 'csv') {
-    mimeType = 'text/csv';
-    extension = 'csv';
-  }
+  const targetFormat: 'xlsx' | 'docx' | 'json' | 'csv' =
+    format === 'excel' || format === 'xlsx'
+      ? 'xlsx'
+      : format === 'word' || format === 'docx'
+      ? 'docx'
+      : format === 'csv'
+      ? 'csv'
+      : 'json';
 
-  const filename = `sdet_${trackId}_guide_template.${extension}`;
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadOfficeTemplate(targetFormat, normTrack, sample);
 }
 
 // Parse imported guides from Excel (.xls, table, TSV), Word (.doc, tables), JSON, or CSV
@@ -1024,7 +1267,16 @@ export function parseImportedGuides(
   const valid: ConceptGuide[] = [];
 
   // Helper to sanitize extracted cell text
-  const cleanText = (str: string) => str.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').trim();
+  const cleanText = (str: string) => str.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').trim();
+
+  // Helper to parse semicolon, bullet, or newline separated lists
+  const parseList = (val?: string): string[] => {
+    if (!val) return [];
+    return val
+      .split(/[\n;•]+/)
+      .map(s => s.trim().replace(/^[-*•]\s*/, ''))
+      .filter(s => s && !s.startsWith('[') && !s.startsWith('Recommendation') && !s.startsWith('Common'));
+  };
 
   // 1. Try JSON parsing
   if (trimmed.startsWith('[') || (trimmed.startsWith('{') && trimmed.includes('"title"'))) {
@@ -1048,13 +1300,13 @@ export function parseImportedGuides(
           architectureOrMechanism: item.architectureOrMechanism || '',
           codeSnippets: Array.isArray(item.codeSnippets) && item.codeSnippets.length > 0 ? item.codeSnippets : [
             {
-              language: defaultLang,
-              caption: `${item.title} Example`,
-              code: typeof item.code === 'string' ? item.code : '// Add concept implementation here',
+              language: item.language || defaultLang,
+              caption: item.caption || `${item.title} Implementation`,
+              code: typeof item.code === 'string' ? item.code : typeof item.codeSnippet === 'string' ? item.codeSnippet : '// Add concept implementation here',
             }
           ],
-          bestPractices: Array.isArray(item.bestPractices) ? item.bestPractices : [],
-          antiPatterns: Array.isArray(item.antiPatterns) ? item.antiPatterns : [],
+          bestPractices: Array.isArray(item.bestPractices) ? item.bestPractices : parseList(item.bestPractices),
+          antiPatterns: Array.isArray(item.antiPatterns) ? item.antiPatterns : parseList(item.antiPatterns),
           interviewTips: item.interviewTips || '',
           isCustom: true,
         });
@@ -1086,7 +1338,7 @@ export function parseImportedGuides(
           const cells = (row.match(/<t[dh][\s\S]*?<\/t[dh]>/gi) || []).map(cleanText);
           if (cells.length === 2) {
             const key = cells[0].toLowerCase().replace(/[^a-z]/g, '');
-            if (['title', 'category', 'level', 'summary', 'overview', 'architecture', 'mechanism', 'code', 'codelanguage', 'codesnippet', 'interviewtips'].some(k => key.includes(k))) {
+            if (['title', 'category', 'level', 'summary', 'overview', 'architecture', 'mechanism', 'code', 'codelanguage', 'codecaption', 'caption', 'codesnippet', 'bestpractices', 'antipatterns', 'interviewtips'].some(k => key.includes(k))) {
               isKeyValueTable = true;
               kvMap[key] = cells[1];
             }
@@ -1101,7 +1353,10 @@ export function parseImportedGuides(
           const overview = kvMap.overview || summary;
           const architecture = kvMap.architecture || kvMap.mechanism || '';
           const codeLang = kvMap.codelanguage || defaultLang;
+          const caption = kvMap.codecaption || kvMap.caption || `${title} Implementation`;
           const codeSnippet = kvMap.code || kvMap.codesnippet || `// Code example for ${title}`;
+          const bestPractices = parseList(kvMap.bestpractices || kvMap.bestpractice);
+          const antiPatterns = parseList(kvMap.antipatterns || kvMap.antipattern);
           const interviewTips = kvMap.interviewtips || '';
 
           // Filter out placeholders like "[Enter Guide Title]"
@@ -1115,7 +1370,9 @@ export function parseImportedGuides(
               summary,
               overview,
               architectureOrMechanism: architecture,
-              codeSnippets: [{ language: codeLang, code: codeSnippet, caption: `${title} Implementation` }],
+              codeSnippets: [{ language: codeLang, code: codeSnippet, caption }],
+              bestPractices,
+              antiPatterns,
               interviewTips,
               isCustom: true,
             });
@@ -1139,7 +1396,7 @@ export function parseImportedGuides(
 
             // Map data row
             const title = cells[headers.indexOf('title') !== -1 ? headers.indexOf('title') : 0];
-            if (!title || title.includes('[Enter Guide')) continue;
+            if (!title || title.includes('[Enter Guide') || title.includes('[FILL YOUR GUIDE')) continue;
 
             const category = (headers.indexOf('category') !== -1 ? cells[headers.indexOf('category')] : cells[1]) || 'General';
             const levelRaw = (headers.indexOf('level') !== -1 ? cells[headers.indexOf('level')] : cells[2]) || 'Intermediate';
@@ -1148,8 +1405,11 @@ export function parseImportedGuides(
             const overview = (headers.indexOf('overview') !== -1 ? cells[headers.indexOf('overview')] : cells[4]) || summary;
             const architecture = (headers.indexOf('architectureormechanism') !== -1 ? cells[headers.indexOf('architectureormechanism')] : cells[5]) || '';
             const codeLang = (headers.indexOf('codelanguage') !== -1 ? cells[headers.indexOf('codelanguage')] : cells[6]) || defaultLang;
-            const code = (headers.indexOf('codesnippet') !== -1 ? cells[headers.indexOf('codesnippet')] : cells[7]) || `// Code example for ${title}`;
-            const interviewTips = (headers.indexOf('interviewtips') !== -1 ? cells[headers.indexOf('interviewtips')] : cells[8]) || '';
+            const caption = (headers.indexOf('codecaption') !== -1 ? cells[headers.indexOf('codecaption')] : `${title} Implementation`) || `${title} Implementation`;
+            const code = (headers.indexOf('codesnippet') !== -1 ? cells[headers.indexOf('codesnippet')] : cells[8] || cells[7]) || `// Code example for ${title}`;
+            const bestPractices = parseList(headers.indexOf('bestpractices') !== -1 ? cells[headers.indexOf('bestpractices')] : '');
+            const antiPatterns = parseList(headers.indexOf('antipatterns') !== -1 ? cells[headers.indexOf('antipatterns')] : '');
+            const interviewTips = (headers.indexOf('interviewtips') !== -1 ? cells[headers.indexOf('interviewtips')] : '') || '';
 
             valid.push({
               id: `imported-excel-${Date.now()}-${valid.length}`,
@@ -1160,7 +1420,9 @@ export function parseImportedGuides(
               summary,
               overview,
               architectureOrMechanism: architecture,
-              codeSnippets: [{ language: codeLang, code, caption: `${title} Implementation` }],
+              codeSnippets: [{ language: codeLang, code, caption }],
+              bestPractices,
+              antiPatterns,
               interviewTips,
               isCustom: true,
             });
@@ -1192,7 +1454,7 @@ export function parseImportedGuides(
         }
 
         const title = parts[headers.indexOf('title') !== -1 ? headers.indexOf('title') : 0];
-        if (!title || title.startsWith('[Enter')) continue;
+        if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
 
         const category = (headers.indexOf('category') !== -1 ? parts[headers.indexOf('category')] : parts[1]) || 'General';
         const levelRaw = (headers.indexOf('level') !== -1 ? parts[headers.indexOf('level')] : parts[2]) || 'Intermediate';
@@ -1201,8 +1463,11 @@ export function parseImportedGuides(
         const overview = (headers.indexOf('overview') !== -1 ? parts[headers.indexOf('overview')] : parts[4]) || summary;
         const architecture = (headers.indexOf('architectureormechanism') !== -1 ? parts[headers.indexOf('architectureormechanism')] : parts[5]) || '';
         const codeLang = (headers.indexOf('codelanguage') !== -1 ? parts[headers.indexOf('codelanguage')] : parts[6]) || defaultLang;
-        const code = (headers.indexOf('codesnippet') !== -1 ? parts[headers.indexOf('codesnippet')] : parts[7]) || `// Code example for ${title}`;
-        const interviewTips = (headers.indexOf('interviewtips') !== -1 ? parts[headers.indexOf('interviewtips')] : parts[8]) || '';
+        const caption = (headers.indexOf('codecaption') !== -1 ? parts[headers.indexOf('codecaption')] : `${title} Implementation`) || `${title} Implementation`;
+        const code = (headers.indexOf('codesnippet') !== -1 ? parts[headers.indexOf('codesnippet')] : parts[8] || parts[7]) || `// Code example for ${title}`;
+        const bestPractices = parseList(headers.indexOf('bestpractices') !== -1 ? parts[headers.indexOf('bestpractices')] : '');
+        const antiPatterns = parseList(headers.indexOf('antipatterns') !== -1 ? parts[headers.indexOf('antipatterns')] : '');
+        const interviewTips = (headers.indexOf('interviewtips') !== -1 ? parts[headers.indexOf('interviewtips')] : '') || '';
 
         valid.push({
           id: `imported-tsv-${Date.now()}-${valid.length}`,
@@ -1213,7 +1478,9 @@ export function parseImportedGuides(
           summary,
           overview,
           architectureOrMechanism: architecture,
-          codeSnippets: [{ language: codeLang, code, caption: `${title} Implementation` }],
+          codeSnippets: [{ language: codeLang, code, caption }],
+          bestPractices,
+          antiPatterns,
           interviewTips,
           isCustom: true,
         });
@@ -1240,15 +1507,19 @@ export function parseImportedGuides(
         };
 
         const title = getField(/(?:title)\s*:\s*([^\n\r]+)/i);
-        if (!title || title.startsWith('[Enter')) continue;
+        if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
 
         const category = getField(/(?:category)\s*:\s*([^\n\r]+)/i) || 'General';
         const levelRaw = getField(/(?:level|difficulty)\s*:\s*([^\n\r]+)/i) || 'Intermediate';
         const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
         const summary = getField(/(?:summary)\s*:\s*([^\n\r]+)/i) || title;
-        const overview = getField(/(?:overview|explanation)\s*:\s*([\s\S]*?)(?=(?:architecture|code|interview|$))/i) || summary;
-        const architecture = getField(/(?:architecture|mechanism)\s*:\s*([\s\S]*?)(?=(?:code|interview|$))/i) || '';
-        const code = getField(/(?:code|snippet)\s*:\s*([\s\S]*?)(?=(?:interview|$))/i) || `// Code example for ${title}`;
+        const overview = getField(/(?:overview|explanation)\s*:\s*([\s\S]*?)(?=(?:architecture|code|best\s*practices|interview|$))/i) || summary;
+        const architecture = getField(/(?:architecture|mechanism)\s*:\s*([\s\S]*?)(?=(?:code|best\s*practices|interview|$))/i) || '';
+        const codeLang = getField(/(?:code\s*language|language)\s*:\s*([^\n\r]+)/i) || defaultLang;
+        const caption = getField(/(?:code\s*caption|caption)\s*:\s*([^\n\r]+)/i) || `${title} Implementation`;
+        const code = getField(/(?:code|snippet)\s*:\s*([\s\S]*?)(?=(?:best\s*practices|anti[- ]patterns|interview|$))/i) || `// Code example for ${title}`;
+        const bestPractices = parseList(getField(/(?:best\s*practices?)\s*:\s*([\s\S]*?)(?=(?:anti[- ]patterns?|interview|$))/i));
+        const antiPatterns = parseList(getField(/(?:anti[- ]patterns?)\s*:\s*([\s\S]*?)(?=(?:interview|$))/i));
         const interviewTips = getField(/(?:interview\s*tips?)\s*:\s*([\s\S]*?)$/i) || '';
 
         valid.push({
@@ -1260,7 +1531,9 @@ export function parseImportedGuides(
           summary,
           overview,
           architectureOrMechanism: architecture,
-          codeSnippets: [{ language: defaultLang, code, caption: `${title} Implementation` }],
+          codeSnippets: [{ language: codeLang, code, caption }],
+          bestPractices,
+          antiPatterns,
           interviewTips,
           isCustom: true,
         });
