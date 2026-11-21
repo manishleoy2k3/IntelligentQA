@@ -125,3 +125,63 @@ test('4. Dashboard Track Categories & AI for QA Course Refinements', () => {
     'Course QA Interview Mastery & Coding Griller must be completely removed from QA_TRACKS'
   );
 });
+
+test('Add Guide button opens centered modal matching Gemini Key with Course Category and full Import & Staging content', () => {
+  const topNavPath = path.join(__dirname, '../src/components/layout/top-nav.tsx');
+  const topNavContent = fs.readFileSync(topNavPath, 'utf8');
+
+  // Verify Add Guide button opens the modal instead of navigating to a page
+  assert.ok(
+    topNavContent.includes('setShowAddGuideModal(true)'),
+    'Add Guide button in top nav triggers setShowAddGuideModal(true)'
+  );
+  assert.ok(
+    topNavContent.includes('<AddGuideModal'),
+    'top-nav renders AddGuideModal'
+  );
+
+  const modalPath = path.join(__dirname, '../src/components/interview/add-guide-modal.tsx');
+  const modalContent = fs.readFileSync(modalPath, 'utf8');
+
+  // Centering check: matches GeminiKeyModal, centered with min-h-screen my-auto, no pt-14
+  assert.ok(
+    modalContent.includes('min-h-screen') && modalContent.includes('flex items-center justify-center') && modalContent.includes('my-auto'),
+    'Modal is centered on the middle of the page using min-h-screen flex items-center justify-center and my-auto'
+  );
+  assert.ok(
+    !modalContent.includes('pt-14'),
+    'Modal must not have pt-14 offset that pushes it down and crops it at the top'
+  );
+
+  // Extra field: Course Category
+  assert.ok(
+    modalContent.includes('Course Category (Where this guide will be listed after Admin approval):'),
+    'Modal contains explicit Course Category field specifying where the guide will be listed after Admin approval'
+  );
+  assert.ok(
+    modalContent.includes('Selenium WebDriver + Java') &&
+    modalContent.includes('Playwright + TypeScript') &&
+    modalContent.includes('Rest Assured (API)') &&
+    modalContent.includes('AI for QA'),
+    'Course Category options support Selenium, Playwright, Rest Assured, and AI for QA'
+  );
+
+  // Import and Review Staging content inside the modal
+  assert.ok(
+    modalContent.includes('Review Staging') || modalContent.includes('Imported Guides Pending Review'),
+    'Modal includes Staging & Review tab/section'
+  );
+  assert.ok(
+    modalContent.includes('Duplicate Check: Clean') || modalContent.includes('checkGuideDuplicate'),
+    'Modal runs automated duplicate check for staged guides'
+  );
+  assert.ok(
+    modalContent.includes('Download Excel (.XLSX)') && modalContent.includes('Download Word (.DOCX)'),
+    'Modal provides direct Excel and Word template downloads'
+  );
+  assert.ok(
+    modalContent.includes('Mandatory Fields (Required for Submission)'),
+    'Modal provides field specifications'
+  );
+});
+

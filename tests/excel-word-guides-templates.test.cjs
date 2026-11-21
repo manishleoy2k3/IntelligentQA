@@ -64,25 +64,24 @@ test('Excel (.XLSX) and Word (.DOCX) binary templates generation and extraction'
   assert.ok(officeDocFile.includes('<sheetViews>'), 'XLSX contains sheetViews for Excel/Google Sheets compatibility');
 });
 
-test('Add Guide page layout: Imported Guides Pending Review is full-width at top; Mandatory & Optional Fields & Staging Workflow are placed below it', () => {
+test('Add Guide modal layout: Imported Guides Pending Review is full-width; Mandatory & Optional Fields & Templates are available; Redundant Staging section removed from courses main page', () => {
   const guideClientFile = fs.readFileSync(path.join(__dirname, '../src/app/guides/[trackId]/guide-catalog-client.tsx'), 'utf8');
+  const addGuideModalFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
 
-  // 1. Top left "Import Concept Guides" card with Upload JSON / CSV Guides button is removed
-  assert.ok(!guideClientFile.includes('Upload JSON / CSV Guides'), 'Old "Upload JSON / CSV Guides" button removed');
-  assert.ok(!guideClientFile.includes('lg:col-span-1 space-y-5'), 'Old 3-column split layout removed');
+  // 1. Redundant "Import & Review Staging" tab/section is removed from courses main page
+  assert.ok(!guideClientFile.includes('Import &amp; Review Staging'), 'Redundant Import & Review Staging tab removed from course page');
+  assert.ok(!guideClientFile.includes('Imported Guides Pending Review'), 'Staging section removed from course page');
 
-  // 2. "Imported Guides Pending Review" is present
-  assert.ok(guideClientFile.includes('Imported Guides Pending Review'), 'Has "Imported Guides Pending Review" header');
+  // 2. "Imported Guides Pending Review" is present in Add Guide modal
+  assert.ok(addGuideModalFile.includes('Imported Guides Pending Review'), 'Modal has "Imported Guides Pending Review" header');
 
-  // 3. Both Mandatory and Optional fields are clearly documented
-  assert.ok(guideClientFile.includes('Mandatory Fields (Required for Submission)'), 'UI documents mandatory fields');
-  assert.ok(guideClientFile.includes('Optional Fields (For 1-Click Admin Approval)'), 'UI documents optional fields');
+  // 3. Both Mandatory and Optional fields are clearly documented in Add Guide modal
+  assert.ok(addGuideModalFile.includes('Mandatory Fields (Required for Submission)'), 'Modal documents mandatory fields');
+  assert.ok(addGuideModalFile.includes('Optional Fields (For 1-Click Admin Approval)'), 'Modal documents optional fields');
 
-  // 4. Excel and Word .xlsx and .docx options are offered for template and import
-  assert.ok(guideClientFile.includes('Excel Template (.XLSX)'), 'Modal has Excel Template (.XLSX) option');
-  assert.ok(guideClientFile.includes('Word Template (.DOCX)'), 'Modal has Word Template (.DOCX) option');
-  assert.ok(guideClientFile.includes('Download .XLSX'), 'Modal has direct Download .XLSX button');
-  assert.ok(guideClientFile.includes('Download .DOCX'), 'Modal has direct Download .DOCX button');
-  assert.ok(guideClientFile.includes('Import Excel / Word Guides'), 'Header action has Import Excel / Word Guides');
-  assert.ok(guideClientFile.includes('Download Excel / Word Template'), 'Header action has Download Excel / Word Template');
+  // 4. Excel and Word .xlsx and .docx options are offered for template and import in modal
+  assert.ok(addGuideModalFile.includes('Download Excel (.XLSX)'), 'Modal has direct Download Excel (.XLSX) button');
+  assert.ok(addGuideModalFile.includes('Download Word (.DOCX)'), 'Modal has direct Download Word (.DOCX) button');
+  assert.ok(addGuideModalFile.includes('Import Excel / Word Guides'), 'Modal has Import Excel / Word Guides');
+  assert.ok(addGuideModalFile.includes('Download Excel / Word Template'), 'Modal has Download Excel / Word Template');
 });

@@ -79,14 +79,13 @@ export default function GuideCatalogClient({
 
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
 
-  // Tabs: 'tutorial' (Step-by-Step Tutorial & Setup) vs 'confirmed-guides' (Guide List) vs 'import-staging' (Import & Staged Review)
+  // Tabs: 'tutorial' (Step-by-Step Tutorial & Setup) vs 'confirmed-guides' (Architecture Concept Guides)
   const [activeTab, setActiveTab] = useState<
-    "tutorial" | "import-staging" | "confirmed-guides"
+    "tutorial" | "confirmed-guides"
   >(() => {
     if (typeof window !== "undefined") {
       const tabParam = new URLSearchParams(window.location.search).get("tab");
-      if (tabParam === "import") return "import-staging";
-      if (tabParam === "guides") return "confirmed-guides";
+      if (tabParam === "guides" || tabParam === "import") return "confirmed-guides";
     }
     return "tutorial";
   });
@@ -102,9 +101,7 @@ export default function GuideCatalogClient({
       const adminStatus = QADatabase.isAdmin(u);
       setIsAdmin(adminStatus);
       const tabParam = searchParams.get("tab");
-      if (tabParam === "import") {
-        setActiveTab("import-staging");
-      } else if (tabParam === "guides") {
+      if (tabParam === "guides" || tabParam === "import") {
         setActiveTab("confirmed-guides");
       } else if (tabParam === "tutorial") {
         setActiveTab("tutorial");
@@ -113,9 +110,6 @@ export default function GuideCatalogClient({
         const updated = QADatabase.getCurrentUser();
         const nextAdmin = QADatabase.isAdmin(updated);
         setIsAdmin(nextAdmin);
-        if (!nextAdmin && activeTab === "import-staging") {
-          setActiveTab("tutorial");
-        }
       };
       window.addEventListener("intelligentqa_auth_changed", handleAuth);
       window.addEventListener("intelligentqa_role_changed", handleAuth);
@@ -249,10 +243,10 @@ export default function GuideCatalogClient({
 
     setStagedGuides(getStagedGuides(activeTrack));
     setImportStatus({
-      success: `Successfully parsed ${result.guides.length} guide(s) into staging! Review them below, edit or delete as needed, then Confirm & Submit.`,
+      success: `Successfully parsed ${result.guides.length} guide(s) into staging! Review them in the Add Guide modal, edit or delete as needed, then Confirm & Submit.`,
     });
     setImportText("");
-    setActiveTab("import-staging");
+    setActiveTab("confirmed-guides");
     showBanner(
       `📥 ${result.guides.length} guide(s) loaded into staging review.`,
     );
@@ -442,7 +436,7 @@ export default function GuideCatalogClient({
     setNewMechanism("");
     setNewCode("");
     setNewInterviewTips("");
-    setActiveTab("import-staging");
+    setActiveTab("confirmed-guides");
     showBanner("✔ Guide added to staging review list.");
   };
 
@@ -550,26 +544,6 @@ export default function GuideCatalogClient({
               Library
             </span>
           </button>
-
-          {isAdmin && (
-            <button
-              type="button"
-              onClick={() => setActiveTab("import-staging")}
-              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all flex items-center gap-2 cursor-pointer ${
-                activeTab === "import-staging"
-                  ? "bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm"
-                  : "text-slate-400 hover:text-white hover:bg-slate-900/40"
-              }`}
-            >
-              <UploadCloud className="w-4 h-4 text-purple-400" />
-              <span>Import &amp; Review Staging</span>
-              {stagedGuides.length > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-mono font-bold">
-                  {stagedGuides.length}
-                </span>
-              )}
-            </button>
-          )}
         </div>
       </div>
 
@@ -583,355 +557,7 @@ export default function GuideCatalogClient({
         )}
 
         {/* ======================================================== */}
-        {/* TAB 1: IMPORT & STAGING (Requirements 1, 2, 3, 4, 5, 6)  */}
-        {/* ======================================================== */}
-        {activeTab === "import-staging" && (
-          <div className="space-y-6">
-            {/* Top / Main Section: IMPORTED GUIDES PENDING REVIEW (Full Width) */}
-            <div className="space-y-4">
-              {/* Header Bar for Staged List */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800 flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold text-white">
-                    Imported Guides Pending Review
-                  </h2>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30 font-mono">
-                    {stagedGuides.length} Pending
-                  </span>
-                </div>
-
-                {/* Header Action Buttons */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => setShowTemplateModal(true)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
-                  >
-                    <Download className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Download Excel / Word Template</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowImportModal(true)}
-                    className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-md"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Import Excel / Word Guides</span>
-                  </button>
-
-                  {/* Confirm & Submit All Button (Requirement 5) */}
-                  {stagedGuides.length > 0 && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          clearStagedGuides(activeTrack);
-                          setStagedGuides([]);
-                        }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 text-xs font-semibold border border-slate-700 transition cursor-pointer"
-                        title="Discard all staged items"
-                      >
-                        Clear Staging
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleConfirmAndSubmitAll}
-                        className={`px-4 py-1.5 rounded-lg text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer ${
-                          isAdmin
-                            ? 'bg-emerald-600 hover:bg-emerald-500'
-                            : 'bg-blue-600 hover:bg-blue-500'
-                        }`}
-                        title={
-                          isAdmin
-                            ? "Admin: Save all staged guides into confirmed guide list"
-                            : "Submit all staged guides to Admin for duplicate check & course approval"
-                        }
-                      >
-                        {isAdmin ? (
-                          <CheckCheck className="w-4 h-4" />
-                        ) : (
-                          <Send className="w-4 h-4" />
-                        )}
-                        <span>
-                          {isAdmin ? "Confirm & Submit All" : "Submit All for Admin Approval"} ({stagedGuides.length})
-                        </span>
-                        <span className="sr-only">Confirm &amp; Submit All</span>
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* EMPTY STATE */}
-              {stagedGuides.length === 0 ? (
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-800 text-blue-400 flex items-center justify-center mx-auto border border-slate-700">
-                    <UploadCloud className="w-6 h-6" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-white">
-                      No Imported Guides Pending Review
-                    </h3>
-                    <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                      Your staging area is empty. Download the Excel (.XLSX) or Word (.DOCX) template below to prepare your concepts, or click <strong>Import Excel / Word Guides</strong> to upload and review.
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowTemplateModal(true)}
-                      className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition cursor-pointer flex items-center gap-1.5"
-                    >
-                      <Download className="w-4 h-4 text-emerald-400" />
-                      <span>Download Template (.XLSX / .DOCX)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowImportModal(true)}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer"
-                    >
-                      <Upload className="w-4 h-4" />
-                      <span>Import Excel / Word Guides</span>
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                /* LIST OF IMPORTED GUIDES WITH EDIT & DELETE (Requirements 3 & 4) */
-                <div className="space-y-3">
-                  {stagedGuides.map((guide) => {
-                    const dupCheck = checkGuideDuplicate({
-                      title: guide.title,
-                      summary: guide.summary,
-                      overview: guide.overview,
-                      code: guide.codeSnippets?.[0]?.code,
-                      category: guide.category,
-                      trackId: activeTrack,
-                    });
-
-                    return (
-                      <div
-                        key={guide.id}
-                        className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition space-y-3 shadow-xs"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="space-y-1.5">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                {guide.category}
-                              </span>
-                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
-                                {guide.level}
-                              </span>
-
-                              {/* Automated Duplicate Check Badge */}
-                              {dupCheck.status === 'unique' ? (
-                                <span
-                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"
-                                  title={dupCheck.recommendation}
-                                >
-                                  <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                                  <span>Duplicate Check: Clean (0% duplicate)</span>
-                                </span>
-                              ) : dupCheck.status === 'potential_duplicate' ? (
-                                <span
-                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1"
-                                  title={dupCheck.recommendation}
-                                >
-                                  <AlertTriangle className="w-3 h-3 text-amber-400" />
-                                  <span>Duplicate Warning: {dupCheck.similarityScore}% match with &quot;{dupCheck.highestMatch?.title}&quot;</span>
-                                </span>
-                              ) : (
-                                <span
-                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1"
-                                  title={dupCheck.recommendation}
-                                >
-                                  <AlertCircle className="w-3 h-3 text-rose-400" />
-                                  <span>High Duplicate Risk: {dupCheck.similarityScore}% match with &quot;{dupCheck.highestMatch?.title}&quot; in {dupCheck.highestMatch?.trackName}</span>
-                                </span>
-                              )}
-
-                              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                <span>{isAdmin ? "Admin Review Required" : "Awaiting Admin Approval"}</span>
-                              </span>
-                            </div>
-                            <h4
-                              className="text-base font-bold text-white hover:text-blue-400 transition cursor-pointer"
-                              onClick={() => setSelectedGuideForView(guide)}
-                            >
-                              {guide.title}
-                            </h4>
-                          </div>
-
-                          {/* Card Actions: Edit, Delete, Confirm Single (Requirements 4 & 5) */}
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            {/* Edit Button */}
-                            <button
-                              type="button"
-                              onClick={() => handleOpenEdit(guide)}
-                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer"
-                              title="Edit this imported guide"
-                            >
-                              <Edit3 className="w-3.5 h-3.5 text-blue-400" />
-                            </button>
-
-                            {/* Delete Button */}
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteStaged(guide.id)}
-                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-300 hover:text-red-400 border border-slate-700 transition cursor-pointer"
-                              title="Delete this imported guide from staging"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-
-                            {/* Single Confirm / Approve / Submit Button */}
-                            <button
-                              type="button"
-                              onClick={() => handleConfirmSingle(guide.id)}
-                              className={`px-3 py-1.5 rounded-lg text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer shadow-xs ${
-                                isAdmin
-                                  ? 'bg-emerald-600 hover:bg-emerald-500'
-                                  : 'bg-blue-600 hover:bg-blue-500'
-                              }`}
-                              title={
-                                isAdmin
-                                  ? "Confirm and add only this guide to the live course"
-                                  : "Submit this guide for Admin approval and duplicate check"
-                              }
-                            >
-                              {isAdmin ? (
-                                <Check className="w-3.5 h-3.5" />
-                              ) : (
-                                <Send className="w-3.5 h-3.5" />
-                              )}
-                              <span>{isAdmin ? "Confirm" : "Submit for Approval"}</span>
-                              <span className="sr-only">Confirm</span>
-                            </button>
-                          </div>
-                        </div>
-
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        {guide.summary}
-                      </p>
-
-                      {/* Code preview if present */}
-                      {guide.codeSnippets?.[0] && (
-                        <div className="bg-slate-950 rounded-xl p-3 border border-slate-800/80 font-mono text-[11px] text-slate-300 overflow-x-auto max-h-28">
-                          <div className="text-[10px] text-slate-500 font-sans mb-1 uppercase font-bold">
-                            {guide.codeSnippets[0].language}:{" "}
-                            {guide.codeSnippets[0].caption || "Snippet Preview"}
-                          </div>
-                          <pre>
-                            {guide.codeSnippets[0].code.slice(0, 300)}
-                            {guide.codeSnippets[0].code.length > 300
-                              ? "..."
-                              : ""}
-                          </pre>
-                        </div>
-                      )}
-
-                      {guide.interviewTips && (
-                        <div className="text-[11px] text-amber-300/90 flex items-start gap-1.5 bg-amber-500/5 p-2 rounded-lg border border-amber-500/10">
-                          <Lightbulb className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                          <span>
-                            <strong>Interview Tip:</strong>{" "}
-                            {guide.interviewTips}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Bottom 2-Column Section (Below Imported Guides Pending Review) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              {/* Left Card: Mandatory & Optional Fields in Template */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xs">
-                <div className="flex items-center gap-2 text-white font-bold text-sm">
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-                  <span>Template Field Specification (Mandatory &amp; Optional):</span>
-                </div>
-                
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                      Mandatory Fields (Required for Submission)
-                    </span>
-                    <ul className="list-disc list-inside text-slate-400 space-y-1 mt-1.5 text-[11px]">
-                      <li>
-                        <strong className="text-slate-200">title</strong>: Name of the architecture concept or interview topic
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">category</strong>: Domain or module group (e.g., Synchronization, Architecture, POM)
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">level</strong>: Beginner | Intermediate | Advanced
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">summary</strong>: Concise 1-2 sentence definition explaining why it matters
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">overview</strong>: Detailed explanation, tradeoffs, and architectural concepts
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">codeSnippet &amp; codeLanguage</strong>: Complete code implementation in Java, TypeScript, or Python
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="pt-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                      Optional Fields (For 1-Click Admin Approval)
-                    </span>
-                    <ul className="list-disc list-inside text-slate-400 space-y-1 mt-1.5 text-[11px]">
-                      <li>
-                        <strong className="text-slate-200">architectureOrMechanism</strong>: Deep-dive into internal mechanics or diagram explanation
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">codeCaption</strong>: Descriptive label for the implementation snippet
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">bestPractices</strong>: Bullet points or semicolon-separated recommendations
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">antiPatterns</strong>: Common mistakes and architectural pitfalls to avoid
-                      </li>
-                      <li>
-                        <strong className="text-slate-200">interviewTips</strong>: High-value SDET interview talking points &amp; watchouts
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Card: Staging Workflow & Admin Approval */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xs text-xs text-slate-400">
-                <div className="flex items-center gap-2 font-bold text-white text-sm">
-                  <Lightbulb className="w-4 h-4 text-amber-400" />
-                  <span>Staging &amp; Admin Approval Workflow</span>
-                </div>
-                <p className="leading-relaxed">
-                  Downloaded Excel (.XLS) and Word (.DOC) templates come pre-populated with all mandatory and optional fields plus complete sample values. Filling in this exact format ensures the guide meets site standards and enables the Admin to review and approve without manual formatting edits.
-                </p>
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-[11px] space-y-1.5 text-slate-300">
-                  <div className="font-semibold text-emerald-400">✓ Standardized Submission Process:</div>
-                  <div>1. Download the Excel (.XLS) or Word (.DOC) template with sample values.</div>
-                  <div>2. Keep the mandatory fields and populate optional sections to enrich the guide.</div>
-                  <div>3. Upload or paste the completed file into Staging to preview, verify, and submit.</div>
-                  <div>4. Admin approves with 0 formatting modifications.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ======================================================== */}
-        {/* TAB 2: CONFIRMED GUIDES LIST (Requirement 5)             */}
+        {/* TAB 1: CONFIRMED GUIDES LIST                             */}
         {/* ======================================================== */}
         {activeTab === "confirmed-guides" && (
           <div className="space-y-5">

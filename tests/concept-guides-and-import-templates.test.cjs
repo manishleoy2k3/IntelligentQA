@@ -68,9 +68,10 @@ test('Dedicated Concept Guide pages exist for Selenium, Playwright, API Testing 
   assert.ok(trackOverviewPage.includes('action=import'), 'Track page has direct link to Import Guide');
 });
 
-test('Requirements 1-6: Direct sidebar track navigation, staging import review, edit, delete, confirm and submit', () => {
+test('Requirements 1-6: Direct sidebar track navigation, staging import review, edit, delete, confirm and submit (in Add Guide modal; redundant staging removed from courses page)', () => {
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
   const guideClientFile = fs.readFileSync(path.join(__dirname, '../src/app/guides/[trackId]/guide-catalog-client.tsx'), 'utf8');
+  const addGuideModalFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
   const conceptGuidesLib = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
 
   // Requirement 1: Clicking track parent row navigates to /guides/${guideSlug} and extra list item removed
@@ -78,26 +79,27 @@ test('Requirements 1-6: Direct sidebar track navigation, staging import review, 
   assert.ok(!sidebarFile.includes('📘 Selenium Guides'), 'Extra list item inside courses removed');
   assert.ok(!sidebarFile.includes('Guides & Architecture (Import)'), 'Extra list item inside courses removed');
 
-  // Requirement 2: All other track links removed from this Import page
+  // Requirement 2: All other track links removed from this Import page, and redundant staging removed from courses main page
   assert.ok(!guideClientFile.includes("label: 'Selenium (Java & Python)'"), 'Track switcher bar removed from Import page');
   assert.ok(!guideClientFile.includes("handleTrackSwitch"), 'handleTrackSwitch removed from Import page');
+  assert.ok(!guideClientFile.includes("Import &amp; Review Staging"), 'Redundant Import & Review Staging removed from courses main page');
 
-  // Requirement 3: Shows only imported guides on right side (stagedGuides)
-  assert.ok(guideClientFile.includes('stagedGuides.length === 0'), 'Renders empty state when no guides imported');
-  assert.ok(guideClientFile.includes('stagedGuides.map'), 'Renders only imported guides in staging area');
-  assert.ok(guideClientFile.includes('Imported Guides Pending Review'), 'Has pending review header');
+  // Requirement 3: Shows only imported guides in staging review (inside Add Guide modal)
+  assert.ok(addGuideModalFile.includes('stagedGuides.length === 0'), 'Renders empty state when no guides imported');
+  assert.ok(addGuideModalFile.includes('stagedGuides.map'), 'Renders only imported guides in staging area');
+  assert.ok(addGuideModalFile.includes('Imported Guides Pending Review'), 'Has pending review header');
 
-  // Requirement 4: Option to Edit and Delete imported guides
-  assert.ok(guideClientFile.includes('handleOpenEdit'), 'Provides Edit button handler for imported guides');
-  assert.ok(guideClientFile.includes('handleDeleteStaged'), 'Provides Delete button handler for imported guides');
-  assert.ok(guideClientFile.includes('handleSaveEdit'), 'Saves edits made to imported guides');
+  // Requirement 4: Option to Edit and Delete imported guides (inside Add Guide modal)
+  assert.ok(addGuideModalFile.includes('handleOpenEdit'), 'Provides Edit button handler for imported guides');
+  assert.ok(addGuideModalFile.includes('handleDeleteStaged'), 'Provides Delete button handler for imported guides');
+  assert.ok(addGuideModalFile.includes('handleSaveEdit'), 'Saves edits made to imported guides');
 
   // Requirement 5: Confirm and Submit saves to Guide list
-  assert.ok(guideClientFile.includes('handleConfirmAndSubmitAll'), 'Has Confirm & Submit All handler');
-  assert.ok(guideClientFile.includes('handleConfirmSingle'), 'Has single guide confirmation handler');
+  assert.ok(addGuideModalFile.includes('handleConfirmAndSubmitAll'), 'Has Confirm & Submit All handler');
+  assert.ok(addGuideModalFile.includes('handleConfirmSingle'), 'Has single guide confirmation handler');
   assert.ok(conceptGuidesLib.includes('confirmAndSubmitStagedGuides'), 'Library provides confirmAndSubmitStagedGuides');
 
   // Requirement 6: Removes confirmed guides from import page staging list
-  assert.ok(guideClientFile.includes('setStagedGuides([])'), 'Staging list cleared after full confirmation');
+  assert.ok(addGuideModalFile.includes('setStagedGuides([])'), 'Staging list cleared after full confirmation');
   assert.ok(conceptGuidesLib.includes('localStorage.removeItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`)'), 'Clears staged storage upon confirm');
 });

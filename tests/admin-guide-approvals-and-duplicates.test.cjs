@@ -38,18 +38,22 @@ test('Concept Guides submission & admin approval workflow in concept-guides.ts',
   assert.ok(guidesLib.includes('checkGuideDuplicate'), 'Runs checkGuideDuplicate before submission');
 });
 
-test('Guide Catalog Staging UI displays duplicate check badges and requires admin approval', () => {
-  const guideClient = fs.readFileSync(path.join(__dirname, '../src/app/guides/[trackId]/guide-catalog-client.tsx'), 'utf8');
+test('Guide Staging UI displays duplicate check badges and requires admin approval (inside Add Guide modal; removed from courses main page)', () => {
+  const guideClient = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
+  const coursePage = fs.readFileSync(path.join(__dirname, '../src/app/guides/[trackId]/guide-catalog-client.tsx'), 'utf8');
 
-  // 1. Displays Duplicate Check Badges
+  // 1. Courses main page has removed the redundant Import & Review Staging section
+  assert.ok(!coursePage.includes('Import &amp; Review Staging'), 'Removed redundant staging tab from course page');
+
+  // 2. Displays Duplicate Check Badges in modal
   assert.ok(guideClient.includes('checkGuideDuplicate'), 'Computes duplicate check for each staged guide');
   assert.ok(guideClient.includes('Duplicate Check: Clean'), 'Displays Clean badge for unique content');
   assert.ok(guideClient.includes('Duplicate Warning:'), 'Displays Warning badge for similar content');
 
-  // 2. Shows Awaiting Admin Approval
+  // 3. Shows Awaiting Admin Approval
   assert.ok(guideClient.includes('Awaiting Admin Approval') || guideClient.includes('Admin Review Required'), 'Shows admin approval status');
 
-  // 3. Actions distinguish Admin vs User
+  // 4. Actions distinguish Admin vs User
   assert.ok(guideClient.includes('Submit for Approval'), 'Non-admin users submit for approval');
   assert.ok(guideClient.includes('submitStagedGuidesForApproval'), 'Invokes submitStagedGuidesForApproval on submit');
 });

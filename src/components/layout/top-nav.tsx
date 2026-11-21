@@ -100,6 +100,26 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
     }
   }, [pathname]);
 
+  // Detect current track from URL if user is viewing a track or guide, otherwise default to user's primary track or selenium
+  let currentGuideTrack = 'selenium';
+  if (pathname?.includes('/tracks/playwright') || pathname?.includes('/guides/playwright')) {
+    currentGuideTrack = 'playwright';
+  } else if (pathname?.includes('/tracks/api-testing') || pathname?.includes('/guides/api-testing')) {
+    currentGuideTrack = 'api-testing';
+  } else if (pathname?.includes('/tracks/ai-qa') || pathname?.includes('/guides/ai-qa')) {
+    currentGuideTrack = 'ai-qa';
+  } else if (pathname?.includes('/tracks/selenium') || pathname?.includes('/guides/selenium')) {
+    currentGuideTrack = 'selenium';
+  } else if (currentUser?.primaryTrack) {
+    currentGuideTrack = currentUser.primaryTrack.includes('playwright')
+      ? 'playwright'
+      : currentUser.primaryTrack.includes('api')
+      ? 'api-testing'
+      : currentUser.primaryTrack.includes('ai')
+      ? 'ai-qa'
+      : 'selenium';
+  }
+
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -196,34 +216,17 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <span className="sr-only">Ask SDET AI</span>
         </button>
 
-        {/* Add Guide Button (Navigates to dedicated Add & Import Guide page) */}
-        {(() => {
-          // Detect current track from URL if user is viewing a track or guide, otherwise default to user's primary track or selenium
-          let currentGuideTrack = 'selenium';
-          if (pathname?.includes('/tracks/playwright') || pathname?.includes('/guides/playwright')) {
-            currentGuideTrack = 'playwright';
-          } else if (pathname?.includes('/tracks/api-testing') || pathname?.includes('/guides/api-testing')) {
-            currentGuideTrack = 'api-testing';
-          } else if (pathname?.includes('/tracks/ai-qa') || pathname?.includes('/guides/ai-qa')) {
-            currentGuideTrack = 'ai-qa';
-          } else if (pathname?.includes('/tracks/selenium') || pathname?.includes('/guides/selenium')) {
-            currentGuideTrack = 'selenium';
-          } else if (currentUser?.primaryTrack) {
-            currentGuideTrack = currentUser.primaryTrack.includes('playwright') ? 'playwright' : currentUser.primaryTrack.includes('api') ? 'api-testing' : currentUser.primaryTrack.includes('ai') ? 'ai-qa' : 'selenium';
-          }
-
-          return (
-            <Link
-              href={`/guides/${currentGuideTrack}?tab=import`}
-              aria-label="Add Guide"
-              className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:opacity-95 text-white border border-purple-400/40 rounded-full font-extrabold text-xs sm:text-sm shadow-[0_0_18px_rgba(168,85,247,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
-              title="Add Guide: Create architecture guides, import JSON/CSV, or download templates"
-            >
-              <BookPlus className="w-4 h-4 text-white shrink-0" />
-              <span className="font-extrabold tracking-tight">Add Guide</span>
-            </Link>
-          );
-        })()}
+        {/* Add Guide Button (Opens modal window just like Gemini Key button) */}
+        <button
+          type="button"
+          onClick={() => setShowAddGuideModal(true)}
+          aria-label="Add Guide"
+          className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:opacity-95 text-white border border-purple-400/40 rounded-full font-extrabold text-xs sm:text-sm shadow-[0_0_18px_rgba(168,85,247,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
+          title="Add Guide: Review staged guides, import JSON/CSV/Excel/Word, or download templates"
+        >
+          <BookPlus className="w-4 h-4 text-white shrink-0" />
+          <span className="font-extrabold tracking-tight">Add Guide</span>
+        </button>
 
         {/* 2. Notifications Bell & Popover */}
         <div ref={notifRef} className="relative">
@@ -529,10 +532,11 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           </div>
         </div>
       )}
-      {/* Add Guide Modal (with Import Guide & Import Guide Template) */}
+      {/* Add Guide Modal (with Import Guide, Review Staging & Course Category) */}
       <AddGuideModal
         isOpen={showAddGuideModal}
         onClose={() => setShowAddGuideModal(false)}
+        defaultTrack={currentGuideTrack}
       />
 
       {/* Suggest Question Modal */}
