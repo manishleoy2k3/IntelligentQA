@@ -46,6 +46,7 @@ import {
   DEFAULT_PROJECT_FOLDERS,
   formatContextForAgents,
 } from '@/lib/project-files';
+import { CODE_REVIEWER_DEBUGGER_AGENT_MD } from '@/data/agents/code-reviewer-debugger-agent';
 
 export type AgentTab = 'requirements' | 'test_cases' | 'automation_code' | 'code_review' | 'chat';
 
@@ -56,7 +57,13 @@ const tabDefaultPrompts: Record<AgentTab, string> = {
     'User Account Transfer Workflow with 2FA Verification, Daily Limits ($10,000 max), and Idempotent Transaction Submissions.',
   automation_code:
     'Feature: Transfer Money between Savings and Checking accounts. Implement Page Object Model with web-first assertions.',
-  code_review: `test("checkout", async ({ page }) => {\n  await page.click("#checkout");\n  await page.waitForTimeout(5000);\n  await page.click("#confirm");\n});`,
+  code_review: `// Paste your error stack trace, flaky script, or upload project files for a comprehensive SDET code review and fix:
+
+test("checkout workflow", async ({ page }) => {
+  await page.click("#checkout");
+  await page.waitForTimeout(5000);
+  await page.click("#confirm");
+});`,
   chat: '',
 };
 
@@ -104,11 +111,11 @@ export const AGENT_CONFIGS: Record<
   },
   code_review: {
     num: '4',
-    tabName: '4. Code Auditor & Flakiness Review',
-    title: 'Code Auditor & Flakiness Review',
-    badgeText: 'Autonomous SDET Suite • Agent 4',
+    tabName: '4. Code Reviewer & Debugger',
+    title: 'QA Code Reviewer & Debugger Agent',
+    badgeText: 'Staff SDET & Architect • Agent 4',
     description:
-      'Deeply analyze test automation code, detect brittle XPath locators, identify hardcoded waits and race conditions, and recommend SDET optimizations.',
+      'Expert SDET Code Reviewer and Root-Cause Debugger for Selenium, Playwright, Rest Assured and Appium. Analyzes stack traces, fixes flaky tests, optimizes locators, and enforces clean code standards.',
     icon: ShieldCheck,
     color: 'text-amber-500',
   },
@@ -157,10 +164,32 @@ export default function QAAgentsWorkspace() {
   const [selectedModalFileIds, setSelectedModalFileIds] = useState<string[]>([]);
   const [modalFolderFilter, setModalFolderFilter] = useState<string>('All');
 
+  // Agent Spec Modal State (for QA learning how Agents are architected)
+  const [showAgentSpecModal, setShowAgentSpecModal] = useState<boolean>(false);
+  const [agentSpecTab, setAgentSpecTab] = useState<'rendered' | 'raw'>('rendered');
+  const [copiedAgentMd, setCopiedAgentMd] = useState<boolean>(false);
+
   // Auth and Key state
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [geminiKey, setGeminiKey] = useState<string>('');
   const [aiPref, setAiPref] = useState<'enabled' | 'opted_out' | 'unset'>('unset');
+
+  // Handoff Workflows (from code_reviewer_debugger_agent.md)
+  const handleHandoffToAutomation = () => {
+    setActiveTab('automation_code');
+    setInputPrompt(
+      `Rewrite and refactor this module applying all recommended POM and clean-code improvements:\n\n${inputPrompt}`
+    );
+    setOutputResult('');
+  };
+
+  const handleHandoffToTestCases = () => {
+    setActiveTab('test_cases');
+    setInputPrompt(
+      `Suggest additional edge-case tests based on the bugs and flakiness uncovered during debugging:\n\n${inputPrompt}`
+    );
+    setOutputResult('');
+  };
 
   const loadProjectFilesData = useCallback(async (userId?: string) => {
     try {
@@ -459,10 +488,38 @@ export default function QAAgentsWorkspace() {
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-3xl">
             {currentAgent.description}
           </p>
+          {activeTab === 'code_review' && (
+            <div className="mt-2.5 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAgentSpecModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 transition cursor-pointer"
+                title="View code_reviewer_debugger_agent.md specification to learn how this Agent was designed"
+              >
+                <FileCode className="w-3.5 h-3.5 text-amber-500" />
+                <span>View Agent (code_reviewer_debugger_agent.md)</span>
+              </button>
+              <span className="text-slate-500 dark:text-zinc-400 text-xs hidden sm:inline">
+                • Learn how SDET Agents are architected
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Right Controls: Gemini Key status & Tech Stack (Only on code/audit tabs) */}
         <div className="flex items-center gap-3 flex-wrap">
+          {activeTab === 'code_review' && (
+            <button
+              type="button"
+              onClick={() => setShowAgentSpecModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition cursor-pointer shadow-xs"
+              title="Inspect code_reviewer_debugger_agent.md specification"
+            >
+              <FileCode className="w-3.5 h-3.5 text-amber-500" />
+              <span>View Agent</span>
+            </button>
+          )}
+
           <button
             onClick={() => setShowKeyModal(true)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
@@ -904,7 +961,7 @@ export default function QAAgentsWorkspace() {
                         }
                         className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
                       >
-                        Thread.sleep / waitForTimeout
+                        Mode B: Flaky Sleep
                       </button>
                       <button
                         onClick={() =>
@@ -914,7 +971,27 @@ export default function QAAgentsWorkspace() {
                         }
                         className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
                       >
-                        Fragile Absolute XPath
+                        Mode B: Brittle XPath
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'org.openqa.selenium.StaleElementReferenceException: stale element reference: stale element not found in the current frame\n  (Session info: chrome=122.0.6261.94)\n  at org.openqa.selenium.remote.ErrorCodec.decode(ErrorCodec.java:167)\n  at org.openqa.selenium.By$ByXPath.findElement(By.java:353)\n  at com.company.qa.pages.CheckoutPage.clickConfirm(CheckoutPage.java:42)\n  at com.company.qa.tests.CheckoutTest.testCheckout(CheckoutTest.java:28)'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Mode A: StaleElement Trace
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for locator("#submit-order") to be visible\n============================================================\n  at /tests/e2e/payment.spec.ts:34:16'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                      >
+                        Mode A: TimeoutError Trace
                       </button>
                     </>
                   )}
@@ -1054,6 +1131,37 @@ export default function QAAgentsWorkspace() {
                 )}
               </div>
             </div>
+
+            {/* Agent Handoffs from code_reviewer_debugger_agent.md */}
+            {activeTab === 'code_review' && outputResult && (
+              <div className="p-3.5 bg-amber-500/10 border border-amber-300 dark:border-amber-800 rounded-xl space-y-2 animate-in fade-in">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 dark:text-amber-300">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Agent Handoffs (from code_reviewer_debugger_agent.md)</span>
+                  </div>
+                  <span className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">Multi-Agent Chain</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleHandoffToAutomation}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    title="Send to Automation Generator to refactor full module"
+                  >
+                    <span>Refactor Full Suite → Agent 3</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleHandoffToTestCases}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    title="Send to Test Case Generator to suggest edge-case tests"
+                  >
+                    <span>Generate Missing Edge Tests → Agent 2</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {savedSuccess && (
               <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl text-emerald-700 dark:text-emerald-300 text-xs flex items-center justify-between gap-2 shadow-sm">
@@ -1360,6 +1468,189 @@ export default function QAAgentsWorkspace() {
                   Attach to Context ({selectedModalFileIds.length})
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* MODAL: VIEW AGENT SPECIFICATION (.md)                         */}
+      {/* ============================================================ */}
+      {showAgentSpecModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xs p-4 flex items-center justify-center min-h-screen">
+          <div className="relative my-auto w-full max-w-3xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-3xl shadow-2xl p-6 space-y-4 max-h-[90vh] flex flex-col font-sans">
+            <div className="flex items-start justify-between pb-3 border-b border-slate-200 dark:border-[#262626] shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500">
+                  <FileCode className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                      code_reviewer_debugger_agent.md
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                      Agent Blueprint
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                    How Autonomous SDET Agents are architected with YAML frontmatter, tools, handoffs, and execution modes.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAgentSpecModal(false)}
+                className="text-slate-400 hover:text-white p-1 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* View Mode Toggle & Copy Action */}
+            <div className="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#1C1C1C] p-1 rounded-xl border border-slate-200 dark:border-[#2A2A2A]">
+                <button
+                  type="button"
+                  onClick={() => setAgentSpecTab('rendered')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                    agentSpecTab === 'rendered'
+                      ? 'bg-white dark:bg-[#282828] text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Architecture Guide
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAgentSpecTab('raw')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                    agentSpecTab === 'raw'
+                      ? 'bg-white dark:bg-[#282828] text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Raw Markdown (.md)
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(CODE_REVIEWER_DEBUGGER_AGENT_MD);
+                  setCopiedAgentMd(true);
+                  setTimeout(() => setCopiedAgentMd(false), 2000);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#222] hover:bg-slate-200 dark:hover:bg-[#2A2A2A] text-slate-700 dark:text-zinc-300 transition cursor-pointer border border-slate-300 dark:border-[#333]"
+              >
+                {copiedAgentMd ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedAgentMd ? 'Copied .md!' : 'Copy Agent .md'}</span>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+              {agentSpecTab === 'rendered' ? (
+                <div className="space-y-4 text-xs leading-relaxed text-slate-700 dark:text-zinc-300">
+                  {/* Frontmatter summary card */}
+                  <div className="bg-slate-50 dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#2A2A2A] rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2A2A2A] pb-2">
+                      <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+                        1. YAML Frontmatter Schema (Agent Metadata)
+                      </span>
+                      <span className="font-mono text-[10px] text-amber-500">name: CodeReviewerAndDebugger</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <strong className="text-slate-900 dark:text-white">Description:</strong>
+                        <p className="text-slate-500 dark:text-zinc-400 mt-0.5">
+                          Expert SDET Code Reviewer and Root-Cause Debugger for Selenium, Playwright, Rest Assured and Appium. Analyzes stack traces, fixes flaky tests, optimizes locators, and enforces clean code standards.
+                        </p>
+                      </div>
+                      <div>
+                        <strong className="text-slate-900 dark:text-white">Active Tools:</strong>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {['read', 'edit', 'search', 'file_upload/parse_context', 'execute'].map(tool => (
+                            <span key={tool} className="px-2 py-0.5 rounded-md font-mono text-[10px] bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200 dark:border-[#2A2A2A]">
+                      <strong className="text-slate-900 dark:text-white">Multi-Agent Handoffs:</strong>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1.5">
+                        <div className="p-2.5 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#333]">
+                          <div className="font-bold text-indigo-600 dark:text-indigo-400 text-[11px]">
+                            Handoff 1: Refactor Full Suite
+                          </div>
+                          <div className="text-[10px] text-slate-500 dark:text-zinc-400">
+                            Target: <strong>AutomationCodeGenerator</strong> (Agent 3)
+                          </div>
+                        </div>
+                        <div className="p-2.5 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#333]">
+                          <div className="font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">
+                            Handoff 2: Generate Missing Edge Tests
+                          </div>
+                          <div className="text-[10px] text-slate-500 dark:text-zinc-400">
+                            Target: <strong>TestCaseGenerator</strong> (Agent 2)
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Core capabilities */}
+                  <div className="bg-slate-50 dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#2A2A2A] rounded-2xl p-4 space-y-2">
+                    <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+                      2. Core Responsibilities &amp; Guardrails
+                    </span>
+                    <ul className="list-disc pl-4 space-y-1 text-slate-600 dark:text-zinc-300">
+                      <li><strong>Root-Cause Stack Trace Analysis:</strong> Diagnose common automation exceptions (StaleElementReferenceException, TimeoutError, ElementClickInterceptedException, NullPointerException).</li>
+                      <li><strong>Flakiness Elimination:</strong> Detect race conditions, improper waits, shared mutable state across threads, and brittle XPaths.</li>
+                      <li><strong>SDET Code Review:</strong> Page Object Model separation, SOLID principles, exception handling, and assertion quality.</li>
+                      <li><strong>Strict Scope Guardrail:</strong> Declines non-QA/engineering inquiries to stay laser-focused.</li>
+                    </ul>
+                  </div>
+
+                  {/* Execution Modes */}
+                  <div className="bg-slate-50 dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#2A2A2A] rounded-2xl p-4 space-y-2">
+                    <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+                      3. Two Distinct Execution Modes
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div className="p-3 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#333] space-y-1">
+                        <div className="font-bold text-amber-600 dark:text-amber-400">Mode A: Debugging &amp; Error Resolution</div>
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">For error logs and failing stack traces: 1. Root Cause Explanation → 2. Exact Fix with inline comments → 3. Prevention Checklist.</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#333] space-y-1">
+                        <div className="font-bold text-indigo-600 dark:text-indigo-400">Mode B: Code Quality Review</div>
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">For pull requests and script audits: 1. Strengths → 2. Critical Issues (Must Fix) → 3. Refactoring Recommendations.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <pre className="p-4 bg-slate-950 text-slate-200 rounded-2xl font-mono text-xs overflow-x-auto leading-relaxed border border-slate-800">
+                  {CODE_REVIEWER_DEBUGGER_AGENT_MD}
+                </pre>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-[#262626] shrink-0">
+              <span className="text-[11px] text-slate-400">
+                Source: <code>code_reviewer_debugger_agent.md</code>
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowAgentSpecModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-[#222] text-slate-700 dark:text-zinc-300 cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

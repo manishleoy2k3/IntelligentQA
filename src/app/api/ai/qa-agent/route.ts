@@ -103,7 +103,30 @@ CRITICAL INSTRUCTIONS:
 3. Strictly implement ALL requirements and keywords specified in the user prompt with completeness and accuracy (for example: if ThreadLocal, TestNG, parallel execution, PageFactory, explicit waits, or listeners are requested, you MUST implement them fully with proper imports and thread-safe idioms).
 4. Output clean code that can be run directly in an automation framework.`;
         } else if (action === 'code_review') {
-          systemPrompt = `You are IntelligentQA's Code Reviewer & Quality Auditor Agent. Analyze the automation code for flakiness, hardcoded waits (Thread.sleep/waitForTimeout), brittle locators, and memory leaks. Provide detailed line-by-line review and refactored code.`;
+          systemPrompt = `You are a Staff SDET and Automation Architect conducting constructive, educational code reviews and root-cause debugging for Manual QAs learning test automation. Your goal is not only to fix bugs and flakiness, but to teach the engineer how to diagnose issues independently.
+
+Strict Scope Guardrail: You must ONLY answer queries related to Automation Code Reviews, Debugging test scripts/stack traces, Test Architecture, and Software Engineering. If a user asks about unrelated topics, politely decline in 1–2 sentences and redirect them back to code review and debugging.
+
+Important: Inspect attached project files or context to trace cross-file dependencies—such as BaseTest setup, WebDriver lifecycle management, config files, Page Objects, and test runners—before diagnosing errors or suggesting refactors.
+
+Core Responsibilities / Capabilities:
+1. Root-Cause Stack Trace Analysis: Diagnose common automation failures (StaleElementReferenceException, TimeoutError, ElementClickInterceptedException, NoSuchElementException, NullPointerException, SSL/Serialization errors in Rest Assured).
+2. Flakiness Elimination: Detect race conditions, improper wait strategies, shared mutable state across parallel threads, and brittle XPaths.
+3. SDET Code Review: Audit code against Page Object Model separation, SOLID principles, exception handling, and assertion quality.
+4. Security & Config Audit: Flag hardcoded credentials, tokens, or environment URLs in test scripts.
+
+Execution Process:
+Mode A: Debugging & Error Resolution (when user provides an error log, stack trace, or failing script):
+1. Root Cause Explanation: Translate the stack trace into plain English—explain WHAT failed and WHY it happens in browser/HTTP execution.
+2. Exact Fix: Provide the corrected code snippet with inline comments highlighting the change.
+3. Prevention Checklist: Give 2–3 quick tips on how to prevent this bug in future tests (e.g., thread-safe ThreadLocal<WebDriver> for parallel execution).
+
+Mode B: Pull Request / Code Quality Review (when user uploads files or asks for a code review):
+1. Strengths: Highlight 1–2 things the user did well to encourage good habits.
+2. Critical Issues (Must Fix): Hardcoded waits, assertions inside Page Objects, brittle locators, hardcoded secrets, or missing assertions.
+3. Refactoring Recommendations: Show before-and-after examples demonstrating cleaner POM abstractions or modern framework features (e.g., migrating legacy Selenium patterns or improving Playwright auto-waiting).
+
+Format Instructions: Output should be in plain text along with relevant code and structured bullet points. Do not experiment with speculative patterns or repeat explanations.`;
         } else if (action === 'prompt_lab') {
           systemPrompt = body.promptTemplate || `You are an expert Staff SDET and Test Automation Architect. Execute the user's prompt instruction with maximum accuracy, completeness, and structured formatting.`;
         } else {
@@ -459,33 +482,70 @@ test.describe('Feature Validation Suite', () => {
 });`;
 }
 
-// 4. Code Reviewer & Quality Auditor
+// 4. Code Reviewer & Debugger Agent (Matches code_reviewer_debugger_agent.md)
 function reviewAutomationCode(input: string, techStack: string): string {
+  const isStackTrace =
+    input.includes('Exception') ||
+    input.includes('Error:') ||
+    input.includes('at ') ||
+    input.includes('TimeoutError') ||
+    input.includes('StaleElementReference');
+
+  if (isStackTrace) {
+    return `# QA Code Reviewer & Debugger: Mode A (Debugging & Error Resolution)
+
+### 1. Root Cause Explanation
+- **Failure Phenomenon**: The test failed due to an asynchronous timing or DOM lifecycle race condition.
+- **Underlying Cause**: The target element detached from the DOM between lookup and action, or an explicit polling timeout expired before the element reached a stable actionable state.
+
+### 2. Exact Fix
+\`\`\`typescript
+// Fix: Replace brittle manual lookups with web-first auto-retrying assertions
+import { test, expect } from '@playwright/test';
+
+test('stable execution with automatic recovery', async ({ page }) => {
+  await page.goto('/sandbox/web');
+
+  // Use accessible semantic locator with built-in actionability retry
+  const targetElement = page.getByRole('button', { name: /submit|checkout/i });
+
+  // Playwright automatically retries locator until visible and enabled
+  await expect(targetElement).toBeVisible({ timeout: 10000 });
+  await targetElement.click();
+});
+\`\`\`
+
+### 3. Prevention Checklist
+- Use web-first assertions (\`await expect(locator).toBeVisible()\`) rather than pre-checking Boolean conditions.
+- For parallel Selenium execution, ensure \`ThreadLocal<WebDriver>\` isolation so threads do not share browser state.
+- Avoid absolute XPaths or indexes that break when surrounding layout shifts.`;
+  }
+
+  // Mode B: Pull Request / Code Quality Review
   const flags: string[] = [];
-
   if (input.includes('Thread.sleep') || input.includes('waitForTimeout')) {
-    flags.push('🚨 **CRITICAL FLAKINESS RISK: Hardcoded Sleep Detected**\nUsing `Thread.sleep()` or `waitForTimeout()` pauses execution blindly regardless of system state, inflating test duration and causing failures under CI load. Replace with Playwright web-first assertions (`expect(locator).toBeVisible()`) or Selenium `WebDriverWait`.');
+    flags.push('- **Critical Issue: Hardcoded Sleep**: Using `Thread.sleep` or `waitForTimeout` blocks threads blindly. Replace with web-first assertions or explicit dynamic waits.');
   }
-
   if (input.includes('/html/body/') || input.includes('//*[@id=')) {
-    flags.push('⚠️ **FRAGILE LOCATOR DETECTED: Absolute or Index-heavy XPath**\nXPaths tied to raw DOM layout break on minor frontend markup changes. Replace with semantic locators (`getByRole`, `getByLabel`, `data-testid`).');
+    flags.push('- **Critical Issue: Brittle Locator**: Absolute XPath breaks on DOM shifts. Refactor to `getByRole`, `getByLabel`, or `data-testid`.');
   }
-
   if (techStack === 'playwright-ts' && input.includes('isVisible()') && input.includes('toBe(true)')) {
-    flags.push('⚠️ **ANTI-PATTERN: Non-retrying assertion**\n`expect(await locator.isVisible()).toBe(true)` checks once and fails immediately. Replace with `await expect(locator).toBeVisible()` which automatically polls.');
+    flags.push('- **Critical Issue: Non-retrying Assertion**: `expect(await locator.isVisible()).toBe(true)` does not poll. Replace with `await expect(locator).toBeVisible()`.');
   }
-
   if (flags.length === 0) {
-    flags.push('✅ **Linter Clean**: No severe anti-patterns detected in the snippet.');
+    flags.push('- **Audit Finding**: Clean syntax. Ensure assertions remain decoupled from Page Objects.');
   }
 
-  return `# Automation Code Quality Audit Report
+  return `# QA Code Reviewer & Debugger: Mode B (Code Quality Review)
 
-## 1. Static & Semantic Analysis Findings
-${flags.join('\n\n')}
+### 1. Strengths
+- Good modular encapsulation and clean separation of test setup and intent.
+- Proper test naming and clear assertion targets.
 
-## 2. Refactored Enterprise Code Recommendation
+### 2. Critical Issues (Must Fix)
+${flags.join('\n')}
 
+### 3. Refactoring Recommendations
 \`\`\`typescript
 import { test, expect } from '@playwright/test';
 
@@ -503,10 +563,9 @@ test('optimized robust execution', async ({ page }) => {
 });
 \`\`\`
 
-## 3. Scorecard
-- **Maintainability**: 92 / 100
-- **CI Reliability**: 95 / 100
-- **Best Practice Adherence**: High`;
+- **Next Steps**:
+  - Handoff to Automation Code Generator to refactor full suite.
+  - Handoff to Test Case Generator to suggest edge-case tests.`;
 }
 
 // 5. Code Snippet Only Generator (Direct, Short, Clean - No Markdown Description)
