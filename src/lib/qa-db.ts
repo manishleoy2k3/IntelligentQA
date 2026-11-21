@@ -1598,17 +1598,30 @@ export const QADatabase = {
   // SDET Track & Curriculum Management
   getTracks(): Track[] {
     if (!isBrowser()) return memoryDb.sdetTracks;
-    const stored = getStoredItem<Track[] | null>('intelligentqa_db_sdet_tracks', null);
+    let stored = getStoredItem<Track[] | null>('intelligentqa_db_sdet_tracks', null);
     const deletedLessons = getStoredItem<string[]>('intelligentqa_db_deleted_lessons', []);
     if (stored && Array.isArray(stored) && stored.length > 0) {
       // Reconcile with QA_TRACKS so newly added lessons/curriculum items are synced to browser storage
       let updated = false;
+
+      // Filter out stale tracks no longer in QA_TRACKS (e.g. removed interview-griller)
+      const validTrackIds = new Set(QA_TRACKS.map(t => t.id));
+      const filtered = stored.filter(t => validTrackIds.has(t.id));
+      if (filtered.length !== stored.length) {
+        stored = filtered;
+        updated = true;
+      }
+
       for (const defaultTrack of QA_TRACKS) {
         const storedTrack = stored.find(t => t.id === defaultTrack.id);
         if (!storedTrack) {
           stored.push(defaultTrack);
           updated = true;
           continue;
+        }
+        if (storedTrack.title !== defaultTrack.title) {
+          storedTrack.title = defaultTrack.title;
+          updated = true;
         }
         for (const defaultModule of defaultTrack.modules) {
           const storedModule = storedTrack.modules.find(m => m.id === defaultModule.id);

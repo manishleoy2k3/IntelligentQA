@@ -2,8 +2,7 @@ export type TrackId =
   | 'playwright-ts'
   | 'selenium-java'
   | 'api-testing'
-  | 'ai-qa'
-  | 'interview-griller';
+  | 'ai-qa';
 
 export type TechnologyBadge =
   | 'playwright'
@@ -155,7 +154,7 @@ export interface QAAgentSession {
 export interface InterviewSession {
   id: string;
   userId: string;
-  trackId: TrackId;
+  trackId: string;
   title: string;
   difficulty: string;
   experienceLevel?: string;

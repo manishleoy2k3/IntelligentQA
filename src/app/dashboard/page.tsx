@@ -253,7 +253,7 @@ export default function UserDashboardPage() {
             Your Track Progress
           </h2>
           <Link href="/tracks" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
-            View All 5 Tracks →
+            View All 4 Tracks →
           </Link>
         </div>
 
@@ -271,7 +271,7 @@ export default function UserDashboardPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${track.badgeColor}`}>
-                    {track.title.split(' ')[0]}
+                    {track.id === 'api-testing' ? 'Rest Assured (API)' : track.id === 'ai-qa' ? 'AI for QA' : track.title.split(' ')[0]}
                   </span>
                   <span className="text-sm font-bold text-slate-900 dark:text-white">
                     {completedInTrack === 0 ? 'Not Started' : `${pct}%`}
@@ -286,9 +286,7 @@ export default function UserDashboardPage() {
                       ? 'Stage 2 · Modern Web Testing'
                       : track.id === 'api-testing'
                       ? 'Stage 3 · API Automation'
-                      : track.id === 'ai-qa'
-                      ? 'Stage 4 · AI Augmentation'
-                      : 'Capstone · SDET Interview'}
+                      : 'Stage 4 · AI Augmentation'}
                   </div>
                   <h3 className="font-bold text-slate-900 dark:text-white text-lg sm:text-xl leading-snug">
                     {track.title}

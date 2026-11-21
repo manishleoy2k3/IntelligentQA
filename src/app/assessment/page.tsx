@@ -129,7 +129,6 @@ export default function DiagnosticAssessment() {
         'selenium-java': 0,
         'api-testing': 0,
         'ai-qa': 0,
-        'interview-griller': 0,
       };
 
       updated.forEach((optIdx, qIdx) => {
@@ -152,8 +151,7 @@ export default function DiagnosticAssessment() {
         'playwright-ts': 'Playwright + TypeScript (Modern Web SDET)',
         'selenium-java': 'Selenium WebDriver + Java (Enterprise SDET)',
         'api-testing': 'API Testing & Automation (REST Assured & Playwright API)',
-        'ai-qa': 'Step-by-Step AI for QA & Testing AI Applications',
-        'interview-griller': 'QA Interview Mastery & Coding Griller',
+        'ai-qa': 'AI for QA',
       };
 
       const reasons: Record<TrackId, string> = {
@@ -161,7 +159,6 @@ export default function DiagnosticAssessment() {
         'selenium-java': 'Your background aligns with Enterprise QA engineering. Mastering Core Java OOPs, TestNG, and WebDriver 4 will position you for high-paying roles in banking and enterprise institutions.',
         'api-testing': 'Focusing on API automation will yield immediate 10x speedups in your testing pipelines, mastering both REST Assured and Playwright API.',
         'ai-qa': 'You are primed for the frontier of Quality Engineering. Harnessing Generative AI for test synthesis and testing LLM applications will set you apart as a Next-Gen SDET.',
-        'interview-griller': 'You are ready to drill interview scenarios, tackle live coding, and ace your technical SDET rounds.',
       };
 
       setResultTrack({

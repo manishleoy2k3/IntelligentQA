@@ -91,3 +91,37 @@ test('3. Progress Tracking & Check: QADatabase, CodeEditorWorkspace, Dashboard, 
     'Tracks page must listen to intelligentqa_progress_updated'
   );
 });
+
+test('4. Dashboard Track Categories & AI for QA Course Refinements', () => {
+  const dashboardPath = path.join(__dirname, '../src/app/dashboard/page.tsx');
+  const dashboardContent = fs.readFileSync(dashboardPath, 'utf8');
+
+  // Verify categories
+  assert.ok(
+    dashboardContent.includes("track.id === 'api-testing' ? 'Rest Assured (API)'"),
+    'Dashboard must display "Rest Assured (API)" category instead of "REST"'
+  );
+  assert.ok(
+    dashboardContent.includes("track.id === 'ai-qa' ? 'AI for QA'"),
+    'Dashboard must display "AI for QA" category instead of "Step-by-Step"'
+  );
+  assert.ok(
+    dashboardContent.includes('View All 4 Tracks →'),
+    'Dashboard header should link to View All 4 Tracks'
+  );
+  assert.ok(
+    !dashboardContent.includes('QA Interview Mastery & Coding Griller'),
+    'Dashboard must not list QA Interview Mastery & Coding Griller as a course'
+  );
+
+  const curriculumPath = path.join(__dirname, '../src/lib/qa-curriculum.ts');
+  const curriculumContent = fs.readFileSync(curriculumPath, 'utf8');
+  assert.ok(
+    curriculumContent.includes("title: 'AI for QA'"),
+    'Course title must be "AI for QA"'
+  );
+  assert.ok(
+    !curriculumContent.includes("title: 'QA Interview Mastery & Coding Griller'"),
+    'Course QA Interview Mastery & Coding Griller must be completely removed from QA_TRACKS'
+  );
+});

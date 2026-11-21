@@ -48,7 +48,7 @@ export default function TracksDirectoryPage() {
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            5 Structured SDET Paths
+            4 Structured SDET Paths
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Learning Tracks &amp; Curriculum
@@ -120,7 +120,7 @@ export default function TracksDirectoryPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${track.badgeColor}`}>
-                    {track.title.split(' ')[0]}
+                    {track.id === 'api-testing' ? 'Rest Assured (API)' : track.id === 'ai-qa' ? 'AI for QA' : track.title.split(' ')[0]}
                   </span>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Clock className="w-3.5 h-3.5" />

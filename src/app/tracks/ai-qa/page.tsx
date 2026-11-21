@@ -149,7 +149,7 @@ export default function AIQALearningStudio() {
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-400 mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            Track 4: Step-by-Step AI for Manual QA
+            Track 4: AI for QA
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             AI for QA Interactive Learning Studio

@@ -1735,7 +1735,7 @@ export const QA_TRACKS: Track[] = [
   },
   {
     id: 'ai-qa',
-    title: 'Step-by-Step AI for QA Professionals',
+    title: 'AI for QA',
     tagline: 'The 8-Step Progressive AI Journey for Manual QA',
     description: 'A transformative 8-step journey for manual testers: prompt engineering, synthetic test data generation, self-healing locators, autonomous QA agents, and testing LLM applications.',
     color: 'cyan',
@@ -2081,70 +2081,6 @@ export const QA_TRACKS: Track[] = [
               validationRules: [
                 {
                   requiredPatterns: ["generateReqs", "generateTests", "generateCode"],
-                  forbiddenPatterns: ['Thread.sleep'],
-                  description: 'Validates required patterns'
-                }
-              ]
-            }
-          },
-        ]
-      },
-    ]
-  },
-  {
-    id: 'interview-griller',
-    title: 'QA Interview Mastery & Coding Griller',
-    tagline: 'Technical Scenarios, Architecture Rounds & Live Simulator',
-    description: 'Master senior SDET interview rounds: framework architecture design, flakiness elimination, concurrency, and live AI grilling simulations.',
-    color: 'rose',
-    badgeColor: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800',
-    iconName: 'Award',
-    totalLessons: 6,
-    estimatedHours: 20,
-    modules: [
-      {
-        id: 'interview-scenarios',
-        trackId: 'interview-griller',
-        title: 'Top SDET Technical Scenarios',
-        description: 'Deep dives into the hardest interview questions asked by top tech companies.',
-        order: 1,
-        lessons: [
-          {
-            id: 'flakiness-and-retries',
-            moduleId: 'interview-scenarios',
-            trackId: 'interview-griller',
-            title: "1. Flakiness Elimination & CI/CD Sharding",
-            description: "How to answer 'How do you eliminate flaky tests?' and architect resilient retry algorithms.",
-            durationMinutes: 200,
-            badge: 'interview',
-            level: 'Architect',
-            manualContext: {
-              title: "The Flaky Test Problem",
-              steps: ["In interviews, architects want to know how you stop tests from passing locally but failing on CI."],
-              painPoints: ["Junior testers answer 'I add retries'. Senior SDETs know retries mask bugs and latency!"]
-            },
-            automationContext: {
-              playwrightTs: "// Architecture: Eliminate race conditions with web-first assertions, ensure test isolation, use Trace Viewer.",
-              explanation: "The correct interview response tackles root causes (dynamic synchronization, isolated contexts) before mentioning retries.",
-              bestPractices: ["Never use retries as a replacement for proper synchronization", "Quarantine flaky tests to separate build targets"],
-              antiPatterns: ["Saying 'I increase implicit wait to 60 seconds' in an interview"]
-            },
-            aiAugmentation: {
-              promptExample: "Give me 3 probing follow-up questions an interviewer will ask when I explain my test framework architecture.",
-              agenticWorkflow: 'QA AI Agent assists with generation and code reviews.',
-              selfHealingTip: 'Self-healing monitors adapt dynamic locators at runtime.'
-            },
-            challenge: {
-              instruction: "Configure retries and trace recording on failure in Playwright configuration.",
-              starterCode: {
-                typescript: "import { defineConfig } from '@playwright/test';\nexport default defineConfig({\n  // Add retries and trace\n});",
-              },
-              solutionCode: {
-                typescript: "import { defineConfig } from '@playwright/test';\nexport default defineConfig({\n  retries: 2,\n  use: { trace: 'retain-on-failure' }\n});",
-              },
-              validationRules: [
-                {
-                  requiredPatterns: ["retries", "retain-on-failure"],
                   forbiddenPatterns: ['Thread.sleep'],
                   description: 'Validates required patterns'
                 }
