@@ -95,6 +95,7 @@ export default function Header({
 
   // 1. Sleek Minimal Guest Links (Public Home Page - Zero Clutter)
   const guestNavLinks = [
+    { href: '/blog', label: 'Tutorials' },
     { href: '/#what-you-get', label: "What You'll Get" },
     { href: '/#curriculum-preview', label: 'Curriculum' },
     { href: '/#faq', label: 'FAQs' },
@@ -104,6 +105,7 @@ export default function Header({
   const memberNavLinks = [
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/tracks', label: 'Tracks' },
+    { href: '/blog', label: 'Tutorials' },
     { href: '/sandbox/api', label: 'API Testing Lab' },
     { href: '/prompt-lab', label: 'Prompt Lab' },
     { href: '/qa-agents', label: 'AI QA Agents' },

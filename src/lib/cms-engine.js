@@ -121,6 +121,156 @@ function sanitizeHtml(html) {
     .replace(/javascript:[^"']*/gi, '');
 }
 
+// Convert a structured LessonDoc into Editor.js blocks
+function lessonDocToBlocks(doc) {
+  if (!doc) return { time: Date.now(), version: '2.28.0', blocks: [] };
+  const blocks = [];
+
+  if (doc.title) {
+    blocks.push({
+      id: `blk-h-${Date.now()}-1`,
+      type: 'header',
+      data: { text: doc.title, level: 2 },
+    });
+  }
+
+  if (doc.overview) {
+    blocks.push({
+      id: `blk-p-${Date.now()}-2`,
+      type: 'paragraph',
+      data: { text: doc.overview },
+    });
+  }
+
+  if (doc.whyItMattersForManualQA) {
+    blocks.push({
+      id: `blk-c-${Date.now()}-3`,
+      type: 'callout',
+      data: {
+        type: 'info',
+        title: 'Why It Matters for Manual QA',
+        message: doc.whyItMattersForManualQA,
+      },
+    });
+  }
+
+  if (doc.architectureUnderTheHood?.flowOrMechanism) {
+    blocks.push({
+      id: `blk-c-${Date.now()}-4`,
+      type: 'callout',
+      data: {
+        type: 'tip',
+        title: doc.architectureUnderTheHood.title || 'Architecture & Mechanism',
+        message: `${doc.architectureUnderTheHood.flowOrMechanism}\n\nKey Takeaway: ${doc.architectureUnderTheHood.keyTakeaway || ''}`,
+      },
+    });
+  }
+
+  if (Array.isArray(doc.stepByStepGuide) && doc.stepByStepGuide.length > 0) {
+    blocks.push({
+      id: `blk-s-${Date.now()}-5`,
+      type: 'stepByStep',
+      data: {
+        title: 'Step-by-Step Practical Implementation',
+        steps: doc.stepByStepGuide.map((s, idx) => ({
+          stepNumber: s.stepNumber || idx + 1,
+          title: s.title || `Step ${idx + 1}`,
+          badge: s.badge || 'Implementation',
+          summary: s.summary || '',
+          explanation: s.explanation || '',
+          codeSnippet: s.codeSnippet,
+          proTip: s.proTip,
+        })),
+      },
+    });
+  }
+
+  if (doc.productionCodeExample?.code) {
+    blocks.push({
+      id: `blk-code-${Date.now()}-6`,
+      type: 'code',
+      data: {
+        language: doc.productionCodeExample.language || 'java',
+        code: doc.productionCodeExample.code,
+        caption: doc.productionCodeExample.title || 'Production Code Template',
+      },
+    });
+  }
+
+  if (Array.isArray(doc.manualToAutomatedBridge) && doc.manualToAutomatedBridge.length > 0) {
+    blocks.push({
+      id: `blk-tbl-${Date.now()}-7`,
+      type: 'table',
+      data: {
+        withHeadings: true,
+        content: [
+          ['Manual Action', 'Automated Approach', 'Why It Matters'],
+          ...doc.manualToAutomatedBridge.map((row) => [
+            row.manualAction || '',
+            row.automatedApproach || '',
+            row.whyItMatters || '',
+          ]),
+        ],
+      },
+    });
+  }
+
+  if (doc.interviewQnA?.question) {
+    blocks.push({
+      id: `blk-faq-${Date.now()}-8`,
+      type: 'faq',
+      data: {
+        title: 'Top Interview Question & Answer',
+        items: [
+          {
+            question: doc.interviewQnA.question,
+            answer: doc.interviewQnA.answer,
+          },
+        ],
+      },
+    });
+  }
+
+  return {
+    time: Date.now(),
+    version: '2.28.0',
+    blocks,
+  };
+}
+
+// Convert Editor.js blocks back into LessonDoc
+function blocksToLessonDoc(editorData, existingDoc) {
+  const doc = { ...(existingDoc || {}) };
+  if (!editorData?.blocks) return doc;
+
+  for (const block of editorData.blocks) {
+    if (block.type === 'header' && block.data.level === 2 && !doc.title) {
+      doc.title = block.data.text;
+    } else if (block.type === 'paragraph' && !doc.overview) {
+      doc.overview = block.data.text;
+    } else if (block.type === 'callout' && block.data.title?.toLowerCase().includes('why it matters')) {
+      doc.whyItMattersForManualQA = block.data.message;
+    } else if (block.type === 'code' && block.data.code) {
+      doc.productionCodeExample = {
+        title: block.data.caption || 'Production Code Example',
+        description: 'Generated via CMS Course Editor',
+        code: block.data.code,
+        language: block.data.language || 'java',
+        annotations: [],
+      };
+    } else if (block.type === 'stepByStep' && Array.isArray(block.data.steps)) {
+      doc.stepByStepGuide = block.data.steps;
+    } else if (block.type === 'faq' && Array.isArray(block.data.items) && block.data.items.length > 0) {
+      doc.interviewQnA = {
+        question: block.data.items[0].question,
+        answer: block.data.items[0].answer,
+      };
+    }
+  }
+
+  return doc;
+}
+
 module.exports = {
   calculateReadingTime,
   generateTableOfContents,
@@ -128,4 +278,6 @@ module.exports = {
   sanitizeHtml,
   ALLOWED_IMAGE_MIME_TYPES,
   MAX_FILE_SIZE_BYTES,
+  lessonDocToBlocks,
+  blocksToLessonDoc,
 };

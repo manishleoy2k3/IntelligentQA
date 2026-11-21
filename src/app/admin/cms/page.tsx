@@ -46,6 +46,9 @@ import {
 } from 'lucide-react';
 import { QADatabase } from '@/lib/qa-db';
 import { Track, Module, Lesson, ModerationItem } from '@/types/qa';
+import { getLessonDoc, LessonDoc } from '@/lib/qa-learning-docs';
+// @ts-ignore
+import { lessonDocToBlocks, blocksToLessonDoc } from '@/lib/cms-engine.js';
 import {
   CMSArticle,
   CMSCategory,
@@ -116,6 +119,22 @@ function CMSPortalContent() {
   const [articleSeoTitle, setArticleSeoTitle] = useState('');
   const [articleSeoDesc, setArticleSeoDesc] = useState('');
   const [articleCanonical, setArticleCanonical] = useState('');
+
+  // Course Lesson Editing Context
+  const [editingLessonContext, setEditingLessonContext] = useState<{
+    courseId: string;
+    moduleId: string;
+    lessonId: string;
+    originalDoc: LessonDoc;
+  } | null>(null);
+
+  // Success Dialog after publication
+  const [publishedSuccessArticle, setPublishedSuccessArticle] = useState<{
+    title: string;
+    url: string;
+    type: 'article' | 'lesson';
+    slug?: string;
+  } | null>(null);
 
   // Course / Module / Lesson Modal
   const [showCourseModal, setShowCourseModal] = useState(false);
@@ -215,6 +234,7 @@ function CMSPortalContent() {
 
   // Open Article Editor
   const handleOpenArticleEditor = (art?: CMSArticle) => {
+    setEditingLessonContext(null);
     if (art) {
       setEditingArticle(art);
       setArticleTitle(art.title);
@@ -223,8 +243,8 @@ function CMSPortalContent() {
       setArticleDesc(art.shortDescription);
       setArticleCategory(art.category);
       setArticleTagsInput(art.tags.join(', '));
-      setArticleFeaturedImg(art.featuredImage || '');
-      setArticleImgCaption(art.featuredImageCaption || '');
+      setArticleFeaturedImg(art.featuredImage || '/images/selenium-architecture.svg');
+      setArticleImgCaption(art.featuredImageCaption || 'Figure 1: Test Automation Architecture & Workflow');
       setArticleStatus(art.status);
       setArticleContent(art.content || { blocks: [] });
       setArticleSeoTitle(art.seoTitle || '');
@@ -239,8 +259,8 @@ function CMSPortalContent() {
       setArticleDesc('');
       setArticleCategory(categories[0]?.name || 'UI Automation');
       setArticleTagsInput('Selenium, Java, Automation');
-      setArticleFeaturedImg('');
-      setArticleImgCaption('');
+      setArticleFeaturedImg('/images/selenium-architecture.svg');
+      setArticleImgCaption('Figure 1: Test Automation Architecture & Workflow');
       setArticleStatus('draft');
       setArticleContent({
         time: Date.now(),
@@ -260,34 +280,112 @@ function CMSPortalContent() {
     setIsEditorOpen(true);
   };
 
-  // Save Article
+  // Open Course Lesson in CMS Rich Block Editor
+  const handleOpenLessonCmsEditor = (courseId: string, moduleId: string, lesson: Lesson) => {
+    setEditingArticle(null);
+    const doc = getLessonDoc(lesson.id, courseId, lesson.title, lesson.description);
+    const blocksData = lessonDocToBlocks(doc);
+
+    setEditingLessonContext({
+      courseId,
+      moduleId,
+      lessonId: lesson.id,
+      originalDoc: doc,
+    });
+
+    setArticleTitle(lesson.title);
+    setArticleSubtitle(doc.tagline || '');
+    setArticleSlug(lesson.id);
+    setArticleDesc(doc.overview || lesson.description || '');
+    setArticleCategory(courseId);
+    setArticleTagsInput('Course Lesson, Curriculum, Interactive Lab');
+    setArticleFeaturedImg('');
+    setArticleImgCaption('');
+    setArticleStatus('published');
+    setArticleContent(blocksData as any as EditorJSData);
+    setArticleSeoTitle(`${lesson.title} | IntelligentQA Course`);
+    setArticleSeoDesc(doc.overview || lesson.description || '');
+    setArticleCanonical(`https://intelligentqa.io/tracks/${courseId}/${lesson.id}`);
+
+    setIsEditorOpen(true);
+  };
+
+  // Save or Publish Article / Lesson
   const handleSaveArticle = async (newStatus?: ArticleStatus) => {
     if (!articleTitle.trim()) {
-      showBanner('Please provide an article title.', 'error');
+      showBanner('Please provide an article or lesson title.', 'error');
       return;
     }
 
     setIsSavingArticle(true);
+
+    // 1. If editing a Course Curriculum Lesson
+    if (editingLessonContext) {
+      try {
+        const updatedDoc = blocksToLessonDoc(articleContent, editingLessonContext.originalDoc);
+        updatedDoc.title = articleTitle;
+        if (articleSubtitle) updatedDoc.tagline = articleSubtitle;
+        if (articleDesc) updatedDoc.overview = articleDesc;
+
+        await QADatabase.saveLessonDocToDatabase(editingLessonContext.lessonId, updatedDoc);
+
+        // Update track metadata if title changed
+        const course = courses.find((c) => c.id === editingLessonContext.courseId);
+        if (course) {
+          const mod = course.modules.find((m) => m.id === editingLessonContext.moduleId);
+          const les = mod?.lessons.find((l) => l.id === editingLessonContext.lessonId);
+          if (les && les.title !== articleTitle) {
+            les.title = articleTitle;
+            QADatabase.saveTrack(course);
+            setCourses(QADatabase.getTracks());
+          }
+        }
+
+        const lessonLiveUrl = `/tracks/${editingLessonContext.courseId}/${editingLessonContext.lessonId}`;
+        showBanner(`🎉 Course lesson "${articleTitle}" published live to students!`, 'success');
+        setPublishedSuccessArticle({
+          title: articleTitle,
+          url: lessonLiveUrl,
+          type: 'lesson',
+        });
+      } catch (err: any) {
+        showBanner(err.message || 'Failed to save course lesson', 'error');
+      } finally {
+        setIsSavingArticle(false);
+      }
+      return;
+    }
+
+    // 2. Standalone Article / Tutorial Saving
     const tagsArray = articleTagsInput
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
 
+    const targetStatus = newStatus || articleStatus;
+    const computedSlug = (
+      articleSlug ||
+      articleTitle
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+    ).toLowerCase();
+
     const payload: Partial<CMSArticle> = {
       id: editingArticle?.id,
       title: articleTitle,
       subtitle: articleSubtitle,
-      slug: (articleSlug || articleTitle.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')).toLowerCase(),
+      slug: computedSlug,
       shortDescription: articleDesc,
       category: articleCategory,
       tags: tagsArray,
       featuredImage: articleFeaturedImg,
       featuredImageCaption: articleImgCaption,
-      status: newStatus || articleStatus,
+      status: targetStatus,
       content: articleContent,
       seoTitle: articleSeoTitle || `${articleTitle} | IntelligentQA`,
       seoDescription: articleSeoDesc || articleDesc,
-      canonicalUrl: articleCanonical || `https://intelligentqa.io/blog/${articleSlug}`,
+      canonicalUrl: articleCanonical || `https://intelligentqa.io/blog/${computedSlug}`,
     };
 
     try {
@@ -306,10 +404,22 @@ function CMSPortalContent() {
 
       const data = await res.json();
       if (data.success && data.article) {
-        showBanner(`Article "${data.article.title}" saved successfully!`);
         setEditingArticle(data.article);
         setArticleStatus(data.article.status);
         loadAllData();
+
+        if (targetStatus === 'published') {
+          const publicLiveUrl = `/blog/${data.article.slug}`;
+          showBanner(`🎉 Article "${data.article.title}" published LIVE!`, 'success');
+          setPublishedSuccessArticle({
+            title: data.article.title,
+            url: publicLiveUrl,
+            type: 'article',
+            slug: data.article.slug,
+          });
+        } else {
+          showBanner(`Article "${data.article.title}" saved as draft!`, 'success');
+        }
       } else {
         showBanner(data.error || 'Failed to save article', 'error');
       }
@@ -498,7 +608,7 @@ function CMSPortalContent() {
       {/* Toast Banner */}
       {banner && (
         <div
-          className={`fixed top-4 right-4 z-50 px-4 py-2.5 rounded-xl border text-xs font-semibold shadow-2xl flex items-center gap-2 ${
+          className={`fixed top-4 right-4 z-[100] px-4 py-2.5 rounded-xl border text-xs font-semibold shadow-2xl flex items-center gap-2 ${
             banner.type === 'error'
               ? 'bg-rose-950/90 border-rose-500 text-rose-200'
               : 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
@@ -984,11 +1094,22 @@ function CMSPortalContent() {
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenLessonCmsEditor(currentCourse.id, mod.id, les)}
+                            className="px-2.5 py-1 rounded-lg bg-purple-600/20 text-xs text-purple-300 hover:bg-purple-600 hover:text-white border border-purple-500/30 flex items-center gap-1 font-semibold transition-colors"
+                            title="Edit Lesson Content using the Rich Block Editor"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                            <span>Edit Content (CMS)</span>
+                          </button>
                           <Link
                             href={`/tracks/${currentCourse.id}/${les.id}`}
-                            className="px-2.5 py-1 rounded-lg bg-[#1A1A1E] text-xs text-purple-300 hover:bg-[#27272A]"
+                            target="_blank"
+                            className="px-2.5 py-1 rounded-lg bg-[#1A1A1E] text-xs text-[#A1A1AA] hover:text-white hover:bg-[#27272A] flex items-center gap-1"
                           >
-                            Open Workspace
+                            <span>Workspace</span>
+                            <ExternalLink className="w-3 h-3" />
                           </Link>
                         </div>
                       </div>
@@ -1232,17 +1353,24 @@ function CMSPortalContent() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setIsEditorOpen(false)}
+                onClick={() => {
+                  setIsEditorOpen(false);
+                  setEditingLessonContext(null);
+                }}
                 className="px-3 py-1.5 rounded-lg border border-[#27272A] bg-[#1A1A1E] text-xs text-[#A1A1AA] hover:text-white"
               >
                 &larr; Back to CMS
               </button>
               <div>
                 <span className="text-xs font-bold text-white">
-                  {editingArticle ? 'Edit Tutorial' : 'New Technical Article'}
+                  {editingLessonContext
+                    ? `Curriculum Lesson: ${editingLessonContext.courseId} / ${editingLessonContext.lessonId}`
+                    : editingArticle
+                    ? 'Edit Tutorial'
+                    : 'New Technical Article'}
                 </span>
                 <span className="text-[10px] text-purple-400 ml-2 font-mono">
-                  Status: {articleStatus.toUpperCase()}
+                  {editingLessonContext ? 'STUDENTS LIVE WORKSPACE' : `Status: ${articleStatus.toUpperCase()}`}
                 </span>
               </div>
             </div>
@@ -1252,7 +1380,7 @@ function CMSPortalContent() {
                 type="button"
                 onClick={() => handleSaveArticle('draft')}
                 disabled={isSavingArticle}
-                className="px-3.5 py-1.5 rounded-lg border border-[#27272A] bg-[#1E1E22] hover:bg-[#27272A] text-xs text-[#D4D4D8] font-semibold"
+                className="px-3.5 py-1.5 rounded-lg border border-[#27272A] bg-[#1E1E22] hover:bg-[#27272A] text-xs text-[#D4D4D8] font-semibold cursor-pointer"
               >
                 Save as Draft
               </button>
@@ -1261,22 +1389,23 @@ function CMSPortalContent() {
                 type="button"
                 onClick={() => handleSaveArticle('published')}
                 disabled={isSavingArticle}
-                className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow transition-colors"
+                className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow transition-colors flex items-center gap-1.5 cursor-pointer"
               >
-                Publish Article
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{editingLessonContext ? 'Publish to Students' : 'Publish Article'}</span>
               </button>
             </div>
           </div>
 
-          {/* Article Metadata Bar */}
+          {/* Article / Lesson Metadata Bar */}
           <div className="px-6 py-3 border-b border-[#27272A] bg-[#151518] grid grid-cols-1 md:grid-cols-4 gap-3 text-xs shrink-0">
             <div>
               <label className="text-[10px] uppercase font-bold text-[#71717A] block mb-1">
-                Article Title *
+                {editingLessonContext ? 'Lesson Title *' : 'Article Title *'}
               </label>
               <input
                 type="text"
-                placeholder="Selenium with Java Tutorial..."
+                placeholder={editingLessonContext ? 'Lesson Title...' : 'Selenium with Java Tutorial...'}
                 value={articleTitle}
                 onChange={(e) => setArticleTitle(e.target.value)}
                 className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-white font-bold"
@@ -1285,47 +1414,188 @@ function CMSPortalContent() {
 
             <div>
               <label className="text-[10px] uppercase font-bold text-[#71717A] block mb-1">
-                URL Slug (/blog/...)
+                {editingLessonContext ? 'Lesson ID / Path' : 'URL Slug (/blog/...)'}
               </label>
               <input
                 type="text"
-                placeholder="selenium-with-java-tutorial"
+                placeholder="slug-or-id"
                 value={articleSlug}
+                disabled={!!editingLessonContext}
                 onChange={(e) => setArticleSlug(e.target.value)}
-                className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-purple-300 font-mono"
+                className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-purple-300 font-mono disabled:opacity-60"
               />
             </div>
 
             <div>
               <label className="text-[10px] uppercase font-bold text-[#71717A] block mb-1">
-                Category
+                {editingLessonContext ? 'Course Track' : 'Category'}
               </label>
-              <select
-                value={articleCategory}
-                onChange={(e) => setArticleCategory(e.target.value)}
-                className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-white"
-              >
-                {categories.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+              {editingLessonContext ? (
+                <input
+                  type="text"
+                  disabled
+                  value={editingLessonContext.courseId}
+                  className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-white disabled:opacity-60 font-mono"
+                />
+              ) : (
+                <select
+                  value={articleCategory}
+                  onChange={(e) => setArticleCategory(e.target.value)}
+                  className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-white"
+                >
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div>
               <label className="text-[10px] uppercase font-bold text-[#71717A] block mb-1">
-                Tags (Comma separated)
+                {editingLessonContext ? 'Tagline / Subtitle' : 'Tags (Comma separated)'}
               </label>
               <input
                 type="text"
-                placeholder="Selenium, Java, SDET"
-                value={articleTagsInput}
-                onChange={(e) => setArticleTagsInput(e.target.value)}
+                placeholder={editingLessonContext ? 'Tagline / Summary...' : 'Selenium, Java, SDET'}
+                value={editingLessonContext ? articleSubtitle : articleTagsInput}
+                onChange={(e) =>
+                  editingLessonContext
+                    ? setArticleSubtitle(e.target.value)
+                    : setArticleTagsInput(e.target.value)
+                }
                 className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-white"
               />
             </div>
           </div>
+
+          {/* Featured Cover Image Bar */}
+          {!editingLessonContext && (
+            <div className="px-6 py-2.5 border-b border-[#27272A] bg-[#101013] flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] uppercase font-bold text-[#71717A] tracking-wider shrink-0">
+                  Featured Cover Image:
+                </span>
+
+                {articleFeaturedImg ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-12 h-8 rounded-md border border-[#27272A] bg-[#09090B] overflow-hidden shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={articleFeaturedImg}
+                        alt="Featured Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                    <span className="font-mono text-[11px] text-emerald-400 max-w-[220px] truncate">
+                      {articleFeaturedImg}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setArticleFeaturedImg('');
+                        setArticleImgCaption('');
+                      }}
+                      className="text-rose-400 hover:text-rose-300 text-[11px] font-semibold underline ml-1 cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-[11px] text-[#71717A] italic">No cover image chosen</span>
+                )}
+              </div>
+
+              {/* Action Buttons to Set / Upload Featured Image */}
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="px-2.5 py-1 rounded-lg bg-[#1E1E22] hover:bg-[#27272A] border border-[#27272A] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm">
+                  <UploadCloud className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Upload from PC</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      formData.append('alt', articleTitle || file.name);
+                      formData.append('category', 'Featured');
+                      try {
+                        const res = await fetch('/api/admin/media', {
+                          method: 'POST',
+                          headers: { 'x-admin-token': 'admin-session' },
+                          body: formData,
+                        });
+                        const data = await res.json();
+                        if (data.success && data.item) {
+                          setArticleFeaturedImg(data.item.url);
+                          setArticleImgCaption(articleTitle || file.name);
+                          showBanner('Featured image uploaded & set!', 'success');
+                        }
+                      } catch (err: any) {
+                        showBanner('Upload failed', 'error');
+                      }
+                    }}
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() => setMediaModalOpen(true)}
+                  className="px-2.5 py-1 rounded-lg bg-[#1E1E22] hover:bg-[#27272A] border border-[#27272A] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <ImageIcon className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Media Library</span>
+                </button>
+
+                {/* Quick Diagram Presets */}
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setArticleFeaturedImg('/images/selenium-architecture.svg');
+                      setArticleImgCaption('Figure 1: Selenium WebDriver 4 Architecture Diagram & W3C Flow');
+                      showBanner('Applied Selenium Architecture Diagram', 'success');
+                    }}
+                    className="px-2 py-0.5 rounded bg-[#18181C] hover:bg-purple-600/20 text-[10px] font-mono text-purple-300 border border-[#27272A] cursor-pointer"
+                    title="Apply Selenium Architecture SVG"
+                  >
+                    + Architecture
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setArticleFeaturedImg('/images/locators-dom-inspector.svg');
+                      setArticleImgCaption('Figure 2: Chrome DevTools DOM Elements & Priority Locators');
+                      showBanner('Applied DOM Inspector Diagram', 'success');
+                    }}
+                    className="px-2 py-0.5 rounded bg-[#18181C] hover:bg-teal-600/20 text-[10px] font-mono text-teal-300 border border-[#27272A] cursor-pointer"
+                    title="Apply DOM Inspector SVG"
+                  >
+                    + Locators
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setArticleFeaturedImg('/images/test-execution-report.svg');
+                      setArticleImgCaption('Figure 3: TestNG & Allure Real-Time Execution Dashboard');
+                      showBanner('Applied Execution Report SVG', 'success');
+                    }}
+                    className="px-2 py-0.5 rounded bg-[#18181C] hover:bg-amber-600/20 text-[10px] font-mono text-amber-300 border border-[#27272A] cursor-pointer"
+                    title="Apply Execution Report SVG"
+                  >
+                    + Report
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Editor Body */}
           <div className="flex-1 overflow-hidden p-4">
@@ -1338,9 +1608,100 @@ function CMSPortalContent() {
               }}
               revisions={editingArticle?.revisions || []}
               onRestoreRevision={handleRestoreRevision}
-              articleTitle={articleTitle || 'Untitled Article'}
+              articleTitle={articleTitle || 'Untitled Content'}
               isSaving={isSavingArticle}
             />
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* PUBLISHED SUCCESS MODAL */}
+      {/* ============================================================ */}
+      {publishedSuccessArticle && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-3xl border border-emerald-500/30 bg-[#121215] shadow-2xl p-6 sm:p-8 space-y-6 text-center animate-in fade-in zoom-in duration-200">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/10">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] font-bold uppercase tracking-wider border border-emerald-500/20">
+                Published Live Successfully
+              </span>
+              <h3 className="text-xl font-bold text-white">
+                {publishedSuccessArticle.type === 'lesson'
+                  ? 'Course Lesson Live for Students!'
+                  : 'Article Published to Community!'}
+              </h3>
+              <p className="text-xs text-[#A1A1AA] max-w-md mx-auto">
+                {publishedSuccessArticle.type === 'lesson'
+                  ? `"${publishedSuccessArticle.title}" is now published and active inside the interactive workspace for all students.`
+                  : `"${publishedSuccessArticle.title}" is now published and publicly accessible to all website visitors.`}
+              </p>
+            </div>
+
+            {/* Public URL Box */}
+            <div className="p-3.5 rounded-xl border border-[#27272A] bg-[#09090B] flex items-center justify-between gap-3 text-left">
+              <div className="truncate">
+                <span className="text-[10px] uppercase font-bold text-[#71717A] block">
+                  {publishedSuccessArticle.type === 'lesson'
+                    ? 'Student Workspace URL'
+                    : 'Public Article URL'}
+                </span>
+                <span className="text-xs font-mono text-emerald-400 font-semibold truncate block">
+                  {publishedSuccessArticle.url}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const fullUrl =
+                    typeof window !== 'undefined'
+                      ? `${window.location.origin}${publishedSuccessArticle.url}`
+                      : publishedSuccessArticle.url;
+                  navigator.clipboard.writeText(fullUrl);
+                  showBanner('Live URL copied to clipboard!', 'success');
+                }}
+                className="px-3 py-1.5 rounded-lg bg-[#1A1A1E] hover:bg-[#27272A] border border-[#27272A] text-xs font-semibold text-white flex items-center gap-1.5 shrink-0 cursor-pointer"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy Link</span>
+              </button>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <a
+                href={publishedSuccessArticle.url}
+                target="_blank"
+                rel="noreferrer"
+                className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>View Live Page</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPublishedSuccessArticle(null);
+                  setIsEditorOpen(false);
+                  setEditingLessonContext(null);
+                }}
+                className="py-2.5 px-4 rounded-xl border border-[#27272A] bg-[#1E1E22] hover:bg-[#27272A] text-white font-semibold text-xs transition-colors cursor-pointer"
+              >
+                Return to CMS List
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setPublishedSuccessArticle(null)}
+              className="text-xs text-[#71717A] hover:text-white underline pt-1 cursor-pointer block mx-auto"
+            >
+              Continue Editing
+            </button>
           </div>
         </div>
       )}
@@ -1349,6 +1710,12 @@ function CMSPortalContent() {
       <MediaLibraryModal
         isOpen={mediaModalOpen}
         onClose={() => setMediaModalOpen(false)}
+        onSelectImage={(media) => {
+          setArticleFeaturedImg(media.url);
+          setArticleImgCaption(media.caption || media.alt || articleTitle);
+          setMediaModalOpen(false);
+          showBanner('Featured image set from Media Library!', 'success');
+        }}
       />
     </div>
   );

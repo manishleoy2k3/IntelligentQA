@@ -463,14 +463,37 @@ export default function RichBlockEditor({
           {/* Media & Table */}
           <button
             type="button"
-            onClick={() => {
-              setMediaTargetBlockId(activeBlockId);
-              setMediaModalOpen(true);
-            }}
+            onClick={() =>
+              insertBlockAfter(activeBlockId, {
+                id: `blk-img-${Date.now()}`,
+                type: 'image',
+                data: {
+                  file: { url: '/images/selenium-architecture.svg' },
+                  caption: 'Figure: Architecture & Technical Flow',
+                  alt: 'Technical Diagram',
+                  alignment: 'center',
+                  size: 'large',
+                },
+              })
+            }
             className="px-2.5 py-1 rounded-md bg-[#222226] hover:bg-[#2E2E34] text-[#E4E4E7] flex items-center gap-1 cursor-pointer transition-colors"
+            title="Insert Image / Diagram Block"
           >
             <ImageIcon className="w-3.5 h-3.5 text-pink-400" />
             <span>Image</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMediaTargetBlockId(null);
+              setMediaModalOpen(true);
+            }}
+            className="px-2.5 py-1 rounded-md bg-[#222226] hover:bg-[#2E2E34] text-sky-300 flex items-center gap-1 cursor-pointer transition-colors"
+            title="Insert image from Media Library"
+          >
+            <UploadCloud className="w-3.5 h-3.5 text-sky-400" />
+            <span>Library</span>
           </button>
 
           <button
@@ -940,88 +963,220 @@ function BlockEditorDispatcher({
         </div>
       );
 
-    case 'image':
+    case 'image': {
+      const imgUrl = block.data.file?.url || (block.data as any).url || '';
       return (
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <input
-              type="text"
-              value={block.data.file?.url || ''}
-              onChange={(e) => onChange({ file: { url: e.target.value } })}
-              placeholder="Image URL or pick from Media Library"
-              className="flex-1 px-3 py-1.5 bg-[#1A1A1E] border border-[#27272A] rounded-lg text-xs text-white focus:outline-none"
-            />
-            <button
-              type="button"
-              onClick={onOpenMediaModal}
-              className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors cursor-pointer"
-            >
-              Select / Upload
-            </button>
+        <div className="space-y-3 p-4 rounded-xl border border-[#27272A] bg-[#0E0F14]">
+          {/* Top Actions: Direct File Upload, Media Library, Preset SVG Diagrams */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[#27272A]/60">
+            <div className="flex items-center gap-2">
+              <label className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm">
+                <UploadCloud className="w-3.5 h-3.5" />
+                <span>Upload from Computer</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('alt', file.name.replace(/\.[^/.]+$/, ''));
+                    formData.append('category', 'Tutorials');
+                    try {
+                      const res = await fetch('/api/admin/media', {
+                        method: 'POST',
+                        headers: { 'x-admin-token': 'admin-session' },
+                        body: formData,
+                      });
+                      const data = await res.json();
+                      if (data.success && data.item) {
+                        onChange({
+                          file: { url: data.item.url },
+                          caption: block.data.caption || data.item.alt,
+                          alt: data.item.alt,
+                        });
+                      }
+                    } catch (err) {
+                      console.error('Direct block upload failed', err);
+                    }
+                  }}
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={onOpenMediaModal}
+                className="px-3 py-1.5 rounded-lg bg-[#1E1E24] hover:bg-[#2A2A32] border border-[#2B2B36] text-white text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <ImageIcon className="w-3.5 h-3.5 text-sky-400" />
+                <span>Media Library</span>
+              </button>
+
+              {imgUrl && (
+                <button
+                  type="button"
+                  onClick={() => onChange({ file: { url: '' } })}
+                  className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  Clear Image
+                </button>
+              )}
+            </div>
+
+            {/* Instant QA Diagram Presets */}
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] text-[#71717A] uppercase font-bold mr-1">Presets:</span>
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({
+                    file: { url: '/images/selenium-architecture.svg' },
+                    caption: 'Figure 1.1: 4-Tier Selenium WebDriver 4 Architecture & W3C Standard Protocol Flow',
+                    alt: 'Selenium 4 Architecture Diagram',
+                  })
+                }
+                className="px-2 py-0.5 rounded bg-[#1A1A22] hover:bg-purple-600/20 text-[10px] font-mono text-purple-300 border border-[#2B2B3A] cursor-pointer"
+                title="Insert 4-Tier Selenium Architecture Diagram"
+              >
+                + Architecture
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({
+                    file: { url: '/images/locators-dom-inspector.svg' },
+                    caption: 'Figure 1.2: Chrome DevTools DOM Elements & Priority Locators',
+                    alt: 'DOM Locators Inspector Screenshot',
+                  })
+                }
+                className="px-2 py-0.5 rounded bg-[#1A1A22] hover:bg-teal-600/20 text-[10px] font-mono text-teal-300 border border-[#2B2B3A] cursor-pointer"
+                title="Insert DOM Locator Inspector Diagram"
+              >
+                + Locators
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({
+                    file: { url: '/images/test-execution-report.svg' },
+                    caption: 'Figure 1.3: Real-Time TestNG & Allure Test Execution Dashboard',
+                    alt: 'TestNG Execution Metrics Report',
+                  })
+                }
+                className="px-2 py-0.5 rounded bg-[#1A1A22] hover:bg-amber-600/20 text-[10px] font-mono text-amber-300 border border-[#2B2B3A] cursor-pointer"
+                title="Insert TestNG Execution Report Diagram"
+              >
+                + Report
+              </button>
+            </div>
           </div>
 
-          {block.data.file?.url && (
-            <div className="relative aspect-video max-h-56 rounded-lg overflow-hidden border border-[#27272A] bg-[#09090B] flex items-center justify-center">
+          {/* Image URL Manual Input */}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-[#71717A] shrink-0">Image URL:</span>
+            <input
+              type="text"
+              value={imgUrl}
+              onChange={(e) => onChange({ file: { url: e.target.value } })}
+              placeholder="Paste public URL (https://... or /images/...) or use upload button above"
+              className="flex-1 px-3 py-1.5 bg-[#141418] border border-[#27272A] rounded-lg text-xs font-mono text-emerald-400 focus:outline-none focus:border-purple-500"
+            />
+          </div>
+
+          {/* Visual Image Preview */}
+          {imgUrl ? (
+            <div className="relative rounded-xl overflow-hidden border border-[#27272A] bg-[#070709] p-2 flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={block.data.file.url}
+                src={imgUrl}
                 alt={block.data.alt || 'Tutorial screenshot'}
-                className="max-h-full max-w-full object-contain"
+                className="max-h-72 w-auto object-contain rounded-lg mx-auto"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
+            </div>
+          ) : (
+            <div className="py-8 border border-dashed border-[#27272A] rounded-xl bg-[#121216] text-center space-y-1">
+              <ImageIcon className="w-8 h-8 text-[#52525B] mx-auto" />
+              <p className="text-xs text-[#A1A1AA] font-semibold">No image selected for this block</p>
+              <p className="text-[11px] text-[#71717A]">
+                Click "Upload from Computer", "Media Library", or choose one of the Presets above.
+              </p>
             </div>
           )}
 
+          {/* Caption & ALT metadata inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <input
-              type="text"
-              value={block.data.caption || ''}
-              onChange={(e) => onChange({ caption: e.target.value })}
-              placeholder="Caption (e.g. Figure 1.2: DOM Locator Inspector)"
-              className="px-2.5 py-1 bg-[#1A1A1E] border border-[#27272A] rounded text-xs text-white"
-            />
-            <input
-              type="text"
-              value={block.data.alt || ''}
-              onChange={(e) => onChange({ alt: e.target.value })}
-              placeholder="ALT text for SEO & Accessibility"
-              className="px-2.5 py-1 bg-[#1A1A1E] border border-[#27272A] rounded text-xs text-white"
-            />
+            <div>
+              <label className="text-[10px] uppercase font-bold text-[#71717A] block mb-1">
+                Figure Caption (Shown to readers)
+              </label>
+              <input
+                type="text"
+                value={block.data.caption || ''}
+                onChange={(e) => onChange({ caption: e.target.value })}
+                placeholder="Figure 1.1: Architecture & Technical Flow"
+                className="w-full px-2.5 py-1.5 bg-[#141418] border border-[#27272A] rounded-lg text-xs text-white"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase font-bold text-[#71717A] block mb-1">
+                ALT Description (Accessibility &amp; SEO)
+              </label>
+              <input
+                type="text"
+                value={block.data.alt || ''}
+                onChange={(e) => onChange({ alt: e.target.value })}
+                placeholder="Descriptive text for search crawlers & screen readers"
+                className="w-full px-2.5 py-1.5 bg-[#141418] border border-[#27272A] rounded-lg text-xs text-white"
+              />
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 text-xs">
-            <span className="text-[#71717A]">Size:</span>
-            {(['small', 'medium', 'large', 'full'] as const).map((sz) => (
-              <button
-                key={sz}
-                type="button"
-                onClick={() => onChange({ size: sz })}
-                className={`px-2 py-0.5 rounded capitalize ${
-                  (block.data.size || 'large') === sz
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-[#1A1A1E] text-[#A1A1AA]'
-                }`}
-              >
-                {sz}
-              </button>
-            ))}
-            <span className="text-[#71717A] ml-2">Align:</span>
-            {(['left', 'center', 'right', 'full'] as const).map((al) => (
-              <button
-                key={al}
-                type="button"
-                onClick={() => onChange({ alignment: al })}
-                className={`px-2 py-0.5 rounded capitalize ${
-                  (block.data.alignment || 'center') === al
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-[#1A1A1E] text-[#A1A1AA]'
-                }`}
-              >
-                {al}
-              </button>
-            ))}
+          {/* Sizing & Alignment toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#71717A] text-[11px]">Size:</span>
+              {(['small', 'medium', 'large', 'full'] as const).map((sz) => (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() => onChange({ size: sz })}
+                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold capitalize cursor-pointer ${
+                    (block.data.size || 'large') === sz
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-[#18181E] text-[#A1A1AA] hover:text-white'
+                  }`}
+                >
+                  {sz}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#71717A] text-[11px]">Alignment:</span>
+              {(['left', 'center', 'right', 'full'] as const).map((al) => (
+                <button
+                  key={al}
+                  type="button"
+                  onClick={() => onChange({ alignment: al })}
+                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold capitalize cursor-pointer ${
+                    (block.data.alignment || 'center') === al
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-[#18181E] text-[#A1A1AA] hover:text-white'
+                  }`}
+                >
+                  {al}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       );
+    }
 
     case 'callout':
       return (
@@ -1431,16 +1586,21 @@ function PreviewBlockItem({ block }: { block: EditorBlock }) {
         </div>
       );
 
-    case 'image':
+    case 'image': {
+      const imgUrl = block.data.file?.url || (block.data as any).url;
+      if (!imgUrl) return null;
       return (
         <figure className="my-6 text-center">
           <div className="rounded-2xl border border-[#27272A] overflow-hidden bg-[#09090B] inline-block max-w-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={block.data.file?.url}
+              src={imgUrl}
               alt={block.data.alt || 'Tutorial diagram'}
               className="max-h-[460px] w-auto mx-auto object-contain"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </div>
           {block.data.caption && (
@@ -1450,6 +1610,7 @@ function PreviewBlockItem({ block }: { block: EditorBlock }) {
           )}
         </figure>
       );
+    }
 
     case 'callout': {
       const isWarn = block.data.type === 'warning';

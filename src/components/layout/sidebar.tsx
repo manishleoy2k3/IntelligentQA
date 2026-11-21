@@ -381,6 +381,16 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <span>Learning Tracks &amp; Curriculum</span>
               </Link>
 
+              {/* Technical Tutorials & Articles (Published Blog) */}
+              <Link
+                href="/blog"
+                onClick={onCloseMobile}
+                className={navItemClass(pathname?.startsWith('/blog'))}
+              >
+                <FileText className="w-4 h-4 shrink-0 text-purple-400" />
+                <span>Tutorials &amp; Articles</span>
+              </Link>
+
               {/* COURSES (Parent Menu with Child / Sub-Menu items) */}
           <div className="space-y-1 pt-1">
             <button

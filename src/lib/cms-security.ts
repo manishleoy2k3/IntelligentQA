@@ -1,11 +1,11 @@
 import { NextRequest } from 'next/server';
 
-const {
+import {
   ALLOWED_IMAGE_MIME_TYPES,
   MAX_FILE_SIZE_BYTES,
   validateImageUpload,
   sanitizeHtml,
-} = require('./cms-engine.js');
+} from './cms-engine.js';
 
 export { ALLOWED_IMAGE_MIME_TYPES, MAX_FILE_SIZE_BYTES, validateImageUpload, sanitizeHtml };
 

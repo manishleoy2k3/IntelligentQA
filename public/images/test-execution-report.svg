@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="repBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E1017"/>
+      <stop offset="100%" stop-color="#141724"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="500" rx="16" fill="url(#repBg)"/>
+  <rect width="998" height="498" x="1" y="1" rx="15" fill="none" stroke="#272A3D" stroke-width="2"/>
+
+  <!-- Top Title -->
+  <text x="36" y="44" font-family="-apple-system, sans-serif" font-size="18" font-weight="800" fill="#FFFFFF">
+    TestNG &amp; Allure Test Execution Dashboard
+  </text>
+  <text x="36" y="68" font-family="-apple-system, sans-serif" font-size="12" fill="#9CA3AF">
+    Automated Continuous Delivery Pipeline Run • Suite: EnterpriseRegressionSuite.xml
+  </text>
+
+  <!-- Summary Cards -->
+  <g transform="translate(36, 90)">
+    <!-- Passed -->
+    <rect width="215" height="90" rx="12" fill="#064E3B" stroke="#059669" stroke-width="1.5"/>
+    <text x="20" y="32" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#34D399">PASSED TESTS</text>
+    <text x="20" y="70" font-family="monospace" font-size="32" font-weight="800" fill="#FFFFFF">142</text>
+    <text x="120" y="66" font-family="-apple-system, sans-serif" font-size="12" fill="#A7F3D0">97.3% Success</text>
+
+    <!-- Failed -->
+    <g transform="translate(235, 0)">
+      <rect width="215" height="90" rx="12" fill="#450A0A" stroke="#DC2626" stroke-width="1.5"/>
+      <text x="20" y="32" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#F87171">FAILED TESTS</text>
+      <text x="20" y="70" font-family="monospace" font-size="32" font-weight="800" fill="#FFFFFF">0</text>
+      <text x="110" y="66" font-family="-apple-system, sans-serif" font-size="12" fill="#FECACA">0 Regressions</text>
+    </g>
+
+    <!-- Skipped -->
+    <g transform="translate(470, 0)">
+      <rect width="215" height="90" rx="12" fill="#451A03" stroke="#D97706" stroke-width="1.5"/>
+      <text x="20" y="32" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#FBBF24">SKIPPED</text>
+      <text x="20" y="70" font-family="monospace" font-size="32" font-weight="800" fill="#FFFFFF">2</text>
+      <text x="110" y="66" font-family="-apple-system, sans-serif" font-size="12" fill="#FDE68A">Flaky Quarantined</text>
+    </g>
+
+    <!-- Duration -->
+    <g transform="translate(705, 0)">
+      <rect width="223" height="90" rx="12" fill="#1E1B4B" stroke="#6366F1" stroke-width="1.5"/>
+      <text x="20" y="32" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#A5B4FC">TOTAL TIME</text>
+      <text x="20" y="70" font-family="monospace" font-size="28" font-weight="800" fill="#FFFFFF">1m 42s</text>
+      <text x="125" y="66" font-family="-apple-system, sans-serif" font-size="12" fill="#C7D2FE">Parallel (x8)</text>
+    </g>
+  </g>
+
+  <!-- Execution Table -->
+  <g transform="translate(36, 210)">
+    <rect width="928" height="250" rx="12" fill="#12141D" stroke="#252838" stroke-width="1"/>
+    
+    <!-- Table Header -->
+    <rect width="928" height="40" rx="12" fill="#1C1F2E"/>
+    <text x="24" y="25" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#9CA3AF">TEST METHOD</text>
+    <text x="360" y="25" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#9CA3AF">TEST CLASS / PACKAGE</text>
+    <text x="660" y="25" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#9CA3AF">DURATION</text>
+    <text x="820" y="25" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#9CA3AF">STATUS</text>
+
+    <!-- Row 1 -->
+    <g transform="translate(0, 42)">
+      <text x="24" y="28" font-family="monospace" font-size="12" fill="#FFFFFF">testUserAuthenticationSuccess()</text>
+      <text x="360" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">io.intelligentqa.tests.LoginTest</text>
+      <text x="660" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">1.84s</text>
+      <rect x="820" y="12" width="70" height="22" rx="6" fill="#064E3B"/>
+      <text x="835" y="27" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#34D399">PASSED</text>
+      <line x1="0" y1="42" x2="928" y2="42" stroke="#1F2233" stroke-width="1"/>
+    </g>
+
+    <!-- Row 2 -->
+    <g transform="translate(0, 84)">
+      <text x="24" y="28" font-family="monospace" font-size="12" fill="#FFFFFF">testProductCatalogFilterAndSort()</text>
+      <text x="360" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">io.intelligentqa.tests.CatalogTest</text>
+      <text x="660" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">2.41s</text>
+      <rect x="820" y="12" width="70" height="22" rx="6" fill="#064E3B"/>
+      <text x="835" y="27" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#34D399">PASSED</text>
+      <line x1="0" y1="42" x2="928" y2="42" stroke="#1F2233" stroke-width="1"/>
+    </g>
+
+    <!-- Row 3 -->
+    <g transform="translate(0, 126)">
+      <text x="24" y="28" font-family="monospace" font-size="12" fill="#FFFFFF">testCheckoutPaymentFlowWithStripe()</text>
+      <text x="360" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">io.intelligentqa.tests.CheckoutTest</text>
+      <text x="660" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">3.12s</text>
+      <rect x="820" y="12" width="70" height="22" rx="6" fill="#064E3B"/>
+      <text x="835" y="27" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#34D399">PASSED</text>
+      <line x1="0" y1="42" x2="928" y2="42" stroke="#1F2233" stroke-width="1"/>
+    </g>
+
+    <!-- Row 4 -->
+    <g transform="translate(0, 168)">
+      <text x="24" y="28" font-family="monospace" font-size="12" fill="#FFFFFF">testDynamicAjaxTableAutoWait()</text>
+      <text x="360" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">io.intelligentqa.tests.SyncTest</text>
+      <text x="660" y="28" font-family="monospace" font-size="12" fill="#9CA3AF">1.15s</text>
+      <rect x="820" y="12" width="70" height="22" rx="6" fill="#064E3B"/>
+      <text x="835" y="27" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#34D399">PASSED</text>
+    </g>
+  </g>
+</svg>

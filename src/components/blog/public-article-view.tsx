@@ -25,7 +25,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { CMSArticle, TableOfContentsItem, EditorBlock } from '@/types/cms';
-const { generateTableOfContents } = require('@/lib/cms-engine.js');
+import { generateTableOfContents } from '@/lib/cms-engine.js';
 
 interface PublicArticleViewProps {
   article: CMSArticle;
@@ -282,12 +282,15 @@ export default function PublicArticleView({
         {/* Featured Image */}
         {article.featuredImage && (
           <figure className="pt-4">
-            <div className="rounded-2xl border border-[#27272A] bg-[#121215] overflow-hidden shadow-2xl">
+            <div className="rounded-2xl border border-[#27272A] bg-[#09090B] overflow-hidden shadow-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={article.featuredImage}
                 alt={article.featuredImageCaption || article.title}
-                className="w-full max-h-[460px] object-cover"
+                className="w-full max-h-[500px] object-contain mx-auto"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             </div>
             {article.featuredImageCaption && (
@@ -600,16 +603,38 @@ function RenderPublicBlock({
       );
     }
 
-    case 'image':
+    case 'image': {
+      const imgUrl = block.data.file?.url || (block.data as any).url;
+      if (!imgUrl) return null;
+
+      const alignClass =
+        block.data.alignment === 'left'
+          ? 'text-left'
+          : block.data.alignment === 'right'
+          ? 'text-right'
+          : 'text-center';
+
+      const sizeClass =
+        block.data.size === 'small'
+          ? 'max-w-md'
+          : block.data.size === 'medium'
+          ? 'max-w-2xl'
+          : block.data.size === 'full'
+          ? 'w-full'
+          : 'max-w-4xl';
+
       return (
-        <figure className="my-8 text-center">
-          <div className="rounded-2xl border border-[#27272A] overflow-hidden bg-[#09090B] shadow-2xl inline-block max-w-full">
+        <figure className={`my-8 ${alignClass}`}>
+          <div className={`rounded-2xl border border-[#27272A] overflow-hidden bg-[#09090B] shadow-2xl inline-block ${sizeClass} max-w-full`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={block.data.file?.url}
-              alt={block.data.alt || 'Technical screenshot'}
-              className="max-h-[500px] w-auto mx-auto object-contain"
+              src={imgUrl}
+              alt={block.data.alt || block.data.caption || 'Technical screenshot or architecture diagram'}
+              className="max-h-[550px] w-full object-contain mx-auto"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </div>
           {block.data.caption && (
@@ -619,6 +644,7 @@ function RenderPublicBlock({
           )}
         </figure>
       );
+    }
 
     case 'callout': {
       const isWarn = block.data.type === 'warning';

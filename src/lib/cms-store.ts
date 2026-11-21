@@ -14,7 +14,7 @@ import {
 
 const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
 
-const { calculateReadingTime, generateTableOfContents } = require('./cms-engine.js');
+import { calculateReadingTime, generateTableOfContents } from './cms-engine.js';
 
 export { calculateReadingTime, generateTableOfContents };
 
@@ -27,8 +27,8 @@ export const SEED_SELENIUM_ARTICLE: CMSArticle = {
   slug: 'selenium-with-java-tutorial',
   shortDescription:
     'Comprehensive guide on Selenium with Java. Master WebDriver architecture, Maven project configuration, XPath locators, explicit waits, and Page Object Model for scalable test automation.',
-  featuredImage: '/images/hero-preview.png',
-  featuredImageCaption: 'Selenium WebDriver with Java Test Automation Architecture & Execution Workflow',
+  featuredImage: '/images/selenium-architecture.svg',
+  featuredImageCaption: 'Figure 1: Selenium WebDriver 4 Architecture — W3C Protocol & Browser Drivers Flow',
   category: 'UI Automation',
   tags: ['Selenium', 'Java', 'WebDriver', 'TestNG', 'Automation', 'SDET'],
   status: 'published',
@@ -139,6 +139,19 @@ export const SEED_SELENIUM_ARTICLE: CMSArticle = {
                 'The browser performs the requested action (click, sendKeys, navigate) and returns the HTTP status code and response payload back up the chain to your Java assertions.',
             },
           ],
+        },
+      },
+      {
+        id: 'blk-img-arch-1',
+        type: 'image',
+        data: {
+          file: {
+            url: '/images/selenium-architecture.svg',
+          },
+          caption: 'Figure 1.1: 4-Tier Selenium WebDriver 4 Architecture & W3C Standard Protocol Flow',
+          alt: 'Selenium 4 Architecture Diagram',
+          alignment: 'center',
+          size: 'large',
         },
       },
       {
@@ -362,6 +375,19 @@ public class FirstSeleniumTest {
         },
       },
       {
+        id: 'blk-img-locator-1',
+        type: 'image',
+        data: {
+          file: {
+            url: '/images/locators-dom-inspector.svg',
+          },
+          caption: 'Figure 1.2: Chrome DevTools DOM Elements & Priority Locator Strategies',
+          alt: 'DOM Elements Inspector and Locator Strategies',
+          alignment: 'center',
+          size: 'large',
+        },
+      },
+      {
         id: 'blk-h2-7',
         type: 'header',
         data: {
@@ -402,6 +428,35 @@ public class DynamicSynchronizationHelper {
         return wait.until(ExpectedConditions.urlContains(fraction));
     }
 }`,
+        },
+      },
+      {
+        id: 'blk-h2-report-1',
+        type: 'header',
+        data: {
+          text: 'Automated Test Execution Reporting & Metrics',
+          level: 2,
+          anchor: 'automated-test-execution-reporting-and-metrics',
+        },
+      },
+      {
+        id: 'blk-p-report-1',
+        type: 'paragraph',
+        data: {
+          text: 'A test suite is only as effective as the visibility and feedback it provides to the engineering organization. Integrated reporting frameworks such as <strong>TestNG and Allure Reports</strong> generate clear visual dashboards highlighting execution status, pass/fail trends, error stack traces, and embedded failure screenshots:',
+        },
+      },
+      {
+        id: 'blk-img-report-1',
+        type: 'image',
+        data: {
+          file: {
+            url: '/images/test-execution-report.svg',
+          },
+          caption: 'Figure 1.3: Real-Time TestNG & Allure Test Execution Dashboard with Parallel Thread Metrics',
+          alt: 'Test Execution Metrics Dashboard Screenshot',
+          alignment: 'center',
+          size: 'large',
         },
       },
       {
@@ -468,6 +523,48 @@ export const DEFAULT_TAGS: CMSTag[] = [
 ];
 
 export const DEFAULT_MEDIA: CMSMediaItem[] = [
+  {
+    id: 'med-arch-1',
+    filename: 'selenium-architecture.svg',
+    originalName: 'selenium-architecture.svg',
+    url: '/images/selenium-architecture.svg',
+    mimeType: 'image/svg+xml',
+    size: 9800,
+    dimensions: { width: 1200, height: 640 },
+    alt: 'Selenium WebDriver 4 Architecture Diagram & Flow',
+    caption: 'Figure 1: Selenium WebDriver 4 Architecture Diagram',
+    category: 'Architecture',
+    uploadedAt: '2026-11-15T09:00:00.000Z',
+    uploadedBy: 'Course Administrator',
+  },
+  {
+    id: 'med-loc-1',
+    filename: 'locators-dom-inspector.svg',
+    originalName: 'locators-dom-inspector.svg',
+    url: '/images/locators-dom-inspector.svg',
+    mimeType: 'image/svg+xml',
+    size: 7500,
+    dimensions: { width: 1000, height: 500 },
+    alt: 'DOM Elements Inspector and Locator Strategies',
+    caption: 'Figure 2: Chrome DevTools DOM Elements & Priority Locators',
+    category: 'Screenshots',
+    uploadedAt: '2026-11-16T10:00:00.000Z',
+    uploadedBy: 'Course Administrator',
+  },
+  {
+    id: 'med-rep-1',
+    filename: 'test-execution-report.svg',
+    originalName: 'test-execution-report.svg',
+    url: '/images/test-execution-report.svg',
+    mimeType: 'image/svg+xml',
+    size: 8200,
+    dimensions: { width: 1000, height: 500 },
+    alt: 'Test Execution Metrics Dashboard Screenshot',
+    caption: 'Figure 3: Real-Time TestNG Execution Dashboard',
+    category: 'Reports',
+    uploadedAt: '2026-11-17T11:00:00.000Z',
+    uploadedBy: 'Course Administrator',
+  },
   {
     id: 'med-hero-1',
     filename: 'hero-preview.png',
