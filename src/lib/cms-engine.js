@@ -124,6 +124,16 @@ function sanitizeHtml(html) {
 // Convert a structured LessonDoc into Editor.js blocks
 function lessonDocToBlocks(doc) {
   if (!doc) return { time: Date.now(), version: '2.28.0', blocks: [] };
+  
+  // If the lesson already has custom-saved rich CMS blocks, preserve them directly
+  if (Array.isArray(doc.customBlocks) && doc.customBlocks.length > 0) {
+    return {
+      time: Date.now(),
+      version: '2.28.0',
+      blocks: doc.customBlocks,
+    };
+  }
+
   const blocks = [];
 
   if (doc.title) {
@@ -231,6 +241,22 @@ function lessonDocToBlocks(doc) {
     });
   }
 
+  // Fallback starter blocks if doc is sparse
+  if (blocks.length === 0) {
+    blocks.push(
+      {
+        id: `blk-h-${Date.now()}-init-1`,
+        type: 'header',
+        data: { text: doc.title || 'Course Lesson', level: 2 },
+      },
+      {
+        id: `blk-p-${Date.now()}-init-2`,
+        type: 'paragraph',
+        data: { text: doc.overview || 'Welcome to this interactive course lesson. Use the CMS rich block editor to build diagrams, code, and guides.' },
+      }
+    );
+  }
+
   return {
     time: Date.now(),
     version: '2.28.0',
@@ -241,29 +267,82 @@ function lessonDocToBlocks(doc) {
 // Convert Editor.js blocks back into LessonDoc
 function blocksToLessonDoc(editorData, existingDoc) {
   const doc = { ...(existingDoc || {}) };
-  if (!editorData?.blocks) return doc;
+  if (!editorData?.blocks || !Array.isArray(editorData.blocks)) return doc;
+
+  // Preserve all blocks so custom blocks (images, diagrams, callouts, steps) persist losslessly
+  doc.customBlocks = editorData.blocks;
+
+  let titleAssigned = false;
+  let overviewAssigned = false;
 
   for (const block of editorData.blocks) {
-    if (block.type === 'header' && block.data.level === 2 && !doc.title) {
+    if (!block || !block.data) continue;
+
+    // Header block -> Lesson Title
+    if (block.type === 'header' && block.data.text && !titleAssigned) {
       doc.title = block.data.text;
-    } else if (block.type === 'paragraph' && !doc.overview) {
+      titleAssigned = true;
+    }
+    // Paragraph block -> Lesson Overview
+    else if (block.type === 'paragraph' && block.data.text && !overviewAssigned) {
       doc.overview = block.data.text;
-    } else if (block.type === 'callout' && block.data.title?.toLowerCase().includes('why it matters')) {
-      doc.whyItMattersForManualQA = block.data.message;
-    } else if (block.type === 'code' && block.data.code) {
+      overviewAssigned = true;
+    }
+    // Callout blocks
+    else if (block.type === 'callout') {
+      const calloutTitle = (block.data.title || '').toLowerCase();
+      if (
+        calloutTitle.includes('architecture') ||
+        calloutTitle.includes('mechanism') ||
+        calloutTitle.includes('under the hood')
+      ) {
+        doc.architectureUnderTheHood = {
+          title: block.data.title || 'Architecture & Mechanism',
+          flowOrMechanism: block.data.message || '',
+          keyTakeaway:
+            doc.architectureUnderTheHood?.keyTakeaway ||
+            'Mastered via CMS Course Editor',
+        };
+      } else {
+        doc.whyItMattersForManualQA = block.data.message || block.data.title || '';
+      }
+    }
+    // Code block
+    else if (block.type === 'code' && block.data.code) {
       doc.productionCodeExample = {
-        title: block.data.caption || 'Production Code Example',
+        title: block.data.caption || doc.productionCodeExample?.title || 'Production Code Example',
         description: 'Generated via CMS Course Editor',
         code: block.data.code,
-        language: block.data.language || 'java',
-        annotations: [],
+        language: block.data.language || doc.productionCodeExample?.language || 'java',
+        annotations: doc.productionCodeExample?.annotations || [],
       };
-    } else if (block.type === 'stepByStep' && Array.isArray(block.data.steps)) {
-      doc.stepByStepGuide = block.data.steps;
-    } else if (block.type === 'faq' && Array.isArray(block.data.items) && block.data.items.length > 0) {
+    }
+    // Step-by-step block
+    else if (block.type === 'stepByStep' && Array.isArray(block.data.steps)) {
+      doc.stepByStepGuide = block.data.steps.map((s, idx) => ({
+        stepNumber: s.stepNumber || idx + 1,
+        title: s.title || `Step ${idx + 1}`,
+        badge: s.badge || 'Implementation',
+        summary: s.summary || '',
+        explanation: s.explanation || '',
+        codeSnippet: s.codeSnippet || '',
+        proTip: s.proTip || '',
+      }));
+    }
+    // Table block -> Manual to Automated Bridge
+    else if (block.type === 'table' && Array.isArray(block.data.content) && block.data.content.length > 1) {
+      const rows = block.data.content.slice(1);
+      doc.manualToAutomatedBridge = rows.map((r) => ({
+        manualAction: r[0] || '',
+        automatedApproach: r[1] || '',
+        whyItMatters: r[2] || '',
+      }));
+    }
+    // FAQ block
+    else if (block.type === 'faq' && Array.isArray(block.data.items) && block.data.items.length > 0) {
       doc.interviewQnA = {
-        question: block.data.items[0].question,
-        answer: block.data.items[0].answer,
+        question: block.data.items[0].question || '',
+        answer: block.data.items[0].answer || '',
       };
     }
   }

@@ -1619,10 +1619,6 @@ export const QADatabase = {
           updated = true;
           continue;
         }
-        if (storedTrack.title !== defaultTrack.title) {
-          storedTrack.title = defaultTrack.title;
-          updated = true;
-        }
         for (const defaultModule of defaultTrack.modules) {
           const storedModule = storedTrack.modules.find(m => m.id === defaultModule.id);
           if (!storedModule) {

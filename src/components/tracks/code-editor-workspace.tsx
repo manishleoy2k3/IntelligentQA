@@ -257,6 +257,8 @@ export default function CodeEditorWorkspace({
 
   const lsn = activeLesson;
 
+  const [curriculumVersion, setCurriculumVersion] = useState(0);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const syncActiveLesson = () => {
@@ -264,9 +266,10 @@ export default function CodeEditorWorkspace({
         const trk = storedTracks.find(t => t.id === track.id);
         const found = trk?.modules.flatMap(m => m.lessons).find(l => l.id === lesson.id);
         if (found) {
-          setActiveLesson(found);
+          setActiveLesson({ ...found });
           setCode(getCodeForLanguage(selectedLang, found, track.id));
         }
+        setCurriculumVersion((v) => v + 1);
       };
       syncActiveLesson();
       window.addEventListener('intelligentqa_curriculum_updated', syncActiveLesson);

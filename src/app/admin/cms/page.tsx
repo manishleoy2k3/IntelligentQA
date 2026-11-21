@@ -138,14 +138,28 @@ function CMSPortalContent() {
 
   // Course / Module / Lesson Modal
   const [showCourseModal, setShowCourseModal] = useState(false);
-  const [editingCourseTarget, setEditingCourseTarget] = useState<{
-    courseId: string;
-    moduleId?: string;
-    lesson?: Lesson | null;
-  } | null>(null);
+  const [courseModalMode, setCourseModalMode] = useState<
+    'edit_track' | 'add_module' | 'edit_module' | 'add_lesson' | 'edit_lesson'
+  >('edit_track');
+  const [trackForm, setTrackForm] = useState({ title: '', tagline: '', description: '' });
+  const [moduleForm, setModuleForm] = useState({ title: '', moduleId: '' });
+  const [lessonForm, setLessonForm] = useState({
+    title: '',
+    description: '',
+    durationMinutes: 15,
+    lessonId: '',
+    moduleId: '',
+  });
 
   // Delete Confirm Modal State
   const [showDeleteConfirmId, setShowDeleteConfirmId] = useState<string | null>(null);
+  const [deleteConfirmTarget, setDeleteConfirmTarget] = useState<{
+    type: 'lesson' | 'module';
+    id: string;
+    courseId: string;
+    moduleId?: string;
+    title: string;
+  } | null>(null);
 
   // Moderation & Approvals (Preserving test requirements)
   const [submissions, setSubmissions] = useState<ModerationItem[]>([]);
@@ -323,19 +337,26 @@ function CMSPortalContent() {
     if (editingLessonContext) {
       try {
         const updatedDoc = blocksToLessonDoc(articleContent, editingLessonContext.originalDoc);
-        updatedDoc.title = articleTitle;
-        if (articleSubtitle) updatedDoc.tagline = articleSubtitle;
+        if (articleTitle) updatedDoc.title = articleTitle;
+        updatedDoc.tagline = articleSubtitle || articleTitle;
         if (articleDesc) updatedDoc.overview = articleDesc;
 
         await QADatabase.saveLessonDocToDatabase(editingLessonContext.lessonId, updatedDoc);
 
-        // Update track metadata if title changed
+        // Update track metadata and lesson object
         const course = courses.find((c) => c.id === editingLessonContext.courseId);
         if (course) {
           const mod = course.modules.find((m) => m.id === editingLessonContext.moduleId);
           const les = mod?.lessons.find((l) => l.id === editingLessonContext.lessonId);
-          if (les && les.title !== articleTitle) {
+          if (les) {
             les.title = articleTitle;
+            if (articleDesc) les.description = articleDesc;
+            await QADatabase.saveLessonToDatabase(
+              editingLessonContext.courseId,
+              editingLessonContext.moduleId,
+              les,
+              updatedDoc
+            );
             QADatabase.saveTrack(course);
             setCourses(QADatabase.getTracks());
           }
@@ -531,6 +552,247 @@ function CMSPortalContent() {
     QADatabase.toggleLessonDisabled(courseId as any, lessonId);
     setCourses(QADatabase.getTracks());
     showBanner('Toggled lesson visibility status');
+  };
+
+  // Course / Module / Lesson Modal Openers
+  const handleOpenEditTrackModal = (track: Track) => {
+    setCourseModalMode('edit_track');
+    setTrackForm({
+      title: track.title,
+      tagline: (track as any).tagline || '',
+      description: track.description || '',
+    });
+    setShowCourseModal(true);
+  };
+
+  const handleOpenAddModuleModal = (courseId: string) => {
+    setCourseModalMode('add_module');
+    setModuleForm({ title: '', moduleId: '' });
+    setShowCourseModal(true);
+  };
+
+  const handleOpenEditModuleModal = (courseId: string, mod: any) => {
+    setCourseModalMode('edit_module');
+    setModuleForm({ title: mod.title, moduleId: mod.id });
+    setShowCourseModal(true);
+  };
+
+  const handleOpenAddLessonModal = (courseId: string, moduleId: string) => {
+    setCourseModalMode('add_lesson');
+    setLessonForm({
+      title: '',
+      description: '',
+      durationMinutes: 15,
+      lessonId: '',
+      moduleId,
+    });
+    setShowCourseModal(true);
+  };
+
+  const handleOpenEditLessonModal = (courseId: string, moduleId: string, lesson: Lesson) => {
+    setCourseModalMode('edit_lesson');
+    setLessonForm({
+      title: lesson.title,
+      description: lesson.description || '',
+      durationMinutes: lesson.durationMinutes || 15,
+      lessonId: lesson.id,
+      moduleId,
+    });
+    setShowCourseModal(true);
+  };
+
+  const handleSaveCourseModal = async () => {
+    const course = courses.find((c) => c.id === selectedCourseId) || courses[0];
+    if (!course) return;
+
+    if (courseModalMode === 'edit_track') {
+      if (!trackForm.title.trim()) {
+        showBanner('Track title cannot be empty', 'error');
+        return;
+      }
+      const updated = {
+        ...course,
+        title: trackForm.title.trim(),
+        tagline: trackForm.tagline.trim(),
+        description: trackForm.description.trim(),
+      };
+      QADatabase.saveTrack(updated);
+      setCourses(QADatabase.getTracks());
+      showBanner(`Saved course details for "${updated.title}"`);
+      setShowCourseModal(false);
+      return;
+    }
+
+    if (courseModalMode === 'add_module') {
+      if (!moduleForm.title.trim()) {
+        showBanner('Module title cannot be empty', 'error');
+        return;
+      }
+      const newModule: Module = {
+        id: `mod-${Date.now()}`,
+        trackId: course.id,
+        order: course.modules.length + 1,
+        title: moduleForm.title.trim(),
+        description: '',
+        lessons: [],
+      };
+      const updated = {
+        ...course,
+        modules: [...course.modules, newModule],
+      };
+      QADatabase.saveTrack(updated);
+      setCourses(QADatabase.getTracks());
+      showBanner(`Added module "${newModule.title}" to ${course.title}`);
+      setShowCourseModal(false);
+      return;
+    }
+
+    if (courseModalMode === 'edit_module') {
+      if (!moduleForm.title.trim()) {
+        showBanner('Module title cannot be empty', 'error');
+        return;
+      }
+      const updatedModules = course.modules.map((m) =>
+        m.id === moduleForm.moduleId ? { ...m, title: moduleForm.title.trim() } : m
+      );
+      const updated = { ...course, modules: updatedModules };
+      QADatabase.saveTrack(updated);
+      setCourses(QADatabase.getTracks());
+      showBanner(`Updated module title to "${moduleForm.title.trim()}"`);
+      setShowCourseModal(false);
+      return;
+    }
+
+    if (courseModalMode === 'add_lesson') {
+      if (!lessonForm.title.trim()) {
+        showBanner('Lesson title cannot be empty', 'error');
+        return;
+      }
+      const newLessonId = `lsn-${Date.now()}`;
+      const targetModule = course.modules.find((m) => m.id === lessonForm.moduleId) || course.modules[0];
+      const newLesson: Lesson = {
+        id: newLessonId,
+        trackId: course.id,
+        moduleId: targetModule?.id || 'mod-1',
+        title: lessonForm.title.trim(),
+        description: lessonForm.description.trim() || 'Interactive lesson',
+        durationMinutes: Number(lessonForm.durationMinutes) || 15,
+        badge: (course.id.includes('playwright') ? 'Playwright' : course.id.includes('api') ? 'REST Assured' : 'Selenium') as any,
+        level: 'Intermediate',
+        disabled: false,
+        order: (targetModule?.lessons?.length || 0) + 1,
+        manualContext: {
+          title: 'Manual Verification Flow',
+          steps: ['Execute manual validation steps'],
+          painPoints: ['Repetitive verification'],
+        },
+        automationContext: {
+          playwrightTs: '// Playwright automated implementation',
+          seleniumJava: '// Selenium automated implementation',
+          explanation: lessonForm.description.trim() || 'Core concept',
+          bestPractices: ['Use explicit assertions'],
+          antiPatterns: ['Avoid hardcoded thread sleeps'],
+        },
+        aiAugmentation: {
+          promptExample: 'Generate robust test assertions',
+          agenticWorkflow: 'Inspect DOM and generate test script',
+          selfHealingTip: 'Use dynamic resilient locators',
+        },
+        challenge: {
+          instruction: lessonForm.description.trim() || 'Implement automation challenge',
+          starterCode: {
+            java: '// Add starter code here',
+            typescript: '// Add starter code here',
+          },
+          solutionCode: {
+            java: '// Add solution code here',
+            typescript: '// Add solution code here',
+          },
+          validationRules: [],
+        },
+      };
+
+      const starterDoc: Partial<LessonDoc> = {
+        title: newLesson.title,
+        category: course.id,
+        tagline: newLesson.title,
+        overview: newLesson.description,
+        whyItMattersForManualQA: 'Critical automation building block.',
+      };
+
+      await QADatabase.saveLessonToDatabase(
+        course.id,
+        lessonForm.moduleId || course.modules[0]?.id,
+        newLesson,
+        starterDoc
+      );
+      setCourses(QADatabase.getTracks());
+      showBanner(`Added lesson "${newLesson.title}" to curriculum!`);
+      setShowCourseModal(false);
+      return;
+    }
+
+    if (courseModalMode === 'edit_lesson') {
+      if (!lessonForm.title.trim()) {
+        showBanner('Lesson title cannot be empty', 'error');
+        return;
+      }
+      const mod = course.modules.find((m) => m.id === lessonForm.moduleId);
+      const les = mod?.lessons.find((l) => l.id === lessonForm.lessonId);
+      if (les) {
+        les.title = lessonForm.title.trim();
+        les.description = lessonForm.description.trim();
+        les.durationMinutes = Number(lessonForm.durationMinutes) || 15;
+        await QADatabase.saveLessonToDatabase(course.id, lessonForm.moduleId || mod!.id, les);
+        setCourses(QADatabase.getTracks());
+        showBanner(`Updated details for "${les.title}"`);
+      }
+      setShowCourseModal(false);
+      return;
+    }
+  };
+
+  const handleConfirmDeleteLesson = (courseId: string, moduleId: string, lesson: Lesson) => {
+    setShowDeleteConfirmId(lesson.id);
+    setDeleteConfirmTarget({
+      type: 'lesson',
+      id: lesson.id,
+      courseId,
+      moduleId,
+      title: lesson.title,
+    });
+  };
+
+  const handleConfirmDeleteModule = (courseId: string, mod: any) => {
+    setShowDeleteConfirmId(mod.id);
+    setDeleteConfirmTarget({
+      type: 'module',
+      id: mod.id,
+      courseId,
+      title: mod.title,
+    });
+  };
+
+  const handleExecuteDelete = () => {
+    if (!deleteConfirmTarget) return;
+
+    if (deleteConfirmTarget.type === 'lesson') {
+      QADatabase.deleteLessonFromDatabase(deleteConfirmTarget.courseId, deleteConfirmTarget.id);
+      setCourses(QADatabase.getTracks());
+      showBanner(`Deleted lesson "${deleteConfirmTarget.title}"`);
+    } else if (deleteConfirmTarget.type === 'module') {
+      const course = courses.find((c) => c.id === deleteConfirmTarget.courseId);
+      if (course) {
+        course.modules = course.modules.filter((m) => m.id !== deleteConfirmTarget.id);
+        course.totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0);
+        QADatabase.saveTrack(course);
+        setCourses(QADatabase.getTracks());
+        showBanner(`Deleted module "${deleteConfirmTarget.title}"`);
+      }
+    }
+
+    setShowDeleteConfirmId(null);
+    setDeleteConfirmTarget(null);
   };
 
   // Moderation Handlers (Preserving test compatibility)
@@ -1012,8 +1274,25 @@ function CMSPortalContent() {
                 </select>
               </div>
 
-              <div className="text-xs text-[#A1A1AA]">
-                Reorder modules and lessons with drag or up/down controls. Each lesson maintains its own content.
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleOpenEditTrackModal(currentCourse)}
+                  className="px-3 py-1.5 rounded-xl border border-[#27272A] bg-[#18181C] hover:bg-[#27272A] text-xs font-semibold text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Edit Track Title & Description"
+                >
+                  <Edit2 className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Edit Course Info</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOpenAddModuleModal(currentCourse.id)}
+                  className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-colors cursor-pointer"
+                  title="Add new Module to this Course"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Module</span>
+                </button>
               </div>
             </div>
 
@@ -1025,7 +1304,7 @@ function CMSPortalContent() {
                   className="rounded-2xl border border-[#27272A] bg-[#121215] overflow-hidden shadow-md"
                 >
                   {/* Module Header with Reordering Controls */}
-                  <div className="p-4 border-b border-[#27272A] bg-[#18181C] flex items-center justify-between">
+                  <div className="p-4 border-b border-[#27272A] bg-[#18181C] flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] font-bold uppercase">
                         Module {mIdx + 1}
@@ -1039,7 +1318,7 @@ function CMSPortalContent() {
                         type="button"
                         onClick={() => handleMoveModule(currentCourse.id, mIdx, 'up')}
                         disabled={mIdx === 0}
-                        className="p-1 rounded text-[#71717A] hover:text-white disabled:opacity-30"
+                        className="p-1.5 rounded text-[#71717A] hover:text-white disabled:opacity-30 hover:bg-[#27272A]"
                         title="Move Module Up"
                       >
                         <ArrowUp className="w-3.5 h-3.5" />
@@ -1048,10 +1327,35 @@ function CMSPortalContent() {
                         type="button"
                         onClick={() => handleMoveModule(currentCourse.id, mIdx, 'down')}
                         disabled={mIdx === currentCourse.modules.length - 1}
-                        className="p-1 rounded text-[#71717A] hover:text-white disabled:opacity-30"
+                        className="p-1.5 rounded text-[#71717A] hover:text-white disabled:opacity-30 hover:bg-[#27272A]"
                         title="Move Module Down"
                       >
                         <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditModuleModal(currentCourse.id, mod)}
+                        className="p-1.5 rounded text-[#A1A1AA] hover:text-white hover:bg-[#27272A]"
+                        title="Edit Module Title"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenAddLessonModal(currentCourse.id, mod.id)}
+                        className="px-2.5 py-1 rounded-lg bg-[#27272A] hover:bg-purple-600/30 text-purple-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+                        title="Add Lesson to Module"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add Lesson</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmDeleteModule(currentCourse.id, mod)}
+                        className="p-1.5 rounded text-rose-400 hover:bg-rose-500/10"
+                        title="Delete Module"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -1061,26 +1365,37 @@ function CMSPortalContent() {
                     {mod.lessons.map((les, lIdx) => (
                       <div
                         key={les.id}
-                        className="p-3 rounded-xl border border-[#27272A] bg-[#09090B] flex items-center justify-between hover:border-[#3F3F46] transition-colors"
+                        className={`p-3 rounded-xl border flex flex-wrap items-center justify-between gap-2 hover:border-[#3F3F46] transition-colors ${
+                          les.disabled
+                            ? 'bg-[#0e0e11] border-rose-900/30 opacity-75'
+                            : 'bg-[#09090B] border-[#27272A]'
+                        }`}
                       >
                         <div className="flex items-center gap-3">
                           <span className="w-6 h-6 rounded-full bg-[#1A1A1E] text-[10px] font-mono text-[#A1A1AA] flex items-center justify-center font-bold">
                             {lIdx + 1}
                           </span>
                           <div>
-                            <span className="text-xs font-semibold text-white">{les.title}</span>
-                            <span className="text-[10px] text-[#71717A] ml-2 font-mono">
-                              ({les.durationMinutes} mins)
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold text-white">{les.title}</span>
+                              {les.disabled && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold uppercase">
+                                  Hidden
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-[#71717A] font-mono block">
+                              {les.durationMinutes} mins • ID: {les.id}
                             </span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleMoveLesson(currentCourse.id, mod.id, lIdx, 'up')}
                             disabled={lIdx === 0}
-                            className="p-1 text-[#71717A] hover:text-white disabled:opacity-30"
+                            className="p-1 text-[#71717A] hover:text-white disabled:opacity-30 hover:bg-[#27272A] rounded"
                             title="Move Lesson Up"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
@@ -1089,10 +1404,30 @@ function CMSPortalContent() {
                             type="button"
                             onClick={() => handleMoveLesson(currentCourse.id, mod.id, lIdx, 'down')}
                             disabled={lIdx === mod.lessons.length - 1}
-                            className="p-1 text-[#71717A] hover:text-white disabled:opacity-30"
+                            className="p-1 text-[#71717A] hover:text-white disabled:opacity-30 hover:bg-[#27272A] rounded"
                             title="Move Lesson Down"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleLessonDisabled(currentCourse.id, mod.id, les.id)}
+                            className={`p-1.5 rounded transition-colors ${
+                              les.disabled
+                                ? 'text-rose-400 bg-rose-500/10 hover:bg-rose-500/20'
+                                : 'text-[#71717A] hover:text-white hover:bg-[#27272A]'
+                            }`}
+                            title={les.disabled ? 'Enable Lesson (Publish to students)' : 'Hide/Disable Lesson'}
+                          >
+                            {les.disabled ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditLessonModal(currentCourse.id, mod.id, les)}
+                            className="p-1.5 rounded text-[#A1A1AA] hover:text-white hover:bg-[#27272A]"
+                            title="Edit Lesson Details (Title, Description, Duration)"
+                          >
+                            <Settings className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
@@ -1107,10 +1442,19 @@ function CMSPortalContent() {
                             href={`/tracks/${currentCourse.id}/${les.id}`}
                             target="_blank"
                             className="px-2.5 py-1 rounded-lg bg-[#1A1A1E] text-xs text-[#A1A1AA] hover:text-white hover:bg-[#27272A] flex items-center gap-1"
+                            title="Preview in Student Workspace"
                           >
                             <span>Workspace</span>
                             <ExternalLink className="w-3 h-3" />
                           </Link>
+                          <button
+                            type="button"
+                            onClick={() => handleConfirmDeleteLesson(currentCourse.id, mod.id, les)}
+                            className="p-1.5 rounded text-rose-400 hover:bg-rose-500/10"
+                            title="Delete Lesson"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -1702,6 +2046,175 @@ function CMSPortalContent() {
             >
               Continue Editing
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Course / Module / Lesson Modal */}
+      {showCourseModal && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-2xl border border-[#27272A] bg-[#121215] shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between border-b border-[#27272A] pb-3">
+              <h3 className="text-sm font-bold text-white">
+                {courseModalMode === 'edit_track' && 'Edit Course Details'}
+                {courseModalMode === 'add_module' && 'Add New Module'}
+                {courseModalMode === 'edit_module' && 'Edit Module Title'}
+                {courseModalMode === 'add_lesson' && 'Add New Lesson to Module'}
+                {courseModalMode === 'edit_lesson' && 'Edit Lesson Details'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowCourseModal(false)}
+                className="p-1 rounded text-[#71717A] hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Edit Track Form */}
+            {courseModalMode === 'edit_track' && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Track Title</label>
+                  <input
+                    type="text"
+                    value={trackForm.title}
+                    onChange={(e) => setTrackForm({ ...trackForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
+                    placeholder="e.g., Selenium with Java Mastery"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Tagline / Subtitle</label>
+                  <input
+                    type="text"
+                    value={trackForm.tagline}
+                    onChange={(e) => setTrackForm({ ...trackForm, tagline: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
+                    placeholder="e.g., Industry-grade test automation from fundamentals to framework"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Description</label>
+                  <textarea
+                    rows={3}
+                    value={trackForm.description}
+                    onChange={(e) => setTrackForm({ ...trackForm, description: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
+                    placeholder="Detailed track description..."
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Add / Edit Module Form */}
+            {(courseModalMode === 'add_module' || courseModalMode === 'edit_module') && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Module Title</label>
+                  <input
+                    type="text"
+                    value={moduleForm.title}
+                    onChange={(e) => setModuleForm({ ...moduleForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
+                    placeholder="e.g., Module 4: Page Object Model & Framework Design"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Add / Edit Lesson Form */}
+            {(courseModalMode === 'add_lesson' || courseModalMode === 'edit_lesson') && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Lesson Title</label>
+                  <input
+                    type="text"
+                    value={lessonForm.title}
+                    onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
+                    placeholder="e.g., Mastering Dynamic Waits & Fluents"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Short Description</label>
+                  <textarea
+                    rows={2}
+                    value={lessonForm.description}
+                    onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
+                    placeholder="Core concept summary..."
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Estimated Duration (Minutes)</label>
+                  <input
+                    type="number"
+                    min={5}
+                    max={180}
+                    value={lessonForm.durationMinutes}
+                    onChange={(e) => setLessonForm({ ...lessonForm, durationMinutes: Number(e.target.value) })}
+                    className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Modal Buttons */}
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-[#27272A]">
+              <button
+                type="button"
+                onClick={() => setShowCourseModal(false)}
+                className="px-3 py-1.5 rounded-xl border border-[#27272A] bg-[#18181C] hover:bg-[#27272A] text-xs font-semibold text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveCourseModal}
+                className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md cursor-pointer"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirmId && deleteConfirmTarget && (
+        <div className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-sm rounded-2xl border border-rose-500/30 bg-[#121215] shadow-2xl p-6 space-y-4 text-center animate-in fade-in zoom-in duration-150">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-white">Confirm Permanent Deletion</h3>
+              <p className="text-xs text-[#A1A1AA]">
+                Are you sure you want to delete {deleteConfirmTarget.type === 'lesson' ? 'lesson' : 'module'}{' '}
+                <strong className="text-white">&quot;{deleteConfirmTarget.title}&quot;</strong>? This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteConfirmId(null);
+                  setDeleteConfirmTarget(null);
+                }}
+                className="py-2 px-3 rounded-xl border border-[#27272A] bg-[#18181C] hover:bg-[#27272A] text-xs font-semibold text-white cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleExecuteDelete}
+                className="py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white shadow-md cursor-pointer"
+              >
+                Yes, Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
