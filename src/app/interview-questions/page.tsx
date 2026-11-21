@@ -33,6 +33,7 @@ export default function InterviewQuestionsPage() {
   const [questions, setQuestions] = useState<InterviewQuestionItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTech, setSelectedTech] = useState<string>('All');
+  const [selectedExpLevel, setSelectedExpLevel] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
   const [showOnlyBookmarks, setShowOnlyBookmarks] = useState(false);
@@ -70,7 +71,7 @@ export default function InterviewQuestionsPage() {
   // Reset display limit when filter criteria changes
   useEffect(() => {
     setDisplayLimit(24);
-  }, [searchTerm, selectedTech, selectedDifficulty, showOnlyBookmarks]);
+  }, [searchTerm, selectedTech, selectedExpLevel, selectedDifficulty, showOnlyBookmarks]);
 
   const handleToggleBookmark = async (qId: string) => {
     const user = QADatabase.getCurrentUser() || DEMO_USER;
@@ -270,7 +271,19 @@ export default function InterviewQuestionsPage() {
     }
   };
 
-  const filteredQuestions = questions.filter(q => {
+  // Dynamic computation of matching questions with progressive difficulty sorting
+  const difficultyRank: Record<string, number> = {
+    Easy: 1,
+    Junior: 1,
+    Medium: 2,
+    Mid: 2,
+    Hard: 3,
+    Senior: 3,
+    Architect: 4,
+  };
+
+  // Pre-calculate questions matching search + tech + experience level (to derive per-difficulty counts)
+  const levelMatchedQuestions = questions.filter(q => {
     const matchesSearch =
       q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -287,17 +300,40 @@ export default function InterviewQuestionsPage() {
       (selectedTech === 'CI/CD' && (q.technology === 'CI/CD' || q.technology === 'GitHub Actions' || q.technology === 'Testcontainers')) ||
       (selectedTech === 'Reporting' && (q.technology === 'Reporting' || q.technology === 'Allure Report' || q.technology === 'Slack / Teams Webhooks')) ||
       (selectedTech === 'DSA for SDET' && (q.technology === 'DSA for SDET' || q.technology === 'Coding & DSA' || q.technology === 'Algorithms'));
-    const matchesDifficulty =
-      selectedDifficulty === 'All' ||
-      q.difficulty === selectedDifficulty ||
-      (selectedDifficulty === 'Junior' && (q.difficulty === 'Easy' || q.difficulty === 'Junior')) ||
-      (selectedDifficulty === 'Mid' && (q.difficulty === 'Medium' || q.difficulty === 'Mid')) ||
-      (selectedDifficulty === 'Senior' && (q.difficulty === 'Hard' || q.difficulty === 'Senior')) ||
-      (selectedDifficulty === 'Architect' && q.difficulty === 'Architect');
+
+    const matchesExpLevel =
+      selectedExpLevel === 'All' ||
+      (selectedExpLevel === 'Junior' && (q.experienceLevel === '0-2 Years' || (q.minYears !== undefined && q.minYears <= 2) || q.difficulty === 'Junior')) ||
+      (selectedExpLevel === 'Mid' && (q.experienceLevel === '3-5 Years' || (q.minYears !== undefined && q.minYears >= 3 && q.minYears <= 5) || q.difficulty === 'Mid')) ||
+      (selectedExpLevel === 'Senior' && (q.experienceLevel === '6-9 Years' || (q.minYears !== undefined && q.minYears >= 6 && q.minYears <= 9) || q.difficulty === 'Senior')) ||
+      (selectedExpLevel === 'Architect' && (q.experienceLevel === '10+ Years' || (q.minYears !== undefined && q.minYears >= 10) || q.difficulty === 'Architect'));
+
     const matchesBookmark = !showOnlyBookmarks || bookmarkedIds.includes(q.id);
 
-    return matchesSearch && matchesTech && matchesDifficulty && matchesBookmark;
+    return matchesSearch && matchesTech && matchesExpLevel && matchesBookmark;
   });
+
+  const countEasy = levelMatchedQuestions.filter(q => q.difficulty === 'Easy' || q.difficulty === 'Junior').length;
+  const countMedium = levelMatchedQuestions.filter(q => q.difficulty === 'Medium' || q.difficulty === 'Mid').length;
+  const countHard = levelMatchedQuestions.filter(q => q.difficulty === 'Hard' || q.difficulty === 'Senior').length;
+  const countArchitect = levelMatchedQuestions.filter(q => q.difficulty === 'Architect').length;
+
+  const filteredQuestions = levelMatchedQuestions
+    .filter(q => {
+      if (selectedDifficulty === 'All') return true;
+      if (selectedDifficulty === 'Easy') return q.difficulty === 'Easy' || q.difficulty === 'Junior';
+      if (selectedDifficulty === 'Medium') return q.difficulty === 'Medium' || q.difficulty === 'Mid';
+      if (selectedDifficulty === 'Hard') return q.difficulty === 'Hard' || q.difficulty === 'Senior';
+      if (selectedDifficulty === 'Architect') return q.difficulty === 'Architect';
+      return q.difficulty === selectedDifficulty;
+    })
+    .sort((a, b) => {
+      // Sort progressive: first Easy, then Medium, then Hard, then Architect
+      const rankA = difficultyRank[a.difficulty] || 99;
+      const rankB = difficultyRank[b.difficulty] || 99;
+      if (rankA !== rankB) return rankA - rankB;
+      return a.id.localeCompare(b.id);
+    });
 
   const displayedQuestions = filteredQuestions.slice(0, displayLimit);
 
@@ -344,59 +380,141 @@ export default function InterviewQuestionsPage() {
         </div>
 
         {/* Filter & Search Toolbar */}
-        <div className="flex flex-col md:flex-row items-center gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="relative flex-1 w-full">
-            <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Search 800+ questions by keyword, topic, or error name (e.g. StaleElement, Flakiness, Sharding, Architect)..."
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm sm:text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+        <div className="flex flex-col gap-3.5 bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Search 800+ questions by keyword, topic, or error name (e.g. StaleElement, Flakiness, Sharding, Architect)..."
+                className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm sm:text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* Tech Selector */}
+            <select
+              value={selectedTech}
+              onChange={e => setSelectedTech(e.target.value)}
+              className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="All">All Tech Stacks (800+ Questions)</option>
+              <option value="Playwright">Playwright &amp; TypeScript</option>
+              <option value="Selenium">Selenium &amp; Java</option>
+              <option value="API Testing">API Testing &amp; REST Assured</option>
+              <option value="Manual QA">Manual QA &amp; Methodologies</option>
+              <option value="Appium">Mobile &amp; Appium</option>
+              <option value="CI/CD">CI/CD &amp; Docker</option>
+              <option value="Reporting">Reporting &amp; Observability</option>
+              <option value="DSA for SDET">DSA for SDET</option>
+              <option value="AI & LLM">AI &amp; LLM in QA</option>
+              <option value="Framework Design">Framework Design</option>
+            </select>
+
+            {/* Experience Level Selector */}
+            <select
+              value={selectedExpLevel}
+              onChange={e => setSelectedExpLevel(e.target.value)}
+              className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="All">All Experience Levels</option>
+              <option value="Junior">Junior QA / SDET (0-2 Yrs)</option>
+              <option value="Mid">Mid SDET (2-5 Yrs)</option>
+              <option value="Senior">Senior SDET (5-8 Yrs)</option>
+              <option value="Architect">Test Architect (8+ Yrs)</option>
+            </select>
+
+            {/* Difficulty Selector */}
+            <select
+              value={selectedDifficulty}
+              onChange={e => setSelectedDifficulty(e.target.value)}
+              className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="All">All Modes (Easy → Med → Hard)</option>
+              <option value="Easy">Easy Mode</option>
+              <option value="Medium">Medium Mode</option>
+              <option value="Hard">Hard Mode</option>
+              <option value="Architect">Test Architect Mode</option>
+            </select>
           </div>
 
-          {/* Tech Selector */}
-          <select
-            value={selectedTech}
-            onChange={e => setSelectedTech(e.target.value)}
-            className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
-          >
-            <option value="All">All Tech Stacks (800+ Questions)</option>
-            <option value="Manual QA">Manual QA &amp; Methodologies</option>
-            <option value="Playwright">Playwright &amp; TypeScript</option>
-            <option value="Selenium">Selenium &amp; Java</option>
-            <option value="API Testing">API Testing &amp; REST Assured</option>
-            <option value="Appium">Mobile &amp; Appium</option>
-            <option value="CI/CD">CI/CD &amp; Docker</option>
-            <option value="Reporting">Reporting &amp; Observability</option>
-            <option value="DSA for SDET">DSA for SDET</option>
-            <option value="AI & LLM">AI &amp; LLM in QA</option>
-            <option value="Framework Design">Framework Design</option>
-          </select>
-
-          {/* Difficulty Selector - with rich Test Architect coverage */}
-          <select
-            value={selectedDifficulty}
-            onChange={e => setSelectedDifficulty(e.target.value)}
-            className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
-          >
-            <option value="All">All Seniorities</option>
-            <option value="Junior">Junior SDET (0-2 Yrs)</option>
-            <option value="Mid">Mid SDET (2-5 Yrs)</option>
-            <option value="Senior">Senior SDET (5-8 Yrs)</option>
-            <option value="Architect">Test Architect (8+ Yrs)</option>
-          </select>
+          {/* Progressive Difficulty Switcher Tabs / Pills */}
+          <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex-wrap">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1">
+              <Filter className="w-3.5 h-3.5" />
+              <span>Difficulty Mode:</span>
+            </span>
+            <button
+              onClick={() => setSelectedDifficulty('All')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedDifficulty === 'All'
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              <span>All Modes ({levelMatchedQuestions.length})</span>
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty('Easy')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedDifficulty === 'Easy'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span>Easy ({countEasy})</span>
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty('Medium')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedDifficulty === 'Medium'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
+              <span>Medium ({countMedium})</span>
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty('Hard')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                selectedDifficulty === 'Hard'
+                  ? 'bg-rose-600 text-white shadow-xs'
+                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-200 dark:border-rose-800'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+              <span>Hard ({countHard})</span>
+            </button>
+            {countArchitect > 0 && (
+              <button
+                onClick={() => setSelectedDifficulty('Architect')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  selectedDifficulty === 'Architect'
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800'
+                }`}
+              >
+                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                <span>Architect ({countArchitect})</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Results Count & Active Filter Pills */}
         <div className="flex items-center justify-between text-xs text-slate-500 px-1 flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <span>Showing <strong>{displayedQuestions.length}</strong> of <strong>{filteredQuestions.length}</strong> matching questions (Total Bank: <strong>{questions.length}</strong>)</span>
-            {(selectedTech !== 'All' || selectedDifficulty !== 'All' || searchTerm || showOnlyBookmarks) && (
+            <span>
+              Showing <strong>{displayedQuestions.length}</strong> of <strong>{filteredQuestions.length}</strong> matching questions (Total Bank: <strong>{questions.length}</strong>)
+            </span>
+            {(selectedTech !== 'All' || selectedExpLevel !== 'All' || selectedDifficulty !== 'All' || searchTerm || showOnlyBookmarks) && (
               <button
                 onClick={() => {
                   setSelectedTech('All');
+                  setSelectedExpLevel('All');
                   setSelectedDifficulty('All');
                   setSearchTerm('');
                   setShowOnlyBookmarks(false);
@@ -407,7 +525,7 @@ export default function InterviewQuestionsPage() {
               </button>
             )}
           </div>
-          {selectedDifficulty === 'Architect' && (
+          {selectedExpLevel === 'Architect' && (
             <span className="text-purple-600 dark:text-purple-400 font-semibold bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
               ● High-Level Test Architecture Focus
             </span>
@@ -425,22 +543,27 @@ export default function InterviewQuestionsPage() {
               >
                 <div className="space-y-3.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                         {item.technology}
                       </span>
+                      {item.experienceLevel && (
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                          {item.experienceLevel === '0-2 Years' ? 'Junior (0-2 Yrs)' : item.experienceLevel === '3-5 Years' ? 'Mid SDET (2-5 Yrs)' : item.experienceLevel === '6-9 Years' ? 'Senior SDET (5-8 Yrs)' : 'Architect (8+ Yrs)'}
+                        </span>
+                      )}
                       <span
                         className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
                           item.difficulty === 'Architect'
                             ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800 font-bold'
-                            : item.difficulty === 'Senior'
-                            ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400'
-                            : item.difficulty === 'Mid'
-                            ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400'
-                            : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400'
+                            : item.difficulty === 'Hard' || item.difficulty === 'Senior'
+                            ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-medium'
+                            : item.difficulty === 'Medium' || item.difficulty === 'Mid'
+                            ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-medium'
+                            : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-medium'
                         }`}
                       >
-                        {item.difficulty === 'Architect' ? 'Test Architect' : item.difficulty}
+                        {item.difficulty === 'Architect' ? 'Test Architect' : `${item.difficulty} Mode`}
                       </span>
                       {item.topic && (
                         <span className="text-[11px] text-slate-400 truncate max-w-[150px] hidden sm:inline">
