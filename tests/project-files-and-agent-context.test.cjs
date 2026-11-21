@@ -59,6 +59,11 @@ test('Project Files Workspace: List view with checkboxes for multi-selection, fo
   // Direct injection into QA Agents
   assert.ok(workspaceContent.includes('handleSendToQAAgents'), 'Has direct handler to send selected files to AI QA Agents');
   assert.ok(workspaceContent.includes('intelligentqa_selected_agent_files'), 'Stores selected files for agent context');
+
+  // Verify Top Header Actions only keep "New Folder" and "Upload Files" (AI Agents button removed)
+  assert.ok(workspaceContent.includes('New Folder'), 'Top header has New Folder button');
+  assert.ok(workspaceContent.includes('Upload Files'), 'Top header has Upload Files button');
+  assert.ok(!workspaceContent.includes('<span>AI QA Agents</span>'), 'Top header does NOT have AI QA Agents button');
 });
 
 test('AI QA Agents Suite: Direct attachment of Project Files into all agents context with checkboxes', () => {
@@ -69,6 +74,8 @@ test('AI QA Agents Suite: Direct attachment of Project Files into all agents con
   assert.ok(agentContent.includes('Attach Project Files'), 'Has "Attach Project Files" button');
   assert.ok(agentContent.includes('showAttachFilesModal'), 'Has modal state for attaching project files');
   assert.ok(agentContent.includes('attachedProjectFiles'), 'Tracks attached project files');
+  assert.ok(agentContent.includes('allProjectFolders'), 'Tracks all project folders including newly created and empty folders');
+  assert.ok(agentContent.includes('handleOpenAttachModal'), 'Refreshes latest files and folders on modal open');
 
   // Multi-selection checkboxes in modal
   assert.ok(agentContent.includes('selectedModalFileIds'), 'Modal tracks selected file IDs with checkboxes');

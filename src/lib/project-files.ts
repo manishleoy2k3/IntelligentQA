@@ -29,9 +29,13 @@ export const MAX_PROJECT_FILE_SIZE_MB = 15;
 export const MAX_PROJECT_FILE_SIZE_BYTES = MAX_PROJECT_FILE_SIZE_MB * 1024 * 1024;
 
 const DB_NAME = 'IntelligentQA_ProjectVault_v1';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const FILES_STORE = 'files';
 const FOLDERS_STORE = 'folders';
+
+// Fallback keys for resilient browser storage
+const FALLBACK_KEY = 'intelligentqa_fallback_project_files_';
+const FOLDERS_FALLBACK_KEY = 'intelligentqa_fallback_project_folders_';
 
 // Default starter folders for organizing QA artifacts
 export const DEFAULT_PROJECT_FOLDERS: string[] = [
@@ -125,34 +129,47 @@ function notifyFilesUpdated(): void {
 export async function getProjectFiles(userId: string = 'default'): Promise<ProjectFile[]> {
   if (!isBrowser()) return DEFAULT_SAMPLE_FILES;
 
+  const currentUserId = userId || 'default';
+
   try {
     const db = await openDatabase();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction(FILES_STORE, 'readonly');
       const store = transaction.objectStore(FILES_STORE);
       const request = store.getAll();
 
       request.onsuccess = () => {
         let results: ProjectFile[] = request.result || [];
-        // Filter by user if populated, or fallback to default
-        if (userId && userId !== 'default') {
-          results = results.filter(f => f.userId === userId || f.userId === 'default');
+        // Filter by user if populated, or fallback to default/unassigned files
+        if (currentUserId && currentUserId !== 'default') {
+          results = results.filter(f => !f.userId || f.userId === currentUserId || f.userId === 'default');
+        }
+
+        // Merge with local fallback files if any exist
+        const local = getLocalFilesFallback(currentUserId);
+        const existingIds = new Set(results.map(r => r.id));
+        for (const loc of local) {
+          if (!existingIds.has(loc.id)) {
+            results.push(loc);
+          }
         }
 
         // If brand-new user with 0 files, initialize sample files
         if (results.length === 0) {
-          saveInitialSampleFiles(userId).then(saved => resolve(saved)).catch(() => resolve([]));
+          saveInitialSampleFiles(currentUserId).then(saved => resolve(saved)).catch(() => resolve([]));
           return;
         }
 
         resolve(results);
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        resolve(getLocalFilesFallback(currentUserId));
+      };
     });
   } catch (err) {
     // Fallback: localStorage
-    return getLocalFilesFallback(userId);
+    return getLocalFilesFallback(currentUserId);
   }
 }
 
@@ -167,9 +184,12 @@ async function saveInitialSampleFiles(userId: string): Promise<ProjectFile[]> {
 export async function saveProjectFile(file: ProjectFile): Promise<ProjectFile> {
   if (!isBrowser()) return file;
 
+  // Dual-write to LocalStorage fallback for seamless persistence
+  saveLocalFileFallback(file);
+
   try {
     const db = await openDatabase();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction(FILES_STORE, 'readwrite');
       const store = transaction.objectStore(FILES_STORE);
       const request = store.put(file);
@@ -179,10 +199,12 @@ export async function saveProjectFile(file: ProjectFile): Promise<ProjectFile> {
         resolve(file);
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        notifyFilesUpdated();
+        resolve(file);
+      };
     });
   } catch (err) {
-    saveLocalFileFallback(file);
     notifyFilesUpdated();
     return file;
   }
@@ -191,9 +213,11 @@ export async function saveProjectFile(file: ProjectFile): Promise<ProjectFile> {
 export async function deleteProjectFile(id: string, userId: string = 'default'): Promise<void> {
   if (!isBrowser()) return;
 
+  deleteLocalFileFallback(id);
+
   try {
     const db = await openDatabase();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction(FILES_STORE, 'readwrite');
       const store = transaction.objectStore(FILES_STORE);
       const request = store.delete(id);
@@ -203,10 +227,12 @@ export async function deleteProjectFile(id: string, userId: string = 'default'):
         resolve();
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        notifyFilesUpdated();
+        resolve();
+      };
     });
   } catch (err) {
-    deleteLocalFileFallback(id);
     notifyFilesUpdated();
   }
 }
@@ -224,6 +250,7 @@ export async function moveFilesToFolder(fileIds: string[], targetFolder: string,
       await saveProjectFile({ ...file, folder: targetFolder });
     }
   }
+  notifyFilesUpdated();
 }
 
 // ============================================================
@@ -233,9 +260,12 @@ export async function moveFilesToFolder(fileIds: string[], targetFolder: string,
 export async function getProjectFolders(userId: string = 'default'): Promise<string[]> {
   if (!isBrowser()) return DEFAULT_PROJECT_FOLDERS;
 
+  const currentUserId = userId || 'default';
+  let storedFolders: string[] = [];
+
   try {
     const db = await openDatabase();
-    const storedFolders: string[] = await new Promise((resolve, reject) => {
+    storedFolders = await new Promise((resolve) => {
       const transaction = db.transaction(FOLDERS_STORE, 'readonly');
       const store = transaction.objectStore(FOLDERS_STORE);
       const request = store.getAll();
@@ -245,31 +275,54 @@ export async function getProjectFolders(userId: string = 'default'): Promise<str
         resolve(folders.map(f => f.name));
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => resolve([]);
     });
-
-    // Merge default folders with user folders uniquely
-    const merged = Array.from(new Set([...DEFAULT_PROJECT_FOLDERS, ...storedFolders]));
-    return merged;
   } catch (err) {
-    return DEFAULT_PROJECT_FOLDERS;
+    // IndexedDB failure handled gracefully
   }
+
+  // Also read from LocalStorage fallback
+  try {
+    const keys = [`${FOLDERS_FALLBACK_KEY}${currentUserId}`, `${FOLDERS_FALLBACK_KEY}default`];
+    for (const k of keys) {
+      const raw = window.localStorage.getItem(k);
+      if (raw) {
+        const parsed: string[] = JSON.parse(raw);
+        storedFolders = Array.from(new Set([...storedFolders, ...parsed]));
+      }
+    }
+  } catch {}
+
+  // Also inspect any folder currently assigned to files
+  try {
+    const allFiles = await getProjectFiles(currentUserId);
+    const fileFolders = allFiles.map(f => f.folder).filter(Boolean);
+    storedFolders = Array.from(new Set([...storedFolders, ...fileFolders]));
+  } catch {}
+
+  // Merge default folders with user and custom folders uniquely
+  const merged = Array.from(new Set([...DEFAULT_PROJECT_FOLDERS, ...storedFolders])).filter(Boolean);
+  return merged;
 }
 
 export async function createProjectFolder(name: string, userId: string = 'default'): Promise<void> {
   const cleanName = name.trim();
   if (!cleanName || !isBrowser()) return;
 
+  const currentUserId = userId || 'default';
+  const folderRecord: ProjectFolder = {
+    id: `folder-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    userId: currentUserId,
+    name: cleanName,
+    createdAt: new Date().toISOString(),
+  };
+
+  // Dual-write to LocalStorage fallback
+  saveLocalFolderFallback(cleanName, currentUserId);
+
   try {
     const db = await openDatabase();
-    const folderRecord: ProjectFolder = {
-      id: `folder-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      userId,
-      name: cleanName,
-      createdAt: new Date().toISOString(),
-    };
-
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction(FOLDERS_STORE, 'readwrite');
       const store = transaction.objectStore(FOLDERS_STORE);
       const request = store.put(folderRecord);
@@ -279,7 +332,10 @@ export async function createProjectFolder(name: string, userId: string = 'defaul
         resolve();
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        notifyFilesUpdated();
+        resolve();
+      };
     });
   } catch (err) {
     notifyFilesUpdated();
@@ -289,8 +345,11 @@ export async function createProjectFolder(name: string, userId: string = 'defaul
 export async function deleteProjectFolder(folderName: string, userId: string = 'default'): Promise<void> {
   if (!isBrowser()) return;
 
+  const currentUserId = userId || 'default';
+  deleteLocalFolderFallback(folderName, currentUserId);
+
   // Move files currently in this folder back to 'Root'
-  const allFiles = await getProjectFiles(userId);
+  const allFiles = await getProjectFiles(currentUserId);
   const filesInFolder = allFiles.filter(f => f.folder === folderName);
   for (const f of filesInFolder) {
     await saveProjectFile({ ...f, folder: 'Root' });
@@ -298,7 +357,7 @@ export async function deleteProjectFolder(folderName: string, userId: string = '
 
   try {
     const db = await openDatabase();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction(FOLDERS_STORE, 'readwrite');
       const store = transaction.objectStore(FOLDERS_STORE);
       const request = store.getAll();
@@ -313,7 +372,10 @@ export async function deleteProjectFolder(folderName: string, userId: string = '
         resolve();
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        notifyFilesUpdated();
+        resolve();
+      };
     });
   } catch {
     notifyFilesUpdated();
@@ -343,8 +405,6 @@ export function formatContextForAgents(files: ProjectFile[]): string {
 // ============================================================
 // LOCAL STORAGE FALLBACK HELPERS
 // ============================================================
-
-const FALLBACK_KEY = 'intelligentqa_fallback_project_files_';
 
 function getLocalFilesFallback(userId: string): ProjectFile[] {
   if (typeof window === 'undefined') return DEFAULT_SAMPLE_FILES;
@@ -377,6 +437,36 @@ function deleteLocalFileFallback(id: string): void {
       if (raw) {
         const files: ProjectFile[] = JSON.parse(raw);
         const filtered = files.filter(f => f.id !== id);
+        window.localStorage.setItem(key, JSON.stringify(filtered));
+      }
+    }
+  } catch {}
+}
+
+function saveLocalFolderFallback(folderName: string, userId: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const keys = [`${FOLDERS_FALLBACK_KEY}${userId}`, `${FOLDERS_FALLBACK_KEY}default`];
+    for (const key of keys) {
+      const raw = window.localStorage.getItem(key);
+      const current: string[] = raw ? JSON.parse(raw) : [];
+      if (!current.includes(folderName)) {
+        current.push(folderName);
+        window.localStorage.setItem(key, JSON.stringify(current));
+      }
+    }
+  } catch {}
+}
+
+function deleteLocalFolderFallback(folderName: string, userId: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const keys = [`${FOLDERS_FALLBACK_KEY}${userId}`, `${FOLDERS_FALLBACK_KEY}default`];
+    for (const key of keys) {
+      const raw = window.localStorage.getItem(key);
+      if (raw) {
+        const current: string[] = JSON.parse(raw);
+        const filtered = current.filter(f => f !== folderName);
         window.localStorage.setItem(key, JSON.stringify(filtered));
       }
     }

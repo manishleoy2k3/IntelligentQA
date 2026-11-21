@@ -190,12 +190,15 @@ export default function ProjectFilesWorkspace() {
   // Folder creation
   const handleCreateFolder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newFolderName.trim()) return;
+    const clean = newFolderName.trim();
+    if (!clean) return;
     const uId = currentUser?.id || 'default';
-    await createProjectFolder(newFolderName.trim(), uId);
-    showNotification('success', `Folder "${newFolderName.trim()}" created successfully.`);
+    await createProjectFolder(clean, uId);
+    showNotification('success', `Folder "${clean}" created successfully.`);
     setNewFolderName('');
     setShowNewFolderModal(false);
+    setSelectedFolder(clean);
+    setTargetMoveFolder(clean);
     loadData();
   };
 
@@ -295,16 +298,6 @@ export default function ProjectFilesWorkspace() {
             <UploadCloud className="w-4 h-4" />
             <span>Upload Files</span>
           </button>
-
-          <Link
-            href="/qa-agents"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white transition cursor-pointer shadow-md"
-            title="Open AI QA Agents suite"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>AI QA Agents</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
       </div>
 

@@ -42,6 +42,8 @@ import { parseRequirementsFile, ParsedRequirementFile } from '@/lib/file-parser'
 import {
   ProjectFile,
   getProjectFiles,
+  getProjectFolders,
+  DEFAULT_PROJECT_FOLDERS,
   formatContextForAgents,
 } from '@/lib/project-files';
 
@@ -150,6 +152,7 @@ export default function QAAgentsWorkspace() {
   // Project Files Context Integration (Accessible across ALL AI QA Agents)
   const [attachedProjectFiles, setAttachedProjectFiles] = useState<ProjectFile[]>([]);
   const [allProjectFiles, setAllProjectFiles] = useState<ProjectFile[]>([]);
+  const [allProjectFolders, setAllProjectFolders] = useState<string[]>(DEFAULT_PROJECT_FOLDERS);
   const [showAttachFilesModal, setShowAttachFilesModal] = useState<boolean>(false);
   const [selectedModalFileIds, setSelectedModalFileIds] = useState<string[]>([]);
   const [modalFolderFilter, setModalFolderFilter] = useState<string>('All');
@@ -161,8 +164,21 @@ export default function QAAgentsWorkspace() {
 
   const loadProjectFilesData = useCallback(async (userId?: string) => {
     try {
-      const loaded = await getProjectFiles(userId || 'default');
-      setAllProjectFiles(loaded);
+      const uId = userId || QADatabase.getCurrentUser()?.id || 'default';
+      const [loadedFiles, loadedFolders] = await Promise.all([
+        getProjectFiles(uId),
+        getProjectFolders(uId),
+      ]);
+      setAllProjectFiles(loadedFiles);
+
+      // Merge all folders: default folders + loaded folders + folders found on any files
+      const fileFolders = loadedFiles.map(f => f.folder).filter(Boolean);
+      const mergedFolders = Array.from(new Set([
+        ...DEFAULT_PROJECT_FOLDERS,
+        ...loadedFolders,
+        ...fileFolders,
+      ])).filter(Boolean);
+      setAllProjectFolders(mergedFolders);
 
       // Check if user came from Project Files page with preselected files
       if (typeof window !== 'undefined') {
@@ -170,7 +186,7 @@ export default function QAAgentsWorkspace() {
         if (preselectedRaw) {
           try {
             const preselectedIds: string[] = JSON.parse(preselectedRaw);
-            const matches = loaded.filter(f => preselectedIds.includes(f.id));
+            const matches = loadedFiles.filter(f => preselectedIds.includes(f.id));
             if (matches.length > 0) {
               setAttachedProjectFiles(matches);
             }
@@ -182,6 +198,13 @@ export default function QAAgentsWorkspace() {
       console.warn('Could not load project files for agents:', err);
     }
   }, []);
+
+  const handleOpenAttachModal = useCallback(async () => {
+    const user = QADatabase.getCurrentUser();
+    await loadProjectFilesData(user?.id);
+    setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
+    setShowAttachFilesModal(true);
+  }, [attachedProjectFiles, loadProjectFilesData]);
 
   const syncState = useCallback(() => {
     if (typeof window !== 'undefined') {
@@ -603,10 +626,7 @@ export default function QAAgentsWorkspace() {
                   {/* Attach Project Files Button */}
                   <button
                     type="button"
-                    onClick={() => {
-                      setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
-                      setShowAttachFilesModal(true);
-                    }}
+                    onClick={handleOpenAttachModal}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer shadow-xs ${
                       attachedProjectFiles.length > 0
                         ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-300 font-bold'
@@ -636,10 +656,7 @@ export default function QAAgentsWorkspace() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => {
-                          setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
-                          setShowAttachFilesModal(true);
-                        }}
+                        onClick={handleOpenAttachModal}
                         className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                       >
                         + Add More
@@ -1095,10 +1112,7 @@ export default function QAAgentsWorkspace() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
-                    setShowAttachFilesModal(true);
-                  }}
+                  onClick={handleOpenAttachModal}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer shadow-xs ${
                     attachedProjectFiles.length > 0
                       ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-300 font-bold'
@@ -1208,12 +1222,15 @@ export default function QAAgentsWorkspace() {
                   onChange={e => setModalFolderFilter(e.target.value)}
                   className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-[#0F0F0F] border border-slate-300 dark:border-[#333] text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                 >
-                  <option value="All">All Folders</option>
-                  {Array.from(new Set(allProjectFiles.map(f => f.folder))).map(folder => (
-                    <option key={folder} value={folder}>
-                      {folder}
-                    </option>
-                  ))}
+                  <option value="All">All Folders ({allProjectFiles.length})</option>
+                  {allProjectFolders.map(folder => {
+                    const count = allProjectFiles.filter(f => f.folder === folder).length;
+                    return (
+                      <option key={folder} value={folder}>
+                        {folder} ({count})
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -1224,15 +1241,24 @@ export default function QAAgentsWorkspace() {
                     const visibleFiles = allProjectFiles.filter(
                       f => modalFolderFilter === 'All' || f.folder === modalFolderFilter
                     );
-                    if (selectedModalFileIds.length === visibleFiles.length) {
-                      setSelectedModalFileIds([]);
+                    const visibleIds = visibleFiles.map(f => f.id);
+                    const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedModalFileIds.includes(id));
+                    if (allVisibleSelected) {
+                      setSelectedModalFileIds(prev => prev.filter(id => !visibleIds.includes(id)));
                     } else {
-                      setSelectedModalFileIds(visibleFiles.map(f => f.id));
+                      setSelectedModalFileIds(prev => Array.from(new Set([...prev, ...visibleIds])));
                     }
                   }}
                   className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 >
-                  {selectedModalFileIds.length > 0 ? 'Clear All' : 'Select All'}
+                  {(() => {
+                    const visibleFiles = allProjectFiles.filter(
+                      f => modalFolderFilter === 'All' || f.folder === modalFolderFilter
+                    );
+                    const visibleIds = visibleFiles.map(f => f.id);
+                    const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedModalFileIds.includes(id));
+                    return allVisibleSelected ? 'Clear Folder' : 'Select All';
+                  })()}
                 </button>
                 <span className="text-xs text-slate-400">•</span>
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
@@ -1245,8 +1271,10 @@ export default function QAAgentsWorkspace() {
             <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-[#242424] border border-slate-200 dark:border-[#262626] rounded-2xl">
               {allProjectFiles.filter(f => modalFolderFilter === 'All' || f.folder === modalFolderFilter).length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400 space-y-2">
-                  <p>No project files found in this folder.</p>
-                  <Link href="/project-files" className="text-blue-500 font-bold hover:underline">
+                  <p>
+                    No project files found in {modalFolderFilter === 'All' ? 'the vault' : `folder "${modalFolderFilter}"`}.
+                  </p>
+                  <Link href="/project-files" className="text-blue-500 font-bold hover:underline inline-block">
                     Go to Project Files to upload documents →
                   </Link>
                 </div>
