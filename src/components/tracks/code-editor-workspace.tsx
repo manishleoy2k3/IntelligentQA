@@ -29,10 +29,12 @@ import {
   Terminal,
   Download,
   Upload,
+  Workflow,
 } from 'lucide-react';
 import Link from 'next/link';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import { getLessonDoc, getConceptCodeSnippet } from '@/lib/qa-learning-docs';
+import CourseVisualDiagram from '@/components/ui/course-visual-diagram';
 
 export type SupportedLang = 'java' | 'typescript' | 'python';
 
@@ -293,6 +295,7 @@ export default function CodeEditorWorkspace({
     setCode(getCodeForLanguage(selectedLang, lsn, track.id));
   }, [lsn.id, selectedLang, track.id]);
   const [activeTab, setActiveTab] = useState<'guide' | 'ai-action'>('guide');
+  const [showVisualDiagram, setShowVisualDiagram] = useState<boolean>(true);
   const [validationResult, setValidationResult] = useState<{
     passed: boolean;
     message: string;
@@ -740,19 +743,51 @@ export default function CodeEditorWorkspace({
                   </div>
                 </div>
 
-                {/* 2. Architecture & Underlying Mechanism */}
-                <div className="p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 space-y-3 shadow-md">
-                  <div className="flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-indigo-400" />
-                    <h4 className="font-bold text-base md:text-lg text-white">
-                      {doc.architectureUnderTheHood.title}
-                    </h4>
+                {/* 2. Architecture & Underlying Mechanism with Visual Infographic Diagram */}
+                <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-5 shadow-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
+                        <Cpu className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-extrabold text-lg md:text-xl text-white">
+                          {doc.architectureUnderTheHood.title}
+                        </h4>
+                        <span className="text-xs text-indigo-300 font-medium">Under-the-Hood Visual Architecture &amp; Protocol Lifecycle</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowVisualDiagram(!showVisualDiagram)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all cursor-pointer self-start sm:self-auto"
+                    >
+                      <Workflow className="w-3.5 h-3.5" />
+                      <span>{showVisualDiagram ? 'Minimize Diagram' : 'Show Visual Architecture Diagram'}</span>
+                    </button>
                   </div>
-                  <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 font-mono text-xs text-indigo-300 overflow-x-auto leading-relaxed">
-                    {doc.architectureUnderTheHood.flowOrMechanism}
+
+                  {/* Visual Architecture Diagram Graphic (Infographic Mode) */}
+                  {showVisualDiagram && (
+                    <div className="pt-2">
+                      <CourseVisualDiagram trackId={track.id} showTitle={false} />
+                    </div>
+                  )}
+
+                  {/* Visual Protocol Execution Stream */}
+                  <div className="space-y-2">
+                    <div className="text-xs font-mono text-indigo-300 uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                      <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Protocol &amp; Execution Pipeline:</span>
+                    </div>
+                    <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 font-mono text-xs sm:text-sm text-indigo-300 overflow-x-auto leading-relaxed shadow-inner">
+                      {doc.architectureUnderTheHood.flowOrMechanism}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs md:text-sm text-slate-300 pt-1">
-                    <Lightbulb className="w-4 h-4 text-amber-400 shrink-0" />
+
+                  <div className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200 pt-1 border-t border-slate-800/80">
+                    <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <span><strong>Key Architectural Takeaway:</strong> {doc.architectureUnderTheHood.keyTakeaway}</span>
                   </div>
                 </div>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Track } from '@/types/qa';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import { UserProgress } from '@/types/qa';
+import CourseVisualDiagram from '@/components/ui/course-visual-diagram';
 import {
   Sparkles,
   Clock,
@@ -372,53 +373,56 @@ export default function TrackOverviewClient({
         )}
       </div>
 
+      {/* Official Architecture & Protocol Visual Infographic Diagram */}
+      <CourseVisualDiagram trackId={track.id} />
+
       {/* Test Architect's Mental Model & Setup from Scratch Blueprint */}
       {architectModel && (
-        <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 space-y-6 text-white shadow-xl relative overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 space-y-7 text-white shadow-xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
           {/* Section Header */}
-          <div className="space-y-2 relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <Compass className="w-3.5 h-3.5" />
+          <div className="space-y-3 relative z-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <Compass className="w-4 h-4" />
               <span>Architect’s Mental Model • 17+ Years Experience Guide</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               {architectModel.tagline}
             </h2>
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-4xl">
+            <p className="text-base sm:text-lg text-slate-200 leading-relaxed max-w-4xl">
               {architectModel.whyThisTrackMatters}
             </p>
           </div>
 
           {/* 5-Stage Progressive Roadmap */}
-          <div className="space-y-3 pt-2 relative z-10">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
+          <div className="space-y-3.5 pt-2 relative z-10">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-400">
               <Workflow className="w-4 h-4" />
               <span>5-Stage Progressive Roadmap: Basic → Enterprise Architect</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
               {architectModel.stages.map((stg, sIdx) => (
                 <div
                   key={stg.stage}
-                  className="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-3.5 space-y-1 hover:border-emerald-500/40 transition-colors"
+                  className="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-4 space-y-1.5 hover:border-emerald-500/40 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-bold text-emerald-400">{stg.stage}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 font-mono">
+                    <span className="text-xs px-2 py-0.5 rounded bg-slate-700/70 text-slate-300 font-mono">
                       Step {sIdx + 1}
                     </span>
                   </div>
-                  <h4 className="text-xs font-bold text-white line-clamp-1">{stg.title}</h4>
-                  <p className="text-[11px] text-slate-400 leading-snug">{stg.focus}</p>
+                  <h4 className="text-sm font-bold text-white line-clamp-1">{stg.title}</h4>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-snug">{stg.focus}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Core "Why" Mental Models */}
-          <div className="space-y-3 pt-2 relative z-10">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
+          <div className="space-y-3.5 pt-2 relative z-10">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-400">
               <Cpu className="w-4 h-4" />
               <span>Why These Concepts Exist: Bridging Manual QA Intuition to Code</span>
             </div>
@@ -426,16 +430,16 @@ export default function TrackOverviewClient({
               {architectModel.mentalModels.map((m, idx) => (
                 <div
                   key={idx}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 space-y-2.5 flex flex-col justify-between"
+                  className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 space-y-3 flex flex-col justify-between"
                 >
-                  <div className="space-y-2">
-                    <h4 className="text-xs sm:text-sm font-bold text-emerald-300 leading-snug">
+                  <div className="space-y-2.5">
+                    <h4 className="text-sm sm:text-base font-bold text-emerald-300 leading-snug">
                       {m.question}
                     </h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">{m.answer}</p>
+                    <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">{m.answer}</p>
                   </div>
-                  <div className="pt-2 border-t border-slate-700/40 flex items-start gap-1.5 text-[11px] text-emerald-400/90 italic">
-                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <div className="pt-3 border-t border-slate-700/60 flex items-start gap-2 text-xs sm:text-sm text-emerald-300/90 italic">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
                     <span><strong>Architect Tip:</strong> {m.architectTip}</span>
                   </div>
                 </div>
@@ -444,25 +448,25 @@ export default function TrackOverviewClient({
           </div>
 
           {/* Setup From Scratch Blueprint */}
-          <div className="space-y-3 pt-2 relative z-10">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
+          <div className="space-y-3.5 pt-2 relative z-10">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-400">
               <Terminal className="w-4 h-4" />
               <span>Production Setup from Scratch &amp; Directory Blueprint</span>
             </div>
-            <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3">
-              <div className="space-y-1">
-                <span className="text-[11px] font-mono text-slate-400">CLI Scaffolding Command:</span>
-                <div className="bg-slate-900 rounded-xl p-2.5 font-mono text-xs text-emerald-400 overflow-x-auto border border-slate-800 select-all">
+            <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4">
+              <div className="space-y-1.5">
+                <span className="text-xs font-mono text-slate-300 font-semibold">CLI Scaffolding Command:</span>
+                <div className="bg-slate-900 rounded-xl p-3 font-mono text-xs sm:text-sm text-emerald-400 overflow-x-auto border border-slate-800 select-all">
                   $ {architectModel.frameworkSetupBlueprint.command}
                 </div>
               </div>
-              <div className="space-y-1">
-                <span className="text-[11px] font-mono text-slate-400">Directory Blueprint:</span>
-                <pre className="bg-slate-900/90 rounded-xl p-3 font-mono text-[11px] text-slate-300 overflow-x-auto border border-slate-800 leading-relaxed">
+              <div className="space-y-1.5">
+                <span className="text-xs font-mono text-slate-300 font-semibold">Directory Blueprint:</span>
+                <pre className="bg-slate-900/90 rounded-xl p-4 font-mono text-xs text-slate-200 overflow-x-auto border border-slate-800 leading-relaxed">
                   {architectModel.frameworkSetupBlueprint.folderStructure}
                 </pre>
               </div>
-              <p className="text-xs text-slate-400 italic">
+              <p className="text-xs sm:text-sm text-slate-300 italic">
                 {architectModel.frameworkSetupBlueprint.description}
               </p>
             </div>

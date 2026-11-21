@@ -6,6 +6,7 @@ import {
   TutorialStep,
   MockScreenshot,
 } from '@/lib/track-tutorials';
+import CourseVisualDiagram from '@/components/ui/course-visual-diagram';
 import {
   BookOpen,
   Terminal,
@@ -60,31 +61,34 @@ export default function TrackTutorialView({ tutorial }: TrackTutorialViewProps) 
         </p>
 
         {/* 4-Layer Architecture Pipeline Diagram */}
-        <div className="pt-2 space-y-2 relative z-10">
-          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="pt-2 space-y-3 relative z-10">
+          <div className="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+            <Layers className="w-4 h-4 text-emerald-400" />
             <span>{tutorial.architectureDiagram.title}</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {tutorial.architectureDiagram.layers.map((layer) => (
               <div
                 key={layer.layer}
-                className="bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 space-y-1 hover:border-emerald-500/40 transition-colors"
+                className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-1.5 hover:border-emerald-500/40 transition-colors"
               >
-                <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase">
                   {layer.layer}
                 </span>
-                <div className="text-xs font-bold text-white">{layer.name}</div>
-                <div className="text-[11px] text-slate-400 leading-snug">{layer.description}</div>
+                <div className="text-sm font-bold text-white">{layer.name}</div>
+                <div className="text-xs sm:text-sm text-slate-300 leading-snug">{layer.description}</div>
               </div>
             ))}
           </div>
-          <div className="p-2.5 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-300">
+          <div className="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs sm:text-sm font-mono text-slate-200">
             <span className="text-emerald-400 font-bold">Data Flow: </span>
             {tutorial.architectureDiagram.flowSummary}
           </div>
         </div>
       </div>
+
+      {/* Official Architecture & Protocol Visual Infographic Diagram */}
+      <CourseVisualDiagram trackId={tutorial.trackId} />
 
       {/* 2. Step Navigator & Content Split View */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

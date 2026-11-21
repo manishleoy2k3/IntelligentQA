@@ -1103,4 +1103,282 @@ public class SpecsAndSchemaTest {
       },
     ],
   },
+
+  // ==========================================
+  // AI FOR QA & AUTONOMOUS AGENTS TUTORIAL
+  // ==========================================
+  'ai-qa': {
+    trackId: 'ai-qa',
+    title: 'AI for QA & Autonomous Testing: Complete Step-by-Step Masterclass',
+    subtitle: 'Comprehensive guide covering AI prompt engineering for SDETs, synthetic test data generation, self-healing locators, CI/CD failure triage, LLM evaluation, and autonomous QA agents.',
+    overview: `Artificial Intelligence is fundamentally revolutionizing quality engineering. AI does not replace manual testers—rather, manual testers who master AI agents and test automation will replace those who do not. This step-by-step masterclass takes you from foundational prompt engineering and synthetic test data generation through self-healing locators and autonomous QA agents integrated into continuous delivery pipelines.`,
+    architectureDiagram: {
+      title: 'Autonomous AI-Augmented QA Lifecycle Architecture',
+      layers: [
+        { layer: 'Layer 1: Input Ingestion', name: 'Jira Story & Acceptance Criteria', description: 'Parse product specs, Gherkin scenarios, and boundary constraints directly from tickets', color: 'cyan' },
+        { layer: 'Layer 2: Reasoning Engine', name: 'Gemini LLM Cognitive Layer', description: 'Few-shot prompting, structured schema output, and boundary test synthesis', color: 'purple' },
+        { layer: 'Layer 3: Self-Healing & Scaffolding', name: 'DOM Fingerprinting & POM', description: 'Multi-attribute element similarity scoring (tag, text, role, hierarchy) for resilient locators', color: 'emerald' },
+        { layer: 'Layer 4: Autonomous Execution', name: 'Playwright & MCP CI/CD Loop', description: 'Headless browser execution, trace log triage, and automated GitHub PR patch generation', color: 'amber' },
+      ],
+      flowSummary: 'User Story Ingestion ===> LLM Cognitive Strategy ===> Synthetic Data & POM Code ===> Playwright Headless Run ===> Self-Healing & Triage CI/CD Loop.',
+    },
+    steps: [
+      {
+        stepNumber: 1,
+        title: 'The AI Mindset Shift: From Manual Tester to AI Quality Architect',
+        badge: 'Mental Model',
+        summary: 'Understand the role of Generative AI in software quality and how to transition from repetitive manual clicking to strategic quality orchestration.',
+        description: `Manual testers spend up to 70% of their time writing repetitive test cases, clicking identical UI flows, and manually entering test data. Generative AI flips this dynamic:
+1. AI handles the rote mechanical synthesis (writing boilerplate assertions, generating 100 variations of test data, drafting Gherkin feature files).
+2. The QA Engineer acts as the Quality Architect: defining domain constraints, verifying boundary coverage, spotting edge-case omissions, and orchestrating autonomous test pipelines.
+3. Instead of writing tests from scratch, you review, refine, and validate AI-generated test scaffolding in minutes.`,
+        mockScreenshot: {
+          windowTitle: 'Mental Model: Manual Tester vs AI-Augmented SDET',
+          caption: 'Visual workflow transformation from manual repetitive clicking to high-leverage AI orchestration',
+          type: 'terminal',
+          codeOrOutput: `Traditional Manual QA Workflow:
+[Read Jira Ticket] -> [Spend 4 hours drafting 25 test cases in Excel] -> [Manually click form 25 times]
+
+AI-Augmented QA Architect Workflow:
+[Jira Acceptance Criteria]
+   |
+   v [Role-Context-Constraint Prompt]
+[Gemini LLM Engine] -> Synthesizes 50 BDD Scenarios + Boundary Matrices + SQL Injection vectors in 3 seconds!
+   |
+   v [Human SDET Quality Review]
+[1-Click Playwright Code Generation & CI/CD Pipeline Execution]`,
+        },
+        keyTakeaways: [
+          'AI handles repetitive synthesis; human engineers provide domain judgment and strategic governance.',
+          'Learning prompt engineering and AI tool integration is the fastest path from manual QA to high-earning SDET.',
+        ],
+      },
+      {
+        stepNumber: 2,
+        title: 'Precision Prompt Engineering for Test Case Generation',
+        badge: 'Prompt Craft',
+        summary: 'Master the Role-Context-Constraint-Format (RCCF) prompting framework for generating exhaustive, production-grade test cases.',
+        description: `Generic prompts like "write test cases for checkout" produce shallow, generic bullet points that miss critical production bugs. The RCCF framework guarantees deep, edge-case-dense output:
+- [ROLE]: Tell the AI who it is (e.g. Principal SDET & Security Specialist).
+- [CONTEXT]: Provide domain context (e.g. Stripe 3D Secure checkout with coupon discounts).
+- [CONSTRAINTS]: Mandate specific coverage (e.g. 3 happy paths, 4 boundary edge cases, 2 security attack vectors).
+- [FORMAT]: Specify exact output schema (e.g. Gherkin BDD with Given-When-Then and Acceptance Criteria).`,
+        codeSnippet: {
+          language: 'markdown',
+          caption: 'sdet-prompt-template.md: Production SDET Prompt Blueprint',
+          code: `[ROLE]: Principal SDET & Security Specialist
+[CONTEXT]: Fintech checkout portal with 2FA OTP verification and Stripe tokenization
+[INPUTS]: email (string), password (bcrypt), otp_pin (6 digits), coupon_code (optional)
+[RULES & CONSTRAINTS]:
+1. Include 3 positive happy paths, 4 boundary value edge cases (e.g. 128-char password, expired OTP, invalid Luhn card).
+2. Include 2 security test scenarios (SQL injection and XSS payload injection in email field).
+3. Do NOT provide generic placeholders. Use realistic test values.
+[OUTPUT FORMAT]:
+Gherkin BDD format:
+Feature: <Feature Name>
+  Scenario: <TC-ID> <Scenario Title>
+    Given <Precondition>
+    When <Action>
+    Then <Assertion>`,
+        },
+        keyTakeaways: [
+          'Always provide Role, Context, Constraints, and Output Format in your prompts.',
+          'Ask explicitly for boundary edge cases and security attack vectors to expose hidden vulnerabilities.',
+        ],
+      },
+      {
+        stepNumber: 3,
+        title: 'AI Synthetic Test Data Generation & Zero-PII Compliance',
+        badge: 'Data Strategy',
+        summary: 'Generate high-fidelity, boundary-dense synthetic test datasets without violating GDPR or risking customer data breaches.',
+        description: `Copying production customer databases into staging or QA test environments violates privacy laws (GDPR, CCPA, HIPAA) and exposes companies to multi-million-dollar fines. AI allows QA teams to generate synthetic datasets that perfectly mirror production schema distributions, relational foreign keys, and edge cases with zero actual customer PII.`,
+        codeSnippet: {
+          language: 'typescript',
+          caption: 'synthetic-data-generator.ts: Schema-Constrained Synthetic Data with Zod',
+          code: `import { z } from 'zod';
+
+// Define strict schema constraints for synthetic user generator
+export const UserPersonaSchema = z.object({
+  id: z.string().uuid(),
+  fullName: z.string().min(2).max(50),
+  email: z.string().email(),
+  birthDate: z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/),
+  accountTier: z.enum(['FREE', 'PRO', 'ENTERPRISE']),
+  balance: z.number().min(0).max(100000),
+  creditCardLuhnValid: z.string().regex(/^\\d{16}$/),
+  testTag: z.enum(['HAPPY_PATH', 'BOUNDARY_MAX', 'UNICODE_NAME', 'SECURITY_INJECTION']),
+});
+
+export type UserPersona = z.infer<typeof UserPersonaSchema>;
+
+// Example AI prompt output adheres 100% to this schema for programmatic injection!`,
+        },
+        keyTakeaways: [
+          'Never use real customer data in staging or automated test runs.',
+          'Use schema validation libraries (Zod / JSON Schema) to validate AI-generated datasets before injecting into databases.',
+        ],
+      },
+      {
+        stepNumber: 4,
+        title: 'Self-Healing Locators & Resilient DOM Fingerprinting',
+        badge: 'Self-Healing',
+        summary: 'Eliminate 80% of test maintenance flakiness by implementing multi-attribute heuristic locator matching.',
+        description: `In traditional automation frameworks, whenever a frontend engineer modifies a CSS class or updates a button ID from "login-btn-v1" to "btn-submit-v2", test runs throw NoSuchElementException and halt the deployment pipeline.
+Self-healing engines resolve this by capturing a multi-attribute fingerprint during test authoring:
+1. Accessibility Role (role="button")
+2. Accessible Name / Text Content ("Sign In")
+3. Parent Element Hierarchy (<form class="auth-form">)
+4. Tag Name & ARIA Attributes (aria-label, data-testid)
+When the primary selector fails, the engine scans DOM candidates, calculates a Levenshtein/cosine similarity score, and executes the click if confidence exceeds 85%.`,
+        codeSnippet: {
+          language: 'typescript',
+          caption: 'self-healing-engine.ts: Multi-Attribute Similarity Matching',
+          code: `export interface ElementFingerprint {
+  primarySelector: string;
+  role: string;
+  text: string;
+  tag: string;
+  parentClass?: string;
+}
+
+export function findBestMatch(candidates: Element[], target: ElementFingerprint): { element: Element; confidence: number } | null {
+  let bestMatch: Element | null = null;
+  let highestScore = 0;
+
+  for (const el of candidates) {
+    let score = 0;
+    if (el.tagName.toLowerCase() === target.tag.toLowerCase()) score += 0.25;
+    if (el.getAttribute('role') === target.role) score += 0.30;
+    if (el.textContent?.trim().toLowerCase() === target.text.toLowerCase()) score += 0.35;
+    if (target.parentClass && el.parentElement?.className.includes(target.parentClass)) score += 0.10;
+
+    if (score > highestScore && score >= 0.80) {
+      highestScore = score;
+      bestMatch = el;
+    }
+  }
+
+  return bestMatch ? { element: bestMatch, confidence: highestScore } : null;
+}`,
+        },
+        keyTakeaways: [
+          'Self-healing prevents false-positive test failures when frontend styling changes.',
+          'Prioritize accessibility roles and user-facing text over brittle CSS IDs or hierarchical XPaths.',
+        ],
+      },
+      {
+        stepNumber: 5,
+        title: 'AI Failure Triage & Root Cause Analysis in CI/CD',
+        badge: 'Observability',
+        summary: 'Automatically diagnose failed test traces, distinguish environment flakes from genuine regression bugs, and draft Jira tickets.',
+        description: `When an enterprise suite of 1,000 tests executes in CI/CD, 10-15 tests might fail. Manually sifting through thousands of lines of terminal logs, network HAR files, and browser console errors takes hours.
+An AI triage agent ingests the failure stack trace, the Playwright trace filmstrip, and the Git commit diff:
+1. Analyzes the exception (e.g. HTTP 504 Gateway Timeout vs AssertionError).
+2. Categorizes the failure: Infrastructure Flake, Test Script Bug, or Genuine Application Regression.
+3. If genuine, drafts a complete Jira bug ticket with reproduction steps, exact payload, and console errors.`,
+        codeSnippet: {
+          language: 'typescript',
+          caption: 'ci-failure-triage-agent.ts: Intelligent Stack Trace Triage',
+          code: `import { GoogleGenAI } from '@google/genai';
+
+export async function triageTestFailure(errorStack: string, gitDiff: string, networkLogs: string) {
+  const ai = new GoogleGenAI();
+  const prompt = \`
+Analyze this CI test failure and determine the root cause:
+[ERROR STACK]: \${errorStack}
+[RECENT COMMIT DIFF]: \${gitDiff}
+[NETWORK HAR / LOGS]: \${networkLogs}
+
+Classify into one of:
+- BUG: Application regression introduced by commit
+- FLAKE: Network timeout or slow third-party dependency
+- SCRIPT_ISSUE: Outdated test selector or invalid test assertion
+
+Provide:
+1. Root Cause Summary (2 sentences)
+2. Confidence Score (0-100%)
+3. Recommended Resolution\`;
+
+  const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+  return response.text;
+}`,
+        },
+        keyTakeaways: [
+          'AI failure triage cuts regression analysis time from hours to minutes.',
+          'Correlating test failures with recent Git commit diffs pinpoints the exact line of application code responsible.',
+        ],
+      },
+      {
+        stepNumber: 6,
+        title: 'Testing AI Applications: Hallucination & RAG Guardrails',
+        badge: 'LLM Testing',
+        summary: 'Learn how to test AI chatbots, Copilots, and RAG pipelines using LLM-as-a-Judge and deterministic assertion harnesses.',
+        description: `Testing software that contains LLMs requires a new testing paradigm. Unlike traditional deterministic software where input "2 + 2" always returns "4", LLM outputs are non-deterministic.
+To test AI applications effectively, QA engineers implement:
+1. LLM-as-a-Judge: A second, more capable model (e.g. Gemini 2.5 Pro) evaluates the application output against strict rubrics (Faithfulness, Groundedness, Toxicity, Prompt Injection Defense).
+2. Semantic Embedding Similarity: Comparing vector cosine distance between expected answer and model response.
+3. Security Red-Teaming: Systematically testing for jailbreaks, prompt injection, and unauthorized data exfiltration.`,
+        codeSnippet: {
+          language: 'typescript',
+          caption: 'llm-evaluator.ts: LLM-as-a-Judge Assertion Harness',
+          code: `export interface EvaluationRubric {
+  faithfulness: boolean; // Does the answer strictly rely on provided document context?
+  noHallucination: boolean; // Did the model avoid inventing facts?
+  noPiiLeak: boolean; // Did the model avoid printing sensitive user records?
+}
+
+export async function evaluateLLMResponse(userPrompt: string, contextDocs: string, modelOutput: string): Promise<{ passed: boolean; score: number; reason: string }> {
+  // Judge prompt passes rubrics and extracts structured evaluation
+  const judgePrompt = \`
+[EVALUATION PROMPT]: Rate the response on a scale of 1-5 for faithfulness and hallucination.
+Context: \${contextDocs}
+User Query: \${userPrompt}
+Model Response: \${modelOutput}
+\`;
+  // Return deterministic pass/fail based on rubric threshold
+  return { passed: true, score: 0.95, reason: "Response 100% grounded in provided context documents." };
+}`,
+        },
+        keyTakeaways: [
+          'Traditional exact string matching fails on AI responses; use semantic evaluation and LLM-as-a-Judge rubrics.',
+          'Always test AI applications for prompt injection attacks and unauthorized data exfiltration.',
+        ],
+      },
+      {
+        stepNumber: 7,
+        title: 'Autonomous QA Agents & Model Context Protocol (MCP) in CI/CD',
+        badge: 'Future SDET',
+        summary: 'Orchestrate autonomous multi-agent QA workflows where agents write tests, run headless browsers, fix broken locators, and open pull requests.',
+        description: `The pinnacle of AI in software testing is the Autonomous QA Agent. By leveraging the Model Context Protocol (MCP), an AI agent can safely interact with local tools, run commands, inspect the DOM tree, execute Playwright scripts, and open GitHub pull requests with zero human intervention.
+The autonomous agent loop:
+1. Ingests Jira ticket acceptance criteria.
+2. Scaffolds Page Object Model code and test specs.
+3. Runs the test suite via terminal tools.
+4. If a test fails, inspects DOM snapshots and heals the locator.
+5. Re-runs the test to verify a green pass.
+6. Pushes a Git branch and creates a pull request for human sign-off!`,
+        mockScreenshot: {
+          windowTitle: 'Autonomous QA Agent CI/CD Terminal Loop',
+          caption: 'Autonomous agent executing test suite, detecting locator failure, healing in real time, and passing the build',
+          type: 'terminal',
+          codeOrOutput: `[AI QA Agent]: Reading Jira Ticket PROJ-482 "Update Checkout 2FA Flow"...
+[AI QA Agent]: Scaffolding Playwright spec 'tests/checkout-2fa.spec.ts'...
+[AI QA Agent]: Executing: npx playwright test tests/checkout-2fa.spec.ts
+[Playwright]: Running 1 test using 1 worker...
+[Playwright]: ⚠️ Timeout 5000ms waiting for locator('#checkout-pay-btn')
+[AI QA Agent]: Primary locator failed. Calling tool 'inspect_dom_tree'...
+[AI QA Agent]: Found matching button: <button data-testid="submit-payment">Pay Now</button>
+[AI QA Agent]: Confidence: 96.8%. Updating Page Object locator to page.getByTestId('submit-payment')...
+[AI QA Agent]: Re-running test...
+[Playwright]: ✔ tests/checkout-2fa.spec.ts passed (1.4s)
+[AI QA Agent]: Git commit: "fix(qa): self-heal checkout button locator"
+[AI QA Agent]: Pull Request #142 opened successfully on GitHub!`,
+        },
+        keyTakeaways: [
+          'Model Context Protocol (MCP) connects AI reasoning engines with real execution tools (Playwright, Git, Terminal).',
+          'Autonomous QA agents do not replace testers—they handle the mechanical fixes, freeing engineers to focus on architectural excellence.',
+        ],
+      },
+    ],
+  },
 };

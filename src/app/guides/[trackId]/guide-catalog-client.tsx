@@ -92,8 +92,10 @@ export default function GuideCatalogClient({
 
   const currentTutorial =
     TRACK_TUTORIALS[activeTrack] ||
-    (activeTrack === "selenium-java" ? TRACK_TUTORIALS["selenium"] : undefined) ||
-    (activeTrack === "playwright-ts" ? TRACK_TUTORIALS["playwright"] : undefined);
+    (activeTrack === "selenium" || activeTrack === "selenium-java" ? TRACK_TUTORIALS["selenium"] : undefined) ||
+    (activeTrack === "playwright" || activeTrack === "playwright-ts" ? TRACK_TUTORIALS["playwright"] : undefined) ||
+    (activeTrack === "api-testing" ? TRACK_TUTORIALS["api-testing"] : undefined) ||
+    (activeTrack === "ai-qa" ? TRACK_TUTORIALS["ai-qa"] : undefined);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import CourseVisualDiagram from '@/components/ui/course-visual-diagram';
 import {
   Sparkles,
   Bot,
@@ -168,8 +169,11 @@ export default function AIQALearningStudio() {
         </Link>
       </div>
 
+      {/* Official Architecture & Autonomous QA Pipeline Visual Infographic */}
+      <CourseVisualDiagram trackId="ai-qa" />
+
       {/* 8-Step Navigation Tracker */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-xs sm:text-sm">
         {[
           { step: 0, title: 'Step 0: Demystifying AI' },
           { step: 1, title: 'Step 1: Prompt Lab' },
@@ -183,37 +187,37 @@ export default function AIQALearningStudio() {
           <button
             key={item.step}
             onClick={() => setActiveStep(item.step)}
-            className={`p-3 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
               activeStep === item.step
-                ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-950 dark:text-cyan-200 font-bold shadow-sm'
-                : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400'
+                ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-950 dark:text-cyan-200 font-bold shadow-sm ring-1 ring-cyan-500/40'
+                : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300'
             }`}
           >
-            <div className="text-[10px] text-slate-400">Pillar {item.step}</div>
-            <div className="truncate font-semibold mt-0.5">{item.title}</div>
+            <div className="text-xs font-mono text-cyan-500 dark:text-cyan-400 font-bold">Pillar {item.step}</div>
+            <div className="truncate font-semibold mt-1 text-xs sm:text-sm">{item.title}</div>
           </button>
         ))}
       </div>
 
       {/* STEP 0: Demystifying AI for Manual QA */}
       {activeStep === 0 && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 space-y-6 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 space-y-6 shadow-sm">
           <div className="max-w-3xl space-y-3">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
               Step 0: The Mental Shift for Manual Testers
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed">
               Manual QA professionals often ask: <em>&quot;Will AI replace my job?&quot;</em> The answer is a resounding <strong>no</strong>. But QA engineers who harness AI will replace those who do not.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-3">
-              <div className="font-bold text-emerald-900 dark:text-emerald-300 text-sm flex items-center gap-2">
+            <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-3.5">
+              <div className="font-bold text-emerald-900 dark:text-emerald-300 text-base flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 What AI Automates at 10x Speed:
               </div>
-              <ul className="text-xs space-y-2 text-emerald-950 dark:text-emerald-200">
+              <ul className="text-sm space-y-2 text-emerald-950 dark:text-emerald-200">
                 <li>• Generating 50 boundary test cases from raw user stories in 5 seconds.</li>
                 <li>• Converting HTML DOM snippets into typed Page Object Model classes.</li>
                 <li>• Generating realistic synthetic datasets (Unicode fuzzing, international names).</li>
@@ -221,12 +225,12 @@ export default function AIQALearningStudio() {
               </ul>
             </div>
 
-            <div className="p-5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-3">
-              <div className="font-bold text-indigo-900 dark:text-indigo-300 text-sm flex items-center gap-2">
+            <div className="p-5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-3.5">
+              <div className="font-bold text-indigo-900 dark:text-indigo-300 text-base flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-indigo-600" />
                 Where Human QA Intuition is Irreplaceable:
               </div>
-              <ul className="text-xs space-y-2 text-indigo-950 dark:text-indigo-200">
+              <ul className="text-sm space-y-2 text-indigo-950 dark:text-indigo-200">
                 <li>• Deep business context (e.g. understanding regulatory requirements in fintech).</li>
                 <li>• Subjective user experience and exploratory testing for unexpected edge cases.</li>
                 <li>• Detecting race conditions and timing nuances across distributed services.</li>
@@ -238,7 +242,7 @@ export default function AIQALearningStudio() {
           <div className="flex justify-end pt-2">
             <button
               onClick={() => setActiveStep(1)}
-              className="py-2.5 px-5 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center gap-2 transition-colors"
+              className="py-3 px-6 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl text-sm flex items-center gap-2 transition-colors cursor-pointer"
             >
               Continue to Step 1: Prompt Lab
               <ArrowRight className="w-4 h-4" />

@@ -78,29 +78,29 @@ export default function TracksDirectoryPage() {
           </div>
           <span className="text-xs text-[#A1A1AA] font-mono">Total SDET Curriculum: 88 Hours · 38 Lessons</span>
         </div>
-        <p className="text-xs sm:text-sm text-[#D4D4D8] leading-relaxed">
+        <p className="text-sm sm:text-base text-[#D4D4D8] leading-relaxed">
           If you are transitioning from a manual testing background, sequence is everything. Start with Core Java &amp; Selenium to master DOM locators and OOPs architecture, level up to Playwright for modern auto-waiting, transition Postman tests to REST Assured code, and master AI agent workflows.
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-xs">
-          <div className="p-3 rounded-xl bg-[#141414] border border-amber-500/30">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-1 text-sm">
+          <div className="p-3.5 rounded-xl bg-[#141414] border border-amber-500/30">
             <div className="text-amber-400 font-bold">Stage 1 · 26h</div>
             <div className="font-semibold text-white">Selenium (Java)</div>
-            <div className="text-[11px] text-[#A1A1AA] mt-0.5">OOPs &amp; DOM Foundation</div>
+            <div className="text-xs text-[#A1A1AA] mt-0.5">OOPs &amp; DOM Foundation</div>
           </div>
-          <div className="p-3 rounded-xl bg-[#141414] border border-[#81FF89]/30">
+          <div className="p-3.5 rounded-xl bg-[#141414] border border-[#81FF89]/30">
             <div className="text-[#81FF89] font-bold">Stage 2 · 24h</div>
             <div className="font-semibold text-white">Playwright (TS)</div>
-            <div className="text-[11px] text-[#A1A1AA] mt-0.5">Auto-Waiting &amp; Async Web</div>
+            <div className="text-xs text-[#A1A1AA] mt-0.5">Auto-Waiting &amp; Async Web</div>
           </div>
-          <div className="p-3 rounded-xl bg-[#141414] border border-[#80FFF9]/30">
+          <div className="p-3.5 rounded-xl bg-[#141414] border border-[#80FFF9]/30">
             <div className="text-[#80FFF9] font-bold">Stage 3 · 18h</div>
             <div className="font-semibold text-white">Rest Assured (API)</div>
-            <div className="text-[11px] text-[#A1A1AA] mt-0.5">Postman to Code-Based API</div>
+            <div className="text-xs text-[#A1A1AA] mt-0.5">Postman to Code-Based API</div>
           </div>
-          <div className="p-3 rounded-xl bg-[#141414] border border-cyan-500/30">
+          <div className="p-3.5 rounded-xl bg-[#141414] border border-cyan-500/30">
             <div className="text-cyan-400 font-bold">Stage 4 · 20h</div>
             <div className="font-semibold text-white">AI for QA</div>
-            <div className="text-[11px] text-[#A1A1AA] mt-0.5">Prompts &amp; Autonomous Agents</div>
+            <div className="text-xs text-[#A1A1AA] mt-0.5">Prompts &amp; Autonomous Agents</div>
           </div>
         </div>
       </div>

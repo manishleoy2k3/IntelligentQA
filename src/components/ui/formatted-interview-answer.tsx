@@ -81,15 +81,15 @@ export default function FormattedInterviewAnswer({
   }
 
   return (
-    <div className={`space-y-3 leading-relaxed break-words text-sm ${className}`}>
+    <div className={`space-y-3 leading-relaxed break-words text-sm sm:text-base ${className}`}>
       {blocks.map((block, bIdx) => {
         if (block.type === 'code') {
           return (
             <div
               key={`code-${bIdx}`}
-              className="relative p-3.5 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs overflow-x-auto text-emerald-300 shadow-inner my-2"
+              className="relative p-3.5 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs sm:text-sm overflow-x-auto text-emerald-300 shadow-inner my-2"
             >
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80 text-[10px] text-slate-400">
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80 text-xs text-slate-400">
                 <span className="font-semibold uppercase tracking-wider">{block.language || 'code'}</span>
                 <button
                   type="button"
