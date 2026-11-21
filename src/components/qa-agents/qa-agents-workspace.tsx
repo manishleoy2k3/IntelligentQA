@@ -26,11 +26,24 @@ import {
   X,
   FileCheck,
   Layers,
+  FolderKanban,
+  Paperclip,
+  CheckSquare,
+  Square,
+  Presentation,
+  FileCode,
+  Folder,
+  ArrowRight,
 } from 'lucide-react';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import { exportRequirementsToExcel, exportTestMatrixToExcel } from '@/lib/excel-export';
 import { parseRequirementsFile, ParsedRequirementFile } from '@/lib/file-parser';
+import {
+  ProjectFile,
+  getProjectFiles,
+  formatContextForAgents,
+} from '@/lib/project-files';
 
 export type AgentTab = 'requirements' | 'test_cases' | 'automation_code' | 'code_review' | 'chat';
 
@@ -134,10 +147,41 @@ export default function QAAgentsWorkspace() {
     edgeCases: true,
   });
 
+  // Project Files Context Integration (Accessible across ALL AI QA Agents)
+  const [attachedProjectFiles, setAttachedProjectFiles] = useState<ProjectFile[]>([]);
+  const [allProjectFiles, setAllProjectFiles] = useState<ProjectFile[]>([]);
+  const [showAttachFilesModal, setShowAttachFilesModal] = useState<boolean>(false);
+  const [selectedModalFileIds, setSelectedModalFileIds] = useState<string[]>([]);
+  const [modalFolderFilter, setModalFolderFilter] = useState<string>('All');
+
   // Auth and Key state
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [geminiKey, setGeminiKey] = useState<string>('');
   const [aiPref, setAiPref] = useState<'enabled' | 'opted_out' | 'unset'>('unset');
+
+  const loadProjectFilesData = useCallback(async (userId?: string) => {
+    try {
+      const loaded = await getProjectFiles(userId || 'default');
+      setAllProjectFiles(loaded);
+
+      // Check if user came from Project Files page with preselected files
+      if (typeof window !== 'undefined') {
+        const preselectedRaw = window.localStorage.getItem('intelligentqa_selected_agent_files');
+        if (preselectedRaw) {
+          try {
+            const preselectedIds: string[] = JSON.parse(preselectedRaw);
+            const matches = loaded.filter(f => preselectedIds.includes(f.id));
+            if (matches.length > 0) {
+              setAttachedProjectFiles(matches);
+            }
+          } catch {}
+          window.localStorage.removeItem('intelligentqa_selected_agent_files');
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load project files for agents:', err);
+    }
+  }, []);
 
   const syncState = useCallback(() => {
     if (typeof window !== 'undefined') {
@@ -147,17 +191,24 @@ export default function QAAgentsWorkspace() {
       setGeminiKey(key);
       const pref = QADatabase.getAiPreference(user?.id);
       setAiPref(pref);
+      loadProjectFilesData(user?.id);
     }
-  }, []);
+  }, [loadProjectFilesData]);
 
   useEffect(() => {
     syncState();
     const handleAuth = () => syncState();
     const handleKey = () => syncState();
     const handleAiPref = () => syncState();
+    const handleProjectFiles = () => {
+      const user = QADatabase.getCurrentUser();
+      loadProjectFilesData(user?.id);
+    };
+
     window.addEventListener('intelligentqa_auth_changed', handleAuth);
     window.addEventListener('intelligentqa_key_changed', handleKey);
     window.addEventListener('intelligentqa_ai_pref_changed', handleAiPref);
+    window.addEventListener('intelligentqa_project_files_updated', handleProjectFiles);
 
     // Support query parameter tab and sidebar custom events
     const params = new URLSearchParams(window.location.search);
@@ -177,9 +228,10 @@ export default function QAAgentsWorkspace() {
       window.removeEventListener('intelligentqa_auth_changed', handleAuth);
       window.removeEventListener('intelligentqa_key_changed', handleKey);
       window.removeEventListener('intelligentqa_ai_pref_changed', handleAiPref);
+      window.removeEventListener('intelligentqa_project_files_updated', handleProjectFiles);
       window.removeEventListener('intelligentqa_switch_agent_tab', handleSwitch);
     };
-  }, [syncState]);
+  }, [syncState, loadProjectFilesData]);
 
   const handleTabSwitch = (newTab: AgentTab) => {
     setActiveTab(newTab);
@@ -251,17 +303,24 @@ export default function QAAgentsWorkspace() {
         headers['x-gemini-api-key'] = geminiKey;
       }
 
+      // Combine user input with any attached project files context
+      const fullInput =
+        attachedProjectFiles.length > 0
+          ? `${inputPrompt}\n\n${formatContextForAgents(attachedProjectFiles)}`
+          : inputPrompt;
+
       const res = await fetch('/api/ai/qa-agent', {
         method: 'POST',
         headers,
         body: JSON.stringify({
           action: activeTab,
-          input: inputPrompt,
+          input: fullInput,
           techStack,
           apiKey: geminiKey,
           options: {
             coverage: coverageFilters,
             sourceFile: importedFile?.fileName,
+            attachedFilesCount: attachedProjectFiles.length,
           },
         }),
       });
@@ -303,11 +362,16 @@ export default function QAAgentsWorkspace() {
         headers['x-gemini-api-key'] = geminiKey;
       }
 
+      const fullChatMessage =
+        attachedProjectFiles.length > 0
+          ? `${userMsg}\n\n${formatContextForAgents(attachedProjectFiles)}`
+          : userMsg;
+
       const res = await fetch('/api/ai/qa-chat', {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          message: userMsg,
+          message: fullChatMessage,
           apiKey: geminiKey,
         }),
       });
@@ -346,6 +410,15 @@ export default function QAAgentsWorkspace() {
 
   const currentAgent = AGENT_CONFIGS[activeTab] || AGENT_CONFIGS.requirements;
   const AgentIcon = currentAgent.icon;
+
+  const getFileIcon = (type: string) => {
+    const t = type.toLowerCase();
+    if (t === 'pdf') return <FileText className="w-3.5 h-3.5 text-rose-500 shrink-0" />;
+    if (t === 'xlsx' || t === 'xls' || t === 'csv') return <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500 shrink-0" />;
+    if (t === 'pptx' || t === 'ppt') return <Presentation className="w-3.5 h-3.5 text-amber-500 shrink-0" />;
+    if (t === 'md' || t === 'txt' || t === 'json') return <FileCode className="w-3.5 h-3.5 text-cyan-500 shrink-0" />;
+    return <FileCheck className="w-3.5 h-3.5 text-blue-500 shrink-0" />;
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 md:p-6 space-y-6">
@@ -511,21 +584,106 @@ export default function QAAgentsWorkspace() {
                   )}
                 </label>
 
-                {/* Target is STRICTLY HIDDEN on Requirement Generator and Test Case Generator */}
-                {activeTab === 'automation_code' || activeTab === 'code_review' ? (
-                  <span className="text-[11px] text-slate-400">
-                    Target: <strong className="text-emerald-600 font-semibold">{techStack}</strong>
-                  </span>
-                ) : activeTab === 'requirements' ? (
-                  <span className="text-[11px] text-slate-400">
-                    Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD &amp; Criteria</strong>
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-slate-400">
-                    Output: <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">QA Test Matrix</strong>
-                  </span>
-                )}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Target is STRICTLY HIDDEN on Requirement Generator and Test Case Generator */}
+                  {activeTab === 'automation_code' || activeTab === 'code_review' ? (
+                    <span className="text-[11px] text-slate-400">
+                      Target: <strong className="text-emerald-600 font-semibold">{techStack}</strong>
+                    </span>
+                  ) : activeTab === 'requirements' ? (
+                    <span className="text-[11px] text-slate-400">
+                      Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD &amp; Criteria</strong>
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-slate-400">
+                      Output: <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">QA Test Matrix</strong>
+                    </span>
+                  )}
+
+                  {/* Attach Project Files Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
+                      setShowAttachFilesModal(true);
+                    }}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer shadow-xs ${
+                      attachedProjectFiles.length > 0
+                        ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-300 font-bold'
+                        : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-zinc-300'
+                    }`}
+                    title="Attach project requirements, test matrices, specs (.pdf, .md, .xlsx, .pptx) into agent context"
+                  >
+                    <Paperclip className="w-3.5 h-3.5 text-blue-500" />
+                    <span>Attach Project Files</span>
+                    {attachedProjectFiles.length > 0 && (
+                      <span className="px-1.5 py-0.2 rounded-full bg-blue-600 text-white font-mono text-[10px]">
+                        {attachedProjectFiles.length}
+                      </span>
+                    )}
+                  </button>
+                </div>
               </div>
+
+              {/* Attached Project Files Tray */}
+              {attachedProjectFiles.length > 0 && (
+                <div className="p-3 bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-blue-900 dark:text-blue-200">
+                      <FolderKanban className="w-4 h-4 text-blue-500" />
+                      <span>Attached Project Context ({attachedProjectFiles.length} file{attachedProjectFiles.length > 1 ? 's' : ''})</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
+                          setShowAttachFilesModal(true);
+                        }}
+                        className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                      >
+                        + Add More
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAttachedProjectFiles([])}
+                        className="text-[11px] font-semibold text-slate-400 hover:text-rose-500 cursor-pointer"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {attachedProjectFiles.map(file => (
+                      <div
+                        key={file.id}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 text-xs shadow-2xs"
+                      >
+                        {getFileIcon(file.type)}
+                        <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
+                          {file.name}
+                        </span>
+                        <span className="text-[10px] text-blue-600 dark:text-blue-400 font-mono">
+                          ({(file.size / 1024).toFixed(1)}KB)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setAttachedProjectFiles(prev => prev.filter(f => f.id !== file.id))}
+                          className="p-0.5 text-slate-400 hover:text-rose-500 rounded cursor-pointer"
+                          title="Remove from context"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-[11px] text-blue-700 dark:text-blue-300">
+                    ✓ Grounding Active: The agent will ingest the extracted requirements from these {attachedProjectFiles.length} file(s) into its prompt context.
+                  </p>
+                </div>
+              )}
 
               {/* SPECIALIZED FEATURE: File Import (Word, Excel, PDF) for Test Case Generator */}
               {activeTab === 'test_cases' && (
@@ -930,29 +1088,251 @@ export default function QAAgentsWorkspace() {
             )}
           </div>
 
-          {/* Chat Input */}
-          <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3">
-            <input
-              type="text"
-              disabled={!geminiKey}
-              value={chatInput}
-              onChange={e => setChatInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSendChat()}
-              placeholder={
-                !geminiKey
-                  ? 'Gemini API Key required in Left Navigation under AI Tools & Agents to chat...'
-                  : 'Ask about locators, framework architecture, or debugging a stack trace...'
-              }
-              className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <button
-              onClick={handleSendChat}
-              disabled={!geminiKey || isGenerating || !chatInput.trim()}
-              className="py-3 px-5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
-            >
-              {!geminiKey ? <Lock className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-              {!geminiKey ? 'Locked' : 'Send'}
-            </button>
+          {/* Chat Input & Attached Project Files */}
+          <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 space-y-2.5">
+            {/* Attached Context Files Tray in Chat */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
+                    setShowAttachFilesModal(true);
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer shadow-xs ${
+                    attachedProjectFiles.length > 0
+                      ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-300 font-bold'
+                      : 'bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-zinc-300'
+                  }`}
+                  title="Attach project requirements, test matrices, specs (.pdf, .md, .xlsx, .pptx) into mentor context"
+                >
+                  <Paperclip className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Attach Project Files</span>
+                  {attachedProjectFiles.length > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full bg-blue-600 text-white font-mono text-[10px]">
+                      {attachedProjectFiles.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              {attachedProjectFiles.length > 0 && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {attachedProjectFiles.map(file => (
+                    <div
+                      key={file.id}
+                      className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-100/70 dark:bg-blue-950/80 border border-blue-300 dark:border-blue-800 text-[11px] font-semibold text-blue-900 dark:text-blue-200"
+                    >
+                      {getFileIcon(file.type)}
+                      <span className="truncate max-w-[120px]">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setAttachedProjectFiles(prev => prev.filter(f => f.id !== file.id))}
+                        className="text-slate-400 hover:text-rose-500 cursor-pointer ml-0.5"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setAttachedProjectFiles([])}
+                    className="text-[10px] text-slate-400 hover:text-rose-500 underline ml-1 cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                disabled={!geminiKey}
+                value={chatInput}
+                onChange={e => setChatInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSendChat()}
+                placeholder={
+                  !geminiKey
+                    ? 'Gemini API Key required in Left Navigation under AI Tools & Agents to chat...'
+                    : 'Ask about locators, framework architecture, or attached project specs...'
+                }
+                className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <button
+                onClick={handleSendChat}
+                disabled={!geminiKey || isGenerating || !chatInput.trim()}
+                className="py-3 px-5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed shrink-0 shadow-sm"
+              >
+                {!geminiKey ? <Lock className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+                {!geminiKey ? 'Locked' : 'Send'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* MODAL: ATTACH PROJECT FILES TO AGENT CONTEXT                 */}
+      {/* ============================================================ */}
+      {showAttachFilesModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xs p-4 flex items-center justify-center min-h-screen">
+          <div className="relative my-auto w-full max-w-2xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] rounded-3xl shadow-2xl p-6 space-y-4 max-h-[85vh] flex flex-col font-sans">
+            <div className="flex items-start justify-between pb-3 border-b border-slate-200 dark:border-[#262626] shrink-0">
+              <div className="flex items-center gap-2">
+                <FolderKanban className="w-5 h-5 text-blue-500" />
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    Attach Project Files to AI QA Agent Context
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">
+                    Select multiple files using the checkboxes below to ground this agent with real project documentation.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAttachFilesModal(false)}
+                className="text-slate-400 hover:text-white p-1 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Controls: Folder Filter & Select All */}
+            <div className="flex items-center justify-between gap-3 shrink-0 flex-wrap">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="font-semibold text-slate-600 dark:text-zinc-300">Folder:</span>
+                <select
+                  value={modalFolderFilter}
+                  onChange={e => setModalFolderFilter(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-[#0F0F0F] border border-slate-300 dark:border-[#333] text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                >
+                  <option value="All">All Folders</option>
+                  {Array.from(new Set(allProjectFiles.map(f => f.folder))).map(folder => (
+                    <option key={folder} value={folder}>
+                      {folder}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const visibleFiles = allProjectFiles.filter(
+                      f => modalFolderFilter === 'All' || f.folder === modalFolderFilter
+                    );
+                    if (selectedModalFileIds.length === visibleFiles.length) {
+                      setSelectedModalFileIds([]);
+                    } else {
+                      setSelectedModalFileIds(visibleFiles.map(f => f.id));
+                    }
+                  }}
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                >
+                  {selectedModalFileIds.length > 0 ? 'Clear All' : 'Select All'}
+                </button>
+                <span className="text-xs text-slate-400">•</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  {selectedModalFileIds.length} Selected
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Files List */}
+            <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-[#242424] border border-slate-200 dark:border-[#262626] rounded-2xl">
+              {allProjectFiles.filter(f => modalFolderFilter === 'All' || f.folder === modalFolderFilter).length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400 space-y-2">
+                  <p>No project files found in this folder.</p>
+                  <Link href="/project-files" className="text-blue-500 font-bold hover:underline">
+                    Go to Project Files to upload documents →
+                  </Link>
+                </div>
+              ) : (
+                allProjectFiles
+                  .filter(f => modalFolderFilter === 'All' || f.folder === modalFolderFilter)
+                  .map(file => {
+                    const isChecked = selectedModalFileIds.includes(file.id);
+
+                    return (
+                      <div
+                        key={file.id}
+                        onClick={() => {
+                          setSelectedModalFileIds(prev =>
+                            prev.includes(file.id) ? prev.filter(id => id !== file.id) : [...prev, file.id]
+                          );
+                        }}
+                        className={`p-3 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-[#1C1C1C] cursor-pointer transition ${
+                          isChecked ? 'bg-blue-50/50 dark:bg-blue-950/20' : ''
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <button
+                            type="button"
+                            className="text-slate-400 hover:text-blue-500 shrink-0"
+                          >
+                            {isChecked ? (
+                              <CheckSquare className="w-4 h-4 text-blue-500" />
+                            ) : (
+                              <Square className="w-4 h-4" />
+                            )}
+                          </button>
+
+                          <div className="flex items-center gap-2 min-w-0">
+                            {getFileIcon(file.type)}
+                            <div className="min-w-0">
+                              <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                                {file.name}
+                              </div>
+                              <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+                                {file.folder} • {(file.size / 1024).toFixed(1)} KB • {file.summary}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] uppercase font-mono font-bold text-slate-400 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-[#222]">
+                          .{file.type}
+                        </span>
+                      </div>
+                    );
+                  })
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-[#262626] shrink-0 flex-wrap gap-2">
+              <Link
+                href="/project-files"
+                className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+              >
+                <span>Upload more in Project Files Vault</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAttachFilesModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-[#222] text-slate-700 dark:text-zinc-300 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const matched = allProjectFiles.filter(f => selectedModalFileIds.includes(f.id));
+                    setAttachedProjectFiles(matched);
+                    setShowAttachFilesModal(false);
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md cursor-pointer"
+                >
+                  Attach to Context ({selectedModalFileIds.length})
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

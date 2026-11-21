@@ -30,6 +30,8 @@ export async function parseRequirementsFile(file: File): Promise<ParsedRequireme
       extractedText = await parseDocxFile(file);
     } else if (ext === 'xlsx' || ext === 'xls') {
       extractedText = await parseExcelFile(file);
+    } else if (ext === 'pptx' || ext === 'ppt') {
+      extractedText = await parsePptxFile(file);
     } else if (ext === 'pdf') {
       extractedText = await parsePdfFile(file);
     } else {
@@ -112,6 +114,44 @@ async function parseExcelFile(file: File): Promise<string> {
   // Fallback: extract string cells or printable text
   const fallback = extractExcelRegexFallback(arrayBuffer);
   return fallback || (await parseTextFile(file));
+}
+
+/**
+ * PowerPoint .pptx / .ppt parser
+ * PPTX is a zip containing ppt/slides/slide1.xml, slide2.xml, etc. with <a:t> text tags
+ */
+async function parsePptxFile(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer();
+  // Target slide XMLs
+  const slideTargets = [
+    'ppt/slides/slide1.xml',
+    'ppt/slides/slide2.xml',
+    'ppt/slides/slide3.xml',
+    'ppt/slides/slide4.xml',
+    'ppt/slides/slide5.xml',
+    'ppt/slides/slide6.xml',
+    'ppt/slides/slide7.xml',
+    'ppt/slides/slide8.xml',
+    'ppt/slides/slide9.xml',
+    'ppt/slides/slide10.xml',
+    'ppt/slides/slide11.xml',
+    'ppt/slides/slide12.xml',
+  ];
+
+  const texts: string[] = [];
+  for (const target of slideTargets) {
+    const textFromZip = await extractTextFromZip(arrayBuffer, [target]);
+    if (textFromZip) {
+      texts.push(extractXmlText(textFromZip));
+    }
+  }
+
+  if (texts.length > 0) {
+    return texts.join('\n\n--- Slide ---\n\n');
+  }
+
+  // Fallback: extract printable strings from raw buffer
+  return extractDocxRegexFallback(arrayBuffer);
 }
 
 /**
@@ -224,8 +264,8 @@ function extractXmlText(xml: string): string {
     .replace(/<\/w:tr>/g, '\n')
     .replace(/<\/row>/g, '\n');
 
-  // Match all <w:t> or <t> nodes
-  const textMatches = withLineBreaks.match(/<(w:t|t)[^>]*>([\s\S]*?)<\/(w:t|t)>/g);
+  // Match all <w:t>, <t>, or <a:t> nodes
+  const textMatches = withLineBreaks.match(/<(w:t|t|a:t)[^>]*>([\s\S]*?)<\/(w:t|t|a:t)>/g);
   if (textMatches) {
     return textMatches
       .map(m => m.replace(/<[^>]+>/g, ''))

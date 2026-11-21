@@ -38,6 +38,7 @@ import {
   MessageSquare,
   Gamepad2,
   Compass,
+  FolderKanban,
   Eye,
   EyeOff,
   ArrowUp,
@@ -832,6 +833,22 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </div>
                 <span className="text-[9px] font-mono font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded shrink-0">
                   MOCK
+                </span>
+              </Link>
+
+              {/* 7. Project Files/Folder */}
+              <Link
+                href="/project-files"
+                onClick={onCloseMobile}
+                className={childItemClass(pathname === '/project-files')}
+                title="Project Files & Folders: Keep and manage project documents (PDF, MD, Excel, PPT) for AI QA Agents context"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <FolderKanban className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                  <span className="truncate">Project Files</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded shrink-0">
+                  DOCS
                 </span>
               </Link>
             </div>
