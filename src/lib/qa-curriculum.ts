@@ -34,7 +34,7 @@ export const QA_TRACKS: Track[] = [
             badge: 'selenium',
             level: 'Beginner',
             manualContext: {
-              title: "Manual Tester Mental Model",
+              title: "Framework Architecture & Lifecycle",
               steps: ["Every test needs browser launch, maximize, cookies clear, and teardown.", "Copying setup code across 100 classes causes chaos."],
               painPoints: ["Copy-pasting 'new ChromeDriver()' into every test creates memory leaks and unmaintainable code."]
             },

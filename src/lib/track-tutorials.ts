@@ -795,7 +795,7 @@ In UI Mode:
       {
         stepNumber: 1,
         title: 'Introduction & Why Migrate from Postman to Code',
-        badge: 'Mental Model',
+        badge: 'Core Architecture',
         summary: 'Understand the limitations of manual Postman collections in enterprise CI/CD and why code automation scales.',
         description: `While Postman GUI is excellent for manual exploratory requests, enterprise automation teams migrate to REST Assured because:
 1. Postman collections are bulky JSON files that cause painful Git merge conflicts across multi-engineer teams.

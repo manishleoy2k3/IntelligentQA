@@ -30,7 +30,7 @@ def generate():
                             "desc": "Map Encapsulation, Inheritance, Polymorphism, and Abstraction directly to QA framework architecture.",
                             "mins": 150, # 2.5h
                             "level": "Beginner",
-                            "manualTitle": "Manual Tester Mental Model",
+                            "manualTitle": "Framework Architecture & Lifecycle",
                             "steps": ["Every test needs browser launch, maximize, cookies clear, and teardown.", "Copying setup code across 100 classes causes chaos."],
                             "pains": ["Copy-pasting 'new ChromeDriver()' into every test creates memory leaks and unmaintainable code."],
                             "pwCode": "import { test } from '@playwright/test';\ntest('login', async ({ page }) => { await page.goto('/login'); });",

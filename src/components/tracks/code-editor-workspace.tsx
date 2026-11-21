@@ -292,7 +292,7 @@ export default function CodeEditorWorkspace({
   useEffect(() => {
     setCode(getCodeForLanguage(selectedLang, lsn, track.id));
   }, [lsn.id, selectedLang, track.id]);
-  const [activeTab, setActiveTab] = useState<'guide' | 'manual-vs-code' | 'ai-action'>('guide');
+  const [activeTab, setActiveTab] = useState<'guide' | 'ai-action'>('guide');
   const [validationResult, setValidationResult] = useState<{
     passed: boolean;
     message: string;
@@ -570,17 +570,6 @@ export default function CodeEditorWorkspace({
               Concept Guide
             </button>
             <button
-              onClick={() => setActiveTab('manual-vs-code')}
-              className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
-                activeTab === 'manual-vs-code'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              <Code className="w-4 h-4" />
-              Manual QA Mental Model
-            </button>
-            <button
               onClick={() => setActiveTab('ai-action')}
               className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'ai-action'
@@ -852,39 +841,78 @@ export default function CodeEditorWorkspace({
                   </div>
                 </div>
 
-                {/* 5. Manual QA to SDET Transition Bridge (Comparative Table) */}
-                {doc.manualToAutomatedBridge.length > 0 && (
+                {/* 5. Manual QA to SDET Transition Bridge (Comparative Table & Merged Manual Context) */}
+                {(doc.manualToAutomatedBridge.length > 0 || (lesson.manualContext && (lesson.manualContext.steps?.length > 0 || lesson.manualContext.painPoints?.length > 0))) && (
                   <div className="space-y-3">
                     <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
                       <ArrowRightCircle className="w-5 h-5 text-sky-500" />
                       Manual QA to Modern SDET Transition Bridge
                     </h4>
-                    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                      <table className="w-full text-left border-collapse text-xs md:text-sm">
-                        <thead>
-                          <tr className="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
-                            <th className="p-3 font-bold">Manual Testing Action</th>
-                            <th className="p-3 font-bold">Modern Automated SDET Code</th>
-                            <th className="p-3 font-bold">Why This Eliminates Flakiness</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
-                          {doc.manualToAutomatedBridge.map((row, i) => (
-                            <tr key={i} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                              <td className="p-3 text-slate-600 dark:text-slate-400 font-medium">
-                                {row.manualAction}
-                              </td>
-                              <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                                {row.automatedApproach}
-                              </td>
-                              <td className="p-3 text-slate-500 dark:text-slate-400">
-                                {row.whyItMatters}
-                              </td>
+                    {doc.manualToAutomatedBridge.length > 0 && (
+                      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                        <table className="w-full text-left border-collapse text-xs md:text-sm">
+                          <thead>
+                            <tr className="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
+                              <th className="p-3 font-bold">Manual Testing Action</th>
+                              <th className="p-3 font-bold">Modern Automated SDET Code</th>
+                              <th className="p-3 font-bold">Why This Eliminates Flakiness</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
+                            {doc.manualToAutomatedBridge.map((row, i) => (
+                              <tr key={i} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                                <td className="p-3 text-slate-600 dark:text-slate-400 font-medium">
+                                  {row.manualAction}
+                                </td>
+                                <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                                  {row.automatedApproach}
+                                </td>
+                                <td className="p-3 text-slate-500 dark:text-slate-400">
+                                  {row.whyItMatters}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {/* Merged Manual Verification Flow & Friction Points where they add value */}
+                    {lesson.manualContext && (
+                      (lesson.manualContext.steps && lesson.manualContext.steps.length > 0 && !lesson.manualContext.steps.every(s => s.toLowerCase().includes('execute verification steps') || s.toLowerCase().includes('execute manual test steps'))) ||
+                      (lesson.manualContext.painPoints && lesson.manualContext.painPoints.length > 0 && !lesson.manualContext.painPoints.every(p => p.toLowerCase().includes('repetitive and slow') || p.toLowerCase().includes('slow and error-prone')))
+                    ) && (
+                      <div className="p-4 md:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                        <div className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
+                          Manual Verification Context: {lesson.manualContext.title}
+                        </div>
+                        {lesson.manualContext.steps && lesson.manualContext.steps.length > 0 && !lesson.manualContext.steps.every(s => s.toLowerCase().includes('execute verification steps') || s.toLowerCase().includes('execute manual test steps')) && (
+                          <div className="space-y-1">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                              Manual Verification Flow:
+                            </span>
+                            <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                              {lesson.manualContext.steps.map((st, i) => (
+                                <li key={i}>{st}</li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
+                        {lesson.manualContext.painPoints && lesson.manualContext.painPoints.length > 0 && !lesson.manualContext.painPoints.every(p => p.toLowerCase().includes('repetitive and slow') || p.toLowerCase().includes('slow and error-prone')) && (
+                          <div className="pt-2 border-t border-slate-200 dark:border-slate-700/60">
+                            <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
+                              Manual QA Friction Points:
+                            </span>
+                            <ul className="list-disc pl-5 mt-1 space-y-0.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                              {lesson.manualContext.painPoints.map((pp, i) => (
+                                <li key={i}>{pp}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -963,32 +991,6 @@ export default function CodeEditorWorkspace({
               </div>
             );
           })()}
-
-          {activeTab === 'manual-vs-code' && (
-            <div className="space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3.5">
-                <h4 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
-                  Manual Verification Flow: {lesson.manualContext.title}
-                </h4>
-                <ol className="list-decimal pl-5 space-y-1.5 text-sm sm:text-base text-slate-700 dark:text-slate-300">
-                  {lesson.manualContext.steps.map((st, i) => (
-                    <li key={i}>{st}</li>
-                  ))}
-                </ol>
-
-                <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
-                  <span className="font-semibold text-rose-600 dark:text-rose-400 text-sm sm:text-base">
-                    Manual QA Pain Points:
-                  </span>
-                  <ul className="list-disc pl-5 mt-1.5 space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                    {lesson.manualContext.painPoints.map((pp, i) => (
-                      <li key={i}>{pp}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          )}
 
           {activeTab === 'ai-action' && (
             <div className="space-y-5">
