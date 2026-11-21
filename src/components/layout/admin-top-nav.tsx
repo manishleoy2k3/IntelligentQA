@@ -24,6 +24,7 @@ interface AdminTopNavProps {
 
 const SECTION_TITLES: Record<string, string> = {
   overview: 'Administration Dashboard',
+  cms: 'Open-Source CMS & Publishing Engine',
   course: 'Course & Curriculum Management',
   labs: 'Practice Labs & Sandbox Editor',
   agents: 'AI Tools & QA Agents Suite',

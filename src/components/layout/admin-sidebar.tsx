@@ -37,6 +37,13 @@ export default function AdminSidebar({
       color: 'text-indigo-400',
     },
     {
+      id: 'cms',
+      name: 'CMS & Publishing',
+      href: '/admin/cms',
+      icon: BookOpen,
+      color: 'text-purple-400',
+    },
+    {
       id: 'course',
       name: 'Course',
       href: '/admin?section=course',
