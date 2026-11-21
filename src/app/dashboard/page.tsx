@@ -61,11 +61,19 @@ export default function UserDashboardPage() {
       QADatabase.getArtifacts(current.id).then(setArtifacts);
     };
 
+    const handleProgressChange = () => {
+      const current = QADatabase.getCurrentUser() || DEMO_USER;
+      QADatabase.getProgress(current.id).then(setProgress);
+      QADatabase.getProfile(current.id).then(p => p && setProfile(p));
+    };
+
     window.addEventListener('intelligentqa_auth_changed', handleAuthChange);
     window.addEventListener('intelligentqa_artifacts_changed', handleArtifactsChange);
+    window.addEventListener('intelligentqa_progress_updated', handleProgressChange);
     return () => {
       window.removeEventListener('intelligentqa_auth_changed', handleAuthChange);
       window.removeEventListener('intelligentqa_artifacts_changed', handleArtifactsChange);
+      window.removeEventListener('intelligentqa_progress_updated', handleProgressChange);
     };
   }, []);
 

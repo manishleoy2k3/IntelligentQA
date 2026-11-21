@@ -21,8 +21,18 @@ export default function TracksDirectoryPage() {
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
 
   useEffect(() => {
-    const user = QADatabase.getCurrentUser() || DEMO_USER;
-    QADatabase.getProgress(user.id).then(setUserProgress);
+    const fetchProgress = () => {
+      const user = QADatabase.getCurrentUser() || DEMO_USER;
+      QADatabase.getProgress(user.id).then(setUserProgress);
+    };
+    fetchProgress();
+
+    window.addEventListener('intelligentqa_progress_updated', fetchProgress);
+    window.addEventListener('intelligentqa_auth_changed', fetchProgress);
+    return () => {
+      window.removeEventListener('intelligentqa_progress_updated', fetchProgress);
+      window.removeEventListener('intelligentqa_auth_changed', fetchProgress);
+    };
   }, []);
 
   const getProgressPercentage = (trackId: string, totalLessons: number) => {

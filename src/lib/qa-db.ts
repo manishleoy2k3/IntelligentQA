@@ -778,27 +778,31 @@ export const QADatabase = {
 
   async markLessonComplete(userId: string, trackId: TrackId, moduleId: string, lessonId: string): Promise<UserProgress> {
     const all = await this.getProgress(userId);
+    let record: UserProgress;
     const existing = all.find(p => p.trackId === trackId && p.lessonId === lessonId);
     if (existing) {
       existing.status = 'completed';
       existing.completedAt = new Date().toISOString();
-      return existing;
+      record = existing;
+    } else {
+      record = {
+        id: `prog_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        userId,
+        trackId,
+        moduleId,
+        lessonId,
+        status: 'completed',
+        completedAt: new Date().toISOString(),
+      };
+      all.push(record);
     }
 
-    const newRecord: UserProgress = {
-      id: `prog_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
-      userId,
-      trackId,
-      moduleId,
-      lessonId,
-      status: 'completed',
-      completedAt: new Date().toISOString(),
-    };
-
-    all.push(newRecord);
     memoryDb.userProgress.set(userId, all);
     if (isBrowser()) {
       setStoredItem(`intelligentqa_progress_${userId}`, all);
+      window.dispatchEvent(new CustomEvent('intelligentqa_progress_updated', {
+        detail: { userId, trackId, moduleId, lessonId, status: 'completed' }
+      }));
     }
 
     // Also update streak if needed
@@ -807,7 +811,49 @@ export const QADatabase = {
       await this.updateProfile(userId, { streakCount: profile.streakCount + 1 });
     }
 
-    return newRecord;
+    return record;
+  },
+
+  async toggleLessonStatus(
+    userId: string,
+    trackId: TrackId,
+    moduleId: string,
+    lessonId: string,
+    forcedStatus?: 'completed' | 'in-progress'
+  ): Promise<UserProgress> {
+    const all = await this.getProgress(userId);
+    let record: UserProgress;
+    const existing = all.find(p => p.trackId === trackId && p.lessonId === lessonId);
+    const newStatus = forcedStatus || (existing?.status === 'completed' ? 'in-progress' : 'completed');
+
+    if (existing) {
+      existing.status = newStatus;
+      if (newStatus === 'completed') {
+        existing.completedAt = new Date().toISOString();
+      }
+      record = existing;
+    } else {
+      record = {
+        id: `prog_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        userId,
+        trackId,
+        moduleId,
+        lessonId,
+        status: newStatus,
+        completedAt: newStatus === 'completed' ? new Date().toISOString() : undefined,
+      };
+      all.push(record);
+    }
+
+    memoryDb.userProgress.set(userId, all);
+    if (isBrowser()) {
+      setStoredItem(`intelligentqa_progress_${userId}`, all);
+      window.dispatchEvent(new CustomEvent('intelligentqa_progress_updated', {
+        detail: { userId, trackId, moduleId, lessonId, status: newStatus }
+      }));
+    }
+
+    return record;
   },
 
   // Code Submissions

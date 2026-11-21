@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Track } from '@/types/qa';
-import { QADatabase } from '@/lib/qa-db';
+import { QADatabase, DEMO_USER } from '@/lib/qa-db';
+import { UserProgress } from '@/types/qa';
 import {
   Sparkles,
   Clock,
@@ -242,6 +243,7 @@ export default function TrackOverviewClient({
     }
     return initialTrack;
   });
+  const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -251,16 +253,34 @@ export default function TrackOverviewClient({
           setTrack(fromDb);
         }
       };
+      const syncProgress = () => {
+        const u = QADatabase.getCurrentUser() || DEMO_USER;
+        QADatabase.getProgress(u.id, initialTrack.id as any).then(setUserProgress);
+      };
+
       syncTrack();
+      syncProgress();
+
       window.addEventListener('intelligentqa_curriculum_updated', syncTrack);
+      window.addEventListener('intelligentqa_progress_updated', syncProgress);
+      window.addEventListener('intelligentqa_auth_changed', syncProgress);
+
       return () => {
         window.removeEventListener('intelligentqa_curriculum_updated', syncTrack);
+        window.removeEventListener('intelligentqa_progress_updated', syncProgress);
+        window.removeEventListener('intelligentqa_auth_changed', syncProgress);
       };
     }
   }, [initialTrack.id]);
 
   const allLessons = track.modules.flatMap((m) => m.lessons);
-  const firstLesson = allLessons[0];
+  const completedLessonIds = new Set(
+    userProgress.filter(p => p.status === 'completed').map(p => p.lessonId)
+  );
+  const completedCount = completedLessonIds.size;
+  const totalLessons = allLessons.length;
+  const percentCompleted = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0;
+  const nextLesson = allLessons.find(l => !completedLessonIds.has(l.id)) || allLessons[0];
   const architectModel = ARCHITECT_TRACK_MODELS[track.id];
 
   return (
@@ -282,33 +302,35 @@ export default function TrackOverviewClient({
           {track.description}
         </p>
 
-        {/* Free Access Policy Pill */}
-        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-900 dark:text-emerald-200 text-xs flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>
-              <strong>100% Free Learning Portal:</strong> Lesson 1 is open for guest preview. Create a free account to unlock all subsequent modules and in-browser code labs.
-            </span>
+        {/* Track Completion & Progress Banner (Replaces Guest Preview Banner for Logged-In Users) */}
+        <div className="p-4 sm:p-5 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center justify-between text-xs sm:text-sm font-semibold">
+              <span className="text-slate-300 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                Track Progress
+              </span>
+              <span className="text-emerald-400 font-mono font-bold">
+                {completedCount} / {totalLessons} Lessons ({percentCompleted}%)
+              </span>
+            </div>
+            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-emerald-500 rounded-full transition-all duration-300"
+                style={{ width: `${percentCompleted}%` }}
+              />
+            </div>
           </div>
-          <Link
-            href="/signup"
-            className="text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:underline shrink-0"
-          >
-            Create Free Account →
-          </Link>
-        </div>
-
-        {firstLesson && (
-          <div className="pt-2">
+          {nextLesson && (
             <Link
-              href={`/tracks/${track.id}/${firstLesson.id}`}
-              className="py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm inline-flex items-center gap-2 shadow-md transition-all"
+              href={`/tracks/${track.id}/${nextLesson.id}`}
+              className="py-3 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm inline-flex items-center gap-2 shadow-md transition-all shrink-0 self-start sm:self-auto"
             >
-              Start Free Preview: {firstLesson.title}
+              <span>{completedCount === 0 ? 'Start Track' : percentCompleted === 100 ? 'Review Track' : 'Continue Track'}: {nextLesson.title}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Concept Guides & Import Hub: Hidden for Selenium WebDriver + Java */}
         {track.id !== 'selenium-java' ? (
@@ -464,8 +486,8 @@ export default function TrackOverviewClient({
             </div>
 
             <div className="divide-y divide-slate-100 dark:divide-slate-800 pt-1">
-              {module.lessons.map((lesson, lIdx) => {
-                const isPreview = mIdx === 0 && lIdx === 0;
+              {module.lessons.map((lesson) => {
+                const isCompleted = completedLessonIds.has(lesson.id);
                 return (
                   <div
                     key={lesson.id}
@@ -479,14 +501,15 @@ export default function TrackOverviewClient({
                         <span className="px-2.5 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
                           {lesson.level}
                         </span>
-                        {isPreview ? (
-                          <span className="px-2.5 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-semibold">
-                            Free Guest Preview
+                        {isCompleted ? (
+                          <span className="px-2.5 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Completed
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 text-xs rounded-full bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 font-medium flex items-center gap-1">
-                            <Lock className="w-3 h-3" />
-                            Free with Signup
+                          <span className="px-2.5 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Not Started
                           </span>
                         )}
                       </div>
@@ -496,12 +519,12 @@ export default function TrackOverviewClient({
                     <Link
                       href={`/tracks/${track.id}/${lesson.id}`}
                       className={`py-2 px-4 rounded-xl text-sm font-semibold transition-colors shrink-0 flex items-center gap-1.5 self-start sm:self-auto ${
-                        isPreview
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-sm'
-                          : 'bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-700 dark:text-slate-300'
+                        isCompleted
+                          ? 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200'
+                          : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
                       }`}
                     >
-                      {isPreview ? 'Preview Free' : 'Open Workspace'}
+                      {isCompleted ? 'Review Lesson' : 'Open Lesson'}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>

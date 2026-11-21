@@ -431,6 +431,38 @@ export default function CodeEditorWorkspace({
   const isLocked = QADatabase.isLessonLocked(track.id, lesson.id, !!currentUser);
   const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
 
+  const allTrackLessons = track.modules.flatMap(m => m.lessons);
+  const currentLessonIdx = allTrackLessons.findIndex(l => l.id === lesson.id);
+  const nextLesson = currentLessonIdx >= 0 && currentLessonIdx < allTrackLessons.length - 1 ? allTrackLessons[currentLessonIdx + 1] : null;
+
+  // Automatically record progress / mark completed upon visiting the section
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const user = currentUser || QADatabase.getCurrentUser() || DEMO_USER;
+
+    if (!isLocked) {
+      QADatabase.getProgress(user.id, track.id as any).then(async (progList) => {
+        const existing = progList.find(p => p.lessonId === lesson.id && p.status === 'completed');
+        if (existing) {
+          setIsCompleted(true);
+        } else {
+          await QADatabase.markLessonComplete(user.id, track.id as any, lesson.moduleId, lesson.id);
+          setIsCompleted(true);
+        }
+      });
+    }
+
+    const handleProgUpdate = (e: any) => {
+      if (e.detail?.lessonId === lesson.id) {
+        setIsCompleted(e.detail.status === 'completed');
+      }
+    };
+    window.addEventListener('intelligentqa_progress_updated', handleProgUpdate);
+    return () => {
+      window.removeEventListener('intelligentqa_progress_updated', handleProgUpdate);
+    };
+  }, [track.id, lesson.id, lesson.moduleId, currentUser, isLocked]);
+
   const handleValidateAndRun = async () => {
     if (isLocked) return;
 
@@ -526,6 +558,28 @@ export default function CodeEditorWorkspace({
               <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-medium">
                 {lesson.level}
               </span>
+
+              {/* Lesson Completion Check Button */}
+              {!isLocked && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const user = currentUser || QADatabase.getCurrentUser() || DEMO_USER;
+                    const newStatus = isCompleted ? 'in-progress' : 'completed';
+                    await QADatabase.toggleLessonStatus(user.id, track.id as any, lesson.moduleId, lesson.id, newStatus);
+                    setIsCompleted(newStatus === 'completed');
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    isCompleted
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:text-emerald-500'
+                  }`}
+                  title={isCompleted ? 'Completed! Click to mark incomplete' : 'Click to mark complete'}
+                >
+                  <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-500 fill-emerald-500/20' : 'text-slate-400'}`} />
+                  <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
+                </button>
+              )}
 
               {/* Concept Guides & Import Hub */}
               <div className="flex items-center gap-1.5 ml-2">
@@ -988,6 +1042,40 @@ export default function CodeEditorWorkspace({
                     </p>
                   </div>
                 )}
+
+                {/* 9. Section Completed & Next Lesson Navigation */}
+                <div className="mt-8 p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">Section Completed</h4>
+                      <p className="text-xs text-slate-400">
+                        {isCompleted
+                          ? 'This lesson is completed and recorded in your overall progress.'
+                          : 'Visiting this section tracks your course completion.'}
+                      </p>
+                    </div>
+                  </div>
+                  {nextLesson ? (
+                    <Link
+                      href={`/tracks/${track.id}/${nextLesson.id}`}
+                      className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-2 transition-all shrink-0 self-start sm:self-auto shadow-md"
+                    >
+                      <span>Next Lesson: {nextLesson.title}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/tracks/${track.id}`}
+                      className="py-2.5 px-5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-2 transition-all shrink-0 self-start sm:self-auto"
+                    >
+                      <span>Track Complete! Back to Overview</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  )}
+                </div>
               </div>
             );
           })()}

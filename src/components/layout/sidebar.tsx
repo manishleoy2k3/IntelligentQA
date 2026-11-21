@@ -54,6 +54,7 @@ interface SidebarProps {
 export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
   const [geminiKey, setGeminiKey] = useState<string>('');
   const [aiPref, setAiPref] = useState<'enabled' | 'opted_out' | 'unset'>('unset');
 
@@ -163,21 +164,35 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       setGeminiKey(QADatabase.getUserGeminiKey(user?.id));
       setAiPref(QADatabase.getAiPreference(user?.id));
 
+      const syncProgress = () => {
+        const u = QADatabase.getCurrentUser();
+        if (u) {
+          QADatabase.getProgress(u.id).then(prog => {
+            const completed = new Set(prog.filter(p => p.status === 'completed').map(p => p.lessonId));
+            setCompletedLessonIds(completed);
+          });
+        }
+      };
+      syncProgress();
+
       const handleAuth = () => {
         const u = QADatabase.getCurrentUser();
         setCurrentUser(u);
         setGeminiKey(QADatabase.getUserGeminiKey(u?.id));
         setAiPref(QADatabase.getAiPreference(u?.id));
+        syncProgress();
       };
 
       window.addEventListener('intelligentqa_auth_changed', handleAuth);
       window.addEventListener('intelligentqa_key_changed', handleAuth);
       window.addEventListener('intelligentqa_ai_pref_changed', handleAuth);
+      window.addEventListener('intelligentqa_progress_updated', syncProgress);
 
       return () => {
         window.removeEventListener('intelligentqa_auth_changed', handleAuth);
         window.removeEventListener('intelligentqa_key_changed', handleAuth);
         window.removeEventListener('intelligentqa_ai_pref_changed', handleAuth);
+        window.removeEventListener('intelligentqa_progress_updated', syncProgress);
       };
     }
   }, []);
@@ -489,6 +504,9 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                     className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1"
                                     title={lesson.title}
                                   >
+                                    {completedLessonIds.has(lesson.id) && (
+                                      <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                                    )}
                                     <span className="truncate">{lesson.title}</span>
                                     {lesson.disabled && (
                                       <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 font-bold">
@@ -675,6 +693,24 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           )}
         </div>
 
+        {/* SECTION: INTERVIEW QUESTIONS (Direct Single Click to View All Questions on Right) */}
+        <div className="space-y-1 pt-1">
+          <Link
+            href="/interview-questions"
+            onClick={onCloseMobile}
+            className={`w-full ${navItemClass(pathname === '/interview-questions')} justify-between`}
+            title="800+ Curated SDET & Automation Interview Question Bank"
+          >
+            <div className="flex items-center gap-3">
+              <HelpCircle className="w-4 h-4 shrink-0 text-sky-500" />
+              <span>Interview Questions</span>
+            </div>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold">
+              800+ Qs
+            </span>
+          </Link>
+        </div>
+
         {/* SECTION: AI QA AGENTS (Consolidated Suite including AI Interview Griller) */}
         <div className="space-y-1 pt-1">
           <button
@@ -800,24 +836,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               </Link>
             </div>
           )}
-        </div>
-
-        {/* SECTION: INTERVIEW QUESTIONS (Direct Single Click to View All Questions on Right) */}
-        <div className="space-y-1 pt-1">
-          <Link
-            href="/interview-questions"
-            onClick={onCloseMobile}
-            className={`w-full ${navItemClass(pathname === '/interview-questions')} justify-between`}
-            title="800+ Curated SDET & Automation Interview Question Bank"
-          >
-            <div className="flex items-center gap-3">
-              <HelpCircle className="w-4 h-4 shrink-0 text-sky-500" />
-              <span>Interview Questions</span>
-            </div>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold">
-              800+ Qs
-            </span>
-          </Link>
         </div>
 
         {/* ADMIN CMS (Strictly Role-Based: Admin Only) */}
