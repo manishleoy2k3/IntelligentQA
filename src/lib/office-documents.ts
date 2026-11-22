@@ -798,27 +798,37 @@ export async function extractTextFromOfficeZip(
   // Parse DOCX document.xml
   if (fileType === 'docx' && targetFiles['word/document.xml']) {
     const xml = targetFiles['word/document.xml'];
-    // Extract tables
-    const tableRegex = /<w:tbl[\s\S]*?<\/w:tbl>/gi;
-    const tables = xml.match(tableRegex) || [];
-    let extractedText = '';
+    // Extract both paragraphs and tables in sequential document order to keep content flow intact
+    const elemRegex = /<w:p[\s\S]*?<\/w:p>|<w:tbl[\s\S]*?<\/w:tbl>/gi;
+    const elements = xml.match(elemRegex) || [];
+    const docParts: string[] = [];
 
-    for (const tbl of tables) {
-      const rows = tbl.match(/<w:tr[\s\S]*?<\/w:tr>/gi) || [];
-      extractedText += '\n<table>\n';
-      for (const row of rows) {
-        const cells = row.match(/<w:tc[\s\S]*?<\/w:tc>/gi) || [];
-        extractedText += '<tr>';
-        for (const cell of cells) {
-          const cellText = extractFormattedWordCell(cell);
-          extractedText += `<td>${cellText}</td>`;
+    for (const elem of elements) {
+      if (elem.startsWith('<w:tbl') || elem.startsWith('<w:tbl ')) {
+        const rows = elem.match(/<w:tr[\s\S]*?<\/w:tr>/gi) || [];
+        let tableHtml = '\n<table>\n';
+        for (const row of rows) {
+          const cells = row.match(/<w:tc[\s\S]*?<\/w:tc>/gi) || [];
+          tableHtml += '<tr>';
+          for (const cell of cells) {
+            const cellText = extractFormattedWordCell(cell);
+            tableHtml += `<td>${cellText}</td>`;
+          }
+          tableHtml += '</tr>\n';
         }
-        extractedText += '</tr>\n';
+        tableHtml += '</table>\n';
+        docParts.push(tableHtml);
+      } else {
+        const pText = extractFormattedWordParagraph(elem);
+        if (pText) {
+          docParts.push(pText);
+        }
       }
-      extractedText += '</table>\n';
     }
 
-    if (extractedText.trim()) return extractedText;
+    if (docParts.length > 0) {
+      return docParts.join('\n\n');
+    }
 
     // Fallback: extract paragraphs with formatting
     const paragraphs = xml.match(/<w:p[\s\S]*?<\/w:p>/gi) || [];

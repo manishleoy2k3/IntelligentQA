@@ -9,6 +9,8 @@ export function generateStaticParams() {
     { trackId: 'playwright-ts' },
     { trackId: 'api-testing' },
     { trackId: 'ai-qa' },
+    { trackId: 'articles' },
+    { trackId: 'tutorials-articles' },
   ];
 }
 

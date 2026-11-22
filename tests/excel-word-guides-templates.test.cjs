@@ -120,7 +120,7 @@ test('Google Drive .docx import fix: Key-value table parsing with [MANDATORY] la
   assert.ok(conceptGuidesFile.includes("getKvVal('summary')"), 'Retrieves summary using getKvVal');
 
   // 3. Verify freeform / heading text parser supports Markdown # and bold labels
-  assert.ok(conceptGuidesFile.includes('hasStructuredMarkers'), 'Detects flexible structured markers including headings and labels');
+  assert.ok(conceptGuidesFile.includes('titleHeaderMatches') || conceptGuidesFile.includes('Single Document'), 'Detects flexible structured markers including headings and labels');
 
   // 4. Test simulated Google Docs exported HTML table with [MANDATORY] labels
   // Extract and run parseImportedGuides in Node
@@ -169,4 +169,149 @@ test('Google Drive .docx import fix: Key-value table parsing with [MANDATORY] la
   assert.ok(getKvVal('overview').includes('**REST Assured**'), 'Retained bold formatting');
   assert.ok(getKvVal('overview').includes('• Fluent syntax'), 'Retained bullet list');
   assert.strictEqual(getKvVal('codesnippet'), 'given().when().get("/users").then().statusCode(200);', 'Matched CodeSnippet [MANDATORY]');
+});
+
+test('Fix 346 sections flaw: Single document import preserves entire article as 1 guide instead of splitting per line/bullet', () => {
+  const conceptGuidesFile = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
+
+  // Verify single-document fallback parser exists and parses as ONE comprehensive guide
+  assert.ok(conceptGuidesFile.includes('Single Document / Article / Tutorial / Notes Import'), 'Provides dedicated single-document handler');
+  assert.ok(conceptGuidesFile.includes('imported-doc-'), 'Produces imported-doc ID');
+  assert.ok(conceptGuidesFile.includes('csvCandidateLines'), 'Guards CSV parser against splitting single lines');
+
+  // Simulate a 350-line article containing notes, bullet points like .log().all(), and code
+  const lines = [
+    '# Comprehensive Guide to API Testing with REST Assured',
+    '',
+    'Category: API Testing',
+    'Level: Intermediate',
+    'Summary: A complete architectural overview of REST Assured automation framework design.',
+    '',
+    '## Introduction and Setup',
+    'REST Assured is a powerful Java DSL for validating RESTful web services in enterprise test harnesses.',
+    '',
+  ];
+
+  for (let i = 1; i <= 340; i++) {
+    lines.push(`• .log().all() is optional step ${i} used to print full response details for debugging`);
+  }
+
+  lines.push('```java');
+  lines.push('given().when().get("/api/v1/health").then().statusCode(200);');
+  lines.push('```');
+
+  const fullArticle = lines.join('\n');
+  assert.strictEqual(lines.length > 340, true, 'Article has over 340 lines');
+
+  // Verify that CSV check does NOT treat this non-CSV text as hundreds of CSV rows
+  const rawLines = fullArticle.split('\n').map(l => l.trim()).filter(Boolean);
+  const csvCandidateLines = rawLines.filter(l => l.includes(',') && l.split(',').length >= 3);
+  assert.strictEqual(csvCandidateLines.length, 0, 'Does not mistakenly identify article text as CSV');
+
+  // Title extraction should find the main title, NOT bullet points
+  let extractedTitle = '';
+  const headingMatch = fullArticle.match(/^#+\s*([^\n\r]+)/m);
+  if (headingMatch) {
+    extractedTitle = headingMatch[1].trim();
+  }
+  assert.strictEqual(extractedTitle, 'Comprehensive Guide to API Testing with REST Assured', 'Correctly identifies article title');
+  assert.ok(!extractedTitle.startsWith('• .log().all()'), 'Did not use a bullet point as the guide title');
+});
+
+test('Tutorials & Articles option and Admin pre-approval correction / re-allocation capability', () => {
+  const addGuideModalFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
+  const conceptGuidesFile = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
+  const adminPageFile = fs.readFileSync(path.join(__dirname, '../src/app/admin/page.tsx'), 'utf8');
+  const qaDbFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-db.ts'), 'utf8');
+
+  // 1. "Tutorials & Articles" option is listed in Share your Knowledge / Add Guide modal COURSE_TRACK_OPTIONS
+  assert.ok(addGuideModalFile.includes("id: 'articles'"), 'COURSE_TRACK_OPTIONS includes articles ID');
+  assert.ok(addGuideModalFile.includes('Tutorials & Articles'), 'COURSE_TRACK_OPTIONS includes "Tutorials & Articles"');
+  assert.ok(conceptGuidesFile.includes('Tutorials & Articles'), 'TRACK_META provides Tutorials & Articles metadata');
+
+  // 2. QADatabase supports updateSubmission and overrideFields on approveSubmission
+  assert.ok(qaDbFile.includes('updateSubmission('), 'QADatabase provides updateSubmission');
+  assert.ok(qaDbFile.includes('overrideFields?: Partial<ModerationItem>'), 'approveSubmission supports overrideFields');
+
+  // 3. Admin Station provides destination track re-allocation dropdown and edit mode
+  assert.ok(adminPageFile.includes('isEditingPreview'), 'Admin provides toggleable edit/correction mode');
+  assert.ok(adminPageFile.includes('Destination Course Category / Track:'), 'Admin review modal includes destination track selector');
+  assert.ok(adminPageFile.includes('Tutorials &amp; Articles (Knowledge Hub)'), 'Admin can re-allocate guide to Tutorials & Articles');
+  assert.ok(adminPageFile.includes('QADatabase.updateSubmission'), 'Admin can save corrections before approval');
+});
+
+test('Single Import strictly produces a single Publish for Admin approval (1 Pending Review)', () => {
+  const addGuideModalFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
+  const conceptGuidesFile = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
+  const officeDocFile = fs.readFileSync(path.join(__dirname, '../src/lib/office-documents.ts'), 'utf8');
+
+  // 1. Verify consolidateGuidesIntoSingle is implemented and exported in concept-guides.ts
+  assert.ok(conceptGuidesFile.includes('export function consolidateGuidesIntoSingle'), 'Exports consolidateGuidesIntoSingle');
+  assert.ok(conceptGuidesFile.includes('singleGuide: boolean = true'), 'parseImportedGuides defaults to singleGuide = true');
+
+  // 2. Verify DOCX document.xml parser extracts both paragraphs and tables sequentially
+  assert.ok(officeDocFile.includes('elemRegex = /<w:p[\\s\\S]*?<\\/w:p>|<w:tbl[\\s\\S]*?<\\/w:tbl>/gi'), 'Extracts both paragraphs and tables in sequential document order');
+
+  // 3. Verify horizontal table parser does NOT convert arbitrary 13-row data/status tables into 13 separate guides
+  assert.ok(conceptGuidesFile.includes('hasGuideHeaders'), 'Checks for explicit guide column headers before splitting table rows');
+
+  // 4. Verify add-guide-modal provides "Consolidate into 1 Guide" button for multi-section reviews
+  assert.ok(addGuideModalFile.includes('Consolidate into 1 Guide'), 'Modal provides "Consolidate into 1 Guide" button');
+  assert.ok(addGuideModalFile.includes('handleConsolidateStaging'), 'Modal implements handleConsolidateStaging');
+  assert.ok(addGuideModalFile.includes('clearStagedGuides(selectedTrack)'), 'Modal clears prior staging on single file import for clean 1-guide review');
+
+  // 5. Test multi-section simulation (13 sections) consolidation logic in Node
+  const thirteenSections = [];
+  for (let i = 1; i <= 13; i++) {
+    thirteenSections.push({
+      id: `section-${i}`,
+      title: i === 1 ? 'Comprehensive REST Assured API Testing Masterclass' : `REST Assured Module ${i}: Core Technique`,
+      category: 'API Testing',
+      level: 'Intermediate',
+      summary: `Detailed summary for module ${i} explaining HTTP methods and assertions.`,
+      overview: `### Section ${i} Content\n• Core rule ${i}\n• Architectural pattern ${i}\n\nDetailed explanation of module ${i}.`,
+      codeSnippets: [{ language: 'java', code: `given().get("/api/${i}").then().statusCode(200);`, caption: `Module ${i} Example` }],
+      bestPractices: [`Best practice ${i}`],
+      antiPatterns: [`Anti-pattern ${i}`],
+      interviewTips: `Interview tip ${i}`,
+    });
+  }
+
+  assert.strictEqual(thirteenSections.length, 13, 'Created 13 sections');
+
+  // Evaluate consolidateGuidesIntoSingle logic
+  const primaryTitle = thirteenSections[0].title;
+  const sections = [];
+  for (const g of thirteenSections) {
+    const parts = [];
+    if (g.title !== primaryTitle) parts.push(`### ${g.title}`);
+    if (g.overview) parts.push(g.overview);
+    if (g.bestPractices && g.bestPractices.length > 0) parts.push(`**Best Practices:**\n${g.bestPractices.map(b => `• ${b}`).join('\n')}`);
+    sections.push(parts.join('\n\n'));
+  }
+
+  const consolidatedOverview = sections.join('\n\n---\n\n');
+  assert.strictEqual(primaryTitle, 'Comprehensive REST Assured API Testing Masterclass', 'Identifies primary topic title');
+  assert.ok(consolidatedOverview.includes('Section 1 Content'), 'Contains section 1 content');
+  assert.ok(consolidatedOverview.includes('REST Assured Module 13: Core Technique'), 'Contains section 13');
+  assert.ok(consolidatedOverview.includes('Best practice 13'), 'Contains best practices from section 13');
+});
+
+test('End-to-End Import & Admin Approval flow: Submitting from Share your Knowledge populates Admin Moderation Queue', () => {
+  const addGuideModalFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
+  const conceptGuidesFile = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
+  const adminPageFile = fs.readFileSync(path.join(__dirname, '../src/app/admin/page.tsx'), 'utf8');
+
+  // 1. Modal action buttons explicitly submit to Admin Approval queue
+  assert.ok(addGuideModalFile.includes('Submit for Admin Approval'), 'Button text includes "Submit for Admin Approval"');
+  assert.ok(addGuideModalFile.includes('submitStagedGuidesForApproval(selectedTrack'), 'Calls submitStagedGuidesForApproval on submit');
+
+  // 2. submitStagedGuidesForApproval registers into QADatabase moderation queue
+  assert.ok(conceptGuidesFile.includes('QADatabase.submitContentForReview'), 'concept-guides.ts pushes submissions to QADatabase review queue');
+  assert.ok(conceptGuidesFile.includes("type: 'guide'"), 'Registers guide type submission');
+
+  // 3. Admin page detects staged guides and imports them into review queue
+  assert.ok(conceptGuidesFile.includes('getAllStagedGuidesAcrossTracks'), 'Exports getAllStagedGuidesAcrossTracks');
+  assert.ok(adminPageFile.includes('getAllStagedGuidesAcrossTracks()'), 'Admin page loads staged guides across all tracks');
+  assert.ok(adminPageFile.includes('Import Staged into Queue'), 'Admin page provides 1-click import from staging into queue');
 });

@@ -12,6 +12,7 @@ import {
   Users,
   Plus,
   Edit2,
+  Edit3,
   Trash2,
   RotateCcw,
   Search,
@@ -64,6 +65,7 @@ import {
 import { getLessonDoc, LessonDoc } from '@/lib/qa-learning-docs';
 import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
 import { checkGuideDuplicate, DuplicateCheckReport } from '@/lib/guide-duplicate-detector';
+import { getAllStagedGuidesAcrossTracks, submitStagedGuidesForApproval, ConceptGuide } from '@/lib/concept-guides';
 
 type AdminSection = 'overview' | 'course' | 'labs' | 'agents' | 'interviews' | 'team' | 'approvals';
 
@@ -95,10 +97,31 @@ function AdminDashboardContent() {
   const [adminEmails, setAdminEmails] = useState<string[]>([]);
   const [adminSecret, setAdminSecret] = useState<string>('');
   const [submissions, setSubmissions] = useState<ModerationItem[]>([]);
+  const [stagedAcrossTracks, setStagedAcrossTracks] = useState<Array<{ trackId: string; guide: ConceptGuide }>>([]);
   const [approvalsFilter, setApprovalsFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [previewSubmission, setPreviewSubmission] = useState<ModerationItem | null>(null);
+  const [isEditingPreview, setIsEditingPreview] = useState<boolean>(false);
+  const [editTrackTarget, setEditTrackTarget] = useState<string>('articles');
+  const [editTitle, setEditTitle] = useState<string>('');
+  const [editCategory, setEditCategory] = useState<string>('');
+  const [editLevel, setEditLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
+  const [editSummary, setEditSummary] = useState<string>('');
+  const [editOverview, setEditOverview] = useState<string>('');
+  const [editCode, setEditCode] = useState<string>('');
   const [rejectingSubmission, setRejectingSubmission] = useState<ModerationItem | null>(null);
   const [rejectionReasonInput, setRejectionReasonInput] = useState<string>('');
+
+  const handleOpenPreview = (sub: ModerationItem) => {
+    setPreviewSubmission(sub);
+    setIsEditingPreview(false);
+    setEditTrackTarget(sub.trackOrLanguage || 'articles');
+    setEditTitle(sub.title || '');
+    setEditCategory(sub.category || (sub.trackOrLanguage === 'articles' ? 'Tutorials & Articles' : 'General'));
+    setEditLevel((sub.contentPayload?.level as any) || 'Intermediate');
+    setEditSummary(sub.summary || '');
+    setEditOverview(sub.contentPayload?.overview || sub.summary || '');
+    setEditCode(sub.contentPayload?.codeSnippets?.[0]?.code || sub.contentPayload?.code || '');
+  };
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -192,6 +215,7 @@ function AdminDashboardContent() {
     setAdminEmails(QADatabase.getAdminEmails());
     setAdminSecret(QADatabase.getAdminSecret());
     setSubmissions(QADatabase.getAllSubmissions());
+    setStagedAcrossTracks(getAllStagedGuidesAcrossTracks());
   };
 
   useEffect(() => {
@@ -1746,6 +1770,39 @@ function AdminDashboardContent() {
               </div>
             </div>
 
+            {/* STAGED GUIDES AUTO-DETECTION BANNER */}
+            {stagedAcrossTracks.length > 0 && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300">
+                    <UploadCloud className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-200">
+                      {stagedAcrossTracks.length} Imported Guide(s) Detected in Staging
+                    </h4>
+                    <p className="text-[11px] text-zinc-400">
+                      These guides were imported via &quot;Share your Knowledge&quot;. Click below to move them into this Admin Approval Queue for review &amp; publishing.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    for (const item of stagedAcrossTracks) {
+                      submitStagedGuidesForApproval(item.trackId, [item.guide.id]);
+                    }
+                    reloadData();
+                    triggerBanner(`✔ Brought ${stagedAcrossTracks.length} staged guide(s) into Admin Approval Queue.`);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition cursor-pointer shrink-0 shadow-sm flex items-center gap-1.5"
+                >
+                  <UploadCloud className="w-4 h-4" />
+                  <span>Import Staged into Queue ({stagedAcrossTracks.length})</span>
+                </button>
+              </div>
+            )}
+
             {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-4 rounded-2xl bg-[#161616] border border-[#262626]">
@@ -1940,9 +1997,9 @@ function AdminDashboardContent() {
                             {/* Review Full Content */}
                             <button
                               type="button"
-                              onClick={() => setPreviewSubmission(sub)}
+                              onClick={() => handleOpenPreview(sub)}
                               className="px-3 py-1.5 rounded-xl bg-[#222222] hover:bg-[#2A2A2A] text-zinc-200 text-xs font-semibold flex items-center gap-1.5 border border-[#333333] transition cursor-pointer"
-                              title="Review full guide content & duplicate comparison"
+                              title="Review full guide content, change destination track, edit, & approve"
                             >
                               <Eye className="w-3.5 h-3.5 text-blue-400" />
                               <span>Review Content</span>
@@ -1996,7 +2053,7 @@ function AdminDashboardContent() {
       </div>
 
       {/* =================================================================== */}
-      {/* MODAL: SUBMISSION PREVIEW & DUPLICATE COMPARISON MODAL              */}
+      {/* MODAL: SUBMISSION PREVIEW, EDIT & APPROVAL MODAL                    */}
       {/* =================================================================== */}
       {previewSubmission && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
@@ -2004,28 +2061,65 @@ function AdminDashboardContent() {
             <div className="flex items-center justify-between pb-3 border-b border-[#262626]">
               <div>
                 <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider">
-                  Submission Details &amp; Duplicate Check
+                  Submission Details &amp; Admin Moderation Station
                 </span>
-                <h3 className="font-bold text-white text-lg mt-0.5">{previewSubmission.title}</h3>
+                <h3 className="font-bold text-white text-lg mt-0.5">{editTitle || previewSubmission.title}</h3>
               </div>
-              <button
-                type="button"
-                onClick={() => setPreviewSubmission(null)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-[#222222] cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingPreview(!isEditingPreview)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition cursor-pointer ${
+                    isEditingPreview
+                      ? 'bg-purple-600/20 text-purple-300 border-purple-500/40'
+                      : 'bg-[#222222] text-zinc-300 border-[#333333] hover:bg-[#2A2A2A]'
+                  }`}
+                  title="Toggle edit mode to change destination track, title, summary, or code before approving"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+                  <span>{isEditingPreview ? 'Preview Mode' : 'Edit / Correct Guide'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewSubmission(null)}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-[#222222] cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Destination Track Badge & Quick Switcher Notice */}
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-[#1A1A1A] border border-[#2E2E2E] text-xs">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-purple-400" />
+                <span className="font-bold text-zinc-300">Target Track:</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-bold">
+                  {editTrackTarget === 'articles'
+                    ? 'Tutorials & Articles'
+                    : editTrackTarget === 'api-testing'
+                    ? 'Rest Assured (API)'
+                    : editTrackTarget === 'playwright'
+                    ? 'Playwright (TS)'
+                    : editTrackTarget === 'selenium'
+                    ? 'Selenium WebDriver'
+                    : 'AI Academy'}
+                </span>
+              </div>
+              <span className="text-[11px] text-zinc-400 hidden sm:inline">
+                {isEditingPreview ? 'Change destination track below' : 'Click "Edit / Correct Guide" to move or edit'}
+              </span>
             </div>
 
             {/* Duplicate Check Report Banner */}
             {(() => {
               const report = checkGuideDuplicate({
-                title: previewSubmission.title,
-                summary: previewSubmission.summary,
-                overview: previewSubmission.contentPayload?.overview,
-                code: previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code,
-                category: previewSubmission.category,
-                trackId: previewSubmission.trackOrLanguage,
+                title: editTitle || previewSubmission.title,
+                summary: editSummary || previewSubmission.summary,
+                overview: editOverview || previewSubmission.contentPayload?.overview,
+                code: editCode || previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code,
+                category: editCategory || previewSubmission.category,
+                trackId: editTrackTarget || previewSubmission.trackOrLanguage,
               });
 
               return (
@@ -2066,54 +2160,154 @@ function AdminDashboardContent() {
               );
             })()}
 
-            {/* Guide Core Info */}
-            <div className="space-y-4 text-xs">
-              <div>
-                <label className="text-[11px] font-bold text-zinc-400 uppercase">Summary</label>
-                <p className="text-zinc-200 mt-1 leading-relaxed bg-[#0F0F0F] p-3 rounded-xl border border-[#262626]">
-                  {previewSubmission.summary}
-                </p>
-              </div>
+            {/* EDIT MODE: Admin Correction Form */}
+            {isEditingPreview ? (
+              <div className="space-y-4 text-xs bg-[#111111] border border-purple-500/30 p-5 rounded-2xl">
+                <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl text-purple-200 text-xs flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
+                  <span>
+                    <strong>Admin Re-allocation &amp; Correction:</strong> Choose the target curriculum track where this guide should live (e.g. re-assign from Rest Assured to <em>Tutorials &amp; Articles</em>) or refine the text before publishing.
+                  </span>
+                </div>
 
-              {previewSubmission.contentPayload?.overview && (
-                <div>
-                  <label className="text-[11px] font-bold text-zinc-400 uppercase">Full Overview</label>
-                  <div className="text-zinc-200 mt-1 leading-relaxed bg-[#0F0F0F] p-3 rounded-xl border border-[#262626] whitespace-pre-wrap max-h-48 overflow-y-auto">
-                    {previewSubmission.contentPayload.overview}
+                {/* Destination Course Track Dropdown */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-white uppercase flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-purple-400" />
+                    <span>Destination Course Category / Track:</span>
+                  </label>
+                  <select
+                    value={editTrackTarget}
+                    onChange={(e) => setEditTrackTarget(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0A0A0A] border border-[#3A3A3A] text-xs font-semibold text-white focus:outline-none focus:border-purple-500 cursor-pointer"
+                  >
+                    <option value="selenium">Selenium WebDriver + Java (Stage 1)</option>
+                    <option value="playwright">Playwright + TypeScript (Stage 2)</option>
+                    <option value="api-testing">Rest Assured (API) &amp; Automation (Stage 3)</option>
+                    <option value="ai-qa">AI Academy (AI for QA) (Stage 4)</option>
+                    <option value="articles">Tutorials &amp; Articles (Knowledge Hub)</option>
+                  </select>
+                </div>
+
+                {/* Title & Category Tag */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2 space-y-1">
+                    <label className="text-[11px] font-bold text-zinc-400 uppercase">Guide Title</label>
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#0A0A0A] border border-[#262626] text-xs text-white"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-zinc-400 uppercase">Category Tag</label>
+                    <input
+                      type="text"
+                      value={editCategory}
+                      onChange={(e) => setEditCategory(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#0A0A0A] border border-[#262626] text-xs text-white"
+                    />
                   </div>
                 </div>
-              )}
 
-              {/* Code Snippet Preview */}
-              {(previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code) && (
+                {/* Level & Summary */}
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-zinc-400 uppercase">Level</label>
+                    <select
+                      value={editLevel}
+                      onChange={(e) => setEditLevel(e.target.value as any)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#0A0A0A] border border-[#262626] text-xs text-white"
+                    >
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-3 space-y-1">
+                    <label className="text-[11px] font-bold text-zinc-400 uppercase">Summary</label>
+                    <textarea
+                      rows={2}
+                      value={editSummary}
+                      onChange={(e) => setEditSummary(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#0A0A0A] border border-[#262626] text-xs text-white resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Full Overview */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-zinc-400 uppercase">Full Overview &amp; Explanation (Markdown)</label>
+                  <textarea
+                    rows={7}
+                    value={editOverview}
+                    onChange={(e) => setEditOverview(e.target.value)}
+                    className="w-full p-3 rounded-xl bg-[#0A0A0A] border border-[#262626] text-xs text-white font-mono leading-relaxed"
+                  />
+                </div>
+
+                {/* Code Snippet */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-zinc-400 uppercase">Code Snippet</label>
+                  <textarea
+                    rows={5}
+                    value={editCode}
+                    onChange={(e) => setEditCode(e.target.value)}
+                    className="w-full p-3 rounded-xl bg-[#0A0A0A] border border-[#262626] text-xs text-emerald-400 font-mono"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* PREVIEW READ-ONLY MODE */
+              <div className="space-y-4 text-xs">
                 <div>
-                  <label className="text-[11px] font-bold text-zinc-400 uppercase">
-                    Code Snippet ({previewSubmission.contentPayload?.codeSnippets?.[0]?.language || 'code'})
-                  </label>
-                  <pre className="text-zinc-200 font-mono text-[11px] mt-1 bg-[#0A0A0A] p-3 rounded-xl border border-[#262626] overflow-x-auto max-h-48">
-                    {previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code}
-                  </pre>
+                  <label className="text-[11px] font-bold text-zinc-400 uppercase">Summary</label>
+                  <p className="text-zinc-200 mt-1 leading-relaxed bg-[#0F0F0F] p-3 rounded-xl border border-[#262626]">
+                    {editSummary || previewSubmission.summary}
+                  </p>
                 </div>
-              )}
 
-              {/* Best Practices & Anti-patterns */}
-              {previewSubmission.contentPayload?.bestPractices?.length > 0 && (
-                <div>
-                  <label className="text-[11px] font-bold text-emerald-400 uppercase">Best Practices</label>
-                  <ul className="list-disc list-inside mt-1 text-zinc-300 space-y-1">
-                    {previewSubmission.contentPayload.bestPractices.map((bp: string, i: number) => (
-                      <li key={i}>{bp}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                {(editOverview || previewSubmission.contentPayload?.overview) && (
+                  <div>
+                    <label className="text-[11px] font-bold text-zinc-400 uppercase">Full Overview</label>
+                    <div className="text-zinc-200 mt-1 leading-relaxed bg-[#0F0F0F] p-3 rounded-xl border border-[#262626] whitespace-pre-wrap max-h-48 overflow-y-auto">
+                      {editOverview || previewSubmission.contentPayload.overview}
+                    </div>
+                  </div>
+                )}
 
-              {previewSubmission.contentPayload?.interviewTips && (
-                <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-amber-200">
-                  <strong className="text-amber-400 font-bold">Interview Tips:</strong> {previewSubmission.contentPayload.interviewTips}
-                </div>
-              )}
-            </div>
+                {/* Code Snippet Preview */}
+                {(editCode || previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code) && (
+                  <div>
+                    <label className="text-[11px] font-bold text-zinc-400 uppercase">
+                      Code Snippet ({previewSubmission.contentPayload?.codeSnippets?.[0]?.language || 'code'})
+                    </label>
+                    <pre className="text-zinc-200 font-mono text-[11px] mt-1 bg-[#0A0A0A] p-3 rounded-xl border border-[#262626] overflow-x-auto max-h-48">
+                      {editCode || previewSubmission.contentPayload?.codeSnippets?.[0]?.code || previewSubmission.contentPayload?.code}
+                    </pre>
+                  </div>
+                )}
+
+                {/* Best Practices & Anti-patterns */}
+                {previewSubmission.contentPayload?.bestPractices?.length > 0 && (
+                  <div>
+                    <label className="text-[11px] font-bold text-emerald-400 uppercase">Best Practices</label>
+                    <ul className="list-disc list-inside mt-1 text-zinc-300 space-y-1">
+                      {previewSubmission.contentPayload.bestPractices.map((bp: string, i: number) => (
+                        <li key={i}>{bp}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {previewSubmission.contentPayload?.interviewTips && (
+                  <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-amber-200">
+                    <strong className="text-amber-400 font-bold">Interview Tips:</strong> {previewSubmission.contentPayload.interviewTips}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Modal Actions */}
             <div className="flex items-center justify-between pt-4 border-t border-[#262626]">
@@ -2127,6 +2321,39 @@ function AdminDashboardContent() {
 
               {previewSubmission.status === 'pending' && (
                 <div className="flex items-center gap-2">
+                  {isEditingPreview && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const res = QADatabase.updateSubmission(previewSubmission.id, {
+                          trackOrLanguage: editTrackTarget,
+                          title: editTitle,
+                          category: editCategory,
+                          summary: editSummary,
+                          contentPayload: {
+                            ...previewSubmission.contentPayload,
+                            overview: editOverview,
+                            level: editLevel,
+                            codeSnippets: [
+                              {
+                                language: editTrackTarget.includes('ts') || editTrackTarget === 'playwright' ? 'typescript' : 'java',
+                                code: editCode,
+                              },
+                            ],
+                          },
+                        });
+                        if (res.success) {
+                          triggerBanner('✔ Corrections saved to submission queue.');
+                          setIsEditingPreview(false);
+                          reloadData();
+                        }
+                      }}
+                      className="px-4 py-2 rounded-xl bg-[#2A2A2A] hover:bg-[#333333] text-purple-300 text-xs font-bold border border-purple-500/40 cursor-pointer"
+                    >
+                      Save Changes
+                    </button>
+                  )}
+
                   <button
                     type="button"
                     onClick={() => {
@@ -2137,10 +2364,28 @@ function AdminDashboardContent() {
                   >
                     Reject Submission
                   </button>
+
                   <button
                     type="button"
                     onClick={() => {
-                      const res = QADatabase.approveSubmission(previewSubmission.id, currentUser?.email);
+                      const overrides = {
+                        trackOrLanguage: editTrackTarget,
+                        title: editTitle || previewSubmission.title,
+                        category: editCategory || previewSubmission.category,
+                        summary: editSummary || previewSubmission.summary,
+                        contentPayload: {
+                          ...previewSubmission.contentPayload,
+                          overview: editOverview || previewSubmission.contentPayload?.overview,
+                          level: editLevel,
+                          codeSnippets: [
+                            {
+                              language: editTrackTarget.includes('ts') || editTrackTarget === 'playwright' ? 'typescript' : 'java',
+                              code: editCode || previewSubmission.contentPayload?.codeSnippets?.[0]?.code || '',
+                            },
+                          ],
+                        },
+                      };
+                      const res = QADatabase.approveSubmission(previewSubmission.id, currentUser?.email, overrides);
                       if (res.success) {
                         triggerBanner(`🎉 ${res.message}`);
                         setPreviewSubmission(null);
@@ -2152,7 +2397,18 @@ function AdminDashboardContent() {
                     className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
                   >
                     <Check className="w-4 h-4" />
-                    <span>Approve &amp; Publish to Course</span>
+                    <span>
+                      Approve &amp; Publish to{' '}
+                      {editTrackTarget === 'articles'
+                        ? 'Tutorials & Articles'
+                        : editTrackTarget === 'api-testing'
+                        ? 'Rest Assured'
+                        : editTrackTarget === 'playwright'
+                        ? 'Playwright'
+                        : editTrackTarget === 'selenium'
+                        ? 'Selenium'
+                        : 'AI Academy'}
+                    </span>
                   </button>
                 </div>
               )}

@@ -1329,15 +1329,59 @@ export const QADatabase = {
     return newItem;
   },
 
+  // Admin updates a submission's destination track or content before approval
+  updateSubmission(submissionId: string, updates: Partial<ModerationItem>): { success: boolean; message: string; item?: ModerationItem } {
+    const current = this.getAllSubmissions();
+    const idx = current.findIndex(s => s.id === submissionId);
+    if (idx === -1) {
+      return { success: false, message: 'Submission not found.' };
+    }
+
+    const existing = current[idx];
+    const updatedItem: ModerationItem = {
+      ...existing,
+      ...updates,
+      contentPayload: {
+        ...existing.contentPayload,
+        ...(updates.contentPayload || {}),
+        ...(updates.trackOrLanguage ? { trackId: updates.trackOrLanguage } : {}),
+      },
+    };
+
+    current[idx] = updatedItem;
+    setStoredItem('intelligentqa_moderation_queue', current);
+
+    if (isBrowser()) {
+      window.dispatchEvent(new CustomEvent('intelligentqa_moderation_updated', { detail: { item: updatedItem } }));
+    }
+
+    return { success: true, message: 'Submission updated successfully.', item: updatedItem };
+  },
+
   // Admin approves a pending submission and directly publishes it to the live database
-  approveSubmission(submissionId: string, reviewerEmail?: string): { success: boolean; message: string; publishedItem?: any } {
+  approveSubmission(
+    submissionId: string,
+    reviewerEmail?: string,
+    overrideFields?: Partial<ModerationItem>
+  ): { success: boolean; message: string; publishedItem?: any } {
     const current = this.getAllSubmissions();
     const targetIdx = current.findIndex(s => s.id === submissionId);
     if (targetIdx === -1) {
       return { success: false, message: 'Submission not found.' };
     }
 
-    const item = current[targetIdx];
+    let item = current[targetIdx];
+    if (overrideFields) {
+      item = {
+        ...item,
+        ...overrideFields,
+        contentPayload: {
+          ...item.contentPayload,
+          ...(overrideFields.contentPayload || {}),
+          ...(overrideFields.trackOrLanguage ? { trackId: overrideFields.trackOrLanguage } : {}),
+        },
+      };
+    }
     item.status = 'approved';
     item.reviewedAt = new Date().toISOString();
     item.reviewedBy = reviewerEmail || this.getCurrentUser()?.email || 'admin@intelligentqa.io';
@@ -1346,18 +1390,20 @@ export const QADatabase = {
 
     // Direct automated publishing into the respective database store
     if (item.type === 'guide') {
+      const rawTrack = item.trackOrLanguage || 'articles';
+      const normTrack = rawTrack === 'selenium-java' ? 'selenium' : rawTrack === 'playwright-ts' ? 'playwright' : rawTrack;
       const guideData: ConceptGuide = {
         id: item.contentPayload?.id || `guide-${Date.now()}`,
-        trackId: item.trackOrLanguage,
+        trackId: normTrack,
         title: item.title,
-        category: item.category || 'Community Guides',
+        category: item.category || (normTrack === 'articles' ? 'Tutorials & Articles' : 'Community Guides'),
         level: item.contentPayload?.level || 'Intermediate',
         summary: item.summary,
         overview: item.contentPayload?.overview || item.summary,
         architectureOrMechanism: item.contentPayload?.architectureOrMechanism || '',
         codeSnippets: item.contentPayload?.codeSnippets || [
           {
-            language: item.trackOrLanguage.includes('ts') || item.trackOrLanguage === 'playwright' ? 'typescript' : 'java',
+            language: normTrack.includes('ts') || normTrack === 'playwright' ? 'typescript' : 'java',
             code: item.contentPayload?.code || '// Approved Guide Code',
           },
         ],
@@ -1372,7 +1418,6 @@ export const QADatabase = {
       // Clean up from staged guides if present
       if (isBrowser()) {
         try {
-          const normTrack = item.trackOrLanguage === 'selenium-java' ? 'selenium' : item.trackOrLanguage === 'playwright-ts' ? 'playwright' : item.trackOrLanguage;
           const stagedKey = `intelligentqa_staged_guides_${normTrack}`;
           const rawStaged = localStorage.getItem(stagedKey);
           if (rawStaged) {

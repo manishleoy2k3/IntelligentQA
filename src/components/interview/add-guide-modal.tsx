@@ -26,6 +26,7 @@ import {
   Lightbulb,
   FileCheck2,
   Sparkles,
+  Merge,
 } from 'lucide-react';
 import FormattedOverviewEditor from '@/components/ui/formatted-overview-editor';
 import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
@@ -43,6 +44,7 @@ import {
   generateConceptGuideTemplate,
   downloadConceptGuideTemplate,
   parseImportedGuides,
+  consolidateGuidesIntoSingle,
   checkGuideDuplicate,
   extractTextFromOfficeZip,
 } from '@/lib/concept-guides';
@@ -59,6 +61,7 @@ const COURSE_TRACK_OPTIONS = [
   { id: 'playwright', name: 'Playwright + TypeScript', stage: 'Stage 2' },
   { id: 'api-testing', name: 'Rest Assured (API) & Automation', stage: 'Stage 3' },
   { id: 'ai-qa', name: 'AI for QA', stage: 'Stage 4' },
+  { id: 'articles', name: 'Tutorials & Articles', stage: 'Knowledge Hub' },
 ];
 
 export default function AddGuideModal({
@@ -107,6 +110,7 @@ export default function AddGuideModal({
   const [editTitle, setEditTitle] = useState('');
   const [editCategory, setEditCategory] = useState('');
   const [editLevel, setEditLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
+  const [editTrack, setEditTrack] = useState<string>('selenium');
   const [editSummary, setEditSummary] = useState('');
   const [editOverview, setEditOverview] = useState('');
   const [editMechanism, setEditMechanism] = useState('');
@@ -163,6 +167,7 @@ export default function AddGuideModal({
   // ==========================================
   const handleOpenEdit = (guide: ConceptGuide) => {
     setEditingGuide(guide);
+    setEditTrack(guide.trackId || selectedTrack);
     setEditTitle(guide.title);
     setEditCategory(guide.category);
     setEditLevel(guide.level);
@@ -183,6 +188,7 @@ export default function AddGuideModal({
 
     const updated: ConceptGuide = {
       ...editingGuide,
+      trackId: editTrack,
       title: editTitle.trim() || editingGuide.title,
       category: editCategory.trim() || editingGuide.category,
       level: editLevel,
@@ -202,6 +208,9 @@ export default function AddGuideModal({
       isCustom: true,
     };
 
+    if (editingGuide.trackId && editingGuide.trackId !== editTrack) {
+      deleteStagedGuide(editingGuide.id, editingGuide.trackId);
+    }
     updateStagedGuide(updated);
     setStagedGuides(getStagedGuides(selectedTrack));
     setEditingGuide(null);
@@ -222,52 +231,90 @@ export default function AddGuideModal({
   };
 
   const handleConfirmSingle = (guideId: string) => {
-    if (isAdmin) {
-      confirmAndSubmitStagedGuides(selectedTrack, [guideId]);
-      setStagedGuides(getStagedGuides(selectedTrack));
-      showBanner('success', `🎉 Confirmed and published guide to ${currentTrackMeta.name} curriculum!`);
-      if (onSuccess) onSuccess(`Published guide to ${currentTrackMeta.name}!`);
-    } else {
-      submitStagedGuidesForApproval(selectedTrack, [guideId]);
-      setStagedGuides(getStagedGuides(selectedTrack));
-      showBanner('success', `📬 Guide submitted for Admin approval! It will appear in ${currentTrackMeta.name} once reviewed.`);
-      if (onSuccess) onSuccess(`Guide submitted for Admin approval!`);
-    }
+    // Submit to Admin Moderation queue so it shows up in Admin Approval section
+    const res = submitStagedGuidesForApproval(selectedTrack, [guideId]);
+    setStagedGuides(getStagedGuides(selectedTrack));
+    const submittedTitle = res.submitted[0]?.title || 'Guide';
+    showBanner('success', `📬 Guide "${submittedTitle}" submitted for Admin approval! It is now listed under Admin -> Guide Approvals.`);
+    if (onSuccess) onSuccess(`Guide "${submittedTitle}" submitted for Admin approval!`);
   };
 
   const handleConfirmAndSubmitAll = () => {
     if (stagedGuides.length === 0) return;
-    if (isAdmin) {
-      const res = confirmAndSubmitStagedGuides(selectedTrack);
-      setStagedGuides([]);
-      showBanner('success', `🎉 Confirmed and published ${res.count} guide(s) to ${currentTrackMeta.name} curriculum!`);
-      if (onSuccess) onSuccess(`Published ${res.count} guide(s) to ${currentTrackMeta.name}!`);
-    } else {
-      const res = submitStagedGuidesForApproval(selectedTrack);
-      setStagedGuides([]);
-      showBanner('success', `📬 Submitted ${res.count} guide(s) for Admin approval into ${currentTrackMeta.name}!`);
-      if (onSuccess) onSuccess(`Submitted ${res.count} guide(s) for Admin approval!`);
+    const res = submitStagedGuidesForApproval(selectedTrack);
+    setStagedGuides([]);
+    showBanner('success', `📬 Submitted ${res.count} guide(s) for Admin approval into ${currentTrackMeta.name}! Review and approve them in Admin -> Guide Approvals.`);
+    if (onSuccess) onSuccess(`Submitted ${res.count} guide(s) for Admin approval!`);
+  };
+
+  const handleDirectPublish = (guideId?: string) => {
+    // When Admin explicitly wants 1-click publishing: also log to moderation queue as approved
+    const toPublish = guideId ? stagedGuides.filter(g => g.id === guideId) : stagedGuides;
+    const u = QADatabase.getCurrentUser();
+    for (const g of toPublish) {
+      const mod = QADatabase.submitContentForReview({
+        type: 'guide',
+        title: g.title,
+        trackOrLanguage: selectedTrack,
+        category: g.category,
+        summary: g.summary,
+        submittedBy: {
+          id: u?.id || 'admin',
+          name: u?.displayName || 'Admin',
+          email: u?.email || 'admin@intelligentqa.io',
+        },
+        contentPayload: g,
+      });
+      QADatabase.approveSubmission(mod.id, u?.email);
     }
+    const res = confirmAndSubmitStagedGuides(selectedTrack, guideId ? [guideId] : undefined);
+    setStagedGuides(getStagedGuides(selectedTrack));
+    showBanner('success', `🎉 Published ${res.count} guide(s) directly to ${currentTrackMeta.name}!`);
+    if (onSuccess) onSuccess(`Published ${res.count} guide(s) to ${currentTrackMeta.name}!`);
   };
 
   // ==========================================
   // IMPORT ACTIONS (Dropzone, Parse, Staging)
   // ==========================================
-  const handleParseImport = (text: string) => {
+  const handleConsolidateStaging = () => {
+    if (stagedGuides.length <= 1) return;
+    const consolidated = consolidateGuidesIntoSingle(stagedGuides, selectedTrack);
+    clearStagedGuides(selectedTrack);
+    saveStagedGuide(consolidated);
+    const reloaded = getStagedGuides(selectedTrack);
+    setStagedGuides(reloaded);
+    showBanner(
+      'success',
+      `✔ Consolidated ${stagedGuides.length} sections into 1 single comprehensive guide ready for Admin approval!`
+    );
+  };
+
+  const handleParseImport = (text: string, forceSingleGuide: boolean = true) => {
     setIsImporting(true);
     try {
-      const result = parseImportedGuides(text, selectedTrack);
+      const result = parseImportedGuides(text, selectedTrack, true, forceSingleGuide);
       if (result.error || !result.guides || result.guides.length === 0) {
         showBanner('error', result.error || 'Could not find valid guides. Please verify your format.');
         setIsImporting(false);
         return;
       }
 
-      result.guides.forEach((g: ConceptGuide) => saveStagedGuide(g));
+      // Enforce single comprehensive guide for single file/article imports
+      let guidesToStage = result.guides;
+      if (forceSingleGuide && guidesToStage.length > 1) {
+        guidesToStage = [consolidateGuidesIntoSingle(guidesToStage, selectedTrack)];
+      }
+
+      // Clear any prior staging of this track so the user gets 1 clean guide to publish
+      clearStagedGuides(selectedTrack);
+      guidesToStage.forEach((g: ConceptGuide) => saveStagedGuide(g));
       const reloaded = getStagedGuides(selectedTrack);
       setStagedGuides(reloaded);
       setImportText('');
-      showBanner('success', `🎉 Successfully imported and staged ${result.guides.length} guide(s) for ${currentTrackMeta.name}!`);
+      showBanner(
+        'success',
+        `🎉 Successfully imported 1 comprehensive guide for ${currentTrackMeta.name}! (1 Pending for Admin approval)`
+      );
       setActiveTab('staging');
     } catch (err: any) {
       showBanner('error', err?.message || 'Failed to parse guide import.');
@@ -290,7 +337,7 @@ export default function AddGuideModal({
         );
         if (extracted && extracted.trim()) {
           setImportText(extracted);
-          handleParseImport(extracted);
+          handleParseImport(extracted, true);
           e.target.value = '';
           return;
         } else {
@@ -311,7 +358,7 @@ export default function AddGuideModal({
       const content = evt.target?.result as string;
       if (content) {
         setImportText(content);
-        handleParseImport(content);
+        handleParseImport(content, true);
       }
     };
     reader.readAsText(file);
@@ -617,6 +664,18 @@ export default function AddGuideModal({
 
                 {stagedGuides.length > 0 && (
                   <>
+                    {stagedGuides.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={handleConsolidateStaging}
+                        className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold border border-amber-500/40 flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                        title="Consolidate all sections into 1 single comprehensive guide for Admin approval"
+                      >
+                        <Merge className="w-3.5 h-3.5" />
+                        <span>Consolidate into 1 Guide</span>
+                      </button>
+                    )}
+
                     <button
                       type="button"
                       onClick={handleClearStaging}
@@ -628,17 +687,24 @@ export default function AddGuideModal({
                     <button
                       type="button"
                       onClick={handleConfirmAndSubmitAll}
-                      className={`px-3.5 py-1.5 rounded-lg text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer ${
-                        isAdmin
-                          ? 'bg-emerald-600 hover:bg-emerald-500'
-                          : 'bg-purple-600 hover:bg-purple-500'
-                      }`}
+                      className="px-3.5 py-1.5 rounded-lg text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer bg-purple-600 hover:bg-purple-500"
+                      title="Submit all staged guides to the Admin Approval queue in Admin Dashboard"
                     >
-                      {isAdmin ? <CheckCheck className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-                      <span>
-                        {isAdmin ? 'Confirm & Publish All' : 'Submit All for Admin Approval'} ({stagedGuides.length})
-                      </span>
+                      <Send className="w-4 h-4" />
+                      <span>{isAdmin ? `Submit for Admin Approval (${stagedGuides.length})` : `Submit for Approval (${stagedGuides.length})`}</span>
                     </button>
+
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => handleDirectPublish()}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-xs font-semibold flex items-center gap-1 border border-emerald-500/40 transition cursor-pointer"
+                        title="Publish directly to course without going through Admin review"
+                      >
+                        <CheckCheck className="w-3.5 h-3.5" />
+                        <span>Direct Publish All</span>
+                      </button>
+                    )}
                   </>
                 )}
               </div>
@@ -770,20 +836,24 @@ export default function AddGuideModal({
                           <button
                             type="button"
                             onClick={() => handleConfirmSingle(guide.id)}
-                            className={`px-3 py-1.5 rounded-lg text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer shadow-xs ${
-                              isAdmin
-                                ? 'bg-emerald-600 hover:bg-emerald-500'
-                                : 'bg-purple-600 hover:bg-purple-500'
-                            }`}
-                            title={
-                              isAdmin
-                                ? 'Publish guide to curriculum'
-                                : 'Submit this guide for Admin approval'
-                            }
+                            className="px-3 py-1.5 rounded-lg text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer shadow-xs bg-purple-600 hover:bg-purple-500"
+                            title="Submit this guide for Admin approval (will appear under Admin -> Guide Approvals)"
                           >
-                            {isAdmin ? <Check className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
-                            <span>{isAdmin ? 'Publish' : 'Submit for Approval'}</span>
+                            <Send className="w-3.5 h-3.5" />
+                            <span>{isAdmin ? 'Submit for Admin Approval' : 'Submit for Approval'}</span>
                           </button>
+
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => handleDirectPublish(guide.id)}
+                              className="px-2.5 py-1.5 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-xs font-semibold flex items-center gap-1 border border-emerald-500/40 transition cursor-pointer"
+                              title="Publish directly to curriculum"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Direct Publish</span>
+                            </button>
+                          )}
                         </div>
                       </div>
 
@@ -878,8 +948,22 @@ export default function AddGuideModal({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-xs font-bold text-zinc-300">Target Track / Category</label>
+                <select
+                  value={editTrack}
+                  onChange={e => setEditTrack(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
+                >
+                  {COURSE_TRACK_OPTIONS.map(opt => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.name} ({opt.stage})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1 sm:col-span-2">
                 <label className="text-xs font-bold text-zinc-300">Title</label>
                 <input
                   type="text"
@@ -889,28 +973,29 @@ export default function AddGuideModal({
                   className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-300">Category</label>
-                  <input
-                    type="text"
-                    value={editCategory}
-                    onChange={e => setEditCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-300">Level</label>
-                  <select
-                    value={editLevel}
-                    onChange={e => setEditLevel(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
-                  >
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                  </select>
-                </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-300">Category Tag</label>
+                <input
+                  type="text"
+                  value={editCategory}
+                  onChange={e => setEditCategory(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-300">Level</label>
+                <select
+                  value={editLevel}
+                  onChange={e => setEditLevel(e.target.value as any)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
+                >
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
               </div>
             </div>
 

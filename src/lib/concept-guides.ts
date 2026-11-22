@@ -79,6 +79,20 @@ export const TRACK_META: Record<string, { id: string; name: string; tag: string;
     color: 'cyan',
     badgeClass: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
   },
+  articles: {
+    id: 'articles',
+    name: 'Tutorials & Articles',
+    tag: 'Articles',
+    color: 'blue',
+    badgeClass: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+  },
+  'tutorials-articles': {
+    id: 'articles',
+    name: 'Tutorials & Articles',
+    tag: 'Articles',
+    color: 'blue',
+    badgeClass: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+  },
 };
 
 export const DEFAULT_CONCEPT_GUIDES: ConceptGuide[] = [
@@ -1505,6 +1519,20 @@ export function clearStagedGuides(trackId?: string): void {
   localStorage.removeItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`);
 }
 
+// Retrieve any staged guides across all tracks awaiting submission or publish
+export function getAllStagedGuidesAcrossTracks(): Array<{ trackId: string; guide: ConceptGuide }> {
+  if (typeof window === 'undefined') return [];
+  const tracks = ['selenium', 'playwright', 'api-testing', 'ai-qa', 'articles'];
+  const results: Array<{ trackId: string; guide: ConceptGuide }> = [];
+  for (const tid of tracks) {
+    const list = getStagedGuides(tid);
+    for (const g of list) {
+      results.push({ trackId: tid, guide: g });
+    }
+  }
+  return results;
+}
+
 export function confirmAndSubmitStagedGuides(
   trackId?: string,
   guideIds?: string[]
@@ -1729,6 +1757,35 @@ given().spec(baseReq).when().get("/users").then().spec(baseRes);`,
         'Relying on self-healing as an excuse for writing brittle locators'
       ],
       interviewTips: 'Discuss latency trade-offs and confidence thresholds in self-healing engines compared to strict assertions.',
+    };
+  }
+
+  if (normTrack === 'articles' || normTrack === 'tutorials-articles') {
+    return {
+      title: 'Enterprise Test Automation Architecture & CI/CD Pipeline Design',
+      category: 'Tutorials & Articles',
+      level: 'Advanced',
+      summary: 'Design patterns and strategies for architecting scalable, parallelized test automation frameworks across distributed CI/CD environments.',
+      overview: 'Modern test automation frameworks require clean separation of concerns: test runners, configuration managers, page abstractions, assertion engines, and reporting listeners.\n\nIn this technical article, we explore how to build resilient pipelines that run hundreds of parallel tests without flaky failures or environment collisions.',
+      architecture: 'Decoupled multi-layer architecture separating execution logic, test data providers, and reporting adapters.',
+      language: 'java',
+      caption: 'Technical Architecture & Pipeline Implementation',
+      code: `// Enterprise Test Engine Configuration
+public class AutomationEngineConfig {
+    public static void initializePipeline() {
+        System.out.println("Configuring distributed test runners...");
+    }
+}`,
+      bestPractices: [
+        'Decouple test configuration from environment execution parameters',
+        'Implement parallel-safe WebDriver and HTTP client thread-local factories',
+        'Integrate automated retry analyzers only for transient infrastructure network blips'
+      ],
+      antiPatterns: [
+        'Sharing mutable state or browser instances across concurrent test threads',
+        'Hardcoding environment URLs and credentials inside test classes'
+      ],
+      interviewTips: 'Explain the principles of the Test Automation Pyramid and how you design frameworks for high concurrency and CI/CD maintainability.'
     };
   }
 
@@ -2185,7 +2242,8 @@ export function downloadConceptGuideTemplate(
 export function parseImportedGuides(
   content: string,
   trackId: string = 'selenium',
-  stageOnly: boolean = true
+  stageOnly: boolean = true,
+  singleGuide: boolean = true
 ): { guides: ConceptGuide[]; error?: string } {
   const normTrack = (trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId) as any;
   const trimmed = content.trim();
@@ -2244,7 +2302,7 @@ export function parseImportedGuides(
       }
 
       if (valid.length > 0) {
-        return finalizeImportResult(valid, normTrack, stageOnly);
+        return finalizeImportResult(valid, normTrack, stageOnly, singleGuide);
       }
     } catch {
       // Fall through to other parsers
@@ -2320,6 +2378,7 @@ export function parseImportedGuides(
         }
 
         // Standard Excel horizontal row table (th header + tr data rows)
+        // ONLY parse rows as individual guides if header explicitly contains Title AND Guide columns
         if (rowMatches.length > 0) {
           let headers: string[] = [];
           for (let r = 0; r < rowMatches.length; r++) {
@@ -2330,6 +2389,15 @@ export function parseImportedGuides(
             const isHeader = r === 0 && (row.includes('<th') || cells[0].toLowerCase().includes('title'));
             if (isHeader) {
               headers = cells.map(c => c.toLowerCase().replace(/[^a-z]/g, ''));
+              continue;
+            }
+
+            // Only parse if header has explicit guide columns (prevents converting a 13-row data/step/status table into 13 guides)
+            const hasGuideHeaders = headers.length > 0 &&
+              headers.some(h => h.includes('title')) &&
+              headers.some(h => h.includes('category') || h.includes('summary') || h.includes('level') || h.includes('code') || h.includes('snippet') || h.includes('overview'));
+
+            if (!hasGuideHeaders) {
               continue;
             }
 
@@ -2375,7 +2443,7 @@ export function parseImportedGuides(
       }
 
       if (valid.length > 0) {
-        return finalizeImportResult(valid, normTrack, stageOnly);
+        return finalizeImportResult(valid, normTrack, stageOnly, singleGuide);
       }
     } catch {
       // Fall through to next parser
@@ -2385,69 +2453,139 @@ export function parseImportedGuides(
   // 3. Try Tab-Separated Values (TSV) - Direct Copy & Paste from Excel / Google Sheets
   if (trimmed.includes('\t')) {
     try {
-      const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-      let headers: string[] = [];
+      const rawLines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+      const tsvCandidateLines = rawLines.filter(l => l.split('\t').length >= 3);
 
-      for (let i = 0; i < lines.length; i++) {
-        const parts = lines[i].split('\t').map(s => s.replace(/^["']|["']$/g, '').trim());
-        if (parts.length === 0 || !parts[0]) continue;
+      if (tsvCandidateLines.length > 0) {
+        let headers: string[] = [];
 
-        if (i === 0 && parts[0].toLowerCase().includes('title')) {
-          headers = parts.map(p => p.toLowerCase().replace(/[^a-z]/g, ''));
-          continue;
+        for (let i = 0; i < rawLines.length; i++) {
+          const parts = rawLines[i].split('\t').map(s => s.replace(/^["']|["']$/g, '').trim());
+          if (parts.length < 3 || !parts[0]) continue;
+
+          if (i === 0 && parts[0].toLowerCase().includes('title')) {
+            headers = parts.map(p => p.toLowerCase().replace(/[^a-z]/g, ''));
+            continue;
+          }
+
+          const getTsvCol = (keyword: string, fallbackIdx: number): string => {
+            const idx = headers.findIndex(h => h.includes(keyword));
+            return (idx !== -1 && parts[idx] !== undefined ? parts[idx] : parts[fallbackIdx]) || '';
+          };
+
+          const title = getTsvCol('title', 0);
+          if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
+
+          const category = getTsvCol('category', 1) || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
+          const levelRaw = getTsvCol('level', 2) || 'Intermediate';
+          const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
+          const summary = getTsvCol('summary', 3) || title;
+          const overview = getTsvCol('overview', 4) || summary;
+          const architecture = getTsvCol('architecture', 5) || getTsvCol('mechanism', 5) || '';
+          const codeLang = getTsvCol('language', 6) || defaultLang;
+          const caption = getTsvCol('caption', 7) || `${title} Implementation`;
+          const code = getTsvCol('snippet', 8) || getTsvCol('code', 8) || parts[8] || parts[7] || `// Code example for ${title}`;
+          const bestPractices = parseList(getTsvCol('bestpractice', 9));
+          const antiPatterns = parseList(getTsvCol('antipattern', 10));
+          const interviewTips = getTsvCol('interview', 11);
+
+          valid.push({
+            id: `imported-tsv-${Date.now()}-${valid.length}`,
+            trackId: normTrack,
+            title,
+            category,
+            level,
+            summary,
+            overview,
+            architectureOrMechanism: architecture,
+            codeSnippets: [{ language: codeLang, code, caption }],
+            bestPractices,
+            antiPatterns,
+            interviewTips,
+            isCustom: true,
+          });
         }
 
-        const getTsvCol = (keyword: string, fallbackIdx: number): string => {
-          const idx = headers.findIndex(h => h.includes(keyword));
-          return (idx !== -1 && parts[idx] !== undefined ? parts[idx] : parts[fallbackIdx]) || '';
-        };
-
-        const title = getTsvCol('title', 0);
-        if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
-
-        const category = getTsvCol('category', 1) || 'General';
-        const levelRaw = getTsvCol('level', 2) || 'Intermediate';
-        const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
-        const summary = getTsvCol('summary', 3) || title;
-        const overview = getTsvCol('overview', 4) || summary;
-        const architecture = getTsvCol('architecture', 5) || getTsvCol('mechanism', 5) || '';
-        const codeLang = getTsvCol('language', 6) || defaultLang;
-        const caption = getTsvCol('caption', 7) || `${title} Implementation`;
-        const code = getTsvCol('snippet', 8) || getTsvCol('code', 8) || parts[8] || parts[7] || `// Code example for ${title}`;
-        const bestPractices = parseList(getTsvCol('bestpractice', 9));
-        const antiPatterns = parseList(getTsvCol('antipattern', 10));
-        const interviewTips = getTsvCol('interview', 11);
-
-        valid.push({
-          id: `imported-tsv-${Date.now()}-${valid.length}`,
-          trackId: normTrack,
-          title,
-          category,
-          level,
-          summary,
-          overview,
-          architectureOrMechanism: architecture,
-          codeSnippets: [{ language: codeLang, code, caption }],
-          bestPractices,
-          antiPatterns,
-          interviewTips,
-          isCustom: true,
-        });
+        if (valid.length > 0) {
+          return finalizeImportResult(valid, normTrack, stageOnly, singleGuide);
+        }
       }
+    } catch {
+      // Fall through to next parser
+    }
+  }
 
-      if (valid.length > 0) {
-        return finalizeImportResult(valid, normTrack, stageOnly);
+  // 4. Try True CSV Parsing (Must have multiple rows with >= 3 comma-separated columns or header row)
+  if (trimmed.includes(',')) {
+    try {
+      const rawLines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+      const csvCandidateLines = rawLines.filter(l => l.includes(',') && l.split(',').length >= 3);
+
+      // Only treat as CSV if at least 2 lines have 3+ comma-separated columns, or line 0 has a clear Title header
+      const hasTitleHeader = rawLines[0]?.toLowerCase().includes('title') && rawLines[0]?.includes(',');
+      if (csvCandidateLines.length >= 2 || (hasTitleHeader && csvCandidateLines.length >= 1)) {
+        let headers: string[] = [];
+        const startIndex = hasTitleHeader ? 1 : 0;
+        if (hasTitleHeader) {
+          headers = rawLines[0].split(',').map(s => s.toLowerCase().replace(/[^a-z]/g, ''));
+        }
+
+        for (let i = startIndex; i < rawLines.length; i++) {
+          const line = rawLines[i];
+          const parts = line.split(',').map(s => s.replace(/^["']|["']$/g, '').trim());
+          if (parts.length < 3 || !parts[0] || parts[0].startsWith('[Enter') || parts[0].startsWith('[FILL YOUR GUIDE')) continue;
+
+          const getCsvCol = (keyword: string, fallbackIdx: number): string => {
+            const idx = headers.findIndex(h => h.includes(keyword));
+            return (idx !== -1 && parts[idx] !== undefined ? parts[idx] : parts[fallbackIdx]) || '';
+          };
+
+          const title = getCsvCol('title', 0);
+          if (!title) continue;
+
+          const category = getCsvCol('category', 1) || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
+          const levelRaw = getCsvCol('level', 2) || 'Intermediate';
+          const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
+          const summary = getCsvCol('summary', 3) || title;
+          const overview = getCsvCol('overview', 4) || summary;
+          const codeLang = getCsvCol('language', 5) || defaultLang;
+          const code = getCsvCol('code', 6) || parts[6] || `// Code example for ${title}`;
+          const interviewTips = getCsvCol('interview', 7) || '';
+
+          valid.push({
+            id: `custom-guide-csv-${Date.now()}-${valid.length}`,
+            trackId: normTrack,
+            title,
+            category,
+            level,
+            summary,
+            overview,
+            codeSnippets: [{ language: codeLang, code, caption: `${title} Example` }],
+            interviewTips,
+            isCustom: true,
+          });
+        }
+
+        if (valid.length > 0) {
+          return finalizeImportResult(valid, normTrack, stageOnly, singleGuide);
+        }
       }
     } catch {
       // Fall through
     }
   }
 
-  // 4. Try Structured Key-Value Text (Plain Text / Word Copy Format / Freeform Docs)
-  const hasStructuredMarkers = /(?:^|\n)(?:\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2}\s*:|#\s+)/i.test(trimmed) || /title\s*:/i.test(trimmed);
-  if (hasStructuredMarkers) {
+  // 5. Try Explicit Multi-Guide Structured Text
+  // ONLY split into MULTIPLE guides if explicit multiple guide markers exist (e.g. Guide 1:, Guide 2: or >= 2 Title: declarations)
+  const titleHeaderMatches = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title)(?:\s*\[[^\]]*\])?\*{0,2}\s*:/gi) || [];
+  const guideNumMatches = trimmed.match(/(?:^|\n)\s*guide\s*\d+\s*:/gi) || [];
+
+  if (guideNumMatches.length >= 2 || titleHeaderMatches.length >= 2) {
     try {
-      const blocks = trimmed.split(/(?:^|\n)(?=(?:\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2}\s*:|#\s+))/i).filter(Boolean);
+      const splitRegex = guideNumMatches.length >= 2
+        ? /(?:^|\n)(?=guide\s*\d+\s*:)/i
+        : /(?:^|\n)(?=(?:\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title)(?:\s*\[[^\]]*\])?\*{0,2}\s*:))/i;
+      const blocks = trimmed.split(splitRegex).filter(b => b.trim());
 
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
@@ -2456,17 +2594,10 @@ export function parseImportedGuides(
           return match ? match[1].trim() : '';
         };
 
-        let title = getField(/(?:\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i);
-        if (!title) {
-          const headerMatch = block.match(/^#+\s*([^\n\r]+)/m);
-          if (headerMatch) {
-            title = headerMatch[1].replace(/^\*+|\*+$/g, '').trim();
-          }
-        }
-
+        const title = getField(/(?:\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i);
         if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
 
-        const category = getField(/(?:\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || 'General';
+        const category = getField(/(?:\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
         const levelRaw = getField(/(?:\*{0,2}(?:level|difficulty)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || 'Intermediate';
         const level = ['Beginner', 'Intermediate', 'Advanced'].find(l => levelRaw.toLowerCase().includes(l.toLowerCase())) || 'Intermediate';
         const summary = getField(/(?:\*{0,2}(?:summary)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || title;
@@ -2476,7 +2607,6 @@ export function parseImportedGuides(
         const caption = getField(/(?:\*{0,2}(?:code\s*caption|caption)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || `${title} Implementation`;
         let code = getField(/(?:\*{0,2}(?:code\s*snippet|snippet|code)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:best\s*practices|anti[- ]patterns|interview)|\n#|$))/i);
 
-        // If code block enclosed in ``` ... ```
         if (!code) {
           const fencedMatch = block.match(/```(?:[a-z0-9_-]+)?\s*([\s\S]*?)```/i);
           if (fencedMatch) {
@@ -2509,53 +2639,157 @@ export function parseImportedGuides(
       }
 
       if (valid.length > 0) {
-        return finalizeImportResult(valid, normTrack, stageOnly);
+        return finalizeImportResult(valid, normTrack, stageOnly, singleGuide);
       }
     } catch {
       // Fall through
     }
   }
 
-  // 5. Try CSV parsing
+  // 6. Single Document / Article / Tutorial / Notes Import (Default for uploaded .docx, Google Docs, articles)
+  // When an author uploads or pastes a document, it must be imported as ONE comprehensive guide,
+  // NOT split line-by-line or bullet-by-bullet!
   try {
-    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-    if (lines.length > 0) {
-      const startIndex = lines[0].toLowerCase().includes('title') ? 1 : 0;
+    // 1. Extract Title:
+    let title = '';
+    const titleMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    if (titleMatch) {
+      title = titleMatch[1].trim();
+    } else {
+      const headingMatch = trimmed.match(/^#+\s*([^\n\r]+)/m);
+      if (headingMatch) {
+        title = headingMatch[1].replace(/^\*+|\*+$/g, '').trim();
+      } else {
+        // Look for the first non-empty line that isn't a bullet point or code comment
+        const docLines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+        for (const line of docLines) {
+          const cleanLine = line.replace(/^\*+|\*+$/g, '').replace(/^[#•\-\d\.]+\s*/, '').trim();
+          if (cleanLine && cleanLine.length >= 4 && cleanLine.length <= 120 && !cleanLine.startsWith('//') && !cleanLine.startsWith('/*')) {
+            title = cleanLine;
+            break;
+          }
+        }
+      }
+    }
 
-      for (let i = startIndex; i < lines.length; i++) {
-        const line = lines[i];
-        const parts = line.split(',').map(s => s.replace(/^["']|["']$/g, '').trim());
-        if (parts.length >= 1 && parts[0] && !parts[0].startsWith('[Enter')) {
-          const title = parts[0];
-          const category = parts[1] || 'General';
-          const level = ['Beginner', 'Intermediate', 'Advanced'].includes(parts[2]) ? parts[2] as any : 'Intermediate';
-          const summary = parts[3] || title;
-          const overview = parts[4] || summary;
-          const codeLang = parts[5] || defaultLang;
-          const code = parts[6] || `// Code example for ${title}`;
-          const interviewTips = parts[7] || '';
+    if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) {
+      title = normTrack === 'articles' ? 'Technical Tutorial & Deep Dive' : 'Imported Concept Guide';
+    }
 
-          valid.push({
-            id: `custom-guide-csv-${Date.now()}-${i}`,
-            trackId: normTrack,
-            title,
-            category,
-            level,
-            summary,
-            overview,
-            codeSnippets: [{ language: codeLang, code, caption: `${title} Example` }],
-            interviewTips,
-            isCustom: true,
+    // 2. Extract Category:
+    let category = '';
+    const categoryMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    if (categoryMatch) {
+      category = categoryMatch[1].trim();
+    } else {
+      category = normTrack === 'articles'
+        ? 'Tutorials & Articles'
+        : normTrack === 'api-testing'
+        ? 'Rest Assured (API)'
+        : normTrack === 'playwright'
+        ? 'Playwright (TS)'
+        : normTrack === 'selenium'
+        ? 'Selenium WebDriver'
+        : 'AI Academy';
+    }
+
+    // 3. Extract Level:
+    let levelVal: 'Beginner' | 'Intermediate' | 'Advanced' = 'Intermediate';
+    const levelMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:level|difficulty)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    if (levelMatch) {
+      const lStr = levelMatch[1].toLowerCase();
+      if (lStr.includes('beg')) levelVal = 'Beginner';
+      else if (lStr.includes('adv')) levelVal = 'Advanced';
+    }
+
+    // 4. Extract Summary:
+    let summary = '';
+    const summaryMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:summary)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    if (summaryMatch) {
+      summary = summaryMatch[1].trim();
+    } else {
+      // Find the first narrative paragraph (after title) that isn't a code or bullet line
+      const paragraphs = trimmed.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+      for (const p of paragraphs) {
+        const cleanP = p.replace(/^[#•\-\*\d\.\s]+/, '').trim();
+        if (cleanP && !cleanP.startsWith('//') && cleanP !== title && cleanP.length >= 20) {
+          summary = cleanP.slice(0, 250);
+          if (cleanP.length > 250) summary += '...';
+          break;
+        }
+      }
+      if (!summary) summary = title;
+    }
+
+    // 5. Overview: The ENTIRE document content with rich formatting preserved
+    const overview = trimmed;
+
+    // 6. Architecture / Mechanism:
+    let architecture = '';
+    const archMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:architecture|mechanism)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}(?:code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i);
+    if (archMatch) {
+      architecture = archMatch[1].trim();
+    }
+
+    // 7. Code Snippets:
+    const codeSnippets: CodeSnippet[] = [];
+    const fencedBlocks = Array.from(trimmed.matchAll(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g));
+    if (fencedBlocks.length > 0) {
+      for (let i = 0; i < Math.min(fencedBlocks.length, 3); i++) {
+        const fb = fencedBlocks[i];
+        const lang = fb[1]?.trim() || defaultLang;
+        const codeText = fb[2]?.trim();
+        if (codeText) {
+          codeSnippets.push({
+            language: lang,
+            code: codeText,
+            caption: `${title} Code Example ${i + 1}`,
           });
         }
       }
+    }
 
-      if (valid.length > 0) {
-        return finalizeImportResult(valid, normTrack, stageOnly);
-      }
+    if (codeSnippets.length === 0) {
+      const codeMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:code|snippet)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}(?:best\s*practices|anti[- ]patterns|interview)|\n#|$))/i);
+      const codeText = codeMatch ? codeMatch[1].trim() : `// Code example for ${title}`;
+      codeSnippets.push({
+        language: defaultLang,
+        code: codeText,
+        caption: `${title} Implementation`,
+      });
+    }
+
+    // 8. Best Practices, Anti-Patterns, Interview Tips:
+    const bpMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}best\s*practices?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}anti[- ]patterns?|\n\s*\*{0,2}interview|\n#|$))/i);
+    const bestPractices = bpMatch ? parseList(bpMatch[1]) : [];
+
+    const apMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}anti[- ]patterns?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}interview|\n#|$))/i);
+    const antiPatterns = apMatch ? parseList(apMatch[1]) : [];
+
+    const itMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}interview\s*tips?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)$/i);
+    const interviewTips = itMatch ? itMatch[1].trim() : '';
+
+    valid.push({
+      id: `imported-doc-${Date.now()}-0`,
+      trackId: normTrack,
+      title,
+      category,
+      level: levelVal,
+      summary,
+      overview,
+      architectureOrMechanism: architecture,
+      codeSnippets,
+      bestPractices,
+      antiPatterns,
+      interviewTips,
+      isCustom: true,
+    });
+
+    if (valid.length > 0) {
+      return finalizeImportResult(valid, normTrack, stageOnly, singleGuide);
     }
   } catch {
-    // CSV failed
+    // Fall through
   }
 
   return {
@@ -2564,20 +2798,143 @@ export function parseImportedGuides(
   };
 }
 
+// Consolidate multiple guide sections, tables, and notes into 1 comprehensive guide
+export function consolidateGuidesIntoSingle(guides: ConceptGuide[], normTrack: string): ConceptGuide {
+  if (guides.length === 0) {
+    throw new Error('No guides to consolidate');
+  }
+  if (guides.length === 1) {
+    return guides[0];
+  }
+
+  // 1. Pick the best primary title (ignore placeholders like "[Enter Guide Title]")
+  const validGuides = guides.filter(g => g.title && !g.title.includes('[Enter') && !g.title.includes('[FILL'));
+  const primary = validGuides.length > 0 ? validGuides[0] : guides[0];
+
+  const primaryTitle = primary.title.replace(/^\[.*?\]\s*/, '').trim() || 'Comprehensive Technical Guide';
+  const category = primary.category || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
+  const level = primary.level || 'Intermediate';
+  const summary = primary.summary && !primary.summary.includes('[Enter')
+    ? primary.summary
+    : `${primaryTitle} - Comprehensive architecture, practical code examples, and production test automation guide.`;
+
+  // 2. Consolidate full Overview & Explanation with rich formatting
+  const sections: string[] = [];
+
+  for (let i = 0; i < guides.length; i++) {
+    const g = guides[i];
+    if (!g.title && !g.overview && !g.summary) continue;
+
+    const parts: string[] = [];
+    const isDistinctSection = g.title && g.title !== primaryTitle && !g.title.includes('[Enter');
+
+    if (isDistinctSection) {
+      parts.push(`### ${g.title}`);
+    }
+
+    if (g.overview && !g.overview.includes('[Detailed multi-paragraph')) {
+      parts.push(g.overview);
+    } else if (g.summary && g.summary !== primary.summary && !g.summary.includes('[Concise 1-2')) {
+      parts.push(g.summary);
+    }
+
+    if (g.architectureOrMechanism && !g.architectureOrMechanism.includes('[Internal engine')) {
+      parts.push(`**Mechanism & Architecture:**\n${g.architectureOrMechanism}`);
+    }
+
+    if (g.bestPractices && g.bestPractices.length > 0) {
+      const bp = g.bestPractices.filter(b => !b.includes('Recommendation'));
+      if (bp.length > 0) {
+        parts.push(`**Best Practices:**\n${bp.map(b => `• ${b}`).join('\n')}`);
+      }
+    }
+
+    if (g.antiPatterns && g.antiPatterns.length > 0) {
+      const ap = g.antiPatterns.filter(a => !a.includes('Common pitfall'));
+      if (ap.length > 0) {
+        parts.push(`**Anti-Patterns to Avoid:**\n${ap.map(a => `• ${a}`).join('\n')}`);
+      }
+    }
+
+    if (g.interviewTips && !g.interviewTips.includes('[Key talking points')) {
+      parts.push(`**Interview Tips:**\n${g.interviewTips}`);
+    }
+
+    if (parts.length > 0) {
+      sections.push(parts.join('\n\n'));
+    }
+  }
+
+  const finalOverview = sections.length > 0
+    ? sections.join('\n\n---\n\n')
+    : primary.overview || summary;
+
+  // 3. Consolidate code snippets across all guides
+  const allSnippets: CodeSnippet[] = [];
+  const seenCodes = new Set<string>();
+
+  for (const g of guides) {
+    if (g.codeSnippets && g.codeSnippets.length > 0) {
+      for (const cs of g.codeSnippets) {
+        if (!cs.code || cs.code.includes('// Paste your complete') || cs.code.includes('// Code example for [') || seenCodes.has(cs.code.trim())) {
+          continue;
+        }
+        seenCodes.add(cs.code.trim());
+        allSnippets.push(cs);
+      }
+    }
+  }
+
+  if (allSnippets.length === 0) {
+    allSnippets.push({
+      language: normTrack === 'playwright' ? 'typescript' : normTrack === 'ai-qa' ? 'python' : 'java',
+      caption: `${primaryTitle} Implementation`,
+      code: primary.codeSnippets?.[0]?.code || `// Technical implementation for ${primaryTitle}`,
+    });
+  }
+
+  // 4. Consolidate interview tips, best practices, and anti-patterns
+  const consolidatedBp = Array.from(new Set(guides.flatMap(g => g.bestPractices || []))).filter(b => !b.includes('Recommendation'));
+  const consolidatedAp = Array.from(new Set(guides.flatMap(g => g.antiPatterns || []))).filter(a => !a.includes('Common pitfall'));
+  const consolidatedTips = Array.from(new Set(guides.map(g => g.interviewTips).filter(Boolean))).join('\n• ');
+
+  return {
+    id: `imported-single-${Date.now()}`,
+    trackId: normTrack,
+    title: primaryTitle,
+    category,
+    level,
+    summary,
+    overview: finalOverview,
+    architectureOrMechanism: primary.architectureOrMechanism || '',
+    codeSnippets: allSnippets,
+    bestPractices: consolidatedBp,
+    antiPatterns: consolidatedAp,
+    interviewTips: consolidatedTips,
+    isCustom: true,
+  };
+}
+
 // Helper to save parsed guides to storage
 function finalizeImportResult(
   valid: ConceptGuide[],
   normTrack: string,
-  stageOnly: boolean
+  stageOnly: boolean,
+  singleGuide: boolean = true
 ): { guides: ConceptGuide[] } {
+  let finalGuides = valid;
+  if (singleGuide && finalGuides.length > 1) {
+    finalGuides = [consolidateGuidesIntoSingle(finalGuides, normTrack)];
+  }
+
   if (stageOnly) {
     const existing = getStagedGuides(normTrack);
-    const updated = [...valid, ...existing.filter(e => !valid.some(v => v.id === e.id))];
+    const updated = [...finalGuides, ...existing.filter(e => !finalGuides.some(v => v.id === e.id))];
     localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
   } else {
     const existing = getStoredCustomGuides(normTrack);
-    const updated = [...valid, ...existing.filter(e => !valid.some(v => v.id === e.id))];
+    const updated = [...finalGuides, ...existing.filter(e => !finalGuides.some(v => v.id === e.id))];
     localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
   }
-  return { guides: valid };
+  return { guides: finalGuides };
 }
