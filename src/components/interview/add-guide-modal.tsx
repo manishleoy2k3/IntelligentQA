@@ -25,7 +25,10 @@ import {
   Clock,
   Lightbulb,
   FileCheck2,
+  Sparkles,
 } from 'lucide-react';
+import FormattedOverviewEditor from '@/components/ui/formatted-overview-editor';
+import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
 import { QADatabase } from '@/lib/qa-db';
 import {
   ConceptGuide,
@@ -41,6 +44,7 @@ import {
   downloadConceptGuideTemplate,
   parseImportedGuides,
   checkGuideDuplicate,
+  extractTextFromOfficeZip,
 } from '@/lib/concept-guides';
 
 interface AddGuideModalProps {
@@ -272,9 +276,35 @@ export default function AddGuideModal({
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const lowerName = file.name.toLowerCase();
+    if (lowerName.endsWith('.docx') || lowerName.endsWith('.xlsx')) {
+      try {
+        const buffer = await file.arrayBuffer();
+        const extracted = await extractTextFromOfficeZip(
+          buffer,
+          lowerName.endsWith('.docx') ? 'docx' : 'xlsx'
+        );
+        if (extracted && extracted.trim()) {
+          setImportText(extracted);
+          handleParseImport(extracted);
+          e.target.value = '';
+          return;
+        } else {
+          showBanner('error', `Could not extract guide data from "${file.name}". Please ensure the Word/Excel document contains tables or text.`);
+          e.target.value = '';
+          return;
+        }
+      } catch (err: any) {
+        console.warn('Office ZIP extraction error:', err);
+        showBanner('error', `Failed to read "${file.name}": ${err?.message || 'Unsupported or corrupted format'}`);
+        e.target.value = '';
+        return;
+      }
+    }
 
     const reader = new FileReader();
     reader.onload = evt => {
@@ -759,6 +789,16 @@ export default function AddGuideModal({
 
                       <p className="text-xs text-zinc-300 leading-relaxed">{guide.summary}</p>
 
+                      {/* Formatted Overview Preview if present */}
+                      {guide.overview && guide.overview !== guide.summary && (
+                        <div className="bg-[#111] p-3 rounded-xl border border-[#222] text-xs text-zinc-300">
+                          <div className="text-[10px] uppercase font-bold text-zinc-500 mb-1">
+                            Overview &amp; Explanation (Formatted):
+                          </div>
+                          <FormattedInterviewAnswer text={guide.overview} isDark />
+                        </div>
+                      )}
+
                       {/* Code preview if present */}
                       {guide.codeSnippets?.[0] && (
                         <div className="bg-[#0D0D0D] rounded-xl p-3 border border-[#262626] font-mono text-[11px] text-zinc-300 overflow-x-auto max-h-28">
@@ -886,12 +926,12 @@ export default function AddGuideModal({
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-zinc-300">Full Overview</label>
-              <textarea
-                rows={3}
+              <label className="text-xs font-bold text-zinc-300">Full Overview &amp; Explanation</label>
+              <FormattedOverviewEditor
                 value={editOverview}
-                onChange={e => setEditOverview(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white resize-none"
+                onChange={setEditOverview}
+                placeholder="In-depth explanation, tradeoffs, and architectural concepts..."
+                minRows={4}
               />
             </div>
 
@@ -1168,12 +1208,11 @@ export default function AddGuideModal({
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-zinc-300">Full Overview &amp; Explanation</label>
-              <textarea
-                rows={3}
+              <FormattedOverviewEditor
                 value={overview}
-                onChange={e => setOverview(e.target.value)}
-                placeholder="In-depth explanation, tradeoffs, and architectural concepts..."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400 resize-none"
+                onChange={setOverview}
+                placeholder="In-depth explanation, tradeoffs, and architectural concepts. Paste retains bullet points, bold lines, and code..."
+                minRows={5}
               />
             </div>
 

@@ -2267,31 +2267,39 @@ export function parseImportedGuides(
 
         for (const row of rowMatches) {
           const cells = (row.match(/<t[dh][\s\S]*?<\/t[dh]>/gi) || []).map(cleanText);
-          if (cells.length === 2) {
-            const key = cells[0].toLowerCase().replace(/[^a-z]/g, '');
-            if (['title', 'category', 'level', 'summary', 'overview', 'architecture', 'mechanism', 'code', 'codelanguage', 'codecaption', 'caption', 'codesnippet', 'bestpractices', 'antipatterns', 'interviewtips'].some(k => key.includes(k))) {
+          if (cells.length >= 2) {
+            const rawKey = cells[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+            const rawVal = cells.slice(1).join(' ').trim();
+            if (['title', 'category', 'level', 'difficulty', 'summary', 'overview', 'explanation', 'architecture', 'mechanism', 'code', 'codelanguage', 'codecaption', 'caption', 'codesnippet', 'bestpractices', 'antipatterns', 'interviewtips'].some(k => rawKey.includes(k))) {
               isKeyValueTable = true;
-              kvMap[key] = cells[1];
+              kvMap[rawKey] = rawVal;
             }
           }
         }
 
-        if (isKeyValueTable && kvMap.title) {
-          const title = kvMap.title;
-          const category = kvMap.category || 'General';
-          const levelVal = ['Beginner', 'Intermediate', 'Advanced'].find(l => kvMap.level?.toLowerCase().includes(l.toLowerCase())) || 'Intermediate';
-          const summary = kvMap.summary || title;
-          const overview = kvMap.overview || summary;
-          const architecture = kvMap.architecture || kvMap.mechanism || '';
-          const codeLang = kvMap.codelanguage || defaultLang;
-          const caption = kvMap.codecaption || kvMap.caption || `${title} Implementation`;
-          const codeSnippet = kvMap.code || kvMap.codesnippet || `// Code example for ${title}`;
-          const bestPractices = parseList(kvMap.bestpractices || kvMap.bestpractice);
-          const antiPatterns = parseList(kvMap.antipatterns || kvMap.antipattern);
-          const interviewTips = kvMap.interviewtips || '';
+        const getKvVal = (keyword: string): string => {
+          const matchKey = Object.keys(kvMap).find(k => k.includes(keyword));
+          return matchKey && kvMap[matchKey] ? kvMap[matchKey].trim() : '';
+        };
+
+        const title = getKvVal('title');
+
+        if (isKeyValueTable && title) {
+          const category = getKvVal('category') || 'General';
+          const levelRaw = getKvVal('level') || getKvVal('difficulty');
+          const levelVal = ['Beginner', 'Advanced'].find(l => levelRaw.toLowerCase().includes(l.toLowerCase())) || 'Intermediate';
+          const summary = getKvVal('summary') || title;
+          const overview = getKvVal('overview') || getKvVal('explanation') || summary;
+          const architecture = getKvVal('architecture') || getKvVal('mechanism') || '';
+          const codeLang = getKvVal('codelanguage') || getKvVal('language') || defaultLang;
+          const caption = getKvVal('codecaption') || getKvVal('caption') || `${title} Implementation`;
+          const codeSnippet = getKvVal('codesnippet') || getKvVal('code') || `// Code example for ${title}`;
+          const bestPractices = parseList(getKvVal('bestpractice'));
+          const antiPatterns = parseList(getKvVal('antipattern'));
+          const interviewTips = getKvVal('interview');
 
           // Filter out placeholders like "[Enter Guide Title]"
-          if (!title.includes('[Enter Guide') && !title.includes('[Your New Guide')) {
+          if (!title.includes('[Enter Guide') && !title.includes('[Your New Guide') && !title.includes('[FILL YOUR GUIDE')) {
             valid.push({
               id: `imported-word-${Date.now()}-${valid.length}`,
               trackId: normTrack,
@@ -2325,22 +2333,27 @@ export function parseImportedGuides(
               continue;
             }
 
-            // Map data row
-            const title = cells[headers.indexOf('title') !== -1 ? headers.indexOf('title') : 0];
+            // Map data row with resilient keyword matching
+            const getCol = (keyword: string, fallbackIdx: number): string => {
+              const idx = headers.findIndex(h => h.includes(keyword));
+              return (idx !== -1 && cells[idx] !== undefined ? cells[idx] : cells[fallbackIdx]) || '';
+            };
+
+            const title = getCol('title', 0);
             if (!title || title.includes('[Enter Guide') || title.includes('[FILL YOUR GUIDE')) continue;
 
-            const category = (headers.indexOf('category') !== -1 ? cells[headers.indexOf('category')] : cells[1]) || 'General';
-            const levelRaw = (headers.indexOf('level') !== -1 ? cells[headers.indexOf('level')] : cells[2]) || 'Intermediate';
+            const category = getCol('category', 1) || 'General';
+            const levelRaw = getCol('level', 2) || 'Intermediate';
             const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
-            const summary = (headers.indexOf('summary') !== -1 ? cells[headers.indexOf('summary')] : cells[3]) || title;
-            const overview = (headers.indexOf('overview') !== -1 ? cells[headers.indexOf('overview')] : cells[4]) || summary;
-            const architecture = (headers.indexOf('architectureormechanism') !== -1 ? cells[headers.indexOf('architectureormechanism')] : cells[5]) || '';
-            const codeLang = (headers.indexOf('codelanguage') !== -1 ? cells[headers.indexOf('codelanguage')] : cells[6]) || defaultLang;
-            const caption = (headers.indexOf('codecaption') !== -1 ? cells[headers.indexOf('codecaption')] : `${title} Implementation`) || `${title} Implementation`;
-            const code = (headers.indexOf('codesnippet') !== -1 ? cells[headers.indexOf('codesnippet')] : cells[8] || cells[7]) || `// Code example for ${title}`;
-            const bestPractices = parseList(headers.indexOf('bestpractices') !== -1 ? cells[headers.indexOf('bestpractices')] : '');
-            const antiPatterns = parseList(headers.indexOf('antipatterns') !== -1 ? cells[headers.indexOf('antipatterns')] : '');
-            const interviewTips = (headers.indexOf('interviewtips') !== -1 ? cells[headers.indexOf('interviewtips')] : '') || '';
+            const summary = getCol('summary', 3) || title;
+            const overview = getCol('overview', 4) || summary;
+            const architecture = getCol('architecture', 5) || getCol('mechanism', 5) || '';
+            const codeLang = getCol('language', 6) || defaultLang;
+            const caption = getCol('caption', 7) || `${title} Implementation`;
+            const code = getCol('snippet', 8) || getCol('code', 8) || cells[8] || cells[7] || `// Code example for ${title}`;
+            const bestPractices = parseList(getCol('bestpractice', 9));
+            const antiPatterns = parseList(getCol('antipattern', 10));
+            const interviewTips = getCol('interview', 11);
 
             valid.push({
               id: `imported-excel-${Date.now()}-${valid.length}`,
@@ -2384,21 +2397,26 @@ export function parseImportedGuides(
           continue;
         }
 
-        const title = parts[headers.indexOf('title') !== -1 ? headers.indexOf('title') : 0];
+        const getTsvCol = (keyword: string, fallbackIdx: number): string => {
+          const idx = headers.findIndex(h => h.includes(keyword));
+          return (idx !== -1 && parts[idx] !== undefined ? parts[idx] : parts[fallbackIdx]) || '';
+        };
+
+        const title = getTsvCol('title', 0);
         if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
 
-        const category = (headers.indexOf('category') !== -1 ? parts[headers.indexOf('category')] : parts[1]) || 'General';
-        const levelRaw = (headers.indexOf('level') !== -1 ? parts[headers.indexOf('level')] : parts[2]) || 'Intermediate';
+        const category = getTsvCol('category', 1) || 'General';
+        const levelRaw = getTsvCol('level', 2) || 'Intermediate';
         const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
-        const summary = (headers.indexOf('summary') !== -1 ? parts[headers.indexOf('summary')] : parts[3]) || title;
-        const overview = (headers.indexOf('overview') !== -1 ? parts[headers.indexOf('overview')] : parts[4]) || summary;
-        const architecture = (headers.indexOf('architectureormechanism') !== -1 ? parts[headers.indexOf('architectureormechanism')] : parts[5]) || '';
-        const codeLang = (headers.indexOf('codelanguage') !== -1 ? parts[headers.indexOf('codelanguage')] : parts[6]) || defaultLang;
-        const caption = (headers.indexOf('codecaption') !== -1 ? parts[headers.indexOf('codecaption')] : `${title} Implementation`) || `${title} Implementation`;
-        const code = (headers.indexOf('codesnippet') !== -1 ? parts[headers.indexOf('codesnippet')] : parts[8] || parts[7]) || `// Code example for ${title}`;
-        const bestPractices = parseList(headers.indexOf('bestpractices') !== -1 ? parts[headers.indexOf('bestpractices')] : '');
-        const antiPatterns = parseList(headers.indexOf('antipatterns') !== -1 ? parts[headers.indexOf('antipatterns')] : '');
-        const interviewTips = (headers.indexOf('interviewtips') !== -1 ? parts[headers.indexOf('interviewtips')] : '') || '';
+        const summary = getTsvCol('summary', 3) || title;
+        const overview = getTsvCol('overview', 4) || summary;
+        const architecture = getTsvCol('architecture', 5) || getTsvCol('mechanism', 5) || '';
+        const codeLang = getTsvCol('language', 6) || defaultLang;
+        const caption = getTsvCol('caption', 7) || `${title} Implementation`;
+        const code = getTsvCol('snippet', 8) || getTsvCol('code', 8) || parts[8] || parts[7] || `// Code example for ${title}`;
+        const bestPractices = parseList(getTsvCol('bestpractice', 9));
+        const antiPatterns = parseList(getTsvCol('antipattern', 10));
+        const interviewTips = getTsvCol('interview', 11);
 
         valid.push({
           id: `imported-tsv-${Date.now()}-${valid.length}`,
@@ -2425,10 +2443,11 @@ export function parseImportedGuides(
     }
   }
 
-  // 4. Try Structured Key-Value Text (Plain Text / Word Copy Format)
-  if (/title\s*:/i.test(trimmed)) {
+  // 4. Try Structured Key-Value Text (Plain Text / Word Copy Format / Freeform Docs)
+  const hasStructuredMarkers = /(?:^|\n)(?:\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2}\s*:|#\s+)/i.test(trimmed) || /title\s*:/i.test(trimmed);
+  if (hasStructuredMarkers) {
     try {
-      const blocks = trimmed.split(/(?:^|\n)(?=(?:guide\s*\d+|title)\s*:)/i).filter(Boolean);
+      const blocks = trimmed.split(/(?:^|\n)(?=(?:\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2}\s*:|#\s+))/i).filter(Boolean);
 
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
@@ -2437,28 +2456,47 @@ export function parseImportedGuides(
           return match ? match[1].trim() : '';
         };
 
-        const title = getField(/(?:title)\s*:\s*([^\n\r]+)/i);
+        let title = getField(/(?:\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i);
+        if (!title) {
+          const headerMatch = block.match(/^#+\s*([^\n\r]+)/m);
+          if (headerMatch) {
+            title = headerMatch[1].replace(/^\*+|\*+$/g, '').trim();
+          }
+        }
+
         if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
 
-        const category = getField(/(?:category)\s*:\s*([^\n\r]+)/i) || 'General';
-        const levelRaw = getField(/(?:level|difficulty)\s*:\s*([^\n\r]+)/i) || 'Intermediate';
-        const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
-        const summary = getField(/(?:summary)\s*:\s*([^\n\r]+)/i) || title;
-        const overview = getField(/(?:overview|explanation)\s*:\s*([\s\S]*?)(?=(?:architecture|code|best\s*practices|interview|$))/i) || summary;
-        const architecture = getField(/(?:architecture|mechanism)\s*:\s*([\s\S]*?)(?=(?:code|best\s*practices|interview|$))/i) || '';
-        const codeLang = getField(/(?:code\s*language|language)\s*:\s*([^\n\r]+)/i) || defaultLang;
-        const caption = getField(/(?:code\s*caption|caption)\s*:\s*([^\n\r]+)/i) || `${title} Implementation`;
-        const code = getField(/(?:code|snippet)\s*:\s*([\s\S]*?)(?=(?:best\s*practices|anti[- ]patterns|interview|$))/i) || `// Code example for ${title}`;
-        const bestPractices = parseList(getField(/(?:best\s*practices?)\s*:\s*([\s\S]*?)(?=(?:anti[- ]patterns?|interview|$))/i));
-        const antiPatterns = parseList(getField(/(?:anti[- ]patterns?)\s*:\s*([\s\S]*?)(?=(?:interview|$))/i));
-        const interviewTips = getField(/(?:interview\s*tips?)\s*:\s*([\s\S]*?)$/i) || '';
+        const category = getField(/(?:\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || 'General';
+        const levelRaw = getField(/(?:\*{0,2}(?:level|difficulty)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || 'Intermediate';
+        const level = ['Beginner', 'Intermediate', 'Advanced'].find(l => levelRaw.toLowerCase().includes(l.toLowerCase())) || 'Intermediate';
+        const summary = getField(/(?:\*{0,2}(?:summary)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || title;
+        const overview = getField(/(?:\*{0,2}(?:overview|explanation)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:architecture|mechanism|code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i) || summary;
+        const architecture = getField(/(?:\*{0,2}(?:architecture|mechanism)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i) || '';
+        const codeLang = getField(/(?:\*{0,2}(?:code\s*language|language)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || defaultLang;
+        const caption = getField(/(?:\*{0,2}(?:code\s*caption|caption)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || `${title} Implementation`;
+        let code = getField(/(?:\*{0,2}(?:code\s*snippet|snippet|code)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:best\s*practices|anti[- ]patterns|interview)|\n#|$))/i);
+
+        // If code block enclosed in ``` ... ```
+        if (!code) {
+          const fencedMatch = block.match(/```(?:[a-z0-9_-]+)?\s*([\s\S]*?)```/i);
+          if (fencedMatch) {
+            code = fencedMatch[1].trim();
+          }
+        }
+        if (!code) {
+          code = `// Code example for ${title}`;
+        }
+
+        const bestPractices = parseList(getField(/(?:\*{0,2}best\s*practices?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}anti[- ]patterns?|\*{0,2}interview|\n#|$))/i));
+        const antiPatterns = parseList(getField(/(?:\*{0,2}anti[- ]patterns?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}interview|\n#|$))/i));
+        const interviewTips = getField(/(?:\*{0,2}interview\s*tips?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)$/i) || '';
 
         valid.push({
           id: `imported-text-${Date.now()}-${valid.length}`,
           trackId: normTrack,
           title,
           category,
-          level,
+          level: level as any,
           summary,
           overview,
           architectureOrMechanism: architecture,

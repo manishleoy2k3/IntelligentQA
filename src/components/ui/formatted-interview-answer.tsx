@@ -123,6 +123,27 @@ export default function FormattedInterviewAnswer({
             {lines.map((line, lIdx) => {
               const trimmed = line.trim();
 
+              // Heading line: # , ## , ###
+              const headingMatch = line.match(/^(\s*#{1,4})\s+(.*)$/);
+              if (headingMatch) {
+                return (
+                  <h4 key={`line-${lIdx}`} className="font-extrabold text-white text-sm sm:text-base pt-2.5 pb-1 border-b border-slate-800/60 flex items-center gap-2">
+                    <span className="w-1.5 h-3.5 bg-purple-500 rounded-full inline-block shrink-0" />
+                    <span>{renderInlineFormatted(headingMatch[2], `h-${lIdx}`)}</span>
+                  </h4>
+                );
+              }
+
+              // Quote line: >
+              if (trimmed.startsWith('>')) {
+                const quoteContent = line.replace(/^\s*>\s*/, '');
+                return (
+                  <div key={`line-${lIdx}`} className="pl-3 py-1 my-1 border-l-2 border-purple-500 bg-purple-950/20 text-purple-200 text-xs italic rounded-r">
+                    {renderInlineFormatted(quoteContent, `q-${lIdx}`)}
+                  </div>
+                );
+              }
+
               // Bullet line: • , - , *
               if (trimmed.startsWith('• ') || trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
                 const bulletContent = line.replace(/^\s*[•\-\*]\s*/, '');

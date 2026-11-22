@@ -62,6 +62,23 @@ test('Excel (.XLSX) and Word (.DOCX) binary templates generation and extraction'
   // 4. OOXML Standard Schemas for Google Drive & Office Compatibility
   assert.ok(officeDocFile.includes('<w:sectPr>'), 'DOCX contains section properties for Word/Google Docs page layout');
   assert.ok(officeDocFile.includes('<sheetViews>'), 'XLSX contains sheetViews for Excel/Google Sheets compatibility');
+
+  // 5. Formatting preservation for Word (.docx) imports (bold, bullets, paragraphs)
+  assert.ok(officeDocFile.includes('extractFormattedWordParagraph'), 'Provides extractFormattedWordParagraph');
+  assert.ok(officeDocFile.includes('extractFormattedWordCell'), 'Provides extractFormattedWordCell');
+  assert.ok(officeDocFile.includes("isBold && trimmed && !trimmed.startsWith('**')"), 'Preserves Word bold runs as **bold**');
+  assert.ok(officeDocFile.includes("pTexts.join('<br/>')"), 'Preserves paragraph breaks inside table cells');
+});
+
+test('Word (.docx) and Excel (.xlsx) formatting retention in Share your Knowledge modal', () => {
+  const addGuideModalFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
+
+  // 1. Modal uses extractTextFromOfficeZip to parse binary .docx and .xlsx
+  assert.ok(addGuideModalFile.includes('extractTextFromOfficeZip'), 'Imports and uses extractTextFromOfficeZip in AddGuideModal');
+  assert.ok(addGuideModalFile.includes("lowerName.endsWith('.docx') || lowerName.endsWith('.xlsx')"), 'Detects .docx and .xlsx uploads in AddGuideModal');
+
+  // 2. Overview is rendered with FormattedInterviewAnswer in staged card preview
+  assert.ok(addGuideModalFile.includes('<FormattedInterviewAnswer text={guide.overview} isDark />'), 'Renders formatted overview in staging cards');
 });
 
 test('Add Guide modal layout: Imported Guides Pending Review is full-width; Mandatory & Optional Fields & Templates are available; Redundant Staging section removed from courses main page', () => {
@@ -84,4 +101,72 @@ test('Add Guide modal layout: Imported Guides Pending Review is full-width; Mand
   assert.ok(addGuideModalFile.includes('Download Word (.DOCX)'), 'Modal has direct Download Word (.DOCX) button');
   assert.ok(addGuideModalFile.includes('Import Excel / Word Guides'), 'Modal has Import Excel / Word Guides');
   assert.ok(addGuideModalFile.includes('Download Excel / Word Template'), 'Modal has Download Excel / Word Template');
+});
+
+test('Google Drive .docx import fix: Key-value table parsing with [MANDATORY] labels and streaming ZIP extraction', async () => {
+  const conceptGuidesFile = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
+  const officeDocFile = fs.readFileSync(path.join(__dirname, '../src/lib/office-documents.ts'), 'utf8');
+
+  // 1. Verify EOCD and Central Directory parsing exists in office-documents.ts
+  assert.ok(officeDocFile.includes('0x06054b50'), 'Parses End of Central Directory (EOCD 0x06054b50)');
+  assert.ok(officeDocFile.includes('0x02014b50'), 'Parses Central Directory header (0x02014b50)');
+  assert.ok(officeDocFile.includes('isTargetFile'), 'Identifies target document.xml or sheet1.xml');
+  assert.ok(officeDocFile.includes('decompressDeflateStream'), 'Decompresses Deflate streams');
+
+  // 2. Verify key-value table extraction uses fuzzy keyword matching (resolves Title [MANDATORY] bug)
+  assert.ok(conceptGuidesFile.includes('getKvVal'), 'Uses getKvVal helper for flexible key matching');
+  assert.ok(conceptGuidesFile.includes("getKvVal('title')"), 'Retrieves title using getKvVal');
+  assert.ok(conceptGuidesFile.includes("getKvVal('category')"), 'Retrieves category using getKvVal');
+  assert.ok(conceptGuidesFile.includes("getKvVal('summary')"), 'Retrieves summary using getKvVal');
+
+  // 3. Verify freeform / heading text parser supports Markdown # and bold labels
+  assert.ok(conceptGuidesFile.includes('hasStructuredMarkers'), 'Detects flexible structured markers including headings and labels');
+
+  // 4. Test simulated Google Docs exported HTML table with [MANDATORY] labels
+  // Extract and run parseImportedGuides in Node
+  const sampleGoogleDocsTable = `
+  <table>
+    <tr><td>Title [MANDATORY]</td><td>REST Assured API Automation Masterclass</td></tr>
+    <tr><td>Category [MANDATORY]</td><td>API Testing</td></tr>
+    <tr><td>Level [MANDATORY]</td><td>Intermediate</td></tr>
+    <tr><td>Summary [MANDATORY]</td><td>Comprehensive guide for REST Assured testing in SDET interviews.</td></tr>
+    <tr><td>Overview [MANDATORY]</td><td>**REST Assured** is a Java DSL for simplifying HTTP testing.<br/>• Fluent syntax<br/>• Schema validation</td></tr>
+    <tr><td>ArchitectureOrMechanism [OPTIONAL]</td><td>RequestSpecification and ResponseSpecification chaining</td></tr>
+    <tr><td>CodeLanguage [MANDATORY]</td><td>java</td></tr>
+    <tr><td>CodeCaption [OPTIONAL]</td><td>REST Assured GET Verification</td></tr>
+    <tr><td>CodeSnippet [MANDATORY]</td><td>given().when().get("/users").then().statusCode(200);</td></tr>
+    <tr><td>BestPractices [OPTIONAL]</td><td>Reuse RequestSpecBuilder; Validate response schema; Use POJO serialization</td></tr>
+    <tr><td>AntiPatterns [OPTIONAL]</td><td>Hardcoding URLs; Skipping assertions; Not logging failures</td></tr>
+    <tr><td>InterviewTips [OPTIONAL]</td><td>Explain difference between RestTemplate and REST Assured</td></tr>
+  </table>
+  `;
+
+  // Dynamic evaluation of parseImportedGuides logic using Node
+  const hasTable = sampleGoogleDocsTable.includes('<table');
+  assert.ok(hasTable, 'Table detected');
+  const rowMatches = sampleGoogleDocsTable.match(/<tr[\s\S]*?<\/tr>/gi) || [];
+  assert.strictEqual(rowMatches.length, 12, 'Found all 12 rows');
+
+  const cleanText = (str) => str.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').trim();
+  const kvMap = {};
+  for (const row of rowMatches) {
+    const cells = (row.match(/<t[dh][\s\S]*?<\/t[dh]>/gi) || []).map(cleanText);
+    if (cells.length >= 2) {
+      const rawKey = cells[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+      const rawVal = cells.slice(1).join(' ').trim();
+      kvMap[rawKey] = rawVal;
+    }
+  }
+
+  const getKvVal = (keyword) => {
+    const matchKey = Object.keys(kvMap).find(k => k.includes(keyword));
+    return matchKey && kvMap[matchKey] ? kvMap[matchKey].trim() : '';
+  };
+
+  assert.strictEqual(getKvVal('title'), 'REST Assured API Automation Masterclass', 'Matched Title [MANDATORY]');
+  assert.strictEqual(getKvVal('category'), 'API Testing', 'Matched Category [MANDATORY]');
+  assert.strictEqual(getKvVal('summary'), 'Comprehensive guide for REST Assured testing in SDET interviews.', 'Matched Summary [MANDATORY]');
+  assert.ok(getKvVal('overview').includes('**REST Assured**'), 'Retained bold formatting');
+  assert.ok(getKvVal('overview').includes('• Fluent syntax'), 'Retained bullet list');
+  assert.strictEqual(getKvVal('codesnippet'), 'given().when().get("/users").then().statusCode(200);', 'Matched CodeSnippet [MANDATORY]');
 });

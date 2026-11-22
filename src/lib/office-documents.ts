@@ -357,10 +357,20 @@ export function generateOfficeWord(trackName: string, sample: SampleGuideData): 
     // Break valueContent into paragraphs
     const paragraphs = valueContent.split('\n').filter(Boolean);
     const pXml = paragraphs.length > 0
-      ? paragraphs.map(p => `
-        <w:p>
-          <w:r><w:t>${escapeXml(p)}</w:t></w:r>
-        </w:p>`).join('')
+      ? paragraphs.map(p => {
+          const isHeading = p.startsWith('#');
+          const cleanP = p.replace(/^#{1,4}\s*/, '');
+          // Split by bold **bold**
+          const parts = cleanP.split(/(\*\*[^*]+\*\*)/g);
+          const rXml = parts.map(part => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return `<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">${escapeXml(part.slice(2, -2))}</w:t></w:r>`;
+            }
+            return `<w:r>${isHeading ? '<w:rPr><w:b/><w:color w:val="1E3A8A"/></w:rPr>' : ''}<w:t xml:space="preserve">${escapeXml(part)}</w:t></w:r>`;
+          }).join('');
+
+          return `<w:p>${rXml}</w:p>`;
+        }).join('')
       : `<w:p><w:r><w:t>${escapeXml(valueContent)}</w:t></w:r></w:p>`;
 
     return `
@@ -429,7 +439,7 @@ export function generateOfficeWord(trackName: string, sample: SampleGuideData): 
     ${makeRow('Category', true, '[e.g., Synchronization, Framework Architecture, POM, API Testing]')}
     ${makeRow('Level', true, 'Beginner | Intermediate | Advanced')}
     ${makeRow('Summary', true, '[Concise 1-2 sentence definition explaining why this concept matters for SDETs]')}
-    ${makeRow('Overview', true, '[Detailed multi-paragraph explanation, architectural solution, and tradeoffs]')}
+    ${makeRow('Overview', true, '### Architectural Overview\n• Key architectural feature 1 (supports bullet points and **bold keywords**)\n• Key architectural feature 2\n\n1. Numbered sequence 1\n2. Numbered sequence 2\n\n[Detailed multi-paragraph explanation, architectural solution, and tradeoffs]')}
     ${makeRow('Architecture / Mechanism', false, '[Internal engine mechanics, polling lifecycle, or diagram flow]')}
     ${makeRow('Code Language', true, `${sample.language} (or java / typescript / python / csharp)`)}
     ${makeRow('Code Snippet Caption', false, '[e.g., Primary Implementation Snippet]')}
@@ -455,7 +465,7 @@ export function generateOfficeWord(trackName: string, sample: SampleGuideData): 
     <w:p>
       <w:r>
         <w:rPr><w:i/><w:color w:val="475569"/><w:sz w:val="20"/></w:rPr>
-        <w:t>Instructions: Blue rows are [MANDATORY]. Gray rows are [OPTIONAL]. Fill out Table 2 with your concept details. Table 2 can be copied and pasted to add multiple guides in this document. When ready, upload this .docx file directly to IntelligentQA.</w:t>
+        <w:t>Instructions: Blue rows are [MANDATORY]. Gray rows are [OPTIONAL]. Overview supports full rich formatting: bold text, bullet points (•), numbered lists (1.), headings (###), and code blocks. Fill out Table 2 with your concept details. Table 2 can be copied and pasted to add multiple guides in this document. When ready, upload this .docx file directly to IntelligentQA.</w:t>
       </w:r>
     </w:p>
     <w:p><w:r><w:t></w:t></w:r></w:p>
@@ -543,6 +553,118 @@ export function downloadOfficeTemplate(
   URL.revokeObjectURL(url);
 }
 
+function extractFormattedWordParagraph(pXml: string): string {
+  // Check if paragraph has numbering / bullet list property
+  const isList = /<w:pPr[\s\S]*?<w:numPr/i.test(pXml);
+
+  // Extract runs <w:r>
+  const runs = pXml.match(/<w:r[\s\S]*?<\/w:r>/gi) || [];
+  let pText = '';
+
+  if (runs.length > 0) {
+    for (const r of runs) {
+      // Check for bold and italic properties in run
+      const isBold =
+        /<w:rPr[\s\S]*?<w:b(\s|\/|>)/i.test(r) &&
+        !/<w:b\s+w:val="(0|false|none)"/i.test(r);
+      const isItalic =
+        /<w:rPr[\s\S]*?<w:i(\s|\/|>)/i.test(r) &&
+        !/<w:i\s+w:val="(0|false|none)"/i.test(r);
+
+      // Extract text content from w:t tags
+      const tMatches = r.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
+      let runText = tMatches.map(m => m.replace(/<[^>]*>/g, '')).join('');
+
+      // Check for line breaks inside run
+      const brCount = (r.match(/<w:br(\s|\/|>)/gi) || []).length;
+
+      if (runText) {
+        runText = runText
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'");
+
+        const trimmed = runText.trim();
+        if (isBold && trimmed && !trimmed.startsWith('**')) {
+          const leading = runText.match(/^\s*/)?.[0] || '';
+          const trailing = runText.match(/\s*$/)?.[0] || '';
+          runText = `${leading}**${trimmed}**${trailing}`;
+        } else if (isItalic && trimmed && !trimmed.startsWith('*')) {
+          const leading = runText.match(/^\s*/)?.[0] || '';
+          const trailing = runText.match(/\s*$/)?.[0] || '';
+          runText = `${leading}*${trimmed}*${trailing}`;
+        }
+      }
+
+      if (brCount > 0) {
+        runText += '\n'.repeat(brCount);
+      }
+
+      pText += runText;
+    }
+  } else {
+    // If no runs detected, fallback to raw w:t tags
+    const textMatches = pXml.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
+    pText = textMatches.map(m => m.replace(/<[^>]*>/g, '')).join('');
+  }
+
+  pText = pText.trim();
+
+  // If Word marked this as a list item and it does not already start with a bullet or number, add bullet
+  if (
+    isList &&
+    pText &&
+    !pText.startsWith('•') &&
+    !pText.startsWith('-') &&
+    !/^\d+[\.\)]/.test(pText)
+  ) {
+    pText = `• ${pText}`;
+  }
+
+  return pText;
+}
+
+function extractFormattedWordCell(cellXml: string): string {
+  const paragraphs = cellXml.match(/<w:p[\s\S]*?<\/w:p>/gi) || [];
+  if (paragraphs.length === 0) {
+    const textMatches = cellXml.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
+    return textMatches.map(m => m.replace(/<[^>]*>/g, '')).join(' ').trim();
+  }
+
+  const pTexts = paragraphs
+    .map(p => extractFormattedWordParagraph(p))
+    .filter(Boolean);
+
+  // Join paragraphs with <br/> so cleanText in parseImportedGuides converts them to clean \n
+  return pTexts.join('<br/>');
+}
+
+// Helper to decompress deflate-raw or deflate payloads
+async function decompressDeflateStream(dataBytes: Uint8Array): Promise<string> {
+  if (typeof DecompressionStream !== 'undefined') {
+    try {
+      const ds = new DecompressionStream('deflate-raw');
+      const writer = ds.writable.getWriter();
+      writer.write(dataBytes as any);
+      writer.close();
+      return await new Response(ds.readable).text();
+    } catch {
+      try {
+        const ds2 = new DecompressionStream('deflate');
+        const writer2 = ds2.writable.getWriter();
+        writer2.write(dataBytes as any);
+        writer2.close();
+        return await new Response(ds2.readable).text();
+      } catch {
+        // Stream decompression failed
+      }
+    }
+  }
+  return '';
+}
+
 // Unzip parser to extract text from uploaded .docx or .xlsx files
 export async function extractTextFromOfficeZip(
   buffer: ArrayBuffer,
@@ -552,50 +674,125 @@ export async function extractTextFromOfficeZip(
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
-  // Find local file headers
-  let offset = 0;
   const targetFiles: Record<string, string> = {};
 
-  while (offset + 30 <= bytes.length) {
-    const sig = view.getUint32(offset, true);
-    if (sig !== 0x04034b50) break; // Not a local file header
+  const isTargetFile = (fileName: string): boolean => {
+    const norm = fileName.replace(/\\/g, '/').toLowerCase();
+    if (fileType === 'docx') {
+      return norm.endsWith('word/document.xml');
+    }
+    if (fileType === 'xlsx') {
+      return norm.endsWith('xl/worksheets/sheet1.xml') || norm.endsWith('xl/sharedstrings.xml');
+    }
+    return false;
+  };
 
-    const method = view.getUint16(offset + 8, true);
-    const compSize = view.getUint32(offset + 18, true);
-    const nameLen = view.getUint16(offset + 26, true);
-    const extraLen = view.getUint16(offset + 28, true);
+  const getTargetKey = (fileName: string): string => {
+    const norm = fileName.replace(/\\/g, '/').toLowerCase();
+    if (norm.endsWith('word/document.xml')) return 'word/document.xml';
+    if (norm.endsWith('xl/worksheets/sheet1.xml')) return 'xl/worksheets/sheet1.xml';
+    if (norm.endsWith('xl/sharedstrings.xml')) return 'xl/sharedStrings.xml';
+    return fileName;
+  };
 
-    const nameBytes = bytes.slice(offset + 30, offset + 30 + nameLen);
-    const fileName = decoder.decode(nameBytes);
-    const dataStart = offset + 30 + nameLen + extraLen;
-    const dataBytes = bytes.slice(dataStart, dataStart + compSize);
+  const decompressData = async (dataBytes: Uint8Array, method: number): Promise<string> => {
+    if (method === 0) {
+      return decoder.decode(dataBytes);
+    }
+    if (method === 8) {
+      return await decompressDeflateStream(dataBytes);
+    }
+    return '';
+  };
 
-    // Check if target
-    const isTarget =
-      (fileType === 'docx' && fileName === 'word/document.xml') ||
-      (fileType === 'xlsx' && (fileName === 'xl/worksheets/sheet1.xml' || fileName === 'xl/sharedStrings.xml'));
+  // 1. First attempt: Read via Central Directory from End of Central Directory (EOCD).
+  // This is required for streaming ZIPs (Google Docs, Google Drive, LibreOffice, modern zip engines)
+  // where local file headers have compSize === 0.
+  let parsedViaCD = false;
+  const maxSearch = Math.min(bytes.length, 65557);
+  let eocdOffset = -1;
 
-    if (isTarget) {
-      let content = '';
-      if (method === 0) {
-        content = decoder.decode(dataBytes);
-      } else if (method === 8 && typeof DecompressionStream !== 'undefined') {
-        try {
-          const ds = new DecompressionStream('deflate-raw');
-          const writer = ds.writable.getWriter();
-          writer.write(dataBytes);
-          writer.close();
-          content = await new Response(ds.readable).text();
-        } catch {
-          // Decompression stream failed
+  for (let i = bytes.length - 22; i >= Math.max(0, bytes.length - maxSearch); i--) {
+    if (view.getUint32(i, true) === 0x06054b50) {
+      eocdOffset = i;
+      break;
+    }
+  }
+
+  if (eocdOffset !== -1) {
+    const totalEntries = view.getUint16(eocdOffset + 10, true);
+    const cdOffset = view.getUint32(eocdOffset + 16, true);
+
+    let cdPos = cdOffset;
+    let entriesFound = 0;
+
+    while (cdPos + 46 <= bytes.length && entriesFound < totalEntries) {
+      const sig = view.getUint32(cdPos, true);
+      if (sig !== 0x02014b50) break; // Central directory header signature
+
+      const method = view.getUint16(cdPos + 10, true);
+      const compSize = view.getUint32(cdPos + 20, true);
+      const nameLen = view.getUint16(cdPos + 28, true);
+      const extraLen = view.getUint16(cdPos + 30, true);
+      const commentLen = view.getUint16(cdPos + 32, true);
+      const localOffset = view.getUint32(cdPos + 42, true);
+
+      const nameBytes = bytes.slice(cdPos + 46, cdPos + 46 + nameLen);
+      const fileName = decoder.decode(nameBytes);
+
+      if (isTargetFile(fileName) && localOffset + 30 <= bytes.length) {
+        const localSig = view.getUint32(localOffset, true);
+        if (localSig === 0x04034b50) {
+          const localNameLen = view.getUint16(localOffset + 26, true);
+          const localExtraLen = view.getUint16(localOffset + 28, true);
+          const dataStart = localOffset + 30 + localNameLen + localExtraLen;
+          const dataBytes = bytes.slice(dataStart, dataStart + compSize);
+
+          const content = await decompressData(dataBytes, method);
+          if (content) {
+            targetFiles[getTargetKey(fileName)] = content;
+          }
         }
       }
-      if (content) {
-        targetFiles[fileName] = content;
-      }
-    }
 
-    offset = dataStart + compSize;
+      cdPos += 46 + nameLen + extraLen + commentLen;
+      entriesFound++;
+      parsedViaCD = true;
+    }
+  }
+
+  // 2. Fallback: Local file header sequential scan (if EOCD was missing or corrupted)
+  if (!parsedViaCD || Object.keys(targetFiles).length === 0) {
+    let offset = 0;
+    while (offset + 30 <= bytes.length) {
+      const sig = view.getUint32(offset, true);
+      if (sig !== 0x04034b50) break;
+
+      const method = view.getUint16(offset + 8, true);
+      const compSize = view.getUint32(offset + 18, true);
+      const nameLen = view.getUint16(offset + 26, true);
+      const extraLen = view.getUint16(offset + 28, true);
+
+      const nameBytes = bytes.slice(offset + 30, offset + 30 + nameLen);
+      const fileName = decoder.decode(nameBytes);
+      const dataStart = offset + 30 + nameLen + extraLen;
+
+      if (compSize === 0) {
+        // Streaming zip without CD size cannot be sequentially skipped by compSize
+        break;
+      }
+
+      const dataBytes = bytes.slice(dataStart, dataStart + compSize);
+
+      if (isTargetFile(fileName)) {
+        const content = await decompressData(dataBytes, method);
+        if (content) {
+          targetFiles[getTargetKey(fileName)] = content;
+        }
+      }
+
+      offset = dataStart + compSize;
+    }
   }
 
   // Parse DOCX document.xml
@@ -613,9 +810,7 @@ export async function extractTextFromOfficeZip(
         const cells = row.match(/<w:tc[\s\S]*?<\/w:tc>/gi) || [];
         extractedText += '<tr>';
         for (const cell of cells) {
-          // Extract text from all w:t tags in this cell
-          const textMatches = cell.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
-          const cellText = textMatches.map(m => m.replace(/<[^>]*>/g, '')).join(' ');
+          const cellText = extractFormattedWordCell(cell);
           extractedText += `<td>${cellText}</td>`;
         }
         extractedText += '</tr>\n';
@@ -623,17 +818,14 @@ export async function extractTextFromOfficeZip(
       extractedText += '</table>\n';
     }
 
-    if (extractedText) return extractedText;
+    if (extractedText.trim()) return extractedText;
 
-    // Fallback: extract paragraphs
+    // Fallback: extract paragraphs with formatting
     const paragraphs = xml.match(/<w:p[\s\S]*?<\/w:p>/gi) || [];
     return paragraphs
-      .map(p => {
-        const textMatches = p.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
-        return textMatches.map(m => m.replace(/<[^>]*>/g, '')).join('');
-      })
+      .map(p => extractFormattedWordParagraph(p))
       .filter(Boolean)
-      .join('\n');
+      .join('\n\n');
   }
 
   // Parse XLSX sheet1.xml

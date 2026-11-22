@@ -51,6 +51,8 @@ import {
 import { QADatabase } from "@/lib/qa-db";
 import TrackTutorialView from "@/components/guides/track-tutorial-view";
 import { TRACK_TUTORIALS } from "@/lib/track-tutorials";
+import FormattedOverviewEditor from "@/components/ui/formatted-overview-editor";
+import FormattedInterviewAnswer from "@/components/ui/formatted-interview-answer";
 
 export default function GuideCatalogClient({
   initialTrackId = "selenium",
@@ -266,13 +268,20 @@ export default function GuideCatalogClient({
           buffer,
           lowerName.endsWith(".docx") ? "docx" : "xlsx"
         );
-        if (extracted) {
+        if (extracted && extracted.trim()) {
           handleParseImport(extracted);
           if (fileInputRef.current) fileInputRef.current.value = "";
           return;
+        } else {
+          showBanner(`❌ Could not extract guide data from "${file.name}". Please ensure the Word/Excel document contains tables or text.`);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          return;
         }
-      } catch (err) {
-        console.warn("Office ZIP extraction fallback:", err);
+      } catch (err: any) {
+        console.warn("Office ZIP extraction error:", err);
+        showBanner(`❌ Failed to read "${file.name}": ${err?.message || 'Unsupported or corrupted format'}`);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
       }
     }
 
@@ -1108,11 +1117,11 @@ export default function GuideCatalogClient({
                 <label className="text-xs font-semibold text-slate-300 block mb-1">
                   Full Overview &amp; Explanation
                 </label>
-                <textarea
-                  rows={4}
+                <FormattedOverviewEditor
                   value={editOverview}
-                  onChange={(e) => setEditOverview(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500"
+                  onChange={setEditOverview}
+                  placeholder="In-depth explanation, tradeoffs, and architectural concepts..."
+                  minRows={4}
                 />
               </div>
 
@@ -1552,12 +1561,11 @@ export default function GuideCatalogClient({
                 <label className="text-xs font-semibold text-slate-300 block mb-1">
                   Full Overview &amp; Explanation
                 </label>
-                <textarea
-                  rows={3}
-                  placeholder="In-depth explanation, tradeoffs, and architectural concepts..."
+                <FormattedOverviewEditor
                   value={newOverview}
-                  onChange={(e) => setNewOverview(e.target.value)}
-                  className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#81FF89] resize-none"
+                  onChange={setNewOverview}
+                  placeholder="In-depth explanation, tradeoffs, and architectural concepts..."
+                  minRows={4}
                 />
               </div>
 
@@ -1678,8 +1686,8 @@ export default function GuideCatalogClient({
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Architectural Overview
                 </h4>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 whitespace-pre-wrap text-slate-300">
-                  {selectedGuideForView.overview}
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-slate-300">
+                  <FormattedInterviewAnswer text={selectedGuideForView.overview} isDark />
                 </div>
               </div>
 
