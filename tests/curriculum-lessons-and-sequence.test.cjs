@@ -45,7 +45,7 @@ test('Requirement 1 & 2: Left navigation sidebar renders individual lessons and 
   assert.ok(sidebarFile.includes('Selenium (Java)'), 'Lists Selenium (Java)');
   assert.ok(sidebarFile.includes('Playwright (TS)'), 'Lists Playwright (TS)');
   assert.ok(sidebarFile.includes('Rest Assured (API)'), 'Lists Rest Assured (API)');
-  assert.ok(sidebarFile.includes('AI for QA'), 'Lists AI for QA');
+  assert.ok(sidebarFile.includes('AI Academy') || sidebarFile.includes('AI for QA'), 'Lists AI Academy');
 
   // Check that individual hours are rendered for lessons
   assert.ok(sidebarFile.includes('getLessonHours(lesson.durationMinutes)'), 'Computes individual lesson hours');

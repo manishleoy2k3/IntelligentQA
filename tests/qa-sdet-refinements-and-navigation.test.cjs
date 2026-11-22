@@ -71,10 +71,10 @@ test('6 & 7. AI QA Agents: Renamed from AI Tools & Agents, consolidated all agen
   // Verify all agents are directly accessible
   assert.ok(content.includes('Requirement Generator'), 'Includes Requirement Generator');
   assert.ok(content.includes('Test Case Generator'), 'Includes Test Case Generator');
-  assert.ok(content.includes('Automation Generator'), 'Includes Automation Generator');
-  assert.ok(content.includes('Code Auditor'), 'Includes Code Auditor');
+  assert.ok(content.includes('Automation Code Generator') || content.includes('Automation Generator'), 'Includes Automation Code Generator');
+  assert.ok(content.includes('Code Reviewer') || content.includes('Code Auditor'), 'Includes Code Reviewer');
   assert.ok(content.includes('Senior SDET Mentor'), 'Includes Senior SDET Mentor');
-  assert.ok(content.includes('AI Interview Griller'), 'Includes AI Interview Griller inside AI QA Agents');
+  assert.ok(content.includes('AI Mock Interviewer') || content.includes('AI Interview Griller'), 'Includes AI Mock Interviewer inside AI QA Agents');
 });
 
 test('8. Top Navigation: Coding Tutorial button removed, button renamed to Add Gemini Key, placed left to Ask AI', () => {
@@ -130,6 +130,6 @@ test('11. Interview Questions: Direct single-click navigation replacing old Inte
 
   assert.ok(!content.includes('<span>Interview Bank</span>'), 'Old Interview Bank accordion removed');
   assert.ok(content.includes('href="/interview-questions"'), 'Direct link to /interview-questions');
-  assert.ok(content.includes('<span>Interview Questions</span>'), 'Direct Interview Questions link rendered');
+  assert.ok(content.includes('<span>Interview Questions Bank</span>') || content.includes('<span>Interview Questions</span>'), 'Direct Interview Questions link rendered');
   assert.ok(content.includes('800+ Qs') || content.includes('500+ Qs'), 'Badge displays 800+ Qs');
 });

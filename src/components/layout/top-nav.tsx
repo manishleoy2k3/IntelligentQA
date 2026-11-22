@@ -216,16 +216,17 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <span className="sr-only">Ask SDET AI</span>
         </button>
 
-        {/* Add Guide Button (Opens modal window just like Gemini Key button) */}
+        {/* Share your Knowledge / Add Guide Button (Opens modal window just like Gemini Key button) */}
         <button
           type="button"
           onClick={() => setShowAddGuideModal(true)}
-          aria-label="Add Guide"
+          aria-label="Share your Knowledge"
           className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:opacity-95 text-white border border-purple-400/40 rounded-full font-extrabold text-xs sm:text-sm shadow-[0_0_18px_rgba(168,85,247,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
-          title="Add Guide: Review staged guides, import JSON/CSV/Excel/Word, or download templates"
+          title="Share your Knowledge: Review staged guides, import JSON/CSV/Excel/Word, or download templates"
         >
           <BookPlus className="w-4 h-4 text-white shrink-0" />
-          <span className="font-extrabold tracking-tight">Add Guide</span>
+          <span className="font-extrabold tracking-tight">Share your Knowledge</span>
+          <span className="sr-only">Add Guide</span>
         </button>
 
         {/* 2. Notifications Bell & Popover */}

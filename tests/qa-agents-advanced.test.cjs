@@ -19,10 +19,10 @@ test('Requirement 1: Sidebar keeps all AI Agents as child menu below QA AI Agent
   assert.ok(sidebarFile.includes('Test Case Generator'), 'Child menu has Test Case Generator');
 
   assert.ok(sidebarFile.includes('/qa-agents?tab=automation_code'), 'Has child link to automation code');
-  assert.ok(sidebarFile.includes('Automation Generator'), 'Child menu has Automation Generator');
+  assert.ok(sidebarFile.includes('Automation Code Generator') || sidebarFile.includes('Automation Generator'), 'Child menu has Automation Code Generator');
 
   assert.ok(sidebarFile.includes('/qa-agents?tab=code_review'), 'Has child link to code review');
-  assert.ok(sidebarFile.includes('Code Auditor'), 'Child menu has Code Auditor');
+  assert.ok(sidebarFile.includes('Code Reviewer') || sidebarFile.includes('Code Auditor'), 'Child menu has Code Reviewer');
 
   assert.ok(sidebarFile.includes('/qa-agents?tab=chat'), 'Has child link to chat');
   assert.ok(sidebarFile.includes('Senior SDET Mentor'), 'Child menu has Senior SDET Mentor');

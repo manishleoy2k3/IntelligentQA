@@ -11,11 +11,11 @@ test('Project Files & Folders: Left Navigation placement below AI Interview Gril
   assert.ok(sidebarContent.includes('href="/project-files"'), 'Sidebar contains link to /project-files');
   assert.ok(sidebarContent.includes('Project Files'), 'Sidebar label includes "Project Files"');
 
-  // Verify placement: Project Files is directly after AI Interview Griller
-  const grillerIndex = sidebarContent.indexOf('AI Interview Griller');
+  // Verify placement: Project Files is directly after AI Mock Interviewer
+  const grillerIndex = sidebarContent.indexOf('AI Mock Interviewer') !== -1 ? sidebarContent.indexOf('AI Mock Interviewer') : sidebarContent.indexOf('AI Interview Griller');
   const projectFilesIndex = sidebarContent.indexOf('Project Files');
 
-  assert.ok(grillerIndex !== -1, 'AI Interview Griller must be present');
+  assert.ok(grillerIndex !== -1, 'AI Mock Interviewer must be present');
   assert.ok(projectFilesIndex !== -1, 'Project Files must be present');
   assert.ok(projectFilesIndex > grillerIndex, 'Project Files is positioned below AI Interview Griller');
 });

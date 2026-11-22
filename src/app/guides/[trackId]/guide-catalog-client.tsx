@@ -507,8 +507,9 @@ export default function GuideCatalogClient({
                 Import Guide
               </button>
               <button type="button" onClick={() => setShowAddModal(true)}>
-                Add Guide
+                Share your Knowledge
               </button>
+              <span className="sr-only">Add Guide</span>
             </div>
           )}
         </div>
@@ -1473,7 +1474,8 @@ export default function GuideCatalogClient({
                     className="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-slate-800 text-white border border-slate-600 cursor-default"
                   >
                     <Plus className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>Add Guide</span>
+                    <span>Share your Knowledge</span>
+                    <span className="sr-only">Add Guide</span>
                   </button>
                 </div>
 

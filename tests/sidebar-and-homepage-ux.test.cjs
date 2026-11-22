@@ -28,7 +28,7 @@ test('Side Left Navigation incorporates AscentWealth layout with Courses parent 
   assert.ok(sidebarFile.includes('/tracks/playwright-ts'), 'Links to /tracks/playwright-ts');
   assert.ok(sidebarFile.includes('Rest Assured (API)'), 'Courses includes Rest Assured (API) child item');
   assert.ok(sidebarFile.includes('/tracks/api-testing'), 'Links to /tracks/api-testing');
-  assert.ok(sidebarFile.includes('AI for QA'), 'Courses includes AI for QA child item');
+  assert.ok(sidebarFile.includes('AI Academy') || sidebarFile.includes('AI for QA'), 'Courses includes AI for QA child item');
   assert.ok(sidebarFile.includes('/tracks/ai-qa'), 'Links to /tracks/ai-qa');
 
   // 3. Practice Labs
@@ -42,11 +42,11 @@ test('Side Left Navigation incorporates AscentWealth layout with Courses parent 
   // 4. AI Agents & Interview Griller
   assert.ok(sidebarFile.includes('QA AI Agents'), 'Sidebar has QA AI Agents');
   assert.ok(sidebarFile.includes('/qa-agents'), 'Links to /qa-agents');
-  assert.ok(sidebarFile.includes('AI Interview Griller'), 'Sidebar has AI Interview Griller');
+  assert.ok(sidebarFile.includes('AI Mock Interviewer') || sidebarFile.includes('AI Interview Griller'), 'Sidebar has AI Interview Griller');
   assert.ok(sidebarFile.includes('/interview-griller'), 'Links to /interview-griller');
 
   // 5. Interview Bank
-  assert.ok(sidebarFile.includes('Interview Questions'), 'Sidebar has Interview Questions');
+  assert.ok(sidebarFile.includes('Interview Questions Bank') || sidebarFile.includes('Interview Questions'), 'Sidebar has Interview Questions');
   assert.ok(sidebarFile.includes('/interview-questions'), 'Links to /interview-questions');
 
   // 6. User Profile removed from bottom left navigation (hosted exclusively in TopNav)

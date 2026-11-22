@@ -306,7 +306,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     },
     {
       id: 'ai-qa',
-      displayTitle: 'AI for QA',
+      displayTitle: 'AI Academy',
       stage: 'Stage 4',
       totalHours: '20h',
       tag: 'AI',
@@ -704,7 +704,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           )}
         </div>
 
-        {/* SECTION: INTERVIEW QUESTIONS (Direct Single Click to View All Questions on Right) */}
+        {/* SECTION: INTERVIEW QUESTIONS BANK (Direct Single Click to View All Questions on Right) */}
         <div className="space-y-1 pt-1">
           <Link
             href="/interview-questions"
@@ -714,7 +714,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           >
             <div className="flex items-center gap-3">
               <HelpCircle className="w-4 h-4 shrink-0 text-sky-500" />
-              <span>Interview Questions</span>
+              <span>Interview Questions Bank</span>
             </div>
             <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold">
               800+ Qs
@@ -722,7 +722,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           </Link>
         </div>
 
-        {/* SECTION: AI QA AGENTS (Consolidated Suite including AI Interview Griller) */}
+        {/* SECTION: AI QA AGENTS (Consolidated Suite including AI Mock Interviewer) */}
         <div className="space-y-1 pt-1">
           <button
             type="button"
@@ -785,7 +785,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               >
                 <div className="flex items-center gap-2 truncate">
                   <Code2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  <span className="truncate">Automation Generator</span>
+                  <span className="truncate">Automation Code Generator</span>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1 py-0.2 rounded">
                   CODE
@@ -800,7 +800,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               >
                 <div className="flex items-center gap-2 truncate">
                   <ShieldCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <span className="truncate">Code Auditor</span>
+                  <span className="truncate">Code Reviewer</span>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded">
                   AUDIT
@@ -822,7 +822,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </span>
               </Link>
 
-              {/* 6. AI Interview Griller */}
+              {/* 6. AI Mock Interviewer */}
               <Link
                 href="/interview-griller"
                 onClick={e => {
@@ -835,11 +835,11 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                   }
                 }}
                 className={childItemClass(pathname === '/interview-griller')}
-                title="AI Interview Griller: Live Technical Mock Interviews"
+                title="AI Mock Interviewer: Live Technical Mock Interviews"
               >
                 <div className="flex items-center gap-2 truncate">
                   <Award className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                  <span className="truncate">AI Interview Griller</span>
+                  <span className="truncate">AI Mock Interviewer</span>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded shrink-0">
                   MOCK

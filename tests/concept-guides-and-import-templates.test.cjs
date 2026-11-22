@@ -40,7 +40,7 @@ test('Dedicated Concept Guide pages exist for Selenium, Playwright, API Testing 
   // Verify Concept Guides page features Import Template, Import Guide, and Add Guide
   assert.ok(guideClientFile.includes('Import Template'), 'Guide page has "Import Template" button');
   assert.ok(guideClientFile.includes('Import Guide'), 'Guide page has "Import Guide" button');
-  assert.ok(guideClientFile.includes('Add Guide'), 'Guide page has "Add Guide" button');
+  assert.ok(guideClientFile.includes('Share your Knowledge') || guideClientFile.includes('Add Guide'), 'Guide page has "Share your Knowledge" / "Add Guide" button');
 
   // Verify modal handlers exist
   assert.ok(guideClientFile.includes('showTemplateModal'), 'Has template modal state');
