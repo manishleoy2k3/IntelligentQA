@@ -10,7 +10,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const lessonSlug = slug && slug.length > 0 ? slug[slug.length - 1] : 'what-is-an-llm';
+  const lessonSlug = slug && slug.length > 0 ? slug[slug.length - 1] : 'what-is-artificial-intelligence';
   const lesson = getLessonBySlug(lessonSlug);
 
   if (lesson) {
@@ -34,7 +34,7 @@ export default async function LearningAcademyPage({
 }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const lessonSlug = slug && slug.length > 0 ? slug[slug.length - 1] : undefined;
+  const lessonSlug = slug && slug.length > 0 ? slug[slug.length - 1] : 'what-is-artificial-intelligence';
 
   return <AcademyShell initialLessonSlug={lessonSlug} />;
 }

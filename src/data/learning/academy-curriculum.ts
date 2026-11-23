@@ -134,6 +134,77 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
               ],
             },
           },
+          {
+            id: 'ai-architecture-pipeline',
+            title: 'AI in Quality Assurance Architecture',
+            level: 2,
+            content: [
+              'Modern AI architectures for test automation integrate multi-layered inference engines that analyze DOM changes, predict locator breakages, and synthesize resilient test strategies in real time.',
+            ],
+            diagram: {
+              type: 'pipeline',
+              title: 'Autonomous AI Testing Architecture',
+              caption: 'Flow of requirement ingestion, test synthesis, self-healing execution, and triage.',
+              nodes: [
+                { id: 'specs', label: 'Feature Specs', subtitle: 'Jira / PRD / OpenAPI', badge: 'Input' },
+                { id: 'ai-engine', label: 'AI Reasoning Core', subtitle: 'LLM + Context Engine', badge: 'Inference', highlight: true },
+                { id: 'test-gen', label: 'Test Synthesis', subtitle: 'Playwright & Selenium Suites', badge: 'Code Gen' },
+                { id: 'self-heal', label: 'Self-Healing Exec', subtitle: 'Dynamic Locator Repair', badge: 'Runtime' },
+                { id: 'triage', label: 'Root Cause Triage', subtitle: 'Failure Diagnosis & Fixes', badge: 'Report' },
+              ],
+              connections: [
+                { from: 'specs', to: 'ai-engine', label: 'Ingest' },
+                { from: 'ai-engine', to: 'test-gen', label: 'Generate' },
+                { from: 'test-gen', to: 'self-heal', label: 'Execute' },
+                { from: 'self-heal', to: 'triage', label: 'Analyze' },
+              ],
+            },
+            codeBlock: {
+              language: 'typescript',
+              title: 'Self-Healing Locator Strategy using Multi-Attribute AI Fingerprints',
+              filename: 'ai-locator-resolver.ts',
+              code: `import { Page, Locator } from '@playwright/test';
+
+interface ElementFingerprint {
+  tag: string;
+  testId?: string;
+  ariaLabel?: string;
+  textSnippet?: string;
+  relativeXPath?: string;
+}
+
+export async function resolveResilientElement(page: Page, fp: ElementFingerprint): Promise<Locator> {
+  // 1. Primary Strategy: Explicit Test ID
+  if (fp.testId) {
+    const primary = page.getByTestId(fp.testId);
+    if (await primary.count() > 0) return primary.first();
+  }
+
+  // 2. Secondary Strategy: Semantic ARIA accessibility label
+  if (fp.ariaLabel) {
+    const semantic = page.getByLabel(fp.ariaLabel);
+    if (await semantic.count() > 0) return semantic.first();
+  }
+
+  // 3. AI Fallback: Exact Text matching with automatic fuzzy tolerance
+  if (fp.textSnippet) {
+    return page.getByText(fp.textSnippet, { exact: false }).first();
+  }
+
+  throw new Error(\`[AI-Locator] Failed to resolve resilient element for fingerprint: \${JSON.stringify(fp)}\`);
+}`,
+              explanation: 'Self-healing locators fall back through prioritized selector strategies to prevent flakiness when front-end developers refactor markup or class names.',
+            },
+            troubleshooting: [
+              {
+                error: 'LocatorFlakinessWarning: Selector timed out waiting for DOM element',
+                cause: 'Hardcoded CSS class or fragile XPath broke during a UI library upgrade or Tailwind rebuild.',
+                solution: 'Switch to semantic accessibility attributes (aria-label, role) or data-testid selectors with multi-attribute fallback.',
+                codeFix: `// Avoid: page.locator('div.btn-primary-2xl > span')
+// Preferred: page.getByRole('button', { name: 'Submit Application' })`,
+              },
+            ],
+          },
         ],
       },
       {

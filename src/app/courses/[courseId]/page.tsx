@@ -3,6 +3,7 @@ import { getTrackById, QA_TRACKS } from '@/lib/qa-curriculum';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { BookOpen, CheckCircle, Clock, Layers, ArrowRight } from 'lucide-react';
+import AcademyShell from '@/components/learning/academy-shell';
 
 interface PageProps {
   params: Promise<{ courseId: string }>;
@@ -35,11 +36,7 @@ export default async function PublicCoursePage({ params }: PageProps) {
   }
 
   if (courseId === 'ai-qa') {
-    return (
-      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
-        {/* Kept clean with no content */}
-      </div>
-    );
+    return <AcademyShell initialLessonSlug="what-is-artificial-intelligence" />;
   }
 
   // Course Structured Data (JSON-LD)

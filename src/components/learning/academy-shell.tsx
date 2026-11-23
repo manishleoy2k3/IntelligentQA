@@ -18,9 +18,15 @@ import {
 
 interface AcademyShellProps {
   initialLessonSlug?: string;
+  showSidebar?: boolean;
+  showHeader?: boolean;
 }
 
-export default function AcademyShell({ initialLessonSlug }: AcademyShellProps) {
+export default function AcademyShell({
+  initialLessonSlug,
+  showSidebar = false,
+  showHeader = false,
+}: AcademyShellProps) {
   const router = useRouter();
 
   // White / Light theme by default, with dark mode toggle support
@@ -28,8 +34,8 @@ export default function AcademyShell({ initialLessonSlug }: AcademyShellProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Active lesson slug: defaults to initialLessonSlug or 'what-is-an-llm' (first rich demo lesson)
-  const defaultSlug = initialLessonSlug || 'what-is-an-llm';
+  // Active lesson slug: defaults to initialLessonSlug or 'what-is-artificial-intelligence' (first lesson of Academy)
+  const defaultSlug = initialLessonSlug || 'what-is-artificial-intelligence';
   const [activeSlug, setActiveSlug] = useState<string>(defaultSlug);
 
   // Sync with prop when URL changes
@@ -93,27 +99,31 @@ export default function AcademyShell({ initialLessonSlug }: AcademyShellProps) {
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
       <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0f1117] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
-        {/* A. Top Navigation Header */}
-        <AcademyHeader
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          onOpenSearch={() => setIsSearchOpen(true)}
-          mobileSidebarOpen={mobileSidebarOpen}
-          onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}
-        />
+        {/* Optional Standalone Header (only when not embedded in primary site layout) */}
+        {showHeader && (
+          <AcademyHeader
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            onOpenSearch={() => setIsSearchOpen(true)}
+            mobileSidebarOpen={mobileSidebarOpen}
+            onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+          />
+        )}
 
-        {/* B & C. Body Container: Left Sidebar + Right Content Panel */}
-        <div className="flex-1 flex max-w-[1600px] w-full mx-auto">
-          {/* Desktop Left Sidebar */}
-          <div className="hidden md:block">
-            <CourseSidebar
-              activeLessonSlug={currentLesson.slug}
-              onSelectLesson={handleSelectLesson}
-            />
-          </div>
+        {/* Body Container: Right Content Panel (Single sidebar provided by primary layout) */}
+        <div className="flex-1 flex w-full">
+          {/* Optional Secondary Sidebar (disabled by default to enforce single left navigation) */}
+          {showSidebar && (
+            <div className="hidden md:block">
+              <CourseSidebar
+                activeLessonSlug={currentLesson.slug}
+                onSelectLesson={handleSelectLesson}
+              />
+            </div>
+          )}
 
-          {/* Mobile Sidebar Slide-Over Drawer */}
-          {mobileSidebarOpen && (
+          {/* Optional Mobile Drawer */}
+          {showSidebar && mobileSidebarOpen && (
             <div
               role="dialog"
               aria-modal="true"

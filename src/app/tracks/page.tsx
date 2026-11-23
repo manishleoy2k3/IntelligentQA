@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Sparkles,
   PlayCircle,
@@ -18,7 +19,13 @@ import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import { UserProgress } from '@/types/qa';
 
 export default function TracksDirectoryPage() {
+  const router = useRouter();
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
+
+  useEffect(() => {
+    // If a user navigates to /tracks directly, redirect to /dashboard
+    router.replace('/dashboard');
+  }, [router]);
 
   useEffect(() => {
     const fetchProgress = () => {
@@ -183,7 +190,7 @@ export default function TracksDirectoryPage() {
                   {track.totalLessons} Lessons
                 </span>
                 <Link
-                  href={firstLessonHref}
+                  href={track.id === 'ai-qa' ? '/learning' : firstLessonHref}
                   className="py-2.5 px-4.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-2 shadow-sm"
                 >
                   {progressPercent === 0 ? 'Start Track' : progressPercent >= 100 ? 'Review Track' : 'Resume Track'}

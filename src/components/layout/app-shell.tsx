@@ -53,9 +53,26 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   const isAcademyRoute = pathname?.startsWith('/learning');
 
-  // Learning Academy features its own dedicated Three-Section layout (Header, Left Sidebar, Right Content)
-  if (isAcademyRoute) {
-    return <div className="min-h-screen flex flex-col">{children}</div>;
+  // =========================================================================
+  // GUEST EXPLORING ACADEMY / GUIDES: Render single unified sidebar layout
+  // =========================================================================
+  const isGuestExploringAcademy = !currentUser && (isAcademyRoute || pathname?.startsWith('/guides'));
+  if (isGuestExploringAcademy && !isAuthRoute) {
+    return (
+      <div className="min-h-screen flex bg-[#111111] text-[#FFFFFF]">
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onCloseMobile={() => setMobileSidebarOpen(false)}
+        />
+        <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-[#111111]">
+          <TopNav onToggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)} />
+          <div className="md:hidden">
+            <Header onToggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)} />
+          </div>
+          <main className="flex-1 flex flex-col">{children}</main>
+        </div>
+      </div>
+    );
   }
 
   // =========================================================================

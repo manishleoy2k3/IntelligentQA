@@ -303,7 +303,7 @@ export default function UserDashboardPage() {
                     {completedInTrack === 0 ? 'Not Started' : `${completedInTrack} / ${track.totalLessons} Lessons`}
                   </span>
                   <Link
-                    href={`/tracks/${track.id}`}
+                    href={track.id === 'ai-qa' ? '/learning' : `/tracks/${track.id}`}
                     className="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5"
                   >
                     {completedInTrack === 0 ? 'Start Course' : completedInTrack >= track.totalLessons ? 'Review Course' : 'Resume Course'}

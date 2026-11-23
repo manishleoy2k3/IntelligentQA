@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import GuideCatalogClient from './guide-catalog-client';
+import AcademyShell from '@/components/learning/academy-shell';
 
 export function generateStaticParams() {
   return [
@@ -22,11 +23,7 @@ export default async function TrackGuidePage({
   const { trackId } = await params;
 
   if (trackId === 'ai-qa') {
-    return (
-      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
-        {/* Kept clean with no content */}
-      </div>
-    );
+    return <AcademyShell initialLessonSlug="what-is-artificial-intelligence" />;
   }
 
   return (

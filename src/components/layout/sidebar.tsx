@@ -6,12 +6,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
 import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
+import { ACADEMY_MODULES } from '@/data/learning/academy-curriculum';
 import { Track, Module, Lesson } from '@/types/qa';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import {
   LayoutDashboard,
   BookOpen,
+  Search,
   ChevronDown,
   ChevronRight,
   Code2,
@@ -19,7 +21,6 @@ import {
   Server,
   Sparkles,
   Laptop,
-  Layers,
   PlayCircle,
   Bot,
   Award,
@@ -72,6 +73,24 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   // Interview Bank collapsible state
   const [interviewBankOpen, setInterviewBankOpen] = useState(true);
 
+  // Search query on top of Left Navigation Panel
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Collapsible state for course modules / groups (open by default)
+  const [openModules, setOpenModules] = useState<Record<string, boolean>>({});
+
+  const isModuleOpen = (moduleId: string) => {
+    if (searchQuery.trim()) return true;
+    return openModules[moduleId] !== false; // defaults to true
+  };
+
+  const toggleModule = (moduleId: string) => {
+    setOpenModules(prev => ({
+      ...prev,
+      [moduleId]: prev[moduleId] !== undefined ? !prev[moduleId] : false,
+    }));
+  };
+
   // Individual Track collapsible states (collapsed by default to prevent heavy scrolling)
   const [openTracks, setOpenTracks] = useState<Record<string, boolean>>({
     'selenium-java': false,
@@ -81,13 +100,31 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   });
 
   const toggleTrack = (trackId: string) => {
+    const isNowOpen = !openTracks[trackId];
     setOpenTracks(prev => ({
       ...prev,
-      [trackId]: !prev[trackId],
+      [trackId]: isNowOpen,
     }));
-    if (trackId === 'ai-qa') {
-      router.push('/learning');
-      onCloseMobile?.();
+
+    // When opening/clicking a main course section, focus the first child course item & show its content on right panel
+    if (isNowOpen) {
+      if (trackId === 'ai-qa') {
+        const firstModId = 'ai-qa-mod-intro-ai';
+        setOpenModules(p => ({ ...p, [firstModId]: true }));
+        router.push('/learning/what-is-artificial-intelligence');
+      } else {
+        const tracksList = typeof window !== 'undefined' ? QADatabase.getTracks() : QA_TRACKS;
+        const track = tracksList.find(t => t.id === trackId);
+        const firstMod = track?.modules?.[0];
+        const firstLesson = firstMod?.lessons?.[0];
+        if (firstMod) {
+          const modId = `${trackId}-${firstMod.id}`;
+          setOpenModules(p => ({ ...p, [modId]: true }));
+        }
+        if (firstLesson) {
+          router.push(`/tracks/${trackId}/${firstLesson.id}`);
+        }
+      }
     }
   };
 
@@ -265,14 +302,49 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   // Keep active track expanded once when navigating into it, without re-opening on manual collapse
   useEffect(() => {
     if (!pathname) return;
-    const matchedTrack = ['selenium-java', 'playwright-ts', 'api-testing', 'ai-qa'].find(id =>
+    let matchedTrack = ['selenium-java', 'playwright-ts', 'api-testing', 'ai-qa'].find(id =>
       pathname.includes(`/tracks/${id}`)
     );
+    if (!matchedTrack && (pathname.startsWith('/learning') || pathname === '/guides/ai-qa')) {
+      matchedTrack = 'ai-qa';
+    }
     if (matchedTrack && lastAutoOpenedTrackRef.current !== matchedTrack) {
       lastAutoOpenedTrackRef.current = matchedTrack;
       setOpenTracks(p => ({ ...p, [matchedTrack]: true }));
+      setCoursesOpen(true);
     }
   }, [pathname]);
+
+  // Automatically expand all courses when user types in the search box
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      setCoursesOpen(true);
+      setOpenTracks({
+        'selenium-java': true,
+        'playwright-ts': true,
+        'api-testing': true,
+        'ai-qa': true,
+      });
+    }
+  }, [searchQuery]);
+
+  // 16 Lessons across 5 Modules for AI Academy
+  const aiAcademyModules = ACADEMY_MODULES.map((mod) => ({
+    id: mod.id,
+    title: mod.title,
+    lessons: mod.lessons.map((l) => ({
+      id: l.slug,
+      moduleId: mod.id,
+      moduleTitle: mod.title,
+      trackId: 'ai-qa',
+      title: l.title,
+      durationMinutes: 15,
+      badge: 'ai-qa',
+      level: l.difficulty,
+    } as unknown as Lesson)),
+  }));
+
+  const aiAcademyLessons: Lesson[] = aiAcademyModules.flatMap((mod) => mod.lessons);
 
   // Core curriculum tracks sequenced for Manual QA Transition
   const courseTracks = [
@@ -286,6 +358,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       iconColor: 'text-amber-500',
       badgeClass: 'text-amber-600 dark:text-amber-400 bg-amber-500/10',
       lessons: curriculumTracks.find(t => t.id === 'selenium-java')?.modules.flatMap((m: Module) => m.lessons) || [],
+      modules: curriculumTracks.find(t => t.id === 'selenium-java')?.modules || [],
     },
     {
       id: 'playwright-ts',
@@ -297,6 +370,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       iconColor: 'text-emerald-500',
       badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10',
       lessons: curriculumTracks.find(t => t.id === 'playwright-ts')?.modules.flatMap((m: Module) => m.lessons) || [],
+      modules: curriculumTracks.find(t => t.id === 'playwright-ts')?.modules || [],
     },
     {
       id: 'api-testing',
@@ -308,6 +382,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       iconColor: 'text-purple-500',
       badgeClass: 'text-purple-600 dark:text-purple-400 bg-purple-500/10',
       lessons: curriculumTracks.find(t => t.id === 'api-testing')?.modules.flatMap((m: Module) => m.lessons) || [],
+      modules: curriculumTracks.find(t => t.id === 'api-testing')?.modules || [],
     },
     {
       id: 'ai-qa',
@@ -318,9 +393,68 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       icon: Sparkles,
       iconColor: 'text-cyan-500',
       badgeClass: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10',
-      lessons: [],
+      lessons: aiAcademyLessons, // fallback: lessons: []
+      modules: aiAcademyModules,
     },
   ];
+
+  // Auto-expand module if active lesson is inside it
+  useEffect(() => {
+    if (!pathname) return;
+    for (const track of courseTracks) {
+      for (const mod of track.modules) {
+        const hasLesson = (mod.lessons || []).some((l: Lesson) =>
+          track.id === 'ai-qa'
+            ? pathname === `/learning/${l.id}` ||
+              (pathname === '/learning' && l.id === 'what-is-artificial-intelligence') ||
+              (pathname === '/guides/ai-qa' && l.id === 'what-is-artificial-intelligence')
+            : pathname === `/tracks/${track.id}/${l.id}`
+        );
+        if (hasLesson) {
+          const modId = `${track.id}-${mod.id}`;
+          setOpenModules((prev) => ({ ...prev, [modId]: true }));
+        }
+      }
+    }
+  }, [pathname]);
+
+  // Real-time filter across all courses and lessons from the top search box
+  const filteredCourseTracks = courseTracks
+    .map((track) => {
+      if (!searchQuery.trim()) {
+        return {
+          ...track,
+          hasMatch: true,
+          modules: track.modules.map((m: any) => ({
+            ...m,
+            lessons: m.lessons || [],
+          })),
+        };
+      }
+      const q = searchQuery.toLowerCase();
+      const trackMatches = track.displayTitle.toLowerCase().includes(q);
+      const matchingModules = track.modules
+        .map((mod: any) => {
+          const modMatches = mod.title.toLowerCase().includes(q);
+          const matchingLessons = (mod.lessons || []).filter((l: Lesson) => l.title.toLowerCase().includes(q));
+          return {
+            ...mod,
+            lessons: modMatches ? mod.lessons : matchingLessons,
+            hasMatch: modMatches || matchingLessons.length > 0,
+          };
+        })
+        .filter((mod: any) => trackMatches || mod.hasMatch);
+
+      const allMatchingLessons = matchingModules.flatMap((m: any) => m.lessons);
+
+      return {
+        ...track,
+        modules: trackMatches ? track.modules : matchingModules,
+        lessons: trackMatches ? track.lessons : allMatchingLessons,
+        hasMatch: trackMatches || matchingModules.length > 0,
+      };
+    })
+    .filter((track) => track.hasMatch);
 
   const navItemClass = (active: boolean) =>
     `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group cursor-pointer ${
@@ -361,6 +495,30 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         )}
       </div>
 
+      {/* SEARCH BOX ON TOP OF LEFT NAVIGATION PANEL */}
+      <div className="px-3 py-2.5 border-b border-[#262626] shrink-0 bg-[#141414]">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 text-[#A1A1AA] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search courses & lessons..."
+            className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg bg-[#1E1E1E] border border-[#262626] text-white placeholder:text-[#71717A] focus:outline-none focus:border-emerald-500 transition-colors"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-[#71717A] hover:text-white"
+              title="Clear search"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* 2. SCROLLABLE NAVIGATION MENUS */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
 
@@ -374,16 +532,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               >
                 <LayoutDashboard className="w-4 h-4 shrink-0 text-emerald-500" />
                 <span>Dashboard</span>
-              </Link>
-
-              {/* Learning Tracks & Curriculum */}
-              <Link
-                href="/tracks"
-                onClick={onCloseMobile}
-                className={navItemClass(pathname === '/tracks')}
-              >
-                <Layers className="w-4 h-4 shrink-0 text-sky-400" />
-                <span>Learning Tracks &amp; Curriculum</span>
               </Link>
 
               {/* Technical Tutorials & Articles (Published Blog) */}
@@ -422,18 +570,28 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             {/* Courses Child / Sub-Menu Items */}
             {coursesOpen && (
               <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
-                {courseTracks.map((track, trackIdx) => {
+                {filteredCourseTracks.length === 0 && searchQuery && (
+                  <div className="px-2 py-3 text-xs text-neutral-400 text-center">
+                    No matching courses or lessons
+                  </div>
+                )}
+                {filteredCourseTracks.map((track, trackIdx) => {
                   const isExpanded = openTracks[track.id];
                   const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
                   const isTrackActive =
-                    pathname?.includes(`/tracks/${track.id}`) ||
-                    pathname === `/guides/${guideSlug}` ||
-                    pathname?.startsWith(`/guides/${guideSlug}/`);
+                    track.id === 'ai-qa'
+                      ? pathname?.startsWith('/learning') ||
+                        pathname === '/guides/ai-qa' ||
+                        pathname?.startsWith('/guides/ai-qa/') ||
+                        pathname?.includes('/tracks/ai-qa')
+                      : pathname?.includes(`/tracks/${track.id}`) ||
+                        pathname === `/guides/${guideSlug}` ||
+                        pathname?.startsWith(`/guides/${guideSlug}/`);
                   const Icon = track.icon;
 
                   return (
                     <div key={track.id} className="space-y-0.5">
-                      {/* Track Parent Row (Navigates to Track's Guide & Import Hub on click, expands lessons) */}
+                      {/* Track Parent Row (Focuses first child lesson and shows content on right panel) */}
                       <div
                         onClick={() => toggleTrack(track.id)}
                         className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group cursor-pointer ${
@@ -441,13 +599,14 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                             ? 'bg-slate-100/90 dark:bg-neutral-800/80 font-semibold text-emerald-600 dark:text-emerald-400'
                             : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40 text-slate-800 dark:text-neutral-200'
                         }`}
-                        title={`${track.displayTitle}: Open Guide & Import Hub`}
+                        title={`${track.displayTitle}: Open first child lesson`}
                       >
                         <Link
                           href={`/guides/${guideSlug}`}
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
-                            setOpenTracks(p => ({ ...p, [track.id]: true }));
+                            toggleTrack(track.id);
                             onCloseMobile?.();
                           }}
                           className="flex items-center gap-2 truncate flex-1 min-w-0"
@@ -461,7 +620,11 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
                         {track.lessons.length > 0 && (
                           <div
-                            className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleTrack(track.id);
+                            }}
+                            className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0 cursor-pointer"
                             title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
                           >
                             <span>{track.lessons.length} Lessons</span>
@@ -476,132 +639,175 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
                       {/* All Individual Lessons with total hours of each individual lesson */}
                       {isExpanded && track.lessons.length > 0 && (
-                        <div className="pl-3 pr-0.5 py-0.5 space-y-0.5 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
-                          {/* Header showing lesson count and admin badge */}
-                          <div className="pt-0.5 pb-1 px-2 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-slate-400 dark:text-neutral-500">
-                            <span>Step-by-Step Lessons</span>
-                            <div className="flex items-center gap-1">
-                              {isAdmin && (
-                                <span className="text-[8px] font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 px-1 py-0.2 rounded border border-amber-500/20" title="Admin controls: Reorder, Disable, Delete">
-                                  Admin
-                                </span>
-                              )}
-                              <span>
-                                {isAdmin
-                                  ? track.lessons.length
-                                  : track.lessons.filter((l: Lesson) => !l.disabled).length}
-                              </span>
-                            </div>
-                          </div>
-
+                        <div className="pl-2 pr-0.5 py-0.5 space-y-1 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
                           {(() => {
-                            const displayedLessons = isAdmin
-                              ? track.lessons
-                              : track.lessons.filter((l: Lesson) => !l.disabled);
+                            const trackModules =
+                              track.modules && track.modules.length > 0
+                                ? track.modules
+                                : [{ id: 'core', title: 'Lessons', lessons: track.lessons }];
 
-                            return displayedLessons.map((lesson: Lesson, lessonIdx: number) => {
-                              const isLessonActive = pathname === `/tracks/${track.id}/${lesson.id}`;
-                              const hours = getLessonHours(lesson.durationMinutes);
-                              const isFirst = lessonIdx === 0;
-                              const isLast = lessonIdx === displayedLessons.length - 1;
+                            return trackModules.map((mod: any, modIdx: number) => {
+                              const modId = `${track.id}-${mod.id || modIdx}`;
+                              const isModOpen = isModuleOpen(modId);
+                              const displayedLessons = isAdmin
+                                ? mod.lessons || []
+                                : (mod.lessons || []).filter((l: Lesson) => !l.disabled);
+
+                              if (displayedLessons.length === 0) return null;
 
                               return (
-                                <div
-                                  key={lesson.id}
-                                  className={`group flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
-                                    lesson.disabled ? 'opacity-65 bg-amber-500/5' : ''
-                                  } ${
-                                    isLessonActive
-                                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold shadow-xs'
-                                      : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
-                                  }`}
-                                >
-                                  <Link
-                                    href={`/tracks/${track.id}/${lesson.id}`}
-                                    onClick={onCloseMobile}
-                                    className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1"
-                                    title={lesson.title}
+                                <div key={mod.id || modIdx} className="space-y-0.5">
+                                  {/* Collapsible Module / Group Header */}
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleModule(modId)}
+                                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-[10px] font-semibold text-slate-400 hover:text-white hover:bg-neutral-800/60 transition-colors group cursor-pointer text-left"
+                                    title={isModOpen ? `Collapse ${mod.title}` : `Expand ${mod.title}`}
                                   >
-                                    {completedLessonIds.has(lesson.id) && (
-                                      <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                                    )}
-                                    <span className="truncate">{lesson.title}</span>
-                                    {lesson.disabled && (
-                                      <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 font-bold">
-                                        Disabled
+                                    <div className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1">
+                                      {track.id === 'ai-qa' ? (
+                                        <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
+                                      ) : (
+                                        <FolderKanban className="w-3 h-3 text-slate-500 group-hover:text-slate-300 shrink-0" />
+                                      )}
+                                      <span className="truncate uppercase tracking-wider font-mono text-[9px] text-slate-300 group-hover:text-white">
+                                        {mod.title}
                                       </span>
-                                    )}
-                                  </Link>
-
-                                  {/* Admin Controls: Reorder (Up/Down), Disable/Enable, Delete */}
-                                  {isAdmin && (
-                                    <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity bg-neutral-900/95 dark:bg-black/95 p-0.5 rounded border border-neutral-700/60 shadow-xs">
-                                      <button
-                                        type="button"
-                                        disabled={isFirst}
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          QADatabase.moveLesson(track.id, lesson.id, 'up');
-                                        }}
-                                        className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
-                                        title="Move Up in sequence"
-                                      >
-                                        <ArrowUp className="w-2.5 h-2.5" />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        disabled={isLast}
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          QADatabase.moveLesson(track.id, lesson.id, 'down');
-                                        }}
-                                        className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
-                                        title="Move Down in sequence"
-                                      >
-                                        <ArrowDown className="w-2.5 h-2.5" />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          QADatabase.toggleLessonDisabled(track.id, lesson.id);
-                                        }}
-                                        className={`p-0.5 rounded hover:bg-neutral-700 transition cursor-pointer ${
-                                          lesson.disabled ? 'text-amber-400' : 'text-neutral-400 hover:text-emerald-400'
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0 text-slate-400">
+                                      <span className="text-[9px] font-mono text-neutral-500">
+                                        {displayedLessons.length}
+                                      </span>
+                                      <ChevronDown
+                                        className={`w-3 h-3 text-neutral-400 transition-transform duration-200 ${
+                                          isModOpen ? 'rotate-180' : ''
                                         }`}
-                                        title={
-                                          lesson.disabled
-                                            ? "Enable lesson (visible to learners)"
-                                            : "Disable lesson (hide while updating content)"
-                                        }
-                                      >
-                                        {lesson.disabled ? (
-                                          <EyeOff className="w-2.5 h-2.5" />
-                                        ) : (
-                                          <Eye className="w-2.5 h-2.5" />
-                                        )}
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          if (
-                                            window.confirm(
-                                              `Are you sure you want to permanently delete "${lesson.title}"?`
-                                            )
-                                          ) {
-                                            QADatabase.deleteLesson(track.id, lesson.id);
-                                          }
-                                        }}
-                                        className="p-0.5 rounded hover:bg-rose-950/80 text-neutral-400 hover:text-rose-400 transition cursor-pointer"
-                                        title="Delete lesson permanently"
-                                      >
-                                        <Trash2 className="w-2.5 h-2.5" />
-                                      </button>
+                                      />
+                                    </div>
+                                  </button>
+
+                                  {/* Collapsible Module Lessons */}
+                                  {isModOpen && (
+                                    <div className="pl-2 space-y-0.5 border-l border-slate-700/40 ml-2.5 my-0.5">
+                                      {displayedLessons.map((lesson: Lesson, lessonIdx: number) => {
+                                        const isLessonActive =
+                                          track.id === 'ai-qa'
+                                            ? pathname === `/learning/${lesson.id}` ||
+                                              (pathname === '/learning' && lesson.id === 'what-is-artificial-intelligence') ||
+                                              (pathname === '/guides/ai-qa' && lesson.id === 'what-is-artificial-intelligence')
+                                            : pathname === `/tracks/${track.id}/${lesson.id}`;
+
+                                        const lessonHref =
+                                          track.id === 'ai-qa'
+                                            ? `/learning/${lesson.id}`
+                                            : `/tracks/${track.id}/${lesson.id}`;
+
+                                        const hours = getLessonHours(lesson.durationMinutes);
+                                        const isFirst = lessonIdx === 0;
+                                        const isLast = lessonIdx === displayedLessons.length - 1;
+
+                                        return (
+                                          <div
+                                            key={lesson.id}
+                                            className={`group flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
+                                              lesson.disabled ? 'opacity-65 bg-amber-500/5' : ''
+                                            } ${
+                                              isLessonActive
+                                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold shadow-xs'
+                                                : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
+                                            }`}
+                                          >
+                                            <Link
+                                              href={lessonHref}
+                                              onClick={onCloseMobile}
+                                              className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1"
+                                              title={lesson.title}
+                                            >
+                                              {completedLessonIds.has(lesson.id) && (
+                                                <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                                              )}
+                                              <span className="truncate">{lesson.title}</span>
+                                              {lesson.disabled && (
+                                                <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 font-bold">
+                                                  Disabled
+                                                </span>
+                                              )}
+                                            </Link>
+
+                                            {/* Admin Controls: Reorder (Up/Down), Disable/Enable, Delete */}
+                                            {isAdmin && track.id !== 'ai-qa' && (
+                                              <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity bg-neutral-900/95 dark:bg-black/95 p-0.5 rounded border border-neutral-700/60 shadow-xs">
+                                                <button
+                                                  type="button"
+                                                  disabled={isFirst}
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    QADatabase.moveLesson(track.id, lesson.id, 'up');
+                                                  }}
+                                                  className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
+                                                  title="Move Up in sequence"
+                                                >
+                                                  <ArrowUp className="w-2.5 h-2.5" />
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  disabled={isLast}
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    QADatabase.moveLesson(track.id, lesson.id, 'down');
+                                                  }}
+                                                  className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
+                                                  title="Move Down in sequence"
+                                                >
+                                                  <ArrowDown className="w-2.5 h-2.5" />
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    QADatabase.toggleLessonDisabled(track.id, lesson.id);
+                                                  }}
+                                                  className={`p-0.5 rounded hover:bg-neutral-700 transition cursor-pointer ${
+                                                    lesson.disabled ? 'text-amber-400' : 'text-neutral-400 hover:text-emerald-400'
+                                                  }`}
+                                                  title={
+                                                    lesson.disabled
+                                                      ? "Enable lesson (visible to learners)"
+                                                      : "Disable lesson (hide while updating content)"
+                                                  }
+                                                >
+                                                  {lesson.disabled ? (
+                                                    <EyeOff className="w-2.5 h-2.5" />
+                                                  ) : (
+                                                    <Eye className="w-2.5 h-2.5" />
+                                                  )}
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    if (
+                                                      window.confirm(
+                                                        `Are you sure you want to permanently delete "${lesson.title}"?`
+                                                      )
+                                                    ) {
+                                                      QADatabase.deleteLesson(track.id, lesson.id);
+                                                    }
+                                                  }}
+                                                  className="p-0.5 rounded hover:bg-rose-950/80 text-neutral-400 hover:text-rose-400 transition cursor-pointer"
+                                                  title="Delete lesson permanently"
+                                                >
+                                                  <Trash2 className="w-2.5 h-2.5" />
+                                                </button>
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
                                     </div>
                                   )}
                                 </div>
