@@ -720,9 +720,19 @@ export class AcademyStore {
       existingData.academyLessonAssets = Array.from(this.lessonAssets.values());
       existingData.academyUserProgress = Array.from(this.userProgress.values());
 
-      const tempFile = `${DATA_FILE}.tmp.${Date.now()}`;
+      const tempFile = `${DATA_FILE}.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).substring(2, 8)}`;
       fs.writeFileSync(tempFile, JSON.stringify(existingData, null, 2), 'utf-8');
-      fs.renameSync(tempFile, DATA_FILE);
+      try {
+        fs.renameSync(tempFile, DATA_FILE);
+      } catch {
+        // Fallback for filesystem collision
+        fs.writeFileSync(DATA_FILE, JSON.stringify(existingData, null, 2), 'utf-8');
+        try {
+          if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
+        } catch {
+          // ignore
+        }
+      }
     } catch (e) {
       console.error('Failed to persist Academy data to disk:', e);
       throw e;
@@ -1182,13 +1192,14 @@ export class AcademyStore {
     return undefined;
   }
 
-  public deleteLesson(lessonId: string): boolean {
+  public deleteLesson(lessonIdOrCourseId: string, moduleId?: string, lessonId?: string): boolean {
+    const targetId = lessonId || lessonIdOrCourseId;
     for (const course of this.courses.values()) {
       if (!course.modules) continue;
       for (const mod of course.modules) {
         if (!mod.lessons) continue;
         const initLen = mod.lessons.length;
-        mod.lessons = mod.lessons.filter((l) => l.id !== lessonId);
+        mod.lessons = mod.lessons.filter((l) => l.id !== targetId);
         if (mod.lessons.length !== initLen) {
           mod.updatedAt = new Date().toISOString();
           course.updatedAt = new Date().toISOString();

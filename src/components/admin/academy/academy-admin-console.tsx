@@ -46,8 +46,12 @@ interface AcademyAdminConsoleProps {
 }
 
 export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsoleProps) {
-  // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'curriculum'>('dashboard');
+  // Navigation Tabs: Default to 'curriculum' so admins immediately manage courses
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'curriculum'>('curriculum');
+
+  // Filter & Search State
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Data State
   const [categories, setCategories] = useState<AcademyCategory[]>([]);
@@ -55,7 +59,6 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Toast Banner
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -831,11 +834,41 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       {/* 3. CURRICULUM TREE VIEW (COURSES, MODULES & LESSONS MANAGEMENT) */}
       {activeTab === 'curriculum' && (
         <div className="space-y-6">
+          {/* Quick Metrics KPI Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <div className="p-3.5 rounded-xl bg-[#161616] border border-[#262626]">
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Courses</span>
+              <p className="text-xl font-black text-white mt-0.5">{totalCourses}</p>
+              <p className="text-[10px] text-zinc-400">Total Tracks</p>
+            </div>
+            <div className="p-3.5 rounded-xl bg-[#161616] border border-[#262626]">
+              <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider block">Modules</span>
+              <p className="text-xl font-black text-white mt-0.5">{totalModules}</p>
+              <p className="text-[10px] text-zinc-400">Active Chapters</p>
+            </div>
+            <div className="p-3.5 rounded-xl bg-[#161616] border border-[#262626]">
+              <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">Lessons</span>
+              <p className="text-xl font-black text-white mt-0.5">{totalLessons}</p>
+              <p className="text-[10px] text-zinc-400">All Technical Content</p>
+            </div>
+            <div className="p-3.5 rounded-xl bg-[#161616] border border-emerald-500/20">
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Published</span>
+              <p className="text-xl font-black text-emerald-300 mt-0.5">{publishedLessonsCount}</p>
+              <p className="text-[10px] text-zinc-400">Live to Learners</p>
+            </div>
+            <div className="p-3.5 rounded-xl bg-[#161616] border border-amber-500/20">
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">Drafts</span>
+              <p className="text-xl font-black text-amber-300 mt-0.5">{draftLessonsCount}</p>
+              <p className="text-[10px] text-zinc-400">Private / Staged</p>
+            </div>
+          </div>
+
           {/* Course Selector Tabs */}
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-              {courses.map((course, idx) => {
+              {courses.map((course) => {
                 const isSelected = course.id === selectedCourseId;
+                const totalCourseLessons = (course.modules || []).reduce((acc, m) => acc + (m.lessons?.length || 0), 0);
                 return (
                   <button
                     key={course.id}
@@ -852,8 +885,9 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                       className={`text-[9px] font-mono px-1.5 py-0.2 rounded ${
                         isSelected ? 'bg-emerald-700 text-white' : 'bg-zinc-800 text-zinc-400'
                       }`}
+                      title={`${course.modules?.length || 0} Modules • ${totalCourseLessons} Lessons`}
                     >
-                      {course.modules?.length || 0}
+                      {totalCourseLessons}
                     </span>
                   </button>
                 );
@@ -895,7 +929,16 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                   )}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <a
+                    href="/learning"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Preview in Academy</span>
+                  </a>
                   <button
                     type="button"
                     onClick={() => handleToggleCoursePublish(activeCourse)}
@@ -926,6 +969,65 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                 </div>
               </div>
 
+              {/* Search & Filter Bar */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-[#262626]">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search lessons by title or keyword..."
+                    className="w-full pl-9 pr-8 py-1.5 rounded-xl bg-[#1C1C1C] border border-[#2D2D2D] text-white text-xs placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Status Filter Pills */}
+                  <div className="bg-[#1C1C1C] p-1 rounded-xl border border-[#2D2D2D] flex items-center gap-1 text-xs">
+                    {(['all', 'published', 'draft'] as const).map((st) => (
+                      <button
+                        key={st}
+                        type="button"
+                        onClick={() => setStatusFilter(st)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold capitalize transition-all cursor-pointer ${
+                          statusFilter === st
+                            ? 'bg-emerald-500 text-white shadow-sm'
+                            : 'text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        {st === 'all' ? 'All' : st}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Expand / Collapse All */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allExpanded = Object.values(expandedModules).every(Boolean);
+                      const nextState: Record<string, boolean> = {};
+                      activeCourse.modules?.forEach((m) => {
+                        nextState[m.id] = !allExpanded;
+                      });
+                      setExpandedModules(nextState);
+                    }}
+                    className="px-2.5 py-1 rounded-xl bg-[#1C1C1C] border border-[#2D2D2D] text-zinc-400 hover:text-white text-[11px] font-semibold cursor-pointer"
+                  >
+                    Toggle All
+                  </button>
+                </div>
+              </div>
+
               {/* Modules Accordion Tree */}
               <div className="space-y-3 pt-2">
                 {(!activeCourse.modules || activeCourse.modules.length === 0) ? (
@@ -933,8 +1035,23 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                     No modules created for this course yet. Click "Add Module" to begin.
                   </div>
                 ) : (
-                  activeCourse.modules.map((mod, modIdx) => {
-                    const isExpanded = expandedModules[mod.id] ?? true;
+                  activeCourse.modules.map((mod) => {
+                    const lessons = mod.lessons || [];
+                    const filteredLessons = lessons.filter((l) => {
+                      if (statusFilter !== 'all' && l.status !== statusFilter) return false;
+                      if (searchQuery.trim()) {
+                        const q = searchQuery.toLowerCase().trim();
+                        return (
+                          l.title.toLowerCase().includes(q) ||
+                          l.slug.toLowerCase().includes(q) ||
+                          (l.summary && l.summary.toLowerCase().includes(q))
+                        );
+                      }
+                      return true;
+                    });
+
+                    const isExpanded = searchQuery.trim() ? true : (expandedModules[mod.id] ?? true);
+
                     return (
                       <div
                         key={mod.id}
@@ -968,7 +1085,7 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                               {mod.status}
                             </span>
                             <span className="text-[10px] font-mono text-zinc-400">
-                              ({mod.lessons?.length || 0} Lessons)
+                              ({filteredLessons.length}{filteredLessons.length !== lessons.length ? ` / ${lessons.length}` : ''} Lessons)
                             </span>
                           </div>
 
@@ -1011,12 +1128,14 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                         {/* Lessons List inside Module */}
                         {isExpanded && (
                           <div className="p-3 space-y-2 border-t border-[#262626]">
-                            {(!mod.lessons || mod.lessons.length === 0) ? (
+                            {filteredLessons.length === 0 ? (
                               <div className="py-4 text-center text-xs text-zinc-500">
-                                No lessons inside this module yet.
+                                {lessons.length === 0
+                                  ? 'No lessons inside this module yet. Click "Add Lesson" to create one.'
+                                  : 'No lessons match your search filter.'}
                               </div>
                             ) : (
-                              mod.lessons.map((lsn) => (
+                              filteredLessons.map((lsn) => (
                                 <div
                                   key={lsn.id}
                                   className="p-2.5 rounded-lg bg-[#141414] border border-[#242424] flex items-center justify-between gap-3 hover:border-zinc-700 transition-all"
@@ -1037,6 +1156,11 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                                         >
                                           {lsn.status.toUpperCase()}
                                         </span>
+                                        {lsn.originalDocxPath && (
+                                          <span className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                                            DOCX
+                                          </span>
+                                        )}
                                       </div>
                                       <p className="text-[10px] text-zinc-400 truncate">
                                         Slug: {lsn.slug} • {lsn.estimatedReadingTime || lsn.estimatedReadTime || 5} min read
@@ -1069,7 +1193,7 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                                       type="button"
                                       onClick={() => handleOpenEditLesson(activeCourse.id, mod.id, lsn)}
                                       className="p-1.5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
-                                      title="Edit Lesson"
+                                      title="Edit Lesson & DOCX Document"
                                     >
                                       <Edit2 className="w-3.5 h-3.5" />
                                     </button>

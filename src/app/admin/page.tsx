@@ -799,7 +799,7 @@ function AdminDashboardContent() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#222222]">
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: Layers },
-            { id: 'academy', label: 'Learning Academy CMS', icon: GraduationCap },
+            { id: 'academy', label: 'Learning Academy CMS', icon: GraduationCap, count: 54 },
             { id: 'course', label: 'Course', icon: BookOpen, count: tracks.reduce((acc, t) => acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0), 0) },
             { id: 'labs', label: 'Practice Labs', icon: Terminal, count: codingProblems.length },
             { id: 'agents', label: 'AI Tools and Agents', icon: Bot, count: agentConfigs.length },
@@ -881,6 +881,49 @@ function AdminDashboardContent() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* 0. LEARNING ACADEMY CMS TILE (FEATURED PRIMARY CURRICULUM CONSOLE) */}
+                <div
+                  onClick={() => handleSelectSection('academy')}
+                  className="md:col-span-2 p-6 rounded-3xl bg-gradient-to-r from-[#171717] via-[#1A1620] to-[#161A18] border border-emerald-500/30 hover:border-emerald-500/70 hover:bg-[#1E1B26] transition-all cursor-pointer group shadow-xl space-y-4"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                        <GraduationCap className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                          PRIMARY CURRICULUM MANAGEMENT
+                        </span>
+                        <h3 className="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors mt-1">
+                          Learning Academy CMS
+                        </h3>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 w-fit">
+                      54 Lessons Across All Modules
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-zinc-300 max-w-3xl leading-relaxed">
+                    Authoritative curriculum management console. Create and manage AI Academy, Selenium, Playwright, API Testing, and DevOps courses. Upload Microsoft Word (.docx) technical documents, preview rendered HTML, and publish lessons directly to learners with 1-click.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-[#262626]">
+                    <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-emerald-300 font-semibold">AI Academy (46 Lessons)</span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">Selenium WebDriver 4</span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">Playwright TypeScript</span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">REST Assured</span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">CI/CD &amp; DevOps</span>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
+                      <span>Open Academy CMS Studio</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </div>
+
                 {/* 1. COURSE SECTION TILE */}
                 <div
                   onClick={() => handleSelectSection('course')}
