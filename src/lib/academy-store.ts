@@ -692,6 +692,20 @@ export class AcademyStore {
   private userProgress: Map<string, UserLessonProgress> = new Map();
   private userBookmarks: Map<string, AcademyLessonBookmark> = new Map();
   private enrolledCourses: Map<string, Set<string>> = new Map();
+  private searchIndexCache: Array<{
+    id: string;
+    courseId: string;
+    courseTitle: string;
+    courseSlug: string;
+    moduleTitle: string;
+    lessonTitle: string;
+    lessonSlug: string;
+    summary: string;
+    status: AcademyPublishStatus;
+    searchMetaLower: string;
+    contentHtml?: string;
+    contentLower?: string;
+  }> | null = null;
   private initialized = false;
 
   private constructor() {
@@ -711,6 +725,7 @@ export class AcademyStore {
 
   private loadFromDisk() {
     try {
+      this.searchIndexCache = null;
       if (fs.existsSync(DATA_FILE)) {
         const raw = fs.readFileSync(DATA_FILE, 'utf-8');
         const data = JSON.parse(raw);
@@ -783,9 +798,43 @@ export class AcademyStore {
         if (!data.academyCategories || !data.academyCourses) {
           this.saveToDisk();
         }
+
+        // Pre-build search index for sub-millisecond query performance
+        this.buildSearchIndex();
       }
     } catch (e) {
       console.error('Failed to load Academy data from disk:', e);
+    }
+  }
+
+  private buildSearchIndex(): void {
+    this.searchIndexCache = [];
+    for (const course of this.courses.values()) {
+      const courseTitleLower = course.title.toLowerCase();
+      for (const mod of course.modules || []) {
+        const modTitleLower = mod.title.toLowerCase();
+        for (const lsn of mod.lessons || []) {
+          const lsnTitleLower = lsn.title.toLowerCase();
+          const summaryLower = (lsn.summary || lsn.shortDescription || '').toLowerCase();
+          const searchMetaLower = `${courseTitleLower} ${modTitleLower} ${lsnTitleLower} ${summaryLower}`;
+          const contentHtml = lsn.contentHtml || '';
+          const contentLower = contentHtml ? contentHtml.toLowerCase() : '';
+          this.searchIndexCache.push({
+            id: lsn.id,
+            courseId: course.id,
+            courseTitle: course.title,
+            courseSlug: course.slug,
+            moduleTitle: mod.title,
+            lessonTitle: lsn.title,
+            lessonSlug: lsn.slug,
+            summary: lsn.summary || lsn.shortDescription || '',
+            status: lsn.status,
+            searchMetaLower,
+            contentHtml,
+            contentLower,
+          });
+        }
+      }
     }
   }
 
@@ -1996,105 +2045,92 @@ export class AcademyStore {
     const q = query.trim().toLowerCase();
     const limit = options.limit || 20;
     const includeDrafts = !!options.includeDrafts;
+    const tokens = q.split(/\s+/).filter(Boolean);
+
+    // Build in-memory search index if not yet ready
+    if (!this.searchIndexCache) {
+      this.buildSearchIndex();
+    }
 
     const scoredResults: Array<{ result: AcademySearchResult; score: number }> = [];
-    const publishedCourses = Array.from(this.courses.values()).filter(
-      (c) => includeDrafts || c.status === 'published'
-    );
 
-    for (const course of publishedCourses) {
-      const courseTitleLower = course.title.toLowerCase();
-      const courseMatchesTitle =
-        courseTitleLower.includes(q) ||
-        (course.subtitle && course.subtitle.toLowerCase().includes(q));
+    for (const item of this.searchIndexCache) {
+      if (!includeDrafts && item.status !== 'published') continue;
 
-      for (const mod of course.modules || []) {
-        if (!includeDrafts && mod.status !== 'published') continue;
-        const modTitleLower = mod.title.toLowerCase();
-        const modMatchesTitle =
-          modTitleLower.includes(q) ||
-          (mod.description && mod.description.toLowerCase().includes(q));
+      const titleLower = item.lessonTitle.toLowerCase();
+      const summaryLower = item.summary.toLowerCase();
+      const courseLower = item.courseTitle.toLowerCase();
+      const modLower = item.moduleTitle.toLowerCase();
 
-        for (const lsn of mod.lessons || []) {
-          if (!includeDrafts && lsn.status !== 'published') continue;
+      const titleMatches = titleLower.includes(q);
+      const summaryMatches = summaryLower.includes(q);
+      const courseMatches = courseLower.includes(q);
+      const modMatches = modLower.includes(q);
+      const allTokensMatch = tokens.length > 1 && tokens.every((t) => item.searchMetaLower.includes(t));
 
-          const lsnTitleLower = lsn.title.toLowerCase();
-          const summaryLower = (lsn.summary || lsn.shortDescription || '').toLowerCase();
-          const titleMatches = lsnTitleLower.includes(q);
-          const summaryMatches = summaryLower.includes(q);
+      let contentMatches = false;
+      if (!titleMatches && !summaryMatches && !courseMatches && !modMatches && !allTokensMatch && item.contentLower) {
+        contentMatches = item.contentLower.includes(q);
+      }
 
-          // Strip HTML tags for clean text search
-          const cleanContent = (lsn.contentHtml || '').replace(/<[^>]*>/g, ' ');
-          const contentMatches = cleanContent.toLowerCase().includes(q);
+      if (titleMatches || summaryMatches || courseMatches || modMatches || allTokensMatch || contentMatches) {
+        let matchedField: 'title' | 'summary' | 'content' | 'module' | 'course' = 'title';
+        let snippet = item.summary;
+        let score = 0;
 
-          // Multi-token search support across context (e.g. "Playwright locator")
-          const tokens = q.split(/\s+/).filter(Boolean);
-          const combinedContext = `${courseTitleLower} ${modTitleLower} ${lsnTitleLower} ${summaryLower} ${cleanContent.toLowerCase()}`;
-          const allTokensMatch = tokens.length > 1 && tokens.every((t) => combinedContext.includes(t));
-
-          if (titleMatches || summaryMatches || contentMatches || modMatchesTitle || courseMatchesTitle || allTokensMatch) {
-            let matchedField: 'title' | 'summary' | 'content' | 'module' | 'course' = 'title';
-            let snippet = lsn.summary || lsn.shortDescription || '';
-            let score = 0;
-
-            if (allTokensMatch) {
-              score += 70;
-              matchedField = 'title';
-            }
-            if (courseMatchesTitle) {
-              score += 100;
-              matchedField = 'course';
-              snippet = `Course: ${course.title}`;
-            }
-            if (modMatchesTitle) {
-              score += 60;
-              matchedField = 'module';
-              snippet = `Module: ${mod.title}`;
-            }
-            if (titleMatches) {
-              score += 80;
-              matchedField = 'title';
-            }
-            if (summaryMatches) {
-              score += 30;
-              if (matchedField === 'course' || matchedField === 'module') matchedField = 'summary';
-            }
-            if (contentMatches) {
-              score += 15;
-              if (matchedField === 'course' || matchedField === 'module') {
-                matchedField = 'content';
-              }
-              const idx = cleanContent.toLowerCase().indexOf(q);
-              const start = Math.max(0, idx - 40);
-              const end = Math.min(cleanContent.length, idx + q.length + 60);
-              snippet =
-                (start > 0 ? '...' : '') +
-                cleanContent.substring(start, end).trim() +
-                (end < cleanContent.length ? '...' : '');
-            }
-
-            scoredResults.push({
-              result: {
-                id: lsn.id,
-                type: 'lesson',
-                title: lsn.title,
-                snippet,
-                lessonSlug: lsn.slug,
-                courseTitle: course.title,
-                courseSlug: course.slug,
-                moduleTitle: mod.title,
-                matchedField,
-              },
-              score,
-            });
-          }
+        if (allTokensMatch) {
+          score += 70;
+          matchedField = 'title';
         }
+        if (courseMatches) {
+          score += 100;
+          matchedField = 'course';
+          snippet = `Course: ${item.courseTitle}`;
+        }
+        if (modMatches) {
+          score += 60;
+          matchedField = 'module';
+          snippet = `Module: ${item.moduleTitle}`;
+        }
+        if (titleMatches) {
+          score += 80;
+          matchedField = 'title';
+        }
+        if (summaryMatches) {
+          score += 30;
+          if (matchedField === 'course' || matchedField === 'module') matchedField = 'summary';
+        }
+        if (contentMatches && item.contentHtml) {
+          score += 15;
+          matchedField = 'content';
+          const cleanContent = item.contentHtml.replace(/<[^>]*>/g, ' ');
+          const idx = cleanContent.toLowerCase().indexOf(q);
+          const start = Math.max(0, idx - 40);
+          const end = Math.min(cleanContent.length, idx + q.length + 60);
+          snippet =
+            (start > 0 ? '...' : '') +
+            cleanContent.substring(start, end).trim() +
+            (end < cleanContent.length ? '...' : '');
+        }
+
+        scoredResults.push({
+          result: {
+            id: item.id,
+            type: 'lesson',
+            title: item.lessonTitle,
+            snippet,
+            lessonSlug: item.lessonSlug,
+            courseTitle: item.courseTitle,
+            courseSlug: item.courseSlug,
+            moduleTitle: item.moduleTitle,
+            matchedField,
+          },
+          score,
+        });
       }
     }
 
-    // Sort by relevance score descending
     scoredResults.sort((a, b) => b.score - a.score);
-
     return scoredResults.slice(0, limit).map((s) => s.result);
   }
 

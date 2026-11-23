@@ -13,6 +13,8 @@ import PreviousNextNavigation from './previous-next-navigation';
 import RelatedLessons from './related-lessons';
 import ModuleOverviewCard from './module-overview-card';
 import CourseOverviewCard from './course-overview-card';
+import LlmArchitectureInfographic from './llm-architecture-infographic';
+import StandardLessonRenderer from './standard-lesson-template';
 import {
   getLessonBySlug,
   getAdjacentLessons,
@@ -587,6 +589,16 @@ export default function AcademyShell({
                     onToggleBookmark={handleToggleBookmark}
                     onPrintLesson={handlePrintLesson}
                   />
+
+                  {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
+                  {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
+                    <LlmArchitectureInfographic />
+                  )}
+
+                  {/* Standardized 13-Section Template Data if provided */}
+                  {apiLessonData?.lesson?.blockData?.standardData && (
+                    <StandardLessonRenderer data={apiLessonData.lesson.blockData.standardData} />
+                  )}
 
                   {/* Supplementary Document HTML if provided from uploaded document */}
                   {optimizedHtml && (

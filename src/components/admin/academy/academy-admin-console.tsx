@@ -30,6 +30,11 @@ import {
   X,
   UploadCloud,
   FileCheck,
+  Code,
+  Image as ImageIcon,
+  Workflow,
+  ListPlus,
+  Terminal,
 } from 'lucide-react';
 import {
   AcademyCourse,
@@ -105,6 +110,17 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   const [lessonDocPath, setLessonDocPath] = useState<string>('');
   const [lessonStatus, setLessonStatus] = useState<AcademyPublishStatus>('draft');
   const [lessonReadTime, setLessonReadTime] = useState<number>(5);
+
+  // Phase 8: Standard Lesson Sections & Diagram Builder state
+  const [lessonEditorTab, setLessonEditorTab] = useState<'content' | 'diagram' | 'docx'>('content');
+  const [diagramType, setDiagramType] = useState<string>('pipeline');
+  const [diagramTitle, setDiagramTitle] = useState<string>('System Architecture Flow');
+  const [diagramCaption, setDiagramCaption] = useState<string>('Component relationship and execution flow');
+  const [diagramMermaid, setDiagramMermaid] = useState<string>('graph TD\n  Client[Test Client] -->|W3C HTTP| Driver[Browser Driver]\n  Driver --> Browser[Browser Process]');
+  const [diagramImageUrl, setDiagramImageUrl] = useState<string>('');
+  const [diagramAltText, setDiagramAltText] = useState<string>('');
+  const [diagramSourceAttr, setDiagramSourceAttr] = useState<string>('');
+  const [selectedSectionTemplate, setSelectedSectionTemplate] = useState<string>('overview');
 
   // 4. Content Preview Modal
   const [previewingLesson, setPreviewingLesson] = useState<{
@@ -523,6 +539,212 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     setLessonStatus(lesson.status);
     setLessonReadTime(lesson.estimatedReadingTime || lesson.estimatedReadTime || 5);
     setShowLessonModal(true);
+  };
+
+  const STANDARD_SECTION_TEMPLATES: Record<string, string> = {
+    overview: `
+<div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
+  <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
+    <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 1 · Overview</span>
+    <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Lesson Overview</h3>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
+      <h4 class="font-bold uppercase text-slate-500 mb-1">What is this concept?</h4>
+      <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">Core technical definition and architecture role in modern test suites.</p>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
+      <h4 class="font-bold uppercase text-slate-500 mb-1">Why is it important?</h4>
+      <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">Prevents flakiness, accelerates execution velocity, and provides regression confidence.</p>
+    </div>
+    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+      <h4 class="font-bold uppercase text-emerald-500 mb-1">Where is it used?</h4>
+      <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">Applied in continuous integration pipelines and end-to-end regression frameworks.</p>
+    </div>
+  </div>
+</div>`,
+
+    objectives: `
+<div class="rounded-2xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50/30 dark:bg-indigo-950/20 p-6 space-y-3 my-6">
+  <span class="text-xs font-mono font-bold uppercase text-indigo-500">Section 2 · Objectives</span>
+  <h3 class="text-xl font-bold text-slate-900 dark:text-white">Learning Objectives</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+    <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-indigo-100 dark:border-indigo-900 text-slate-700 dark:text-neutral-200 font-medium">✓ Master core architecture and runtime behavior</div>
+    <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-indigo-100 dark:border-indigo-900 text-slate-700 dark:text-neutral-200 font-medium">✓ Synthesize deterministic automation tests</div>
+    <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-indigo-100 dark:border-indigo-900 text-slate-700 dark:text-neutral-200 font-medium">✓ Diagnose and troubleshoot common exceptions</div>
+    <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-indigo-100 dark:border-indigo-900 text-slate-700 dark:text-neutral-200 font-medium">✓ Answer senior SDET & architect interview scenarios</div>
+  </div>
+</div>`,
+
+    concept: `
+<div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
+  <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
+    <span class="text-xs font-mono font-bold uppercase text-blue-500">Section 3 · Theory</span>
+    <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Concept Explanation</h3>
+  </div>
+  <p class="text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">In modern quality engineering, deterministic verification guarantees reliable feedback loops across distributed architectures.</p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+    <div class="p-3 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-xs">
+      <strong class="block text-slate-900 dark:text-white mb-1">Deterministic Verification</strong>
+      <span class="text-slate-600 dark:text-neutral-400">Identical outcomes on every run under identical preconditions.</span>
+    </div>
+    <div class="p-3 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-xs">
+      <strong class="block text-slate-900 dark:text-white mb-1">State Isolation</strong>
+      <span class="text-slate-600 dark:text-neutral-400">Independent test fixtures preventing cascading side effects.</span>
+    </div>
+  </div>
+</div>`,
+
+    code: `
+<div class="my-6 space-y-4">
+  <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 7 · Implementation Code</span>
+  <div class="rounded-xl border border-slate-800 bg-slate-950 overflow-hidden font-mono text-xs shadow-sm">
+    <div class="px-4 py-2.5 bg-slate-900 border-b border-slate-800 flex justify-between items-center text-slate-300">
+      <span class="font-bold text-slate-200">EnterpriseTest.ts</span>
+      <span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-400 text-[10px] font-bold uppercase">TYPESCRIPT</span>
+    </div>
+    <pre class="p-4 text-[#81FF89] overflow-x-auto leading-relaxed"><code>import { test, expect } from '@playwright/test';
+
+test('deterministic enterprise verification', async ({ page }) => {
+  await page.goto('/dashboard');
+  const target = page.getByRole('button', { name: 'Submit' });
+  await expect(target).toBeVisible();
+  await target.click();
+  await expect(page.locator('.status')).toHaveText('Success');
+});</code></pre>
+  </div>
+</div>`,
+
+    usecases: `
+<div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
+  <span class="text-xs font-mono font-bold uppercase text-cyan-500">Section 8 · Production Use Cases</span>
+  <h3 class="text-xl font-bold text-slate-900 dark:text-white">Real-World QA Applications</h3>
+  <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 space-y-1.5 text-xs">
+    <h4 class="font-bold text-slate-900 dark:text-white">Continuous Pull Request Quality Gate</h4>
+    <p class="text-slate-600 dark:text-neutral-400"><strong>Scenario:</strong> Validating critical user journeys on every PR merge before deployment.</p>
+    <p class="text-emerald-600 dark:text-emerald-400"><strong>Enterprise Scale:</strong> Executing 500+ parallel tests in under 10 minutes in CI.</p>
+  </div>
+</div>`,
+
+    troubleshooting: `
+<div class="rounded-2xl border border-red-200 dark:border-red-950 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
+  <span class="text-xs font-mono font-bold uppercase text-red-500">Section 9 · Debugging &amp; Troubleshooting</span>
+  <h3 class="text-xl font-bold text-slate-900 dark:text-white">Common Errors &amp; Fixes</h3>
+  <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2">
+    <h4 class="font-bold font-mono text-red-600 dark:text-red-400">TimeoutException / StaleElementReferenceException</h4>
+    <p class="text-slate-600 dark:text-neutral-400"><strong>Root Cause:</strong> Dynamic DOM update unmounted element before interaction.</p>
+    <p class="text-slate-600 dark:text-neutral-400"><strong>Fix:</strong> Re-locate element dynamically using explicit expected condition polling.</p>
+  </div>
+</div>`,
+
+    bestpractices: `
+<div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
+  <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 10 · Best Practices</span>
+  <h3 class="text-xl font-bold text-slate-900 dark:text-white">Enterprise Standards</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
+      <strong class="text-slate-900 dark:text-white block mb-1">Zero Hardcoded Sleep Timers</strong>
+      <p class="text-slate-600 dark:text-neutral-300">Always utilize event-driven polling waits instead of static thread sleep intervals.</p>
+    </div>
+    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
+      <strong class="text-slate-900 dark:text-white block mb-1">Fail-Fast Preconditions</strong>
+      <p class="text-slate-600 dark:text-neutral-300">Verify environment connectivity and database seeding before launching heavy UI browser sessions.</p>
+    </div>
+  </div>
+</div>`,
+
+    interview: `
+<div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
+  <span class="text-xs font-mono font-bold uppercase text-rose-500">Section 12 · Technical Interview Prep</span>
+  <h3 class="text-xl font-bold text-slate-900 dark:text-white">Interview Questions</h3>
+  <div class="p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-800/50 text-xs space-y-1.5">
+    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/10 text-rose-500 border border-rose-500/20">Architect-Level</span>
+    <strong class="text-slate-900 dark:text-white block">How do you scale test execution across 100+ parallel workers without resource deadlocks?</strong>
+    <p class="text-slate-600 dark:text-neutral-400 leading-relaxed font-sans">Isolate test state per worker using ephemeral containers, seed test data via background API calls rather than UI, and shard test execution evenly.</p>
+  </div>
+</div>`,
+
+    summary: `
+<div class="rounded-2xl border border-emerald-200 dark:border-emerald-950 bg-emerald-50/20 dark:bg-emerald-950/20 p-6 space-y-4 my-6">
+  <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 13 · Review &amp; Summary</span>
+  <h3 class="text-xl font-bold text-slate-900 dark:text-white">Key Takeaways</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+    <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-emerald-100 dark:border-emerald-900/50 text-slate-700 dark:text-neutral-300">✓ Deterministic assertions and dynamic waits are mandatory</div>
+    <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-emerald-100 dark:border-emerald-900/50 text-slate-700 dark:text-neutral-300">✓ Abstract low-level APIs behind reusable Page Objects</div>
+  </div>
+</div>`,
+  };
+
+  const handleInsertSectionTemplate = (sectionKey: string) => {
+    const template = STANDARD_SECTION_TEMPLATES[sectionKey];
+    if (template) {
+      setLessonContentHtml((prev) => (prev ? prev + '\n' + template : template));
+      notify(`Inserted ${sectionKey} section template into lesson editor.`);
+    }
+  };
+
+  const handleInsertDiagram = () => {
+    let diagramHtml = '';
+    if (diagramType === 'mermaid') {
+      diagramHtml = `
+<div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 p-6 space-y-4">
+  <div class="border-b border-slate-200 dark:border-neutral-800 pb-3 flex justify-between items-center">
+    <div>
+      <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 4 · Architecture</span>
+      <h4 class="text-lg font-bold text-slate-900 dark:text-white">${diagramTitle || 'Mermaid Architecture Diagram'}</h4>
+      ${diagramCaption ? `<p class="text-xs text-slate-500">${diagramCaption}</p>` : ''}
+    </div>
+    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-500 font-bold uppercase">Mermaid</span>
+  </div>
+  <pre class="mermaid text-xs p-4 rounded-xl bg-slate-900 text-emerald-400 font-mono overflow-x-auto"><code>${diagramMermaid}</code></pre>
+  ${diagramSourceAttr ? `<p class="text-[10px] text-slate-400">Source: ${diagramSourceAttr}</p>` : ''}
+</div>`;
+    } else if (diagramType === 'image') {
+      diagramHtml = `
+<div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
+  <div class="border-b border-slate-200 dark:border-neutral-800 pb-3">
+    <span class="text-xs font-mono font-bold uppercase text-blue-500">Section 4 · Visual Diagram</span>
+    <h4 class="text-lg font-bold text-slate-900 dark:text-white">${diagramTitle || 'Technical Illustration'}</h4>
+  </div>
+  <figure class="space-y-2 text-center">
+    <img src="${diagramImageUrl || '/assets/diagram-placeholder.png'}" alt="${diagramAltText || diagramTitle}" class="rounded-xl mx-auto max-h-96 object-contain border border-slate-200 dark:border-neutral-800 shadow-sm" />
+    ${diagramCaption ? `<figcaption class="text-xs text-slate-500">${diagramCaption}</figcaption>` : ''}
+  </figure>
+  ${diagramSourceAttr ? `<p class="text-[10px] text-slate-400 text-right">Source: ${diagramSourceAttr}</p>` : ''}
+</div>`;
+    } else {
+      diagramHtml = `
+<div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 p-6 space-y-4">
+  <div class="border-b border-slate-200 dark:border-neutral-800 pb-3 flex justify-between items-center">
+    <div>
+      <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 4 · Architecture</span>
+      <h4 class="text-lg font-bold text-slate-900 dark:text-white">${diagramTitle || 'Component Execution Flow'}</h4>
+      ${diagramCaption ? `<p class="text-xs text-slate-500">${diagramCaption}</p>` : ''}
+    </div>
+    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-500 font-bold uppercase">${diagramType}</span>
+  </div>
+  <div class="flex flex-col md:flex-row items-center gap-3 overflow-x-auto py-2">
+    <div class="flex-1 min-w-[150px] p-3 rounded-xl bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-center">
+      <span class="text-[10px] font-mono font-bold text-slate-400 uppercase">Input</span>
+      <h5 class="text-xs font-bold text-slate-900 dark:text-white">1. Precondition Fixture</h5>
+    </div>
+    <div class="text-slate-400 font-bold">→</div>
+    <div class="flex-1 min-w-[150px] p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 text-center ring-1 ring-emerald-400/30">
+      <span class="text-[10px] font-mono font-bold text-emerald-600 uppercase">Action</span>
+      <h5 class="text-xs font-bold text-slate-900 dark:text-white">2. Execution Engine</h5>
+    </div>
+    <div class="text-slate-400 font-bold">→</div>
+    <div class="flex-1 min-w-[150px] p-3 rounded-xl bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-center">
+      <span class="text-[10px] font-mono font-bold text-slate-400 uppercase">Output</span>
+      <h5 class="text-xs font-bold text-slate-900 dark:text-white">3. Deterministic Assertion</h5>
+    </div>
+  </div>
+</div>`;
+    }
+
+    setLessonContentHtml((prev) => (prev ? prev + '\n' + diagramHtml : diagramHtml));
+    setLessonEditorTab('content');
+    notify(`Inserted ${diagramType} diagram into lesson content.`);
   };
 
   const handleSaveLesson = async (overrideStatus?: AcademyPublishStatus) => {
@@ -1482,7 +1704,7 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
         >
-          <div className="relative w-full max-w-2xl max-h-[90vh] bg-[#161616] border border-[#2A2A2A] rounded-2xl shadow-2xl flex flex-col overflow-hidden text-white">
+          <div className="relative w-full max-w-4xl max-h-[92vh] bg-[#161616] border border-[#2A2A2A] rounded-2xl shadow-2xl flex flex-col overflow-hidden text-white">
             <div className="px-6 py-4 border-b border-[#262626] flex items-center justify-between bg-[#191919] shrink-0">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-400" />
@@ -1536,31 +1758,242 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                 />
               </div>
 
-              {/* DEDICATED WORD DOCUMENT UPLOAD ZONE */}
-              <div className="space-y-1.5 p-4 rounded-xl bg-[#1A1A1A] border border-[#262626]">
-                <div className="flex items-center justify-between mb-1">
-                  <label className="font-semibold text-zinc-200 flex items-center gap-2">
-                    <UploadCloud className="w-4 h-4 text-emerald-400" />
-                    <span>Upload Word Document (.docx)</span>
-                  </label>
-                  <span className="text-[10px] text-zinc-400 font-mono">Preserves Original Format</span>
+              {/* EDITOR MODE TABS */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-1 p-1 bg-[#1A1A1A] rounded-xl border border-[#2D2D2D]">
+                  <button
+                    type="button"
+                    onClick={() => setLessonEditorTab('content')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                      lessonEditorTab === 'content'
+                        ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Code className="w-3.5 h-3.5" />
+                    <span>Technical Content & Code (HTML)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLessonEditorTab('diagram')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                      lessonEditorTab === 'diagram'
+                        ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Workflow className="w-3.5 h-3.5" />
+                    <span>Visual Diagram Builder</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLessonEditorTab('docx')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                      lessonEditorTab === 'docx'
+                        ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>Word Document (.docx)</span>
+                  </button>
                 </div>
 
-                <DocxUploadDropzone
-                  lessonId={editingLessonTarget?.lesson?.id}
-                  currentDocumentPath={lessonDocPath}
-                  onUploaded={(info: UploadedDocInfo) => {
-                    setLessonDocPath(info.filePath);
-                    if (info.contentHtml) {
-                      setLessonContentHtml(info.contentHtml);
-                    }
-                    if (info.metadata?.estimated_reading_time_minutes) {
-                      setLessonReadTime(info.metadata.estimated_reading_time_minutes);
-                    }
-                    notify(`Uploaded & processed "${info.originalFilename}" with format preservation.`);
-                  }}
-                  onClear={() => setLessonDocPath('')}
-                />
+                {/* TAB 1: TECHNICAL CONTENT & INSERT STANDARD SECTION */}
+                {lessonEditorTab === 'content' && (
+                  <div className="space-y-2.5 p-4 rounded-xl bg-[#1A1A1A] border border-[#262626]">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#262626] pb-2.5">
+                      <span className="font-semibold text-zinc-200 flex items-center gap-1.5">
+                        <Code className="w-4 h-4 text-emerald-400" />
+                        <span>Standard Lesson Content (HTML)</span>
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={selectedSectionTemplate}
+                          onChange={(e) => setSelectedSectionTemplate(e.target.value)}
+                          className="px-2.5 py-1.5 rounded-lg bg-[#222] border border-[#333] text-zinc-200 text-xs focus:outline-none"
+                        >
+                          <option value="overview">Section 1: Overview</option>
+                          <option value="objectives">Section 2: Learning Objectives</option>
+                          <option value="concept">Section 3: Concept Explanation</option>
+                          <option value="code">Section 7: Code Example</option>
+                          <option value="usecases">Section 8: QA Use Cases</option>
+                          <option value="troubleshooting">Section 9: Troubleshooting</option>
+                          <option value="bestpractices">Section 10: Best Practices</option>
+                          <option value="interview">Section 12: Interview Questions</option>
+                          <option value="summary">Section 13: Lesson Summary</option>
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => handleInsertSectionTemplate(selectedSectionTemplate)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition-colors cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Insert Section</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <textarea
+                      value={lessonContentHtml}
+                      onChange={(e) => setLessonContentHtml(e.target.value)}
+                      placeholder="<div class='standard-lesson-container'>...</div>"
+                      rows={10}
+                      className="w-full p-3 rounded-xl bg-[#141414] border border-[#2D2D2D] text-emerald-300 font-mono text-xs focus:outline-none focus:border-emerald-500 leading-relaxed resize-y"
+                    />
+                    <p className="text-[10px] text-zinc-400 flex items-center justify-between">
+                      <span>Supports 13 standardized lesson sections with responsive styling & syntax highlights.</span>
+                      <span>Characters: {lessonContentHtml.length}</span>
+                    </p>
+                  </div>
+                )}
+
+                {/* TAB 2: VISUAL DIAGRAM BUILDER */}
+                {lessonEditorTab === 'diagram' && (
+                  <div className="space-y-4 p-4 rounded-xl bg-[#1A1A1A] border border-[#262626]">
+                    <div className="flex items-center justify-between border-b border-[#262626] pb-2.5">
+                      <span className="font-semibold text-zinc-200 flex items-center gap-1.5">
+                        <Workflow className="w-4 h-4 text-emerald-400" />
+                        <span>Visual Technical Diagram Builder</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-400 uppercase bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        Zero Paid API Dependency
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-zinc-400 font-medium mb-1">Diagram Type</label>
+                        <select
+                          value={diagramType}
+                          onChange={(e) => setDiagramType(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-[#202020] border border-[#333] text-white focus:outline-none focus:border-emerald-500"
+                        >
+                          <option value="pipeline">Pipeline / Execution Flow</option>
+                          <option value="architecture">System Architecture / Layered</option>
+                          <option value="client-server">Client-Server Model</option>
+                          <option value="sequence">Sequence Flow</option>
+                          <option value="mermaid">Mermaid.js Code</option>
+                          <option value="image">Uploaded PNG / JPG / SVG / WebP</option>
+                        </select>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-zinc-400 font-medium mb-1">Diagram Title</label>
+                        <input
+                          type="text"
+                          value={diagramTitle}
+                          onChange={(e) => setDiagramTitle(e.target.value)}
+                          placeholder="e.g. Selenium WebDriver 4 Architecture"
+                          className="w-full px-3 py-2 rounded-xl bg-[#202020] border border-[#333] text-white focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-zinc-400 font-medium mb-1">Caption / Description</label>
+                      <input
+                        type="text"
+                        value={diagramCaption}
+                        onChange={(e) => setDiagramCaption(e.target.value)}
+                        placeholder="e.g. Execution flow from Client Language Bindings to Browser Engine"
+                        className="w-full px-3 py-2 rounded-xl bg-[#202020] border border-[#333] text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+
+                    {diagramType === 'mermaid' ? (
+                      <div>
+                        <label className="block text-zinc-400 font-medium mb-1">Mermaid Definition Code</label>
+                        <textarea
+                          value={diagramMermaid}
+                          onChange={(e) => setDiagramMermaid(e.target.value)}
+                          rows={5}
+                          className="w-full p-3 rounded-xl bg-[#141414] border border-[#2D2D2D] text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500 leading-relaxed"
+                          placeholder="graph TD&#10;  A[Client] --> B[Server]"
+                        />
+                      </div>
+                    ) : diagramType === 'image' ? (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-zinc-400 font-medium mb-1">Image URL / Path</label>
+                            <input
+                              type="text"
+                              value={diagramImageUrl}
+                              onChange={(e) => setDiagramImageUrl(e.target.value)}
+                              placeholder="/assets/diagrams/selenium-arch.svg"
+                              className="w-full px-3 py-2 rounded-xl bg-[#202020] border border-[#333] text-white focus:outline-none focus:border-emerald-500 font-mono text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-zinc-400 font-medium mb-1">Alternative Text (Alt)</label>
+                            <input
+                              type="text"
+                              value={diagramAltText}
+                              onChange={(e) => setDiagramAltText(e.target.value)}
+                              placeholder="Selenium W3C architecture diagram"
+                              className="w-full px-3 py-2 rounded-xl bg-[#202020] border border-[#333] text-white focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-zinc-400 font-medium mb-1">Source Attribution (Optional)</label>
+                          <input
+                            type="text"
+                            value={diagramSourceAttr}
+                            onChange={(e) => setDiagramSourceAttr(e.target.value)}
+                            placeholder="e.g. Official Selenium Documentation (W3C standard)"
+                            className="w-full px-3 py-2 rounded-xl bg-[#202020] border border-[#333] text-white focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3 rounded-xl bg-[#141414] border border-[#262626] text-zinc-400 text-xs">
+                        Will generate an interactive SVG/CSS-powered <strong>{diagramType}</strong> execution diagram with component breakdowns and step transitions.
+                      </div>
+                    )}
+
+                    <div className="flex justify-end pt-1">
+                      <button
+                        type="button"
+                        onClick={handleInsertDiagram}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs transition-colors cursor-pointer shadow-md"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Insert Diagram into Lesson</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: DEDICATED WORD DOCUMENT UPLOAD ZONE */}
+                {lessonEditorTab === 'docx' && (
+                  <div className="space-y-1.5 p-4 rounded-xl bg-[#1A1A1A] border border-[#262626]">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="font-semibold text-zinc-200 flex items-center gap-2">
+                        <UploadCloud className="w-4 h-4 text-emerald-400" />
+                        <span>Upload Word Document (.docx)</span>
+                      </label>
+                      <span className="text-[10px] text-zinc-400 font-mono">Preserves Original Format</span>
+                    </div>
+
+                    <DocxUploadDropzone
+                      lessonId={editingLessonTarget?.lesson?.id}
+                      currentDocumentPath={lessonDocPath}
+                      onUploaded={(info: UploadedDocInfo) => {
+                        setLessonDocPath(info.filePath);
+                        if (info.contentHtml) {
+                          setLessonContentHtml(info.contentHtml);
+                        }
+                        if (info.metadata?.estimated_reading_time_minutes) {
+                          setLessonReadTime(info.metadata.estimated_reading_time_minutes);
+                        }
+                        notify(`Uploaded & processed "${info.originalFilename}" with format preservation.`);
+                      }}
+                      onClear={() => setLessonDocPath('')}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
