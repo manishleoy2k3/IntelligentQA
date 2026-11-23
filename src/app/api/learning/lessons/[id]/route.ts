@@ -9,7 +9,27 @@ export async function GET(
   try {
     const { id } = await params;
     const auth = verifyAdminAccess(req);
-    const lessonWithContext = academyStore.getLessonWithContext(id);
+    let lessonWithContext = academyStore.getLessonWithContext(id);
+
+    // If not found directly, check if `id` is a course slug or ID, and resolve to first published lesson
+    if (!lessonWithContext) {
+      const course = academyStore.getCourse(id, { includeDrafts: auth.authorized });
+      if (course && course.modules && course.modules.length > 0) {
+        const sortedMods = [...course.modules]
+          .filter((m) => auth.authorized || m.status === 'published')
+          .sort((a, b) => a.sortOrder - b.sortOrder);
+        for (const m of sortedMods) {
+          const sortedLessons = [...(m.lessons || [])]
+            .filter((l) => auth.authorized || l.status === 'published')
+            .sort((a, b) => a.sortOrder - b.sortOrder);
+          if (sortedLessons.length > 0) {
+            lessonWithContext = academyStore.getLessonWithContext(sortedLessons[0].slug || sortedLessons[0].id);
+            break;
+          }
+        }
+      }
+    }
+
     if (!lessonWithContext) {
       return NextResponse.json(
         { success: false, error: `Lesson ${id} not found.` },

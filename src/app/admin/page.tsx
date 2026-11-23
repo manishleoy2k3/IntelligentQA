@@ -96,6 +96,7 @@ function AdminDashboardContent() {
   const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestionItem[]>([]);
   const [adminEmails, setAdminEmails] = useState<string[]>([]);
   const [adminSecret, setAdminSecret] = useState<string>('');
+  const [academyLessonCount, setAcademyLessonCount] = useState<number>(104);
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -188,6 +189,23 @@ function AdminDashboardContent() {
     setInterviewQuestions(getAllInterviewQuestions());
     setAdminEmails(QADatabase.getAdminEmails());
     setAdminSecret(QADatabase.getAdminSecret());
+
+    // Dynamically sync Learning Academy lesson count
+    if (typeof window !== 'undefined') {
+      fetch('/api/learning/courses?includeDrafts=true', { headers: { 'x-admin-token': 'admin' } })
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.success && Array.isArray(json.data)) {
+            const total = json.data.reduce(
+              (acc: number, c: any) =>
+                acc + (c.modules?.reduce((mAcc: number, m: any) => mAcc + (m.lessons?.length || 0), 0) || 0),
+              0
+            );
+            setAcademyLessonCount(total);
+          }
+        })
+        .catch(() => {});
+    }
 
     // Auto-clean legacy guide approvals queue and staged items
     if (typeof window !== 'undefined') {
@@ -799,7 +817,7 @@ function AdminDashboardContent() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#222222]">
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: Layers },
-            { id: 'academy', label: 'Learning Academy CMS', icon: GraduationCap, count: 54 },
+            { id: 'academy', label: 'Learning Academy CMS', icon: GraduationCap, count: academyLessonCount },
             { id: 'course', label: 'Course', icon: BookOpen, count: tracks.reduce((acc, t) => acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0), 0) },
             { id: 'labs', label: 'Practice Labs', icon: Terminal, count: codingProblems.length },
             { id: 'agents', label: 'AI Tools and Agents', icon: Bot, count: agentConfigs.length },
@@ -901,7 +919,7 @@ function AdminDashboardContent() {
                       </div>
                     </div>
                     <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 w-fit">
-                      54 Lessons Across All Modules
+                      {academyLessonCount} Lessons Across All Modules
                     </span>
                   </div>
 

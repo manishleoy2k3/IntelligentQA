@@ -122,6 +122,12 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
 
+  const notifyCurriculumUpdated = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+    }
+  };
+
   // =========================================================================
   // LOAD DATA FROM APIS
   // =========================================================================
@@ -148,6 +154,7 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
           if (!selectedCourseId && coursesJson.data.length > 0) {
             setSelectedCourseId(coursesJson.data[0].id);
           }
+          notifyCurriculumUpdated();
         }
       }
     } catch (err: any) {
@@ -347,6 +354,25 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || 'Failed to reorder');
       notify('Courses reordered successfully.');
+      fetchCurriculum();
+    } catch (err: any) {
+      notify(err.message, 'error');
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: string, title: string) => {
+    if (!confirm(`Are you sure you want to permanently delete course "${title}" and all its modules and lessons? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/admin/learning/courses/${courseId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-token': 'admin' },
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to delete course');
+      notify(`Course "${title}" deleted successfully.`);
+      setSelectedCourseId('');
       fetchCurriculum();
     } catch (err: any) {
       notify(err.message, 'error');
@@ -957,6 +983,15 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>Edit Course</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteCourse(activeCourse.id, activeCourse.title)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold border border-red-500/30 transition-colors cursor-pointer"
+                    title="Delete Course"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete</span>
                   </button>
                   <button
                     type="button"

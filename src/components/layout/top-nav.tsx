@@ -476,7 +476,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                   setAdminUnlockStatus({ success: res.message });
                   setTimeout(() => {
                     setShowAdminUnlockModal(false);
-                    window.location.href = "/admin/cms";
+                    window.location.href = "/admin?section=academy";
                   }, 800);
                 } else {
                   setAdminUnlockStatus({ error: res.message });

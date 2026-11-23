@@ -7694,7 +7694,7 @@
       "sortOrder": 1,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-23T15:13:14.818Z",
+      "updatedAt": "2026-11-23T15:47:04.393Z",
       "modules": [
         {
           "id": "mod-intro-ai",
@@ -7705,7 +7705,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T15:13:14.818Z",
+          "updatedAt": "2026-11-23T15:47:04.393Z",
           "lessons": [
             {
               "id": "les-what-is-ai",
@@ -7796,7 +7796,7 @@
               "sortOrder": 4,
               "status": "published",
               "createdAt": "2026-11-23T00:00:00.000Z",
-              "updatedAt": "2026-11-23T15:13:14.818Z",
+              "updatedAt": "2026-11-23T15:47:04.393Z",
               "publishedAt": "2026-11-23T00:00:00.000Z"
             },
             {
@@ -10649,6 +10649,111 @@
       "id": "course-fidelity-course-1795446795044",
       "createdAt": "2026-11-23T15:13:15.044Z",
       "updatedAt": "2026-11-23T15:13:15.256Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795448383291",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795448383339",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795448383339",
+          "courseId": "course-fidelity-course-1795448383291",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795448383353",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795448383353",
+              "courseId": "course-fidelity-course-1795448383291",
+              "moduleId": "mod-fidelity-module-1795448383339",
+              "createdAt": "2026-11-23T15:39:43.353Z",
+              "updatedAt": "2026-11-23T15:39:43.353Z"
+            }
+          ],
+          "createdAt": "2026-11-23T15:39:43.339Z",
+          "updatedAt": "2026-11-23T15:39:43.353Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795448383291",
+      "createdAt": "2026-11-23T15:39:43.291Z",
+      "updatedAt": "2026-11-23T15:39:43.353Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Cypress End-to-End Testing",
+      "slug": "cypress-e2e-testing",
+      "description": "Modern web testing with Cypress",
+      "icon": "Code2",
+      "level": "Beginner",
+      "estimatedHours": 12,
+      "status": "draft",
+      "id": "course-cypress-e2e-testing",
+      "modules": [],
+      "createdAt": "2026-11-23T15:39:58.798Z",
+      "updatedAt": "2026-11-23T15:39:58.798Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795448824662",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795448824679",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795448824679",
+          "courseId": "course-fidelity-course-1795448824662",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795448824697",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795448824697",
+              "courseId": "course-fidelity-course-1795448824662",
+              "moduleId": "mod-fidelity-module-1795448824679",
+              "createdAt": "2026-11-23T15:47:04.698Z",
+              "updatedAt": "2026-11-23T15:47:04.988Z",
+              "contentHtml": "<h1 id=\"heading-1-autonomous-quality-engineering-architecture\" class=\"text-2xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-neutral-800 pb-2\">Heading 1: Autonomous Quality Engineering Architecture</h1>\n<h2 id=\"heading-2-core-transformer-pipeline\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">Heading 2: Core Transformer Pipeline</h2>\n<h3 id=\"heading-3-subsystem-components-and-ingestion-stages\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Heading 3: Subsystem Components and Ingestion Stages</h3>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">This technical specification document verifies that Microsoft Word OpenXML (.docx) files are processed, rendered, and preserved with zero manual HTML authoring. Every paragraph, heading, list hierarchy, table, code block, and binary asset must survive transformation intact.</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><strong>Bold Text Example</strong>, <em>Italic Text Example</em>, and <u><em><strong>Bold-Italic-Underlined Text</strong></em></u>. Special characters testing: &amp;amp; symbols (&lt;tag&gt;, &quot;quotes&quot;, © 2026, ® registered, ™ trademark, λ lambda, → arrow, and ✓ checkmark).</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">For more technical documentation, visit <a href=\"https://playwright.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Playwright Official Documentation</u></span></a> or review enterprise practices on <a href=\"https://www.selenium.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Selenium WebDriver Official Portal</u></span></a>.</p>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Root Bullet Item: Quality Engineering Foundations</li>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Deterministic Element Locators</li>\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Auto-Waiting Actionability Matrix</li>\n</ul>\n<li class=\"leading-relaxed\">Root Bullet Item: Agentic Execution Loops</li>\n</ul>\n<ol class=\"list-decimal pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Initialize Test Driver and Browser Context</li>\n<li class=\"leading-relaxed\">Execute Autonomous Test Step with Multi-Attribute Self-Healing</li>\n<li class=\"leading-relaxed\">Capture Trace Artifacts, Console Logs, and Har Payloads</li>\n</ol>\n<div class=\"overflow-x-auto my-6 rounded-2xl border border-neutral-700/80 shadow-lg\">\n  <table class=\"w-full text-left border-collapse text-xs bg-neutral-950/60\">\n    <tbody>\n      <tr><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Capability</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Specification</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Fidelity Level</strong></th></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Headings &amp; Structure</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">H1, H2, H3 with anchor IDs</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">100% Semantic Match</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Embedded Images</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Lossless extraction to persistent disk</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Native Resolution</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Code Snippets</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Syntax block with language badge &amp; copy button</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Indentation</td></tr>\n    </tbody>\n  </table>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 1: Quality Engineering Architecture Diagram</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795448824697/les-fidelity-lesson-1795448824697_image1.png\" alt=\"QE Architecture Diagram\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">QE Architecture Diagram</figcaption>\n</figure></p>\n<div class=\"my-8 flex items-center justify-center gap-4 text-neutral-500 docx-page-break select-none\">\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n  <span class=\"text-[10px] font-mono tracking-widest uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full text-neutral-400\">Page Break</span>\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 2: Pipeline Orchestration &amp; Reporting</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795448824697/les-fidelity-lesson-1795448824697_image2.png\" alt=\"Pipeline Orchestration\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">Pipeline Orchestration</figcaption>\n</figure></p>\n<h3 id=\"java-selenium-enterprise-implementation\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Java Selenium Enterprise Implementation</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">java</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-java\">package com.intelligentqa.tests;\n\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.testng.annotations.Test;\n\npublic class SeleniumEnterpriseTest {\n    @Test\n    public void verifyAutonomousHealthCheck() {\n        WebDriver driver = new ChromeDriver();\n        driver.get(&quot;https://intelligentqa.com/dashboard&quot;);\n        System.out.println(&quot;Page Title: &quot; + driver.getTitle());\n        driver.quit();\n    }\n}</code></pre>\n</div>\n<h3 id=\"typescript-playwright-modern-framework\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">TypeScript Playwright Modern Framework</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">typescript</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-typescript\">import { test, expect } from &#x27;@playwright/test&#x27;;\n\ninterface AssessmentPayload {\n  candidateId: string;\n  role: &#x27;SDET&#x27; | &#x27;QA_Architect&#x27;;\n  score: number;\n}\n\ntest(&#x27;verify Playwright auto-waiting actionability matrix&#x27;, async ({ page }) =&gt; {\n  await page.goto(&#x27;/learning&#x27;);\n  const card = page.getByRole(&#x27;heading&#x27;, { name: &#x27;What is an LLM?&#x27; });\n  await expect(card).toBeVisible();\n});</code></pre>\n</div>",
+              "originalDocxPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795448824725.docx",
+              "pdfPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795448824725_print.html",
+              "wordCount": 98,
+              "estimatedReadingTime": 1
+            }
+          ],
+          "createdAt": "2026-11-23T15:47:04.679Z",
+          "updatedAt": "2026-11-23T15:47:04.988Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795448824662",
+      "createdAt": "2026-11-23T15:47:04.662Z",
+      "updatedAt": "2026-11-23T15:47:04.988Z"
     }
   ],
   "academyDocSources": [
@@ -10811,6 +10916,46 @@
       "fileSizeBytes": 3963,
       "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "uploadedAt": "2026-11-23T15:13:15.124Z"
+    },
+    {
+      "id": "doc-1795448383036-pw50",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795448383036.docx",
+      "fileHashSha256": "035da07083b1027b6b4664406f25870372419259ff63ae11507fb42254854d33",
+      "fileSizeBytes": 3008,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T15:39:43.036Z"
+    },
+    {
+      "id": "doc-1795448383404-f22n",
+      "lessonId": "les-fidelity-lesson-1795448383353",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795448383403.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T15:39:43.404Z"
+    },
+    {
+      "id": "doc-1795448824725-w8xd",
+      "lessonId": "les-fidelity-lesson-1795448824697",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795448824725.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T15:47:04.725Z"
+    },
+    {
+      "id": "doc-1795448825043-poj8",
+      "lessonId": "les-fidelity-lesson-1795448824697",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795448825043.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T15:47:05.043Z"
     }
   ],
   "academyMedia": [],
@@ -11084,6 +11229,96 @@
       "displayOrder": 1,
       "id": "asset-1795446795455-0aknb",
       "createdAt": "2026-11-23T15:13:15.455Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwtflyxk",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T15:39:43.256Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwtflyy0",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T15:39:43.272Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795448383353-img-1-mwtflz52",
+      "lessonId": "les-fidelity-lesson-1795448383353",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795448383353/les-fidelity-lesson-1795448383353_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T15:39:43.526Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795448383353-img-2-mwtflz5i",
+      "lessonId": "les-fidelity-lesson-1795448383353",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795448383353/les-fidelity-lesson-1795448383353_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T15:39:43.542Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795448383624",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795448383701-l872n",
+      "createdAt": "2026-11-23T15:39:43.701Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwtfvfhp",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T15:47:04.621Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwtfvfia",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T15:47:04.642Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795448824697-img-1-mwtfvfps",
+      "lessonId": "les-fidelity-lesson-1795448824697",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795448824697/les-fidelity-lesson-1795448824697_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T15:47:04.912Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795448824697-img-2-mwtfvfqp",
+      "lessonId": "les-fidelity-lesson-1795448824697",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795448824697/les-fidelity-lesson-1795448824697_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T15:47:04.945Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795448825154",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795448825236-avgkm",
+      "createdAt": "2026-11-23T15:47:05.236Z"
     }
   ],
   "academyUserProgress": [
@@ -11262,6 +11497,38 @@
       "completionStatus": "completed",
       "lastAccessedAt": "2026-11-23T15:13:15.716Z",
       "completedAt": "2026-11-23T15:13:15.716Z"
+    },
+    {
+      "id": "prog-test-user-1795448383690-les-test-lsn-1795448383624",
+      "userId": "test-user-1795448383690",
+      "lessonId": "les-test-lsn-1795448383624",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T15:39:43.690Z",
+      "completedAt": "2026-11-23T15:39:43.690Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795448383939-les-api-test",
+      "userId": "usr_api_test_1795448383939",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T15:39:43.939Z",
+      "completedAt": "2026-11-23T15:39:43.939Z"
+    },
+    {
+      "id": "prog-test-user-1795448825199-les-test-lsn-1795448825154",
+      "userId": "test-user-1795448825199",
+      "lessonId": "les-test-lsn-1795448825154",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T15:47:05.199Z",
+      "completedAt": "2026-11-23T15:47:05.199Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795448825508-les-api-test",
+      "userId": "usr_api_test_1795448825508",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T15:47:05.508Z",
+      "completedAt": "2026-11-23T15:47:05.508Z"
     }
   ]
 }

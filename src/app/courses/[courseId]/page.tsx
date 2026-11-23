@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { BookOpen, CheckCircle, Clock, Layers, ArrowRight } from 'lucide-react';
 import AcademyShell from '@/components/learning/academy-shell';
+import { academyStore } from '@/lib/academy-store';
 
 interface PageProps {
   params: Promise<{ courseId: string }>;
@@ -16,7 +17,16 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { courseId } = await params;
   const track = getTrackById(courseId);
-  if (!track) return { title: 'Course Not Found' };
+  if (!track) {
+    const academyCourse = academyStore.getCourse(courseId);
+    if (academyCourse) {
+      return {
+        title: `${academyCourse.title} | IntelligentQA Free Course`,
+        description: academyCourse.description,
+      };
+    }
+    return { title: 'Course Not Found' };
+  }
 
   return {
     title: `${track.title} | IntelligentQA Free Course`,
@@ -32,6 +42,13 @@ export default async function PublicCoursePage({ params }: PageProps) {
   const track = getTrackById(courseId);
 
   if (!track) {
+    const academyCourse = academyStore.getCourse(courseId);
+    if (academyCourse && academyCourse.modules && academyCourse.modules.length > 0) {
+      const firstLesson = academyCourse.modules[0]?.lessons?.[0];
+      if (firstLesson) {
+        redirect(`/learning/${firstLesson.slug}`);
+      }
+    }
     notFound();
   }
 

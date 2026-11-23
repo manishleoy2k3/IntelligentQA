@@ -43,6 +43,7 @@ import {
   ChevronDown,
   ChevronRight,
   Filter,
+  GraduationCap,
 } from 'lucide-react';
 import { QADatabase } from '@/lib/qa-db';
 import { Track, Module, Lesson, ModerationItem } from '@/types/qa';
@@ -887,6 +888,14 @@ function CMSPortalContent() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/admin?section=academy"
+            className="px-3.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs text-emerald-300 font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Learning Academy CMS</span>
+          </Link>
+
           <Link
             href="/blog"
             target="_blank"

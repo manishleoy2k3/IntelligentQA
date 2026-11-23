@@ -12,6 +12,7 @@ import {
   Users,
   ShieldCheck,
   X,
+  GraduationCap,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -35,6 +36,13 @@ export default function AdminSidebar({
       href: '/admin',
       icon: LayoutDashboard,
       color: 'text-indigo-400',
+    },
+    {
+      id: 'academy',
+      name: 'Learning Academy CMS',
+      href: '/admin?section=academy',
+      icon: GraduationCap,
+      color: 'text-emerald-400',
     },
     {
       id: 'cms',
@@ -117,7 +125,11 @@ export default function AdminSidebar({
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            pathname === '/admin'
+            item.id === 'academy'
+              ? pathname === '/admin/academy' || currentSection === 'academy'
+              : item.id === 'cms'
+              ? pathname === '/admin/cms'
+              : pathname === '/admin'
               ? (item.id === 'overview' && (!searchParams.get('section') || currentSection === 'overview')) ||
                 currentSection === item.id
               : false;

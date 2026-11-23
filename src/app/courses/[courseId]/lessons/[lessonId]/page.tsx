@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getLessonById } from '@/lib/qa-curriculum';
 import { notFound } from 'next/navigation';
+import { academyStore } from '@/lib/academy-store';
 
 export default async function CourseLessonRedirectPage({
   params,
@@ -15,6 +16,12 @@ export default async function CourseLessonRedirectPage({
         {/* Kept clean with no content */}
       </div>
     );
+  }
+
+  // Check if it's an Academy course lesson
+  const academyRes = academyStore.getLesson(lessonId);
+  if (academyRes?.lesson) {
+    redirect(`/learning/${academyRes.lesson.slug}`);
   }
 
   const data = getLessonById(courseId, lessonId);
