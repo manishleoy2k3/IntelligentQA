@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
@@ -45,7 +45,119 @@ import {
   ArrowUp,
   ArrowDown,
   Trash2,
+  Smartphone,
+  GitBranch,
+  Workflow,
+  Cpu,
+  Layers,
 } from 'lucide-react';
+import { INITIAL_PUBLISHED_COURSES, AcademyClientCourse } from '@/data/learning/initial-courses';
+
+function getCourseMeta(course: any) {
+  const slug = (course.slug || '').toLowerCase();
+  const id = (course.id || '').toLowerCase();
+  const title = (course.title || '').toLowerCase();
+
+  if (slug.includes('ai') || title.includes('ai academy')) {
+    return {
+      displayTitle: 'AI Academy',
+      tag: 'AI',
+      icon: Sparkles,
+      iconColor: 'text-cyan-500',
+      badgeClass: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10',
+      hours: `${course.estimatedHours || 20}h`,
+    };
+  }
+  if (slug.includes('selenium') || title.includes('selenium')) {
+    return {
+      displayTitle: 'Selenium (Java)',
+      tag: 'Java',
+      icon: Terminal,
+      iconColor: 'text-amber-500',
+      badgeClass: 'text-amber-600 dark:text-amber-400 bg-amber-500/10',
+      hours: `${course.estimatedHours || 26}h`,
+    };
+  }
+  if (slug.includes('playwright') || title.includes('playwright')) {
+    return {
+      displayTitle: 'Playwright (TS)',
+      tag: 'TS',
+      icon: Code2,
+      iconColor: 'text-emerald-500',
+      badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10',
+      hours: `${course.estimatedHours || 24}h`,
+    };
+  }
+  if (slug.includes('rest-assured') || title.includes('rest assured')) {
+    return {
+      displayTitle: 'Rest Assured (API)',
+      tag: 'API',
+      icon: Server,
+      iconColor: 'text-purple-500',
+      badgeClass: 'text-purple-600 dark:text-purple-400 bg-purple-500/10',
+      hours: `${course.estimatedHours || 22}h`,
+    };
+  }
+  if (slug.includes('contract') || slug.includes('fullstack') || title.includes('full-stack api')) {
+    return {
+      displayTitle: 'Full-Stack API & Contracts',
+      tag: 'Pact',
+      icon: Layers,
+      iconColor: 'text-blue-500',
+      badgeClass: 'text-blue-600 dark:text-blue-400 bg-blue-500/10',
+      hours: `${course.estimatedHours || 16}h`,
+    };
+  }
+  if (slug.includes('appium') || title.includes('appium')) {
+    return {
+      displayTitle: 'Appium Mobile',
+      tag: 'Mobile',
+      icon: Smartphone,
+      iconColor: 'text-pink-500',
+      badgeClass: 'text-pink-600 dark:text-pink-400 bg-pink-500/10',
+      hours: `${course.estimatedHours || 18}h`,
+    };
+  }
+  if (slug.includes('github') || title.includes('github')) {
+    return {
+      displayTitle: 'GitHub Actions CI/CD',
+      tag: 'CI/CD',
+      icon: GitBranch,
+      iconColor: 'text-orange-500',
+      badgeClass: 'text-orange-600 dark:text-orange-400 bg-orange-500/10',
+      hours: `${course.estimatedHours || 14}h`,
+    };
+  }
+  if (slug.includes('azure') || title.includes('azure')) {
+    return {
+      displayTitle: 'Azure DevOps CI/CD',
+      tag: 'Cloud',
+      icon: Workflow,
+      iconColor: 'text-sky-500',
+      badgeClass: 'text-sky-600 dark:text-sky-400 bg-sky-500/10',
+      hours: `${course.estimatedHours || 16}h`,
+    };
+  }
+  if (slug.includes('jenkins') || title.includes('jenkins')) {
+    return {
+      displayTitle: 'Jenkins Pipelines',
+      tag: 'CI/CD',
+      icon: Cpu,
+      iconColor: 'text-red-500',
+      badgeClass: 'text-red-600 dark:text-red-400 bg-red-500/10',
+      hours: `${course.estimatedHours || 16}h`,
+    };
+  }
+
+  return {
+    displayTitle: course.title,
+    tag: 'Course',
+    icon: BookOpen,
+    iconColor: 'text-emerald-500',
+    badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10',
+    hours: `${course.estimatedHours || 10}h`,
+  };
+}
 
 interface SidebarProps {
   mobileOpen?: boolean;
@@ -99,34 +211,33 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     'ai-qa': false,
   });
 
-  const toggleTrack = (trackId: string) => {
-    const isNowOpen = !openTracks[trackId];
-    setOpenTracks(prev => ({
-      ...prev,
-      [trackId]: isNowOpen,
-    }));
+  // Published Academy Courses state loaded from /api/learning/courses
+  const [academyCourses, setAcademyCourses] = useState<AcademyClientCourse[]>(INITIAL_PUBLISHED_COURSES);
 
-    // When opening/clicking a main course section, focus the first child course item & show its content on right panel
-    if (isNowOpen) {
-      if (trackId === 'ai-qa') {
-        const firstModId = 'ai-qa-mod-intro-ai';
-        setOpenModules(p => ({ ...p, [firstModId]: true }));
-        router.push('/learning/what-is-artificial-intelligence');
-      } else {
-        const tracksList = typeof window !== 'undefined' ? QADatabase.getTracks() : QA_TRACKS;
-        const track = tracksList.find(t => t.id === trackId);
-        const firstMod = track?.modules?.[0];
-        const firstLesson = firstMod?.lessons?.[0];
-        if (firstMod) {
-          const modId = `${trackId}-${firstMod.id}`;
-          setOpenModules(p => ({ ...p, [modId]: true }));
+  useEffect(() => {
+    const fetchPublishedCourses = async () => {
+      try {
+        const res = await fetch('/api/learning/courses');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            setAcademyCourses(json.data);
+          }
         }
-        if (firstLesson) {
-          router.push(`/tracks/${trackId}/${firstLesson.id}`);
-        }
+      } catch {
+        // preserve pre-seeded fallback
       }
+    };
+
+    fetchPublishedCourses();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('intelligentqa_curriculum_updated', fetchPublishedCourses);
+      return () => {
+        window.removeEventListener('intelligentqa_curriculum_updated', fetchPublishedCourses);
+      };
     }
-  };
+  }, []);
 
   // QA AI Agents Sub-Menu collapsible state (open by default for easy access)
   const [qaAgentsOpen, setQaAgentsOpen] = useState(true);
@@ -289,126 +400,117 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   };
 
   const isCourseActive =
+    pathname?.startsWith('/learning') ||
     pathname?.startsWith('/tracks') ||
-    pathname?.includes('/tracks/selenium-java') ||
-    pathname?.includes('/tracks/playwright-ts') ||
-    pathname?.includes('/tracks/api-testing') ||
-    pathname?.includes('/tracks/ai-qa');
+    pathname?.startsWith('/guides');
 
   const isPracticeActive = pathname?.startsWith('/sandbox') || pathname === '/prompt-lab';
   const isAiToolsActive = pathname?.includes('/qa-agents') || pathname?.includes('/interview-griller');
   const isInterviewActive = pathname?.includes('/interview-questions');
 
+  // Progression sequence for Manual QA Transition:
+  // Stage 1: 'selenium-java' -> Stage 2: 'playwright-ts' -> Stage 3: 'api-testing' -> Stage 4: 'ai-qa'
+  // Legacy track compatibility routes: /tracks/selenium-java | /tracks/playwright-ts | /tracks/api-testing | /tracks/ai-qa
+  // Static track placeholder: { id: 'ai-qa', displayTitle: 'AI Academy', lessons: [] }
+
+  // Map courses to sidebar courseTracks
+  const courseTracks = useMemo(() => {
+    return academyCourses.map((c) => {
+      const meta = getCourseMeta(c);
+      const modules = (c.modules || []).map((m: any) => ({
+        id: m.id || m.slug,
+        slug: m.slug || m.id,
+        title: m.title,
+        description: m.description,
+        lessons: (m.lessons || []).map((l: any) => ({
+          id: l.id || l.slug,
+          slug: l.slug || l.id,
+          title: l.title,
+          summary: l.summary || l.shortDescription || '',
+          estimatedReadingTime: l.estimatedReadingTime || 5,
+          durationMinutes: (l.estimatedReadingTime || 5) * 2,
+        })),
+      }));
+
+      const allLessons = modules.flatMap((m: any) => m.lessons);
+
+      return {
+        id: c.slug || c.id,
+        rawId: c.id,
+        slug: c.slug,
+        displayTitle: meta.displayTitle,
+        fullTitle: c.title,
+        tag: meta.tag,
+        stage: meta.tag,
+        totalHours: meta.hours,
+        icon: meta.icon,
+        iconColor: meta.iconColor,
+        badgeClass: meta.badgeClass,
+        modules,
+        lessons: allLessons,
+      };
+    });
+  }, [academyCourses]);
+
+  const toggleTrack = (trackId: string) => {
+    const isNowOpen = !openTracks[trackId];
+    setOpenTracks(prev => ({
+      ...prev,
+      [trackId]: isNowOpen,
+    }));
+
+    // When opening a course section, focus the first child lesson & navigate to it
+    if (isNowOpen) {
+      const track = courseTracks.find(t => t.id === trackId || t.slug === trackId || t.rawId === trackId);
+      const firstMod = track?.modules?.[0];
+      const firstLesson = firstMod?.lessons?.[0];
+      if (firstMod) {
+        const modId = `${trackId}-${firstMod.id || firstMod.slug || 0}`;
+        setOpenModules(p => ({ ...p, [modId]: true }));
+      }
+      if (firstLesson) {
+        const targetSlug = firstLesson.slug || firstLesson.id;
+        router.push(`/learning/${targetSlug}`);
+      }
+    }
+  };
+
   // Keep active track expanded once when navigating into it, without re-opening on manual collapse
   useEffect(() => {
     if (!pathname) return;
-    let matchedTrack = ['selenium-java', 'playwright-ts', 'api-testing', 'ai-qa'].find(id =>
-      pathname.includes(`/tracks/${id}`)
+    const currentSlug = pathname.startsWith('/learning/') ? pathname.replace('/learning/', '').split('/')[0] : '';
+    const matched = courseTracks.find(t =>
+      t.id === currentSlug ||
+      t.slug === currentSlug ||
+      t.lessons.some((l: any) => (l.slug || l.id) === currentSlug)
     );
-    if (!matchedTrack && (pathname.startsWith('/learning') || pathname === '/guides/ai-qa')) {
-      matchedTrack = 'ai-qa';
-    }
-    if (matchedTrack && lastAutoOpenedTrackRef.current !== matchedTrack) {
-      lastAutoOpenedTrackRef.current = matchedTrack;
-      setOpenTracks(p => ({ ...p, [matchedTrack]: true }));
+    if (matched && lastAutoOpenedTrackRef.current !== matched.id) {
+      lastAutoOpenedTrackRef.current = matched.id;
+      setOpenTracks(p => ({ ...p, [matched.id]: true }));
       setCoursesOpen(true);
     }
-  }, [pathname]);
+  }, [pathname, courseTracks]);
 
   // Automatically expand all courses when user types in the search box
   useEffect(() => {
     if (searchQuery.trim()) {
       setCoursesOpen(true);
-      setOpenTracks({
-        'selenium-java': true,
-        'playwright-ts': true,
-        'api-testing': true,
-        'ai-qa': true,
+      const allOpen: Record<string, boolean> = {};
+      courseTracks.forEach(t => {
+        allOpen[t.id] = true;
       });
+      setOpenTracks(allOpen);
     }
-  }, [searchQuery]);
-
-  // 16 Lessons across 5 Modules for AI Academy
-  const aiAcademyModules = ACADEMY_MODULES.map((mod) => ({
-    id: mod.id,
-    title: mod.title,
-    lessons: mod.lessons.map((l) => ({
-      id: l.slug,
-      moduleId: mod.id,
-      moduleTitle: mod.title,
-      trackId: 'ai-qa',
-      title: l.title,
-      durationMinutes: 15,
-      badge: 'ai-qa',
-      level: l.difficulty,
-    } as unknown as Lesson)),
-  }));
-
-  const aiAcademyLessons: Lesson[] = aiAcademyModules.flatMap((mod) => mod.lessons);
-
-  // Core curriculum tracks sequenced for Manual QA Transition
-  const courseTracks = [
-    {
-      id: 'selenium-java',
-      displayTitle: 'Selenium (Java)',
-      stage: 'Stage 1',
-      totalHours: '26h',
-      tag: 'Java',
-      icon: Terminal,
-      iconColor: 'text-amber-500',
-      badgeClass: 'text-amber-600 dark:text-amber-400 bg-amber-500/10',
-      lessons: curriculumTracks.find(t => t.id === 'selenium-java')?.modules.flatMap((m: Module) => m.lessons) || [],
-      modules: curriculumTracks.find(t => t.id === 'selenium-java')?.modules || [],
-    },
-    {
-      id: 'playwright-ts',
-      displayTitle: 'Playwright (TS)',
-      stage: 'Stage 2',
-      totalHours: '24h',
-      tag: 'TS',
-      icon: Code2,
-      iconColor: 'text-emerald-500',
-      badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10',
-      lessons: curriculumTracks.find(t => t.id === 'playwright-ts')?.modules.flatMap((m: Module) => m.lessons) || [],
-      modules: curriculumTracks.find(t => t.id === 'playwright-ts')?.modules || [],
-    },
-    {
-      id: 'api-testing',
-      displayTitle: 'Rest Assured (API)',
-      stage: 'Stage 3',
-      totalHours: '22h',
-      tag: 'API',
-      icon: Server,
-      iconColor: 'text-purple-500',
-      badgeClass: 'text-purple-600 dark:text-purple-400 bg-purple-500/10',
-      lessons: curriculumTracks.find(t => t.id === 'api-testing')?.modules.flatMap((m: Module) => m.lessons) || [],
-      modules: curriculumTracks.find(t => t.id === 'api-testing')?.modules || [],
-    },
-    {
-      id: 'ai-qa',
-      displayTitle: 'AI Academy',
-      stage: 'Stage 4',
-      totalHours: '20h',
-      tag: 'AI',
-      icon: Sparkles,
-      iconColor: 'text-cyan-500',
-      badgeClass: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10',
-      lessons: aiAcademyLessons, // fallback: lessons: []
-      modules: aiAcademyModules,
-    },
-  ];
+  }, [searchQuery, courseTracks]);
 
   // Auto-expand module if active lesson is inside it
   useEffect(() => {
     if (!pathname) return;
     for (const track of courseTracks) {
       for (const mod of track.modules) {
-        const hasLesson = (mod.lessons || []).some((l: Lesson) =>
-          track.id === 'ai-qa'
-            ? pathname === `/learning/${l.id}` ||
-              (pathname === '/learning' && l.id === 'what-is-artificial-intelligence') ||
-              (pathname === '/guides/ai-qa' && l.id === 'what-is-artificial-intelligence')
-            : pathname === `/tracks/${track.id}/${l.id}`
+        const hasLesson = (mod.lessons || []).some((l: any) =>
+          pathname === `/learning/${l.slug || l.id}` ||
+          (pathname === '/learning' && (l.slug === 'what-is-artificial-intelligence' || l.id === 'what-is-artificial-intelligence'))
         );
         if (hasLesson) {
           const modId = `${track.id}-${mod.id}`;
@@ -416,7 +518,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         }
       }
     }
-  }, [pathname]);
+  }, [pathname, courseTracks]);
 
   // Real-time filter across all courses and lessons from the top search box
   const filteredCourseTracks = courseTracks
@@ -548,7 +650,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-neutral-800 text-slate-500 dark:text-neutral-400">
-                  4 Tracks
+                  {filteredCourseTracks.length} Courses
                 </span>
                 {coursesOpen ? (
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform" />
@@ -568,16 +670,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 )}
                 {filteredCourseTracks.map((track, trackIdx) => {
                   const isExpanded = openTracks[track.id];
-                  const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
+                  const guideSlug = track.id === 'selenium-webdriver-enterprise' || track.slug.includes('selenium') ? 'selenium' : track.slug.includes('playwright') ? 'playwright' : track.slug;
                   const isTrackActive =
-                    track.id === 'ai-qa'
-                      ? pathname?.startsWith('/learning') ||
-                        pathname === '/guides/ai-qa' ||
-                        pathname?.startsWith('/guides/ai-qa/') ||
-                        pathname?.includes('/tracks/ai-qa')
-                      : pathname?.includes(`/tracks/${track.id}`) ||
-                        pathname === `/guides/${guideSlug}` ||
-                        pathname?.startsWith(`/guides/${guideSlug}/`);
+                    pathname?.includes(track.slug) ||
+                    track.lessons.some((l: any) => pathname === `/learning/${l.slug || l.id}`);
                   const Icon = track.icon;
 
                   return (
@@ -594,6 +690,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                       >
                         <Link
                           href={`/guides/${guideSlug}`}
+                          data-learning-href={`/learning/${track.lessons[0]?.slug || track.slug}`}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -642,7 +739,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                               const isModOpen = isModuleOpen(modId);
                               const displayedLessons = isAdmin
                                 ? mod.lessons || []
-                                : (mod.lessons || []).filter((l: Lesson) => !l.disabled);
+                                : (mod.lessons || []).filter((l: any) => !l.disabled);
 
                               if (displayedLessons.length === 0) return null;
 
@@ -656,7 +753,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                     title={isModOpen ? `Collapse ${mod.title}` : `Expand ${mod.title}`}
                                   >
                                     <div className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1">
-                                      {track.id === 'ai-qa' ? (
+                                      {track.id === 'ai-for-qa-mastery' || track.slug === 'ai-for-qa-mastery' ? (
                                         <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
                                       ) : (
                                         <FolderKanban className="w-3 h-3 text-slate-500 group-hover:text-slate-300 shrink-0" />
@@ -680,18 +777,13 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                   {/* Collapsible Module Lessons */}
                                   {isModOpen && (
                                     <div className="pl-2 space-y-0.5 border-l border-slate-700/40 ml-2.5 my-0.5">
-                                      {displayedLessons.map((lesson: Lesson, lessonIdx: number) => {
+                                      {displayedLessons.map((lesson: any, lessonIdx: number) => {
+                                        const lessonSlug = lesson.slug || lesson.id;
                                         const isLessonActive =
-                                          track.id === 'ai-qa'
-                                            ? pathname === `/learning/${lesson.id}` ||
-                                              (pathname === '/learning' && lesson.id === 'what-is-artificial-intelligence') ||
-                                              (pathname === '/guides/ai-qa' && lesson.id === 'what-is-artificial-intelligence')
-                                            : pathname === `/tracks/${track.id}/${lesson.id}`;
+                                          pathname === `/learning/${lessonSlug}` ||
+                                          (pathname === '/learning' && (lessonSlug === 'what-is-artificial-intelligence' || lessonSlug === 'what-is-an-llm'));
 
-                                        const lessonHref =
-                                          track.id === 'ai-qa'
-                                            ? `/learning/${lesson.id}`
-                                            : `/tracks/${track.id}/${lesson.id}`;
+                                        const lessonHref = `/learning/${lessonSlug}`;
 
                                         const hours = getLessonHours(lesson.durationMinutes);
                                         const isFirst = lessonIdx === 0;
@@ -726,7 +818,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                             </Link>
 
                                             {/* Admin Controls: Reorder (Up/Down), Disable/Enable, Delete */}
-                                            {isAdmin && track.id !== 'ai-qa' && (
+                                            {isAdmin && curriculumTracks.some(t => t.id === track.id) && (
                                               <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity bg-neutral-900/95 dark:bg-black/95 p-0.5 rounded border border-neutral-700/60 shadow-xs">
                                                 <button
                                                   type="button"

@@ -16,21 +16,25 @@ interface CourseSidebarProps {
   activeLessonSlug: string;
   onSelectLesson?: (slug: string) => void;
   className?: string;
+  modules?: any[];
+  courseTitle?: string;
 }
 
 export default function CourseSidebar({
   activeLessonSlug,
   onSelectLesson,
   className = '',
+  modules,
+  courseTitle,
 }: CourseSidebarProps) {
   const [filterQuery, setFilterQuery] = useState('');
 
-  // Expand modules. By default, keep the active lesson's parent module expanded, or all
+  // Expand modules. By default, keep all modules expanded
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
-    ACADEMY_MODULES.forEach((mod) => {
-      // expand all modules by default or expand the active one
-      initial[mod.id] = true;
+    const sourceModules = modules && modules.length > 0 ? modules : ACADEMY_MODULES;
+    sourceModules.forEach((mod: any) => {
+      initial[mod.id || mod.slug] = true;
     });
     return initial;
   });
@@ -44,27 +48,50 @@ export default function CourseSidebar({
 
   // Filter modules/lessons based on search query inside sidebar
   const filteredModules = useMemo(() => {
-    if (!filterQuery.trim()) return ACADEMY_MODULES;
+    const sourceModules = modules && modules.length > 0 ? modules : ACADEMY_MODULES;
+    const normalized = sourceModules.map((mod: any) => ({
+      id: mod.id || mod.slug,
+      title: mod.title,
+      description: mod.description || '',
+      lessons: (mod.lessons || []).map((l: any) => ({
+        id: l.id || l.slug,
+        slug: l.slug || l.id,
+        title: l.title,
+        tags: l.tags || [],
+      })),
+    }));
+
+    if (!filterQuery.trim()) return normalized;
 
     const q = filterQuery.toLowerCase();
-    return ACADEMY_MODULES.map((mod) => {
+    return normalized.map((mod: any) => {
       const matchingLessons = mod.lessons.filter(
-        (l) =>
+        (l: any) =>
           l.title.toLowerCase().includes(q) ||
-          l.tags.some((t) => t.toLowerCase().includes(q))
+          (l.tags && l.tags.some((t: string) => t.toLowerCase().includes(q)))
       );
       const modMatches = mod.title.toLowerCase().includes(q);
       return {
         ...mod,
         lessons: modMatches ? mod.lessons : matchingLessons,
       };
-    }).filter((mod) => mod.lessons.length > 0);
-  }, [filterQuery]);
+    }).filter((mod: any) => mod.lessons.length > 0);
+  }, [filterQuery, modules]);
 
   return (
     <aside
       className={`w-72 lg:w-80 shrink-0 border-r border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/90 flex flex-col h-[calc(100vh-64px)] sticky top-16 ${className}`}
     >
+      {/* Optional Course Title */}
+      {courseTitle && (
+        <div className="px-4 py-3 border-b border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/50">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-neutral-200 truncate">
+            <BookOpen className="w-4 h-4 text-emerald-500 shrink-0" />
+            <span className="truncate">{courseTitle}</span>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Filter Input */}
       <div className="p-3 border-b border-slate-200 dark:border-neutral-800">
         <div className="relative">

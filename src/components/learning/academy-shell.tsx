@@ -173,10 +173,12 @@ export default function AcademyShell({
   };
 
   // Resolve current active lesson (with seamless API-to-Curriculum mapping)
-  const fallbackLesson: AcademyLessonData =
-    getLessonBySlug(activeSlug) ||
-    getLessonBySlug('what-is-an-llm') ||
-    getAllLessons()[0];
+  const staticLesson = getLessonBySlug(activeSlug);
+  const fallbackLesson: AcademyLessonData | undefined =
+    staticLesson ||
+    (activeSlug === 'what-is-artificial-intelligence' || activeSlug === 'what-is-an-llm'
+      ? getLessonBySlug('what-is-artificial-intelligence') || getAllLessons()[0]
+      : undefined);
 
   const currentLesson: AcademyLessonData = apiLessonData?.lesson
     ? {
@@ -189,9 +191,20 @@ export default function AcademyShell({
         difficulty: (apiLessonData.course?.level || 'All Levels') as any,
         tags: [apiLessonData.course?.title || 'QA', 'Documentation'],
         summary: apiLessonData.lesson.shortDescription || apiLessonData.lesson.summary || '',
-        sections: fallbackLesson ? fallbackLesson.sections : [],
+        sections: staticLesson ? staticLesson.sections : [],
       }
-    : fallbackLesson;
+    : fallbackLesson || {
+        id: activeSlug,
+        slug: activeSlug,
+        title: activeSlug,
+        moduleSlug: 'learning-module',
+        moduleTitle: 'Academy Module',
+        estimatedTime: '5 min read',
+        difficulty: 'All Levels',
+        tags: ['QA', 'Course'],
+        summary: '',
+        sections: [],
+      };
 
   // Resolve adjacent lessons for navigation footer
   const { previousLesson, nextLesson } = apiLessonData?.previousLesson || apiLessonData?.nextLesson
@@ -243,6 +256,8 @@ export default function AcademyShell({
               <CourseSidebar
                 activeLessonSlug={currentLesson.slug}
                 onSelectLesson={handleSelectLesson}
+                modules={apiLessonData?.course?.modules}
+                courseTitle={apiLessonData?.course?.title}
               />
             </div>
           )}
@@ -266,6 +281,8 @@ export default function AcademyShell({
                 <CourseSidebar
                   activeLessonSlug={currentLesson.slug}
                   onSelectLesson={handleSelectLesson}
+                  modules={apiLessonData?.course?.modules}
+                  courseTitle={apiLessonData?.course?.title}
                   className="w-full h-full border-r-0"
                 />
               </div>
@@ -333,10 +350,14 @@ export default function AcademyShell({
                   {/* Top Bar with Completion Toggle */}
                   <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-neutral-800/80">
                     <LessonBreadcrumb
-                      items={[
-                        { label: currentLesson.moduleTitle },
-                        { label: currentLesson.title, active: true },
-                      ]}
+                      items={
+                        apiLessonData?.breadcrumbs && apiLessonData.breadcrumbs.length > 0
+                          ? apiLessonData.breadcrumbs
+                          : [
+                              { label: currentLesson.moduleTitle },
+                              { label: currentLesson.title, active: true },
+                            ]
+                      }
                     />
 
                     <button
