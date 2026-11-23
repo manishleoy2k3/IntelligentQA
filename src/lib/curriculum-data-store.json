@@ -7694,7 +7694,7 @@
       "sortOrder": 1,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-23T15:47:04.393Z",
+      "updatedAt": "2026-11-23T16:09:56.760Z",
       "modules": [
         {
           "id": "mod-intro-ai",
@@ -7705,7 +7705,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T15:47:04.393Z",
+          "updatedAt": "2026-11-23T16:09:56.760Z",
           "lessons": [
             {
               "id": "les-what-is-ai",
@@ -7796,7 +7796,7 @@
               "sortOrder": 4,
               "status": "published",
               "createdAt": "2026-11-23T00:00:00.000Z",
-              "updatedAt": "2026-11-23T15:47:04.393Z",
+              "updatedAt": "2026-11-23T16:09:56.760Z",
               "publishedAt": "2026-11-23T00:00:00.000Z"
             },
             {
@@ -10754,6 +10754,188 @@
       "id": "course-fidelity-course-1795448824662",
       "createdAt": "2026-11-23T15:47:04.662Z",
       "updatedAt": "2026-11-23T15:47:04.988Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795449284155",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795449284174",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795449284174",
+          "courseId": "course-fidelity-course-1795449284155",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795449284188",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795449284188",
+              "courseId": "course-fidelity-course-1795449284155",
+              "moduleId": "mod-fidelity-module-1795449284174",
+              "createdAt": "2026-11-23T15:54:44.188Z",
+              "updatedAt": "2026-11-23T15:54:44.391Z",
+              "contentHtml": "<h1 id=\"heading-1-autonomous-quality-engineering-architecture\" class=\"text-2xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-neutral-800 pb-2\">Heading 1: Autonomous Quality Engineering Architecture</h1>\n<h2 id=\"heading-2-core-transformer-pipeline\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">Heading 2: Core Transformer Pipeline</h2>\n<h3 id=\"heading-3-subsystem-components-and-ingestion-stages\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Heading 3: Subsystem Components and Ingestion Stages</h3>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">This technical specification document verifies that Microsoft Word OpenXML (.docx) files are processed, rendered, and preserved with zero manual HTML authoring. Every paragraph, heading, list hierarchy, table, code block, and binary asset must survive transformation intact.</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><strong>Bold Text Example</strong>, <em>Italic Text Example</em>, and <u><em><strong>Bold-Italic-Underlined Text</strong></em></u>. Special characters testing: &amp;amp; symbols (&lt;tag&gt;, &quot;quotes&quot;, © 2026, ® registered, ™ trademark, λ lambda, → arrow, and ✓ checkmark).</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">For more technical documentation, visit <a href=\"https://playwright.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Playwright Official Documentation</u></span></a> or review enterprise practices on <a href=\"https://www.selenium.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Selenium WebDriver Official Portal</u></span></a>.</p>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Root Bullet Item: Quality Engineering Foundations</li>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Deterministic Element Locators</li>\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Auto-Waiting Actionability Matrix</li>\n</ul>\n<li class=\"leading-relaxed\">Root Bullet Item: Agentic Execution Loops</li>\n</ul>\n<ol class=\"list-decimal pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Initialize Test Driver and Browser Context</li>\n<li class=\"leading-relaxed\">Execute Autonomous Test Step with Multi-Attribute Self-Healing</li>\n<li class=\"leading-relaxed\">Capture Trace Artifacts, Console Logs, and Har Payloads</li>\n</ol>\n<div class=\"overflow-x-auto my-6 rounded-2xl border border-neutral-700/80 shadow-lg\">\n  <table class=\"w-full text-left border-collapse text-xs bg-neutral-950/60\">\n    <tbody>\n      <tr><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Capability</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Specification</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Fidelity Level</strong></th></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Headings &amp; Structure</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">H1, H2, H3 with anchor IDs</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">100% Semantic Match</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Embedded Images</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Lossless extraction to persistent disk</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Native Resolution</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Code Snippets</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Syntax block with language badge &amp; copy button</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Indentation</td></tr>\n    </tbody>\n  </table>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 1: Quality Engineering Architecture Diagram</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795449284188/les-fidelity-lesson-1795449284188_image1.png\" alt=\"QE Architecture Diagram\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">QE Architecture Diagram</figcaption>\n</figure></p>\n<div class=\"my-8 flex items-center justify-center gap-4 text-neutral-500 docx-page-break select-none\">\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n  <span class=\"text-[10px] font-mono tracking-widest uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full text-neutral-400\">Page Break</span>\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 2: Pipeline Orchestration &amp; Reporting</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795449284188/les-fidelity-lesson-1795449284188_image2.png\" alt=\"Pipeline Orchestration\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">Pipeline Orchestration</figcaption>\n</figure></p>\n<h3 id=\"java-selenium-enterprise-implementation\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Java Selenium Enterprise Implementation</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">java</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-java\">package com.intelligentqa.tests;\n\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.testng.annotations.Test;\n\npublic class SeleniumEnterpriseTest {\n    @Test\n    public void verifyAutonomousHealthCheck() {\n        WebDriver driver = new ChromeDriver();\n        driver.get(&quot;https://intelligentqa.com/dashboard&quot;);\n        System.out.println(&quot;Page Title: &quot; + driver.getTitle());\n        driver.quit();\n    }\n}</code></pre>\n</div>\n<h3 id=\"typescript-playwright-modern-framework\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">TypeScript Playwright Modern Framework</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">typescript</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-typescript\">import { test, expect } from &#x27;@playwright/test&#x27;;\n\ninterface AssessmentPayload {\n  candidateId: string;\n  role: &#x27;SDET&#x27; | &#x27;QA_Architect&#x27;;\n  score: number;\n}\n\ntest(&#x27;verify Playwright auto-waiting actionability matrix&#x27;, async ({ page }) =&gt; {\n  await page.goto(&#x27;/learning&#x27;);\n  const card = page.getByRole(&#x27;heading&#x27;, { name: &#x27;What is an LLM?&#x27; });\n  await expect(card).toBeVisible();\n});</code></pre>\n</div>",
+              "originalDocxPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795449284232.docx",
+              "pdfPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795449284232_print.html",
+              "wordCount": 98,
+              "estimatedReadingTime": 1
+            }
+          ],
+          "createdAt": "2026-11-23T15:54:44.174Z",
+          "updatedAt": "2026-11-23T15:54:44.391Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795449284155",
+      "createdAt": "2026-11-23T15:54:44.155Z",
+      "updatedAt": "2026-11-23T15:54:44.391Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795450196983",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795450197006",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795450197006",
+          "courseId": "course-fidelity-course-1795450196983",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795450197047",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795450197047",
+              "courseId": "course-fidelity-course-1795450196983",
+              "moduleId": "mod-fidelity-module-1795450197006",
+              "createdAt": "2026-11-23T16:09:57.047Z",
+              "updatedAt": "2026-11-23T16:09:57.047Z"
+            }
+          ],
+          "createdAt": "2026-11-23T16:09:57.006Z",
+          "updatedAt": "2026-11-23T16:09:57.047Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795450196983",
+      "createdAt": "2026-11-23T16:09:56.983Z",
+      "updatedAt": "2026-11-23T16:09:57.047Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795450306115",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795450306133",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795450306133",
+          "courseId": "course-fidelity-course-1795450306115",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795450306173",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795450306173",
+              "courseId": "course-fidelity-course-1795450306115",
+              "moduleId": "mod-fidelity-module-1795450306133",
+              "createdAt": "2026-11-23T16:11:46.173Z",
+              "updatedAt": "2026-11-23T16:11:46.416Z",
+              "contentHtml": "<h1 id=\"heading-1-autonomous-quality-engineering-architecture\" class=\"text-2xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-neutral-800 pb-2\">Heading 1: Autonomous Quality Engineering Architecture</h1>\n<h2 id=\"heading-2-core-transformer-pipeline\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">Heading 2: Core Transformer Pipeline</h2>\n<h3 id=\"heading-3-subsystem-components-and-ingestion-stages\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Heading 3: Subsystem Components and Ingestion Stages</h3>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">This technical specification document verifies that Microsoft Word OpenXML (.docx) files are processed, rendered, and preserved with zero manual HTML authoring. Every paragraph, heading, list hierarchy, table, code block, and binary asset must survive transformation intact.</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><strong>Bold Text Example</strong>, <em>Italic Text Example</em>, and <u><em><strong>Bold-Italic-Underlined Text</strong></em></u>. Special characters testing: &amp;amp; symbols (&lt;tag&gt;, &quot;quotes&quot;, © 2026, ® registered, ™ trademark, λ lambda, → arrow, and ✓ checkmark).</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">For more technical documentation, visit <a href=\"https://playwright.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Playwright Official Documentation</u></span></a> or review enterprise practices on <a href=\"https://www.selenium.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Selenium WebDriver Official Portal</u></span></a>.</p>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Root Bullet Item: Quality Engineering Foundations</li>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Deterministic Element Locators</li>\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Auto-Waiting Actionability Matrix</li>\n</ul>\n<li class=\"leading-relaxed\">Root Bullet Item: Agentic Execution Loops</li>\n</ul>\n<ol class=\"list-decimal pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Initialize Test Driver and Browser Context</li>\n<li class=\"leading-relaxed\">Execute Autonomous Test Step with Multi-Attribute Self-Healing</li>\n<li class=\"leading-relaxed\">Capture Trace Artifacts, Console Logs, and Har Payloads</li>\n</ol>\n<div class=\"overflow-x-auto my-6 rounded-2xl border border-neutral-700/80 shadow-lg\">\n  <table class=\"w-full text-left border-collapse text-xs bg-neutral-950/60\">\n    <tbody>\n      <tr><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Capability</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Specification</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Fidelity Level</strong></th></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Headings &amp; Structure</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">H1, H2, H3 with anchor IDs</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">100% Semantic Match</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Embedded Images</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Lossless extraction to persistent disk</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Native Resolution</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Code Snippets</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Syntax block with language badge &amp; copy button</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Indentation</td></tr>\n    </tbody>\n  </table>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 1: Quality Engineering Architecture Diagram</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795450306173/les-fidelity-lesson-1795450306173_image1.png\" alt=\"QE Architecture Diagram\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">QE Architecture Diagram</figcaption>\n</figure></p>\n<div class=\"my-8 flex items-center justify-center gap-4 text-neutral-500 docx-page-break select-none\">\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n  <span class=\"text-[10px] font-mono tracking-widest uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full text-neutral-400\">Page Break</span>\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 2: Pipeline Orchestration &amp; Reporting</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795450306173/les-fidelity-lesson-1795450306173_image2.png\" alt=\"Pipeline Orchestration\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">Pipeline Orchestration</figcaption>\n</figure></p>\n<h3 id=\"java-selenium-enterprise-implementation\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Java Selenium Enterprise Implementation</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">java</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-java\">package com.intelligentqa.tests;\n\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.testng.annotations.Test;\n\npublic class SeleniumEnterpriseTest {\n    @Test\n    public void verifyAutonomousHealthCheck() {\n        WebDriver driver = new ChromeDriver();\n        driver.get(&quot;https://intelligentqa.com/dashboard&quot;);\n        System.out.println(&quot;Page Title: &quot; + driver.getTitle());\n        driver.quit();\n    }\n}</code></pre>\n</div>\n<h3 id=\"typescript-playwright-modern-framework\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">TypeScript Playwright Modern Framework</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">typescript</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-typescript\">import { test, expect } from &#x27;@playwright/test&#x27;;\n\ninterface AssessmentPayload {\n  candidateId: string;\n  role: &#x27;SDET&#x27; | &#x27;QA_Architect&#x27;;\n  score: number;\n}\n\ntest(&#x27;verify Playwright auto-waiting actionability matrix&#x27;, async ({ page }) =&gt; {\n  await page.goto(&#x27;/learning&#x27;);\n  const card = page.getByRole(&#x27;heading&#x27;, { name: &#x27;What is an LLM?&#x27; });\n  await expect(card).toBeVisible();\n});</code></pre>\n</div>",
+              "originalDocxPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795450306202.docx",
+              "pdfPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795450306202_print.html",
+              "wordCount": 98,
+              "estimatedReadingTime": 1
+            }
+          ],
+          "createdAt": "2026-11-23T16:11:46.134Z",
+          "updatedAt": "2026-11-23T16:11:46.416Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795450306115",
+      "createdAt": "2026-11-23T16:11:46.115Z",
+      "updatedAt": "2026-11-23T16:11:46.416Z"
+    },
+    {
+      "categoryId": "cat-selenium",
+      "title": "Test Automated Backend Course",
+      "slug": "test-backend-course-1795450306527",
+      "description": "Integration test course",
+      "level": "Intermediate",
+      "estimatedHours": 8,
+      "sortOrder": 99,
+      "status": "published",
+      "modules": [
+        {
+          "title": "Test Backend Module 1",
+          "slug": "test-mod-1795450306548",
+          "description": "Module testing",
+          "sortOrder": 1,
+          "status": "published",
+          "id": "mod-test-mod-1795450306548",
+          "courseId": "course-test-backend-course-1795450306527",
+          "lessons": [
+            {
+              "title": "Test Backend Lesson 1.1",
+              "slug": "test-lsn-1795450306571",
+              "summary": "Lesson summary for test",
+              "contentHtml": "<h3>Backend Lesson Test</h3>",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 1,
+              "status": "published",
+              "id": "les-test-lsn-1795450306571",
+              "courseId": "course-test-backend-course-1795450306527",
+              "moduleId": "mod-test-mod-1795450306548",
+              "createdAt": "2026-11-23T16:11:46.571Z",
+              "updatedAt": "2026-11-23T16:11:46.571Z"
+            }
+          ],
+          "createdAt": "2026-11-23T16:11:46.548Z",
+          "updatedAt": "2026-11-23T16:11:46.571Z"
+        }
+      ],
+      "id": "course-test-backend-course-1795450306527",
+      "createdAt": "2026-11-23T16:11:46.527Z",
+      "updatedAt": "2026-11-23T16:11:46.626Z"
     }
   ],
   "academyDocSources": [
@@ -10956,6 +11138,86 @@
       "fileSizeBytes": 3963,
       "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "uploadedAt": "2026-11-23T15:47:05.043Z"
+    },
+    {
+      "id": "doc-1795449283882-17bn",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795449283881.docx",
+      "fileHashSha256": "035da07083b1027b6b4664406f25870372419259ff63ae11507fb42254854d33",
+      "fileSizeBytes": 3008,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T15:54:43.882Z"
+    },
+    {
+      "id": "doc-1795449284233-54vj",
+      "lessonId": "les-fidelity-lesson-1795449284188",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795449284232.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T15:54:44.233Z"
+    },
+    {
+      "id": "doc-1795450197073-rw5p",
+      "lessonId": "les-fidelity-lesson-1795450197047",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795450197072.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T16:09:57.073Z"
+    },
+    {
+      "id": "doc-1795450241735-fhyg",
+      "lessonId": "les-fidelity-lesson-1795450241694",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795450241735.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T16:10:41.735Z"
+    },
+    {
+      "id": "doc-1795450242073-rrt7",
+      "lessonId": "les-fidelity-lesson-1795450241694",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795450242073.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T16:10:42.073Z"
+    },
+    {
+      "id": "doc-1795450305857-wput",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795450305856.docx",
+      "fileHashSha256": "035da07083b1027b6b4664406f25870372419259ff63ae11507fb42254854d33",
+      "fileSizeBytes": 3008,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T16:11:45.857Z"
+    },
+    {
+      "id": "doc-1795450306202-iy1o",
+      "lessonId": "les-fidelity-lesson-1795450306173",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795450306202.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T16:11:46.202Z"
+    },
+    {
+      "id": "doc-1795450306453-66u5",
+      "lessonId": "les-fidelity-lesson-1795450306173",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795450306432.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T16:11:46.453Z"
     }
   ],
   "academyMedia": [],
@@ -11319,6 +11581,177 @@
       "displayOrder": 1,
       "id": "asset-1795448825236-avgkm",
       "createdAt": "2026-11-23T15:47:05.236Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwtg5a04",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T15:54:44.068Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwtg5a1c",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T15:54:44.112Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795449284188-img-1-mwtg5a7p",
+      "lessonId": "les-fidelity-lesson-1795449284188",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795449284188/les-fidelity-lesson-1795449284188_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T15:54:44.341Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795449284188-img-2-mwtg5a8o",
+      "lessonId": "les-fidelity-lesson-1795449284188",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795449284188/les-fidelity-lesson-1795449284188_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T15:54:44.376Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795449284500",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795449284744-66pvq",
+      "createdAt": "2026-11-23T15:54:44.744Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwtgoudl",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T16:09:56.937Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwtgoueg",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T16:09:56.968Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795450197047-img-1-mwtgoujt",
+      "lessonId": "les-fidelity-lesson-1795450197047",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795450197047/les-fidelity-lesson-1795450197047_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T16:09:57.161Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795450197305",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795450197399-39bmc",
+      "createdAt": "2026-11-23T16:09:57.399Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwtgpstt",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T16:10:41.585Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwtgpsuh",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T16:10:41.609Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795450241694-img-1-mwtgpt4u",
+      "lessonId": "les-fidelity-lesson-1795450241694",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795450241694/les-fidelity-lesson-1795450241694_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T16:10:41.982Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795450241694-img-2-mwtgpt5n",
+      "lessonId": "les-fidelity-lesson-1795450241694",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795450241694/les-fidelity-lesson-1795450241694_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T16:10:42.011Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795450241694-img-1-mwtgptbw",
+      "lessonId": "les-fidelity-lesson-1795450241694",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795450241694/les-fidelity-lesson-1795450241694_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T16:10:42.236Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795450241694-img-2-mwtgptcd",
+      "lessonId": "les-fidelity-lesson-1795450241694",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795450241694/les-fidelity-lesson-1795450241694_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T16:10:42.253Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwtgr6l6",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T16:11:46.074Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwtgr6lm",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T16:11:46.090Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795450306173-img-1-mwtgr6tg",
+      "lessonId": "les-fidelity-lesson-1795450306173",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795450306173/les-fidelity-lesson-1795450306173_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T16:11:46.372Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795450306173-img-2-mwtgr6u3",
+      "lessonId": "les-fidelity-lesson-1795450306173",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795450306173/les-fidelity-lesson-1795450306173_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T16:11:46.395Z"
     }
   ],
   "academyUserProgress": [
@@ -11529,6 +11962,440 @@
       "completionStatus": "completed",
       "lastAccessedAt": "2026-11-23T15:47:05.508Z",
       "completedAt": "2026-11-23T15:47:05.508Z"
+    },
+    {
+      "id": "prog-test-user-1795449284728-les-test-lsn-1795449284500",
+      "userId": "test-user-1795449284728",
+      "lessonId": "les-test-lsn-1795449284500",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T15:54:44.728Z",
+      "completedAt": "2026-11-23T15:54:44.728Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795449284935-les-api-test",
+      "userId": "usr_api_test_1795449284935",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T15:54:44.935Z",
+      "completedAt": "2026-11-23T15:54:44.935Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450100409-les-what-is-ai",
+      "userId": "test-user-partial-1795450100409",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:08:20.409Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-partial-1795450100409-les-what-is-machine-learning",
+      "userId": "test-user-partial-1795450100409",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.429Z",
+      "completedAt": "2026-11-23T16:08:20.429Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450100409-les-what-is-genai",
+      "userId": "test-user-partial-1795450100409",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:08:20.442Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-full-1795450100455-les-what-is-ai",
+      "userId": "test-user-full-1795450100455",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.455Z",
+      "completedAt": "2026-11-23T16:08:20.455Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450100455-les-what-is-machine-learning",
+      "userId": "test-user-full-1795450100455",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.479Z",
+      "completedAt": "2026-11-23T16:08:20.479Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450100455-les-what-is-genai",
+      "userId": "test-user-full-1795450100455",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.490Z",
+      "completedAt": "2026-11-23T16:08:20.490Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450100455-les-what-is-llm",
+      "userId": "test-user-full-1795450100455",
+      "lessonId": "les-what-is-llm",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.501Z",
+      "completedAt": "2026-11-23T16:08:20.501Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450100455-les-how-llms-work",
+      "userId": "test-user-full-1795450100455",
+      "lessonId": "les-how-llms-work",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.513Z",
+      "completedAt": "2026-11-23T16:08:20.513Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450100455-les-transformer-architecture",
+      "userId": "test-user-full-1795450100455",
+      "lessonId": "les-transformer-architecture",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.528Z",
+      "completedAt": "2026-11-23T16:08:20.528Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450100455-les-tokens-embeddings-and-attention",
+      "userId": "test-user-full-1795450100455",
+      "lessonId": "les-tokens-embeddings-and-attention",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:08:20.541Z",
+      "completedAt": "2026-11-23T16:08:20.541Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450190583-les-what-is-ai",
+      "userId": "test-user-partial-1795450190583",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:09:50.583Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-partial-1795450190583-les-what-is-machine-learning",
+      "userId": "test-user-partial-1795450190583",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.648Z",
+      "completedAt": "2026-11-23T16:09:50.648Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450190583-les-what-is-genai",
+      "userId": "test-user-partial-1795450190583",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:09:50.667Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-full-1795450190695-les-what-is-ai",
+      "userId": "test-user-full-1795450190695",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.695Z",
+      "completedAt": "2026-11-23T16:09:50.695Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450190695-les-what-is-machine-learning",
+      "userId": "test-user-full-1795450190695",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.719Z",
+      "completedAt": "2026-11-23T16:09:50.719Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450190695-les-what-is-genai",
+      "userId": "test-user-full-1795450190695",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.744Z",
+      "completedAt": "2026-11-23T16:09:50.744Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450190695-les-what-is-llm",
+      "userId": "test-user-full-1795450190695",
+      "lessonId": "les-what-is-llm",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.772Z",
+      "completedAt": "2026-11-23T16:09:50.772Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450190695-les-how-llms-work",
+      "userId": "test-user-full-1795450190695",
+      "lessonId": "les-how-llms-work",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.794Z",
+      "completedAt": "2026-11-23T16:09:50.794Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450190695-les-transformer-architecture",
+      "userId": "test-user-full-1795450190695",
+      "lessonId": "les-transformer-architecture",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.815Z",
+      "completedAt": "2026-11-23T16:09:50.815Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450190695-les-tokens-embeddings-and-attention",
+      "userId": "test-user-full-1795450190695",
+      "lessonId": "les-tokens-embeddings-and-attention",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:50.837Z",
+      "completedAt": "2026-11-23T16:09:50.837Z"
+    },
+    {
+      "id": "prog-test-user-1795450197361-les-test-lsn-1795450197305",
+      "userId": "test-user-1795450197361",
+      "lessonId": "les-test-lsn-1795450197305",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:57.361Z",
+      "completedAt": "2026-11-23T16:09:57.361Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795450197851-les-api-test",
+      "userId": "usr_api_test_1795450197851",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:09:57.852Z",
+      "completedAt": "2026-11-23T16:09:57.852Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450242524-les-what-is-ai",
+      "userId": "test-user-partial-1795450242524",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:10:42.524Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-partial-1795450242524-les-what-is-machine-learning",
+      "userId": "test-user-partial-1795450242524",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.579Z",
+      "completedAt": "2026-11-23T16:10:42.579Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450242524-les-what-is-genai",
+      "userId": "test-user-partial-1795450242524",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:10:42.601Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-full-1795450242624-les-what-is-ai",
+      "userId": "test-user-full-1795450242624",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.624Z",
+      "completedAt": "2026-11-23T16:10:42.624Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450242624-les-what-is-machine-learning",
+      "userId": "test-user-full-1795450242624",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.652Z",
+      "completedAt": "2026-11-23T16:10:42.652Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450242624-les-what-is-genai",
+      "userId": "test-user-full-1795450242624",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.809Z",
+      "completedAt": "2026-11-23T16:10:42.809Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450242624-les-what-is-llm",
+      "userId": "test-user-full-1795450242624",
+      "lessonId": "les-what-is-llm",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.853Z",
+      "completedAt": "2026-11-23T16:10:42.853Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450242624-les-how-llms-work",
+      "userId": "test-user-full-1795450242624",
+      "lessonId": "les-how-llms-work",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.869Z",
+      "completedAt": "2026-11-23T16:10:42.869Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450242624-les-transformer-architecture",
+      "userId": "test-user-full-1795450242624",
+      "lessonId": "les-transformer-architecture",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.884Z",
+      "completedAt": "2026-11-23T16:10:42.884Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450242624-les-tokens-embeddings-and-attention",
+      "userId": "test-user-full-1795450242624",
+      "lessonId": "les-tokens-embeddings-and-attention",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:10:42.898Z",
+      "completedAt": "2026-11-23T16:10:42.898Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450299053-les-what-is-ai",
+      "userId": "test-user-partial-1795450299053",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:11:39.053Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-partial-1795450299053-les-what-is-machine-learning",
+      "userId": "test-user-partial-1795450299053",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.067Z",
+      "completedAt": "2026-11-23T16:11:39.067Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450299053-les-what-is-genai",
+      "userId": "test-user-partial-1795450299053",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:11:39.077Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-full-1795450299088-les-what-is-ai",
+      "userId": "test-user-full-1795450299088",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.088Z",
+      "completedAt": "2026-11-23T16:11:39.088Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450299088-les-what-is-machine-learning",
+      "userId": "test-user-full-1795450299088",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.098Z",
+      "completedAt": "2026-11-23T16:11:39.098Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450299088-les-what-is-genai",
+      "userId": "test-user-full-1795450299088",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.108Z",
+      "completedAt": "2026-11-23T16:11:39.108Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450299088-les-what-is-llm",
+      "userId": "test-user-full-1795450299088",
+      "lessonId": "les-what-is-llm",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.119Z",
+      "completedAt": "2026-11-23T16:11:39.119Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450299088-les-how-llms-work",
+      "userId": "test-user-full-1795450299088",
+      "lessonId": "les-how-llms-work",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.133Z",
+      "completedAt": "2026-11-23T16:11:39.133Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450299088-les-transformer-architecture",
+      "userId": "test-user-full-1795450299088",
+      "lessonId": "les-transformer-architecture",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.144Z",
+      "completedAt": "2026-11-23T16:11:39.144Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450299088-les-tokens-embeddings-and-attention",
+      "userId": "test-user-full-1795450299088",
+      "lessonId": "les-tokens-embeddings-and-attention",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:39.154Z",
+      "completedAt": "2026-11-23T16:11:39.154Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450306697-les-what-is-ai",
+      "userId": "test-user-partial-1795450306697",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:11:46.698Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-partial-1795450306697-les-what-is-machine-learning",
+      "userId": "test-user-partial-1795450306697",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.723Z",
+      "completedAt": "2026-11-23T16:11:46.723Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795450306697-les-what-is-genai",
+      "userId": "test-user-partial-1795450306697",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-23T16:11:46.744Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-full-1795450306756-les-what-is-ai",
+      "userId": "test-user-full-1795450306756",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.756Z",
+      "completedAt": "2026-11-23T16:11:46.756Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450306756-les-what-is-machine-learning",
+      "userId": "test-user-full-1795450306756",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.809Z",
+      "completedAt": "2026-11-23T16:11:46.809Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450306756-les-what-is-genai",
+      "userId": "test-user-full-1795450306756",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.835Z",
+      "completedAt": "2026-11-23T16:11:46.835Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450306756-les-what-is-llm",
+      "userId": "test-user-full-1795450306756",
+      "lessonId": "les-what-is-llm",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.847Z",
+      "completedAt": "2026-11-23T16:11:46.847Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450306756-les-how-llms-work",
+      "userId": "test-user-full-1795450306756",
+      "lessonId": "les-how-llms-work",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.882Z",
+      "completedAt": "2026-11-23T16:11:46.882Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450306756-les-transformer-architecture",
+      "userId": "test-user-full-1795450306756",
+      "lessonId": "les-transformer-architecture",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.895Z",
+      "completedAt": "2026-11-23T16:11:46.895Z"
+    },
+    {
+      "id": "prog-test-user-full-1795450306756-les-tokens-embeddings-and-attention",
+      "userId": "test-user-full-1795450306756",
+      "lessonId": "les-tokens-embeddings-and-attention",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T16:11:46.919Z",
+      "completedAt": "2026-11-23T16:11:46.919Z"
     }
-  ]
+  ],
+  "academyBookmarks": [],
+  "academyEnrolledCourses": []
 }

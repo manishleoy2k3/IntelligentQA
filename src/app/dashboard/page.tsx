@@ -28,6 +28,7 @@ import { UserProfile, UserProgress, QAGeneratedArtifact, InterviewSession } from
 import { QA_TRACKS } from '@/lib/qa-curriculum';
 import AuthGuard from '@/components/auth/auth-guard';
 import ProfileModal from '@/components/profile/profile-modal';
+import LearningDashboard from '@/components/learning/learning-dashboard';
 import { exportRequirementsToExcel, exportTestMatrixToExcel } from '@/lib/excel-export';
 
 export default function UserDashboardPage() {
@@ -245,6 +246,9 @@ export default function UserDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Learning Academy Dashboard (Enrolled courses, recently viewed, completed, bookmarks) */}
+      <LearningDashboard userId={profile.id} />
 
       {/* Track Progress Cards */}
       <div className="space-y-5">

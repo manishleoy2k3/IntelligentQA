@@ -158,3 +158,79 @@
   border: 1px solid #262626;
   border-radius: 9999px;
 }
+
+/* Print-Friendly Styles for Learning Academy Lessons */
+@media print {
+  body, html {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Hide navigation, sidebars, headers, floating widgets, buttons */
+  header,
+  nav,
+  aside,
+  .no-print,
+  button,
+  [role="dialog"],
+  #ask-ai-widget,
+  [data-ask-ai-widget] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Expand main content container to full width */
+  main,
+  .max-w-4xl,
+  .docx-rendered-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: #000000 !important;
+  }
+
+  /* High contrast text and borders */
+  h1, h2, h3, h4, h5, h6 {
+    color: #000000 !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  p, li, blockquote {
+    color: #111111 !important;
+  }
+
+  /* Clean tables on print */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  th, td {
+    border: 1px solid #CCCCCC !important;
+    padding: 6px 10px !important;
+    color: #000000 !important;
+  }
+
+  /* Code block formatting for print */
+  pre, code {
+    background: #F4F4F5 !important;
+    color: #111111 !important;
+    border: 1px solid #E4E4E7 !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Prevent page cuts across figures and diagrams */
+  img, svg, figure {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    max-width: 100% !important;
+  }
+}

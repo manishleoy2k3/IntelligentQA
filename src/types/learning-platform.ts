@@ -98,6 +98,90 @@ export interface UserLessonProgress {
   completedAt?: string | null;
 }
 
+export interface ModuleProgressStat {
+  moduleId: string;
+  moduleTitle: string;
+  moduleSlug: string;
+  totalLessons: number;
+  completedLessons: number;
+  visitedLessons: number;
+  percentCompleted: number;
+}
+
+export interface CourseProgressStat {
+  courseId: string;
+  courseTitle: string;
+  courseSlug: string;
+  level: string;
+  totalLessons: number;
+  completedLessons: number;
+  visitedLessons: number;
+  percentCompleted: number;
+  modules: ModuleProgressStat[];
+}
+
+export interface UserLearningStats {
+  userId: string;
+  totalLessons: number;
+  totalVisited: number;
+  totalCompleted: number;
+  overallPercentCompleted: number;
+  lastAccessedLesson: {
+    lessonId: string;
+    lessonSlug: string;
+    lessonTitle: string;
+    moduleTitle: string;
+    courseTitle: string;
+    courseSlug: string;
+    lastAccessedAt: string;
+  } | null;
+  courseProgress: CourseProgressStat[];
+  completedLessons: {
+    lessonId: string;
+    lessonSlug: string;
+    lessonTitle: string;
+    moduleTitle: string;
+    courseTitle: string;
+    courseSlug: string;
+    completedAt: string;
+  }[];
+  recentlyViewedLessons: {
+    lessonId: string;
+    lessonSlug: string;
+    lessonTitle: string;
+    moduleTitle: string;
+    courseTitle: string;
+    courseSlug: string;
+    lastAccessedAt: string;
+    completionStatus: 'in_progress' | 'completed';
+  }[];
+  enrolledCourseIds: string[];
+}
+
+export interface AcademyLessonBookmark {
+  id: string;
+  userId: string;
+  lessonId: string;
+  lessonSlug: string;
+  lessonTitle: string;
+  moduleTitle: string;
+  courseTitle: string;
+  courseSlug: string;
+  createdAt: string;
+}
+
+export interface AcademySearchResult {
+  id: string;
+  type: 'course' | 'module' | 'lesson' | 'content';
+  title: string;
+  snippet?: string;
+  lessonSlug: string;
+  courseTitle: string;
+  courseSlug: string;
+  moduleTitle: string;
+  matchedField: 'title' | 'summary' | 'content' | 'module' | 'course';
+}
+
 export interface AcademyDocumentSource {
   id: string;
   lessonId: string;

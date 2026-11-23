@@ -318,13 +318,27 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       setGeminiKey(QADatabase.getUserGeminiKey(user?.id));
       setAiPref(QADatabase.getAiPreference(user?.id));
 
-      const syncProgress = () => {
+      const syncProgress = async () => {
         const u = QADatabase.getCurrentUser();
         if (u) {
-          QADatabase.getProgress(u.id).then(prog => {
-            const completed = new Set(prog.filter(p => p.status === 'completed').map(p => p.lessonId));
-            setCompletedLessonIds(completed);
-          });
+          const prog = await QADatabase.getProgress(u.id);
+          const completed = new Set(prog.filter(p => p.status === 'completed').map(p => p.lessonId));
+          try {
+            const academyRes = await fetch(`/api/learning/progress?userId=${encodeURIComponent(u.id)}`);
+            if (academyRes.ok) {
+              const academyJson = await academyRes.json();
+              if (academyJson.success && Array.isArray(academyJson.data)) {
+                academyJson.data
+                  .filter((p: any) => p.completionStatus === 'completed')
+                  .forEach((p: any) => {
+                    completed.add(p.lessonId);
+                  });
+              }
+            }
+          } catch {
+            // non-blocking
+          }
+          setCompletedLessonIds(completed);
         }
       };
       syncProgress();

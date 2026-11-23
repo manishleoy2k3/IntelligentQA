@@ -17,6 +17,11 @@ import {
   AcademyMediaAttachment,
   AcademyLessonAsset,
   UserLessonProgress,
+  AcademyLessonBookmark,
+  AcademySearchResult,
+  UserLearningStats,
+  CourseProgressStat,
+  ModuleProgressStat,
 } from '@/types/learning-platform';
 
 const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
@@ -624,6 +629,8 @@ export class AcademyStore {
   private mediaAttachments: Map<string, AcademyMediaAttachment> = new Map();
   private lessonAssets: Map<string, AcademyLessonAsset> = new Map();
   private userProgress: Map<string, UserLessonProgress> = new Map();
+  private userBookmarks: Map<string, AcademyLessonBookmark> = new Map();
+  private enrolledCourses: Map<string, Set<string>> = new Map();
   private initialized = false;
 
   private constructor() {
@@ -693,6 +700,22 @@ export class AcademyStore {
           });
         }
 
+        // Load User Bookmarks
+        if (Array.isArray(data.academyBookmarks)) {
+          this.userBookmarks.clear();
+          data.academyBookmarks.forEach((b: AcademyLessonBookmark) => {
+            this.userBookmarks.set(`${b.userId}:${b.lessonId}`, b);
+          });
+        }
+
+        // Load Enrolled Courses
+        if (Array.isArray(data.academyEnrolledCourses)) {
+          this.enrolledCourses.clear();
+          data.academyEnrolledCourses.forEach((item: { userId: string; courses: string[] }) => {
+            this.enrolledCourses.set(item.userId, new Set(item.courses));
+          });
+        }
+
         this.initialized = true;
 
         // If categories or courses were populated with defaults because file didn't have them, save to disk
@@ -719,6 +742,11 @@ export class AcademyStore {
       existingData.academyMedia = Array.from(this.mediaAttachments.values());
       existingData.academyLessonAssets = Array.from(this.lessonAssets.values());
       existingData.academyUserProgress = Array.from(this.userProgress.values());
+      existingData.academyBookmarks = Array.from(this.userBookmarks.values());
+      existingData.academyEnrolledCourses = Array.from(this.enrolledCourses.entries()).map(([userId, courses]) => ({
+        userId,
+        courses: Array.from(courses),
+      }));
 
       const tempFile = `${DATA_FILE}.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).substring(2, 8)}`;
       fs.writeFileSync(tempFile, JSON.stringify(existingData, null, 2), 'utf-8');
@@ -1318,6 +1346,35 @@ export class AcademyStore {
     breadcrumbs: BreadcrumbItem[];
     previousLesson?: LessonNavPointer;
     nextLesson?: LessonNavPointer;
+    relatedLessons?: {
+      id: string;
+      slug: string;
+      title: string;
+      moduleTitle: string;
+      estimatedReadTime?: number;
+    }[];
+    backToCourse?: {
+      courseId: string;
+      courseSlug: string;
+      courseTitle: string;
+      categorySlug: string;
+    };
+    courseOverview?: {
+      title: string;
+      subtitle?: string;
+      description?: string;
+      level: string;
+      estimatedHours?: number;
+      totalModules: number;
+      totalLessons: number;
+    };
+    moduleOverview?: {
+      id: string;
+      title: string;
+      slug: string;
+      description?: string;
+      totalLessons: number;
+    };
   } | undefined {
     const res = this.getLesson(idOrSlug);
     if (!res) return undefined;
@@ -1391,6 +1448,57 @@ export class AcademyStore {
       };
     }
 
+    const relatedLessons = (module.lessons || [])
+      .filter((l) => l.status === 'published' && l.id !== lesson.id)
+      .slice(0, 3)
+      .map((l) => ({
+        id: l.id,
+        slug: l.slug,
+        title: l.title,
+        moduleTitle: module.title,
+        estimatedReadTime: l.estimatedReadingTime || l.estimatedReadTime || 5,
+      }));
+
+    if (relatedLessons.length < 2) {
+      for (const item of allCourseLessons) {
+        if (item.lesson.id !== lesson.id && !relatedLessons.some((r) => r.id === item.lesson.id)) {
+          relatedLessons.push({
+            id: item.lesson.id,
+            slug: item.lesson.slug,
+            title: item.lesson.title,
+            moduleTitle: item.modTitle,
+            estimatedReadTime: item.lesson.estimatedReadingTime || item.lesson.estimatedReadTime || 5,
+          });
+          if (relatedLessons.length >= 3) break;
+        }
+      }
+    }
+
+    const backToCourse = {
+      courseId: course.id,
+      courseSlug: course.slug,
+      courseTitle: course.title,
+      categorySlug: category.slug,
+    };
+
+    const courseOverview = {
+      title: course.title,
+      subtitle: course.subtitle,
+      description: course.description,
+      level: course.level,
+      estimatedHours: course.estimatedHours,
+      totalModules: sortedMods.length,
+      totalLessons: allCourseLessons.length,
+    };
+
+    const moduleOverview = {
+      id: module.id,
+      title: module.title,
+      slug: module.slug,
+      description: module.description,
+      totalLessons: (module.lessons || []).filter((l) => l.status === 'published').length,
+    };
+
     return {
       lesson,
       course,
@@ -1399,6 +1507,10 @@ export class AcademyStore {
       breadcrumbs,
       previousLesson,
       nextLesson,
+      relatedLessons,
+      backToCourse,
+      courseOverview,
+      moduleOverview,
     };
   }
 
@@ -1553,6 +1665,366 @@ export class AcademyStore {
     this.userProgress.set(key, updated);
     this.saveToDisk();
     return updated;
+  }
+
+  public getUserLearningStats(userId: string): UserLearningStats {
+    const userProgs = this.getUserProgress(userId);
+    const progMap = new Map<string, UserLessonProgress>();
+    userProgs.forEach((p) => progMap.set(p.lessonId, p));
+
+    const publishedCourses = Array.from(this.courses.values()).filter((c) => c.status === 'published');
+    
+    let totalLessonsCount = 0;
+    let totalCompletedCount = 0;
+    let totalVisitedCount = 0;
+
+    let lastAccessedRecord: { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule; lastAccessedAt: string } | null = null;
+
+    const completedLessonsList: {
+      lessonId: string;
+      lessonSlug: string;
+      lessonTitle: string;
+      moduleTitle: string;
+      courseTitle: string;
+      courseSlug: string;
+      completedAt: string;
+    }[] = [];
+
+    const recentlyViewedList: {
+      lessonId: string;
+      lessonSlug: string;
+      lessonTitle: string;
+      moduleTitle: string;
+      courseTitle: string;
+      courseSlug: string;
+      lastAccessedAt: string;
+      completionStatus: 'in_progress' | 'completed';
+    }[] = [];
+
+    const courseProgressList: CourseProgressStat[] = [];
+
+    for (const course of publishedCourses) {
+      let courseTotalLessons = 0;
+      let courseCompletedLessons = 0;
+      let courseVisitedLessons = 0;
+      const moduleStats: ModuleProgressStat[] = [];
+
+      const sortedMods = (course.modules || [])
+        .filter((m) => m.status === 'published')
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+
+      for (const mod of sortedMods) {
+        const publishedLessons = (mod.lessons || [])
+          .filter((l) => l.status === 'published')
+          .sort((a, b) => a.sortOrder - b.sortOrder);
+
+        let modCompleted = 0;
+        let modVisited = 0;
+
+        for (const lsn of publishedLessons) {
+          courseTotalLessons++;
+          totalLessonsCount++;
+          const p = progMap.get(lsn.id) || progMap.get(lsn.slug);
+          if (p) {
+            modVisited++;
+            courseVisitedLessons++;
+            totalVisitedCount++;
+
+            if (!lastAccessedRecord || new Date(p.lastAccessedAt) > new Date(lastAccessedRecord.lastAccessedAt)) {
+              lastAccessedRecord = {
+                lesson: lsn,
+                course,
+                module: mod,
+                lastAccessedAt: p.lastAccessedAt,
+              };
+            }
+
+            recentlyViewedList.push({
+              lessonId: lsn.id,
+              lessonSlug: lsn.slug,
+              lessonTitle: lsn.title,
+              moduleTitle: mod.title,
+              courseTitle: course.title,
+              courseSlug: course.slug,
+              lastAccessedAt: p.lastAccessedAt,
+              completionStatus: p.completionStatus === 'completed' ? 'completed' : 'in_progress',
+            });
+
+            if (p.completionStatus === 'completed') {
+              modCompleted++;
+              courseCompletedLessons++;
+              totalCompletedCount++;
+              completedLessonsList.push({
+                lessonId: lsn.id,
+                lessonSlug: lsn.slug,
+                lessonTitle: lsn.title,
+                moduleTitle: mod.title,
+                courseTitle: course.title,
+                courseSlug: course.slug,
+                completedAt: p.completedAt || p.lastAccessedAt,
+              });
+            }
+          }
+        }
+
+        const modPercent = publishedLessons.length > 0 ? Math.round((modCompleted / publishedLessons.length) * 100) : 0;
+        moduleStats.push({
+          moduleId: mod.id,
+          moduleTitle: mod.title,
+          moduleSlug: mod.slug,
+          totalLessons: publishedLessons.length,
+          completedLessons: modCompleted,
+          visitedLessons: modVisited,
+          percentCompleted: modPercent,
+        });
+      }
+
+      const coursePercent = courseTotalLessons > 0 ? Math.round((courseCompletedLessons / courseTotalLessons) * 100) : 0;
+      courseProgressList.push({
+        courseId: course.id,
+        courseTitle: course.title,
+        courseSlug: course.slug,
+        level: course.level,
+        totalLessons: courseTotalLessons,
+        completedLessons: courseCompletedLessons,
+        visitedLessons: courseVisitedLessons,
+        percentCompleted: coursePercent,
+        modules: moduleStats,
+      });
+    }
+
+    recentlyViewedList.sort((a, b) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime());
+    completedLessonsList.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+
+    const enrolledSet = this.enrolledCourses.get(userId) || new Set<string>();
+    courseProgressList.forEach((cp) => {
+      if (cp.visitedLessons > 0) {
+        enrolledSet.add(cp.courseId);
+      }
+    });
+
+    return {
+      userId,
+      totalLessons: totalLessonsCount,
+      totalVisited: totalVisitedCount,
+      totalCompleted: totalCompletedCount,
+      overallPercentCompleted: totalLessonsCount > 0 ? Math.round((totalCompletedCount / totalLessonsCount) * 100) : 0,
+      lastAccessedLesson: lastAccessedRecord
+        ? {
+            lessonId: lastAccessedRecord.lesson.id,
+            lessonSlug: lastAccessedRecord.lesson.slug,
+            lessonTitle: lastAccessedRecord.lesson.title,
+            moduleTitle: lastAccessedRecord.module.title,
+            courseTitle: lastAccessedRecord.course.title,
+            courseSlug: lastAccessedRecord.course.slug,
+            lastAccessedAt: lastAccessedRecord.lastAccessedAt,
+          }
+        : null,
+      courseProgress: courseProgressList,
+      completedLessons: completedLessonsList,
+      recentlyViewedLessons: recentlyViewedList.slice(0, 10),
+      enrolledCourseIds: Array.from(enrolledSet),
+    };
+  }
+
+  // ==========================================
+  // USER LESSON BOOKMARKS
+  // ==========================================
+
+  public getUserBookmarks(userId: string): AcademyLessonBookmark[] {
+    const list: AcademyLessonBookmark[] = [];
+    for (const b of this.userBookmarks.values()) {
+      if (b.userId === userId) {
+        list.push(b);
+      }
+    }
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  public isLessonBookmarked(userId: string, lessonId: string): boolean {
+    return this.userBookmarks.has(`${userId}:${lessonId}`);
+  }
+
+  public toggleBookmark(userId: string, lessonId: string): { bookmarked: boolean; bookmark?: AcademyLessonBookmark } {
+    const key = `${userId}:${lessonId}`;
+    if (this.userBookmarks.has(key)) {
+      this.userBookmarks.delete(key);
+      this.saveToDisk();
+      return { bookmarked: false };
+    }
+
+    const lessonCtx = this.getLessonWithContext(lessonId);
+    let courseTitle = lessonCtx?.course?.title || 'Learning Course';
+    let courseSlug = lessonCtx?.course?.slug || 'course';
+    let moduleTitle = lessonCtx?.module?.title || 'Learning Module';
+    let lessonTitle = lessonCtx?.lesson?.title || lessonId;
+    let lessonSlug = lessonCtx?.lesson?.slug || lessonId;
+
+    if (!lessonCtx) {
+      for (const course of this.courses.values()) {
+        for (const mod of course.modules || []) {
+          const lsn = (mod.lessons || []).find((l) => l.id === lessonId || l.slug === lessonId);
+          if (lsn) {
+            courseTitle = course.title;
+            courseSlug = course.slug;
+            moduleTitle = mod.title;
+            lessonTitle = lsn.title;
+            lessonSlug = lsn.slug;
+            break;
+          }
+        }
+      }
+    }
+
+    const bookmark: AcademyLessonBookmark = {
+      id: `bm-${userId}-${lessonId}`,
+      userId,
+      lessonId,
+      lessonSlug,
+      lessonTitle,
+      moduleTitle,
+      courseTitle,
+      courseSlug,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.userBookmarks.set(key, bookmark);
+    this.saveToDisk();
+    return { bookmarked: true, bookmark };
+  }
+
+  public removeBookmark(userId: string, lessonId: string): boolean {
+    const key = `${userId}:${lessonId}`;
+    if (this.userBookmarks.has(key)) {
+      this.userBookmarks.delete(key);
+      this.saveToDisk();
+      return true;
+    }
+    return false;
+  }
+
+  // ==========================================
+  // COURSE ENROLLMENT
+  // ==========================================
+
+  public enrollUserInCourse(userId: string, courseId: string): boolean {
+    let userCourses = this.enrolledCourses.get(userId);
+    if (!userCourses) {
+      userCourses = new Set<string>();
+      this.enrolledCourses.set(userId, userCourses);
+    }
+    userCourses.add(courseId);
+    this.saveToDisk();
+    return true;
+  }
+
+  public getUserEnrolledCourses(userId: string): string[] {
+    const stats = this.getUserLearningStats(userId);
+    return stats.enrolledCourseIds;
+  }
+
+  // ==========================================
+  // GLOBAL CURRICULUM SEARCH
+  // ==========================================
+
+  public searchCurriculum(
+    query: string,
+    options: { limit?: number; includeDrafts?: boolean } = {}
+  ): AcademySearchResult[] {
+    if (!query || !query.trim()) return [];
+    const q = query.trim().toLowerCase();
+    const limit = options.limit || 20;
+    const includeDrafts = !!options.includeDrafts;
+
+    const scoredResults: Array<{ result: AcademySearchResult; score: number }> = [];
+    const publishedCourses = Array.from(this.courses.values()).filter(
+      (c) => includeDrafts || c.status === 'published'
+    );
+
+    for (const course of publishedCourses) {
+      const courseTitleLower = course.title.toLowerCase();
+      const courseMatchesTitle =
+        courseTitleLower.includes(q) ||
+        (course.subtitle && course.subtitle.toLowerCase().includes(q));
+
+      for (const mod of course.modules || []) {
+        if (!includeDrafts && mod.status !== 'published') continue;
+        const modTitleLower = mod.title.toLowerCase();
+        const modMatchesTitle =
+          modTitleLower.includes(q) ||
+          (mod.description && mod.description.toLowerCase().includes(q));
+
+        for (const lsn of mod.lessons || []) {
+          if (!includeDrafts && lsn.status !== 'published') continue;
+
+          const lsnTitleLower = lsn.title.toLowerCase();
+          const titleMatches = lsnTitleLower.includes(q);
+          const summaryMatches = (lsn.summary || lsn.shortDescription || '').toLowerCase().includes(q);
+
+          // Strip HTML tags for clean text search
+          const cleanContent = (lsn.contentHtml || '').replace(/<[^>]*>/g, ' ');
+          const contentMatches = cleanContent.toLowerCase().includes(q);
+
+          if (titleMatches || summaryMatches || contentMatches || modMatchesTitle || courseMatchesTitle) {
+            let matchedField: 'title' | 'summary' | 'content' | 'module' | 'course' = 'title';
+            let snippet = lsn.summary || lsn.shortDescription || '';
+            let score = 0;
+
+            if (courseMatchesTitle) {
+              score += 100;
+              matchedField = 'course';
+              snippet = `Course: ${course.title}`;
+            }
+            if (modMatchesTitle) {
+              score += 60;
+              matchedField = 'module';
+              snippet = `Module: ${mod.title}`;
+            }
+            if (titleMatches) {
+              score += 80;
+              matchedField = 'title';
+            }
+            if (summaryMatches) {
+              score += 30;
+              if (matchedField === 'course' || matchedField === 'module') matchedField = 'summary';
+            }
+            if (contentMatches) {
+              score += 15;
+              if (matchedField === 'course' || matchedField === 'module') {
+                matchedField = 'content';
+              }
+              const idx = cleanContent.toLowerCase().indexOf(q);
+              const start = Math.max(0, idx - 40);
+              const end = Math.min(cleanContent.length, idx + q.length + 60);
+              snippet =
+                (start > 0 ? '...' : '') +
+                cleanContent.substring(start, end).trim() +
+                (end < cleanContent.length ? '...' : '');
+            }
+
+            scoredResults.push({
+              result: {
+                id: lsn.id,
+                type: 'lesson',
+                title: lsn.title,
+                snippet,
+                lessonSlug: lsn.slug,
+                courseTitle: course.title,
+                courseSlug: course.slug,
+                moduleTitle: mod.title,
+                matchedField,
+              },
+              score,
+            });
+          }
+        }
+      }
+    }
+
+    // Sort by relevance score descending
+    scoredResults.sort((a, b) => b.score - a.score);
+
+    return scoredResults.slice(0, limit).map((s) => s.result);
   }
 
   // ==========================================

@@ -6,12 +6,22 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
     const lessonId = searchParams.get('lessonId') || undefined;
+    const isSummary = searchParams.get('summary') === 'true';
 
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'userId parameter is required.' },
         { status: 400 }
       );
+    }
+
+    if (isSummary) {
+      const summary = academyStore.getUserLearningStats(userId);
+      return NextResponse.json({
+        success: true,
+        summary,
+        data: academyStore.getUserProgress(userId),
+      });
     }
 
     const progress = academyStore.getUserProgress(userId, lessonId);
