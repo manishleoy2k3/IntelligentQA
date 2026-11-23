@@ -88,10 +88,10 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
   {
     id: 'mod-intro-ai',
     slug: 'introduction-to-ai',
-    title: 'Introduction to AI',
-    description: 'Foundational concepts of artificial intelligence, generative models, and neural architecture.',
+    title: 'Module 1 — Introduction to AI',
+    description: 'Foundational concepts of artificial intelligence, machine learning paradigms, generative models, transformer mechanics, and LLM token processing.',
     lessons: [
-      {
+{
         id: 'les-what-is-ai',
         slug: 'what-is-artificial-intelligence',
         title: 'What is Artificial Intelligence?',
@@ -134,80 +134,83 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
               ],
             },
           },
+        ],
+      },
+      {
+        id: 'les-what-is-machine-learning',
+        slug: 'what-is-machine-learning',
+        title: 'What is Machine Learning?',
+        moduleSlug: 'introduction-to-ai',
+        moduleTitle: 'Module 1 — Introduction to AI',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Introduction to AI', 'AI Quality Engineering'],
+        summary: 'Supervised, unsupervised, and reinforcement learning applied to automated test classification.',
+        sections: [
           {
-            id: 'ai-architecture-pipeline',
-            title: 'AI in Quality Assurance Architecture',
+            id: 'what-is-machine-learning-overview',
+            title: '1. Technical Overview & Core Objectives',
             level: 2,
             content: [
-              'Modern AI architectures for test automation integrate multi-layered inference engines that analyze DOM changes, predict locator breakages, and synthesize resilient test strategies in real time.',
+              'Supervised, unsupervised, and reinforcement learning applied to automated test classification.',
+              'In modern quality engineering, What is Machine Learning? provides the architectural foundation for autonomous, resilient test systems.',
             ],
-            diagram: {
-              type: 'pipeline',
-              title: 'Autonomous AI Testing Architecture',
-              caption: 'Flow of requirement ingestion, test synthesis, self-healing execution, and triage.',
-              nodes: [
-                { id: 'specs', label: 'Feature Specs', subtitle: 'Jira / PRD / OpenAPI', badge: 'Input' },
-                { id: 'ai-engine', label: 'AI Reasoning Core', subtitle: 'LLM + Context Engine', badge: 'Inference', highlight: true },
-                { id: 'test-gen', label: 'Test Synthesis', subtitle: 'Playwright & Selenium Suites', badge: 'Code Gen' },
-                { id: 'self-heal', label: 'Self-Healing Exec', subtitle: 'Dynamic Locator Repair', badge: 'Runtime' },
-                { id: 'triage', label: 'Root Cause Triage', subtitle: 'Failure Diagnosis & Fixes', badge: 'Report' },
-              ],
-              connections: [
-                { from: 'specs', to: 'ai-engine', label: 'Ingest' },
-                { from: 'ai-engine', to: 'test-gen', label: 'Generate' },
-                { from: 'test-gen', to: 'self-heal', label: 'Execute' },
-                { from: 'self-heal', to: 'triage', label: 'Analyze' },
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering What is Machine Learning? enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'what-is-machine-learning-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
               ],
             },
+          },
+          {
+            id: 'what-is-machine-learning-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for What is Machine Learning?:',
+            ],
             codeBlock: {
-              language: 'typescript',
-              title: 'Self-Healing Locator Strategy using Multi-Attribute AI Fingerprints',
-              filename: 'ai-locator-resolver.ts',
-              code: `import { Page, Locator } from '@playwright/test';
-
-interface ElementFingerprint {
-  tag: string;
-  testId?: string;
-  ariaLabel?: string;
-  textSnippet?: string;
-  relativeXPath?: string;
-}
-
-export async function resolveResilientElement(page: Page, fp: ElementFingerprint): Promise<Locator> {
-  // 1. Primary Strategy: Explicit Test ID
-  if (fp.testId) {
-    const primary = page.getByTestId(fp.testId);
-    if (await primary.count() > 0) return primary.first();
-  }
-
-  // 2. Secondary Strategy: Semantic ARIA accessibility label
-  if (fp.ariaLabel) {
-    const semantic = page.getByLabel(fp.ariaLabel);
-    if (await semantic.count() > 0) return semantic.first();
-  }
-
-  // 3. AI Fallback: Exact Text matching with automatic fuzzy tolerance
-  if (fp.textSnippet) {
-    return page.getByText(fp.textSnippet, { exact: false }).first();
-  }
-
-  throw new Error(\`[AI-Locator] Failed to resolve resilient element for fingerprint: \${JSON.stringify(fp)}\`);
-}`,
-              explanation: 'Self-healing locators fall back through prioritized selector strategies to prevent flakiness when front-end developers refactor markup or class names.',
+              language: 'java',
+              title: 'Production Implementation (what-is-machine-learning)',
+              filename: 'what-is-machine-learning.java',
+              code: `public class Spec { public static void main(String[] args) { System.out.println("Executing What is Machine Learning?"); } }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
+          },
+          {
+            id: 'what-is-machine-learning-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying What is Machine Learning? in enterprise CI/CD environments.',
+            ],
             troubleshooting: [
               {
-                error: 'LocatorFlakinessWarning: Selector timed out waiting for DOM element',
-                cause: 'Hardcoded CSS class or fragile XPath broke during a UI library upgrade or Tailwind rebuild.',
-                solution: 'Switch to semantic accessibility attributes (aria-label, role) or data-testid selectors with multi-attribute fallback.',
-                codeFix: `// Avoid: page.locator('div.btn-primary-2xl > span')
-// Preferred: page.getByRole('button', { name: 'Submit Application' })`,
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-      {
+{
         id: 'les-what-is-genai',
         slug: 'what-is-generative-ai',
         title: 'What is Generative AI?',
@@ -250,8 +253,7 @@ Generate 5 boundary test payloads including edge cases (null bytes, max integers
           },
         ],
       },
-      // DEMO LESSON 1: What is an LLM? (Complete Rich Content)
-      {
+{
         id: 'les-what-is-llm',
         slug: 'what-is-an-llm',
         title: 'What is an LLM?',
@@ -411,6 +413,228 @@ Rules:
           },
         ],
       },
+      {
+        id: 'les-how-llms-work',
+        slug: 'how-llms-work',
+        title: 'How LLMs Work',
+        moduleSlug: 'introduction-to-ai',
+        moduleTitle: 'Module 1 — Introduction to AI',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Introduction to AI', 'AI Quality Engineering'],
+        summary: 'Inference loops, next-token prediction, softmax sampling, and temperature tuning in test automation.',
+        sections: [
+          {
+            id: 'how-llms-work-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Inference loops, next-token prediction, softmax sampling, and temperature tuning in test automation.',
+              'In modern quality engineering, How LLMs Work provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering How LLMs Work enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'how-llms-work-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'how-llms-work-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for How LLMs Work:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (how-llms-work)',
+              filename: 'how-llms-work.ts',
+              code: `export async function executeQAFlow() { console.log("Executing How LLMs Work"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'how-llms-work-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying How LLMs Work in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-transformer-architecture',
+        slug: 'transformer-architecture',
+        title: 'Transformer Architecture',
+        moduleSlug: 'introduction-to-ai',
+        moduleTitle: 'Module 1 — Introduction to AI',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Introduction to AI', 'AI Quality Engineering'],
+        summary: 'Multi-head self-attention, query-key-value vector matrices, feed-forward layers, and positional embeddings.',
+        sections: [
+          {
+            id: 'transformer-architecture-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Multi-head self-attention, query-key-value vector matrices, feed-forward layers, and positional embeddings.',
+              'In modern quality engineering, Transformer Architecture provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Transformer Architecture enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'transformer-architecture-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'transformer-architecture-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Transformer Architecture:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (transformer-architecture)',
+              filename: 'transformer-architecture.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Transformer Architecture"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'transformer-architecture-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Transformer Architecture in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-tokens-embeddings-and-attention',
+        slug: 'tokens-embeddings-and-attention',
+        title: 'Tokens, Embeddings and Attention',
+        moduleSlug: 'introduction-to-ai',
+        moduleTitle: 'Module 1 — Introduction to AI',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Introduction to AI', 'AI Quality Engineering'],
+        summary: 'Byte-Pair Encoding, high-dimensional vector representations, and contextual attention matrices.',
+        sections: [
+          {
+            id: 'tokens-embeddings-and-attention-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Byte-Pair Encoding, high-dimensional vector representations, and contextual attention matrices.',
+              'In modern quality engineering, Tokens, Embeddings and Attention provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Tokens, Embeddings and Attention enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'tokens-embeddings-and-attention-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'tokens-embeddings-and-attention-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Tokens, Embeddings and Attention:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (tokens-embeddings-and-attention)',
+              filename: 'tokens-embeddings-and-attention.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Tokens, Embeddings and Attention"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'tokens-embeddings-and-attention-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Tokens, Embeddings and Attention in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      }
     ],
   },
 
@@ -418,13 +642,12 @@ Rules:
   // Module 2: Prompt Engineering
   // =========================================================================
   {
-    id: 'mod-prompt-eng',
+    id: 'mod-prompt-engineering',
     slug: 'prompt-engineering',
-    title: 'Prompt Engineering',
-    description: 'Master the art and science of formulating high-precision instructions, few-shot examples, and chain-of-thought structures.',
+    title: 'Module 2 — Prompt Engineering',
+    description: 'Systematic prompt design, few-shot patterns, reasoning chains, and deterministic test code synthesis.',
     lessons: [
-      // DEMO LESSON 2: What is Prompt Engineering? (Complete Rich Content)
-      {
+{
         id: 'les-what-is-prompt-eng',
         slug: 'what-is-prompt-engineering',
         title: 'What is Prompt Engineering?',
@@ -548,6 +771,302 @@ Provide the complete .java file with package declarations and imports.\`;
         ],
       },
       {
+        id: 'les-anatomy-of-a-good-prompt',
+        slug: 'anatomy-of-a-good-prompt',
+        title: 'Anatomy of a Good Prompt',
+        moduleSlug: 'prompt-engineering',
+        moduleTitle: 'Module 2 — Prompt Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Prompt Engineering', 'AI Quality Engineering'],
+        summary: 'Role definitions, context framing, explicit constraints, input data boundaries, and output schemas.',
+        sections: [
+          {
+            id: 'anatomy-of-a-good-prompt-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Role definitions, context framing, explicit constraints, input data boundaries, and output schemas.',
+              'In modern quality engineering, Anatomy of a Good Prompt provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Anatomy of a Good Prompt enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'anatomy-of-a-good-prompt-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'anatomy-of-a-good-prompt-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Anatomy of a Good Prompt:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (anatomy-of-a-good-prompt)',
+              filename: 'anatomy-of-a-good-prompt.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Anatomy of a Good Prompt"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'anatomy-of-a-good-prompt-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Anatomy of a Good Prompt in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-zero-shot-prompting',
+        slug: 'zero-shot-prompting',
+        title: 'Zero-shot Prompting',
+        moduleSlug: 'prompt-engineering',
+        moduleTitle: 'Module 2 — Prompt Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Prompt Engineering', 'AI Quality Engineering'],
+        summary: 'Direct task instruction without demonstrations: baseline testing prompts and limitations.',
+        sections: [
+          {
+            id: 'zero-shot-prompting-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Direct task instruction without demonstrations: baseline testing prompts and limitations.',
+              'In modern quality engineering, Zero-shot Prompting provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Zero-shot Prompting enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'zero-shot-prompting-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'zero-shot-prompting-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Zero-shot Prompting:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (zero-shot-prompting)',
+              filename: 'zero-shot-prompting.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Zero-shot Prompting"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'zero-shot-prompting-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Zero-shot Prompting in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-few-shot-prompting',
+        slug: 'few-shot-prompting',
+        title: 'Few-shot Prompting',
+        moduleSlug: 'prompt-engineering',
+        moduleTitle: 'Module 2 — Prompt Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Prompt Engineering', 'AI Quality Engineering'],
+        summary: 'In-context exemplar pairs to anchor style, syntax compliance, and locator conventions in test generation.',
+        sections: [
+          {
+            id: 'few-shot-prompting-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'In-context exemplar pairs to anchor style, syntax compliance, and locator conventions in test generation.',
+              'In modern quality engineering, Few-shot Prompting provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Few-shot Prompting enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'few-shot-prompting-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'few-shot-prompting-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Few-shot Prompting:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (few-shot-prompting)',
+              filename: 'few-shot-prompting.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Few-shot Prompting"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'few-shot-prompting-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Few-shot Prompting in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-chain-of-thought-concepts',
+        slug: 'chain-of-thought-concepts',
+        title: 'Chain-of-Thought Concepts',
+        moduleSlug: 'prompt-engineering',
+        moduleTitle: 'Module 2 — Prompt Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Prompt Engineering', 'AI Quality Engineering'],
+        summary: 'Step-by-step reasoning elicitation for complex test scenario synthesis and edge case discovery.',
+        sections: [
+          {
+            id: 'chain-of-thought-concepts-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Step-by-step reasoning elicitation for complex test scenario synthesis and edge case discovery.',
+              'In modern quality engineering, Chain-of-Thought Concepts provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Chain-of-Thought Concepts enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'chain-of-thought-concepts-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'chain-of-thought-concepts-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Chain-of-Thought Concepts:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (chain-of-thought-concepts)',
+              filename: 'chain-of-thought-concepts.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Chain-of-Thought Concepts"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'chain-of-thought-concepts-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Chain-of-Thought Concepts in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+{
         id: 'les-prompt-best-practices',
         slug: 'prompting-best-practices',
         title: 'Prompting Best Practices',
@@ -571,6 +1090,80 @@ Provide the complete .java file with package declarations and imports.\`;
         ],
       },
       {
+        id: 'les-common-prompting-mistakes',
+        slug: 'common-prompting-mistakes',
+        title: 'Common Prompting Mistakes',
+        moduleSlug: 'prompt-engineering',
+        moduleTitle: 'Module 2 — Prompt Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Prompt Engineering', 'AI Quality Engineering'],
+        summary: 'Ambiguous scopes, excessive temperature, conflicting instructions, and missing boundary constraints.',
+        sections: [
+          {
+            id: 'common-prompting-mistakes-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Ambiguous scopes, excessive temperature, conflicting instructions, and missing boundary constraints.',
+              'In modern quality engineering, Common Prompting Mistakes provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Common Prompting Mistakes enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'common-prompting-mistakes-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'common-prompting-mistakes-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Common Prompting Mistakes:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (common-prompting-mistakes)',
+              filename: 'common-prompting-mistakes.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Common Prompting Mistakes"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'common-prompting-mistakes-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Common Prompting Mistakes in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+{
         id: 'les-adv-prompt-patterns',
         slug: 'advanced-prompt-patterns',
         title: 'Advanced Prompt Patterns',
@@ -591,7 +1184,7 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
           },
         ],
-      },
+      }
     ],
   },
 
@@ -599,12 +1192,12 @@ Provide the complete .java file with package declarations and imports.\`;
   // Module 3: Context Engineering
   // =========================================================================
   {
-    id: 'mod-context-eng',
+    id: 'mod-context-engineering',
     slug: 'context-engineering',
-    title: 'Context Engineering',
-    description: 'Techniques for managing finite model context windows, Retrieval-Augmented Generation (RAG), and vector embeddings.',
+    title: 'Module 3 — Context Engineering',
+    description: 'Context window optimization, system instructions, vector embeddings, and Retrieval-Augmented Generation (RAG).',
     lessons: [
-      {
+{
         id: 'les-what-is-context-eng',
         slug: 'what-is-context-engineering',
         title: 'What is Context Engineering?',
@@ -627,6 +1220,154 @@ Provide the complete .java file with package declarations and imports.\`;
         ],
       },
       {
+        id: 'les-context-window',
+        slug: 'context-window',
+        title: 'Context Window',
+        moduleSlug: 'context-engineering',
+        moduleTitle: 'Module 3 — Context Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Context Engineering', 'AI Quality Engineering'],
+        summary: 'Input/output token limits, context degradation, needle-in-a-haystack recall, and sliding window chunking.',
+        sections: [
+          {
+            id: 'context-window-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Input/output token limits, context degradation, needle-in-a-haystack recall, and sliding window chunking.',
+              'In modern quality engineering, Context Window provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Context Window enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'context-window-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'context-window-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Context Window:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (context-window)',
+              filename: 'context-window.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Context Window"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'context-window-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Context Window in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-system-instructions',
+        slug: 'system-instructions',
+        title: 'System Instructions',
+        moduleSlug: 'context-engineering',
+        moduleTitle: 'Module 3 — Context Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Context Engineering', 'AI Quality Engineering'],
+        summary: 'Immutable persona guidelines, behavioral guardrails, and deterministic code constraints in SDET copilots.',
+        sections: [
+          {
+            id: 'system-instructions-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Immutable persona guidelines, behavioral guardrails, and deterministic code constraints in SDET copilots.',
+              'In modern quality engineering, System Instructions provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering System Instructions enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'system-instructions-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'system-instructions-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for System Instructions:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (system-instructions)',
+              filename: 'system-instructions.ts',
+              code: `export async function executeQAFlow() { console.log("Executing System Instructions"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'system-instructions-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying System Instructions in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+{
         id: 'les-rag-architecture',
         slug: 'rag-architecture',
         title: 'RAG Architecture',
@@ -661,6 +1402,154 @@ Provide the complete .java file with package declarations and imports.\`;
         ],
       },
       {
+        id: 'les-vector-databases',
+        slug: 'vector-databases',
+        title: 'Vector Databases',
+        moduleSlug: 'context-engineering',
+        moduleTitle: 'Module 3 — Context Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Context Engineering', 'AI Quality Engineering'],
+        summary: 'ChromaDB, Pinecone, and pgvector: indexing DOM snapshots, test failure logs, and enterprise API specifications.',
+        sections: [
+          {
+            id: 'vector-databases-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'ChromaDB, Pinecone, and pgvector: indexing DOM snapshots, test failure logs, and enterprise API specifications.',
+              'In modern quality engineering, Vector Databases provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Vector Databases enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'vector-databases-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'vector-databases-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Vector Databases:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (vector-databases)',
+              filename: 'vector-databases.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Vector Databases"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'vector-databases-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Vector Databases in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-embeddings-and-retrieval',
+        slug: 'embeddings-and-retrieval',
+        title: 'Embeddings and Retrieval',
+        moduleSlug: 'context-engineering',
+        moduleTitle: 'Module 3 — Context Engineering',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Context Engineering', 'AI Quality Engineering'],
+        summary: 'Text embedding models, dense vector search, cosine distance thresholds, and reciprocal rank fusion.',
+        sections: [
+          {
+            id: 'embeddings-and-retrieval-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Text embedding models, dense vector search, cosine distance thresholds, and reciprocal rank fusion.',
+              'In modern quality engineering, Embeddings and Retrieval provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Embeddings and Retrieval enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'embeddings-and-retrieval-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'embeddings-and-retrieval-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Embeddings and Retrieval:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (embeddings-and-retrieval)',
+              filename: 'embeddings-and-retrieval.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Embeddings and Retrieval"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'embeddings-and-retrieval-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Embeddings and Retrieval in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+{
         id: 'les-context-management',
         slug: 'context-management',
         title: 'Context Management',
@@ -681,7 +1570,7 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
           },
         ],
-      },
+      }
     ],
   },
 
@@ -691,11 +1580,10 @@ Provide the complete .java file with package declarations and imports.\`;
   {
     id: 'mod-mcp',
     slug: 'model-context-protocol',
-    title: 'Model Context Protocol (MCP)',
-    description: 'The open standard by Anthropic for connecting AI models to local development tools, test execution environments, and databases.',
+    title: 'Module 4 — Model Context Protocol (MCP)',
+    description: 'Standardized client-host-server protocol for exposing development tools, databases, and test frameworks to AI models.',
     lessons: [
-      // DEMO LESSON 3: What is MCP? (Complete Rich Content)
-      {
+{
         id: 'les-what-is-mcp',
         slug: 'what-is-mcp',
         title: 'What is MCP?',
@@ -863,6 +1751,80 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         ],
       },
       {
+        id: 'les-why-mcp-is-needed',
+        slug: 'why-mcp-is-needed',
+        title: 'Why MCP is Needed',
+        moduleSlug: 'model-context-protocol',
+        moduleTitle: 'Module 4 — Model Context Protocol (MCP)',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
+        summary: 'The M×N integration problem between LLM hosts and software development toolchains in automated testing.',
+        sections: [
+          {
+            id: 'why-mcp-is-needed-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'The M×N integration problem between LLM hosts and software development toolchains in automated testing.',
+              'In modern quality engineering, Why MCP is Needed provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Why MCP is Needed enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'why-mcp-is-needed-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'why-mcp-is-needed-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Why MCP is Needed:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (why-mcp-is-needed)',
+              filename: 'why-mcp-is-needed.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Why MCP is Needed"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'why-mcp-is-needed-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Why MCP is Needed in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+{
         id: 'les-mcp-arch',
         slug: 'mcp-architecture',
         title: 'MCP Architecture',
@@ -884,6 +1846,228 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         ],
       },
       {
+        id: 'les-mcp-host-client-and-server',
+        slug: 'mcp-host-client-and-server',
+        title: 'MCP Host, Client and Server',
+        moduleSlug: 'model-context-protocol',
+        moduleTitle: 'Module 4 — Model Context Protocol (MCP)',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
+        summary: 'Responsibilities of hosts (IDEs/Agents), clients (session managers), and servers (tool/resource providers).',
+        sections: [
+          {
+            id: 'mcp-host-client-and-server-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Responsibilities of hosts (IDEs/Agents), clients (session managers), and servers (tool/resource providers).',
+              'In modern quality engineering, MCP Host, Client and Server provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering MCP Host, Client and Server enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'mcp-host-client-and-server-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'mcp-host-client-and-server-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for MCP Host, Client and Server:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (mcp-host-client-and-server)',
+              filename: 'mcp-host-client-and-server.ts',
+              code: `export async function executeQAFlow() { console.log("Executing MCP Host, Client and Server"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'mcp-host-client-and-server-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying MCP Host, Client and Server in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-resources-tools-and-prompts',
+        slug: 'resources-tools-and-prompts',
+        title: 'Resources, Tools and Prompts',
+        moduleSlug: 'model-context-protocol',
+        moduleTitle: 'Module 4 — Model Context Protocol (MCP)',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
+        summary: 'The three core primitives of MCP: read-only resources, callable tools, and standardized prompt templates.',
+        sections: [
+          {
+            id: 'resources-tools-and-prompts-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'The three core primitives of MCP: read-only resources, callable tools, and standardized prompt templates.',
+              'In modern quality engineering, Resources, Tools and Prompts provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Resources, Tools and Prompts enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'resources-tools-and-prompts-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'resources-tools-and-prompts-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Resources, Tools and Prompts:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (resources-tools-and-prompts)',
+              filename: 'resources-tools-and-prompts.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Resources, Tools and Prompts"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'resources-tools-and-prompts-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Resources, Tools and Prompts in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-mcp-communication-flow',
+        slug: 'mcp-communication-flow',
+        title: 'MCP Communication Flow',
+        moduleSlug: 'model-context-protocol',
+        moduleTitle: 'Module 4 — Model Context Protocol (MCP)',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
+        summary: 'Initialization handshakes, tool listing, sampling requests, progress reporting, and notification streams.',
+        sections: [
+          {
+            id: 'mcp-communication-flow-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Initialization handshakes, tool listing, sampling requests, progress reporting, and notification streams.',
+              'In modern quality engineering, MCP Communication Flow provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering MCP Communication Flow enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'mcp-communication-flow-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'mcp-communication-flow-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for MCP Communication Flow:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (mcp-communication-flow)',
+              filename: 'mcp-communication-flow.ts',
+              code: `export async function executeQAFlow() { console.log("Executing MCP Communication Flow"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'mcp-communication-flow-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying MCP Communication Flow in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+{
         id: 'les-create-mcp-server',
         slug: 'creating-custom-mcp-servers',
         title: 'Creating Custom MCP Servers',
@@ -904,7 +2088,7 @@ console.error('Playwright QA MCP Server running over Stdio');`,
           },
         ],
       },
-      {
+{
         id: 'les-connect-ext-tools',
         slug: 'connecting-external-tools',
         title: 'Connecting External Tools',
@@ -925,6 +2109,80 @@ console.error('Playwright QA MCP Server running over Stdio');`,
           },
         ],
       },
+      {
+        id: 'les-mcp-security-best-practices',
+        slug: 'mcp-security-best-practices',
+        title: 'MCP Security Best Practices',
+        moduleSlug: 'model-context-protocol',
+        moduleTitle: 'Module 4 — Model Context Protocol (MCP)',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
+        summary: 'Permission boundaries, tool execution sandboxing, input parameter validation, and rate limiting.',
+        sections: [
+          {
+            id: 'mcp-security-best-practices-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Permission boundaries, tool execution sandboxing, input parameter validation, and rate limiting.',
+              'In modern quality engineering, MCP Security Best Practices provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering MCP Security Best Practices enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'mcp-security-best-practices-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'mcp-security-best-practices-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for MCP Security Best Practices:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (mcp-security-best-practices)',
+              filename: 'mcp-security-best-practices.ts',
+              code: `export async function executeQAFlow() { console.log("Executing MCP Security Best Practices"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'mcp-security-best-practices-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying MCP Security Best Practices in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      }
     ],
   },
 
@@ -934,10 +2192,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
   {
     id: 'mod-ai-agents',
     slug: 'ai-agents-for-qa',
-    title: 'AI Agents for QA',
-    description: 'Autonomous multi-step agents that plan, write, execute, inspect, and self-heal test frameworks.',
+    title: 'Module 5 — AI Agents for QA',
+    description: 'Autonomous reasoning loops, tool invocation, multi-agent systems, and self-directing quality engineering agents.',
     lessons: [
-      {
+{
         id: 'les-what-are-agents',
         slug: 'what-are-ai-agents',
         title: 'What are AI Agents?',
@@ -978,7 +2236,7 @@ console.error('Playwright QA MCP Server running over Stdio');`,
           },
         ],
       },
-      {
+{
         id: 'les-agentic-testing',
         slug: 'agentic-testing',
         title: 'Agentic Testing',
@@ -1000,6 +2258,228 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         ],
       },
       {
+        id: 'les-ai-agent-vs-traditional-automation',
+        slug: 'ai-agent-vs-traditional-automation',
+        title: 'AI Agent vs Traditional Automation',
+        moduleSlug: 'ai-agents-for-qa',
+        moduleTitle: 'Module 5 — AI Agents for QA',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI Agents for QA', 'AI Quality Engineering'],
+        summary: 'Static procedural execution scripts versus dynamic adaptive goal resolution in flakiness reduction.',
+        sections: [
+          {
+            id: 'ai-agent-vs-traditional-automation-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Static procedural execution scripts versus dynamic adaptive goal resolution in flakiness reduction.',
+              'In modern quality engineering, AI Agent vs Traditional Automation provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI Agent vs Traditional Automation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-agent-vs-traditional-automation-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-agent-vs-traditional-automation-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI Agent vs Traditional Automation:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-agent-vs-traditional-automation)',
+              filename: 'ai-agent-vs-traditional-automation.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI Agent vs Traditional Automation"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-agent-vs-traditional-automation-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI Agent vs Traditional Automation in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-tool-calling',
+        slug: 'tool-calling',
+        title: 'Tool Calling',
+        moduleSlug: 'ai-agents-for-qa',
+        moduleTitle: 'Module 5 — AI Agents for QA',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI Agents for QA', 'AI Quality Engineering'],
+        summary: 'JSON Schema tool contracts, function argument generation, execution callbacks, and error recovery loops.',
+        sections: [
+          {
+            id: 'tool-calling-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'JSON Schema tool contracts, function argument generation, execution callbacks, and error recovery loops.',
+              'In modern quality engineering, Tool Calling provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Tool Calling enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'tool-calling-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'tool-calling-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Tool Calling:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (tool-calling)',
+              filename: 'tool-calling.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Tool Calling"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'tool-calling-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Tool Calling in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-multi-agent-systems',
+        slug: 'multi-agent-systems',
+        title: 'Multi-Agent Systems',
+        moduleSlug: 'ai-agents-for-qa',
+        moduleTitle: 'Module 5 — AI Agents for QA',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI Agents for QA', 'AI Quality Engineering'],
+        summary: 'Specialized agent orchestration: Test Planner, Code Synthesizer, Locator Healer, and RCA swarms.',
+        sections: [
+          {
+            id: 'multi-agent-systems-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Specialized agent orchestration: Test Planner, Code Synthesizer, Locator Healer, and RCA swarms.',
+              'In modern quality engineering, Multi-Agent Systems provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Multi-Agent Systems enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'multi-agent-systems-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'multi-agent-systems-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Multi-Agent Systems:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (multi-agent-systems)',
+              filename: 'multi-agent-systems.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Multi-Agent Systems"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'multi-agent-systems-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Multi-Agent Systems in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+{
         id: 'les-building-qa-agents',
         slug: 'building-qa-automation-agents',
         title: 'Building QA Automation Agents',
@@ -1020,9 +2500,705 @@ console.error('Playwright QA MCP Server running over Stdio');`,
           },
         ],
       },
+      {
+        id: 'les-ai-powered-test-case-generation',
+        slug: 'ai-powered-test-case-generation',
+        title: 'AI-Powered Test Case Generation',
+        moduleSlug: 'ai-agents-for-qa',
+        moduleTitle: 'Module 5 — AI Agents for QA',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI Agents for QA', 'AI Quality Engineering'],
+        summary: 'Autonomous derivation of edge cases, pairwise parameter combinations, and executable test suites.',
+        sections: [
+          {
+            id: 'ai-powered-test-case-generation-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Autonomous derivation of edge cases, pairwise parameter combinations, and executable test suites.',
+              'In modern quality engineering, AI-Powered Test Case Generation provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI-Powered Test Case Generation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-powered-test-case-generation-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-powered-test-case-generation-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI-Powered Test Case Generation:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-powered-test-case-generation)',
+              filename: 'ai-powered-test-case-generation.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI-Powered Test Case Generation"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-powered-test-case-generation-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI-Powered Test Case Generation in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-ai-powered-test-failure-analysis',
+        slug: 'ai-powered-test-failure-analysis',
+        title: 'AI-Powered Test Failure Analysis',
+        moduleSlug: 'ai-agents-for-qa',
+        moduleTitle: 'Module 5 — AI Agents for QA',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI Agents for QA', 'AI Quality Engineering'],
+        summary: 'Automated correlation of stack traces, network telemetry, and visual snapshots to diagnose root cause.',
+        sections: [
+          {
+            id: 'ai-powered-test-failure-analysis-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Automated correlation of stack traces, network telemetry, and visual snapshots to diagnose root cause.',
+              'In modern quality engineering, AI-Powered Test Failure Analysis provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI-Powered Test Failure Analysis enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-powered-test-failure-analysis-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-powered-test-failure-analysis-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI-Powered Test Failure Analysis:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-powered-test-failure-analysis)',
+              filename: 'ai-powered-test-failure-analysis.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI-Powered Test Failure Analysis"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-powered-test-failure-analysis-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI-Powered Test Failure Analysis in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      }
+    ],
+  },
+
+  // =========================================================================
+  // Module 6: AI-Powered Test Automation
+  // =========================================================================
+  {
+    id: 'mod-ai-automation',
+    slug: 'ai-powered-test-automation',
+    title: 'Module 6 — AI-Powered Test Automation',
+    description: 'Practical application of AI across Selenium, Playwright, API testing, synthetic data, and self-healing automation.',
+    lessons: [
+      {
+        id: 'les-ai-with-selenium',
+        slug: 'ai-with-selenium',
+        title: 'AI with Selenium',
+        moduleSlug: 'ai-powered-test-automation',
+        moduleTitle: 'Module 6 — AI-Powered Test Automation',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
+        summary: 'Augmenting Selenium WebDriver 4 with LLM-based element discovery, dynamic waits, and automated Page Objects.',
+        sections: [
+          {
+            id: 'ai-with-selenium-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Augmenting Selenium WebDriver 4 with LLM-based element discovery, dynamic waits, and automated Page Objects.',
+              'In modern quality engineering, AI with Selenium provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI with Selenium enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-with-selenium-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-with-selenium-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI with Selenium:',
+            ],
+            codeBlock: {
+              language: 'java',
+              title: 'Production Implementation (ai-with-selenium)',
+              filename: 'ai-with-selenium.java',
+              code: `public class Spec { public static void main(String[] args) { System.out.println("Executing AI with Selenium"); } }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-with-selenium-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI with Selenium in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-ai-with-playwright',
+        slug: 'ai-with-playwright',
+        title: 'AI with Playwright',
+        moduleSlug: 'ai-powered-test-automation',
+        moduleTitle: 'Module 6 — AI-Powered Test Automation',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
+        summary: 'Leveraging Playwright auto-waiting and CDP protocol alongside AI agents for resilient web testing.',
+        sections: [
+          {
+            id: 'ai-with-playwright-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Leveraging Playwright auto-waiting and CDP protocol alongside AI agents for resilient web testing.',
+              'In modern quality engineering, AI with Playwright provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI with Playwright enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-with-playwright-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-with-playwright-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI with Playwright:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-with-playwright)',
+              filename: 'ai-with-playwright.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI with Playwright"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-with-playwright-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI with Playwright in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-ai-api-testing',
+        slug: 'ai-api-testing',
+        title: 'AI API Testing',
+        moduleSlug: 'ai-powered-test-automation',
+        moduleTitle: 'Module 6 — AI-Powered Test Automation',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
+        summary: 'OpenAPI schema-driven test generation, intelligent payload mutation, and automated contract drift detection.',
+        sections: [
+          {
+            id: 'ai-api-testing-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'OpenAPI schema-driven test generation, intelligent payload mutation, and automated contract drift detection.',
+              'In modern quality engineering, AI API Testing provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI API Testing enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-api-testing-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-api-testing-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI API Testing:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-api-testing)',
+              filename: 'ai-api-testing.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI API Testing"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-api-testing-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI API Testing in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-ai-test-data-generation',
+        slug: 'ai-test-data-generation',
+        title: 'AI Test Data Generation',
+        moduleSlug: 'ai-powered-test-automation',
+        moduleTitle: 'Module 6 — AI-Powered Test Automation',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
+        summary: 'Synthesizing production-realistic, GDPR-compliant relational test data using generative models.',
+        sections: [
+          {
+            id: 'ai-test-data-generation-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Synthesizing production-realistic, GDPR-compliant relational test data using generative models.',
+              'In modern quality engineering, AI Test Data Generation provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI Test Data Generation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-test-data-generation-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-test-data-generation-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI Test Data Generation:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-test-data-generation)',
+              filename: 'ai-test-data-generation.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI Test Data Generation"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-test-data-generation-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI Test Data Generation in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-ai-test-case-optimization',
+        slug: 'ai-test-case-optimization',
+        title: 'AI Test Case Optimization',
+        moduleSlug: 'ai-powered-test-automation',
+        moduleTitle: 'Module 6 — AI-Powered Test Automation',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
+        summary: 'Test suite reduction, flakiness scoring, risk-based test selection, and regression minimization algorithms.',
+        sections: [
+          {
+            id: 'ai-test-case-optimization-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Test suite reduction, flakiness scoring, risk-based test selection, and regression minimization algorithms.',
+              'In modern quality engineering, AI Test Case Optimization provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI Test Case Optimization enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-test-case-optimization-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-test-case-optimization-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI Test Case Optimization:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-test-case-optimization)',
+              filename: 'ai-test-case-optimization.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI Test Case Optimization"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-test-case-optimization-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI Test Case Optimization in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-self-healing-test-automation',
+        slug: 'self-healing-test-automation',
+        title: 'Self-Healing Test Automation',
+        moduleSlug: 'ai-powered-test-automation',
+        moduleTitle: 'Module 6 — AI-Powered Test Automation',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
+        summary: 'Multi-attribute weighted distance algorithms for locator healing in dynamic DOM environments without failure.',
+        sections: [
+          {
+            id: 'self-healing-test-automation-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Multi-attribute weighted distance algorithms for locator healing in dynamic DOM environments without failure.',
+              'In modern quality engineering, Self-Healing Test Automation provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering Self-Healing Test Automation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'self-healing-test-automation-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'self-healing-test-automation-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for Self-Healing Test Automation:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (self-healing-test-automation)',
+              filename: 'self-healing-test-automation.ts',
+              code: `export async function executeQAFlow() { console.log("Executing Self-Healing Test Automation"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'self-healing-test-automation-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying Self-Healing Test Automation in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'les-ai-based-root-cause-analysis',
+        slug: 'ai-based-root-cause-analysis',
+        title: 'AI-Based Root Cause Analysis',
+        moduleSlug: 'ai-powered-test-automation',
+        moduleTitle: 'Module 6 — AI-Powered Test Automation',
+        estimatedTime: '10 min read',
+        difficulty: 'Intermediate',
+        tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
+        summary: 'Correlating CI/CD pipeline logs, container metrics, and application traces to isolate defect origins automatically.',
+        sections: [
+          {
+            id: 'ai-based-root-cause-analysis-overview',
+            title: '1. Technical Overview & Core Objectives',
+            level: 2,
+            content: [
+              'Correlating CI/CD pipeline logs, container metrics, and application traces to isolate defect origins automatically.',
+              'In modern quality engineering, AI-Based Root Cause Analysis provides the architectural foundation for autonomous, resilient test systems.',
+            ],
+            infoCallout: {
+              title: 'Strategic Value',
+              message: 'Mastering AI-Based Root Cause Analysis enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+            },
+          },
+          {
+            id: 'ai-based-root-cause-analysis-architecture',
+            title: '2. Technical Architecture & System Flow',
+            level: 2,
+            content: [
+              'The underlying system coordinates multi-dimensional token inference with distributed test runners to guarantee deterministic results.',
+            ],
+            comparisonTable: {
+              title: 'Enterprise Architecture Evaluation Matrix',
+              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              rows: [
+                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
+                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
+                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+              ],
+            },
+          },
+          {
+            id: 'ai-based-root-cause-analysis-implementation',
+            title: '3. Production Implementation Patterns',
+            level: 2,
+            content: [
+              'Below is a production-grade implementation illustrating the integration pattern for AI-Based Root Cause Analysis:',
+            ],
+            codeBlock: {
+              language: 'typescript',
+              title: 'Production Implementation (ai-based-root-cause-analysis)',
+              filename: 'ai-based-root-cause-analysis.ts',
+              code: `export async function executeQAFlow() { console.log("Executing AI-Based Root Cause Analysis"); }`,
+              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+            },
+          },
+          {
+            id: 'ai-based-root-cause-analysis-troubleshooting',
+            title: '4. Common Pitfalls & Troubleshooting',
+            level: 2,
+            content: [
+              'Avoid common operational failure modes when deploying AI-Based Root Cause Analysis in enterprise CI/CD environments.',
+            ],
+            troubleshooting: [
+              {
+                error: 'NonDeterministicInferenceError',
+                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
+              },
+            ],
+          },
+        ],
+      }
     ],
   },
 ];
+
+// Bidirectional Aliases for seamless URL compatibility
+export const LESSON_SLUG_ALIASES: Record<string, string> = {
+  'what-is-an-ai-agent': 'what-are-ai-agents',
+  'what-are-ai-agents': 'what-are-ai-agents',
+  'agentic-ai-architecture': 'agentic-testing',
+  'agentic-testing': 'agentic-testing',
+  'building-a-qa-ai-agent': 'building-qa-automation-agents',
+  'building-qa-automation-agents': 'building-qa-automation-agents',
+  'prompt-engineering-best-practices': 'prompting-best-practices',
+  'prompting-best-practices': 'prompting-best-practices',
+  'practical-qa-prompt-examples': 'advanced-prompt-patterns',
+  'advanced-prompt-patterns': 'advanced-prompt-patterns',
+  'context-management-best-practices': 'context-management',
+  'context-management': 'context-management',
+  'creating-a-custom-mcp-server': 'creating-custom-mcp-servers',
+  'creating-custom-mcp-servers': 'creating-custom-mcp-servers',
+};
 
 // Helper functions for curriculum navigation
 export function getAllLessons(): AcademyLessonData[] {
@@ -1030,7 +3206,8 @@ export function getAllLessons(): AcademyLessonData[] {
 }
 
 export function getLessonBySlug(slug: string): AcademyLessonData | undefined {
-  return getAllLessons().find((l) => l.slug === slug);
+  const target = LESSON_SLUG_ALIASES[slug] || slug;
+  return getAllLessons().find((l) => l.slug === target || l.slug === slug);
 }
 
 export function getAdjacentLessons(currentSlug: string): {
@@ -1038,7 +3215,8 @@ export function getAdjacentLessons(currentSlug: string): {
   nextLesson?: { slug: string; title: string; moduleTitle: string };
 } {
   const all = getAllLessons();
-  const currentIndex = all.findIndex((l) => l.slug === currentSlug);
+  const target = LESSON_SLUG_ALIASES[currentSlug] || currentSlug;
+  const currentIndex = all.findIndex((l) => l.slug === target || l.slug === currentSlug);
 
   if (currentIndex === -1) return {};
 

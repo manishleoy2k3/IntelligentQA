@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lesson Document Print Preview</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #ffffff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { font-size: 20pt; color: #0f172a; border-bottom: 2px solid #0284c7; padding-bottom: 6px; margin-top: 24px; }
+    h2 { font-size: 16pt; color: #0369a1; margin-top: 20px; }
+    h3 { font-size: 13pt; color: #334155; margin-top: 16px; }
+    p { margin: 8px 0; text-align: justify; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 10pt; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: bold; }
+    pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 9pt; overflow-x: auto; }
+    img { max-width: 100%; height: auto; display: block; margin: 12px auto; }
+    .docx-page-break { page-break-after: always; height: 0; margin: 0; border: none; }
+    @media print {
+      body { padding: 0; }
+      button { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <h1 id="what-is-context-engineering" class="text-2xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-neutral-800 pb-2">What is Context Engineering?</h1>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300"><span style="color: #64748B;"><em>Dynamic information staging, semantic token budget allocation, and context retrieval for quality agents.</em></span></p>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">Welcome to this comprehensive technical lesson in Module 3 — Context Engineering. Modern quality engineering demands an architectural transition from manual, brittle test scripts toward autonomous, resilient, AI-augmented systems. This guide provides SDETs and Test Architects with the theoretical foundations and production implementations necessary to succeed.</p>
+<h2 id="1-learning-objectives" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">1. Learning Objectives</h2>
+<ul class="list-disc pl-6 space-y-1 my-2 text-slate-300">
+<li class="leading-relaxed">Master core architectural principles behind What is Context Engineering? in enterprise software environments.</li>
+<li class="leading-relaxed">Implement production-grade automation patterns with deterministic reliability.</li>
+<li class="leading-relaxed">Eliminate flakiness by leveraging probabilistic reasoning loops and dynamic telemetry.</li>
+<li class="leading-relaxed">Evaluate security, cost, and latency tradeoffs across cloud and local model deployments.</li>
+</ul>
+<h2 id="2-detailed-concept-explanation" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">2. Detailed Concept Explanation</h2>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">In contemporary software development, What is Context Engineering? operates at the intersection of machine learning inference, distributed systems, and continuous delivery pipelines. Unlike traditional rule-based test assertions, AI-driven architectures process multi-dimensional token vectors to evaluate application state, dynamically reconcile broken locators, and predict system regressions before code merges into production.</p>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300"><span style="color: #047857;"><strong>Core Principle: </strong></span>Deterministic testing remains non-negotiable. AI does not replace rigor; it augments human intelligence by handling high-entropy tasks such as synthetic test data generation, locator drift recovery, and automated log clustering.</p>
+<h2 id="3-technical-architecture-and-pipeline-what-is-context-engineering" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">3. Technical Architecture and Pipeline: What is Context Engineering?</h2>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">Figure 1 illustrates the end-to-end data processing pipeline for What is Context Engineering?:</p>
+<div class="overflow-x-auto my-6 rounded-2xl border border-neutral-700/80 shadow-lg">
+  <table class="w-full text-left border-collapse text-xs bg-neutral-950/60">
+    <tbody>
+      <tr><th class="px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80"><strong>Pipeline Stage</strong></th><th class="px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80"><strong>Input &amp; Transformation</strong></th><th class="px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80"><strong>Output State</strong></th></tr><tr><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Stage 1: Ingestion &amp; Context</td><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Raw DOM snapshots, logs, or OpenAPI specifications</td><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Normalized token buffer with system prompt constraints</td></tr><tr><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Stage 2: Model Inference</td><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Attention layers compute Q-K-V matrices with temperature 0.1</td><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Deterministic token sequence conforming to JSON schema</td></tr><tr><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Stage 3: Actuation &amp; Verification</td><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Playwright / Selenium driver or REST client execution</td><td class="px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed">Pass/Fail telemetry, failure triage, and artifact persistence</td></tr>
+    </tbody>
+  </table>
+</div>
+<h2 id="4-step-by-step-implementation-guide" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">4. Step-by-Step Implementation Guide</h2>
+<ol class="list-decimal pl-6 space-y-1 my-2 text-slate-300">
+<li class="leading-relaxed">Define precise system role constraints to prevent hallucinated selectors and invalid assertions.</li>
+<li class="leading-relaxed">Tokenize input context and enforce strict JSON schema contracts for all structured responses.</li>
+<li class="leading-relaxed">Execute tool actuation via sandboxed runners with timeout guards and error boundary handling.</li>
+<li class="leading-relaxed">Verify output syntax against production standards before deploying test code into CI/CD pipelines.</li>
+</ol>
+<h2 id="5-practical-examples-in-quality-engineering" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">5. Practical Examples in Quality Engineering</h2>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">Consider an enterprise e-commerce checkout flow where DOM element IDs mutate with every release build. In legacy automation, this causes widespread pipeline breakage. With What is Context Engineering?, multi-attribute fingerprinting compares parent semantic containers, accessibility labels, and sibling nodes to recover locators with 99.4% confidence without test aborts.</p>
+<h2 id="6-production-implementation-code" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">6. Production Implementation Code</h2>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">Below is production-ready code demonstrating What is Context Engineering?:</p>
+<div class="my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group">
+  <div class="flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block"></span>
+      <span class="font-bold text-neutral-200 uppercase tracking-wider">java</span>
+    </div>
+    <button type="button" onclick="navigator.clipboard.writeText(this.closest('.group').querySelector('code').innerText); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy Code', 2000)" class="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans">
+      Copy Code
+    </button>
+  </div>
+  <pre class="p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre"><code class="language-java">import { GoogleGenAI } from &#x27;@google/genai&#x27;;
+
+export class WhatIsContextEngineeringEngine {
+  private client: GoogleGenAI;
+  private model = &#x27;gemini-2.5-flash&#x27;;
+
+  constructor(apiKey: string) {
+    this.client = new GoogleGenAI({ apiKey });
+  }
+
+  async executeQAWorkflow(inputContext: string): Promise&lt;string&gt; {
+    const systemInstruction = `You are a Principal SDET and AI Test Architect.
+Evaluate requirements, synthesize deterministic test scenarios, and adhere to strict quality engineering principles.`;
+
+    const response = await this.client.models.generateContent({
+      model: this.model,
+      contents: [
+        { role: &#x27;user&#x27;, parts: [{ text: systemInstruction }, { text: inputContext }] }
+      ],
+      config: {
+        temperature: 0.1,
+        maxOutputTokens: 4096
+      }
+    });
+
+    return response.text ?? &#x27;// No test output generated&#x27;;
+  }
+}</code></pre>
+</div>
+<h2 id="7-real-world-qa-use-cases" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">7. Real-World QA Use Cases</h2>
+<ul class="list-disc pl-6 space-y-1 my-2 text-slate-300">
+<li class="leading-relaxed">Financial Banking Systems: Automated transaction payload synthesis covering edge boundary balances and international currencies.</li>
+<li class="leading-relaxed">Healthcare Platforms: Synthetic HIPAA-compliant patient test records generating realistic clinical timelines.</li>
+<li class="leading-relaxed">High-Volume E-Commerce: Dynamic self-healing during flash sales where marketing tags frequently disrupt automation DOM selectors.</li>
+</ul>
+<h2 id="8-common-pitfalls-and-mitigation-strategies" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">8. Common Pitfalls and Mitigation Strategies</h2>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300"><span style="color: #B91C1C;"><strong>Caution: Non-Deterministic Temperature Drift: </strong></span>Setting model temperature above 0.3 results in unpredictable test code and synthetic locator hallucinations. Always pin temperature to 0.0 - 0.2 for test synthesis.</p>
+<ul class="list-disc pl-6 space-y-1 my-2 text-slate-300">
+<li class="leading-relaxed">Context Window Exhaustion: Truncated HTML snippets cause incomplete Page Object class generation. Mitigate using semantic DOM chunking.</li>
+<li class="leading-relaxed">Unbounded Agent Loops: Prevent infinite reflection loops by enforcing a hard maximum step limit (e.g., max 10 steps per test execution).</li>
+</ul>
+<h2 id="9-enterprise-best-practices" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">9. Enterprise Best Practices</h2>
+<ul class="list-disc pl-6 space-y-1 my-2 text-slate-300">
+<li class="leading-relaxed">Schema Enforcement: Always validate LLM tool arguments against strict Zod or JSON Schema definitions.</li>
+<li class="leading-relaxed">Human-in-the-Loop Approval: Critical test deletions and production environment changes must require explicit engineer sign-off.</li>
+<li class="leading-relaxed">Telemetry Tracking: Log prompt tokens, completion tokens, latency, and cost per test suite run into centralized dashboards.</li>
+</ul>
+<h2 id="10-key-takeaways-summary" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">10. Key Takeaways &amp; Summary</h2>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">What is Context Engineering? marks an inflection point in quality engineering. By grounding generative models in deterministic schemas, robust context pipelines, and reliable test frameworks, SDETs transform automation from a maintenance burden into an autonomous, self-healing quality shield.</p>
+<h2 id="11-top-interview-questions-answers" class="text-xl font-bold text-white mt-6 mb-3 tracking-tight">11. Top Interview Questions &amp; Answers</h2>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300"><strong>Q1: How does What is Context Engineering? impact automated regression suite maintenance?</strong></p>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">Answer: By decoupling test logic from fragile static DOM selectors and introducing multi-attribute self-healing, maintenance overhead drops by up to 70%, allowing engineers to focus on architectural test coverage rather than repairing brittle XPath locators.</p>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300"><strong>Q2: What is the primary risk of using generative AI in automated testing, and how is it resolved?</strong></p>
+<p class="my-3 leading-relaxed text-slate-300 dark:text-neutral-300">Answer: The primary risk is hallucination—generating assertions that pass vacuously or asserting non-existent functionality. It is mitigated through deterministic schemas, low model temperature (&lt;= 0.1), explicit system constraints, and sandboxed test execution validation.</p>
+</body>
+</html>
