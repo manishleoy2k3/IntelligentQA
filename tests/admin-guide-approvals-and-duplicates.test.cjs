@@ -58,26 +58,18 @@ test('Guide Staging UI displays duplicate check badges and requires admin approv
   assert.ok(guideClient.includes('submitStagedGuidesForApproval'), 'Invokes submitStagedGuidesForApproval on submit');
 });
 
-test('Admin Control Center (/admin) provides dedicated Guide Approvals & Duplicate Verification section', () => {
+test('Admin Control Center (/admin) has removed legacy Guide Approvals section & purges legacy queue', () => {
   const adminPage = fs.readFileSync(path.join(__dirname, '../src/app/admin/page.tsx'), 'utf8');
 
-  // 1. Section definition includes approvals
-  assert.ok(adminPage.includes("'approvals'"), 'Includes approvals in AdminSection');
+  // 1. Section definition has removed approvals
+  assert.ok(!adminPage.includes("'approvals'"), 'Removes approvals from AdminSection');
 
-  // 2. Overview has Guide Approvals tile
-  assert.ok(adminPage.includes('Guide Approvals & Duplicate Moderation') || adminPage.includes('Course Guide Approvals'), 'Has Approvals tile in Overview');
-  assert.ok(adminPage.includes("handleSelectSection('approvals')"), 'Navigates to approvals section');
+  // 2. Overview does not have Guide Approvals tile
+  assert.ok(!adminPage.includes('Guide Approvals & Duplicate Moderation'), 'Removes Approvals tile in Overview');
+  assert.ok(!adminPage.includes("handleSelectSection('approvals')"), 'Removes navigation to approvals section');
 
-  // 3. Approvals Section view displays duplicate report and course publishing
-  assert.ok(adminPage.includes("activeSection === 'approvals'"), 'Renders activeSection === approvals view');
-  assert.ok(adminPage.includes('checkGuideDuplicate'), 'Runs automated duplicate check on pending submissions');
-  assert.ok(
-    adminPage.includes('Approve &amp; Add to Course') ||
-    adminPage.includes('Approve & Add to Course') ||
-    adminPage.includes('Approve &amp; Publish to Course') ||
-    adminPage.includes('Approve & Publish to Course'),
-    'Provides 1-click Approve & Add to Course action'
-  );
-  assert.ok(adminPage.includes('QADatabase.approveSubmission'), 'Approves submission into live course database');
-  assert.ok(adminPage.includes('QADatabase.rejectSubmission'), 'Provides rejection action with feedback');
+  // 3. Approvals Section view removed & purges legacy queues
+  assert.ok(!adminPage.includes("activeSection === 'approvals'"), 'Removes activeSection === approvals view');
+  assert.ok(adminPage.includes('intelligentqa_moderation_queue'), 'Purges legacy moderation queue in browser');
+  assert.ok(adminPage.includes('intelligentqa_staged_guides_'), 'Purges legacy staged guides in browser');
 });

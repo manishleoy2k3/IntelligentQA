@@ -71,7 +71,6 @@ type CMSTab =
   | 'drafts'
   | 'published'
   | 'seo'
-  | 'approvals'
   | 'team';
 
 function CMSPortalContent() {
@@ -161,12 +160,6 @@ function CMSPortalContent() {
     title: string;
   } | null>(null);
 
-  // Moderation & Approvals (Preserving test requirements)
-  const [submissions, setSubmissions] = useState<ModerationItem[]>([]);
-  const [previewSubmission, setPreviewSubmission] = useState<ModerationItem | null>(null);
-  const [rejectingSubmission, setRejectingSubmission] = useState<ModerationItem | null>(null);
-  const [rejectionReason, setRejectionReason] = useState('');
-
   // Team & RBAC (Preserving test requirements)
   const [adminEmails, setAdminEmails] = useState<string[]>([]);
   const [newAdminEmail, setNewAdminEmail] = useState('');
@@ -225,13 +218,18 @@ function CMSPortalContent() {
       const cList = getCmsCourses();
       setCourses(cList);
 
-      // Load moderation & admin team
-      const subs = QADatabase.getPendingSubmissions();
-      setSubmissions(subs);
+      // Load admin team
       const emails = QADatabase.getAdminEmails();
       setAdminEmails(emails);
       const sec = QADatabase.getAdminSecret();
       setAdminSecret(sec);
+
+      // Purge legacy approvals queue
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.removeItem('intelligentqa_moderation_queue');
+        } catch {}
+      }
     } catch (err) {
       console.error('Failed to load CMS data:', err);
     }
@@ -798,25 +796,6 @@ function CMSPortalContent() {
     setDeleteConfirmTarget(null);
   };
 
-  // Moderation Handlers (Preserving test compatibility)
-  const approveSubmission = (subId: string) => {
-    const ok = QADatabase.approveSubmission(subId, currentUser?.displayName || 'Admin');
-    if (ok) {
-      setSubmissions(QADatabase.getPendingSubmissions());
-      showBanner('Content submission approved and published!');
-    }
-  };
-
-  const rejectSubmission = (subId: string, reason: string) => {
-    const ok = QADatabase.rejectSubmission(subId, reason, currentUser?.displayName || 'Admin');
-    if (ok) {
-      setSubmissions(QADatabase.getPendingSubmissions());
-      setRejectingSubmission(null);
-      setRejectionReason('');
-      showBanner('Submission rejected with reason provided.');
-    }
-  };
-
   // Filter Articles
   const filteredArticles = articles.filter((art) => {
     const matchSearch =
@@ -940,7 +919,6 @@ function CMSPortalContent() {
           { id: 'drafts', label: 'Drafts', icon: Edit2 },
           { id: 'published', label: 'Published Content', icon: CheckCircle2 },
           { id: 'seo', label: 'SEO Management', icon: Globe },
-          { id: 'approvals', label: 'Approvals Queue', icon: CheckCircle2 },
           { id: 'team', label: 'Admin Team & RBAC', icon: Users },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -1579,58 +1557,6 @@ function CMSPortalContent() {
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* ============================================================ */}
-        {/* TAB 8: APPROVALS QUEUE (Preserving test compatibility) */}
-        {/* ============================================================ */}
-        {activeTab === 'approvals' && (
-          <div className="space-y-6">
-            <div className="p-6 rounded-2xl border border-[#27272A] bg-[#121215] space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#27272A]">
-                <h3 className="text-sm font-bold text-white">Approvals Queue</h3>
-                <span className="text-xs text-[#71717A]">{submissions.length} pending items</span>
-              </div>
-
-              {submissions.length === 0 ? (
-                <p className="text-xs text-[#71717A] py-8 text-center">
-                  No submissions pending moderation review.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {submissions.map((sub) => (
-                    <div
-                      key={sub.id}
-                      className="p-4 rounded-xl border border-[#27272A] bg-[#18181C] flex items-center justify-between"
-                    >
-                      <div>
-                        <h4 className="text-xs font-bold text-white">{sub.title}</h4>
-                        <p className="text-[11px] text-[#A1A1AA]">
-                          Submitted by {sub.submittedBy?.name || 'Community Member'} ({sub.type})
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => approveSubmission(sub.id)}
-                          className="px-3 py-1 rounded bg-emerald-600/20 text-emerald-300 text-xs font-bold hover:bg-emerald-600 hover:text-white"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setRejectingSubmission(sub)}
-                          className="px-3 py-1 rounded bg-rose-600/20 text-rose-300 text-xs font-bold hover:bg-rose-600 hover:text-white"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         )}

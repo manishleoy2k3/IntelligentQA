@@ -44,16 +44,14 @@ test('RBAC & Moderation in QADatabase: Admin allowlist and content approval queu
   assert.strictEqual(content.includes('rejectSubmission'), true, 'QADatabase must implement rejectSubmission');
 });
 
-test('Course CMS Portal: Approvals Queue and Admin Team & RBAC management are implemented', () => {
+test('Course CMS Portal: Admin Team & RBAC management are implemented and legacy approvals queue is purged', () => {
   const cmsPath = path.join(process.cwd(), 'src/app/admin/cms/page.tsx');
   const content = fs.readFileSync(cmsPath, 'utf-8');
 
-  assert.strictEqual(content.includes('Approvals Queue'), true, 'CMS must have Approvals Queue tab');
+  assert.strictEqual(content.includes('intelligentqa_moderation_queue'), true, 'CMS must purge legacy moderation queue');
   assert.strictEqual(content.includes('Admin Team &amp; RBAC') || content.includes('Admin Team'), true, 'CMS must have Admin Team & RBAC tab');
   assert.strictEqual(content.includes('Authorized Administrator Accounts'), true, 'CMS must display Authorized Administrators');
   assert.strictEqual(content.includes('Master Admin Security Passcode'), true, 'CMS must support Master Admin Passcode');
-  assert.strictEqual(content.includes('approveSubmission'), true, 'CMS must support approving submissions');
-  assert.strictEqual(content.includes('rejectSubmission'), true, 'CMS must support rejecting submissions');
 });
 
 test('Normal users submit guides and coding problems for Admin review instead of direct publish', () => {

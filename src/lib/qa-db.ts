@@ -1495,6 +1495,18 @@ export const QADatabase = {
     return true;
   },
 
+  // Purge all submissions from the moderation queue
+  clearAllSubmissions(): boolean {
+    setStoredItem('intelligentqa_moderation_queue', []);
+    if (isBrowser()) {
+      try {
+        localStorage.removeItem('intelligentqa_moderation_queue');
+      } catch {}
+      window.dispatchEvent(new Event('intelligentqa_moderation_updated'));
+    }
+    return true;
+  },
+
   // =========================================================================
   // COURSE CONTENT MANAGEMENT (SDET COURSES DATABASE)
   // =========================================================================

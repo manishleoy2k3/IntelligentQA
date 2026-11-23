@@ -233,11 +233,9 @@ test('Tutorials & Articles option and Admin pre-approval correction / re-allocat
   assert.ok(qaDbFile.includes('updateSubmission('), 'QADatabase provides updateSubmission');
   assert.ok(qaDbFile.includes('overrideFields?: Partial<ModerationItem>'), 'approveSubmission supports overrideFields');
 
-  // 3. Admin Station provides destination track re-allocation dropdown and edit mode
-  assert.ok(adminPageFile.includes('isEditingPreview'), 'Admin provides toggleable edit/correction mode');
-  assert.ok(adminPageFile.includes('Destination Course Category / Track:'), 'Admin review modal includes destination track selector');
-  assert.ok(adminPageFile.includes('Tutorials &amp; Articles (Knowledge Hub)'), 'Admin can re-allocate guide to Tutorials & Articles');
-  assert.ok(adminPageFile.includes('QADatabase.updateSubmission'), 'Admin can save corrections before approval');
+  // 3. Admin flow provides automatic purge of legacy guide moderation queue
+  assert.ok(qaDbFile.includes('clearAllSubmissions'), 'QADatabase provides clearAllSubmissions');
+  assert.ok(adminPageFile.includes('intelligentqa_moderation_queue'), 'Admin flow purges legacy moderation queue');
 });
 
 test('Single Import strictly produces a single Publish for Admin approval (1 Pending Review)', () => {
@@ -310,8 +308,8 @@ test('End-to-End Import & Admin Approval flow: Submitting from Share your Knowle
   assert.ok(conceptGuidesFile.includes('QADatabase.submitContentForReview'), 'concept-guides.ts pushes submissions to QADatabase review queue');
   assert.ok(conceptGuidesFile.includes("type: 'guide'"), 'Registers guide type submission');
 
-  // 3. Admin page detects staged guides and imports them into review queue
+  // 3. Admin flow cleanly purges legacy staged guides and moderation queue
   assert.ok(conceptGuidesFile.includes('getAllStagedGuidesAcrossTracks'), 'Exports getAllStagedGuidesAcrossTracks');
-  assert.ok(adminPageFile.includes('getAllStagedGuidesAcrossTracks()'), 'Admin page loads staged guides across all tracks');
-  assert.ok(adminPageFile.includes('Import Staged into Queue'), 'Admin page provides 1-click import from staging into queue');
+  assert.ok(adminPageFile.includes('intelligentqa_staged_guides_'), 'Admin page automatically purges staged guides across all tracks');
+  assert.ok(adminPageFile.includes('intelligentqa_moderation_queue'), 'Admin page purges legacy moderation queue');
 });
