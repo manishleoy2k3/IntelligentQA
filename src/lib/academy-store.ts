@@ -818,7 +818,6 @@ export class AcademyStore {
           const summaryLower = (lsn.summary || lsn.shortDescription || '').toLowerCase();
           const searchMetaLower = `${courseTitleLower} ${modTitleLower} ${lsnTitleLower} ${summaryLower}`;
           const contentHtml = lsn.contentHtml || '';
-          const contentLower = contentHtml ? contentHtml.toLowerCase() : '';
           this.searchIndexCache.push({
             id: lsn.id,
             courseId: course.id,
@@ -831,7 +830,6 @@ export class AcademyStore {
             status: lsn.status,
             searchMetaLower,
             contentHtml,
-            contentLower,
           });
         }
       }
@@ -2069,7 +2067,10 @@ export class AcademyStore {
       const allTokensMatch = tokens.length > 1 && tokens.every((t) => item.searchMetaLower.includes(t));
 
       let contentMatches = false;
-      if (!titleMatches && !summaryMatches && !courseMatches && !modMatches && !allTokensMatch && item.contentLower) {
+      if (!titleMatches && !summaryMatches && !courseMatches && !modMatches && !allTokensMatch && item.contentHtml) {
+        if (!item.contentLower) {
+          item.contentLower = item.contentHtml.toLowerCase();
+        }
         contentMatches = item.contentLower.includes(q);
       }
 

@@ -266,34 +266,59 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
             </div>
           </div>
 
-          <p className="text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">
-            {data.practicalImplementation.overview}
-          </p>
+          {(data.practicalImplementation.overview || (data.practicalImplementation as any).description) && (
+            <p className="text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">
+              {data.practicalImplementation.overview || (data.practicalImplementation as any).description}
+            </p>
+          )}
 
-          <div className="space-y-3">
-            {data.practicalImplementation.steps.map((step) => (
-              <div key={step.stepNumber} className="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800/50 border border-slate-200 dark:border-neutral-700 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-violet-600 dark:text-violet-400">
-                    Step {step.stepNumber}:
-                  </span>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                    {step.action}
-                  </h4>
-                </div>
-                {step.details && (
-                  <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
-                    {step.details}
-                  </p>
-                )}
-                {step.snippet && (
-                  <pre className="p-3 rounded-lg bg-[#161616] text-[#81FF89] text-xs font-mono overflow-x-auto border border-[#2D2D2D]">
-                    <code>{step.snippet}</code>
-                  </pre>
-                )}
-              </div>
-            ))}
-          </div>
+          {/* Prerequisites if present */}
+          {Array.isArray((data.practicalImplementation as any).prerequisites) && (data.practicalImplementation as any).prerequisites.length > 0 && (
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800/60 border border-slate-200 dark:border-neutral-700">
+              <h5 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-neutral-300 mb-2">Prerequisites:</h5>
+              <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 dark:text-neutral-400">
+                {(data.practicalImplementation as any).prerequisites.map((req: string, rIdx: number) => (
+                  <li key={rIdx}>{req}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Steps: gracefully handles both string[] and step objects */}
+          {Array.isArray(data.practicalImplementation.steps) && data.practicalImplementation.steps.length > 0 && (
+            <div className="space-y-3">
+              {data.practicalImplementation.steps.map((step: any, sIdx: number) => {
+                const isObj = typeof step === 'object' && step !== null;
+                const stepNum = isObj && step.stepNumber ? step.stepNumber : sIdx + 1;
+                const action = isObj ? (step.action || step.title || '') : String(step);
+                const details = isObj ? step.details : null;
+                const snippet = isObj ? step.snippet : null;
+
+                return (
+                  <div key={sIdx} className="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800/50 border border-slate-200 dark:border-neutral-700 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-violet-600 dark:text-violet-400">
+                        Step {stepNum}:
+                      </span>
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                        {action}
+                      </h4>
+                    </div>
+                    {details && (
+                      <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
+                        {details}
+                      </p>
+                    )}
+                    {snippet && (
+                      <pre className="p-3 rounded-lg bg-[#161616] text-[#81FF89] text-xs font-mono overflow-x-auto border border-[#2D2D2D]">
+                        <code>{snippet}</code>
+                      </pre>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
 
@@ -395,8 +420,14 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
           </div>
 
           <div className="space-y-3">
-            {data.commonProblems.map((prob, i) => {
+            {data.commonProblems.map((prob: any, i) => {
               const isOpen = openProblems[i];
+              const steps: string[] = Array.isArray(prob.troubleshooting)
+                ? prob.troubleshooting
+                : Array.isArray(prob.troubleshootingSteps)
+                ? prob.troubleshootingSteps
+                : [];
+
               return (
                 <div key={i} className="rounded-xl border border-red-200/80 dark:border-red-900/40 overflow-hidden">
                   <button
@@ -420,14 +451,16 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
                         <p className="text-slate-600 dark:text-neutral-400">{prob.rootCause}</p>
                       </div>
 
-                      <div>
-                        <strong className="text-slate-800 dark:text-neutral-200 block mb-1">Troubleshooting Steps:</strong>
-                        <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-neutral-400">
-                          {prob.troubleshooting.map((step, sIdx) => (
-                            <li key={sIdx}>{step}</li>
-                          ))}
-                        </ul>
-                      </div>
+                      {steps.length > 0 && (
+                        <div>
+                          <strong className="text-slate-800 dark:text-neutral-200 block mb-1">Troubleshooting Steps:</strong>
+                          <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-neutral-400">
+                            {steps.map((step, sIdx) => (
+                              <li key={sIdx}>{step}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
                       {prob.codeFix && (
                         <div>
@@ -506,31 +539,35 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
-              <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                Advantages &amp; Strengths
-              </h4>
-              <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 dark:text-neutral-300">
-                {data.comparison.advantages.map((adv, i) => (
-                  <li key={i}>{adv}</li>
-                ))}
-              </ul>
-            </div>
+            {Array.isArray(data.comparison.advantages) && data.comparison.advantages.length > 0 && (
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                  Advantages &amp; Strengths
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 dark:text-neutral-300">
+                  {data.comparison.advantages.map((adv, i) => (
+                    <li key={i}>{adv}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2">
-              <h4 className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-                Limitations &amp; Trade-offs
-              </h4>
-              <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 dark:text-neutral-300">
-                {data.comparison.limitations.map((lim, i) => (
-                  <li key={i}>{lim}</li>
-                ))}
-              </ul>
-            </div>
+            {Array.isArray(data.comparison.limitations) && data.comparison.limitations.length > 0 && (
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2">
+                <h4 className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
+                  Limitations &amp; Trade-offs
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 dark:text-neutral-300">
+                  {data.comparison.limitations.map((lim, i) => (
+                    <li key={i}>{lim}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* Optional Comparison Matrix Table */}
-          {data.comparison.headers && data.comparison.matrix && (
+          {Array.isArray(data.comparison.headers) && Array.isArray(data.comparison.matrix) && (
             <div className="overflow-x-auto pt-2">
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
@@ -545,7 +582,7 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
                 <tbody className="divide-y divide-slate-100 dark:divide-neutral-800">
                   {data.comparison.matrix.map((row, rIdx) => (
                     <tr key={rIdx} className="hover:bg-slate-50 dark:hover:bg-neutral-800/40">
-                      {row.map((cell, cIdx) => (
+                      {Array.isArray(row) && row.map((cell, cIdx) => (
                         <td key={cIdx} className="py-2.5 px-3 text-slate-700 dark:text-neutral-300">
                           {cell}
                         </td>
@@ -646,34 +683,51 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
             </div>
           </div>
 
-          <div className="space-y-2 text-xs">
-            <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
-              Key Architectural Takeaways:
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {data.summary.takeaways.map((t, idx) => (
-                <div key={idx} className="flex items-start gap-2 p-3 rounded-xl bg-white dark:bg-neutral-800/80 border border-emerald-100 dark:border-emerald-900/30">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-slate-700 dark:text-neutral-300">{t}</span>
-                </div>
-              ))}
+          {Array.isArray(data.summary.takeaways) && data.summary.takeaways.length > 0 && (
+            <div className="space-y-2 text-xs">
+              <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+                Key Architectural Takeaways:
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {data.summary.takeaways.map((t, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-3 rounded-xl bg-white dark:bg-neutral-800/80 border border-emerald-100 dark:border-emerald-900/30">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-slate-700 dark:text-neutral-300">{t}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {data.summary.whatToLearnNext && (
+          {/* Key Terminology if present */}
+          {Array.isArray((data.summary as any).keyTerminology) && (data.summary as any).keyTerminology.length > 0 && (
+            <div className="pt-2 text-xs">
+              <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-2">
+                Key Concepts Recap:
+              </h4>
+              <div className="flex flex-wrap gap-1.5">
+                {(data.summary as any).keyTerminology.map((term: string, idx: number) => (
+                  <span key={idx} className="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-mono text-[11px] border border-emerald-500/20 font-semibold">
+                    {term}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Support both whatToLearnNext (object) and nextSteps (string) */}
+          {(data.summary.whatToLearnNext || (data.summary as any).nextSteps) && (
             <div className="p-4 rounded-xl bg-white dark:bg-neutral-800 border border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
               <div>
                 <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
                   Up Next:
                 </span>
                 <h5 className="font-bold text-slate-900 dark:text-white text-sm">
-                  {data.summary.whatToLearnNext.title}
+                  {data.summary.whatToLearnNext?.title || 'Next Lesson in Track'}
                 </h5>
-                {data.summary.whatToLearnNext.description && (
-                  <p className="text-slate-500 dark:text-neutral-400 text-xs">
-                    {data.summary.whatToLearnNext.description}
-                  </p>
-                )}
+                <p className="text-slate-500 dark:text-neutral-400 text-xs mt-0.5">
+                  {data.summary.whatToLearnNext?.description || (data.summary as any).nextSteps}
+                </p>
               </div>
               <span className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 shrink-0">
                 <span>Continue</span>
@@ -687,178 +741,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
   );
 }
 
-/**
- * Utility: Compiles StandardLessonTemplateData into rich semantic HTML
- * for storage in curriculum-data-store.json or DOCX export
- */
-export function generateStandardLessonHtml(data: StandardLessonTemplateData): string {
-  const escapeHtml = (str: string) =>
-    (str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-
-  let html = `<div class="standard-lesson-container space-y-8 text-slate-800 dark:text-neutral-200">`;
-
-  // 1. Overview
-  if (data.overview) {
-    html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
-          <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 1 · Overview</span>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Lesson Overview</h3>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
-            <h4 class="font-bold uppercase text-slate-500 mb-1">What is this concept?</h4>
-            <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">${data.overview.whatIsIt}</p>
-          </div>
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
-            <h4 class="font-bold uppercase text-slate-500 mb-1">Why is it important?</h4>
-            <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">${data.overview.whyImportant}</p>
-          </div>
-          <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <h4 class="font-bold uppercase text-emerald-500 mb-1">Where is it used in testing?</h4>
-            <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">${data.overview.whereUsed}</p>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // 2. Objectives
-  if (data.learningObjectives && data.learningObjectives.length > 0) {
-    html += `
-      <div class="rounded-2xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50/30 dark:bg-indigo-950/20 p-6 space-y-3">
-        <span class="text-xs font-mono font-bold uppercase text-indigo-500">Section 2 · Objectives</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Learning Objectives</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          ${data.learningObjectives.map(o => `<div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-indigo-100 dark:border-indigo-900 text-slate-700 dark:text-neutral-200 font-medium">✓ ${escapeHtml(o)}</div>`).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 3. Concept Explanation
-  if (data.conceptExplanation) {
-    html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
-          <span class="text-xs font-mono font-bold uppercase text-blue-500">Section 3 · Theory</span>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Concept Explanation</h3>
-        </div>
-        <div class="space-y-3 text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">
-          ${data.conceptExplanation.theory.map(t => `<p>${t}</p>`).join('')}
-        </div>
-        ${data.conceptExplanation.terminology && data.conceptExplanation.terminology.length > 0 ? `
-          <div class="pt-2">
-            <h4 class="text-xs font-bold uppercase text-slate-500 mb-2">Key Terminology:</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              ${data.conceptExplanation.terminology.map(t => `<div class="p-3 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-xs"><strong class="block text-slate-900 dark:text-white mb-1">${escapeHtml(t.term)}</strong><span class="text-slate-600 dark:text-neutral-400">${escapeHtml(t.definition)}</span></div>`).join('')}
-            </div>
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }
-
-  // 4. Code Examples
-  if (data.codeExamples && data.codeExamples.length > 0) {
-    html += `
-      <div class="space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 7 · Implementation Code</span>
-        ${data.codeExamples.map(codeItem => `
-          <div class="rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-900 overflow-hidden font-mono text-xs">
-            <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 flex justify-between items-center text-slate-300">
-              <span class="font-bold text-slate-200">${escapeHtml(codeItem.filename || codeItem.title)}</span>
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 text-[10px] uppercase">${escapeHtml(codeItem.language)}</span>
-            </div>
-            <pre class="p-4 text-[#81FF89] overflow-x-auto leading-relaxed"><code>${escapeHtml(codeItem.code)}</code></pre>
-            ${codeItem.explanation ? `<div class="px-4 py-2 bg-slate-950 text-[11px] text-slate-400 border-t border-slate-800">${escapeHtml(codeItem.explanation)}</div>` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  // 5. Troubleshooting
-  if (data.commonProblems && data.commonProblems.length > 0) {
-    html += `
-      <div class="rounded-2xl border border-red-200 dark:border-red-950 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-red-500">Section 9 · Troubleshooting</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Common Errors &amp; Solutions</h3>
-        <div class="space-y-3">
-          ${data.commonProblems.map(p => `
-            <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2">
-              <h4 class="font-bold font-mono text-red-600 dark:text-red-400">${escapeHtml(p.error)}</h4>
-              <p class="text-slate-600 dark:text-neutral-400"><strong>Root Cause:</strong> ${escapeHtml(p.rootCause)}</p>
-              ${p.codeFix ? `<pre class="p-3 rounded-lg bg-[#161616] text-[#81FF89] font-mono text-[11px] overflow-x-auto"><code>${escapeHtml(p.codeFix)}</code></pre>` : ''}
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 6. Best Practices
-  if (data.bestPractices && data.bestPractices.length > 0) {
-    html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 10 · Best Practices</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Enterprise Recommendations</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          ${data.bestPractices.map(bp => `
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
-              <div class="flex justify-between items-center mb-1">
-                <strong class="text-slate-900 dark:text-white">${escapeHtml(bp.title)}</strong>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500">${escapeHtml(bp.category)}</span>
-              </div>
-              <p class="text-slate-600 dark:text-neutral-300">${escapeHtml(bp.recommendation)}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 7. Interview Questions
-  if (data.interviewQuestions && data.interviewQuestions.length > 0) {
-    html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-rose-500">Section 12 · Interview Questions</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Technical Interview Q&amp;A</h3>
-        <div class="space-y-3">
-          ${data.interviewQuestions.map(q => `
-            <div class="p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-800/50 text-xs space-y-1.5">
-              <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/10 text-rose-500">${escapeHtml(q.level)}</span>
-                <strong class="text-slate-900 dark:text-white">${escapeHtml(q.question)}</strong>
-              </div>
-              <p class="text-slate-600 dark:text-neutral-400 leading-relaxed">${escapeHtml(q.answer)}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 8. Summary
-  if (data.summary) {
-    html += `
-      <div class="rounded-2xl border border-emerald-200 dark:border-emerald-950 bg-emerald-50/20 dark:bg-emerald-950/20 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 13 · Summary</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Key Takeaways</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          ${data.summary.takeaways.map(t => `<div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-emerald-100 dark:border-emerald-900/50 text-slate-700 dark:text-neutral-300">✓ ${escapeHtml(t)}</div>`).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  html += `</div>`;
-  return html;
-}
+export { generateStandardLessonHtml } from '@/lib/standard-lesson-compiler';
 
 export { StandardLessonRenderer };

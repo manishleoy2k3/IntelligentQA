@@ -32,7 +32,7 @@ export default function CodeBlock({
     }
   };
 
-  const lines = code.trim().split('\n');
+  const lines = (code || '').trim().split('\n');
 
   return (
     <div className="my-6 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-900 text-slate-100 shadow-sm overflow-hidden font-mono text-[14px]">

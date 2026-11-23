@@ -136,7 +136,7 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
               <code>{config.mermaidCode}</code>
             </pre>
           </div>
-        ) : activeTab === 'components' && config.componentsExplanation ? (
+        ) : activeTab === 'components' && Array.isArray(config.componentsExplanation) && config.componentsExplanation.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             {config.componentsExplanation.map((comp, idx) => (
               <div
@@ -176,7 +176,7 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
             className="w-full overflow-x-auto flex justify-center py-2 text-slate-800 dark:text-slate-200"
             dangerouslySetInnerHTML={{ __html: config.svgContent }}
           />
-        ) : config.type === 'pipeline' && config.nodes ? (
+        ) : config.type === 'pipeline' && Array.isArray(config.nodes) && config.nodes.length > 0 ? (
           <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 overflow-x-auto pb-2">
             {config.nodes.map((node, idx) => (
               <React.Fragment key={node.id}>
@@ -210,7 +210,7 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
               </React.Fragment>
             ))}
           </div>
-        ) : config.type === 'layers' && config.nodes ? (
+        ) : config.type === 'layers' && Array.isArray(config.nodes) && config.nodes.length > 0 ? (
           <div className="space-y-3">
             {config.nodes.map((node, idx) => (
               <div
@@ -244,7 +244,7 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
               </div>
             ))}
           </div>
-        ) : config.nodes ? (
+        ) : Array.isArray(config.nodes) && config.nodes.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {config.nodes.map((node) => (
               <div

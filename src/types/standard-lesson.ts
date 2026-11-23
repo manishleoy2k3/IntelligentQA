@@ -30,7 +30,8 @@ export interface CodeExampleItem {
 export interface TroubleshootingScenario {
   error: string;
   rootCause: string;
-  troubleshooting: string[];
+  troubleshooting?: string[];
+  troubleshootingSteps?: string[];
   debuggingTechnique?: string;
   codeFix?: string;
 }
@@ -107,13 +108,16 @@ export interface StandardLessonTemplateData {
 
   // 6. Practical Implementation
   practicalImplementation?: {
-    overview: string;
+    overview?: string;
+    description?: string;
+    prerequisites?: string[];
     steps: Array<{
-      stepNumber: number;
-      action: string;
+      stepNumber?: number;
+      action?: string;
+      title?: string;
       details?: string;
       snippet?: string;
-    }>;
+    } | string>;
   };
 
   // 7. Code Examples
@@ -135,7 +139,8 @@ export interface StandardLessonTemplateData {
   // 11. Comparison and Alternatives
   comparison?: {
     title: string;
-    alternativeApproach: string;
+    comparedTo?: string;
+    alternativeApproach?: string;
     advantages: string[];
     limitations: string[];
     headers?: string[];
@@ -148,7 +153,8 @@ export interface StandardLessonTemplateData {
   // 13. Lesson Summary
   summary?: {
     takeaways: string[];
-    keyTerminology: string[];
+    keyTerminology?: string[];
+    nextSteps?: string;
     whatToLearnNext?: {
       title: string;
       slug?: string;
