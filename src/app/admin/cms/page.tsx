@@ -196,6 +196,9 @@ function CMSPortalContent() {
     }
   }, []);
 
+  // Helper to load tracks for CMS excluding AI for QA
+  const getCmsCourses = () => QADatabase.getTracks().filter((c) => c.id !== 'ai-qa');
+
   const loadAllData = async () => {
     try {
       // Load stats
@@ -219,7 +222,7 @@ function CMSPortalContent() {
       if (tagData.success) setTags(tagData.tags);
 
       // Load courses
-      const cList = QADatabase.getTracks();
+      const cList = getCmsCourses();
       setCourses(cList);
 
       // Load moderation & admin team
@@ -358,7 +361,7 @@ function CMSPortalContent() {
               updatedDoc
             );
             QADatabase.saveTrack(course);
-            setCourses(QADatabase.getTracks());
+            setCourses(getCmsCourses());
           }
         }
 
@@ -525,7 +528,7 @@ function CMSPortalContent() {
 
     const updatedTrack = { ...course, modules: nextModules };
     QADatabase.saveTrack(updatedTrack);
-    setCourses(QADatabase.getTracks());
+    setCourses(getCmsCourses());
     showBanner(`Reordered module "${moved.title}" ${direction}`);
   };
 
@@ -543,14 +546,14 @@ function CMSPortalContent() {
     const lesson = mod.lessons[lessonIndex];
     if (lesson) {
       QADatabase.moveLesson(courseId as any, lesson.id, direction);
-      setCourses(QADatabase.getTracks());
+      setCourses(getCmsCourses());
       showBanner(`Reordered lesson "${lesson.title}" ${direction}`);
     }
   };
 
   const handleToggleLessonDisabled = (courseId: string, moduleId: string, lessonId: string) => {
     QADatabase.toggleLessonDisabled(courseId as any, lessonId);
-    setCourses(QADatabase.getTracks());
+    setCourses(getCmsCourses());
     showBanner('Toggled lesson visibility status');
   };
 
@@ -617,7 +620,7 @@ function CMSPortalContent() {
         description: trackForm.description.trim(),
       };
       QADatabase.saveTrack(updated);
-      setCourses(QADatabase.getTracks());
+      setCourses(getCmsCourses());
       showBanner(`Saved course details for "${updated.title}"`);
       setShowCourseModal(false);
       return;
@@ -641,7 +644,7 @@ function CMSPortalContent() {
         modules: [...course.modules, newModule],
       };
       QADatabase.saveTrack(updated);
-      setCourses(QADatabase.getTracks());
+      setCourses(getCmsCourses());
       showBanner(`Added module "${newModule.title}" to ${course.title}`);
       setShowCourseModal(false);
       return;
@@ -657,7 +660,7 @@ function CMSPortalContent() {
       );
       const updated = { ...course, modules: updatedModules };
       QADatabase.saveTrack(updated);
-      setCourses(QADatabase.getTracks());
+      setCourses(getCmsCourses());
       showBanner(`Updated module title to "${moduleForm.title.trim()}"`);
       setShowCourseModal(false);
       return;
@@ -726,7 +729,7 @@ function CMSPortalContent() {
         newLesson,
         starterDoc
       );
-      setCourses(QADatabase.getTracks());
+      setCourses(getCmsCourses());
       showBanner(`Added lesson "${newLesson.title}" to curriculum!`);
       setShowCourseModal(false);
       return;
@@ -744,7 +747,7 @@ function CMSPortalContent() {
         les.description = lessonForm.description.trim();
         les.durationMinutes = Number(lessonForm.durationMinutes) || 15;
         await QADatabase.saveLessonToDatabase(course.id, lessonForm.moduleId || mod!.id, les);
-        setCourses(QADatabase.getTracks());
+        setCourses(getCmsCourses());
         showBanner(`Updated details for "${les.title}"`);
       }
       setShowCourseModal(false);
@@ -778,7 +781,7 @@ function CMSPortalContent() {
 
     if (deleteConfirmTarget.type === 'lesson') {
       QADatabase.deleteLessonFromDatabase(deleteConfirmTarget.courseId, deleteConfirmTarget.id);
-      setCourses(QADatabase.getTracks());
+      setCourses(getCmsCourses());
       showBanner(`Deleted lesson "${deleteConfirmTarget.title}"`);
     } else if (deleteConfirmTarget.type === 'module') {
       const course = courses.find((c) => c.id === deleteConfirmTarget.courseId);
@@ -786,7 +789,7 @@ function CMSPortalContent() {
         course.modules = course.modules.filter((m) => m.id !== deleteConfirmTarget.id);
         course.totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0);
         QADatabase.saveTrack(course);
-        setCourses(QADatabase.getTracks());
+        setCourses(getCmsCourses());
         showBanner(`Deleted module "${deleteConfirmTarget.title}"`);
       }
     }

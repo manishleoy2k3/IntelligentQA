@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
 import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
@@ -54,6 +54,7 @@ interface SidebarProps {
 
 export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
   const [geminiKey, setGeminiKey] = useState<string>('');
@@ -84,6 +85,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       ...prev,
       [trackId]: !prev[trackId],
     }));
+    if (trackId === 'ai-qa') {
+      router.push('/guides/ai-qa');
+      onCloseMobile?.();
+    }
   };
 
   // QA AI Agents Sub-Menu collapsible state (open by default for easy access)
@@ -313,7 +318,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       icon: Sparkles,
       iconColor: 'text-cyan-500',
       badgeClass: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10',
-      lessons: curriculumTracks.find(t => t.id === 'ai-qa')?.modules.flatMap((m: Module) => m.lessons) || [],
+      lessons: [],
     },
   ];
 
@@ -446,7 +451,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                             onCloseMobile?.();
                           }}
                           className="flex items-center gap-2 truncate flex-1 min-w-0"
-                          title={`${track.displayTitle} (${track.lessons.length} Lessons)`}
+                          title={`${track.displayTitle}${track.lessons.length > 0 ? ` (${track.lessons.length} Lessons)` : ''}`}
                         >
                           <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
                           <span className="truncate font-semibold">
@@ -454,21 +459,23 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           </span>
                         </Link>
 
-                        <div
-                          className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0"
-                          title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
-                        >
-                          <span>{track.lessons.length} Lessons</span>
-                          <ChevronDown
-                            className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
-                              isExpanded ? 'rotate-180' : ''
-                            }`}
-                          />
-                        </div>
+                        {track.lessons.length > 0 && (
+                          <div
+                            className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0"
+                            title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
+                          >
+                            <span>{track.lessons.length} Lessons</span>
+                            <ChevronDown
+                              className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {/* All Individual Lessons with total hours of each individual lesson */}
-                      {isExpanded && (
+                      {isExpanded && track.lessons.length > 0 && (
                         <div className="pl-3 pr-0.5 py-0.5 space-y-0.5 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
                           {/* Header showing lesson count and admin badge */}
                           <div className="pt-0.5 pb-1 px-2 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-slate-400 dark:text-neutral-500">

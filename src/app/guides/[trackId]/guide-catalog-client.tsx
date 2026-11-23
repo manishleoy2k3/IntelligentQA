@@ -70,7 +70,15 @@ export default function GuideCatalogClient({
         ? "playwright"
         : initialTrackId;
 
-  const [activeTrack] = useState<string>(normalizedTrack);
+  const activeTrack = normalizedTrack;
+
+  if (activeTrack === 'ai-qa' || initialTrackId === 'ai-qa') {
+    return (
+      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
+        {/* Kept clean with no content */}
+      </div>
+    );
+  }
   const trackInfo = TRACK_META[activeTrack] || {
     id: activeTrack,
     name: "Automation",
@@ -457,6 +465,14 @@ export default function GuideCatalogClient({
     setTemplateCopied(true);
     setTimeout(() => setTemplateCopied(false), 2500);
   };
+
+  if (activeTrack === 'ai-qa') {
+    return (
+      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
+        {/* Kept clean with no content */}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans">

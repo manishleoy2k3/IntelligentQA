@@ -20,6 +20,15 @@ export default async function LessonWorkspacePage({
   params: Promise<{ trackId: string; lessonId: string }>;
 }) {
   const { trackId, lessonId } = await params;
+
+  if (trackId === 'ai-qa') {
+    return (
+      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
+        {/* Kept clean with no content */}
+      </div>
+    );
+  }
+
   const data = getLessonById(trackId, lessonId);
 
   if (!data) {

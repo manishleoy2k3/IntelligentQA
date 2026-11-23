@@ -208,7 +208,7 @@ function AdminDashboardContent() {
 
   // Reload all stores
   const reloadData = () => {
-    setTracks(QADatabase.getTracks());
+    setTracks(QADatabase.getTracks().filter((t) => t.id !== 'ai-qa'));
     setCodingProblems(getAllProblems());
     setAgentConfigs(getStoredAgentConfigs());
     setInterviewQuestions(getAllInterviewQuestions());
@@ -2103,7 +2103,7 @@ function AdminDashboardContent() {
                     ? 'Playwright (TS)'
                     : editTrackTarget === 'selenium'
                     ? 'Selenium WebDriver'
-                    : 'AI Academy'}
+                    : 'Tutorials & Articles'}
                 </span>
               </div>
               <span className="text-[11px] text-zinc-400 hidden sm:inline">
@@ -2184,7 +2184,6 @@ function AdminDashboardContent() {
                     <option value="selenium">Selenium WebDriver + Java (Stage 1)</option>
                     <option value="playwright">Playwright + TypeScript (Stage 2)</option>
                     <option value="api-testing">Rest Assured (API) &amp; Automation (Stage 3)</option>
-                    <option value="ai-qa">AI Academy (AI for QA) (Stage 4)</option>
                     <option value="articles">Tutorials &amp; Articles (Knowledge Hub)</option>
                   </select>
                 </div>
@@ -2407,7 +2406,7 @@ function AdminDashboardContent() {
                         ? 'Playwright'
                         : editTrackTarget === 'selenium'
                         ? 'Selenium'
-                        : 'AI Academy'}
+                        : 'Tutorials & Articles'}
                     </span>
                   </button>
                 </div>

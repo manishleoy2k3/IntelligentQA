@@ -18,6 +18,14 @@ export default async function TrackOverviewPage({
     notFound();
   }
 
+  if (trackId === 'ai-qa') {
+    return (
+      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
+        {/* Kept clean with no content */}
+      </div>
+    );
+  }
+
   const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
 
   return <TrackOverviewClient initialTrack={track} guideSlug={guideSlug} />;

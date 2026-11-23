@@ -94,3 +94,54 @@ test('Admin Modification: Track overview client component exists and reacts to u
     'Track overview client must react to intelligentqa_curriculum_updated and query QADatabase.getTrackById'
   );
 });
+
+test('AI for QA Removal: Left navigation has no course content listed under AI for QA, and Admin CMS removes AI for QA reference', () => {
+  const sidebarPath = path.join(process.cwd(), 'src/components/layout/sidebar.tsx');
+  const sidebarContent = fs.readFileSync(sidebarPath, 'utf-8');
+
+  // Verify AI for QA in sidebar is renamed to AI Academy with no course content/lessons listed under it
+  assert.strictEqual(
+    sidebarContent.includes("id: 'ai-qa'") &&
+    sidebarContent.includes("displayTitle: 'AI Academy'") &&
+    sidebarContent.includes('lessons: []'),
+    true,
+    'Sidebar must rename ai-qa track to AI Academy and have empty lessons array'
+  );
+  assert.strictEqual(
+    sidebarContent.includes('isExpanded && track.lessons.length > 0'),
+    true,
+    'Sidebar must only render lesson hierarchy when track has lessons'
+  );
+
+  // Verify Guide and Tracks client keeps ai-qa page clean with no content
+  const guideClientPath = path.join(process.cwd(), 'src/app/guides/[trackId]/guide-catalog-client.tsx');
+  const guideContent = fs.readFileSync(guideClientPath, 'utf-8');
+  assert.strictEqual(
+    guideContent.includes("activeTrack === 'ai-qa'"),
+    true,
+    'Guide catalog client must keep ai-qa clean with no content'
+  );
+
+  // Verify Admin Dashboard (/admin) excludes ai-qa
+  const adminPagePath = path.join(process.cwd(), 'src/app/admin/page.tsx');
+  const adminContent = fs.readFileSync(adminPagePath, 'utf-8');
+  assert.strictEqual(
+    adminContent.includes("t.id !== 'ai-qa'"),
+    true,
+    'Admin page must filter out ai-qa from tracks'
+  );
+  assert.strictEqual(
+    adminContent.includes('<option value="ai-qa">'),
+    false,
+    'Admin page Guide Approvals dropdown must not reference ai-qa'
+  );
+
+  // Verify Admin CMS (/admin/cms) excludes ai-qa
+  const adminCmsPath = path.join(process.cwd(), 'src/app/admin/cms/page.tsx');
+  const cmsContent = fs.readFileSync(adminCmsPath, 'utf-8');
+  assert.strictEqual(
+    cmsContent.includes("c.id !== 'ai-qa'"),
+    true,
+    'Admin CMS must filter out ai-qa from courses'
+  );
+});

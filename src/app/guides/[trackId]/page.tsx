@@ -21,6 +21,14 @@ export default async function TrackGuidePage({
 }) {
   const { trackId } = await params;
 
+  if (trackId === 'ai-qa') {
+    return (
+      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
+        {/* Kept clean with no content */}
+      </div>
+    );
+  }
+
   return (
     <Suspense
       fallback={
@@ -32,7 +40,7 @@ export default async function TrackGuidePage({
         </div>
       }
     >
-      <GuideCatalogClient initialTrackId={trackId} />
+      <GuideCatalogClient key={trackId} initialTrackId={trackId} />
     </Suspense>
   );
 }

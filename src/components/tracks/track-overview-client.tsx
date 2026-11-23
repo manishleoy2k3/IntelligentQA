@@ -284,6 +284,14 @@ export default function TrackOverviewClient({
   const nextLesson = allLessons.find(l => !completedLessonIds.has(l.id)) || allLessons[0];
   const architectModel = ARCHITECT_TRACK_MODELS[track.id];
 
+  if (track.id === 'ai-qa') {
+    return (
+      <div className="flex-1 flex flex-col min-h-screen bg-[#111111] text-slate-100 font-sans">
+        {/* Kept clean with no content */}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-5xl mx-auto p-4 md:p-8 space-y-8">
       {/* Header */}
