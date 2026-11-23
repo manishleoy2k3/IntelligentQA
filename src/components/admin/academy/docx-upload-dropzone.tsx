@@ -20,6 +20,10 @@ export interface UploadedDocInfo {
   fileSizeBytes: number;
   mimeType: string;
   hash: string;
+  contentHtml?: string;
+  pdfPath?: string;
+  metadata?: any;
+  extractedImages?: any[];
 }
 
 interface DocxUploadDropzoneProps {
@@ -144,6 +148,7 @@ export default function DocxUploadDropzone({
         throw new Error(json.error || `Upload failed with status ${res.status}`);
       }
 
+      const processing = json.data.processing;
       const info: UploadedDocInfo = {
         id: json.data.id,
         originalFilename: json.data.originalFilename || file.name,
@@ -151,6 +156,10 @@ export default function DocxUploadDropzone({
         fileSizeBytes: json.data.fileSizeBytes || file.size,
         mimeType: json.data.mimeType || file.type,
         hash: json.data.hash || '',
+        contentHtml: processing?.html || '',
+        pdfPath: processing?.pdfPath || '',
+        metadata: processing?.metadata || null,
+        extractedImages: processing?.extractedImages || [],
       };
 
       setUploadedInfo(info);
@@ -236,6 +245,33 @@ export default function DocxUploadDropzone({
               <p className="text-[10px] text-zinc-400">
                 {uploadedInfo ? formatFileSize(uploadedInfo.fileSizeBytes) : 'Preserved Document'} • Ready for Preview &amp; Publishing
               </p>
+              {uploadedInfo?.metadata && (
+                <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Fidelity: High
+                  </span>
+                  {uploadedInfo.metadata.headings_count > 0 && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                      {uploadedInfo.metadata.headings_count} Headings
+                    </span>
+                  )}
+                  {uploadedInfo.metadata.images_count > 0 && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      {uploadedInfo.metadata.images_count} Images Extracted
+                    </span>
+                  )}
+                  {uploadedInfo.metadata.code_blocks_count > 0 && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      {uploadedInfo.metadata.code_blocks_count} Code Blocks
+                    </span>
+                  )}
+                  {uploadedInfo.metadata.tables_count > 0 && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                      {uploadedInfo.metadata.tables_count} Tables
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

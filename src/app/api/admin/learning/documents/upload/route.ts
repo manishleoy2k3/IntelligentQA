@@ -4,6 +4,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { academyStore } from '@/lib/academy-store';
 import { verifyAdminAccess } from '@/lib/cms-security';
+import { validateDocxFile, processDocxDocument } from '@/lib/docx-engine';
 
 const DOCS_DIR = path.join(process.cwd(), 'public/uploads/learning/docs');
 const MEDIA_DIR = path.join(process.cwd(), 'public/uploads/learning/media');
@@ -49,8 +50,20 @@ export async function POST(req: NextRequest) {
     const originalFilename = file.name;
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const hash = crypto.createHash('sha256').update(buffer).digest('hex');
     const ext = path.extname(originalFilename).toLowerCase();
+
+    // 1. Rigorous File Validation for .docx
+    if (ext === '.docx') {
+      const validation = validateDocxFile(buffer, originalFilename);
+      if (!validation.valid) {
+        return NextResponse.json(
+          { success: false, error: validation.error },
+          { status: 400 }
+        );
+      }
+    }
+
+    const hash = crypto.createHash('sha256').update(buffer).digest('hex');
     const safeBaseName = path.basename(originalFilename, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
     const storedFilename = `${safeBaseName}_${Date.now()}${ext}`;
 
@@ -74,6 +87,16 @@ export async function POST(req: NextRequest) {
         uploadedAt: new Date().toISOString(),
       });
 
+      // 2. High-Fidelity DOCX Processing Pipeline
+      let processingResult = null;
+      if (ext === '.docx') {
+        processingResult = processDocxDocument({
+          docxFilePath: filePath,
+          lessonId,
+          originalFilename,
+        });
+      }
+
       return NextResponse.json({
         success: true,
         data: {
@@ -83,8 +106,11 @@ export async function POST(req: NextRequest) {
           fileSizeBytes: buffer.length,
           mimeType: file.type,
           hash,
+          processing: processingResult,
         },
-        message: 'Document uploaded successfully.',
+        message: ext === '.docx' 
+          ? 'Word document uploaded and processed successfully with format preservation.'
+          : 'Document uploaded successfully.',
       }, { status: 201 });
     }
 

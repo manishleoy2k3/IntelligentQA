@@ -1392,7 +1392,13 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
                   currentDocumentPath={lessonDocPath}
                   onUploaded={(info: UploadedDocInfo) => {
                     setLessonDocPath(info.filePath);
-                    notify(`Uploaded "${info.originalFilename}" successfully.`);
+                    if (info.contentHtml) {
+                      setLessonContentHtml(info.contentHtml);
+                    }
+                    if (info.metadata?.estimated_reading_time_minutes) {
+                      setLessonReadTime(info.metadata.estimated_reading_time_minutes);
+                    }
+                    notify(`Uploaded & processed "${info.originalFilename}" with format preservation.`);
                   }}
                   onClear={() => setLessonDocPath('')}
                 />

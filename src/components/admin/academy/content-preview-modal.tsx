@@ -204,18 +204,53 @@ export default function ContentPreviewModal({
                 </div>
 
                 {docPath && (
-                  <div className="flex items-center justify-center gap-3 pt-2">
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    {lesson.pdfPath && (
+                      <a
+                        href={lesson.pdfPath}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors cursor-pointer"
+                      >
+                        <Globe className="w-3.5 h-3.5" />
+                        <span>Open Printable Document / PDF</span>
+                      </a>
+                    )}
                     <a
                       href={docPath}
                       download
                       className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      <span>Download Original Document</span>
+                      <span>Download Original Document (.docx)</span>
                     </a>
                   </div>
                 )}
               </div>
+
+              {lesson.pdfPath && (
+                <div className="rounded-2xl border border-[#2D2D2D] bg-[#141414] overflow-hidden">
+                  <div className="px-4 py-2.5 bg-[#1C1C1C] border-b border-[#2D2D2D] text-xs font-medium text-zinc-300 flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Printable Layout Fidelity Preview</span>
+                    </span>
+                    <a
+                      href={lesson.pdfPath}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-emerald-400 hover:underline"
+                    >
+                      Full Window ↗
+                    </a>
+                  </div>
+                  <iframe
+                    src={lesson.pdfPath}
+                    title="Document Print Layout Preview"
+                    className="w-full h-96 bg-white border-0"
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

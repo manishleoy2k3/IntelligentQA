@@ -8394,6 +8394,102 @@
           ]
         }
       ]
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795436167449",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795436167453",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795436167453",
+          "courseId": "course-fidelity-course-1795436167449",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795436167458",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795436167458",
+              "courseId": "course-fidelity-course-1795436167449",
+              "moduleId": "mod-fidelity-module-1795436167453",
+              "createdAt": "2026-11-23T12:16:07.458Z",
+              "updatedAt": "2026-11-23T12:16:07.523Z",
+              "contentHtml": "<h1 id=\"heading-1-autonomous-quality-engineering-architecture\" class=\"text-2xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-neutral-800 pb-2\">Heading 1: Autonomous Quality Engineering Architecture</h1>\n<h2 id=\"heading-2-core-transformer-pipeline\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">Heading 2: Core Transformer Pipeline</h2>\n<h3 id=\"heading-3-subsystem-components-and-ingestion-stages\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Heading 3: Subsystem Components and Ingestion Stages</h3>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">This technical specification document verifies that Microsoft Word OpenXML (.docx) files are processed, rendered, and preserved with zero manual HTML authoring. Every paragraph, heading, list hierarchy, table, code block, and binary asset must survive transformation intact.</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><strong>Bold Text Example</strong>, <em>Italic Text Example</em>, and <u><em><strong>Bold-Italic-Underlined Text</strong></em></u>. Special characters testing: &amp;amp; symbols (&lt;tag&gt;, &quot;quotes&quot;, © 2026, ® registered, ™ trademark, λ lambda, → arrow, and ✓ checkmark).</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">For more technical documentation, visit <a href=\"https://playwright.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Playwright Official Documentation</u></span></a> or review enterprise practices on <a href=\"https://www.selenium.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Selenium WebDriver Official Portal</u></span></a>.</p>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Root Bullet Item: Quality Engineering Foundations</li>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Deterministic Element Locators</li>\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Auto-Waiting Actionability Matrix</li>\n</ul>\n<li class=\"leading-relaxed\">Root Bullet Item: Agentic Execution Loops</li>\n<li class=\"leading-relaxed\">Initialize Test Driver and Browser Context</li>\n<li class=\"leading-relaxed\">Execute Autonomous Test Step with Multi-Attribute Self-Healing</li>\n<li class=\"leading-relaxed\">Capture Trace Artifacts, Console Logs, and Har Payloads</li>\n</ul>\n<div class=\"overflow-x-auto my-6 rounded-2xl border border-neutral-700/80 shadow-lg\">\n  <table class=\"w-full text-left border-collapse text-xs bg-neutral-950/60\">\n    <tbody>\n      <tr><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Capability</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Specification</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Fidelity Level</strong></th></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Headings &amp; Structure</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">H1, H2, H3 with anchor IDs</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">100% Semantic Match</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Embedded Images</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Lossless extraction to persistent disk</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Native Resolution</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Code Snippets</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Syntax block with language badge &amp; copy button</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Indentation</td></tr>\n    </tbody>\n  </table>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 1: Quality Engineering Architecture Diagram</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795436167458/les-fidelity-lesson-1795436167458_image1.png\" alt=\"QE Architecture Diagram\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">QE Architecture Diagram</figcaption>\n</figure></p>\n<div class=\"my-8 flex items-center justify-center gap-4 text-neutral-500 docx-page-break select-none\">\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n  <span class=\"text-[10px] font-mono tracking-widest uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full text-neutral-400\">Page Break</span>\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 2: Pipeline Orchestration &amp; Reporting</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795436167458/les-fidelity-lesson-1795436167458_image2.png\" alt=\"Pipeline Orchestration\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">Pipeline Orchestration</figcaption>\n</figure></p>\n<h3 id=\"java-selenium-enterprise-implementation\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Java Selenium Enterprise Implementation</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">java</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-java\">package com.intelligentqa.tests;\n\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.testng.annotations.Test;\n\npublic class SeleniumEnterpriseTest {\n    @Test\n    public void verifyAutonomousHealthCheck() {\n        WebDriver driver = new ChromeDriver();\n        driver.get(&quot;https://intelligentqa.com/dashboard&quot;);\n        System.out.println(&quot;Page Title: &quot; + driver.getTitle());\n        driver.quit();\n    }\n}</code></pre>\n</div>\n<h3 id=\"typescript-playwright-modern-framework\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">TypeScript Playwright Modern Framework</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">typescript</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-typescript\">import { test, expect } from &#x27;@playwright/test&#x27;;\n\ninterface AssessmentPayload {\n  candidateId: string;\n  role: &#x27;SDET&#x27; | &#x27;QA_Architect&#x27;;\n  score: number;\n}\n\ntest(&#x27;verify Playwright auto-waiting actionability matrix&#x27;, async ({ page }) =&gt; {\n  await page.goto(&#x27;/learning&#x27;);\n  const card = page.getByRole(&#x27;heading&#x27;, { name: &#x27;What is an LLM?&#x27; });\n  await expect(card).toBeVisible();\n});</code></pre>\n</div>",
+              "originalDocxPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436167470.docx",
+              "pdfPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436167470_print.html",
+              "wordCount": 98,
+              "estimatedReadingTime": 1
+            }
+          ],
+          "createdAt": "2026-11-23T12:16:07.453Z",
+          "updatedAt": "2026-11-23T12:16:07.523Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795436167449",
+      "createdAt": "2026-11-23T12:16:07.449Z",
+      "updatedAt": "2026-11-23T12:16:07.523Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795436322563",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795436322568",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795436322568",
+          "courseId": "course-fidelity-course-1795436322563",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795436322574",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795436322574",
+              "courseId": "course-fidelity-course-1795436322563",
+              "moduleId": "mod-fidelity-module-1795436322568",
+              "createdAt": "2026-11-23T12:18:42.574Z",
+              "updatedAt": "2026-11-23T12:18:42.716Z",
+              "contentHtml": "<h1 id=\"heading-1-autonomous-quality-engineering-architecture\" class=\"text-2xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-neutral-800 pb-2\">Heading 1: Autonomous Quality Engineering Architecture</h1>\n<h2 id=\"heading-2-core-transformer-pipeline\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">Heading 2: Core Transformer Pipeline</h2>\n<h3 id=\"heading-3-subsystem-components-and-ingestion-stages\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Heading 3: Subsystem Components and Ingestion Stages</h3>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">This technical specification document verifies that Microsoft Word OpenXML (.docx) files are processed, rendered, and preserved with zero manual HTML authoring. Every paragraph, heading, list hierarchy, table, code block, and binary asset must survive transformation intact.</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><strong>Bold Text Example</strong>, <em>Italic Text Example</em>, and <u><em><strong>Bold-Italic-Underlined Text</strong></em></u>. Special characters testing: &amp;amp; symbols (&lt;tag&gt;, &quot;quotes&quot;, © 2026, ® registered, ™ trademark, λ lambda, → arrow, and ✓ checkmark).</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">For more technical documentation, visit <a href=\"https://playwright.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Playwright Official Documentation</u></span></a> or review enterprise practices on <a href=\"https://www.selenium.dev\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors\"><span style=\"color: #10B981;\"><u>Selenium WebDriver Official Portal</u></span></a>.</p>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Root Bullet Item: Quality Engineering Foundations</li>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Deterministic Element Locators</li>\n<li class=\"leading-relaxed\">Nested Bullet Level 1: Auto-Waiting Actionability Matrix</li>\n</ul>\n<li class=\"leading-relaxed\">Root Bullet Item: Agentic Execution Loops</li>\n</ul>\n<ol class=\"list-decimal pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Initialize Test Driver and Browser Context</li>\n<li class=\"leading-relaxed\">Execute Autonomous Test Step with Multi-Attribute Self-Healing</li>\n<li class=\"leading-relaxed\">Capture Trace Artifacts, Console Logs, and Har Payloads</li>\n</ol>\n<div class=\"overflow-x-auto my-6 rounded-2xl border border-neutral-700/80 shadow-lg\">\n  <table class=\"w-full text-left border-collapse text-xs bg-neutral-950/60\">\n    <tbody>\n      <tr><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Capability</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Specification</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Fidelity Level</strong></th></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Headings &amp; Structure</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">H1, H2, H3 with anchor IDs</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">100% Semantic Match</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Embedded Images</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Lossless extraction to persistent disk</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Native Resolution</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Code Snippets</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Syntax block with language badge &amp; copy button</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Preserved Indentation</td></tr>\n    </tbody>\n  </table>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 1: Quality Engineering Architecture Diagram</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795436322574/les-fidelity-lesson-1795436322574_image1.png\" alt=\"QE Architecture Diagram\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">QE Architecture Diagram</figcaption>\n</figure></p>\n<div class=\"my-8 flex items-center justify-center gap-4 text-neutral-500 docx-page-break select-none\">\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n  <span class=\"text-[10px] font-mono tracking-widest uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full text-neutral-400\">Page Break</span>\n  <div class=\"h-px bg-neutral-800 flex-1\"></div>\n</div>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 2: Pipeline Orchestration &amp; Reporting</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><figure class=\"my-6 text-center select-none\">\n  <img src=\"/uploads/learning/images/les-fidelity-lesson-1795436322574/les-fidelity-lesson-1795436322574_image2.png\" alt=\"Pipeline Orchestration\" class=\"rounded-xl shadow-xl max-w-full h-auto mx-auto border border-neutral-700/60 transition-transform hover:scale-[1.01]\" loading=\"lazy\" />\n  <figcaption class=\"text-xs text-neutral-400 mt-2.5 font-medium italic\">Pipeline Orchestration</figcaption>\n</figure></p>\n<h3 id=\"java-selenium-enterprise-implementation\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">Java Selenium Enterprise Implementation</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">java</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-java\">package com.intelligentqa.tests;\n\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.testng.annotations.Test;\n\npublic class SeleniumEnterpriseTest {\n    @Test\n    public void verifyAutonomousHealthCheck() {\n        WebDriver driver = new ChromeDriver();\n        driver.get(&quot;https://intelligentqa.com/dashboard&quot;);\n        System.out.println(&quot;Page Title: &quot; + driver.getTitle());\n        driver.quit();\n    }\n}</code></pre>\n</div>\n<h3 id=\"typescript-playwright-modern-framework\" class=\"text-lg font-semibold text-neutral-200 mt-5 mb-2\">TypeScript Playwright Modern Framework</h3>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">typescript</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-typescript\">import { test, expect } from &#x27;@playwright/test&#x27;;\n\ninterface AssessmentPayload {\n  candidateId: string;\n  role: &#x27;SDET&#x27; | &#x27;QA_Architect&#x27;;\n  score: number;\n}\n\ntest(&#x27;verify Playwright auto-waiting actionability matrix&#x27;, async ({ page }) =&gt; {\n  await page.goto(&#x27;/learning&#x27;);\n  const card = page.getByRole(&#x27;heading&#x27;, { name: &#x27;What is an LLM?&#x27; });\n  await expect(card).toBeVisible();\n});</code></pre>\n</div>",
+              "originalDocxPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436322590.docx",
+              "pdfPath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436322590_print.html",
+              "wordCount": 98,
+              "estimatedReadingTime": 1
+            }
+          ],
+          "createdAt": "2026-11-23T12:18:42.568Z",
+          "updatedAt": "2026-11-23T12:18:42.716Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795436322563",
+      "createdAt": "2026-11-23T12:18:42.563Z",
+      "updatedAt": "2026-11-23T12:18:42.716Z"
     }
   ],
   "academyDocSources": [
@@ -8456,6 +8552,156 @@
       "fileSizeBytes": 3008,
       "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "uploadedAt": "2026-11-23T11:38:49.609Z"
+    },
+    {
+      "id": "doc-1795436167470-bhec",
+      "lessonId": "les-fidelity-lesson-1795436167458",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436167470.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:16:07.470Z"
+    },
+    {
+      "id": "doc-1795436187650-hoxx",
+      "lessonId": "les-fidelity-lesson-1795436187641",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436187650.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:16:27.650Z"
+    },
+    {
+      "id": "doc-1795436187709-n3kc",
+      "lessonId": "les-fidelity-lesson-1795436187641",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436187709.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:16:27.709Z"
+    },
+    {
+      "id": "doc-1795436212501-huf8",
+      "lessonId": "les-fidelity-lesson-1795436212492",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436212501.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:16:52.501Z"
+    },
+    {
+      "id": "doc-1795436212564-r8yg",
+      "lessonId": "les-fidelity-lesson-1795436212492",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436212563.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:16:52.564Z"
+    },
+    {
+      "id": "doc-1795436231408-mdjd",
+      "lessonId": "les-fidelity-lesson-1795436231399",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436231408.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:17:11.408Z"
+    },
+    {
+      "id": "doc-1795436231466-tnwt",
+      "lessonId": "les-fidelity-lesson-1795436231399",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436231466.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:17:11.466Z"
+    },
+    {
+      "id": "doc-1795436259998-dn4i",
+      "lessonId": "les-fidelity-lesson-1795436259987",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436259998.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:17:39.998Z"
+    },
+    {
+      "id": "doc-1795436260061-z1ik",
+      "lessonId": "les-fidelity-lesson-1795436259987",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436260061.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:17:40.061Z"
+    },
+    {
+      "id": "doc-1795436267823-hxo7",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795436267823.docx",
+      "fileHashSha256": "035da07083b1027b6b4664406f25870372419259ff63ae11507fb42254854d33",
+      "fileSizeBytes": 3008,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:17:47.823Z"
+    },
+    {
+      "id": "doc-1795436268009-u40r",
+      "lessonId": "les-fidelity-lesson-1795436267998",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436268008.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:17:48.009Z"
+    },
+    {
+      "id": "doc-1795436268123-iwf4",
+      "lessonId": "les-fidelity-lesson-1795436267998",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436268123.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:17:48.123Z"
+    },
+    {
+      "id": "doc-1795436322380-do52",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795436322380.docx",
+      "fileHashSha256": "035da07083b1027b6b4664406f25870372419259ff63ae11507fb42254854d33",
+      "fileSizeBytes": 3008,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:18:42.380Z"
+    },
+    {
+      "id": "doc-1795436322590-umi3",
+      "lessonId": "les-fidelity-lesson-1795436322574",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436322590.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:18:42.590Z"
+    },
+    {
+      "id": "doc-1795436322728-xo07",
+      "lessonId": "les-fidelity-lesson-1795436322574",
+      "originalFilename": "fidelity_test_suite_v4.docx",
+      "storagePath": "/uploads/learning/docs/fidelity_test_suite_v4_1795436322727.docx",
+      "fileHashSha256": "06c2e4eab981934edcc74f71d077688b0ee459d327d0f5f9704f208abedb5e8b",
+      "fileSizeBytes": 3963,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T12:18:42.728Z"
     }
   ],
   "academyMedia": [],
@@ -8522,6 +8768,438 @@
       "displayOrder": 1,
       "id": "asset-1795433929922-awrzg",
       "createdAt": "2026-11-23T11:38:49.922Z"
+    },
+    {
+      "id": "asset-les-fidelity-check-img-1-mwt88gei",
+      "lessonId": "les-fidelity-check",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-check/les-fidelity-check_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:13:15.402Z"
+    },
+    {
+      "id": "asset-les-fidelity-check-img-2-mwt88get",
+      "lessonId": "les-fidelity-check",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-check/les-fidelity-check_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:13:15.413Z"
+    },
+    {
+      "id": "asset-les-fidelity-check-img-1-mwt88ylv",
+      "lessonId": "les-fidelity-check",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-check/les-fidelity-check_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:13:38.995Z"
+    },
+    {
+      "id": "asset-les-fidelity-check-img-2-mwt88ym1",
+      "lessonId": "les-fidelity-check",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-check/les-fidelity-check_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:13:39.001Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwt8c55c",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:07.440Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwt8c55h",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:07.445Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436167458-img-1-mwt8c57f",
+      "lessonId": "les-fidelity-lesson-1795436167458",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436167458/les-fidelity-lesson-1795436167458_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:07.515Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436167458-img-2-mwt8c57i",
+      "lessonId": "les-fidelity-lesson-1795436167458",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436167458/les-fidelity-lesson-1795436167458_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:07.518Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwt8ckq0",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:27.624Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwt8ckq4",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:27.628Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436187641-img-1-mwt8ckrz",
+      "lessonId": "les-fidelity-lesson-1795436187641",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436187641/les-fidelity-lesson-1795436187641_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:27.695Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436187641-img-2-mwt8cks3",
+      "lessonId": "les-fidelity-lesson-1795436187641",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436187641/les-fidelity-lesson-1795436187641_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:27.699Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436187641-img-1-mwt8cktm",
+      "lessonId": "les-fidelity-lesson-1795436187641",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436187641/les-fidelity-lesson-1795436187641_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:27.754Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436187641-img-2-mwt8cktr",
+      "lessonId": "les-fidelity-lesson-1795436187641",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436187641/les-fidelity-lesson-1795436187641_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:27.759Z"
+    },
+    {
+      "id": "asset-test-img-1-mwt8crw2",
+      "lessonId": "test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/test/test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:36.914Z"
+    },
+    {
+      "id": "asset-test-img-2-mwt8crw7",
+      "lessonId": "test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/test/test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:36.919Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwt8d3wb",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:52.475Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwt8d3wg",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:52.480Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436212492-img-1-mwt8d3yd",
+      "lessonId": "les-fidelity-lesson-1795436212492",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436212492/les-fidelity-lesson-1795436212492_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:52.549Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436212492-img-2-mwt8d3yh",
+      "lessonId": "les-fidelity-lesson-1795436212492",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436212492/les-fidelity-lesson-1795436212492_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:52.553Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436212492-img-1-mwt8d402",
+      "lessonId": "les-fidelity-lesson-1795436212492",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436212492/les-fidelity-lesson-1795436212492_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:16:52.610Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436212492-img-2-mwt8d406",
+      "lessonId": "les-fidelity-lesson-1795436212492",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436212492/les-fidelity-lesson-1795436212492_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:16:52.614Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwt8dihj",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:11.383Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwt8diho",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:11.388Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436231399-img-1-mwt8dijg",
+      "lessonId": "les-fidelity-lesson-1795436231399",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436231399/les-fidelity-lesson-1795436231399_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:11.452Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436231399-img-2-mwt8dijk",
+      "lessonId": "les-fidelity-lesson-1795436231399",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436231399/les-fidelity-lesson-1795436231399_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:11.456Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436231399-img-1-mwt8dil3",
+      "lessonId": "les-fidelity-lesson-1795436231399",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436231399/les-fidelity-lesson-1795436231399_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:11.511Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436231399-img-2-mwt8dil7",
+      "lessonId": "les-fidelity-lesson-1795436231399",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436231399/les-fidelity-lesson-1795436231399_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:11.515Z"
+    },
+    {
+      "id": "asset-test-img-1-mwt8dpks",
+      "lessonId": "test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/test/test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:20.572Z"
+    },
+    {
+      "id": "asset-test-img-2-mwt8dpkx",
+      "lessonId": "test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/test/test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:20.577Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwt8e4jn",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:39.971Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwt8e4js",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:39.976Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436259987-img-1-mwt8e4lr",
+      "lessonId": "les-fidelity-lesson-1795436259987",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436259987/les-fidelity-lesson-1795436259987_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:40.047Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436259987-img-2-mwt8e4lv",
+      "lessonId": "les-fidelity-lesson-1795436259987",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436259987/les-fidelity-lesson-1795436259987_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:40.051Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436259987-img-1-mwt8e4nf",
+      "lessonId": "les-fidelity-lesson-1795436259987",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436259987/les-fidelity-lesson-1795436259987_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:40.107Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436259987-img-2-mwt8e4nj",
+      "lessonId": "les-fidelity-lesson-1795436259987",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436259987/les-fidelity-lesson-1795436259987_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:40.111Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwt8eapv",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:47.971Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwt8eaq2",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:47.978Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436267998-img-1-mwt8eatc",
+      "lessonId": "les-fidelity-lesson-1795436267998",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436267998/les-fidelity-lesson-1795436267998_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:48.096Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436267998-img-2-mwt8eath",
+      "lessonId": "les-fidelity-lesson-1795436267998",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436267998/les-fidelity-lesson-1795436267998_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:48.101Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436267998-img-1-mwt8eawd",
+      "lessonId": "les-fidelity-lesson-1795436267998",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436267998/les-fidelity-lesson-1795436267998_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:17:48.205Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436267998-img-2-mwt8eawm",
+      "lessonId": "les-fidelity-lesson-1795436267998",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436267998/les-fidelity-lesson-1795436267998_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:17:48.214Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795436268321",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795436268339-kczt9",
+      "createdAt": "2026-11-23T12:17:48.339Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwt8fgtu",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:18:42.546Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwt8fgu3",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:18:42.555Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436322574-img-1-mwt8fgy6",
+      "lessonId": "les-fidelity-lesson-1795436322574",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436322574/les-fidelity-lesson-1795436322574_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-23T12:18:42.702Z"
+    },
+    {
+      "id": "asset-les-fidelity-lesson-1795436322574-img-2-mwt8fgyd",
+      "lessonId": "les-fidelity-lesson-1795436322574",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-lesson-1795436322574/les-fidelity-lesson-1795436322574_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-23T12:18:42.709Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795436322817",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795436322834-2i0sj",
+      "createdAt": "2026-11-23T12:18:42.834Z"
     }
   ],
   "academyUserProgress": [
@@ -8620,6 +9298,38 @@
       "completionStatus": "completed",
       "lastAccessedAt": "2026-11-23T11:38:49.991Z",
       "completedAt": "2026-11-23T11:38:49.991Z"
+    },
+    {
+      "id": "prog-test-user-1795436268334-les-test-lsn-1795436268321",
+      "userId": "test-user-1795436268334",
+      "lessonId": "les-test-lsn-1795436268321",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T12:17:48.334Z",
+      "completedAt": "2026-11-23T12:17:48.334Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795436268406-les-api-test",
+      "userId": "usr_api_test_1795436268406",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T12:17:48.407Z",
+      "completedAt": "2026-11-23T12:17:48.407Z"
+    },
+    {
+      "id": "prog-test-user-1795436322829-les-test-lsn-1795436322817",
+      "userId": "test-user-1795436322829",
+      "lessonId": "les-test-lsn-1795436322817",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T12:18:42.829Z",
+      "completedAt": "2026-11-23T12:18:42.829Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795436322920-les-api-test",
+      "userId": "usr_api_test_1795436322920",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T12:18:42.920Z",
+      "completedAt": "2026-11-23T12:18:42.920Z"
     }
   ]
 }
