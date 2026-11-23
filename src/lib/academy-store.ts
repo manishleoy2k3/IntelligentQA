@@ -26,7 +26,7 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
   {
     id: 'cat-ai-for-qa',
     slug: 'ai-for-qa',
-    title: 'AI for QA',
+    title: 'AI Academy',
     description: 'AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.',
     icon: 'Bot',
     sortOrder: 1,
@@ -152,7 +152,7 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     id: 'course-ai-qa-mastery',
     categoryId: 'cat-ai-for-qa',
     slug: 'ai-for-qa-mastery',
-    title: 'AI for QA: Modern Quality Engineering with AI',
+    title: 'AI Academy: Modern Quality Engineering with AI',
     subtitle: 'From LLM Prompt Evals to Autonomous Self-Healing Test Agents',
     description: 'Master how artificial intelligence is transforming software quality engineering, test case synthesis, and test automation maintenance.',
     level: 'All Levels',

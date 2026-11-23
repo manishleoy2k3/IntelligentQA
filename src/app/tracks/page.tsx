@@ -106,7 +106,7 @@ export default function TracksDirectoryPage() {
           </div>
           <div className="p-3.5 rounded-xl bg-[#141414] border border-cyan-500/30">
             <div className="text-cyan-400 font-bold">Stage 4 · 20h</div>
-            <div className="font-semibold text-white">AI for QA</div>
+            <div className="font-semibold text-white">AI Academy</div>
             <div className="text-xs text-[#A1A1AA] mt-0.5">Prompts &amp; Autonomous Agents</div>
           </div>
         </div>
@@ -127,7 +127,7 @@ export default function TracksDirectoryPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${track.badgeColor}`}>
-                    {track.id === 'api-testing' ? 'Rest Assured (API)' : track.id === 'ai-qa' ? 'AI for QA' : track.title.split(' ')[0]}
+                    {track.id === 'api-testing' ? 'Rest Assured (API)' : track.id === 'ai-qa' ? 'AI Academy' : track.title.split(' ')[0]}
                   </span>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Clock className="w-3.5 h-3.5" />

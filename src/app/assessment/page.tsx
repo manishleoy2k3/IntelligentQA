@@ -50,7 +50,7 @@ const ASSESSMENT_QUESTIONS: Question[] = [
       {
         label: 'Automation Practitioner: Looking to lead AI testing and integrate autonomous agents.',
         recommendedTrack: 'ai-qa',
-        reason: 'AI for QA will teach you prompt engineering, self-healing locators, and LLM evaluation.',
+        reason: 'AI Academy will teach you prompt engineering, self-healing locators, and LLM evaluation.',
       },
     ],
   },
@@ -151,7 +151,7 @@ export default function DiagnosticAssessment() {
         'playwright-ts': 'Playwright + TypeScript (Modern Web SDET)',
         'selenium-java': 'Selenium WebDriver + Java (Enterprise SDET)',
         'api-testing': 'API Testing & Automation (REST Assured & Playwright API)',
-        'ai-qa': 'AI for QA',
+        'ai-qa': 'AI Academy',
       };
 
       const reasons: Record<TrackId, string> = {

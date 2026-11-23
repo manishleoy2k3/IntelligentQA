@@ -363,26 +363,26 @@ export default function AcademyShell({
                     summary={currentLesson.summary}
                   />
 
-                  {/* Render Semantic Content HTML if present from API / DOCX */}
-                  {apiLessonData?.lesson?.contentHtml && (!currentLesson.sections || currentLesson.sections.length === 0) ? (
+                  {/* Supplementary Document HTML if provided from uploaded document */}
+                  {apiLessonData?.lesson?.contentHtml && (
                     <div
-                      className="prose dark:prose-invert max-w-none my-6 text-slate-800 dark:text-neutral-200"
+                      className="prose dark:prose-invert max-w-none my-6 text-slate-800 dark:text-neutral-200 docx-rendered-content"
                       dangerouslySetInnerHTML={{ __html: apiLessonData.lesson.contentHtml }}
                     />
-                  ) : (
-                    /* Lesson Sections (Diagrams, Code, Callouts, Tables, Troubleshooting) */
-                    <div className="space-y-2">
-                      {currentLesson.sections && currentLesson.sections.length > 0 ? (
-                        currentLesson.sections.map((section) => (
-                          <LessonSection key={section.id} section={section} />
-                        ))
-                      ) : (
-                        <div className="py-8 text-center text-sm text-neutral-400">
-                          Content is being generated for this lesson.
-                        </div>
-                      )}
-                    </div>
                   )}
+
+                  {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
+                  {currentLesson.sections && currentLesson.sections.length > 0 ? (
+                    <div className="space-y-4 my-2">
+                      {currentLesson.sections.map((section) => (
+                        <LessonSection key={section.id} section={section} />
+                      ))}
+                    </div>
+                  ) : !apiLessonData?.lesson?.contentHtml ? (
+                    <div className="py-8 text-center text-sm text-neutral-400">
+                      Content is being generated for this lesson.
+                    </div>
+                  ) : null}
 
                   {/* Previous / Next Lesson Navigation Cards */}
                   <PreviousNextNavigation

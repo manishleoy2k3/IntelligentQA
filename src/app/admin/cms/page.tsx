@@ -196,7 +196,7 @@ function CMSPortalContent() {
     }
   }, []);
 
-  // Helper to load tracks for CMS excluding AI for QA
+  // Helper to load tracks for CMS excluding AI Academy
   const getCmsCourses = () => QADatabase.getTracks().filter((c) => c.id !== 'ai-qa');
 
   const loadAllData = async () => {

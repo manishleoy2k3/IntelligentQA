@@ -102,8 +102,9 @@ test('4. Dashboard Track Categories & AI for QA Course Refinements', () => {
     'Dashboard must display "Rest Assured (API)" category instead of "REST"'
   );
   assert.ok(
+    dashboardContent.includes("track.id === 'ai-qa' ? 'AI Academy'") ||
     dashboardContent.includes("track.id === 'ai-qa' ? 'AI for QA'"),
-    'Dashboard must display "AI for QA" category instead of "Step-by-Step"'
+    'Dashboard must display "AI Academy" or "AI for QA" category instead of "Step-by-Step"'
   );
   assert.ok(
     dashboardContent.includes('View All 4 Tracks →'),
@@ -117,8 +118,9 @@ test('4. Dashboard Track Categories & AI for QA Course Refinements', () => {
   const curriculumPath = path.join(__dirname, '../src/lib/qa-curriculum.ts');
   const curriculumContent = fs.readFileSync(curriculumPath, 'utf8');
   assert.ok(
+    curriculumContent.includes("title: 'AI Academy'") ||
     curriculumContent.includes("title: 'AI for QA'"),
-    'Course title must be "AI for QA"'
+    'Course title must be "AI Academy" or "AI for QA"'
   );
   assert.ok(
     !curriculumContent.includes("title: 'QA Interview Mastery & Coding Griller'"),
@@ -162,8 +164,8 @@ test('Add Guide button opens centered modal matching Gemini Key with Course Cate
     modalContent.includes('Selenium WebDriver + Java') &&
     modalContent.includes('Playwright + TypeScript') &&
     modalContent.includes('Rest Assured (API)') &&
-    modalContent.includes('AI for QA'),
-    'Course Category options support Selenium, Playwright, Rest Assured, and AI for QA'
+    (modalContent.includes('AI Academy') || modalContent.includes('AI for QA')),
+    'Course Category options support Selenium, Playwright, Rest Assured, and AI Academy'
   );
 
   // Import and Review Staging content inside the modal

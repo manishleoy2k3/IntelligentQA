@@ -74,7 +74,7 @@ export const TRACK_META: Record<string, { id: string; name: string; tag: string;
   },
   'ai-qa': {
     id: 'ai-qa',
-    name: 'AI for QA',
+    name: 'AI Academy',
     tag: '',
     color: 'cyan',
     badgeClass: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
@@ -1829,7 +1829,7 @@ WebElement status = fluentWait.until(d -> d.findElement(By.id("txn-status")));`,
 export function generateExcelTemplate(trackId: string = 'selenium'): string {
   const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
-  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI for QA';
+  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI Academy';
 
   const bestPracticesStr = sample.bestPractices.join('; ');
   const antiPatternsStr = sample.antiPatterns.join('; ');
@@ -1929,7 +1929,7 @@ export function generateExcelTemplate(trackId: string = 'selenium'): string {
 export function generateWordTemplate(trackId: string = 'selenium'): string {
   const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
-  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI for QA';
+  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI Academy';
 
   return `<html xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head>

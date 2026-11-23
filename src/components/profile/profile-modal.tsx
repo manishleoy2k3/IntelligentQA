@@ -182,7 +182,7 @@ export default function ProfileModal({
               <option value="playwright-ts">Playwright with TypeScript (Recommended for fastest SDET transition)</option>
               <option value="selenium-java">Selenium WebDriver with Java (Enterprise standard)</option>
               <option value="api-testing">API Automation (Postman + RestAssured + Playwright API)</option>
-              <option value="ai-qa">AI for QA &amp; Autonomous Testing Agents</option>
+              <option value="ai-qa">AI Academy &amp; Autonomous Testing Agents</option>
             </select>
           </div>
 

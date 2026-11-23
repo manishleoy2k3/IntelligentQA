@@ -271,7 +271,7 @@ export default function UserDashboardPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${track.badgeColor}`}>
-                    {track.id === 'api-testing' ? 'Rest Assured (API)' : track.id === 'ai-qa' ? 'AI for QA' : track.title.split(' ')[0]}
+                    {track.id === 'api-testing' ? 'Rest Assured (API)' : track.id === 'ai-qa' ? 'AI Academy' : track.title.split(' ')[0]}
                   </span>
                   <span className="text-sm font-bold text-slate-900 dark:text-white">
                     {completedInTrack === 0 ? 'Not Started' : `${pct}%`}

@@ -722,7 +722,7 @@ public class OrderApiTest {
   // ==========================================
   'ai-qa-intro': {
     title: 'AI in Testing: The Paradigm Shift',
-    category: 'AI for QA • Next-Gen Autonomous Testing',
+    category: 'AI Academy • Next-Gen Autonomous Testing',
     tagline: 'How Autonomous Agents, Self-Healing, and LLMs are Transforming Quality Engineering',
     overview:
       'Artificial Intelligence is fundamentally reshaping the software testing discipline. Traditional automation requires human engineers to manually inspect every DOM element, hand-craft every XPath, write static test data, and investigate every CI failure log. Modern AI for QA introduces three transformative capabilities: Autonomous Requirements Generation, Self-Healing Locators, and Automated Failure Root Cause Analysis.',
@@ -8132,8 +8132,8 @@ function getAiLessonDoc(
   lessonTitle?: string,
   lessonDesc?: string
 ): LessonDoc {
-  const category = 'AI for QA • Autonomous Engineering & Modern Testing';
-  const cleanTitle = lessonTitle || 'AI for QA';
+  const category = 'AI Academy • Autonomous Engineering & Modern Testing';
+  const cleanTitle = lessonTitle || 'AI Academy';
 
   // 1. Step 0: Demystifying AI for QA (The Mental Shift)
   if (lessonId === 'step-0-demystifying-ai') {
@@ -9355,7 +9355,7 @@ class TestLoginValidation:
       ? (isPython ? 'Selenium (Python) • Enterprise Architecture' : 'Selenium (Java) • Enterprise Architecture')
       : isApi
       ? (isPython ? 'REST API (Python) • Contract Validation' : 'REST Assured (API) • Contract Validation')
-      : 'AI for QA • Autonomous Engineering',
+      : 'AI Academy • Autonomous Engineering',
     tagline: `Enterprise Architecture & Implementation Guide: ${cleanTitle}`,
     overview: `${lessonDesc || cleanTitle}. In modern test automation, mastering this concept is essential to building fast, resilient, and deterministic test frameworks that run reliably in CI/CD pipelines without false alarms.`,
     whyItMattersForManualQA: `When manual testers transition to SDET roles, understanding ${cleanTitle} bridges the gap between manual verification steps and production-grade automated code. Instead of writing linear, brittle scripts, you learn to model the application cleanly, handle asynchronous timing, and write self-documenting tests.`,

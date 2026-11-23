@@ -1735,7 +1735,7 @@ export const QA_TRACKS: Track[] = [
   },
   {
     id: 'ai-qa',
-    title: 'AI for QA',
+    title: 'AI Academy',
     tagline: 'The 8-Step Progressive AI Journey for Manual QA',
     description: 'A transformative 8-step journey for manual testers: prompt engineering, synthetic test data generation, self-healing locators, autonomous QA agents, and testing LLM applications.',
     color: 'cyan',

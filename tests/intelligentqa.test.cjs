@@ -12,7 +12,7 @@ test('Curriculum has all 4 Tracks with structured modules and lessons', () => {
   assert.ok(curriculumFile.includes('selenium-java'), 'Includes Selenium Java track');
   assert.ok(curriculumFile.includes('api-testing'), 'Includes API Testing track');
   assert.ok(curriculumFile.includes('ai-qa'), 'Includes AI in QA track');
-  assert.ok(curriculumFile.includes("title: 'AI for QA'"), 'AI for QA course is named AI for QA');
+  assert.ok(curriculumFile.includes("title: 'AI Academy'") || curriculumFile.includes("title: 'AI for QA'"), 'AI course is named AI Academy or AI for QA');
   assert.ok(!curriculumFile.includes("title: 'QA Interview Mastery & Coding Griller'"), 'Interview griller course is removed from QA_TRACKS');
 
   // Verify 8-step AI progression is present

@@ -27,8 +27,8 @@ test('Academy Platform: Data store contains all 7 mandatory top-level categories
   const titles = categories.map((c) => c.title);
   const slugs = categories.map((c) => c.slug);
 
-  // 1. AI for QA
-  assert.ok(titles.includes('AI for QA'), 'Must include AI for QA');
+  // 1. AI Academy / AI for QA
+  assert.ok(titles.includes('AI Academy') || titles.includes('AI for QA'), 'Must include AI Academy / AI for QA');
   assert.ok(slugs.includes('ai-for-qa'), 'Must include ai-for-qa slug');
 
   // 2. Selenium

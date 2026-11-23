@@ -2297,7 +2297,7 @@
     },
     {
       "id": "ai-qa",
-      "title": "AI for QA",
+      "title": "AI Academy",
       "tagline": "The 8-Step Progressive AI Journey for Manual QA",
       "description": "A transformative 8-step journey for manual testers: prompt engineering, synthetic test data generation, self-healing locators, autonomous QA agents, and testing LLM applications.",
       "color": "cyan",
@@ -7871,7 +7871,7 @@
     {
       "id": "cat-ai-for-qa",
       "slug": "ai-for-qa",
-      "title": "AI for QA",
+      "title": "AI Academy",
       "description": "AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.",
       "icon": "Bot",
       "sortOrder": 1,
@@ -7994,7 +7994,7 @@
       "id": "course-ai-qa-mastery",
       "categoryId": "cat-ai-for-qa",
       "slug": "ai-for-qa-mastery",
-      "title": "AI for QA: Modern Quality Engineering with AI",
+      "title": "AI Academy: Modern Quality Engineering with AI",
       "subtitle": "From LLM Prompt Evals to Autonomous Self-Healing Test Agents",
       "description": "Master how artificial intelligence is transforming software quality engineering, test case synthesis, and test automation maintenance.",
       "level": "All Levels",
@@ -8396,7 +8396,68 @@
       ]
     }
   ],
-  "academyDocSources": [],
+  "academyDocSources": [
+    {
+      "id": "doc-1795431746795-b4xu",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795431746795.docx",
+      "fileHashSha256": "a942c13ae327991cc0674454a6f561ff46bca2b3316bced994bdddb8ddfeb2d2",
+      "fileSizeBytes": 1962,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T11:02:26.795Z"
+    },
+    {
+      "id": "doc-1795431776761-t7e7",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795431776761.docx",
+      "fileHashSha256": "a942c13ae327991cc0674454a6f561ff46bca2b3316bced994bdddb8ddfeb2d2",
+      "fileSizeBytes": 1962,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T11:02:56.761Z"
+    },
+    {
+      "id": "doc-1795431783315-b9e0",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795431783315.docx",
+      "fileHashSha256": "a942c13ae327991cc0674454a6f561ff46bca2b3316bced994bdddb8ddfeb2d2",
+      "fileSizeBytes": 1962,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T11:03:03.315Z"
+    },
+    {
+      "id": "doc-1795432463389-j3bi",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795432463387.docx",
+      "fileHashSha256": "a942c13ae327991cc0674454a6f561ff46bca2b3316bced994bdddb8ddfeb2d2",
+      "fileSizeBytes": 1962,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T11:14:23.389Z"
+    },
+    {
+      "id": "doc-1795432742256-4vue",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795432742255.docx",
+      "fileHashSha256": "a942c13ae327991cc0674454a6f561ff46bca2b3316bced994bdddb8ddfeb2d2",
+      "fileSizeBytes": 1962,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T11:19:02.256Z"
+    },
+    {
+      "id": "doc-1795433929609-j6zv",
+      "lessonId": "les-test-upload",
+      "originalFilename": "valid_test_document.docx",
+      "storagePath": "/uploads/learning/docs/valid_test_document_1795433929609.docx",
+      "fileHashSha256": "035da07083b1027b6b4664406f25870372419259ff63ae11507fb42254854d33",
+      "fileSizeBytes": 3008,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-11-23T11:38:49.609Z"
+    }
+  ],
   "academyMedia": [],
   "academyLessonAssets": [
     {
@@ -8434,6 +8495,33 @@
       "displayOrder": 1,
       "id": "asset-1795430554359-ulqbx",
       "createdAt": "2026-11-23T10:42:34.359Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795431783678",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795431783692-em7sb",
+      "createdAt": "2026-11-23T11:03:03.692Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795432463772",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795432463797-47fjq",
+      "createdAt": "2026-11-23T11:14:23.797Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795433929904",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795433929922-awrzg",
+      "createdAt": "2026-11-23T11:38:49.922Z"
     }
   ],
   "academyUserProgress": [
@@ -8484,6 +8572,54 @@
       "completionStatus": "completed",
       "lastAccessedAt": "2026-11-23T10:42:34.423Z",
       "completedAt": "2026-11-23T10:42:34.423Z"
+    },
+    {
+      "id": "prog-test-user-1795431783687-les-test-lsn-1795431783678",
+      "userId": "test-user-1795431783687",
+      "lessonId": "les-test-lsn-1795431783678",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T11:03:03.687Z",
+      "completedAt": "2026-11-23T11:03:03.687Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795431783775-les-api-test",
+      "userId": "usr_api_test_1795431783775",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T11:03:03.776Z",
+      "completedAt": "2026-11-23T11:03:03.776Z"
+    },
+    {
+      "id": "prog-test-user-1795432463789-les-test-lsn-1795432463772",
+      "userId": "test-user-1795432463789",
+      "lessonId": "les-test-lsn-1795432463772",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T11:14:23.789Z",
+      "completedAt": "2026-11-23T11:14:23.789Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795432463882-les-api-test",
+      "userId": "usr_api_test_1795432463882",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T11:14:23.882Z",
+      "completedAt": "2026-11-23T11:14:23.882Z"
+    },
+    {
+      "id": "prog-test-user-1795433929915-les-test-lsn-1795433929904",
+      "userId": "test-user-1795433929915",
+      "lessonId": "les-test-lsn-1795433929904",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T11:38:49.915Z",
+      "completedAt": "2026-11-23T11:38:49.915Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795433929991-les-api-test",
+      "userId": "usr_api_test_1795433929991",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T11:38:49.991Z",
+      "completedAt": "2026-11-23T11:38:49.991Z"
     }
   ]
 }

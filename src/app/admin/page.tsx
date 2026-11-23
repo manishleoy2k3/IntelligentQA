@@ -38,7 +38,9 @@ import {
   ChevronRight,
   Copy,
   Clock,
+  GraduationCap,
 } from 'lucide-react';
+import AcademyAdminConsole from '@/components/admin/academy/academy-admin-console';
 import { QADatabase } from '@/lib/qa-db';
 import { Track, Lesson, ModerationItem, UserProfile, InterviewQuestionItem } from '@/types/qa';
 import {
@@ -67,13 +69,14 @@ import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer
 import { checkGuideDuplicate, DuplicateCheckReport } from '@/lib/guide-duplicate-detector';
 import { getAllStagedGuidesAcrossTracks, submitStagedGuidesForApproval, ConceptGuide } from '@/lib/concept-guides';
 
-type AdminSection = 'overview' | 'course' | 'labs' | 'agents' | 'interviews' | 'team' | 'approvals';
+type AdminSection = 'overview' | 'academy' | 'course' | 'labs' | 'agents' | 'interviews' | 'team' | 'approvals';
 
 function AdminDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawSection = searchParams.get('section');
   const activeSection: AdminSection =
+    rawSection === 'academy' ||
     rawSection === 'course' ||
     rawSection === 'labs' ||
     rawSection === 'agents' ||
@@ -816,6 +819,7 @@ function AdminDashboardContent() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#222222]">
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: Layers },
+            { id: 'academy', label: 'Learning Academy CMS', icon: GraduationCap },
             { id: 'course', label: 'Course', icon: BookOpen, count: tracks.reduce((acc, t) => acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0), 0) },
             { id: 'approvals', label: 'Guide Approvals', icon: ShieldCheck, count: submissions.filter((s) => s.status === 'pending').length },
             { id: 'labs', label: 'Practice Labs', icon: Terminal, count: codingProblems.length },
@@ -1069,6 +1073,23 @@ function AdminDashboardContent() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* VIEW: LEARNING ACADEMY CONTENT MANAGEMENT CONSOLE                   */}
+        {/* =================================================================== */}
+        {activeSection === 'academy' && (
+          <div className="space-y-6 animate-in fade-in duration-150">
+            <button
+              type="button"
+              onClick={() => handleSelectSection('overview')}
+              className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 mb-1 cursor-pointer"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              <span>Back to Dashboard Overview</span>
+            </button>
+            <AcademyAdminConsole onNotify={(msg, type) => triggerBanner(msg, type)} />
           </div>
         )}
 

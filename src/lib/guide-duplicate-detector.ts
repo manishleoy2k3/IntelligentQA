@@ -153,7 +153,7 @@ export function checkGuideDuplicate(
       case 'api-testing':
         return 'Rest Assured (API)';
       case 'ai-qa':
-        return 'AI for QA';
+        return 'AI Academy';
       default:
         return id || 'General SDET';
     }

@@ -60,7 +60,7 @@ const COURSE_TRACK_OPTIONS = [
   { id: 'selenium', name: 'Selenium WebDriver + Java', stage: 'Stage 1' },
   { id: 'playwright', name: 'Playwright + TypeScript', stage: 'Stage 2' },
   { id: 'api-testing', name: 'Rest Assured (API) & Automation', stage: 'Stage 3' },
-  { id: 'ai-qa', name: 'AI for QA', stage: 'Stage 4' },
+  { id: 'ai-qa', name: 'AI Academy', stage: 'Stage 4' },
   { id: 'articles', name: 'Tutorials & Articles', stage: 'Knowledge Hub' },
 ];
 

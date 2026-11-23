@@ -948,7 +948,7 @@ export default function GuideCatalogClient({
               </div>
             )}
 
-            {/* AI for QA Enterprise Architecture */}
+            {/* AI Academy Enterprise Architecture */}
             {activeTrack === 'ai-qa' && (
               <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
                 <div className="border-b border-slate-800 pb-4">
@@ -956,7 +956,7 @@ export default function GuideCatalogClient({
                     <span>Enterprise Architecture Overview</span>
                   </div>
                   <h3 className="text-lg font-extrabold text-white tracking-tight">
-                    AI for QA &amp; Autonomous Agentic Testing Architecture
+                    AI Academy &amp; Autonomous Agentic Testing Architecture
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                     Next-generation intelligent quality engineering leveraging LLM reasoning loops, autonomous test generation agents, dynamic locator self-healing, and automated root cause analysis (RCA).
