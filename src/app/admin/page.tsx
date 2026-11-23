@@ -211,7 +211,7 @@ function AdminDashboardContent() {
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem('intelligentqa_moderation_queue');
-        const legacyTracks = ['selenium', 'playwright', 'api-testing', 'ai-qa', 'articles', 'selenium-java', 'playwright-ts'];
+        const legacyTracks = ['selenium', 'playwright', 'api-testing', 'ai-qa', 'selenium-java', 'playwright-ts'];
         legacyTracks.forEach((t) => localStorage.removeItem(`intelligentqa_staged_guides_${t}`));
       } catch {
         // ignore

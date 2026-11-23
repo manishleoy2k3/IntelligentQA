@@ -1307,5 +1307,43 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
         ]
       }
     ]
+  },
+  {
+    "id": "course-git",
+    "slug": "git-for-qa-engineers",
+    "title": "Git Version Control for QA Engineers",
+    "subtitle": "Commits, Branches, Rebasing & Pull Request Gate Architecture",
+    "description": "Master Git essentials, branching strategies, merge conflict resolution, and quality gate workflows for test automation repositories.",
+    "level": "Beginner",
+    "estimatedHours": 8,
+    "modules": [
+      {
+        "id": "mod-git-1",
+        "courseId": "course-git",
+        "slug": "git-essentials-qa",
+        "title": "Git Foundations & Repositories",
+        "description": "Repository structure, commits, staging, ignore patterns, and remote synchronization.",
+        "lessons": [
+          {
+            "id": "les-git-foundations",
+            "moduleId": "mod-git-1",
+            "courseId": "course-git",
+            "slug": "git-foundations-for-qa",
+            "title": "1.1 Git Essentials: Commits, Remotes & .gitignore for Test Frameworks",
+            "summary": "Initialize local repositories, stage test scripts, configure .gitignore for allure/playwright artifacts, and synchronize with remote origins.",
+            "estimatedReadingTime": 4
+          },
+          {
+            "id": "les-git-branching-pr",
+            "moduleId": "mod-git-1",
+            "courseId": "course-git",
+            "slug": "git-branching-and-pr-gates",
+            "title": "1.2 Branching Strategies, Rebase & Pull Request Reviews",
+            "summary": "Implement trunk-based development, feature branch isolation, interactive rebasing, and automated PR quality check criteria.",
+            "estimatedReadingTime": 5
+          }
+        ]
+      }
+    ]
   }
 ];

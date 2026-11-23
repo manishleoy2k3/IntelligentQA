@@ -255,7 +255,7 @@ CREATE TABLE IF NOT EXISTS academy_lesson_assets (
 
 CREATE INDEX IF NOT EXISTS idx_academy_lesson_assets_lesson ON academy_lesson_assets(lesson_id);
 
--- 8.7 User Lesson Progress
+-- 8.7 User Lesson Progress & Bookmarks
 CREATE TABLE IF NOT EXISTS user_lesson_progress (
     id VARCHAR(64) PRIMARY KEY,
     user_id VARCHAR(64) NOT NULL,
@@ -268,6 +268,17 @@ CREATE TABLE IF NOT EXISTS user_lesson_progress (
 
 CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_user ON user_lesson_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_lesson ON user_lesson_progress(lesson_id);
+
+CREATE TABLE IF NOT EXISTS academy_bookmarks (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    lesson_id VARCHAR(64) NOT NULL REFERENCES academy_lessons(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_academy_bookmark UNIQUE (user_id, lesson_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_academy_bookmarks_user ON academy_bookmarks(user_id);
+CREATE INDEX IF NOT EXISTS idx_academy_bookmarks_lesson ON academy_bookmarks(lesson_id);
 
 -- ==============================================================================
 -- ROLLBACK STRATEGY (If needed to revert migrations cleanly):

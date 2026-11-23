@@ -920,7 +920,6 @@ function CMSPortalContent() {
       <nav className="border-b border-[#27272A] bg-[#141417] px-6 flex items-center gap-1 overflow-x-auto text-xs shrink-0 select-none">
         {[
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-          { id: 'articles', label: 'Articles / Tutorials', icon: FileText },
           { id: 'courses', label: 'Courses & Hierarchy', icon: Layers },
           { id: 'categories', label: 'Categories', icon: Folder },
           { id: 'tags', label: 'Tags', icon: TagIcon },

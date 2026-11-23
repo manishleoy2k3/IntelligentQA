@@ -47,6 +47,7 @@ import {
   Trash2,
   Smartphone,
   GitBranch,
+  GitMerge,
   Workflow,
   Cpu,
   Layers,
@@ -157,6 +158,18 @@ function getCourseMeta(course: any) {
     badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10',
     hours: `${course.estimatedHours || 10}h`,
   };
+}
+
+function getSidebarModuleIcon(modTitle: string, trackId: string) {
+  const t = (modTitle || '').toLowerCase();
+  if (t === 'git' || (t.includes('git') && !t.includes('github') && !t.includes('ci/cd'))) return GitBranch;
+  if (t.includes('github')) return GitMerge;
+  if (t.includes('azure')) return Workflow;
+  if (t.includes('jenkins')) return Cpu;
+  if (t.includes('rest assured') || t.includes('rest-assured')) return Server;
+  if (t.includes('contract') || t.includes('fullstack') || t.includes('full-stack')) return Layers;
+  if (trackId.includes('ai')) return Sparkles;
+  return FolderKanban;
 }
 
 interface SidebarProps {
@@ -429,7 +442,70 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   // Map courses to sidebar courseTracks
   const courseTracks = useMemo(() => {
-    return academyCourses.map((c) => {
+    // 1. Filter out test fidelity and unwanted test courses
+    const validCourses = academyCourses.filter((c) => {
+      const title = (c.title || '').toLowerCase();
+      const id = (c.id || '').toLowerCase();
+      const slug = (c.slug || '').toLowerCase();
+      if (title.includes('test automated backend') || id.includes('test-backend-course') || slug.includes('test-backend-course')) return false;
+      if (title.includes('fidelity assessment') || id.includes('fidelity-course') || slug.includes('fidelity-course')) return false;
+      return true;
+    });
+
+    const extractLessons = (course: any) => {
+      const modules = (course?.modules || []).map((m: any) => ({
+        id: m.id || m.slug,
+        slug: m.slug || m.id,
+        title: m.title,
+        description: m.description,
+        lessons: (m.lessons || []).map((l: any) => ({
+          id: l.id || l.slug,
+          slug: l.slug || l.id,
+          title: l.title,
+          summary: l.summary || l.shortDescription || '',
+          estimatedReadingTime: l.estimatedReadingTime || 5,
+          durationMinutes: (l.estimatedReadingTime || 5) * 2,
+        })),
+      }));
+      return modules.flatMap((m: any) => m.lessons);
+    };
+
+    // 2. Identify grouped courses
+    // API Testing & Automation: FullStack API & Contracts + Rest Assured
+    const fullStackCourse = validCourses.find(c =>
+      (c.id || '').includes('api-testing') || (c.slug || '').includes('api-testing') || (c.title || '').toLowerCase().includes('full-stack api')
+    );
+    const restAssuredCourse = validCourses.find(c =>
+      (c.id || '').includes('rest-assured') || (c.slug || '').includes('rest-assured') || (c.title || '').toLowerCase().includes('rest assured')
+    );
+
+    // CI/CD Concepts: Git + GitHub Actions + Azure DevOps + Jenkins
+    const gitCourse = validCourses.find(c =>
+      (c.id || '') === 'course-git' || (c.slug || '').includes('git-for-qa') || ((c.title || '').toLowerCase().includes('git') && !(c.title || '').toLowerCase().includes('github'))
+    );
+    const githubCourse = validCourses.find(c =>
+      (c.id || '').includes('github-actions') || (c.slug || '').includes('github-actions') || (c.title || '').toLowerCase().includes('github actions')
+    );
+    const azureCourse = validCourses.find(c =>
+      (c.id || '').includes('azure-devops') || (c.slug || '').includes('azure-devops') || (c.title || '').toLowerCase().includes('azure devops')
+    );
+    const jenkinsCourse = validCourses.find(c =>
+      (c.id || '').includes('jenkins') || (c.slug || '').includes('jenkins') || (c.title || '').toLowerCase().includes('jenkins')
+    );
+
+    const groupedIds = new Set<string>();
+    if (fullStackCourse) groupedIds.add(fullStackCourse.id);
+    if (restAssuredCourse) groupedIds.add(restAssuredCourse.id);
+    if (gitCourse) groupedIds.add(gitCourse.id);
+    if (githubCourse) groupedIds.add(githubCourse.id);
+    if (azureCourse) groupedIds.add(azureCourse.id);
+    if (jenkinsCourse) groupedIds.add(jenkinsCourse.id);
+
+    // Build the standalone courses list
+    const tracks: any[] = [];
+
+    // Helper to build a regular track
+    const buildTrack = (c: any) => {
       const meta = getCourseMeta(c);
       const modules = (c.modules || []).map((m: any) => ({
         id: m.id || m.slug,
@@ -463,7 +539,173 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         modules,
         lessons: allLessons,
       };
+    };
+
+    // AI, Selenium, Playwright come first if present
+    const aiCourse = validCourses.find(c => (c.slug || '').includes('ai') || (c.title || '').toLowerCase().includes('ai academy'));
+    if (aiCourse) tracks.push(buildTrack(aiCourse));
+
+    const seleniumCourse = validCourses.find(c => (c.slug || '').includes('selenium') || (c.title || '').toLowerCase().includes('selenium'));
+    if (seleniumCourse) tracks.push(buildTrack(seleniumCourse));
+
+    const playwrightCourse = validCourses.find(c => (c.slug || '').includes('playwright') || (c.title || '').toLowerCase().includes('playwright'));
+    if (playwrightCourse) tracks.push(buildTrack(playwrightCourse));
+
+    // 3. API Testing & Automation (Child items: FullStack API & Contracts, Rest Assured)
+    const apiModules: any[] = [];
+    let apiLessons: any[] = [];
+
+    if (fullStackCourse) {
+      const fullStackLessons = extractLessons(fullStackCourse);
+      apiLessons = apiLessons.concat(fullStackLessons);
+      apiModules.push({
+        id: 'fullstack-api-contracts',
+        slug: fullStackCourse.slug || 'api-testing-and-contracts',
+        title: 'FullStack API & Contracts',
+        description: fullStackCourse.description || 'Full-Stack API Testing & Consumer-Driven Contracts',
+        lessons: fullStackLessons,
+      });
+    }
+
+    if (restAssuredCourse) {
+      const restAssuredLessons = extractLessons(restAssuredCourse);
+      apiLessons = apiLessons.concat(restAssuredLessons);
+      apiModules.push({
+        id: 'rest-assured',
+        slug: restAssuredCourse.slug || 'rest-assured-api-automation',
+        title: 'Rest Assured',
+        description: restAssuredCourse.description || 'REST Assured: Enterprise API Automation with Java',
+        lessons: restAssuredLessons,
+      });
+    }
+
+    if (apiModules.length > 0) {
+      tracks.push({
+        id: 'api-testing-automation',
+        rawId: 'course-api-testing-automation',
+        slug: fullStackCourse?.slug || 'api-testing-and-contracts',
+        displayTitle: 'API Testing & Automation',
+        fullTitle: 'API Testing & Automation',
+        tag: 'API',
+        stage: 'API',
+        totalHours: '38h',
+        icon: Server,
+        iconColor: 'text-purple-500',
+        badgeClass: 'text-purple-600 dark:text-purple-400 bg-purple-500/10',
+        modules: apiModules,
+        lessons: apiLessons,
+      });
+    }
+
+    // 4. CI/CD Concepts (Child items: Git, Github Actions, Azure DevOps, Jenkins)
+    const cicdModules: any[] = [];
+    let cicdLessons: any[] = [];
+
+    // Git
+    const gitLessonsList = gitCourse ? extractLessons(gitCourse) : [
+      {
+        id: 'les-git-foundations',
+        slug: 'git-foundations-for-qa',
+        title: '1.1 Git Essentials: Commits, Remotes & .gitignore for Test Frameworks',
+        summary: 'Initialize local repositories, stage test scripts, configure .gitignore, and sync with remote origins.',
+        estimatedReadingTime: 4,
+        durationMinutes: 8,
+      },
+      {
+        id: 'les-git-branching-pr',
+        slug: 'git-branching-and-pr-gates',
+        title: '1.2 Branching Strategies, Rebase & Pull Request Reviews',
+        summary: 'Feature branches, interactive rebasing, squash merging, and PR quality check criteria.',
+        estimatedReadingTime: 5,
+        durationMinutes: 10,
+      },
+    ];
+    cicdLessons = cicdLessons.concat(gitLessonsList);
+    cicdModules.push({
+      id: 'git',
+      slug: 'git-for-qa-engineers',
+      title: 'Git',
+      description: 'Git Version Control, Commits, Branching & PR Gates',
+      lessons: gitLessonsList,
     });
+
+    // GitHub Actions
+    if (githubCourse) {
+      const ghaLessons = extractLessons(githubCourse);
+      cicdLessons = cicdLessons.concat(ghaLessons);
+      cicdModules.push({
+        id: 'github-actions',
+        slug: githubCourse.slug || 'github-actions-for-qa',
+        title: 'Github Actions',
+        description: githubCourse.description || 'GitHub Actions CI/CD Pipelines for QA Automation',
+        lessons: ghaLessons,
+      });
+    }
+
+    // Azure DevOps
+    if (azureCourse) {
+      const adoLessons = extractLessons(azureCourse);
+      cicdLessons = cicdLessons.concat(adoLessons);
+      cicdModules.push({
+        id: 'azure-devops',
+        slug: azureCourse.slug || 'azure-devops-test-pipelines',
+        title: 'Azure DevOps',
+        description: azureCourse.description || 'Azure DevOps Pipelines for SDETs',
+        lessons: adoLessons,
+      });
+    }
+
+    // Jenkins
+    if (jenkinsCourse) {
+      const jenLessons = extractLessons(jenkinsCourse);
+      cicdLessons = cicdLessons.concat(jenLessons);
+      cicdModules.push({
+        id: 'jenkins',
+        slug: jenkinsCourse.slug || 'declarative-jenkins-pipelines',
+        title: 'Jenkins',
+        description: jenkinsCourse.description || 'Declarative Jenkins Pipelines for QA Automation',
+        lessons: jenLessons,
+      });
+    }
+
+    if (cicdModules.length > 0) {
+      tracks.push({
+        id: 'cicd-concepts',
+        rawId: 'course-cicd-concepts',
+        slug: githubCourse?.slug || 'github-actions-for-qa',
+        displayTitle: 'CI/CD Concepts',
+        fullTitle: 'CI/CD Concepts',
+        tag: 'CI/CD',
+        stage: 'CI/CD',
+        totalHours: '46h',
+        icon: GitBranch,
+        iconColor: 'text-orange-500',
+        badgeClass: 'text-orange-600 dark:text-orange-400 bg-orange-500/10',
+        modules: cicdModules,
+        lessons: cicdLessons,
+      });
+    }
+
+    // Appium and any other remaining courses
+    const appiumCourse = validCourses.find(c => (c.slug || '').includes('appium') || (c.title || '').toLowerCase().includes('appium'));
+    if (appiumCourse) tracks.push(buildTrack(appiumCourse));
+
+    // Remaining non-grouped courses
+    const alreadyHandled = new Set([
+      aiCourse?.id,
+      seleniumCourse?.id,
+      playwrightCourse?.id,
+      appiumCourse?.id,
+      ...groupedIds,
+    ]);
+
+    validCourses.forEach((c) => {
+      if (!alreadyHandled.has(c.id)) {
+        tracks.push(buildTrack(c));
+      }
+    });
+
+    return tracks;
   }, [academyCourses]);
 
   const toggleTrack = (trackId: string) => {
@@ -767,11 +1009,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                     title={isModOpen ? `Collapse ${mod.title}` : `Expand ${mod.title}`}
                                   >
                                     <div className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1">
-                                      {track.id === 'ai-for-qa-mastery' || track.slug === 'ai-for-qa-mastery' ? (
-                                        <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
-                                      ) : (
-                                        <FolderKanban className="w-3 h-3 text-slate-500 group-hover:text-slate-300 shrink-0" />
-                                      )}
+                                      {(() => {
+                                        const ModIcon = getSidebarModuleIcon(mod.title, track.id);
+                                        return <ModIcon className="w-3 h-3 text-slate-400 group-hover:text-slate-200 shrink-0" />;
+                                      })()}
                                       <span className="truncate uppercase tracking-wider font-mono text-[9px] text-slate-300 group-hover:text-white">
                                         {mod.title}
                                       </span>
@@ -1172,18 +1413,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               </Link>
             </div>
           )}
-        </div>
-
-        {/* Technical Tutorials & Articles (Published Blog) */}
-        <div className="space-y-1 pt-1">
-          <Link
-            href="/blog"
-            onClick={onCloseMobile}
-            className={navItemClass(pathname?.startsWith('/blog'))}
-          >
-            <FileText className="w-4 h-4 shrink-0 text-purple-400" />
-            <span>Tutorials &amp; Articles</span>
-          </Link>
         </div>
 
         {/* ADMIN CMS (Strictly Role-Based: Admin Only) */}
