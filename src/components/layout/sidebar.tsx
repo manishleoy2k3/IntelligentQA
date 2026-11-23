@@ -109,14 +109,14 @@ function getCourseMeta(course: any) {
       hours: `${course.estimatedHours || 16}h`,
     };
   }
-  if (slug.includes('appium') || title.includes('appium')) {
+  if (slug.includes('appium') || title.includes('appium') || slug.includes('mobile') || title.includes('mobile')) {
     return {
-      displayTitle: 'Appium Mobile',
+      displayTitle: 'Mobile Testing & Automation',
       tag: 'Mobile',
       icon: Smartphone,
       iconColor: 'text-pink-500',
       badgeClass: 'text-pink-600 dark:text-pink-400 bg-pink-500/10',
-      hours: `${course.estimatedHours || 18}h`,
+      hours: `${course.estimatedHours || 26}h`,
     };
   }
   if (slug.includes('github') || title.includes('github')) {
@@ -479,6 +479,18 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       (c.id || '').includes('rest-assured') || (c.slug || '').includes('rest-assured') || (c.title || '').toLowerCase().includes('rest assured')
     );
 
+    // Mobile Testing & Automation: Mobile Testing + Appium
+    const mobileTestingCourse = validCourses.find(c =>
+      (c.id || '') === 'course-mobile-testing' ||
+      (c.slug || '').includes('mobile-testing') ||
+      ((c.title || '').toLowerCase().includes('mobile testing') && !(c.title || '').toLowerCase().includes('appium'))
+    );
+    const appiumCourse = validCourses.find(c =>
+      (c.id || '') === 'course-appium' ||
+      (c.slug || '').includes('appium') ||
+      (c.title || '').toLowerCase().includes('appium')
+    );
+
     // CI/CD Concepts: Git + GitHub Actions + Azure DevOps + Jenkins
     const gitCourse = validCourses.find(c =>
       (c.id || '') === 'course-git' || (c.slug || '').includes('git-for-qa') || ((c.title || '').toLowerCase().includes('git') && !(c.title || '').toLowerCase().includes('github'))
@@ -496,6 +508,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     const groupedIds = new Set<string>();
     if (fullStackCourse) groupedIds.add(fullStackCourse.id);
     if (restAssuredCourse) groupedIds.add(restAssuredCourse.id);
+    if (mobileTestingCourse) groupedIds.add(mobileTestingCourse.id);
+    if (appiumCourse) groupedIds.add(appiumCourse.id);
     if (gitCourse) groupedIds.add(gitCourse.id);
     if (githubCourse) groupedIds.add(githubCourse.id);
     if (azureCourse) groupedIds.add(azureCourse.id);
@@ -597,7 +611,117 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       });
     }
 
-    // 4. CI/CD Concepts (Child items: Git, Github Actions, Azure DevOps, Jenkins)
+    // 4. Mobile Testing & Automation (Child items: Mobile Testing, Appium)
+    const mobileModules: any[] = [];
+    let mobileLessons: any[] = [];
+
+    // Child item 1: Mobile Testing
+    const mobileTestingLessonsList = mobileTestingCourse ? extractLessons(mobileTestingCourse) : [
+      {
+        id: 'les-mobile-testing-foundations',
+        slug: 'mobile-testing-fundamentals',
+        title: '1.1 Mobile Testing Fundamentals: Native, Hybrid & Mobile Web Apps',
+        summary: 'Architectural differences between Native (Kotlin/Swift), Hybrid (Flutter/React Native), and Web apps.',
+        estimatedReadingTime: 5,
+        durationMinutes: 10,
+      },
+      {
+        id: 'les-mobile-device-matrix',
+        slug: 'device-matrix-emulators-simulators',
+        title: '1.2 Device Matrix, Emulators, Simulators & Cloud Device Farms',
+        summary: 'Real devices vs Android Emulators vs iOS Simulators, screen fragmentation, and cloud execution farms.',
+        estimatedReadingTime: 6,
+        durationMinutes: 12,
+      },
+      {
+        id: 'les-mobile-gestures-ux',
+        slug: 'mobile-touch-actions-gestures-testing',
+        title: '1.3 Mobile Touch Actions, Gestures & Interruption Testing',
+        summary: 'Verifying taps, multi-touch pinch/zoom, swipes, incoming calls, network switches, and battery throttling.',
+        estimatedReadingTime: 5,
+        durationMinutes: 10,
+      },
+      {
+        id: 'les-mobile-debugging-logs',
+        slug: 'mobile-logs-adb-instruments-debugging',
+        title: '1.4 Mobile Performance, Memory Leaks, ADB & Xcode Instruments',
+        summary: 'Extracting ADB logcat, iOS crash logs, memory footprints, network profiling, and battery consumption.',
+        estimatedReadingTime: 6,
+        durationMinutes: 12,
+      },
+    ];
+    mobileLessons = mobileLessons.concat(mobileTestingLessonsList);
+    mobileModules.push({
+      id: 'mobile-testing',
+      slug: mobileTestingCourse?.slug || 'mobile-testing-fundamentals',
+      title: 'Mobile Testing',
+      description: mobileTestingCourse?.description || 'Mobile Testing Fundamentals, Native/Hybrid/Web, ADB & Device Matrices',
+      lessons: mobileTestingLessonsList,
+    });
+
+    // Child item 2: Appium
+    const appiumLessonsList = appiumCourse ? extractLessons(appiumCourse) : [
+      {
+        id: 'les-appium-2-modular-ecosystem',
+        slug: 'appium-2-modular-ecosystem',
+        title: '1.1 Appium 2.0 Modular Drivers & Plugins',
+        summary: 'Understand independent driver lifecycle, CLI management, and plugin architecture.',
+        estimatedReadingTime: 5,
+        durationMinutes: 10,
+      },
+      {
+        id: 'les-android-ios-driver-capabilities',
+        slug: 'android-ios-driver-capabilities',
+        title: '1.2 UiAutomator2 & XCUITest Capabilities Matrix',
+        summary: 'Configure W3C capabilities, automationName, bundleId, and appPackage across platforms.',
+        estimatedReadingTime: 6,
+        durationMinutes: 12,
+      },
+      {
+        id: 'les-w3c-mobile-actions-gestures',
+        slug: 'w3c-mobile-actions-gestures',
+        title: '2.1 W3C Pointer Actions & Smooth Scrolling',
+        summary: 'Implement fluent W3C Actions API for scrolls, drags, and multi-finger gestures.',
+        estimatedReadingTime: 5,
+        durationMinutes: 10,
+      },
+      {
+        id: 'les-mobile-page-object-model',
+        slug: 'mobile-page-object-model',
+        title: '2.2 Mobile Page Object Model & Cloud Execution',
+        summary: 'Scalable Page Object Model architecture with AppiumFieldDecorator and cloud test grids.',
+        estimatedReadingTime: 6,
+        durationMinutes: 12,
+      },
+    ];
+    mobileLessons = mobileLessons.concat(appiumLessonsList);
+    mobileModules.push({
+      id: 'appium',
+      slug: appiumCourse?.slug || 'appium-mobile-automation',
+      title: 'Appium',
+      description: appiumCourse?.description || 'Appium 2.0 Mobile Automation Masterclass',
+      lessons: appiumLessonsList,
+    });
+
+    if (mobileModules.length > 0) {
+      tracks.push({
+        id: 'mobile-testing-automation',
+        rawId: 'course-mobile-testing-automation',
+        slug: mobileTestingCourse?.slug || appiumCourse?.slug || 'mobile-testing-and-automation',
+        displayTitle: 'Mobile Testing & Automation',
+        fullTitle: 'Mobile Testing & Automation',
+        tag: 'Mobile',
+        stage: 'Mobile',
+        totalHours: '26h',
+        icon: Smartphone,
+        iconColor: 'text-pink-500',
+        badgeClass: 'text-pink-600 dark:text-pink-400 bg-pink-500/10',
+        modules: mobileModules,
+        lessons: mobileLessons,
+      });
+    }
+
+    // 5. CI/CD Concepts (Child items: Git, Github Actions, Azure DevOps, Jenkins)
     const cicdModules: any[] = [];
     let cicdLessons: any[] = [];
 
@@ -686,15 +810,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       });
     }
 
-    // Appium and any other remaining courses
-    const appiumCourse = validCourses.find(c => (c.slug || '').includes('appium') || (c.title || '').toLowerCase().includes('appium'));
-    if (appiumCourse) tracks.push(buildTrack(appiumCourse));
-
     // Remaining non-grouped courses
     const alreadyHandled = new Set([
       aiCourse?.id,
       seleniumCourse?.id,
       playwrightCourse?.id,
+      mobileTestingCourse?.id,
       appiumCourse?.id,
       ...groupedIds,
     ]);

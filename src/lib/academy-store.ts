@@ -2019,18 +2019,28 @@ export class AcademyStore {
           if (!includeDrafts && lsn.status !== 'published') continue;
 
           const lsnTitleLower = lsn.title.toLowerCase();
+          const summaryLower = (lsn.summary || lsn.shortDescription || '').toLowerCase();
           const titleMatches = lsnTitleLower.includes(q);
-          const summaryMatches = (lsn.summary || lsn.shortDescription || '').toLowerCase().includes(q);
+          const summaryMatches = summaryLower.includes(q);
 
           // Strip HTML tags for clean text search
           const cleanContent = (lsn.contentHtml || '').replace(/<[^>]*>/g, ' ');
           const contentMatches = cleanContent.toLowerCase().includes(q);
 
-          if (titleMatches || summaryMatches || contentMatches || modMatchesTitle || courseMatchesTitle) {
+          // Multi-token search support across context (e.g. "Playwright locator")
+          const tokens = q.split(/\s+/).filter(Boolean);
+          const combinedContext = `${courseTitleLower} ${modTitleLower} ${lsnTitleLower} ${summaryLower} ${cleanContent.toLowerCase()}`;
+          const allTokensMatch = tokens.length > 1 && tokens.every((t) => combinedContext.includes(t));
+
+          if (titleMatches || summaryMatches || contentMatches || modMatchesTitle || courseMatchesTitle || allTokensMatch) {
             let matchedField: 'title' | 'summary' | 'content' | 'module' | 'course' = 'title';
             let snippet = lsn.summary || lsn.shortDescription || '';
             let score = 0;
 
+            if (allTokensMatch) {
+              score += 70;
+              matchedField = 'title';
+            }
             if (courseMatchesTitle) {
               score += 100;
               matchedField = 'course';

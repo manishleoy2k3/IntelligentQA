@@ -604,8 +604,21 @@ export default function AcademyShell({
                       ))}
                     </div>
                   ) : !optimizedHtml ? (
-                    <div className="py-8 text-center text-sm text-neutral-400">
-                      Content is being generated for this lesson.
+                    <div className="my-8 p-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 shadow-sm text-center space-y-4">
+                      <div className="w-12 h-12 mx-auto rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                        <FileQuestion className="w-6 h-6" />
+                      </div>
+                      <div className="max-w-md mx-auto space-y-2">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Curriculum Content Under Construction
+                        </span>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                          Building Fresh in Uniform Format
+                        </h3>
+                        <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
+                          This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
+                        </p>
+                      </div>
                     </div>
                   ) : null}
 

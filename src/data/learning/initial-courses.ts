@@ -1049,6 +1049,71 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
     ]
   },
   {
+    "id": "course-mobile-testing",
+    "slug": "mobile-testing-fundamentals",
+    "title": "Mobile Testing Fundamentals",
+    "subtitle": "Native, Hybrid, Web Apps & Device Matrix Testing",
+    "description": "Master foundational mobile testing methodologies, real device vs emulator matrices, mobile touch gestures, and ADB/Xcode debugging.",
+    "level": "Beginner",
+    "estimatedHours": 12,
+    "modules": [
+      {
+        "id": "mod-mob-1",
+        "courseId": "course-mobile-testing",
+        "slug": "mobile-testing-architecture",
+        "title": "Module 1: Mobile App Architecture & Platforms",
+        "description": "Native, Hybrid, and Mobile Web application testing architectures and platform differences.",
+        "lessons": [
+          {
+            "id": "les-mobile-testing-foundations",
+            "moduleId": "mod-mob-1",
+            "courseId": "course-mobile-testing",
+            "slug": "mobile-testing-fundamentals",
+            "title": "1.1 Mobile Testing Fundamentals: Native, Hybrid & Mobile Web Apps",
+            "summary": "Architectural differences between Native (Kotlin/Swift), Hybrid (Flutter/React Native), and Web apps.",
+            "estimatedReadingTime": 5
+          },
+          {
+            "id": "les-mobile-device-matrix",
+            "moduleId": "mod-mob-1",
+            "courseId": "course-mobile-testing",
+            "slug": "device-matrix-emulators-simulators",
+            "title": "1.2 Device Matrix, Emulators, Simulators & Cloud Device Farms",
+            "summary": "Real devices vs Android Emulators vs iOS Simulators, screen fragmentation, and cloud execution farms.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      },
+      {
+        "id": "mod-mob-2",
+        "courseId": "course-mobile-testing",
+        "slug": "mobile-gestures-and-debugging",
+        "title": "Module 2: Touch Gestures & Performance Debugging",
+        "description": "Multi-touch gesture validation, interruptions, ADB profiling, and crash log analysis.",
+        "lessons": [
+          {
+            "id": "les-mobile-gestures-ux",
+            "moduleId": "mod-mob-2",
+            "courseId": "course-mobile-testing",
+            "slug": "mobile-touch-actions-gestures-testing",
+            "title": "1.3 Mobile Touch Actions, Gestures & Interruption Testing",
+            "summary": "Verifying taps, multi-touch pinch/zoom, swipes, incoming calls, network switches, and battery throttling.",
+            "estimatedReadingTime": 5
+          },
+          {
+            "id": "les-mobile-debugging-logs",
+            "moduleId": "mod-mob-2",
+            "courseId": "course-mobile-testing",
+            "slug": "mobile-logs-adb-instruments-debugging",
+            "title": "1.4 Mobile Performance, Memory Leaks, ADB & Xcode Instruments",
+            "summary": "Extracting ADB logcat, iOS crash logs, memory footprints, network profiling, and battery consumption.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "course-appium",
     "slug": "appium-mobile-automation",
     "title": "Appium 2.0 Mobile Automation Masterclass",
