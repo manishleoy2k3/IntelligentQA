@@ -8,7 +8,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const course = academyStore.getCourse(id);
+    const auth = verifyAdminAccess(req);
+    const course = academyStore.getCourse(id, { includeDrafts: auth.authorized });
     if (!course) {
       return NextResponse.json(
         { success: false, error: `Course ${id} not found.` },
@@ -44,19 +45,26 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
-    const updated = academyStore.updateCourse(id, body);
-    if (!updated) {
+    try {
+      const updated = academyStore.updateCourse(id, body);
+      if (!updated) {
+        return NextResponse.json(
+          { success: false, error: `Course ${id} not found.` },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: updated,
+        message: 'Course updated successfully.',
+      });
+    } catch (validationErr: any) {
       return NextResponse.json(
-        { success: false, error: `Course ${id} not found.` },
-        { status: 404 }
+        { success: false, error: validationErr.message },
+        { status: 400 }
       );
     }
-
-    return NextResponse.json({
-      success: true,
-      data: updated,
-      message: 'Course updated successfully.',
-    });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },

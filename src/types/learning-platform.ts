@@ -25,8 +25,11 @@ export interface AcademyCourse {
   title: string;
   subtitle?: string;
   description?: string;
+  icon?: string;
+  thumbnail?: string;
   level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
   estimatedHours?: number;
+  displayOrder?: number;
   sortOrder: number;
   status: AcademyPublishStatus;
   modules?: AcademyModule[];
@@ -40,6 +43,7 @@ export interface AcademyModule {
   slug: string;
   title: string;
   description?: string;
+  displayOrder?: number;
   sortOrder: number;
   status: AcademyPublishStatus;
   lessons?: AcademyLesson[];
@@ -54,17 +58,44 @@ export interface AcademyLesson {
   slug: string;
   title: string;
   summary?: string;
+  shortDescription?: string;
+  contentType?: 'html' | 'markdown' | 'docx' | 'blocks';
   contentHtml: string;
   blockData?: any; // Structured block AST (Editor.js / Tiptap compatible)
   originalDocxPath?: string;
+  originalDocumentPath?: string;
   renderedDocxUrl?: string;
+  renderedHtmlPath?: string;
+  pdfPath?: string;
   wordCount?: number;
   estimatedReadTime?: number; // in minutes
+  estimatedReadingTime?: number; // in minutes
+  displayOrder?: number;
   sortOrder: number;
   status: AcademyPublishStatus;
   publishedAt?: string | null;
+  assets?: AcademyLessonAsset[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AcademyLessonAsset {
+  id: string;
+  lessonId: string;
+  assetType: 'image' | 'diagram' | 'code' | 'attachment' | 'pdf';
+  filePath: string;
+  originalFilename: string;
+  displayOrder: number;
+  createdAt?: string;
+}
+
+export interface UserLessonProgress {
+  id: string;
+  userId: string;
+  lessonId: string;
+  completionStatus: 'not_started' | 'in_progress' | 'completed';
+  lastAccessedAt: string;
+  completedAt?: string | null;
 }
 
 export interface AcademyDocumentSource {

@@ -36,26 +36,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const created = academyStore.createLesson(courseId, moduleId, {
-      title,
-      slug,
-      summary: summary || '',
-      contentHtml: contentHtml || '',
-      blockData: blockData || null,
-      originalDocxPath: originalDocxPath || null,
-      renderedDocxUrl: renderedDocxUrl || null,
-      wordCount: typeof wordCount === 'number' ? wordCount : 0,
-      estimatedReadTime: typeof estimatedReadTime === 'number' ? estimatedReadTime : 1,
-      sortOrder: typeof sortOrder === 'number' ? sortOrder : 0,
-      status: status || 'published',
-      publishedAt: status === 'published' ? new Date().toISOString() : null,
-    });
+    try {
+      const created = academyStore.createLesson(courseId, moduleId, {
+        title,
+        slug,
+        summary: summary || '',
+        contentHtml: contentHtml || '',
+        blockData: blockData || null,
+        originalDocxPath: originalDocxPath || null,
+        renderedDocxUrl: renderedDocxUrl || null,
+        wordCount: typeof wordCount === 'number' ? wordCount : 0,
+        estimatedReadTime: typeof estimatedReadTime === 'number' ? estimatedReadTime : 1,
+        sortOrder: typeof sortOrder === 'number' ? sortOrder : 0,
+        status: status || 'published',
+        publishedAt: status === 'published' ? new Date().toISOString() : null,
+      });
 
-    return NextResponse.json({
-      success: true,
-      data: created,
-      message: 'Lesson created successfully.',
-    }, { status: 201 });
+      return NextResponse.json({
+        success: true,
+        data: created,
+        message: 'Lesson created successfully.',
+      }, { status: 201 });
+    } catch (valErr: any) {
+      return NextResponse.json(
+        { success: false, error: valErr.message },
+        { status: 400 }
+      );
+    }
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },

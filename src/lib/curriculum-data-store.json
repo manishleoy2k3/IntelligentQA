@@ -8395,5 +8395,95 @@
         }
       ]
     }
+  ],
+  "academyDocSources": [],
+  "academyMedia": [],
+  "academyLessonAssets": [
+    {
+      "lessonId": "les-test-lsn-1795430500235",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795430500248-w9hxv",
+      "createdAt": "2026-11-23T10:41:40.248Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795430528925",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795430528936-avcx2",
+      "createdAt": "2026-11-23T10:42:08.936Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795430547065",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795430547076-rzsmx",
+      "createdAt": "2026-11-23T10:42:27.076Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795430554338",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795430554359-ulqbx",
+      "createdAt": "2026-11-23T10:42:34.359Z"
+    }
+  ],
+  "academyUserProgress": [
+    {
+      "id": "prog-test-user-1795430500245-les-test-lsn-1795430500235",
+      "userId": "test-user-1795430500245",
+      "lessonId": "les-test-lsn-1795430500235",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T10:41:40.245Z",
+      "completedAt": "2026-11-23T10:41:40.245Z"
+    },
+    {
+      "id": "prog-test-user-1795430528932-les-test-lsn-1795430528925",
+      "userId": "test-user-1795430528932",
+      "lessonId": "les-test-lsn-1795430528925",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T10:42:08.932Z",
+      "completedAt": "2026-11-23T10:42:08.932Z"
+    },
+    {
+      "id": "prog-test-user-1795430547072-les-test-lsn-1795430547065",
+      "userId": "test-user-1795430547072",
+      "lessonId": "les-test-lsn-1795430547065",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T10:42:27.072Z",
+      "completedAt": "2026-11-23T10:42:27.072Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795430547241-les-api-test",
+      "userId": "usr_api_test_1795430547241",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T10:42:27.241Z",
+      "completedAt": "2026-11-23T10:42:27.241Z"
+    },
+    {
+      "id": "prog-test-user-1795430554355-les-test-lsn-1795430554338",
+      "userId": "test-user-1795430554355",
+      "lessonId": "les-test-lsn-1795430554338",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T10:42:34.355Z",
+      "completedAt": "2026-11-23T10:42:34.355Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795430554422-les-api-test",
+      "userId": "usr_api_test_1795430554422",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-23T10:42:34.423Z",
+      "completedAt": "2026-11-23T10:42:34.423Z"
+    }
   ]
 }

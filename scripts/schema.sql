@@ -148,8 +148,11 @@ CREATE TABLE IF NOT EXISTS academy_courses (
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255),
     description TEXT,
+    icon VARCHAR(64) DEFAULT 'BookOpen',
+    thumbnail VARCHAR(512),
     level VARCHAR(32) DEFAULT 'All Levels',
     estimated_hours INT DEFAULT 0,
+    display_order INT NOT NULL DEFAULT 0,
     sort_order INT NOT NULL DEFAULT 0,
     status VARCHAR(32) NOT NULL DEFAULT 'published',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -167,6 +170,7 @@ CREATE TABLE IF NOT EXISTS academy_modules (
     slug VARCHAR(128) NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
+    display_order INT NOT NULL DEFAULT 0,
     sort_order INT NOT NULL DEFAULT 0,
     status VARCHAR(32) NOT NULL DEFAULT 'published',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -184,12 +188,19 @@ CREATE TABLE IF NOT EXISTS academy_lessons (
     slug VARCHAR(128) NOT NULL,
     title VARCHAR(255) NOT NULL,
     summary TEXT,
+    short_description TEXT,
+    content_type VARCHAR(32) DEFAULT 'html',
     content_html TEXT NOT NULL,
     block_data JSONB,
     original_docx_path VARCHAR(512),
+    original_document_path VARCHAR(512),
     rendered_docx_url VARCHAR(512),
+    rendered_html_path VARCHAR(512),
+    pdf_path VARCHAR(512),
     word_count INT DEFAULT 0,
     estimated_read_time INT DEFAULT 1,
+    estimated_reading_time INT DEFAULT 1,
+    display_order INT NOT NULL DEFAULT 0,
     sort_order INT NOT NULL DEFAULT 0,
     status VARCHAR(32) NOT NULL DEFAULT 'published',
     published_at TIMESTAMP WITH TIME ZONE,
@@ -217,7 +228,7 @@ CREATE TABLE IF NOT EXISTS academy_document_sources (
 
 CREATE INDEX IF NOT EXISTS idx_academy_docs_lesson ON academy_document_sources(lesson_id);
 
--- 8.6 Media Attachments
+-- 8.6 Media Attachments & Lesson Assets
 CREATE TABLE IF NOT EXISTS academy_media_attachments (
     id VARCHAR(64) PRIMARY KEY,
     lesson_id VARCHAR(64) REFERENCES academy_lessons(id) ON DELETE SET NULL,
@@ -231,6 +242,32 @@ CREATE TABLE IF NOT EXISTS academy_media_attachments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_academy_media_lesson ON academy_media_attachments(lesson_id);
+
+CREATE TABLE IF NOT EXISTS academy_lesson_assets (
+    id VARCHAR(64) PRIMARY KEY,
+    lesson_id VARCHAR(64) NOT NULL REFERENCES academy_lessons(id) ON DELETE CASCADE,
+    asset_type VARCHAR(64) NOT NULL DEFAULT 'image',
+    file_path VARCHAR(512) NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    display_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_academy_lesson_assets_lesson ON academy_lesson_assets(lesson_id);
+
+-- 8.7 User Lesson Progress
+CREATE TABLE IF NOT EXISTS user_lesson_progress (
+    id VARCHAR(64) PRIMARY KEY,
+    user_id VARCHAR(64) NOT NULL,
+    lesson_id VARCHAR(64) NOT NULL REFERENCES academy_lessons(id) ON DELETE CASCADE,
+    completion_status VARCHAR(32) NOT NULL DEFAULT 'not_started',
+    last_accessed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT uq_user_lesson_progress UNIQUE (user_id, lesson_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_user ON user_lesson_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_lesson ON user_lesson_progress(lesson_id);
 
 -- ==============================================================================
 -- ROLLBACK STRATEGY (If needed to revert migrations cleanly):

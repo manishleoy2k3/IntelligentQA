@@ -533,16 +533,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <LayoutDashboard className="w-4 h-4 shrink-0 text-emerald-500" />
                 <span>Dashboard</span>
               </Link>
-
-              {/* Technical Tutorials & Articles (Published Blog) */}
-              <Link
-                href="/blog"
-                onClick={onCloseMobile}
-                className={navItemClass(pathname?.startsWith('/blog'))}
-              >
-                <FileText className="w-4 h-4 shrink-0 text-purple-400" />
-                <span>Tutorials &amp; Articles</span>
-              </Link>
+            </div>
 
               {/* COURSES (Parent Menu with Child / Sub-Menu items) */}
           <div className="space-y-1 pt-1">
@@ -822,7 +813,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               </div>
             )}
           </div>
-        </div>
 
         {/* SECTION: PRACTICE LABS (Collapsible Parent Menu matching Courses) */}
         <div className="space-y-1 pt-1">
@@ -1076,6 +1066,18 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               </Link>
             </div>
           )}
+        </div>
+
+        {/* Technical Tutorials & Articles (Published Blog) */}
+        <div className="space-y-1 pt-1">
+          <Link
+            href="/blog"
+            onClick={onCloseMobile}
+            className={navItemClass(pathname?.startsWith('/blog'))}
+          >
+            <FileText className="w-4 h-4 shrink-0 text-purple-400" />
+            <span>Tutorials &amp; Articles</span>
+          </Link>
         </div>
 
         {/* ADMIN CMS (Strictly Role-Based: Admin Only) */}

@@ -22,20 +22,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const created = academyStore.createModule(courseId, {
-      title,
-      slug,
-      description: description || '',
-      sortOrder: typeof sortOrder === 'number' ? sortOrder : 0,
-      status: status || 'published',
-      lessons: [],
-    });
+    try {
+      const created = academyStore.createModule(courseId, {
+        title,
+        slug,
+        description: description || '',
+        sortOrder: typeof sortOrder === 'number' ? sortOrder : 0,
+        status: status || 'published',
+        lessons: [],
+      });
 
-    return NextResponse.json({
-      success: true,
-      data: created,
-      message: 'Module created successfully.',
-    }, { status: 201 });
+      return NextResponse.json({
+        success: true,
+        data: created,
+        message: 'Module created successfully.',
+      }, { status: 201 });
+    } catch (valErr: any) {
+      return NextResponse.json(
+        { success: false, error: valErr.message },
+        { status: 400 }
+      );
+    }
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },

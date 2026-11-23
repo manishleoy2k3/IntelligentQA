@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import {
+  AcademyPublishStatus,
   AcademyCategory,
   AcademyCourse,
   AcademyModule,
@@ -14,6 +15,8 @@ import {
   LessonNavPointer,
   AcademyDocumentSource,
   AcademyMediaAttachment,
+  AcademyLessonAsset,
+  UserLessonProgress,
 } from '@/types/learning-platform';
 
 const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
@@ -619,6 +622,8 @@ export class AcademyStore {
   private courses: Map<string, AcademyCourse> = new Map();
   private docSources: Map<string, AcademyDocumentSource> = new Map();
   private mediaAttachments: Map<string, AcademyMediaAttachment> = new Map();
+  private lessonAssets: Map<string, AcademyLessonAsset> = new Map();
+  private userProgress: Map<string, UserLessonProgress> = new Map();
   private initialized = false;
 
   private constructor() {
@@ -674,6 +679,20 @@ export class AcademyStore {
           data.academyMedia.forEach((m: AcademyMediaAttachment) => this.mediaAttachments.set(m.id, m));
         }
 
+        // Load Lesson Assets
+        if (Array.isArray(data.academyLessonAssets)) {
+          this.lessonAssets.clear();
+          data.academyLessonAssets.forEach((a: AcademyLessonAsset) => this.lessonAssets.set(a.id, a));
+        }
+
+        // Load User Lesson Progress
+        if (Array.isArray(data.academyUserProgress)) {
+          this.userProgress.clear();
+          data.academyUserProgress.forEach((p: UserLessonProgress) => {
+            this.userProgress.set(`${p.userId}:${p.lessonId}`, p);
+          });
+        }
+
         this.initialized = true;
 
         // If categories or courses were populated with defaults because file didn't have them, save to disk
@@ -698,6 +717,8 @@ export class AcademyStore {
       existingData.academyCourses = Array.from(this.courses.values());
       existingData.academyDocSources = Array.from(this.docSources.values());
       existingData.academyMedia = Array.from(this.mediaAttachments.values());
+      existingData.academyLessonAssets = Array.from(this.lessonAssets.values());
+      existingData.academyUserProgress = Array.from(this.userProgress.values());
 
       const tempFile = `${DATA_FILE}.tmp.${Date.now()}`;
       fs.writeFileSync(tempFile, JSON.stringify(existingData, null, 2), 'utf-8');
@@ -783,25 +804,76 @@ export class AcademyStore {
   // COURSES
   // ==========================================
 
-  public getCourses(filter?: { categoryId?: string; status?: string }): AcademyCourse[] {
+  public isCourseSlugUnique(slug: string, excludeId?: string): boolean {
+    const normalized = slug.trim().toLowerCase();
+    for (const course of this.courses.values()) {
+      if (excludeId && course.id === excludeId) continue;
+      if (course.slug.trim().toLowerCase() === normalized) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public getCourses(filter?: { categoryId?: string; status?: string; includeDrafts?: boolean }): AcademyCourse[] {
     let list = Array.from(this.courses.values());
     if (filter?.categoryId) {
       list = list.filter((c) => c.categoryId === filter.categoryId);
     }
     if (filter?.status) {
       list = list.filter((c) => c.status === filter.status);
+    } else if (!filter?.includeDrafts) {
+      list = list.filter((c) => c.status === 'published');
     }
+
+    if (!filter?.includeDrafts) {
+      // Filter nested modules and lessons to published only
+      list = list.map((c) => ({
+        ...c,
+        modules: (c.modules || [])
+          .filter((m) => m.status === 'published')
+          .map((m) => ({
+            ...m,
+            lessons: (m.lessons || []).filter((l) => l.status === 'published'),
+          })),
+      }));
+    }
+
     return list.sort((a, b) => a.sortOrder - b.sortOrder);
   }
 
-  public getCourse(idOrSlug: string): AcademyCourse | undefined {
-    return (
+  public getCourse(idOrSlug: string, options?: { includeDrafts?: boolean }): AcademyCourse | undefined {
+    const raw = (
       this.courses.get(idOrSlug) ||
       Array.from(this.courses.values()).find((c) => c.slug === idOrSlug)
     );
+    if (!raw) return undefined;
+
+    if (!options?.includeDrafts) {
+      if (raw.status !== 'published') return undefined;
+      return {
+        ...raw,
+        modules: (raw.modules || [])
+          .filter((m) => m.status === 'published')
+          .map((m) => ({
+            ...m,
+            lessons: (m.lessons || []).filter((l) => l.status === 'published'),
+          })),
+      };
+    }
+
+    return raw;
+  }
+
+  public getCourseBySlug(slug: string, options?: { includeDrafts?: boolean }): AcademyCourse | undefined {
+    return this.getCourse(slug, options);
   }
 
   public createCourse(input: Omit<AcademyCourse, 'id' | 'createdAt' | 'updatedAt'>): AcademyCourse {
+    if (!this.isCourseSlugUnique(input.slug)) {
+      throw new Error(`Course slug "${input.slug}" is already in use.`);
+    }
+
     const id = `course-${input.slug || Date.now()}`;
     const now = new Date().toISOString();
     const course: AcademyCourse = {
@@ -819,6 +891,12 @@ export class AcademyStore {
   public updateCourse(id: string, updates: Partial<AcademyCourse>): AcademyCourse | undefined {
     const course = this.courses.get(id);
     if (!course) return undefined;
+
+    if (updates.slug && updates.slug !== course.slug) {
+      if (!this.isCourseSlugUnique(updates.slug, id)) {
+        throw new Error(`Course slug "${updates.slug}" is already in use.`);
+      }
+    }
 
     const updated: AcademyCourse = {
       ...course,
@@ -843,21 +921,60 @@ export class AcademyStore {
   // MODULES
   // ==========================================
 
-  public getModules(courseId: string): AcademyModule[] {
-    const course = this.courses.get(courseId);
-    if (!course || !course.modules) return [];
-    return [...course.modules].sort((a, b) => a.sortOrder - b.sortOrder);
+  public isModuleSlugUnique(courseId: string, slug: string, excludeId?: string): boolean {
+    const course = this.getCourse(courseId, { includeDrafts: true });
+    if (!course || !course.modules) return true;
+    const normalized = slug.trim().toLowerCase();
+    for (const mod of course.modules) {
+      if (excludeId && mod.id === excludeId) continue;
+      if (mod.slug.trim().toLowerCase() === normalized) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  public getModule(courseId: string, moduleIdOrSlug: string): AcademyModule | undefined {
-    const course = this.courses.get(courseId);
+  public getModules(courseIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyModule[] {
+    const course = this.getCourse(courseIdOrSlug, options);
+    if (!course || !course.modules) return [];
+
+    let mods = [...course.modules];
+    if (!options?.includeDrafts) {
+      mods = mods
+        .filter((m) => m.status === 'published')
+        .map((m) => ({
+          ...m,
+          lessons: (m.lessons || []).filter((l) => l.status === 'published'),
+        }));
+    }
+    return mods.sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+
+  public getModule(courseIdOrSlug: string, moduleIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyModule | undefined {
+    const course = this.getCourse(courseIdOrSlug, options);
     if (!course || !course.modules) return undefined;
-    return course.modules.find((m) => m.id === moduleIdOrSlug || m.slug === moduleIdOrSlug);
+
+    const mod = course.modules.find((m) => m.id === moduleIdOrSlug || m.slug === moduleIdOrSlug);
+    if (!mod) return undefined;
+
+    if (!options?.includeDrafts) {
+      if (mod.status !== 'published') return undefined;
+      return {
+        ...mod,
+        lessons: (mod.lessons || []).filter((l) => l.status === 'published'),
+      };
+    }
+
+    return mod;
   }
 
   public createModule(courseId: string, input: Omit<AcademyModule, 'id' | 'courseId' | 'createdAt' | 'updatedAt'>): AcademyModule {
     const course = this.courses.get(courseId);
     if (!course) throw new Error(`Course with id ${courseId} not found`);
+
+    if (!this.isModuleSlugUnique(courseId, input.slug)) {
+      throw new Error(`Module slug "${input.slug}" is already in use for course ${course.title}.`);
+    }
 
     if (!course.modules) course.modules = [];
 
@@ -884,6 +1001,12 @@ export class AcademyStore {
 
     const modIndex = course.modules.findIndex((m) => m.id === moduleId);
     if (modIndex === -1) return undefined;
+
+    if (updates.slug && updates.slug !== course.modules[modIndex].slug) {
+      if (!this.isModuleSlugUnique(courseId, updates.slug, moduleId)) {
+        throw new Error(`Module slug "${updates.slug}" is already in use for course ${course.title}.`);
+      }
+    }
 
     const updated: AcademyModule = {
       ...course.modules[modIndex],
@@ -916,26 +1039,79 @@ export class AcademyStore {
   // LESSONS
   // ==========================================
 
-  public getLessons(courseId: string, moduleId: string): AcademyLesson[] {
-    const course = this.courses.get(courseId);
-    if (!course || !course.modules) return [];
-    const mod = course.modules.find((m) => m.id === moduleId);
-    if (!mod || !mod.lessons) return [];
-    return [...mod.lessons].sort((a, b) => a.sortOrder - b.sortOrder);
+  public isLessonSlugUnique(moduleId: string, slug: string, excludeId?: string): boolean {
+    const normalized = slug.trim().toLowerCase();
+    for (const course of this.courses.values()) {
+      const mod = course.modules?.find((m) => m.id === moduleId);
+      if (mod && mod.lessons) {
+        for (const lsn of mod.lessons) {
+          if (excludeId && lsn.id === excludeId) continue;
+          if (lsn.slug.trim().toLowerCase() === normalized) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
-  public getLesson(idOrSlug: string): { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule } | undefined {
+  public getLessons(courseIdOrSlug: string, moduleIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyLesson[] {
+    const course = this.getCourse(courseIdOrSlug, options);
+    if (!course || !course.modules) return [];
+    const mod = course.modules.find((m) => m.id === moduleIdOrSlug || m.slug === moduleIdOrSlug);
+    if (!mod || !mod.lessons) return [];
+
+    let lessons = [...mod.lessons];
+    if (!options?.includeDrafts) {
+      lessons = lessons.filter((l) => l.status === 'published');
+    }
+    return lessons.sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+
+  public getLessonsByModule(moduleIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyLesson[] {
+    for (const course of this.courses.values()) {
+      if (!course.modules) continue;
+      if (!options?.includeDrafts && course.status !== 'published') continue;
+      const mod = course.modules.find((m) => m.id === moduleIdOrSlug || m.slug === moduleIdOrSlug);
+      if (mod && mod.lessons) {
+        if (!options?.includeDrafts && mod.status !== 'published') return [];
+        let lessons = [...mod.lessons];
+        if (!options?.includeDrafts) {
+          lessons = lessons.filter((l) => l.status === 'published');
+        }
+        return lessons.sort((a, b) => a.sortOrder - b.sortOrder);
+      }
+    }
+    return [];
+  }
+
+  public getLesson(idOrSlug: string, options?: { includeDrafts?: boolean }): { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule } | undefined {
     for (const course of this.courses.values()) {
       if (!course.modules) continue;
       for (const mod of course.modules) {
         if (!mod.lessons) continue;
         const lesson = mod.lessons.find((l) => l.id === idOrSlug || l.slug === idOrSlug);
         if (lesson) {
-          return { lesson, course, module: mod };
+          if (!options?.includeDrafts) {
+            if (lesson.status !== 'published' || mod.status !== 'published' || course.status !== 'published') {
+              return undefined;
+            }
+          }
+          // Attach assets
+          const assets = this.getLessonAssets(lesson.id);
+          const decoratedLesson: AcademyLesson = {
+            ...lesson,
+            assets,
+          };
+          return { lesson: decoratedLesson, course, module: mod };
         }
       }
     }
     return undefined;
+  }
+
+  public getLessonBySlug(slug: string, options?: { includeDrafts?: boolean }): { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule } | undefined {
+    return this.getLesson(slug, options);
   }
 
   public createLesson(
@@ -948,6 +1124,10 @@ export class AcademyStore {
 
     const mod = course.modules.find((m) => m.id === moduleId);
     if (!mod) throw new Error(`Module ${moduleId} not found`);
+
+    if (!this.isLessonSlugUnique(moduleId, input.slug)) {
+      throw new Error(`Lesson slug "${input.slug}" is already in use in module ${mod.title}.`);
+    }
 
     if (!mod.lessons) mod.lessons = [];
 
@@ -979,6 +1159,12 @@ export class AcademyStore {
         if (!mod.lessons) continue;
         const idx = mod.lessons.findIndex((l) => l.id === lessonId);
         if (idx !== -1) {
+          if (updates.slug && updates.slug !== mod.lessons[idx].slug) {
+            if (!this.isLessonSlugUnique(mod.id, updates.slug, lessonId)) {
+              throw new Error(`Lesson slug "${updates.slug}" is already in use in module ${mod.title}.`);
+            }
+          }
+
           const updated: AcademyLesson = {
             ...mod.lessons[idx],
             ...updates,
@@ -1284,6 +1470,134 @@ export class AcademyStore {
 
   public getMediaAttachment(id: string): AcademyMediaAttachment | undefined {
     return this.mediaAttachments.get(id);
+  }
+  // ==========================================
+  // LESSON ASSETS
+  // ==========================================
+
+  public getLessonAssets(lessonId: string): AcademyLessonAsset[] {
+    const list: AcademyLessonAsset[] = [];
+    for (const asset of this.lessonAssets.values()) {
+      if (asset.lessonId === lessonId) {
+        list.push(asset);
+      }
+    }
+    return list.sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  public saveLessonAsset(assetInput: Omit<AcademyLessonAsset, 'id'> & { id?: string }): AcademyLessonAsset {
+    const id = assetInput.id || `asset-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const now = new Date().toISOString();
+    const asset: AcademyLessonAsset = {
+      ...assetInput,
+      id,
+      createdAt: assetInput.createdAt || now,
+    };
+    this.lessonAssets.set(id, asset);
+    this.saveToDisk();
+    return asset;
+  }
+
+  public deleteLessonAsset(id: string): boolean {
+    if (!this.lessonAssets.has(id)) return false;
+    this.lessonAssets.delete(id);
+    this.saveToDisk();
+    return true;
+  }
+
+  // ==========================================
+  // USER LESSON PROGRESS
+  // ==========================================
+
+  public getUserProgress(userId: string, lessonId?: string): UserLessonProgress[] {
+    const list: UserLessonProgress[] = [];
+    for (const prog of this.userProgress.values()) {
+      if (prog.userId === userId) {
+        if (!lessonId || prog.lessonId === lessonId) {
+          list.push(prog);
+        }
+      }
+    }
+    return list;
+  }
+
+  public recordUserProgress(input: {
+    userId: string;
+    lessonId: string;
+    completionStatus: 'not_started' | 'in_progress' | 'completed';
+  }): UserLessonProgress {
+    const key = `${input.userId}:${input.lessonId}`;
+    const now = new Date().toISOString();
+    const existing = this.userProgress.get(key);
+
+    const updated: UserLessonProgress = {
+      id: existing ? existing.id : `prog-${input.userId}-${input.lessonId}`,
+      userId: input.userId,
+      lessonId: input.lessonId,
+      completionStatus: input.completionStatus,
+      lastAccessedAt: now,
+      completedAt: input.completionStatus === 'completed' ? (existing?.completedAt || now) : null,
+    };
+
+    this.userProgress.set(key, updated);
+    this.saveToDisk();
+    return updated;
+  }
+
+  // ==========================================
+  // PUBLISHING HELPERS
+  // ==========================================
+
+  public setPublishStatus(
+    entityType: 'course' | 'module' | 'lesson',
+    id: string,
+    status: AcademyPublishStatus
+  ): boolean {
+    if (entityType === 'course') {
+      const course = this.courses.get(id);
+      if (!course) return false;
+      course.status = status;
+      course.updatedAt = new Date().toISOString();
+      this.saveToDisk();
+      return true;
+    }
+
+    if (entityType === 'module') {
+      for (const course of this.courses.values()) {
+        const mod = course.modules?.find((m) => m.id === id);
+        if (mod) {
+          mod.status = status;
+          mod.updatedAt = new Date().toISOString();
+          course.updatedAt = new Date().toISOString();
+          this.saveToDisk();
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (entityType === 'lesson') {
+      for (const course of this.courses.values()) {
+        if (!course.modules) continue;
+        for (const mod of course.modules) {
+          const lsn = mod.lessons?.find((l) => l.id === id);
+          if (lsn) {
+            lsn.status = status;
+            lsn.updatedAt = new Date().toISOString();
+            if (status === 'published' && !lsn.publishedAt) {
+              lsn.publishedAt = new Date().toISOString();
+            }
+            mod.updatedAt = new Date().toISOString();
+            course.updatedAt = new Date().toISOString();
+            this.saveToDisk();
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    return false;
   }
 }
 

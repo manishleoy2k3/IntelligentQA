@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { academyStore } from '@/lib/academy-store';
+import { verifyAdminAccess } from '@/lib/cms-security';
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const includeDrafts = searchParams.get('includeDrafts') === 'true';
+    const auth = verifyAdminAccess(req);
+    const includeDrafts = auth.authorized && searchParams.get('includeDrafts') === 'true';
 
     const tree = academyStore.getNavigationTree({ includeDrafts });
     return NextResponse.json({

@@ -8,12 +8,26 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const auth = verifyAdminAccess(req);
     const lessonWithContext = academyStore.getLessonWithContext(id);
     if (!lessonWithContext) {
       return NextResponse.json(
         { success: false, error: `Lesson ${id} not found.` },
         { status: 404 }
       );
+    }
+
+    if (!auth.authorized) {
+      if (
+        lessonWithContext.lesson.status !== 'published' ||
+        lessonWithContext.module.status !== 'published' ||
+        lessonWithContext.course.status !== 'published'
+      ) {
+        return NextResponse.json(
+          { success: false, error: `Lesson ${id} not found.` },
+          { status: 404 }
+        );
+      }
     }
 
     return NextResponse.json({
@@ -44,19 +58,26 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
-    const updated = academyStore.updateLesson(id, body);
-    if (!updated) {
+    try {
+      const updated = academyStore.updateLesson(id, body);
+      if (!updated) {
+        return NextResponse.json(
+          { success: false, error: `Lesson ${id} not found.` },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: updated,
+        message: 'Lesson updated successfully.',
+      });
+    } catch (valErr: any) {
       return NextResponse.json(
-        { success: false, error: `Lesson ${id} not found.` },
-        { status: 404 }
+        { success: false, error: valErr.message },
+        { status: 400 }
       );
     }
-
-    return NextResponse.json({
-      success: true,
-      data: updated,
-      message: 'Lesson updated successfully.',
-    });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },
