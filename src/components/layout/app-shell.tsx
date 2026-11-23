@@ -51,6 +51,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/signup') ||
     pathname?.startsWith('/auth');
 
+  const isAcademyRoute = pathname?.startsWith('/learning');
+
+  // Learning Academy features its own dedicated Three-Section layout (Header, Left Sidebar, Right Content)
+  if (isAcademyRoute) {
+    return <div className="min-h-screen flex flex-col">{children}</div>;
+  }
+
   // =========================================================================
   // ADMIN USER EXPERIENCE: Dedicated Admin Shell & Screens
   // Admin does NOT share the same standard user screens unless explicitly previewing

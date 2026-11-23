@@ -7866,5 +7866,534 @@
       "entityTitle": "Selenium with Java Tutorial: The Ultimate Guide for Beginners & SDETs",
       "details": "Article \"Selenium with Java Tutorial: The Ultimate Guide for Beginners & SDETs\" (published) saved"
     }
+  ],
+  "academyCategories": [
+    {
+      "id": "cat-ai-for-qa",
+      "slug": "ai-for-qa",
+      "title": "AI for QA",
+      "description": "AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.",
+      "icon": "Bot",
+      "sortOrder": 1,
+      "parentCategoryId": null,
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-selenium",
+      "slug": "selenium",
+      "title": "Selenium",
+      "description": "Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.",
+      "icon": "Globe",
+      "sortOrder": 2,
+      "parentCategoryId": null,
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-playwright",
+      "slug": "playwright",
+      "title": "Playwright",
+      "description": "Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.",
+      "icon": "Code2",
+      "sortOrder": 3,
+      "parentCategoryId": null,
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-rest-assured",
+      "slug": "rest-assured",
+      "title": "Rest Assured",
+      "description": "Microservice API automation, RequestSpecBuilder, JSON schema validation, and POJO mapping in Java.",
+      "icon": "Zap",
+      "sortOrder": 4,
+      "parentCategoryId": null,
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-api-testing",
+      "slug": "api-testing",
+      "title": "API Testing",
+      "description": "Contract testing with Pact, Postman/Newman automation, GraphQL validation, and performance tests.",
+      "icon": "Layers",
+      "sortOrder": 5,
+      "parentCategoryId": null,
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-appium",
+      "slug": "appium",
+      "title": "Appium",
+      "description": "Cross-platform mobile automation for iOS and Android native, hybrid, and web applications.",
+      "icon": "Smartphone",
+      "sortOrder": 6,
+      "parentCategoryId": null,
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-git-cicd",
+      "slug": "git-cicd",
+      "title": "Git & CI/CD",
+      "description": "Continuous Integration and Continuous Delivery pipelines, automated test runs, and Git workflows.",
+      "icon": "GitBranch",
+      "sortOrder": 7,
+      "parentCategoryId": null,
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-github-actions",
+      "slug": "github-actions",
+      "title": "GitHub Actions",
+      "description": "Automated test execution, matrix runs, secrets management, and custom composite actions.",
+      "icon": "GitMerge",
+      "sortOrder": 1,
+      "parentCategoryId": "cat-git-cicd",
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-azure-devops",
+      "slug": "azure-devops",
+      "title": "Azure DevOps",
+      "description": "Azure Pipelines, YAML multi-stage test jobs, Test Plans integration, and self-hosted agents.",
+      "icon": "Cloud",
+      "sortOrder": 2,
+      "parentCategoryId": "cat-git-cicd",
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "cat-jenkins",
+      "slug": "jenkins",
+      "title": "Jenkins",
+      "description": "Declarative Jenkinsfiles, distributed agent grids, parallel test suites, and Allure reporting.",
+      "icon": "Server",
+      "sortOrder": 3,
+      "parentCategoryId": "cat-git-cicd",
+      "isActive": true,
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z"
+    }
+  ],
+  "academyCourses": [
+    {
+      "id": "course-ai-qa-mastery",
+      "categoryId": "cat-ai-for-qa",
+      "slug": "ai-for-qa-mastery",
+      "title": "AI for QA: Modern Quality Engineering with AI",
+      "subtitle": "From LLM Prompt Evals to Autonomous Self-Healing Test Agents",
+      "description": "Master how artificial intelligence is transforming software quality engineering, test case synthesis, and test automation maintenance.",
+      "level": "All Levels",
+      "estimatedHours": 12,
+      "sortOrder": 1,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-ai-qa-1",
+          "courseId": "course-ai-qa-mastery",
+          "slug": "foundations-of-ai-testing",
+          "title": "Module 1: Foundations of AI in Software Testing",
+          "description": "Understand the landscape of generative AI, prompt engineering for test cases, and evaluation metrics.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-ai-qa-1-1",
+              "moduleId": "mod-ai-qa-1",
+              "courseId": "course-ai-qa-mastery",
+              "slug": "intro-to-ai-in-qa",
+              "title": "1.1 Introduction to AI-Driven Quality Assurance",
+              "summary": "Explore how generative models and computer vision are revolutionizing test automation and defect discovery.",
+              "contentHtml": "\n              <h2>The Evolution of Quality Engineering with AI</h2>\n              <p>Modern software development velocity demands automated testing that adapts to rapid UI changes without breaking. Traditional locator-based automation suffers from test flakiness, requiring substantial maintenance overhead.</p>\n              <h3>Key Pillars of AI in QA:</h3>\n              <ul>\n                <li><strong>Self-Healing Test Automation:</strong> Using multi-attribute fingerprinting and cosine similarity to dynamically resolve broken locators at runtime.</li>\n                <li><strong>Autonomous Test Generation:</strong> Converting Jira requirements and user stories directly into executable Gherkin feature files and Playwright scripts.</li>\n                <li><strong>Visual Regression & Anomaly Detection:</strong> Utilizing computer vision models to identify visual regressions across viewports without brittle pixel-by-pixel comparisons.</li>\n                <li><strong>LLM & Agent Evaluations:</strong> Benchmarking accuracy, hallucination rates, and security guardrails for AI-powered applications.</li>\n              </ul>\n              <div class=\"rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-4 my-6\">\n                <h4 class=\"text-emerald-400 font-semibold mb-1\">Architectural Insight</h4>\n                <p class=\"text-sm text-neutral-300\">AI does not replace foundational testing principles; it supercharges test coverage by eliminating boilerplate script maintenance and surfacing edge cases humans often overlook.</p>\n              </div>\n            ",
+              "wordCount": 350,
+              "estimatedReadTime": 3,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-selenium-mastery",
+      "categoryId": "cat-selenium",
+      "slug": "selenium-webdriver-enterprise",
+      "title": "Selenium WebDriver 4 Enterprise Framework Architecture",
+      "subtitle": "Production-Grade Java Test Automation Frameworks",
+      "description": "Deep dive into WebDriver 4 W3C protocol, dynamic wait strategies, ThreadLocal thread safety, and scalable Page Object Models.",
+      "level": "Intermediate",
+      "estimatedHours": 24,
+      "sortOrder": 1,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-sel-1",
+          "courseId": "course-selenium-mastery",
+          "slug": "webdriver-architecture-and-waits",
+          "title": "Module 1: WebDriver Architecture & Dynamic Synchronization",
+          "description": "Understand the W3C communication model and master zero-flake explicit waits.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-sel-1-1",
+              "moduleId": "mod-sel-1",
+              "courseId": "course-selenium-mastery",
+              "slug": "w3c-protocol-and-driver-architecture",
+              "title": "1.1 Selenium 4 Architecture & W3C Standardization",
+              "summary": "Learn how Selenium 4 communicates directly with browser drivers over W3C HTTP protocol without JSON Wire encoding.",
+              "contentHtml": "\n              <h2>Selenium 4 Under the Hood</h2>\n              <p>In Selenium 4, the legacy JSON Wire Protocol has been completely deprecated in favor of the official W3C WebDriver Standard. This ensures direct, low-latency communication between your test client and browser engines (ChromeDriver, GeckoDriver, SafariDriver).</p>\n              <h3>Why W3C Standardization Matters:</h3>\n              <ol>\n                <li><strong>Native Browser Action Execution:</strong> Chrome, Firefox, and Safari execute commands directly without proxy translation layers.</li>\n                <li><strong>Standardized Status Codes:</strong> Consistent exception handling across all browser vendors.</li>\n                <li><strong>CDP & BiDi Protocol Integration:</strong> Direct access to Chrome DevTools Protocol for network throttling, console logs, and performance metrics.</li>\n              </ol>\n            ",
+              "wordCount": 280,
+              "estimatedReadTime": 3,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-playwright-mastery",
+      "categoryId": "cat-playwright",
+      "slug": "playwright-ts-mastery",
+      "title": "Playwright Automation with TypeScript",
+      "subtitle": "Modern End-to-End Testing for Web Applications",
+      "description": "Learn Playwright from scratch: auto-waiting, isolated browser contexts, parallel execution, API mocking, and Trace Viewer debugging.",
+      "level": "Beginner",
+      "estimatedHours": 20,
+      "sortOrder": 1,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-pw-1",
+          "courseId": "course-playwright-mastery",
+          "slug": "playwright-architecture-and-setup",
+          "title": "Module 1: Architecture, Setup & Auto-Waiting",
+          "description": "Set up your first Playwright project and master zero-flake test execution.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-pw-1-1",
+              "moduleId": "mod-pw-1",
+              "courseId": "course-playwright-mastery",
+              "slug": "playwright-core-concepts",
+              "title": "1.1 Playwright Architecture & Actionability Matrix",
+              "summary": "Discover how Playwright performs automatic checks before every click, fill, or tap to guarantee flake-free tests.",
+              "contentHtml": "\n              <h2>Why Playwright is Built for Modern Web Apps</h2>\n              <p>Unlike legacy tools, Microsoft Playwright communicates with browser processes via a single bidirectional WebSocket connection. This architecture eliminates HTTP connection overhead and unlocks instant event-driven DOM observation.</p>\n              <h3>The Actionability Check:</h3>\n              <p>Before clicking an element with <code>page.click('button')</code>, Playwright automatically checks that:</p>\n              <ul>\n                <li>The element is attached to the DOM.</li>\n                <li>The element is visible (not hidden via opacity, display:none, or zero size).</li>\n                <li>The element is stable (not moving due to CSS transitions).</li>\n                <li>The element receives pointer events (not obscured by modal overlays).</li>\n                <li>The element is enabled (not disabled).</li>\n              </ul>\n            ",
+              "wordCount": 310,
+              "estimatedReadTime": 3,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-rest-assured",
+      "categoryId": "cat-rest-assured",
+      "slug": "rest-assured-api-automation",
+      "title": "REST Assured: Enterprise API Automation with Java",
+      "subtitle": "From RequestSpecBuilder to JSON Schema & Contract Validation",
+      "description": "Learn REST Assured for automating RESTful microservices: authentication, OAuth2, POJO serialization with Jackson, and JSON schema assertions.",
+      "level": "Intermediate",
+      "estimatedHours": 18,
+      "sortOrder": 1,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-ra-1",
+          "courseId": "course-rest-assured",
+          "slug": "rest-assured-fundamentals",
+          "title": "Module 1: REST Assured Architecture & BDD Syntax",
+          "description": "Master given(), when(), then() fluent chaining and authentication handling.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-ra-1-1",
+              "moduleId": "mod-ra-1",
+              "courseId": "course-rest-assured",
+              "slug": "bdd-dsl-and-specs",
+              "title": "1.1 Fluent BDD Syntax & RequestSpecBuilder",
+              "summary": "Build clean, reusable request specifications and assert JSON payloads efficiently.",
+              "contentHtml": "\n              <h2>Writing Clean REST Assured Tests</h2>\n              <p>REST Assured utilizes a fluent BDD domain-specific language (DSL) inspired by Hamcrest and Cucumber. Tests follow the <strong>Given - When - Then</strong> structure:</p>\n              <pre><code class=\"language-java\">given()\n    .spec(requestSpec)\n    .body(payload)\n.when()\n    .post(\"/api/v1/orders\")\n.then()\n    .statusCode(201)\n    .body(\"status\", equalTo(\"CONFIRMED\"));</code></pre>\n            ",
+              "wordCount": 220,
+              "estimatedReadTime": 2,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-api-testing",
+      "categoryId": "cat-api-testing",
+      "slug": "api-testing-and-contracts",
+      "title": "Full-Stack API Testing & Consumer-Driven Contracts",
+      "subtitle": "Postman, Newman, Pact, and OpenAPI Schema Verification",
+      "description": "Comprehensive guide to testing distributed microservices, REST APIs, GraphQL endpoints, and consumer-driven contracts.",
+      "level": "All Levels",
+      "estimatedHours": 16,
+      "sortOrder": 1,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-api-1",
+          "courseId": "course-api-testing",
+          "slug": "api-testing-foundations",
+          "title": "Module 1: API Protocols & Contract Testing",
+          "description": "Understand HTTP status codes, headers, payloads, and contract validation principles.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-api-1-1",
+              "moduleId": "mod-api-1",
+              "courseId": "course-api-testing",
+              "slug": "consumer-driven-contracts-with-pact",
+              "title": "1.1 Consumer-Driven Contracts with Pact",
+              "summary": "Prevent breaking changes across frontend and backend services using automated contract testing.",
+              "contentHtml": "\n              <h2>What is Contract Testing?</h2>\n              <p>Contract testing ensures that two separate systems (such as a Next.js web application and a Go backend microservice) have a shared agreement on the messages they exchange. By verifying contracts in isolation, teams eliminate the need for brittle end-to-end integration environments.</p>\n            ",
+              "wordCount": 260,
+              "estimatedReadTime": 3,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-appium",
+      "categoryId": "cat-appium",
+      "slug": "appium-mobile-automation",
+      "title": "Appium 2.0 Mobile Automation Masterclass",
+      "subtitle": "Cross-Platform Automation for Android and iOS",
+      "description": "Master Appium 2.0 modular driver architecture, UiAutomator2, XCUITest, mobile gestures, and device cloud integration.",
+      "level": "Intermediate",
+      "estimatedHours": 20,
+      "sortOrder": 1,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-app-1",
+          "courseId": "course-appium",
+          "slug": "appium-2-architecture",
+          "title": "Module 1: Appium 2.0 Modular Architecture & Setup",
+          "description": "Understand the decoupled driver model and install plugins for automated device interaction.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-app-1-1",
+              "moduleId": "mod-app-1",
+              "courseId": "course-appium",
+              "slug": "appium-2-modular-ecosystem",
+              "title": "1.1 Appium 2.0 Modular Drivers & Plugins",
+              "summary": "Learn how Appium 2 separates core automation server from device drivers (uiautomator2, xcuitest).",
+              "contentHtml": "\n              <h2>Appium 2.0 Architecture</h2>\n              <p>In Appium 2.0, drivers and plugins are completely decoupled from the main server. You can install only the drivers your team needs, minimizing installation footprint and simplifying version management.</p>\n            ",
+              "wordCount": 240,
+              "estimatedReadTime": 2,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-github-actions",
+      "categoryId": "cat-github-actions",
+      "slug": "github-actions-for-qa",
+      "title": "GitHub Actions: CI/CD Pipelines for QA Automation",
+      "subtitle": "Automated Test Matrix, Artifact Uploads & PR Gates",
+      "description": "Design robust CI/CD workflows for executing Playwright, Selenium, and API tests on every pull request with rich HTML reports.",
+      "level": "Beginner",
+      "estimatedHours": 14,
+      "sortOrder": 1,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-gha-1",
+          "courseId": "course-github-actions",
+          "slug": "workflow-scaffolding-and-triggers",
+          "title": "Module 1: Workflow Triggers & Parallel Execution",
+          "description": "Set up YAML workflows triggered on pull_request and push with multi-OS test matrices.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-gha-1-1",
+              "moduleId": "mod-gha-1",
+              "courseId": "course-github-actions",
+              "slug": "pr-test-gate-workflow",
+              "title": "1.1 Building a PR Quality Gate Workflow",
+              "summary": "Create a GitHub Actions workflow that executes tests, caches dependencies, and uploads HTML test artifacts.",
+              "contentHtml": "\n              <h2>Creating Your First QA Workflow</h2>\n              <p>GitHub Actions uses YAML files located in the <code>.github/workflows/</code> directory. A standard automated testing pipeline triggers on pull requests to ensure code changes meet quality benchmarks before merging.</p>\n            ",
+              "wordCount": 270,
+              "estimatedReadTime": 3,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-azure-devops",
+      "categoryId": "cat-azure-devops",
+      "slug": "azure-devops-test-pipelines",
+      "title": "Azure DevOps Pipelines for SDETs",
+      "subtitle": "YAML Pipelines, Test Plan Sync, and Release Gates",
+      "description": "Learn how to build enterprise testing pipelines in Azure DevOps: agent pools, published test results, and quality release approvals.",
+      "level": "Intermediate",
+      "estimatedHours": 16,
+      "sortOrder": 2,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-ado-1",
+          "courseId": "course-azure-devops",
+          "slug": "azure-pipeline-foundations",
+          "title": "Module 1: Multi-Stage Pipelines & Test Publishing",
+          "description": "Configure azure-pipelines.yml and publish JUnit / NUnit test results to Azure Test Plans.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-ado-1-1",
+              "moduleId": "mod-ado-1",
+              "courseId": "course-azure-devops",
+              "slug": "publishing-test-results-in-ado",
+              "title": "1.1 PublishTestResults@2 Task & Reporting",
+              "summary": "Integrate automated test runs directly with the Azure DevOps Test Runs dashboard.",
+              "contentHtml": "\n              <h2>Publishing Test Results in Azure DevOps</h2>\n              <p>Azure DevOps provides native visualization for test runs using the <code>PublishTestResults@2</code> task. When tests finish running, this task parses the output XML and displays pass/fail trends, error messages, and stack traces.</p>\n            ",
+              "wordCount": 230,
+              "estimatedReadTime": 2,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course-jenkins",
+      "categoryId": "cat-jenkins",
+      "slug": "declarative-jenkins-pipelines",
+      "title": "Declarative Jenkins Pipelines for QA Automation",
+      "subtitle": "Distributed Test Execution & Allure Report Dashboard",
+      "description": "Master Declarative Jenkinsfiles, Dockerized agent containers, parallel test stage execution, and Slack notification integration.",
+      "level": "Advanced",
+      "estimatedHours": 18,
+      "sortOrder": 3,
+      "status": "published",
+      "createdAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "modules": [
+        {
+          "id": "mod-jen-1",
+          "courseId": "course-jenkins",
+          "slug": "declarative-jenkinsfile-mastery",
+          "title": "Module 1: Declarative Syntax & Parallel Stages",
+          "description": "Construct Jenkins pipelines with stages, post blocks, and parallel browser execution.",
+          "sortOrder": 1,
+          "status": "published",
+          "createdAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "lessons": [
+            {
+              "id": "les-jen-1-1",
+              "moduleId": "mod-jen-1",
+              "courseId": "course-jenkins",
+              "slug": "declarative-syntax-essentials",
+              "title": "1.1 Declarative Jenkinsfile Structure for QA",
+              "summary": "Write resilient, maintainable Jenkins pipelines using agent, stages, and post-execution hooks.",
+              "contentHtml": "\n              <h2>Declarative Pipeline Syntax</h2>\n              <p>Declarative Pipeline is the recommended syntax for Jenkins. It provides strict structure, easy-to-read syntax, and built-in post hooks for test archiving.</p>\n            ",
+              "wordCount": 210,
+              "estimatedReadTime": 2,
+              "sortOrder": 1,
+              "status": "published",
+              "publishedAt": "2026-11-23T00:00:00.000Z",
+              "createdAt": "2026-11-23T00:00:00.000Z",
+              "updatedAt": "2026-11-23T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

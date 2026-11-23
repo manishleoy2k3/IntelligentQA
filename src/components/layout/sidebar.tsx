@@ -86,7 +86,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       [trackId]: !prev[trackId],
     }));
     if (trackId === 'ai-qa') {
-      router.push('/guides/ai-qa');
+      router.push('/learning');
       onCloseMobile?.();
     }
   };
