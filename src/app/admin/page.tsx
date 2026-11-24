@@ -67,7 +67,7 @@ import {
 import { getLessonDoc, LessonDoc } from '@/lib/qa-learning-docs';
 import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
 
-type AdminSection = 'overview' | 'academy' | 'course' | 'labs' | 'agents' | 'interviews' | 'team';
+type AdminSection = 'overview' | 'academy' | 'labs' | 'agents' | 'interviews' | 'team';
 
 function AdminDashboardContent() {
   const router = useRouter();
@@ -75,7 +75,6 @@ function AdminDashboardContent() {
   const rawSection = searchParams.get('section');
   const activeSection: AdminSection =
     rawSection === 'academy' ||
-    rawSection === 'course' ||
     rawSection === 'labs' ||
     rawSection === 'agents' ||
     rawSection === 'interviews' ||
@@ -817,8 +816,7 @@ function AdminDashboardContent() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#222222]">
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: Layers },
-            { id: 'academy', label: 'Learning Academy CMS', icon: GraduationCap, count: academyLessonCount },
-            { id: 'course', label: 'Course', icon: BookOpen, count: tracks.reduce((acc, t) => acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0), 0) },
+            { id: 'academy', label: 'Content Management Studio', icon: GraduationCap, count: academyLessonCount },
             { id: 'labs', label: 'Practice Labs', icon: Terminal, count: codingProblems.length },
             { id: 'agents', label: 'AI Tools and Agents', icon: Bot, count: agentConfigs.length },
             { id: 'interviews', label: 'Interview Banks', icon: HelpCircle, count: interviewQuestions.length },
@@ -911,68 +909,33 @@ function AdminDashboardContent() {
                       </div>
                       <div>
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                          PRIMARY CURRICULUM MANAGEMENT
+                          ALL-IN-ONE CMS &amp; CURRICULUM MANAGEMENT
                         </span>
                         <h3 className="text-xl font-bold text-white group-hover:text-emerald-300 transition-colors mt-1">
-                          Learning Academy CMS
+                          Content Management Studio
                         </h3>
                       </div>
                     </div>
                     <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 w-fit">
-                      {academyLessonCount} Lessons Across All Modules
+                      {academyLessonCount} Lessons Across All Courses
                     </span>
                   </div>
 
                   <p className="text-xs text-zinc-300 max-w-3xl leading-relaxed">
-                    Authoritative curriculum management console. Create and manage AI Academy, Selenium, Playwright, API Testing, and DevOps courses. Upload Microsoft Word (.docx) technical documents, preview rendered HTML, and publish lessons directly to learners with 1-click.
+                    Authoritative curriculum &amp; CMS console. Manage all courses, tracks, modules, and lessons (AI Academy, Playwright, Selenium, REST Assured, CI/CD). Upload Microsoft Word (.docx) technical guides, preview rendered HTML, and publish lessons with 1-click.
                   </p>
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-[#262626]">
                     <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
                       <span className="px-2 py-0.5 rounded bg-[#222] text-emerald-300 font-semibold">AI Academy (46 Lessons)</span>
-                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">Selenium WebDriver 4</span>
                       <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">Playwright TypeScript</span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">Selenium WebDriver 4</span>
                       <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">REST Assured</span>
                       <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">CI/CD &amp; DevOps</span>
                     </div>
                     <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
-                      <span>Open Academy CMS Studio</span>
+                      <span>Open Content Management Studio</span>
                       <ArrowRight className="w-4 h-4" />
-                    </span>
-                  </div>
-                </div>
-
-                {/* 1. COURSE SECTION TILE */}
-                <div
-                  onClick={() => handleSelectSection('course')}
-                  className="p-6 rounded-3xl bg-[#161616] border border-[#2A2A2A] hover:border-emerald-500/60 hover:bg-[#1A1A1A] transition-all cursor-pointer group shadow-lg space-y-4"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-                      <BookOpen className="w-6 h-6" />
-                    </div>
-                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                      {tracks.length} Tracks • {tracks.reduce((acc, t) => acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0), 0)} Lessons
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">
-                      Course
-                    </h3>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {tracks.map(t => (
-                        <span key={t.id} className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
-                          {t.title.split(' ')[0]}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                      <span>Edit &amp; Delete Details</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
                 </div>
@@ -1094,179 +1057,6 @@ function AdminDashboardContent() {
               <span>Back to Dashboard Overview</span>
             </button>
             <AcademyAdminConsole onNotify={(msg, type) => triggerBanner(msg, type)} />
-          </div>
-        )}
-
-        {/* =================================================================== */}
-        {/* VIEW 2: COURSE SECTION (FULL EDIT & DELETE CAPABILITIES)            */}
-        {/* =================================================================== */}
-        {activeSection === 'course' && (
-          <div className="space-y-6 animate-in fade-in duration-150">
-            {/* Header & Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <button
-                  type="button"
-                  onClick={() => handleSelectSection('overview')}
-                  className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 mb-1 cursor-pointer"
-                >
-                  <ArrowLeft className="w-3 h-3" />
-                  <span>Back to Dashboard</span>
-                </button>
-                <h2 className="text-xl font-bold text-white">Course Management</h2>
-                <p className="text-xs text-zinc-400">Add, edit, and delete modules, lessons, and production guides.</p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleOpenAddLesson}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add New Lesson</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Track Switcher Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              {tracks.map((track) => (
-                <button
-                  key={track.id}
-                  type="button"
-                  onClick={() => setSelectedTrackId(track.id)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    selectedTrackId === track.id
-                      ? 'bg-emerald-600 text-white shadow'
-                      : 'bg-[#1C1C1C] text-zinc-400 hover:text-white border border-[#2B2B2B]'
-                  }`}
-                >
-                  <span>{track.title}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Lessons List for Selected Track */}
-            <div className="bg-[#161616] rounded-3xl border border-[#262626] p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-white text-sm">{currentTrack?.title} Curriculum</h3>
-                  <span className="text-[10px] font-mono text-zinc-400 bg-[#222222] px-2 py-0.5 rounded-full">
-                    {currentTrack?.modules?.reduce((acc, m) => acc + m.lessons.length, 0) || 0} Lessons
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {currentTrack?.modules?.map((module) => (
-                  <div key={module.id} className="space-y-2">
-                    <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider px-1">
-                      {module.title}
-                    </div>
-
-                    <div className="divide-y divide-[#222222] border border-[#262626] rounded-2xl bg-[#1A1A1A] overflow-hidden">
-                      {module.lessons.map((lesson, lessonIdx) => (
-                        <div
-                          key={lesson.id}
-                          className={`p-4 flex items-center justify-between gap-4 hover:bg-[#202020] transition-colors ${
-                            lesson.disabled ? 'opacity-75 bg-amber-950/10 border-l-2 border-l-amber-500' : ''
-                          }`}
-                        >
-                          <div className="min-w-0 space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-mono text-xs text-zinc-500 font-bold">#{lessonIdx + 1}</span>
-                              <span className="font-bold text-sm text-white truncate">{lesson.title}</span>
-                              <span className="text-[10px] px-2 py-0.5 rounded bg-[#262626] text-zinc-300 font-mono">
-                                {lesson.durationMinutes}m
-                              </span>
-                              {lesson.disabled ? (
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                                  <EyeOff className="w-3 h-3 text-amber-400" />
-                                  <span>Disabled (Hidden from Students)</span>
-                                </span>
-                              ) : (
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                                  <Eye className="w-3 h-3 text-emerald-400" />
-                                  <span>Active</span>
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-xs text-zinc-400 line-clamp-1">{lesson.description}</p>
-                          </div>
-
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            {/* MOVE UP */}
-                            <button
-                              type="button"
-                              disabled={lessonIdx === 0}
-                              onClick={() => handleMoveLesson(selectedTrackId, lesson.id, 'up')}
-                              className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed border border-zinc-700 transition cursor-pointer"
-                              title="Move Up in sequence"
-                            >
-                              <ArrowUp className="w-3.5 h-3.5" />
-                            </button>
-
-                            {/* MOVE DOWN */}
-                            <button
-                              type="button"
-                              disabled={lessonIdx === module.lessons.length - 1}
-                              onClick={() => handleMoveLesson(selectedTrackId, lesson.id, 'down')}
-                              className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed border border-zinc-700 transition cursor-pointer"
-                              title="Move Down in sequence"
-                            >
-                              <ArrowDown className="w-3.5 h-3.5" />
-                            </button>
-
-                            {/* DISABLE / ENABLE TOGGLE */}
-                            <button
-                              type="button"
-                              onClick={() => handleToggleLessonDisabled(selectedTrackId, lesson.id)}
-                              className={`p-2 rounded-xl border transition cursor-pointer ${
-                                lesson.disabled
-                                  ? 'bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border-amber-500/30'
-                                  : 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border-emerald-500/30'
-                              }`}
-                              title={
-                                lesson.disabled
-                                  ? 'Enable Lesson (make visible to students)'
-                                  : 'Disable Lesson (hide while content is under update)'
-                              }
-                            >
-                              {lesson.disabled ? (
-                                <EyeOff className="w-3.5 h-3.5" />
-                              ) : (
-                                <Eye className="w-3.5 h-3.5" />
-                              )}
-                            </button>
-
-                            {/* EDIT BUTTON */}
-                            <button
-                              type="button"
-                              onClick={() => handleOpenEditLesson(lesson, module.id)}
-                              className="p-2 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 border border-sky-500/30 transition-colors cursor-pointer"
-                              title="Edit Lesson"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-
-                            {/* DELETE BUTTON */}
-                            <button
-                              type="button"
-                              onClick={() => handleConfirmDeleteLesson(selectedTrackId, lesson.id, lesson.title)}
-                              className="p-2 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-colors cursor-pointer"
-                              title="Delete Lesson permanently"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 
@@ -1756,122 +1546,6 @@ function AdminDashboardContent() {
 
         {/* =================================================================== */}
       </div>
-
-      {/* MODAL 1: LESSON EDIT / ADD MODAL                                    */}
-      {/* =================================================================== */}
-      {showLessonModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#161616] border border-[#2B2B2B] rounded-3xl p-6 sm:p-8 space-y-5 my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#262626]">
-              <h3 className="font-bold text-white text-base">
-                {editingLessonTarget?.lesson ? 'Edit Course Lesson' : 'Add New Course Lesson'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowLessonModal(false)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-[#222222]"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveLesson} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-300">Lesson Title</label>
-                  <input
-                    type="text"
-                    required
-                    value={lessonTitle}
-                    onChange={e => setLessonTitle(e.target.value)}
-                    placeholder="e.g. Dynamic Locators & Shadow DOM"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-zinc-300">Module / Category</label>
-                  <input
-                    type="text"
-                    value={lessonModule}
-                    onChange={e => setLessonModule(e.target.value)}
-                    placeholder="e.g. Automation Basics"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Summary / Learning Objective</label>
-                <input
-                  type="text"
-                  value={lessonSummary}
-                  onChange={e => setLessonSummary(e.target.value)}
-                  placeholder="Brief description of the lesson"
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Step-by-Step Overview &amp; Guide</label>
-                <textarea
-                  rows={3}
-                  value={lessonOverview}
-                  onChange={e => setLessonOverview(e.target.value)}
-                  placeholder="Explain the architectural pattern and testing steps..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Starter Code Template</label>
-                <textarea
-                  rows={4}
-                  value={lessonStarterCode}
-                  onChange={e => setLessonStarterCode(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-mono text-zinc-300"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Solution Code</label>
-                <textarea
-                  rows={4}
-                  value={lessonSolutionCode}
-                  onChange={e => setLessonSolutionCode(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-mono text-zinc-300"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Best Practices (One per line)</label>
-                <textarea
-                  rows={2}
-                  value={lessonBestPractices}
-                  onChange={e => setLessonBestPractices(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#262626]">
-                <button
-                  type="button"
-                  onClick={() => setShowLessonModal(false)}
-                  className="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors cursor-pointer"
-                >
-                  Save Lesson
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* =================================================================== */}
       {/* MODAL 2: PRACTICE LAB PROBLEM EDIT / ADD MODAL                      */}

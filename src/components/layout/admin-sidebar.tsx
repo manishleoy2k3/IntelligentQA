@@ -39,23 +39,9 @@ export default function AdminSidebar({
     },
     {
       id: 'academy',
-      name: 'Learning Academy CMS',
+      name: 'Content Management Studio',
       href: '/admin?section=academy',
       icon: GraduationCap,
-      color: 'text-emerald-400',
-    },
-    {
-      id: 'cms',
-      name: 'CMS & Publishing',
-      href: '/admin/cms',
-      icon: BookOpen,
-      color: 'text-purple-400',
-    },
-    {
-      id: 'course',
-      name: 'Course',
-      href: '/admin?section=course',
-      icon: BookOpen,
       color: 'text-emerald-400',
     },
     {
@@ -126,9 +112,7 @@ export default function AdminSidebar({
           const Icon = item.icon;
           const isActive =
             item.id === 'academy'
-              ? pathname === '/admin/academy' || currentSection === 'academy'
-              : item.id === 'cms'
-              ? pathname === '/admin/cms'
+              ? pathname === '/admin/academy' || pathname === '/admin/cms' || currentSection === 'academy'
               : pathname === '/admin'
               ? (item.id === 'overview' && (!searchParams.get('section') || currentSection === 'overview')) ||
                 currentSection === item.id

@@ -951,6 +951,27 @@ function CMSPortalContent() {
 
       {/* Main Content Body */}
       <div className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+        {/* Banner linking directly to unified Content Management Studio */}
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white">Content Management Studio</h4>
+              <p className="text-xs text-zinc-300">
+                To manage courses, modules, lessons, and DOCX document publishing, use the unified Content Management Studio.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin?section=academy"
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shrink-0 w-fit"
+          >
+            <span>Open Studio</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
         {/* ============================================================ */}
         {/* TAB 1: DASHBOARD METRICS */}
         {/* ============================================================ */}
