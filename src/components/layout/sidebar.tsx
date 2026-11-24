@@ -1055,37 +1055,42 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
                   return (
                     <div key={track.id} className="space-y-0.5">
-                      {/* Track Parent Row (Focuses first child lesson and shows content on right panel) */}
+                      {/* Track Parent Row (Navigates to Course Overview and expands syllabus) */}
                       <div
-                        onClick={() => toggleTrack(track.id)}
                         className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group cursor-pointer ${
                           isTrackActive
                             ? 'bg-slate-100/90 dark:bg-neutral-800/80 font-semibold text-emerald-600 dark:text-emerald-400'
                             : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40 text-slate-800 dark:text-neutral-200'
                         }`}
-                        title={`${track.displayTitle}: Open first child lesson`}
+                        title={`${track.displayTitle}: Open Course Overview`}
                       >
-                        <Link
-                          href={`/guides/${guideSlug}`}
-                          data-learning-href={`/learning/${track.lessons[0]?.slug || track.slug}`}
+                        <div
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            toggleTrack(track.id);
+                            if (!isExpanded) {
+                              toggleTrack(track.id);
+                            }
                             onCloseMobile?.();
+                            if (track.id === 'ai-qa' || track.displayTitle === 'AI Academy' || (track.slug || '').includes('ai')) {
+                              router.push('/learning');
+                            } else {
+                              router.push(`/learning?course=${encodeURIComponent(track.rawId || track.slug || track.id)}`);
+                            }
                           }}
-                          className="flex items-center gap-2 truncate flex-1 min-w-0"
-                          title={`${track.displayTitle}${track.lessons.length > 0 ? ` (${track.lessons.length} Lessons)` : ''}`}
+                          className="flex items-center gap-2 truncate flex-1 min-w-0 cursor-pointer"
+                          title={`${track.displayTitle}: Open Course Overview`}
                         >
                           <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
                           <span className="truncate font-semibold">
                             {track.displayTitle}
                           </span>
-                        </Link>
+                        </div>
 
                         {track.lessons.length > 0 && (
                           <div
                             onClick={(e) => {
+                              e.preventDefault();
                               e.stopPropagation();
                               toggleTrack(track.id);
                             }}

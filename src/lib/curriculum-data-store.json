@@ -107215,7 +107215,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-llm",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T02:51:12.590Z",
+      "lastAccessedAt": "2026-11-24T03:07:55.540Z",
       "completedAt": null
     },
     {
@@ -107223,7 +107223,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-how-llms-work",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-23T19:35:06.434Z",
+      "lastAccessedAt": "2026-11-24T03:02:56.246Z",
       "completedAt": null
     },
     {
@@ -107648,6 +107648,14 @@
       "lessonId": "les-what-is-genai",
       "completionStatus": "in_progress",
       "lastAccessedAt": "2026-11-24T02:51:11.338Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-transformer-architecture",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-transformer-architecture",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T03:03:08.646Z",
       "completedAt": null
     }
   ],

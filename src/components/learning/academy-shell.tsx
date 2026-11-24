@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, AlertCircle, CheckCircle2, FileQuestion, RefreshCw, LayoutGrid, Eye, EyeOff, Bookmark, Printer } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, FileQuestion, RefreshCw, Eye, EyeOff, Bookmark, Printer, ArrowRight } from 'lucide-react';
 import AcademyHeader from './academy-header';
 import CourseSidebar from './course-sidebar';
 import CourseSearch from './course-search';
-import LessonBreadcrumb from './lesson-breadcrumb';
 import LessonHeader from './lesson-header';
 import LessonSection from './lesson-section';
 import PreviousNextNavigation from './previous-next-navigation';
@@ -21,10 +20,13 @@ import {
   AcademyLessonData,
   getAllLessons,
 } from '@/data/learning/academy-curriculum';
+import { INITIAL_PUBLISHED_COURSES } from '@/data/learning/initial-courses';
 import { QADatabase } from '@/lib/qa-db';
 
 interface AcademyShellProps {
   initialLessonSlug?: string;
+  initialCourseId?: string;
+  isOverview?: boolean;
   showSidebar?: boolean;
   showHeader?: boolean;
 }
@@ -34,6 +36,8 @@ const lessonClientCache = new Map<string, any>();
 
 export default function AcademyShell({
   initialLessonSlug,
+  initialCourseId,
+  isOverview = false,
   showSidebar = false,
   showHeader = false,
 }: AcademyShellProps) {
@@ -43,7 +47,12 @@ export default function AcademyShell({
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [showCourseOverview, setShowCourseOverview] = useState(false);
+
+  // Overview mode vs. Lesson mode
+  const [isOverviewMode, setIsOverviewMode] = useState<boolean>(
+    isOverview || !initialLessonSlug || initialLessonSlug === 'overview'
+  );
+  const [selectedCourseId, setSelectedCourseId] = useState<string | undefined>(initialCourseId);
 
   // Active lesson slug
   const defaultSlug = initialLessonSlug || 'what-is-artificial-intelligence';
@@ -60,12 +69,19 @@ export default function AcademyShell({
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
   const [courseProgressStats, setCourseProgressStats] = useState<any | null>(null);
 
-  // Sync with prop when URL changes
+  // Sync with props when URL or course selection changes
   useEffect(() => {
+    if (isOverview !== undefined) {
+      setIsOverviewMode(isOverview);
+    }
+    if (initialCourseId) {
+      setSelectedCourseId(initialCourseId);
+    }
     if (initialLessonSlug) {
       setActiveSlug(initialLessonSlug);
+      setIsOverviewMode(false);
     }
-  }, [initialLessonSlug]);
+  }, [initialLessonSlug, isOverview, initialCourseId]);
 
   // Load saved theme preference on mount
   useEffect(() => {
@@ -224,10 +240,10 @@ export default function AcademyShell({
   }, []);
 
   useEffect(() => {
-    if (activeSlug) {
+    if (!isOverviewMode && activeSlug && activeSlug !== 'overview') {
       fetchLessonData(activeSlug);
     }
-  }, [activeSlug, fetchLessonData]);
+  }, [activeSlug, isOverviewMode, fetchLessonData]);
 
   // Handle Mark Completed / In Progress
   const handleToggleComplete = async () => {
@@ -366,11 +382,41 @@ export default function AcademyShell({
 
   const handleSelectLesson = (slug: string) => {
     setActiveSlug(slug);
+    setIsOverviewMode(false);
     setMobileSidebarOpen(false);
+    router.push(`/learning/${slug}`);
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  // Resolve active course for Course Overview mode
+  const activeCourse = useMemo(() => {
+    if (selectedCourseId) {
+      const match = INITIAL_PUBLISHED_COURSES.find(
+        (c) =>
+          c.id === selectedCourseId ||
+          c.slug === selectedCourseId ||
+          c.title.toLowerCase().includes(selectedCourseId.toLowerCase())
+      );
+      if (match) return match;
+    }
+    if (apiLessonData?.course) {
+      return apiLessonData.course;
+    }
+    return INITIAL_PUBLISHED_COURSES[0]; // AI Academy default
+  }, [selectedCourseId, apiLessonData?.course]);
+
+  const totalCourseLessons = useMemo(() => {
+    return (activeCourse?.modules || []).reduce((acc: number, m: any) => acc + (m.lessons?.length || 0), 0) || 46;
+  }, [activeCourse]);
+
+  const completedInCourseCount = useMemo(() => {
+    const allLessons = (activeCourse?.modules || []).flatMap((m: any) => m.lessons || []);
+    return allLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
+  }, [activeCourse, completedLessonIds]);
+
+  const coursePercent = totalCourseLessons > 0 ? Math.round((completedInCourseCount / totalCourseLessons) * 100) : 0;
 
   // Calculate current module completion stats
   const moduleLessons = apiLessonData?.module?.lessons || [];
@@ -447,8 +493,8 @@ export default function AcademyShell({
           {/* C. Right Content Panel */}
           <main className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-8 bg-white dark:bg-[#0f1117]">
             <div className="max-w-4xl mx-auto">
-              {/* 1. LOADING SKELETON STATE */}
-              {isLoading && !apiLessonData && (
+              {/* 1. LOADING SKELETON STATE (Only when loading a specific lesson) */}
+              {!isOverviewMode && isLoading && !apiLessonData && (
                 <div className="space-y-6 animate-pulse py-4">
                   <div className="h-4 w-48 bg-slate-200 dark:bg-neutral-800 rounded" />
                   <div className="h-8 w-3/4 bg-slate-200 dark:bg-neutral-800 rounded" />
@@ -460,8 +506,8 @@ export default function AcademyShell({
                 </div>
               )}
 
-              {/* 2. NOT FOUND STATE */}
-              {!isLoading && isNotFound && (
+              {/* 2. NOT FOUND STATE (Only when a specific lesson is not found) */}
+              {!isOverviewMode && !isLoading && isNotFound && (
                 <div className="text-center py-16 px-4 bg-slate-50 dark:bg-neutral-900/40 rounded-2xl border border-slate-200 dark:border-neutral-800">
                   <FileQuestion className="w-12 h-12 text-amber-500 mx-auto mb-3" />
                   <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-neutral-100">
@@ -479,8 +525,8 @@ export default function AcademyShell({
                 </div>
               )}
 
-              {/* 3. API ERROR STATE */}
-              {!isLoading && !isNotFound && apiError && !apiLessonData && (
+              {/* 3. API ERROR STATE (Only when a specific lesson fails to load) */}
+              {!isOverviewMode && !isLoading && !isNotFound && apiError && !apiLessonData && (
                 <div className="p-4 mb-6 rounded-xl border border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <AlertCircle className="w-5 h-5 shrink-0" />
@@ -500,112 +546,189 @@ export default function AcademyShell({
               )}
 
               {/* 4. ACTIVE CONTENT STATE */}
-              {(!isLoading || apiLessonData) && !isNotFound && (
-                <>
-                  {/* Top Bar with Breadcrumbs & Unified Action Toolbar */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-6 border-b border-slate-100 dark:border-neutral-800/80 no-print">
-                    <LessonBreadcrumb
-                      items={
-                        apiLessonData?.breadcrumbs && apiLessonData.breadcrumbs.length > 0
-                          ? apiLessonData.breadcrumbs
-                          : [
-                              { label: currentLesson.moduleTitle },
-                              { label: currentLesson.title, active: true },
-                            ]
-                      }
-                      className="min-w-0 flex-1"
-                    />
+              {isOverviewMode ? (
+                /* ================= COURSE OVERVIEW (MAIN PAGE) ================= */
+                <div className="space-y-8 py-2">
+                  {/* Course Overview Card */}
+                  <CourseOverviewCard
+                    courseTitle={activeCourse.title}
+                    subtitle={activeCourse.subtitle}
+                    description={activeCourse.description}
+                    level={activeCourse.level}
+                    estimatedHours={activeCourse.estimatedHours}
+                    totalModules={activeCourse.modules.length}
+                    totalLessons={totalCourseLessons}
+                    completedLessons={completedInCourseCount}
+                    percentCompleted={coursePercent}
+                  />
 
-                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                      {/* Bookmark Button */}
-                      <button
-                        onClick={handleToggleBookmark}
-                        aria-label={isBookmarked ? 'Remove Bookmark' : 'Bookmark Lesson'}
-                        title={isBookmarked ? 'Remove from My Bookmarks' : 'Bookmark this lesson'}
-                        className={`p-1.5 px-2.5 rounded-lg border text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-                          isBookmarked
-                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 hover:bg-amber-500/20'
-                            : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                      >
-                        <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}`} />
-                        <span className="hidden md:inline">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
-                      </button>
-
-                      {/* Print Button */}
-                      <button
-                        onClick={handlePrintLesson}
-                        aria-label="Print Lesson"
-                        title="Print or Save as PDF"
-                        className="p-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-700 bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5"
-                      >
-                        <Printer className="w-3.5 h-3.5" />
-                        <span className="hidden md:inline">Print</span>
-                      </button>
-
-                      {/* Course & Module Overview Toggle */}
-                      {apiLessonData?.course && (
-                        <button
-                          onClick={() => setShowCourseOverview((prev) => !prev)}
-                          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
-                            showCourseOverview
-                              ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
-                              : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700'
-                          }`}
-                        >
-                          <LayoutGrid className="w-3.5 h-3.5" />
-                          <span>{showCourseOverview ? 'Hide Overview' : 'Overview'}</span>
-                        </button>
-                      )}
-
-                      {/* Mark Complete Button */}
-                      <button
-                        onClick={handleToggleComplete}
-                        disabled={isSavingProgress}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                          isCompleted
-                            ? 'bg-emerald-500 text-white shadow-xs'
-                            : 'bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700 border border-slate-200 dark:border-neutral-700'
-                        }`}
-                      >
-                        <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
-                        <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
-                      </button>
+                  {/* Ready to begin? Primary Action Callout */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white mb-0.5">
+                        {completedInCourseCount > 0 ? 'Pick up where you left off' : 'Ready to start learning?'}
+                      </h3>
+                      <p className="text-xs text-slate-600 dark:text-neutral-400">
+                        Follow the structured curriculum below or jump straight into the first lesson.
+                      </p>
                     </div>
+                    <button
+                      onClick={() => {
+                        const firstLesson = activeCourse.modules[0]?.lessons[0]?.slug || 'what-is-artificial-intelligence';
+                        handleSelectLesson(firstLesson);
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0"
+                    >
+                      <span>{completedInCourseCount > 0 ? 'Continue Learning' : 'Start Course'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
 
-                  {/* Optional Course & Module Overview (Only visible when user toggles Overview) */}
-                  {showCourseOverview && (
-                    <div className="space-y-4 mb-8">
-                      {apiLessonData?.course && (
-                        <CourseOverviewCard
-                          courseTitle={apiLessonData.course.title}
-                          subtitle={apiLessonData.course.subtitle}
-                          description={apiLessonData.course.description}
-                          level={apiLessonData.course.level}
-                          estimatedHours={apiLessonData.course.estimatedHours}
-                          totalModules={apiLessonData.course.modules?.length || 6}
-                          totalLessons={apiLessonData.courseOverview?.totalLessons || 46}
-                          completedLessons={completedLessonIds.size}
-                          percentCompleted={
-                            apiLessonData.courseOverview?.totalLessons
-                              ? Math.round((completedLessonIds.size / apiLessonData.courseOverview.totalLessons) * 100)
-                              : 0
-                          }
-                        />
-                      )}
-
-                      {apiLessonData?.module && (
-                        <ModuleOverviewCard
-                          title={apiLessonData.module.title}
-                          description={apiLessonData.module.description}
-                          totalLessons={moduleTotalLessons}
-                          completedLessons={moduleCompletedCount}
-                          percentCompleted={modulePercent}
-                        />
-                      )}
+                  {/* Course Syllabus & Modules Breakdown */}
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-neutral-800">
+                      <div>
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                          Curriculum Map
+                        </span>
+                        <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                          Course Syllabus &amp; Modules
+                        </h2>
+                      </div>
+                      <span className="text-xs text-slate-500 dark:text-neutral-400 font-medium">
+                        {activeCourse.modules.length} Modules • {totalCourseLessons} Lessons
+                      </span>
                     </div>
-                  )}
+
+                    <div className="space-y-4">
+                      {activeCourse.modules.map((mod: any, mIdx: number) => {
+                        const modLessons = mod.lessons || [];
+                        const modCompleted = modLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
+                        const modPercent = modLessons.length > 0 ? Math.round((modCompleted / modLessons.length) * 100) : 0;
+
+                        return (
+                          <div
+                            key={mod.id || mIdx}
+                            className="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 overflow-hidden shadow-xs"
+                          >
+                            <div className="p-5 border-b border-slate-100 dark:border-neutral-800 bg-slate-50/60 dark:bg-neutral-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                    Module {mIdx + 1}
+                                  </span>
+                                  <span className="text-xs text-slate-500 dark:text-neutral-400">
+                                    {modLessons.length} Lessons
+                                  </span>
+                                </div>
+                                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                                  {mod.title}
+                                </h3>
+                                {mod.description && (
+                                  <p className="text-xs text-slate-600 dark:text-neutral-400 mt-0.5">
+                                    {mod.description}
+                                  </p>
+                                )}
+                              </div>
+                              {modCompleted > 0 && (
+                                <span className="text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full shrink-0">
+                                  {modCompleted}/{modLessons.length} Done ({modPercent}%)
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Lesson List */}
+                            <div className="divide-y divide-slate-100 dark:divide-neutral-800/60">
+                              {modLessons.map((les: any, lIdx: number) => {
+                                const isDone = completedLessonIds.has(les.id) || completedLessonIds.has(les.slug);
+                                return (
+                                  <button
+                                    key={les.id || lIdx}
+                                    onClick={() => handleSelectLesson(les.slug || les.id)}
+                                    className="w-full text-left p-3.5 sm:px-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-neutral-800/40 transition-colors group cursor-pointer"
+                                  >
+                                    <div className="flex items-center gap-3 min-w-0 pr-3">
+                                      <span
+                                        className={`w-6 h-6 rounded-full text-xs font-mono font-bold flex items-center justify-center shrink-0 border transition-colors ${
+                                          isDone
+                                            ? 'bg-emerald-500 text-white border-emerald-500'
+                                            : 'bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-neutral-700 group-hover:border-emerald-500 group-hover:text-emerald-500'
+                                        }`}
+                                      >
+                                        {isDone ? '✓' : lIdx + 1}
+                                      </span>
+                                      <div className="min-w-0">
+                                        <h4 className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                                          {les.title}
+                                        </h4>
+                                        {les.summary && (
+                                          <p className="text-xs text-slate-500 dark:text-neutral-400 line-clamp-1">
+                                            {les.summary}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 shrink-0 text-xs text-slate-400">
+                                      <span className="hidden sm:inline font-mono text-[11px]">
+                                        {les.estimatedReadingTime || 5} min read
+                                      </span>
+                                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ) : (!isLoading || apiLessonData) && !isNotFound ? (
+                /* ================= LESSON READING PAGE ================= */
+                <>
+                  {/* Clean Utility Action Toolbar (Bookmark, Print, Mark Complete) - NO breadcrumbs, NO overview button */}
+                  <div className="flex items-center justify-end gap-2 pb-3 mb-6 border-b border-slate-100 dark:border-neutral-800/80 no-print">
+                    {/* Bookmark Button */}
+                    <button
+                      onClick={handleToggleBookmark}
+                      aria-label={isBookmarked ? 'Remove Bookmark' : 'Bookmark Lesson'}
+                      title={isBookmarked ? 'Remove from My Bookmarks' : 'Bookmark this lesson'}
+                      className={`p-1.5 px-2.5 rounded-lg border text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                        isBookmarked
+                          ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 hover:bg-amber-500/20'
+                          : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}`} />
+                      <span className="hidden md:inline">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+                    </button>
+
+                    {/* Print Button */}
+                    <button
+                      onClick={handlePrintLesson}
+                      aria-label="Print Lesson"
+                      title="Print or Save as PDF"
+                      className="p-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-700 bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Printer className="w-3.5 h-3.5" />
+                      <span className="hidden md:inline">Print</span>
+                    </button>
+
+                    {/* Mark Complete Button */}
+                    <button
+                      onClick={handleToggleComplete}
+                      disabled={isSavingProgress}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                        isCompleted
+                          ? 'bg-emerald-500 text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700 border border-slate-200 dark:border-neutral-700'
+                      }`}
+                    >
+                      <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
+                      <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
+                    </button>
+                  </div>
 
                   {/* Clean Lesson Header with Reading Time, Difficulty, Updated Date, Summary */}
                   <LessonHeader
@@ -685,7 +808,7 @@ export default function AcademyShell({
                     }
                   />
                 </>
-              )}
+              ) : null}
             </div>
           </main>
         </div>

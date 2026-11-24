@@ -2,6 +2,21 @@ import React from 'react';
 import { Metadata } from 'next';
 import AcademyShell from '@/components/learning/academy-shell';
 import { getLessonBySlug } from '@/data/learning/academy-curriculum';
+import { INITIAL_PUBLISHED_COURSES } from '@/data/learning/initial-courses';
+
+const KNOWN_COURSE_SLUGS = new Set([
+  'overview',
+  'ai-academy',
+  'ai-for-qa',
+  'ai-qa',
+  'ai-for-qa-mastery',
+  'course-ai-qa-mastery',
+  'selenium-java',
+  'playwright-ts',
+  'api-testing',
+  ...INITIAL_PUBLISHED_COURSES.map((c) => c.slug),
+  ...INITIAL_PUBLISHED_COURSES.map((c) => c.id),
+]);
 
 export async function generateMetadata({
   params,
@@ -10,9 +25,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const lessonSlug = slug && slug.length > 0 ? slug[slug.length - 1] : 'what-is-artificial-intelligence';
-  const lesson = getLessonBySlug(lessonSlug);
+  const targetSlug = slug && slug.length > 0 ? slug[slug.length - 1] : undefined;
 
+  if (!targetSlug || KNOWN_COURSE_SLUGS.has(targetSlug)) {
+    return {
+      title: 'AI Academy — Technical Documentation & Quality Engineering | IntelligentQA',
+      description:
+        'Master artificial intelligence, prompt engineering, context engineering, Model Context Protocol (MCP), and autonomous test agents.',
+    };
+  }
+
+  const lesson = getLessonBySlug(targetSlug);
   if (lesson) {
     return {
       title: `${lesson.title} — IntelligentQA Learning Academy`,
@@ -29,12 +52,24 @@ export async function generateMetadata({
 
 export default async function LearningAcademyPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug?: string[] }>;
+  searchParams?: Promise<{ course?: string }>;
 }) {
   const resolvedParams = await params;
+  const resolvedQuery = searchParams ? await searchParams : {};
   const slug = resolvedParams?.slug;
-  const lessonSlug = slug && slug.length > 0 ? slug[slug.length - 1] : 'what-is-artificial-intelligence';
+  const targetSlug = slug && slug.length > 0 ? slug[slug.length - 1] : undefined;
 
-  return <AcademyShell initialLessonSlug={lessonSlug} />;
+  const isCourseOverview = !targetSlug || KNOWN_COURSE_SLUGS.has(targetSlug) || !!resolvedQuery.course;
+  const courseId = resolvedQuery.course || (targetSlug && KNOWN_COURSE_SLUGS.has(targetSlug) && targetSlug !== 'overview' ? targetSlug : undefined);
+
+  return (
+    <AcademyShell
+      initialLessonSlug={isCourseOverview ? undefined : targetSlug}
+      initialCourseId={courseId}
+      isOverview={isCourseOverview}
+    />
+  );
 }
