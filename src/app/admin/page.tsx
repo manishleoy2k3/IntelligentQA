@@ -1759,7 +1759,7 @@ function AdminDashboardContent() {
       {/* =================================================================== */}
       {showInterviewModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#161616] border border-[#2B2B2B] rounded-3xl p-6 sm:p-8 space-y-5 my-8 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-4xl bg-[#161616] border border-[#2B2B2B] rounded-3xl p-6 sm:p-8 space-y-5 my-8 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[#262626]">
               <h3 className="font-bold text-white text-base">
                 {editingQuestion ? 'Edit Interview Question' : 'Add Interview Question'}
@@ -1836,16 +1836,20 @@ function AdminDashboardContent() {
                   <span className="text-[10px] text-zinc-500 font-mono">Keeps exact paragraphs, bullets &amp; code formatting</span>
                 </div>
                 <textarea
-                  rows={6}
+                  rows={14}
                   value={iqAnswer}
                   onChange={e => setIqAnswer(e.target.value)}
                   placeholder="Paste or write detailed technical explanation... Exact formatting, line breaks, bullet points, and code blocks from your source will be preserved."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-sans text-white leading-relaxed whitespace-pre-wrap"
+                  className="w-full min-h-[300px] px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-sans text-white leading-relaxed whitespace-pre-wrap resize-y"
                 />
                 {iqAnswer.trim() && (
-                  <div className="p-3 bg-[#141414] rounded-xl border border-[#252525] text-xs text-zinc-300 space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-emerald-400 block">Live Formatted Preview:</span>
-                    <FormattedInterviewAnswer text={iqAnswer} isDark />
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[10px] uppercase font-bold text-emerald-400 block tracking-wider">
+                      Live Formatted Preview:
+                    </span>
+                    <div className="p-3 bg-[#141414] rounded-xl border border-[#252525] text-xs text-zinc-300 max-h-60 overflow-y-auto">
+                      <FormattedInterviewAnswer text={iqAnswer} isDark />
+                    </div>
                   </div>
                 )}
               </div>
