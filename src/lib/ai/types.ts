@@ -58,10 +58,43 @@ export type EnhancementResponseType =
   | 'technical_review'
   | 'general_guidance';
 
+export interface TechnicalReviewMetric {
+  name: string;
+  score: number; // 0-100
+  maxScore: number; // 100
+  weight?: number;
+  benchmark?: string;
+  description: string;
+}
+
+export interface TechnicalRecommendation {
+  type: 'Good' | 'Missing' | 'Improve' | 'Warning';
+  category: 'Concepts' | 'Architecture' | 'Code Examples' | 'Failures' | 'Objectives' | 'Best Practices' | 'Other';
+  title: string;
+  detail: string;
+  actionableStep?: string;
+}
+
+export interface TechnicalReviewData {
+  overallScore: number; // 0-100
+  status: 'Strong' | 'Needs Improvement' | 'Critical Issues';
+  metrics: {
+    completeness: TechnicalReviewMetric;   // e.g. 88/100 Technical completeness
+    practicalDepth: TechnicalReviewMetric; // e.g. 72/100 Practical depth
+    codeExamples?: TechnicalReviewMetric;
+    diagrams?: TechnicalReviewMetric;
+    failureHandling?: TechnicalReviewMetric;
+    [key: string]: TechnicalReviewMetric | undefined;
+  };
+  recommendations: TechnicalRecommendation[];
+  summaryVerbatim?: string;
+}
+
 export interface AIStructuredResponse {
   response_type: EnhancementResponseType;
   summary: string;
   generated_content: string;
+  review?: TechnicalReviewData;
   diagrams?: Array<{
     type: 'mermaid' | 'svg' | 'ascii';
     title: string;

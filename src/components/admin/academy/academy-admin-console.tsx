@@ -46,6 +46,7 @@ import {
 import DocxUploadDropzone, { UploadedDocInfo } from './docx-upload-dropzone';
 import ContentPreviewModal from './content-preview-modal';
 import VisualLessonEditor from '@/components/editor/visual-lesson-editor';
+import AiTechnicalReviewModal from './ai-technical-review-modal';
 
 interface AcademyAdminConsoleProps {
   onNotify?: (msg: string, type?: 'success' | 'error') => void;
@@ -118,6 +119,25 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     module: AcademyModule;
     lesson: AcademyLesson;
   } | null>(null);
+
+  // AI Technical Review Modal State (Audit before editing)
+  const [reviewLessonTarget, setReviewLessonTarget] = useState<{
+    lesson: AcademyLesson;
+    courseTitle: string;
+    moduleTitle: string;
+    courseDesc?: string;
+    moduleDesc?: string;
+  } | null>(null);
+
+  const handleOpenReviewLesson = (course: AcademyCourse, module: AcademyModule, lesson: AcademyLesson) => {
+    setReviewLessonTarget({
+      lesson,
+      courseTitle: course.title,
+      moduleTitle: module.title,
+      courseDesc: course.description,
+      moduleDesc: module.description,
+    });
+  };
 
   // Phase 8: Standard Lesson Sections & Diagram Builder state
   const [lessonEditorTab, setLessonEditorTab] = useState<'content' | 'diagram' | 'docx'>('content');
@@ -1154,6 +1174,15 @@ test('deterministic enterprise verification', async ({ page }) => {
                       </button>
                       <button
                         type="button"
+                        onClick={() => handleOpenReviewLesson(course, module, lesson)}
+                        className="px-2.5 py-1 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 hover:text-white border border-purple-500/30 text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                        title="AI Technical Review & Content Audit"
+                      >
+                        <Sparkles className="w-3 h-3 text-purple-400" />
+                        <span>Review</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleOpenEditLesson(course.id, module.id, lesson)}
                         className="p-1.5 rounded-lg bg-[#222222] hover:bg-[#2C2C2C] text-zinc-300 hover:text-white transition-colors cursor-pointer"
                         title="Edit Lesson"
@@ -1535,6 +1564,17 @@ test('deterministic enterprise verification', async ({ page }) => {
                                     </button>
                                     <button
                                       type="button"
+                                      onClick={() => {
+                                        const parentMod = (activeCourse.modules || []).find((m) => m.id === mod.id) || mod;
+                                        handleOpenReviewLesson(activeCourse, parentMod, lsn);
+                                      }}
+                                      className="p-1.5 rounded text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 transition-colors cursor-pointer"
+                                      title="AI Technical Review & Content Audit"
+                                    >
+                                      <Sparkles className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
                                       onClick={() => handleOpenEditLesson(activeCourse.id, mod.id, lsn)}
                                       className="p-1.5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
                                       title="Edit Lesson & DOCX Document"
@@ -1857,14 +1897,35 @@ test('deterministic enterprise verification', async ({ page }) => {
                       Edit this lesson visually with rich text, code highlighting, tables, callouts, and images. Zero HTML required.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleOpenVisualEditorFromModal}
-                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg transition-colors cursor-pointer shrink-0"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                    <span>Open Visual Editor</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (editingLessonTarget?.lesson) {
+                          const activeC = courses.find((c) => c.id === editingLessonTarget.courseId);
+                          const activeM = (activeC?.modules || []).find((m) => m.id === editingLessonTarget.moduleId);
+                          if (activeC && activeM) {
+                            handleOpenReviewLesson(activeC, activeM, {
+                              ...editingLessonTarget.lesson,
+                              contentHtml: lessonContentHtml,
+                            });
+                          }
+                        }
+                      }}
+                      className="px-3 py-2 rounded-xl bg-purple-900/40 hover:bg-purple-900/60 text-purple-300 border border-purple-500/30 font-bold text-xs flex items-center gap-1.5 shadow transition-colors cursor-pointer shrink-0"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Review Content</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOpenVisualEditorFromModal}
+                      className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg transition-colors cursor-pointer shrink-0"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span>Open Visual Editor</span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -2239,6 +2300,46 @@ test('deterministic enterprise verification', async ({ page }) => {
             }}
           />
         </div>
+      )}
+
+      {/* 4F. AI TECHNICAL REVIEW & QUALITY EVALUATION MODAL */}
+      {reviewLessonTarget && (
+        <AiTechnicalReviewModal
+          isOpen={!!reviewLessonTarget}
+          onClose={() => setReviewLessonTarget(null)}
+          lessonId={reviewLessonTarget.lesson.id}
+          lessonTitle={reviewLessonTarget.lesson.title}
+          courseTitle={reviewLessonTarget.courseTitle}
+          moduleTitle={reviewLessonTarget.moduleTitle}
+          contentHtml={reviewLessonTarget.lesson.contentHtml || ''}
+          contextPackage={{
+            course: {
+              name: reviewLessonTarget.courseTitle,
+              description: reviewLessonTarget.courseDesc,
+            },
+            module: {
+              name: reviewLessonTarget.moduleTitle,
+              description: reviewLessonTarget.moduleDesc,
+            },
+            currentLesson: {
+              id: reviewLessonTarget.lesson.id,
+              title: reviewLessonTarget.lesson.title,
+              contentHtml: reviewLessonTarget.lesson.contentHtml || '',
+            },
+          }}
+          onOpenVisualEditor={() => {
+            const activeC = courses.find((c) => c.title === reviewLessonTarget.courseTitle);
+            const activeM = (activeC?.modules || []).find((m) => m.title === reviewLessonTarget.moduleTitle);
+            if (activeC && activeM) {
+              setActiveVisualLesson({
+                course: activeC,
+                module: activeM,
+                lesson: reviewLessonTarget.lesson,
+              });
+              setShowVisualEditor(true);
+            }
+          }}
+        />
       )}
     </div>
   );

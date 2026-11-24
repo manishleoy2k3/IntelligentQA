@@ -24,6 +24,8 @@ import {
   Wand2,
   Trash2,
   Key,
+  ArrowUpRight,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   AIEnhancementResponse,
@@ -441,6 +443,99 @@ export default function AiChatPanel({
                 {resp?.summary && (
                   <div className="text-[11px] text-zinc-300 italic bg-purple-950/20 border border-purple-500/10 p-2.5 rounded-xl">
                     {resp.summary}
+                  </div>
+                )}
+
+                {/* Structured Technical Review (Evaluation Rubric & Recommendations) */}
+                {resp?.review && (
+                  <div className="space-y-3 p-3.5 rounded-2xl bg-[#121216] border border-purple-500/30">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono font-bold uppercase text-purple-400 flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        AI Technical Review Audit
+                      </span>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+                        Score: {resp.review.overallScore}/100
+                      </span>
+                    </div>
+
+                    {/* Criteria Scorecards */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2.5 rounded-xl bg-[#181820] border border-[#272733] space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] text-zinc-300 font-medium">Technical completeness</span>
+                          <span className="font-mono font-bold text-cyan-400">
+                            {resp.review.metrics.completeness?.score ?? 0}/100
+                          </span>
+                        </div>
+                        <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-cyan-400 transition-all"
+                            style={{ width: `${resp.review.metrics.completeness?.score ?? 0}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-[#181820] border border-[#272733] space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] text-zinc-300 font-medium">Practical depth</span>
+                          <span className="font-mono font-bold text-purple-400">
+                            {resp.review.metrics.practicalDepth?.score ?? 0}/100
+                          </span>
+                        </div>
+                        <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-purple-400 transition-all"
+                            style={{ width: `${resp.review.metrics.practicalDepth?.score ?? 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Specific Recommendations */}
+                    {resp.review.recommendations && resp.review.recommendations.length > 0 && (
+                      <div className="space-y-1.5 pt-1">
+                        <span className="text-[10px] font-mono uppercase text-zinc-400 font-bold block">
+                          Review Findings & Gaps:
+                        </span>
+                        <div className="space-y-1.5">
+                          {resp.review.recommendations.map((rec, rIdx) => (
+                            <div
+                              key={rIdx}
+                              className={`p-2 rounded-xl border text-[11px] flex items-start gap-2 ${
+                                rec.type === 'Good'
+                                  ? 'bg-emerald-950/20 border-emerald-500/20 text-emerald-200'
+                                  : rec.type === 'Missing'
+                                  ? 'bg-rose-950/20 border-rose-500/25 text-rose-200'
+                                  : rec.type === 'Warning'
+                                  ? 'bg-amber-950/20 border-amber-500/25 text-amber-200'
+                                  : 'bg-sky-950/20 border-sky-500/20 text-sky-200'
+                              }`}
+                            >
+                              <span
+                                className={`text-[9px] font-bold font-mono px-1.5 py-0.5 rounded shrink-0 ${
+                                  rec.type === 'Good'
+                                    ? 'bg-emerald-500/20 text-emerald-400'
+                                    : rec.type === 'Missing'
+                                    ? 'bg-rose-500/20 text-rose-400'
+                                    : rec.type === 'Warning'
+                                    ? 'bg-amber-500/20 text-amber-400'
+                                    : 'bg-sky-500/20 text-sky-400'
+                                }`}
+                              >
+                                {rec.type}
+                              </span>
+                              <div className="min-w-0 flex-1 leading-snug">
+                                <span className="font-bold text-white block">{rec.title}</span>
+                                {rec.detail && rec.detail !== rec.title && (
+                                  <span className="text-[10px] text-zinc-300 block">{rec.detail}</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 

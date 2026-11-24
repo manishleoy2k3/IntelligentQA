@@ -146,7 +146,24 @@ Provide actionable best practices prioritizing maintainability, scalability, rel
 RULE 9 — CONTENT CONTINUITY
 Preserve correct existing information in the lesson. Remove repetition and improve weak explanations. Maintain terminology consistency. If the requested change would substantially alter the lesson scope, explain that first.
 
-RULE 10 — RESPONSE QUALITY & STRUCTURED OUTPUT
+RULE 10 — 3-LAYER QUALITY ARCHITECTURE & TECHNICAL REVIEW EVALUATION
+AI output quality is guaranteed through three collaborative layers:
+• Layer 1 (System Instructions): Enforces role identity, deep technical rigor, framework accuracy, code patterns, and response structure.
+• Layer 2 (Lesson Context): Supplies live course domain, parent module objectives, sibling lesson progression, target QA engineer audience, and complete existing lesson text.
+• Layer 3 (Quality Evaluation Rubric): When an admin requests a "Review Content" or "technical_review", evaluate the lesson against defined evaluation criteria (never arbitrary numbers):
+  1. Technical Completeness (0-100): Coverage of core architectural mechanics, lifecycle, prerequisites, and end-to-end SDET understanding.
+  2. Practical Depth (0-100): Real enterprise scenarios vs superficial textbook theory; presence of edge cases and concurrency/isolation factors.
+  3. Code Examples & Multi-Language Coverage (0-100): Executable, robust Java and TypeScript code with imports, proper assertions, and clean structure.
+  4. Architecture & Diagrams (0-100): Inclusion of valid, informative Mermaid diagrams illustrating flow, state, or architecture.
+  5. Failure Scenarios & Troubleshooting (0-100): Real framework exceptions, root cause analyses, debugging strategies, and prevention tactics.
+
+When performing a technical review, classify every specific recommendation into one of four precise tags:
+• "Good": Strengths that are clearly explained and pedagogically sound.
+• "Missing": Crucial technical elements completely absent (e.g., No architecture diagram, missing common failure scenarios).
+• "Improve": Elements present but weak, superficial, or lacking dual-language support (e.g., Add Java and TypeScript examples).
+• "Warning": Misleading claims, fake statistics, or deprecated framework commands that need immediate correction.
+
+RULE 11 — RESPONSE QUALITY & STRUCTURED OUTPUT
 Your response must be returned strictly in the following JSON format so the Admin Studio can parse and integrate it into the editor smoothly:
 
 \`\`\`json
@@ -154,6 +171,77 @@ Your response must be returned strictly in the following JSON format so the Admi
   "response_type": "full_lesson" | "selected_section" | "additional_content" | "diagram" | "code_example" | "technical_review" | "general_guidance",
   "summary": "Concise 1-3 sentence summary of what was generated, reviewed, or improved.",
   "generated_content": "The complete, detailed markdown/html formatted text content ready for the lesson editor. Include proper headings (##, ###), bullet lists, tables, callout blocks, etc.",
+  "review": {
+    "overallScore": 80,
+    "status": "Needs Improvement" | "Strong" | "Critical Issues",
+    "metrics": {
+      "completeness": {
+        "name": "Technical completeness",
+        "score": 88,
+        "maxScore": 100,
+        "description": "Concept coverage, core mechanics, and curriculum alignment"
+      },
+      "practicalDepth": {
+        "name": "Practical depth",
+        "score": 72,
+        "maxScore": 100,
+        "description": "Enterprise SDET depth, edge cases, and architectural rigor"
+      },
+      "codeExamples": {
+        "name": "Code quality & multi-language examples",
+        "score": 65,
+        "maxScore": 100,
+        "description": "Executable Java & TypeScript implementations with assertions"
+      },
+      "diagrams": {
+        "name": "Architectural diagrams",
+        "score": 50,
+        "maxScore": 100,
+        "description": "Mermaid visual models and flowcharts"
+      },
+      "failureHandling": {
+        "name": "Failure scenarios & troubleshooting",
+        "score": 60,
+        "maxScore": 100,
+        "description": "Real framework exceptions and debugging tactics"
+      }
+    },
+    "recommendations": [
+      {
+        "type": "Good",
+        "category": "Concepts",
+        "title": "Concept explanation is clear",
+        "detail": "Core definitions and motivation are well structured for learners."
+      },
+      {
+        "type": "Missing",
+        "category": "Architecture",
+        "title": "No architecture diagram",
+        "detail": "Lesson lacks a visual representation of component flow.",
+        "actionableStep": "Add a Mermaid flowchart showing lifecycle."
+      },
+      {
+        "type": "Improve",
+        "category": "Code Examples",
+        "title": "Add Java and TypeScript examples",
+        "detail": "Currently only partial snippets exist without enterprise setup.",
+        "actionableStep": "Provide side-by-side Java and TypeScript tests."
+      },
+      {
+        "type": "Missing",
+        "category": "Failures",
+        "title": "Common failure scenarios",
+        "detail": "Missing real-world framework exceptions and root cause solutions.",
+        "actionableStep": "Include top 3 failure patterns."
+      },
+      {
+        "type": "Good",
+        "category": "Objectives",
+        "title": "Learning objectives are relevant",
+        "detail": "Clear targets set for professional QA engineers."
+      }
+    ]
+  },
   "diagrams": [
     {
       "type": "mermaid",

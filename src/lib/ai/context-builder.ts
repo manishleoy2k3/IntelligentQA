@@ -56,11 +56,17 @@ export function buildLessonPromptContext(context: LessonContextPackage): string 
     parts.push(`\n--- SELECTED CONTENT IN EDITOR (User Highlighted Target) ---\n${context.selectedText.trim()}\n--- END SELECTED CONTENT ---`);
   }
 
-  // Sanitize content length if too enormous to stay within free-tier model context limits (max ~100k chars)
+  // Sanitize content length and strip excessive HTML noise to keep request fast and lightweight (~15k chars)
   const fullContent = context.currentLesson.contentHtml || '';
-  const truncatedContent = fullContent.length > 60000 
-    ? fullContent.slice(0, 60000) + '\n\n[... Lesson content truncated for token conservation ...]'
-    : fullContent;
+  const sanitizedContent = fullContent
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/class="[^"]*"/gi, '')
+    .trim();
+
+  const truncatedContent = sanitizedContent.length > 15000 
+    ? sanitizedContent.slice(0, 15000) + '\n\n[... Lesson content truncated for token conservation ...]'
+    : sanitizedContent;
 
   parts.push(`\n--- COMPLETE CURRENT LESSON CONTENT ---\n${truncatedContent}\n--- END CURRENT LESSON CONTENT ---`);
 

@@ -76,7 +76,9 @@ export async function POST(req: NextRequest) {
     // Determine API Key: Header > Body > Server ENV
     // Server environment GEMINI_API_KEY protects keys from ever leaking to client code.
     const headerKey = req.headers.get('x-gemini-api-key');
-    const effectiveApiKey = sanitizeGeminiKey(headerKey || bodyApiKey || process.env.GEMINI_API_KEY || '');
+    const effectiveApiKey = sanitizeGeminiKey(
+      headerKey || bodyApiKey || process.env.GEMINI_API_KEY || process.env.Gemini_API_KEY || ''
+    );
 
     const requestPayload: AIEnhancementRequest = {
       action,

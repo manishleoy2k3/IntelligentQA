@@ -1,0 +1,362 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0C10"/>
+      <stop offset="50%" stop-color="#12131C"/>
+      <stop offset="100%" stop-color="#181926"/>
+    </linearGradient>
+
+    <!-- Card Gradients -->
+    <linearGradient id="tier1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="tier2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="tier3Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+    <linearGradient id="tier4Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="tier5Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+
+    <!-- Card Background Gradient -->
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E1F2E" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#141522" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#818CF8"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#22D3EE"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base Canvas -->
+  <rect width="1200" height="680" rx="24" fill="url(#bgGrad)"/>
+  <rect width="1198" height="678" x="1" y="1" rx="23" fill="none" stroke="#26283B" stroke-width="2"/>
+
+  <!-- Subtle Cybernetic Grid Pattern -->
+  <g opacity="0.05" stroke="#FFFFFF" stroke-width="1">
+    <line x1="0" y1="80" x2="1200" y2="80"/>
+    <line x1="0" y1="160" x2="1200" y2="160"/>
+    <line x1="0" y1="240" x2="1200" y2="240"/>
+    <line x1="0" y1="320" x2="1200" y2="320"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="480" x2="1200" y2="480"/>
+    <line x1="0" y1="560" x2="1200" y2="560"/>
+    <line x1="0" y1="640" x2="1200" y2="640"/>
+    <line x1="240" y1="0" x2="240" y2="680"/>
+    <line x1="480" y1="0" x2="480" y2="680"/>
+    <line x1="720" y1="0" x2="720" y2="680"/>
+    <line x1="960" y1="0" x2="960" y2="680"/>
+  </g>
+
+  <!-- Title & Subtitle Banner -->
+  <g text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+    <rect x="470" y="24" width="260" height="24" rx="12" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-opacity="0.3"/>
+    <text x="600" y="40" font-size="11" font-weight="700" fill="#C4B5FD" letter-spacing="1.5">INTELLIGENT QA ARCHITECTURE</text>
+    <text x="600" y="78" font-size="24" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">
+      LARGE LANGUAGE MODEL (LLM) ARCHITECTURE &amp; INFERENCE PIPELINE
+    </text>
+    <text x="600" y="104" font-size="13" font-weight="400" fill="#94A3B8">
+      From Raw Prompt Tokenization and Multi-Head Self-Attention to Probabilistic Next-Token Generation
+    </text>
+  </g>
+
+  <!-- Flow Connectors Between Stages -->
+  <g stroke="#6366F1" stroke-width="2.5" fill="none" opacity="0.8">
+    <!-- 1 -> 2 -->
+    <path d="M 235 340 L 265 340" marker-end="url(#arrow)"/>
+    <!-- 2 -> 3 -->
+    <path d="M 475 340 L 505 340" marker-end="url(#arrow)"/>
+    <!-- 3 -> 4 -->
+    <path d="M 715 340 L 745 340" marker-end="url(#arrowCyan)"/>
+    <!-- 4 -> 5 -->
+    <path d="M 955 340 L 985 340" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- STAGE 1: INPUT & TOKENIZATION                                         -->
+  <!-- ===================================================================== -->
+  <g transform="translate(35, 140)">
+    <rect width="200" height="420" rx="16" fill="url(#cardBg)" stroke="#8B5CF6" stroke-width="1.5"/>
+    <!-- Stage Header -->
+    <rect width="200" height="42" rx="16" fill="url(#tier1Grad)"/>
+    <rect y="26" width="200" height="16" fill="url(#tier1Grad)"/>
+    <text x="100" y="26" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">1. INPUT &amp; TOKENS</text>
+
+    <!-- Content Items -->
+    <g transform="translate(14, 60)" font-family="sans-serif">
+      <!-- Raw Text -->
+      <text x="0" y="14" font-size="11" font-weight="700" fill="#C4B5FD">Raw Input Prompt</text>
+      <rect y="22" width="172" height="36" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+      <text x="8" y="44" font-size="10" font-family="monospace" fill="#E2E8F0">"Write test for login"</text>
+
+      <!-- Tokenizer Engine -->
+      <g transform="translate(0, 75)">
+        <text x="0" y="14" font-size="11" font-weight="700" fill="#C4B5FD">Byte-Pair Encoding (BPE)</text>
+        <rect y="22" width="172" height="65" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+        <text x="8" y="40" font-size="9" fill="#94A3B8">Subword chunking:</text>
+        <rect x="8" y="48" width="46" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6"/>
+        <text x="31" y="63" text-anchor="middle" font-size="9" font-family="monospace" fill="#DDD6FE">Write</text>
+        <rect x="58" y="48" width="38" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6"/>
+        <text x="77" y="63" text-anchor="middle" font-size="9" font-family="monospace" fill="#DDD6FE">test</text>
+        <rect x="100" y="48" width="28" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6"/>
+        <text x="114" y="63" text-anchor="middle" font-size="9" font-family="monospace" fill="#DDD6FE">for</text>
+        <rect x="132" y="48" width="32" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6"/>
+        <text x="148" y="63" text-anchor="middle" font-size="9" font-family="monospace" fill="#DDD6FE">login</text>
+      </g>
+
+      <!-- Vocabulary IDs -->
+      <g transform="translate(0, 180)">
+        <text x="0" y="14" font-size="11" font-weight="700" fill="#C4B5FD">Vocabulary Lookup</text>
+        <rect y="22" width="172" height="42" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+        <text x="8" y="40" font-size="9" fill="#94A3B8">Token IDs [1xN]:</text>
+        <text x="8" y="54" font-size="10" font-family="monospace" fill="#A78BFA">[1842, 1332, 329, 7490]</text>
+      </g>
+
+      <!-- Key Concept Callout -->
+      <g transform="translate(0, 260)">
+        <rect width="172" height="85" rx="8" fill="#8B5CF6" fill-opacity="0.08" stroke="#8B5CF6" stroke-opacity="0.25"/>
+        <text x="10" y="18" font-size="10" font-weight="700" fill="#A78BFA">💡 SDET Context</text>
+        <text x="10" y="34" font-size="9" fill="#CBD5E1">LLMs do not read words.</text>
+        <text x="10" y="48" font-size="9" fill="#CBD5E1">They operate strictly on</text>
+        <text x="10" y="62" font-size="9" fill="#CBD5E1">numerical integers mapped</text>
+        <text x="10" y="76" font-size="9" fill="#CBD5E1">from a static vocabulary.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- STAGE 2: VECTOR EMBEDDING & POSITIONAL ENCODING                       -->
+  <!-- ===================================================================== -->
+  <g transform="translate(275, 140)">
+    <rect width="200" height="420" rx="16" fill="url(#cardBg)" stroke="#3B82F6" stroke-width="1.5"/>
+    <rect width="200" height="42" rx="16" fill="url(#tier2Grad)"/>
+    <rect y="26" width="200" height="16" fill="url(#tier2Grad)"/>
+    <text x="100" y="26" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">2. VECTOR EMBEDDING</text>
+
+    <g transform="translate(14, 60)" font-family="sans-serif">
+      <!-- Semantic Vectors -->
+      <text x="0" y="14" font-size="11" font-weight="700" fill="#93C5FD">Dense Vector Space</text>
+      <rect y="22" width="172" height="70" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+      <text x="8" y="38" font-size="9" fill="#94A3B8">High-dimensional (d=4096):</text>
+      <text x="8" y="52" font-size="9" font-family="monospace" fill="#60A5FA">[ 0.184, -0.923, 0.441, ...]</text>
+      <text x="8" y="66" font-size="9" font-family="monospace" fill="#60A5FA">[-0.042,  0.812, 0.119, ...]</text>
+      <text x="8" y="80" font-size="8" fill="#64748B">Semantic proximity capture</text>
+
+      <!-- Positional Encoding -->
+      <g transform="translate(0, 105)">
+        <text x="0" y="14" font-size="11" font-weight="700" fill="#93C5FD">Positional Encoding</text>
+        <rect y="22" width="172" height="60" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+        <text x="8" y="38" font-size="9" fill="#94A3B8">Injected Sinusoidal / RoPE:</text>
+        <text x="8" y="52" font-size="9" font-family="monospace" fill="#38BDF8">PE(pos, 2i) = sin(pos/10000)</text>
+        <text x="8" y="68" font-size="8" fill="#64748B">Preserves token sequential order</text>
+      </g>
+
+      <!-- Summation Block -->
+      <g transform="translate(0, 195)">
+        <rect width="172" height="42" rx="8" fill="#3B82F6" fill-opacity="0.15" stroke="#3B82F6" stroke-dasharray="3,3"/>
+        <text x="86" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="#BFDBFE">Input Vector Representation</text>
+        <text x="86" y="34" text-anchor="middle" font-size="9" font-family="monospace" fill="#93C5FD">Embedding + Positional Vector</text>
+      </g>
+
+      <!-- Key Concept Callout -->
+      <g transform="translate(0, 260)">
+        <rect width="172" height="85" rx="8" fill="#3B82F6" fill-opacity="0.08" stroke="#3B82F6" stroke-opacity="0.25"/>
+        <text x="10" y="18" font-size="10" font-weight="700" fill="#60A5FA">💡 SDET Context</text>
+        <text x="10" y="34" font-size="9" fill="#CBD5E1">Transformers process all</text>
+        <text x="10" y="48" font-size="9" fill="#CBD5E1">tokens in parallel.</text>
+        <text x="10" y="62" font-size="9" fill="#CBD5E1">Positional encoding tells AI</text>
+        <text x="10" y="76" font-size="9" fill="#CBD5E1">word order in test steps.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- STAGE 3: TRANSFORMER CORE & MULTI-HEAD ATTENTION                     -->
+  <!-- ===================================================================== -->
+  <g transform="translate(515, 140)">
+    <rect width="220" height="420" rx="16" fill="url(#cardBg)" stroke="#06B6D4" stroke-width="2" filter="url(#glow)"/>
+    <rect width="220" height="420" rx="16" fill="url(#cardBg)" stroke="#06B6D4" stroke-width="1.5"/>
+    <rect width="220" height="42" rx="16" fill="url(#tier3Grad)"/>
+    <rect y="26" width="220" height="16" fill="url(#tier3Grad)"/>
+    <text x="110" y="26" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">3. TRANSFORMER BLOCKS</text>
+
+    <g transform="translate(14, 56)" font-family="sans-serif">
+      <text x="96" y="12" text-anchor="middle" font-size="9" font-weight="700" fill="#67E8F9">Repeated across 32 to 128 Layers</text>
+
+      <!-- Multi-Head Attention Box -->
+      <g transform="translate(0, 20)">
+        <rect width="192" height="105" rx="10" fill="#082F49" fill-opacity="0.6" stroke="#0891B2"/>
+        <text x="96" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#22D3EE">Multi-Head Self-Attention</text>
+        
+        <!-- Q, K, V Projections -->
+        <g transform="translate(14, 28)">
+          <rect x="0" y="0" width="46" height="24" rx="4" fill="#0284C7" fill-opacity="0.4" stroke="#06B6D4"/>
+          <text x="23" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#BAE6FD">Query</text>
+          <rect x="58" y="0" width="46" height="24" rx="4" fill="#0284C7" fill-opacity="0.4" stroke="#06B6D4"/>
+          <text x="81" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#BAE6FD">Key</text>
+          <rect x="116" y="0" width="46" height="24" rx="4" fill="#0284C7" fill-opacity="0.4" stroke="#06B6D4"/>
+          <text x="139" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#BAE6FD">Value</text>
+        </g>
+
+        <!-- Attention Formula -->
+        <rect x="12" y="60" width="168" height="34" rx="6" fill="#0B132B" stroke="#164E63"/>
+        <text x="96" y="76" text-anchor="middle" font-size="9" font-family="monospace" fill="#38BDF8">Attention(Q,K,V) =</text>
+        <text x="96" y="88" text-anchor="middle" font-size="9" font-family="monospace" fill="#22D3EE">softmax(QKᵀ / √dₖ) V</text>
+      </g>
+
+      <!-- Residual & LayerNorm -->
+      <g transform="translate(0, 134)">
+        <rect width="192" height="26" rx="6" fill="#0C4A6E" fill-opacity="0.3" stroke="#0369A1" stroke-dasharray="3,3"/>
+        <text x="96" y="17" text-anchor="middle" font-size="9" font-weight="600" fill="#7DD3FC">Add &amp; RMSNorm / LayerNorm</text>
+      </g>
+
+      <!-- Feed Forward Network (FFN) -->
+      <g transform="translate(0, 168)">
+        <rect width="192" height="52" rx="10" fill="#0F172A" stroke="#0284C7"/>
+        <text x="96" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#38BDF8">Feed-Forward Network (FFN)</text>
+        <text x="96" y="34" text-anchor="middle" font-size="9" fill="#94A3B8">SwiGLU / GeLU Nonlinear Projections</text>
+        <text x="96" y="46" text-anchor="middle" font-size="8" font-family="monospace" fill="#64748B">Hidden dim = 4 x d_model (16384)</text>
+      </g>
+
+      <!-- Key Concept Callout -->
+      <g transform="translate(0, 264)">
+        <rect width="192" height="85" rx="8" fill="#0891B2" fill-opacity="0.08" stroke="#0891B2" stroke-opacity="0.25"/>
+        <text x="10" y="18" font-size="10" font-weight="700" fill="#22D3EE">💡 SDET Context</text>
+        <text x="10" y="34" font-size="9" fill="#CBD5E1">Self-Attention connects</text>
+        <text x="10" y="48" font-size="9" fill="#CBD5E1">"login" to "page.click()".</text>
+        <text x="10" y="62" font-size="9" fill="#CBD5E1">Calculates cross-context</text>
+        <text x="10" y="76" font-size="9" fill="#CBD5E1">relationships between tokens.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- STAGE 4: MODEL PARAMETERS & PRE-TRAINED WEIGHTS                       -->
+  <!-- ===================================================================== -->
+  <g transform="translate(755, 140)">
+    <rect width="200" height="420" rx="16" fill="url(#cardBg)" stroke="#10B981" stroke-width="1.5"/>
+    <rect width="200" height="42" rx="16" fill="url(#tier4Grad)"/>
+    <rect y="26" width="200" height="16" fill="url(#tier4Grad)"/>
+    <text x="100" y="26" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">4. WEIGHTS &amp; MEMORY</text>
+
+    <g transform="translate(14, 60)" font-family="sans-serif">
+      <!-- Parameters Store -->
+      <text x="0" y="14" font-size="11" font-weight="700" fill="#6EE7B7">Learned Parameters</text>
+      <rect y="22" width="172" height="60" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+      <text x="8" y="40" font-size="9" fill="#94A3B8">Weights (7B to 1.8T params):</text>
+      <text x="8" y="56" font-size="10" font-weight="700" font-family="monospace" fill="#34D399">W_q, W_k, W_v, W_o</text>
+      <text x="8" y="70" font-size="8" fill="#64748B">Frozen static matrix tensors</text>
+
+      <!-- Training Stages -->
+      <g transform="translate(0, 95)">
+        <text x="0" y="14" font-size="11" font-weight="700" fill="#6EE7B7">Optimization Pipeline</text>
+        <rect y="22" width="172" height="70" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+        <text x="8" y="38" font-size="9" fill="#A7F3D0">1. Pre-training (Trillions tokens)</text>
+        <text x="8" y="52" font-size="9" fill="#6EE7B7">2. SFT (Instruction Fine-Tuning)</text>
+        <text x="8" y="66" font-size="9" fill="#34D399">3. RLHF / DPO (Safety Alignment)</text>
+        <text x="8" y="80" font-size="8" fill="#64748B">Aligns reasoning to human intent</text>
+      </g>
+
+      <!-- KV Cache -->
+      <g transform="translate(0, 195)">
+        <rect width="172" height="42" rx="8" fill="#10B981" fill-opacity="0.12" stroke="#10B981" stroke-dasharray="3,3"/>
+        <text x="86" y="18" text-anchor="middle" font-size="10" font-weight="700" fill="#A7F3D0">KV Cache Acceleration</text>
+        <text x="86" y="32" text-anchor="middle" font-size="8" fill="#D1FAE5">Reuses attention keys during inference</text>
+      </g>
+
+      <!-- Key Concept Callout -->
+      <g transform="translate(0, 260)">
+        <rect width="172" height="85" rx="8" fill="#10B981" fill-opacity="0.08" stroke="#10B981" stroke-opacity="0.25"/>
+        <text x="10" y="18" font-size="10" font-weight="700" fill="#34D399">💡 SDET Context</text>
+        <text x="10" y="34" font-size="9" fill="#CBD5E1">The model does not browse</text>
+        <text x="10" y="48" font-size="9" fill="#CBD5E1">live web unless connected</text>
+        <text x="10" y="62" font-size="9" fill="#CBD5E1">via RAG or Tools (MCP /</text>
+        <text x="10" y="76" font-size="9" fill="#CBD5E1">Function Calling).</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- STAGE 5: LOGITS, SOFTMAX & NEXT-TOKEN PREDICTION                      -->
+  <!-- ===================================================================== -->
+  <g transform="translate(975, 140)">
+    <rect width="190" height="420" rx="16" fill="url(#cardBg)" stroke="#F59E0B" stroke-width="1.5"/>
+    <rect width="190" height="42" rx="16" fill="url(#tier5Grad)"/>
+    <rect y="26" width="190" height="16" fill="url(#tier5Grad)"/>
+    <text x="95" y="26" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">5. GENERATION (OUTPUT)</text>
+
+    <g transform="translate(14, 60)" font-family="sans-serif">
+      <!-- Logits Vector -->
+      <text x="0" y="14" font-size="11" font-weight="700" fill="#FDE68A">Logits Projection</text>
+      <rect y="22" width="162" height="38" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+      <text x="8" y="42" font-size="9" font-family="monospace" fill="#FBBF24">Z = W_vocab · H_final</text>
+
+      <!-- Softmax Probabilities -->
+      <g transform="translate(0, 70)">
+        <text x="0" y="14" font-size="11" font-weight="700" fill="#FDE68A">Softmax Distribution</text>
+        <rect y="22" width="162" height="70" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+        <text x="8" y="38" font-size="8" fill="#94A3B8">P("await") = 84.2%</text>
+        <rect x="8" y="42" width="110" height="5" rx="2" fill="#F59E0B"/>
+        <text x="8" y="58" font-size="8" fill="#94A3B8">P("const") = 12.1%</text>
+        <rect x="8" y="62" width="30" height="5" rx="2" fill="#78350F"/>
+        <text x="8" y="78" font-size="8" fill="#94A3B8">P("expect") = 3.7%</text>
+      </g>
+
+      <!-- Sampling & Decoding -->
+      <g transform="translate(0, 168)">
+        <text x="0" y="14" font-size="11" font-weight="700" fill="#FDE68A">Sampling &amp; Decoding</text>
+        <rect y="22" width="162" height="52" rx="8" fill="#0F101A" stroke="#2D2E45"/>
+        <text x="8" y="38" font-size="8" fill="#D97706">Temp: 0.2 (Deterministic)</text>
+        <text x="8" y="52" font-size="8" fill="#D97706">Top-p / Top-k Sampling</text>
+        <text x="8" y="64" font-size="8" font-family="monospace" fill="#FDE68A">-> Emits: "await"</text>
+      </g>
+
+      <!-- Autoregressive Loop -->
+      <g transform="translate(0, 260)">
+        <rect width="162" height="85" rx="8" fill="#F59E0B" fill-opacity="0.08" stroke="#F59E0B" stroke-opacity="0.25"/>
+        <text x="10" y="18" font-size="10" font-weight="700" fill="#FBBF24">🔄 Autoregressive</text>
+        <text x="10" y="34" font-size="9" fill="#CBD5E1">The generated token is</text>
+        <text x="10" y="48" font-size="9" fill="#CBD5E1">appended back to input</text>
+        <text x="10" y="62" font-size="9" fill="#CBD5E1">to predict the next token</text>
+        <text x="10" y="76" font-size="9" fill="#CBD5E1">until &lt;|endoftext|&gt;.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom Execution Metrics / Footer Banner -->
+  <g transform="translate(35, 590)">
+    <rect width="1130" height="60" rx="14" fill="#13141F" stroke="#26283D"/>
+    
+    <g transform="translate(25, 22)" font-family="sans-serif">
+      <circle cx="10" cy="10" r="6" fill="#10B981"/>
+      <text x="24" y="14" font-size="11" font-weight="700" fill="#FFFFFF">Autoregressive Loop</text>
+      <text x="160" y="14" font-size="11" fill="#94A3B8">Input → Embeddings → N x Transformer Blocks → Softmax → Next Token → Append to Input</text>
+    </g>
+
+    <g transform="translate(930, 22)" font-family="sans-serif">
+      <rect x="0" y="0" width="175" height="26" rx="6" fill="#8B5CF6" fill-opacity="0.2" stroke="#8B5CF6" stroke-opacity="0.4"/>
+      <text x="88" y="17" text-anchor="middle" font-size="10" font-weight="700" fill="#DDD6FE">Standard Curriculum Asset</text>
+    </g>
+  </g>
+</svg>

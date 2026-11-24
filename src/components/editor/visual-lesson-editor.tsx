@@ -18,6 +18,7 @@ import EditorToolbar from './editor-toolbar';
 import ImageUploadModal from './image-upload-modal';
 import AiChatPanel from './ai-chat-panel';
 import ContentComparisonModal from './content-comparison-modal';
+import AiTechnicalReviewModal from '@/components/admin/academy/ai-technical-review-modal';
 import { sharedTiptapExtensions } from './tiptap-schema';
 import { renderTiptapJsonToHtml } from './tiptap-renderer';
 import { LessonContextPackage } from '@/lib/ai/types';
@@ -36,6 +37,7 @@ import {
   ChevronRight,
   BookOpen,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 
 export interface VisualLessonEditorProps {
@@ -88,6 +90,7 @@ export default function VisualLessonEditor({
   const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
   const [showAiAssistant, setShowAiAssistant] = useState<boolean>(false);
+  const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
   const [showCompareModal, setShowCompareModal] = useState<boolean>(false);
   const [compareEnhancedHtml, setCompareEnhancedHtml] = useState<string>('');
   const [mode, setMode] = useState<'visual' | 'code'>('visual');
@@ -379,6 +382,17 @@ export default function VisualLessonEditor({
             <span>Preview</span>
           </button>
 
+          {/* Prominent Header Review Content Button */}
+          <button
+            type="button"
+            onClick={() => setShowReviewModal(true)}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 hover:text-white border border-purple-500/30"
+            title="AI Technical Review & Content Audit"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
+            <span>Review Content</span>
+          </button>
+
           {/* Prominent Header Enhance with AI Button */}
           <button
             type="button"
@@ -495,6 +509,20 @@ export default function VisualLessonEditor({
         onClose={() => setShowImageModal(false)}
         onInsertImage={handleInsertImage}
       />
+
+      {/* AI Technical Review Modal */}
+      {showReviewModal && (
+        <AiTechnicalReviewModal
+          isOpen={showReviewModal}
+          onClose={() => setShowReviewModal(false)}
+          lessonId={lessonId}
+          lessonTitle={lessonTitle}
+          courseTitle={courseTitle}
+          moduleTitle={moduleTitle}
+          contentHtml={mode === 'visual' && editor ? editor.getHTML() : rawHtml}
+          contextPackage={lessonContextPackage}
+        />
+      )}
 
       {/* Side-by-Side Diff Comparison Modal */}
       <ContentComparisonModal
