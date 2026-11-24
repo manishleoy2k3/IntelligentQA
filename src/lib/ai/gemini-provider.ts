@@ -12,10 +12,7 @@ export class GeminiProvider implements AIProvider {
   name = 'Gemini';
 
   private defaultModels = [
-    'gemini-2.0-flash',
-    'gemini-2.5-flash',
-    'gemini-1.5-flash',
-    'gemini-flash-lite-latest',
+    'gemini-3.8-flash',
   ];
 
   async generateEnhancement(request: AIEnhancementRequest): Promise<AIEnhancementResponse> {
@@ -76,7 +73,7 @@ export class GeminiProvider implements AIProvider {
     for (const model of modelsToTry) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s timeout for large structured lesson generation
 
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -100,12 +97,19 @@ export class GeminiProvider implements AIProvider {
 
         clearTimeout(timeoutId);
 
-        if (response.status === 429) {
-          lastError = { code: 'RATE_LIMITED', message: 'Gemini API Rate limit reached. Please wait a moment.' };
+        if (response.status === 429 || response.status === 503) {
+          const errData = await response.json().catch(() => ({}));
+          const errMsg = errData.error?.message || response.statusText;
+          // When a model is overloaded (e.g. 503 or 429 high demand), failover immediately to next model in the pool
+          lastError = { 
+            code: 'RATE_LIMITED', 
+            message: `Model ${model} is experiencing high demand. Failing over...`, 
+            details: errMsg 
+          };
           continue;
         }
 
-        if (response.status === 403 || response.status === 400) {
+        if (response.status === 403 || response.status === 400 || response.status === 404) {
           const errData = await response.json().catch(() => ({}));
           const errMsg = errData.error?.message || response.statusText;
           if (errMsg.includes('API_KEY_INVALID') || errMsg.includes('key not valid')) {
@@ -118,8 +122,16 @@ export class GeminiProvider implements AIProvider {
               },
             };
           }
-          if (errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('Quota')) {
-            lastError = { code: 'QUOTA_EXCEEDED', message: 'Gemini API Quota exceeded for model ' + model, details: errMsg };
+          if (
+            errMsg.includes('RESOURCE_EXHAUSTED') || 
+            errMsg.includes('Quota') || 
+            errMsg.includes('high demand') ||
+            errMsg.includes('temporarily unavailable') ||
+            errMsg.includes('no longer available') ||
+            response.status === 404 ||
+            errMsg.includes('not found')
+          ) {
+            lastError = { code: 'QUOTA_EXCEEDED', message: `Model ${model} unavailable: ${errMsg}` };
             continue;
           }
           lastError = { code: 'BAD_REQUEST', message: errMsg };
@@ -128,9 +140,15 @@ export class GeminiProvider implements AIProvider {
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
+          const errMsg = errData.error?.message || `Gemini API returned status ${response.status}`;
+          // If high demand / overloaded message is in non-ok response, failover to next model
+          if (errMsg.includes('high demand') || errMsg.includes('overloaded') || response.status >= 500) {
+            lastError = { code: 'PROVIDER_UNAVAILABLE', message: `Model ${model} overloaded. Failing over...` };
+            continue;
+          }
           lastError = { 
             code: 'PROVIDER_UNAVAILABLE', 
-            message: errData.error?.message || `Gemini API returned status ${response.status}`,
+            message: errMsg,
           };
           continue;
         }
@@ -160,7 +178,7 @@ export class GeminiProvider implements AIProvider {
         };
       } catch (err: any) {
         if (err.name === 'AbortError') {
-          lastError = { code: 'NETWORK_ERROR', message: 'Request to Gemini timed out after 45 seconds.' };
+          lastError = { code: 'NETWORK_ERROR', message: `Request to ${model} timed out after 90 seconds. Generating full comprehensive lessons with diagrams and structured JSON may require retry or shorter prompt.` };
         } else {
           lastError = { code: 'NETWORK_ERROR', message: err.message || 'Network connection failed' };
         }
@@ -185,6 +203,22 @@ export class GeminiProvider implements AIProvider {
       clean = clean.replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
     }
 
+    // If the text does not start with '{' but contains one, find the outer JSON boundaries
+    if (!clean.startsWith('{') && clean.includes('{')) {
+      const firstBrace = clean.indexOf('{');
+      const lastBrace = clean.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace > firstBrace) {
+        clean = clean.substring(firstBrace, lastBrace + 1).trim();
+      }
+    } else if (!clean.startsWith('{') && clean.includes('"response_type"')) {
+      // Model returned JSON fields without the opening brace
+      const firstQuote = clean.indexOf('"response_type"');
+      clean = '{' + clean.substring(firstQuote);
+      if (!clean.endsWith('}')) {
+        clean = clean + '}';
+      }
+    }
+
     try {
       const parsed = JSON.parse(clean);
       return {
@@ -198,16 +232,58 @@ export class GeminiProvider implements AIProvider {
         suggested_actions: Array.isArray(parsed.suggested_actions) ? parsed.suggested_actions : [],
       };
     } catch {
-      // Graceful fallback if model output failed strict JSON parsing
+      // If JSON.parse fails, attempt heuristic extraction of generated_content and summary
+      // to avoid dumping raw JSON text / keys into the chat window
+      let extractedContent = '';
+      let extractedSummary = '';
+
+      const contentMatch = rawText.match(/"generated_content"\s*:\s*"((?:[^"\\]|\\.)*)"/s);
+      if (contentMatch && contentMatch[1]) {
+        try {
+          extractedContent = JSON.parse(`"${contentMatch[1]}"`);
+        } catch {
+          extractedContent = contentMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+        }
+      }
+
+      const summaryMatch = rawText.match(/"summary"\s*:\s*"((?:[^"\\]|\\.)*)"/s);
+      if (summaryMatch && summaryMatch[1]) {
+        try {
+          extractedSummary = JSON.parse(`"${summaryMatch[1]}"`);
+        } catch {
+          extractedSummary = summaryMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+        }
+      }
+
+      if (extractedContent) {
+        return {
+          response_type: 'full_lesson',
+          summary: extractedSummary || 'AI content enhancement processed.',
+          generated_content: extractedContent,
+          diagrams: [],
+          code_examples: [],
+          technical_warnings: [],
+          assumptions: [],
+          suggested_actions: [],
+        };
+      }
+
+      // If all extraction fails, clean any dangling json formatting from rawText
+      const sanitizedRaw = rawText
+        .replace(/^\s*\{?\s*"response_type"[^,]+,\s*/i, '')
+        .replace(/"summary"\s*:\s*"[^"]*",?\s*/i, '')
+        .replace(/"generated_content"\s*:\s*"?/i, '')
+        .replace(/"?\s*\}?\s*$/i, '');
+
       return {
         response_type: 'general_guidance',
-        summary: 'AI response generated (raw formatting preserved).',
-        generated_content: rawText,
+        summary: 'AI response generated.',
+        generated_content: sanitizedRaw || rawText,
         diagrams: [],
         code_examples: [],
-        technical_warnings: ['Response was not strictly formatted as JSON; rendered raw output.'],
+        technical_warnings: [],
         assumptions: [],
-        suggested_actions: ['Review content manually before inserting.'],
+        suggested_actions: ['Review content before inserting.'],
       };
     }
   }

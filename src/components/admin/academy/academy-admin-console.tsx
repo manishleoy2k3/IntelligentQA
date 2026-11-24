@@ -632,18 +632,9 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || 'Failed to publish lesson');
       notify(`Lesson "${activeVisualLesson.lesson.title}" published successfully!`);
-      setActiveVisualLesson((prev) =>
-        prev
-          ? {
-              ...prev,
-              lesson: {
-                ...prev.lesson,
-                contentHtml,
-                status: 'published',
-              },
-            }
-          : null
-      );
+      // Close the visual editor window and return to CMS view
+      setShowVisualEditor(false);
+      setActiveVisualLesson(null);
       fetchCurriculum();
       return true;
     } catch (err: any) {

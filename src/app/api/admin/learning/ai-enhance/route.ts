@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       context,
       history,
       apiKey: effectiveApiKey,
-      model: model || process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      model: model || process.env.GEMINI_MODEL || undefined,
       temperature: 0.2,
       maxTokens: 4096,
     };

@@ -39,10 +39,7 @@ export async function POST(req: NextRequest) {
     const keyValidation = activeApiKey ? validateGeminiKeySyntax(activeApiKey) : { valid: false };
     if (activeApiKey && keyValidation.valid) {
       const modelsToTry = [
-        'gemini-2.0-flash',
-        'gemini-1.5-flash',
-        'gemini-2.5-flash',
-        'gemini-flash-lite-latest',
+        'gemini-3.8-flash',
       ];
 
       const systemPrompt = `You are the master SDET AI Mentor and Principal Quality Engineering Architect for IntelligentQA, functioning as an expert AI Programming & Coding Assistant and Debugging Specialist.

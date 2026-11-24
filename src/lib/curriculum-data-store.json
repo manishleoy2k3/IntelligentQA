@@ -7706,7 +7706,7 @@
       "sortOrder": 1,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-24T08:02:44.967Z",
+      "updatedAt": "2026-11-24T09:09:42.848Z",
       "modules": [
         {
           "id": "mod-intro-ai",
@@ -7717,7 +7717,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-24T08:02:44.967Z",
+          "updatedAt": "2026-11-24T09:09:42.848Z",
           "lessons": [
             {
               "id": "les-what-is-ai",
@@ -8802,7 +8802,7 @@
               "summary": "Large Language Model architectures, token probability distributions, and parameter scale dynamics in SDET workflows.",
               "shortDescription": "Large Language Model architectures, token probability distributions, and parameter scale dynamics in SDET workflows.",
               "contentType": "docx",
-              "contentHtml": "<h1 id=\"what-is-an-llm\" class=\"text-2xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-neutral-800 pb-2\">What is an LLM?</h1>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><span style=\"color: #64748B;\"><em>Large Language Model architectures, token probability distributions, and parameter scale dynamics in SDET workflows.</em></span></p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Welcome to this comprehensive technical lesson in Module 1 — Introduction to AI. Modern quality engineering demands an architectural transition from manual, brittle test scripts toward autonomous, resilient, AI-augmented systems. This guide provides SDETs and Test Architects with the theoretical foundations and production implementations necessary to succeed.</p>\n<h2 id=\"1-learning-objectives\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">1. Learning Objectives</h2>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Master core architectural principles behind What is an LLM? in enterprise software environments.</li>\n<li class=\"leading-relaxed\">Implement production-grade automation patterns with deterministic reliability.</li>\n<li class=\"leading-relaxed\">Eliminate flakiness by leveraging probabilistic reasoning loops and dynamic telemetry.</li>\n<li class=\"leading-relaxed\">Evaluate security, cost, and latency tradeoffs across cloud and local model deployments.</li>\n</ul>\n<h2 id=\"2-detailed-concept-explanation\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">2. Detailed Concept Explanation</h2>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">In contemporary software development, What is an LLM? operates at the intersection of machine learning inference, distributed systems, and continuous delivery pipelines. Unlike traditional rule-based test assertions, AI-driven architectures process multi-dimensional token vectors to evaluate application state, dynamically reconcile broken locators, and predict system regressions before code merges into production.</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><span style=\"color: #047857;\"><strong>Core Principle: </strong></span>Deterministic testing remains non-negotiable. AI does not replace rigor; it augments human intelligence by handling high-entropy tasks such as synthetic test data generation, locator drift recovery, and automated log clustering.</p>\n<h2 id=\"3-technical-architecture-end-to-end-llm-transformer-inference-pipeline\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">3. Technical Architecture: End-to-End LLM Transformer Inference Pipeline</h2>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Figure 1 illustrates the end-to-end data processing pipeline for What is an LLM?:</p>\n<div class=\"overflow-x-auto my-6 rounded-2xl border border-neutral-700/80 shadow-lg\">\n  <table class=\"w-full text-left border-collapse text-xs bg-neutral-950/60\">\n    <tbody>\n      <tr><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Pipeline Stage</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Input &amp; Transformation</strong></th><th class=\"px-4 py-3 border border-neutral-700 text-left font-bold text-white bg-neutral-900/80\"><strong>Output State</strong></th></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Stage 1: Ingestion &amp; Context</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Raw DOM snapshots, logs, or OpenAPI specifications</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Normalized token buffer with system prompt constraints</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Stage 2: Model Inference</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Attention layers compute Q-K-V matrices with temperature 0.1</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Deterministic token sequence conforming to JSON schema</td></tr><tr><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Stage 3: Actuation &amp; Verification</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Playwright / Selenium driver or REST client execution</td><td class=\"px-4 py-3 border border-neutral-800 text-neutral-300 text-xs leading-relaxed\">Pass/Fail telemetry, failure triage, and artifact persistence</td></tr>\n    </tbody>\n  </table>\n</div>\n<h2 id=\"4-step-by-step-implementation-guide\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">4. Step-by-Step Implementation Guide</h2>\n<ol class=\"list-decimal pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Define precise system role constraints to prevent hallucinated selectors and invalid assertions.</li>\n<li class=\"leading-relaxed\">Tokenize input context and enforce strict JSON schema contracts for all structured responses.</li>\n<li class=\"leading-relaxed\">Execute tool actuation via sandboxed runners with timeout guards and error boundary handling.</li>\n<li class=\"leading-relaxed\">Verify output syntax against production standards before deploying test code into CI/CD pipelines.</li>\n</ol>\n<h2 id=\"5-practical-examples-in-quality-engineering\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">5. Practical Examples in Quality Engineering</h2>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Consider an enterprise e-commerce checkout flow where DOM element IDs mutate with every release build. In legacy automation, this causes widespread pipeline breakage. With What is an LLM?, multi-attribute fingerprinting compares parent semantic containers, accessibility labels, and sibling nodes to recover locators with 99.4% confidence without test aborts.</p>\n<h2 id=\"6-production-implementation-code\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">6. Production Implementation Code</h2>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Below is production-ready code demonstrating What is an LLM?:</p>\n<div class=\"my-6 rounded-2xl overflow-hidden border border-neutral-700/80 bg-[#121316] shadow-xl group\">\n  <div class=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900/90 border-b border-neutral-800 text-xs font-mono text-neutral-400 select-none\">\n    <div class=\"flex items-center gap-2\">\n      <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block\"></span>\n      <span class=\"font-bold text-neutral-200 uppercase tracking-wider\">java</span>\n    </div>\n    <button type=\"button\" class=\"px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px] font-sans\">\n      Copy Code\n    </button>\n  </div>\n  <pre class=\"p-4 text-xs font-mono leading-relaxed overflow-x-auto text-neutral-200 whitespace-pre\"><code class=\"language-java\">import { GoogleGenAI } from &#x27;@google/genai&#x27;;\n\nexport class QAInferenceEngine {\n  private ai: GoogleGenAI;\n  private modelName = &#x27;gemini-2.5-flash&#x27;;\n\n  constructor(apiKey: string) {\n    this.ai = new GoogleGenAI({ apiKey });\n  }\n\n  async predictLocator(domSnapshot: string, targetDescription: string): Promise&lt;string&gt; {\n    const prompt = `Given this HTML snippet:\n${domSnapshot}\nReturn the most resilient CSS selector for: &quot;${targetDescription}&quot;. Respond in JSON: {&quot;selector&quot;: &quot;...&quot;, &quot;confidence&quot;: 0.0-1.0}`;\n    try {\n      const response = await this.ai.models.generateContent({\n        model: this.modelName,\n        contents: prompt,\n        config: { temperature: 0.1, responseMimeType: &#x27;application/json&#x27; }\n      });\n      return response.text || &#x27;&#x27;;\n    } catch (err: any) {\n      if (err.message?.includes(&#x27;ContextWindowExceededError&#x27;)) {\n        throw new Error(&#x27;DOM snapshot exceeded model token budget. Prune irrelevant nodes before retry.&#x27;);\n      }\n      throw err;\n    }\n  }\n}</code></pre>\n</div>\n<h2 id=\"7-real-world-qa-use-cases\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">7. Real-World QA Use Cases</h2>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Financial Banking Systems: Automated transaction payload synthesis covering edge boundary balances and international currencies.</li>\n<li class=\"leading-relaxed\">Healthcare Platforms: Synthetic HIPAA-compliant patient test records generating realistic clinical timelines.</li>\n<li class=\"leading-relaxed\">High-Volume E-Commerce: Dynamic self-healing during flash sales where marketing tags frequently disrupt automation DOM selectors.</li>\n</ul>\n<h2 id=\"8-common-pitfalls-and-mitigation-strategies\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">8. Common Pitfalls and Mitigation Strategies</h2>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><span style=\"color: #B91C1C;\"><strong>Caution: Non-Deterministic Temperature Drift: </strong></span>Setting model temperature above 0.3 results in unpredictable test code and synthetic locator hallucinations. Always pin temperature to 0.0 - 0.2 for test synthesis.</p>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Context Window Exhaustion: Truncated HTML snippets cause incomplete Page Object class generation. Mitigate using semantic DOM chunking.</li>\n<li class=\"leading-relaxed\">Unbounded Agent Loops: Prevent infinite reflection loops by enforcing a hard maximum step limit (e.g., max 10 steps per test execution).</li>\n</ul>\n<h2 id=\"9-enterprise-best-practices\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">9. Enterprise Best Practices</h2>\n<ul class=\"list-disc pl-6 space-y-1 my-2 text-slate-300\">\n<li class=\"leading-relaxed\">Schema Enforcement: Always validate LLM tool arguments against strict Zod or JSON Schema definitions.</li>\n<li class=\"leading-relaxed\">Human-in-the-Loop Approval: Critical test deletions and production environment changes must require explicit engineer sign-off.</li>\n<li class=\"leading-relaxed\">Telemetry Tracking: Log prompt tokens, completion tokens, latency, and cost per test suite run into centralized dashboards.</li>\n</ul>\n<h2 id=\"10-key-takeaways-summary\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">10. Key Takeaways &amp; Summary</h2>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">What is an LLM? marks an inflection point in quality engineering. By grounding generative models in deterministic schemas, robust context pipelines, and reliable test frameworks, SDETs transform automation from a maintenance burden into an autonomous, self-healing quality shield.</p>\n<h2 id=\"11-top-interview-questions-answers\" class=\"text-xl font-bold text-white mt-6 mb-3 tracking-tight\">11. Top Interview Questions &amp; Answers</h2>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><strong>Q1: How does What is an LLM? impact automated regression suite maintenance?</strong></p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Answer: By decoupling test logic from fragile static DOM selectors and introducing multi-attribute self-healing, maintenance overhead drops by up to 70%, allowing engineers to focus on architectural test coverage rather than repairing brittle XPath locators.</p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\"><strong>Q2: What is the primary risk of using generative AI in automated testing, and how is it resolved?</strong></p>\n<p class=\"my-3 leading-relaxed text-slate-300 dark:text-neutral-300\">Answer: The primary risk is hallucination—generating assertions that pass vacuously or asserting non-existent functionality. It is mitigated through deterministic schemas, low model temperature (&lt;= 0.1), explicit system constraints, and sandboxed test execution validation.</p>",
+              "contentHtml": "<h1>What is an LLM?</h1><p><em>Large Language Model architectures, token probability distributions, and parameter scale dynamics in SDET workflows.</em></p><p> </p><p>Modern quality engineering demands an architectural transition from manual, brittle test scripts toward autonomous, resilient, AI-augmented systems. This guide provides SDETs and Test Architects with the theoretical foundations and production implementations necessary to succeed.</p><h2>1. Learning Objectives</h2><ul><li><p>Master core architectural principles behind LLM in enterprise software environments.</p></li><li><p>Implement production-grade automation patterns with deterministic reliability.</p></li><li><p>Eliminate flakiness by leveraging probabilistic reasoning loops and dynamic telemetry.</p></li><li><p>Evaluate security, cost, and latency tradeoffs across cloud and local model deployments.</p></li></ul><h2>2. Detailed Concept Explanation</h2><p>In contemporary software development, LLM operates at the intersection of machine learning inference, distributed systems, and continuous delivery pipelines. Unlike traditional rule-based test assertions, AI-driven architectures process multi-dimensional token vectors to evaluate application state, dynamically reconcile broken locators, and predict system regressions before code merges into production.</p><p><strong>Core Principle: </strong>Deterministic testing remains non-negotiable. AI does not replace rigor; it augments human intelligence by handling high-entropy tasks such as synthetic test data generation, locator drift recovery, and automated log clustering.</p><h2>3. Technical Architecture: End-to-End LLM Transformer Inference Pipeline</h2><p>Figure 1 illustrates the end-to-end data processing pipeline for LLM:</p><table style=\"min-width: 75px;\"><colgroup><col style=\"min-width: 25px;\"><col style=\"min-width: 25px;\"><col style=\"min-width: 25px;\"></colgroup><tbody><tr><th><p><strong>Pipeline Stage</strong></p></th><th><p><strong>Input &amp; Transformation</strong></p></th><th><p><strong>Output State</strong></p></th></tr><tr><td><p>Stage 1: Ingestion &amp; Context</p></td><td><p>Raw DOM snapshots, logs, or OpenAPI specifications</p></td><td><p>Normalized token buffer with system prompt constraints</p></td></tr><tr><td><p>Stage 2: Model Inference</p></td><td><p>Attention layers compute Q-K-V matrices with temperature 0.1</p></td><td><p>Deterministic token sequence conforming to JSON schema</p></td></tr><tr><td><p>Stage 3: Actuation &amp; Verification</p></td><td><p>Playwright / Selenium driver or REST client execution</p></td><td><p>Pass/Fail telemetry, failure triage, and artifact persistence</p></td></tr></tbody></table><h2>4. Step-by-Step Implementation Guide</h2><ol><li><p>Define precise system role constraints to prevent hallucinated selectors and invalid assertions.</p></li><li><p>Tokenize input context and enforce strict JSON schema contracts for all structured responses.</p></li><li><p>Execute tool actuation via sandboxed runners with timeout guards and error boundary handling.</p></li><li><p>Verify output syntax against production standards before deploying test code into CI/CD pipelines.</p></li></ol><h2>5. Practical Examples in Quality Engineering</h2><p>Consider an enterprise e-commerce checkout flow where DOM element IDs mutate with every release build. In legacy automation, this causes widespread pipeline breakage. With LLM, multi-attribute fingerprinting compares parent semantic containers, accessibility labels, and sibling nodes to recover locators with 99.4% confidence without test aborts.</p><h2>6. Production Implementation Code</h2><p>Below is production-ready code demonstrating LLM:</p><p>java</p><p> Copy Code</p><pre class=\"tiptap-code-block rounded-2xl bg-[#0F0F12] border border-[#27272A] p-4 text-emerald-300 font-mono text-xs my-4 overflow-x-auto shadow-inner\"><code class=\"language-java\">import { GoogleGenAI } from '@google/genai';\n\nexport class QAInferenceEngine {\n  private ai: GoogleGenAI;\n  private modelName = 'gemini-2.5-flash';\n\n  constructor(apiKey: string) {\n    this.ai = new GoogleGenAI({ apiKey });\n  }\n\n  async predictLocator(domSnapshot: string, targetDescription: string): Promise&lt;string&gt; {\n    const prompt = `Given this HTML snippet:\n${domSnapshot}\nReturn the most resilient CSS selector for: \"${targetDescription}\". Respond in JSON: {\"selector\": \"...\", \"confidence\": 0.0-1.0}`;\n    try {\n      const response = await this.ai.models.generateContent({\n        model: this.modelName,\n        contents: prompt,\n        config: { temperature: 0.1, responseMimeType: 'application/json' }\n      });\n      return response.text || '';\n    } catch (err: any) {\n      if (err.message?.includes('ContextWindowExceededError')) {\n        throw new Error('DOM snapshot exceeded model token budget. Prune irrelevant nodes before retry.');\n      }\n      throw err;\n    }\n  }\n}</code></pre><h2>7. Real-World QA Use Cases</h2><ul><li><p>Financial Banking Systems: Automated transaction payload synthesis covering edge boundary balances and international currencies.</p></li><li><p>Healthcare Platforms: Synthetic HIPAA-compliant patient test records generating realistic clinical timelines.</p></li><li><p>High-Volume E-Commerce: Dynamic self-healing during flash sales where marketing tags frequently disrupt automation DOM selectors.</p></li></ul><h2>8. Common Pitfalls and Mitigation Strategies</h2><p><strong>Caution: Non-Deterministic Temperature Drift: </strong>Setting model temperature above 0.3 results in unpredictable test code and synthetic locator hallucinations. Always pin temperature to 0.0 - 0.2 for test synthesis.</p><ul><li><p>Context Window Exhaustion: Truncated HTML snippets cause incomplete Page Object class generation. Mitigate using semantic DOM chunking.</p></li><li><p>Unbounded Agent Loops: Prevent infinite reflection loops by enforcing a hard maximum step limit (e.g., max 10 steps per test execution).</p></li></ul><h2>9. Enterprise Best Practices</h2><ul><li><p>Schema Enforcement: Always validate LLM tool arguments against strict Zod or JSON Schema definitions.</p></li><li><p>Human-in-the-Loop Approval: Critical test deletions and production environment changes must require explicit engineer sign-off.</p></li><li><p>Telemetry Tracking: Log prompt tokens, completion tokens, latency, and cost per test suite run into centralized dashboards.</p></li></ul><h2>10. Key Takeaways &amp; Summary</h2><p>LLM marks an inflection point in quality engineering. By grounding generative models in deterministic schemas, robust context pipelines, and reliable test frameworks, SDETs transform automation from a maintenance burden into an autonomous, self-healing quality shield.</p><h2>11. Top Interview Questions &amp; Answers</h2><p><strong>Q1: How does LLM impact automated regression suite maintenance?</strong></p><p>Answer: By decoupling test logic from fragile static DOM selectors and introducing multi-attribute self-healing, maintenance overhead drops by up to 70%, allowing engineers to focus on architectural test coverage rather than repairing brittle XPath locators.</p><p><strong>Q2: What is the primary risk of using generative AI in automated testing, and how is it resolved?</strong></p><p>Answer: The primary risk is hallucination—generating assertions that pass vacuously or asserting non-existent functionality. It is mitigated through deterministic schemas, low model temperature (&lt;= 0.1), explicit system constraints, and sandboxed test execution validation.</p>",
               "originalDocxPath": "/uploads/learning/docs/ai_academy_what-is-an-llm.docx",
               "originalDocumentPath": "/uploads/learning/docs/ai_academy_what-is-an-llm.docx",
               "pdfPath": "/uploads/learning/docs/ai_academy_what-is-an-llm_print.html",
@@ -8813,8 +8813,1025 @@
               "sortOrder": 4,
               "status": "published",
               "createdAt": "2026-11-23T00:00:00.000Z",
-              "updatedAt": "2026-11-23T18:24:08.418Z",
-              "publishedAt": "2026-11-23T00:00:00.000Z"
+              "updatedAt": "2026-11-24T09:09:42.848Z",
+              "publishedAt": "2026-11-24T09:09:42.821Z",
+              "blockData": {
+                "tiptapJson": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 1
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "What is an LLM?"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "italic"
+                            }
+                          ],
+                          "text": "Large Language Model architectures, token probability distributions, and parameter scale dynamics in SDET workflows."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": " "
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Modern quality engineering demands an architectural transition from manual, brittle test scripts toward autonomous, resilient, AI-augmented systems. This guide provides SDETs and Test Architects with the theoretical foundations and production implementations necessary to succeed."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "1. Learning Objectives"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "bulletList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Master core architectural principles behind LLM in enterprise software environments."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Implement production-grade automation patterns with deterministic reliability."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Eliminate flakiness by leveraging probabilistic reasoning loops and dynamic telemetry."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Evaluate security, cost, and latency tradeoffs across cloud and local model deployments."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "2. Detailed Concept Explanation"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "In contemporary software development, LLM operates at the intersection of machine learning inference, distributed systems, and continuous delivery pipelines. Unlike traditional rule-based test assertions, AI-driven architectures process multi-dimensional token vectors to evaluate application state, dynamically reconcile broken locators, and predict system regressions before code merges into production."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "Core Principle: "
+                        },
+                        {
+                          "type": "text",
+                          "text": "Deterministic testing remains non-negotiable. AI does not replace rigor; it augments human intelligence by handling high-entropy tasks such as synthetic test data generation, locator drift recovery, and automated log clustering."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "3. Technical Architecture: End-to-End LLM Transformer Inference Pipeline"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Figure 1 illustrates the end-to-end data processing pipeline for LLM:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "table",
+                      "content": [
+                        {
+                          "type": "tableRow",
+                          "content": [
+                            {
+                              "type": "tableHeader",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "marks": [
+                                        {
+                                          "type": "bold"
+                                        }
+                                      ],
+                                      "text": "Pipeline Stage"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableHeader",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "marks": [
+                                        {
+                                          "type": "bold"
+                                        }
+                                      ],
+                                      "text": "Input & Transformation"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableHeader",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "marks": [
+                                        {
+                                          "type": "bold"
+                                        }
+                                      ],
+                                      "text": "Output State"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tableRow",
+                          "content": [
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Stage 1: Ingestion & Context"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Raw DOM snapshots, logs, or OpenAPI specifications"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Normalized token buffer with system prompt constraints"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tableRow",
+                          "content": [
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Stage 2: Model Inference"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Attention layers compute Q-K-V matrices with temperature 0.1"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Deterministic token sequence conforming to JSON schema"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tableRow",
+                          "content": [
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Stage 3: Actuation & Verification"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Playwright / Selenium driver or REST client execution"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "tableCell",
+                              "attrs": {
+                                "colspan": 1,
+                                "rowspan": 1,
+                                "colwidth": null,
+                                "align": null
+                              },
+                              "content": [
+                                {
+                                  "type": "paragraph",
+                                  "attrs": {
+                                    "textAlign": null
+                                  },
+                                  "content": [
+                                    {
+                                      "type": "text",
+                                      "text": "Pass/Fail telemetry, failure triage, and artifact persistence"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "4. Step-by-Step Implementation Guide"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "orderedList",
+                      "attrs": {
+                        "start": 1,
+                        "type": null
+                      },
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Define precise system role constraints to prevent hallucinated selectors and invalid assertions."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Tokenize input context and enforce strict JSON schema contracts for all structured responses."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Execute tool actuation via sandboxed runners with timeout guards and error boundary handling."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Verify output syntax against production standards before deploying test code into CI/CD pipelines."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "5. Practical Examples in Quality Engineering"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Consider an enterprise e-commerce checkout flow where DOM element IDs mutate with every release build. In legacy automation, this causes widespread pipeline breakage. With LLM, multi-attribute fingerprinting compares parent semantic containers, accessibility labels, and sibling nodes to recover locators with 99.4% confidence without test aborts."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "6. Production Implementation Code"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Below is production-ready code demonstrating LLM:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "java"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": " Copy Code"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "codeBlock",
+                      "attrs": {
+                        "language": "java"
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "import { GoogleGenAI } from '@google/genai';\n\nexport class QAInferenceEngine {\n  private ai: GoogleGenAI;\n  private modelName = 'gemini-2.5-flash';\n\n  constructor(apiKey: string) {\n    this.ai = new GoogleGenAI({ apiKey });\n  }\n\n  async predictLocator(domSnapshot: string, targetDescription: string): Promise<string> {\n    const prompt = `Given this HTML snippet:\n${domSnapshot}\nReturn the most resilient CSS selector for: \"${targetDescription}\". Respond in JSON: {\"selector\": \"...\", \"confidence\": 0.0-1.0}`;\n    try {\n      const response = await this.ai.models.generateContent({\n        model: this.modelName,\n        contents: prompt,\n        config: { temperature: 0.1, responseMimeType: 'application/json' }\n      });\n      return response.text || '';\n    } catch (err: any) {\n      if (err.message?.includes('ContextWindowExceededError')) {\n        throw new Error('DOM snapshot exceeded model token budget. Prune irrelevant nodes before retry.');\n      }\n      throw err;\n    }\n  }\n}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "7. Real-World QA Use Cases"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "bulletList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Financial Banking Systems: Automated transaction payload synthesis covering edge boundary balances and international currencies."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Healthcare Platforms: Synthetic HIPAA-compliant patient test records generating realistic clinical timelines."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "High-Volume E-Commerce: Dynamic self-healing during flash sales where marketing tags frequently disrupt automation DOM selectors."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "8. Common Pitfalls and Mitigation Strategies"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "Caution: Non-Deterministic Temperature Drift: "
+                        },
+                        {
+                          "type": "text",
+                          "text": "Setting model temperature above 0.3 results in unpredictable test code and synthetic locator hallucinations. Always pin temperature to 0.0 - 0.2 for test synthesis."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "bulletList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Context Window Exhaustion: Truncated HTML snippets cause incomplete Page Object class generation. Mitigate using semantic DOM chunking."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Unbounded Agent Loops: Prevent infinite reflection loops by enforcing a hard maximum step limit (e.g., max 10 steps per test execution)."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "9. Enterprise Best Practices"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "bulletList",
+                      "content": [
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Schema Enforcement: Always validate LLM tool arguments against strict Zod or JSON Schema definitions."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Human-in-the-Loop Approval: Critical test deletions and production environment changes must require explicit engineer sign-off."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "listItem",
+                          "content": [
+                            {
+                              "type": "paragraph",
+                              "attrs": {
+                                "textAlign": null
+                              },
+                              "content": [
+                                {
+                                  "type": "text",
+                                  "text": "Telemetry Tracking: Log prompt tokens, completion tokens, latency, and cost per test suite run into centralized dashboards."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "10. Key Takeaways & Summary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "LLM marks an inflection point in quality engineering. By grounding generative models in deterministic schemas, robust context pipelines, and reliable test frameworks, SDETs transform automation from a maintenance burden into an autonomous, self-healing quality shield."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "attrs": {
+                        "textAlign": null,
+                        "level": 2
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "11. Top Interview Questions & Answers"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "Q1: How does LLM impact automated regression suite maintenance?"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Answer: By decoupling test logic from fragile static DOM selectors and introducing multi-attribute self-healing, maintenance overhead drops by up to 70%, allowing engineers to focus on architectural test coverage rather than repairing brittle XPath locators."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "marks": [
+                            {
+                              "type": "bold"
+                            }
+                          ],
+                          "text": "Q2: What is the primary risk of using generative AI in automated testing, and how is it resolved?"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "attrs": {
+                        "textAlign": null
+                      },
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Answer: The primary risk is hallucination—generating assertions that pass vacuously or asserting non-existent functionality. It is mitigated through deterministic schemas, low model temperature (<= 0.1), explicit system constraints, and sandboxed test execution validation."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
             },
             {
               "id": "les-how-llms-work",
@@ -105638,6 +106655,24 @@
       "originalFilename": "image2.png",
       "displayOrder": 2,
       "createdAt": "2026-11-24T08:02:43.269Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwugg79y",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-24T08:50:59.926Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwugg7eh",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-24T08:51:00.089Z"
     }
   ],
   "academyUserProgress": [
@@ -108238,7 +109273,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-llm",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T03:41:12.434Z",
+      "lastAccessedAt": "2026-11-24T09:11:45.910Z",
       "completedAt": null
     },
     {
@@ -108912,6 +109947,78 @@
       "completionStatus": "in_progress",
       "lastAccessedAt": "2026-11-24T08:02:51.317Z",
       "completedAt": null
+    },
+    {
+      "id": "prog-test-user-partial-1795510260774-les-what-is-machine-learning",
+      "userId": "test-user-partial-1795510260774",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T08:51:00.774Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-partial-1795510260774-les-what-is-genai",
+      "userId": "test-user-partial-1795510260774",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:51:01.447Z",
+      "completedAt": "2026-11-24T08:51:01.447Z"
+    },
+    {
+      "id": "prog-test-user-partial-1795510260774-les-what-is-llm",
+      "userId": "test-user-partial-1795510260774",
+      "lessonId": "les-what-is-llm",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T08:51:01.765Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-test-user-full-1795510262138-les-what-is-machine-learning",
+      "userId": "test-user-full-1795510262138",
+      "lessonId": "les-what-is-machine-learning",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:51:02.138Z",
+      "completedAt": "2026-11-24T08:51:02.138Z"
+    },
+    {
+      "id": "prog-test-user-full-1795510262138-les-what-is-genai",
+      "userId": "test-user-full-1795510262138",
+      "lessonId": "les-what-is-genai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:51:02.371Z",
+      "completedAt": "2026-11-24T08:51:02.371Z"
+    },
+    {
+      "id": "prog-test-user-full-1795510262138-les-what-is-llm",
+      "userId": "test-user-full-1795510262138",
+      "lessonId": "les-what-is-llm",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:51:02.511Z",
+      "completedAt": "2026-11-24T08:51:02.511Z"
+    },
+    {
+      "id": "prog-test-user-full-1795510262138-les-how-llms-work",
+      "userId": "test-user-full-1795510262138",
+      "lessonId": "les-how-llms-work",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:51:02.783Z",
+      "completedAt": "2026-11-24T08:51:02.783Z"
+    },
+    {
+      "id": "prog-test-user-full-1795510262138-les-transformer-architecture",
+      "userId": "test-user-full-1795510262138",
+      "lessonId": "les-transformer-architecture",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:51:03.744Z",
+      "completedAt": "2026-11-24T08:51:03.744Z"
+    },
+    {
+      "id": "prog-test-user-full-1795510262138-les-tokens-embeddings-and-attention",
+      "userId": "test-user-full-1795510262138",
+      "lessonId": "les-tokens-embeddings-and-attention",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:51:03.889Z",
+      "completedAt": "2026-11-24T08:51:03.889Z"
     }
   ],
   "academyBookmarks": [

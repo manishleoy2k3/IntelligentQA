@@ -23,6 +23,7 @@ import {
   Layers,
   Wand2,
   Trash2,
+  Key,
 } from 'lucide-react';
 import {
   AIEnhancementResponse,
@@ -31,6 +32,8 @@ import {
   AIChatMessage,
 } from '@/lib/ai/types';
 import { markdownToTiptapHtml } from '@/lib/ai/markdown-converter';
+import { QADatabase } from '@/lib/qa-db';
+import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 
 interface AiChatPanelProps {
   isOpen: boolean;
@@ -68,7 +71,70 @@ export default function AiChatPanel({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  
+  // In-session temporary memory for Gemini API Key (NEVER written to DB or disk)
+  const [sessionApiKey, setSessionApiKey] = useState<string>('');
+  const [showKeyDrawer, setShowKeyDrawer] = useState<boolean>(false);
+  const [keyInputVal, setKeyInputVal] = useState<string>('');
+  const [keyTesting, setKeyTesting] = useState<boolean>(false);
+  const [keyNotice, setKeyNotice] = useState<string | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Sync session or user key state (in-memory session prioritized, fallback to QADatabase memory)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('intelligentqa_ai_session_key') || QADatabase.getUserGeminiKey();
+      if (stored) {
+        setSessionApiKey(stored);
+      }
+    }
+  }, []);
+
+  const handleSaveSessionKey = async () => {
+    const trimmed = keyInputVal.trim();
+    if (!trimmed) {
+      setKeyNotice('Please paste a valid Google AI Studio key.');
+      return;
+    }
+
+    setKeyTesting(true);
+    setKeyNotice(null);
+
+    try {
+      const res = await fetch('/api/ai/verify-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: trimmed }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.valid) {
+        // Store only in browser session memory (cleared on tab/browser close, ZERO database writes)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('intelligentqa_ai_session_key', trimmed);
+        }
+        setSessionApiKey(trimmed);
+        setShowKeyDrawer(false);
+        setKeyInputVal('');
+        setErrorMessage(null);
+      } else {
+        setKeyNotice(data.error || data.message || 'Key verification failed. Please check the key.');
+      }
+    } catch (err: any) {
+      setKeyNotice(err.message || 'Network error while verifying key.');
+    } finally {
+      setKeyTesting(false);
+    }
+  };
+
+  const handleClearSessionKey = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('intelligentqa_ai_session_key');
+    }
+    setSessionApiKey('');
+    setKeyNotice('Session API key cleared.');
+  };
 
   // Predefined shortcut actions
   const PREDEFINED_ACTIONS = [
@@ -194,14 +260,23 @@ export default function AiChatPanel({
         selectedText: selectedEditorText,
       };
 
+      // Retrieve configured Gemini API Key (session memory first, then database/storage fallback)
+      const activeKey = sessionApiKey || (typeof window !== 'undefined' ? (sessionStorage.getItem('intelligentqa_ai_session_key') || QADatabase.getUserGeminiKey()) : '');
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (activeKey) {
+        headers['x-gemini-api-key'] = activeKey;
+      }
+
       const res = await fetch('/api/admin/learning/ai-enhance', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           action: actionId || 'custom_chat',
           prompt: promptToSend,
           context: enrichedContext,
           history,
+          apiKey: activeKey || undefined,
         }),
       });
 
@@ -338,7 +413,17 @@ export default function AiChatPanel({
           }
 
           const resp = turn.response;
-          const htmlContent = resp ? markdownToTiptapHtml(resp.generated_content) : '';
+          // Clean display content to ensure raw JSON meta strings never leak into the chat view
+          let cleanContent = resp?.generated_content || '';
+          if (!cleanContent && turn.rawText) {
+            cleanContent = turn.rawText
+              .replace(/^\s*\{?\s*"response_type"[^,]+,\s*/i, '')
+              .replace(/"summary"\s*:\s*"[^"]*",?\s*/i, '')
+              .replace(/"generated_content"\s*:\s*"?/i, '')
+              .replace(/"?\s*\}?\s*$/i, '');
+          }
+
+          const htmlContent = cleanContent ? markdownToTiptapHtml(cleanContent) : '';
 
           return (
             <div key={turn.id} className="flex flex-col space-y-2">
@@ -363,7 +448,7 @@ export default function AiChatPanel({
                 <div className="prose prose-invert prose-xs max-w-none text-zinc-200 leading-relaxed font-sans space-y-2">
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: htmlContent || `<p>${turn.rawText}</p>`,
+                      __html: htmlContent || `<p class="text-zinc-400 italic">No content generated.</p>`,
                     }}
                   />
                 </div>
@@ -486,12 +571,27 @@ export default function AiChatPanel({
 
         {/* Error Notification */}
         {errorMessage && (
-          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-            <div className="space-y-1">
-              <span className="font-bold">Enhancement Failed</span>
-              <p className="text-[11px] text-rose-200/80 leading-relaxed">{errorMessage}</p>
+          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex flex-col gap-2">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+              <div className="space-y-1">
+                <span className="font-bold">Enhancement Failed</span>
+                <p className="text-[11px] text-rose-200/80 leading-relaxed">{errorMessage}</p>
+              </div>
             </div>
+            {(errorMessage.includes('Gemini API Key') || errorMessage.includes('key is missing')) && (
+              <div className="pt-2 border-t border-rose-500/20 flex items-center justify-between">
+                <span className="text-[10px] text-zinc-400">Temporary In-Memory Key (0% DB storage):</span>
+                <button
+                  type="button"
+                  onClick={() => setShowKeyDrawer(true)}
+                  className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 shadow transition-colors cursor-pointer"
+                >
+                  <Key className="w-3.5 h-3.5" />
+                  <span>Set Session Key</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -500,6 +600,48 @@ export default function AiChatPanel({
 
       {/* 3. INPUT AREA */}
       <div className="p-4 bg-[#18181B] border-t border-[#27272A] space-y-2">
+        {/* Quick Session Key Drawer (In-Memory Only, Zero DB Writes) */}
+        {showKeyDrawer && (
+          <div className="p-3.5 rounded-2xl bg-[#09090B] border border-purple-500/30 space-y-2.5 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-purple-300 flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-purple-400" />
+                Session Gemini Key (In-Memory Only)
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowKeyDrawer(false)}
+                className="text-zinc-500 hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <p className="text-[11px] text-zinc-400 leading-relaxed">
+              Never stored in any database. Held strictly in active browser memory for this session and discarded when tab closes.
+            </p>
+            <div className="flex items-center gap-1.5">
+              <input
+                type="password"
+                value={keyInputVal}
+                onChange={(e) => setKeyInputVal(e.target.value)}
+                placeholder="AIzaSy..."
+                className="flex-1 px-3 py-1.5 rounded-xl bg-[#141417] border border-[#27272A] text-zinc-100 text-xs font-mono focus:outline-none focus:border-purple-500"
+              />
+              <button
+                type="button"
+                onClick={handleSaveSessionKey}
+                disabled={keyTesting || !keyInputVal.trim()}
+                className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {keyTesting ? 'Verifying...' : 'Set Key'}
+              </button>
+            </div>
+            {keyNotice && (
+              <p className="text-[10px] text-amber-400">{keyNotice}</p>
+            )}
+          </div>
+        )}
+
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -531,7 +673,31 @@ export default function AiChatPanel({
         </form>
         <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
           <span>Press Enter to send • Shift+Enter for newline</span>
-          <span>Never automatically publishes content</span>
+          <div className="flex items-center gap-2">
+            {sessionApiKey ? (
+              <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Session Key Active</span>
+                <button
+                  type="button"
+                  onClick={handleClearSessionKey}
+                  className="text-zinc-500 hover:text-rose-400 ml-1 underline cursor-pointer"
+                  title="Clear in-memory key"
+                >
+                  Clear
+                </button>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowKeyDrawer(true)}
+                className="text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1 cursor-pointer"
+              >
+                <Key className="w-3 h-3" />
+                <span>Set In-Memory Key</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </aside>
