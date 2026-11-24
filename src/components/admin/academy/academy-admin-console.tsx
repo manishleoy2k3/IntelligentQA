@@ -1257,9 +1257,6 @@ test('deterministic enterprise verification', async ({ page }) => {
                     >
                       {activeCourse.status.toUpperCase()}
                     </span>
-                    <span className="text-[10px] font-mono text-zinc-400">
-                      Slug: {activeCourse.slug}
-                    </span>
                   </div>
                   <h3 className="text-lg font-bold text-white tracking-tight">{activeCourse.title}</h3>
                   {activeCourse.description && (
@@ -1510,7 +1507,7 @@ test('deterministic enterprise verification', async ({ page }) => {
                                         )}
                                       </div>
                                       <p className="text-[10px] text-zinc-400 truncate">
-                                        Slug: {lsn.slug} • {lsn.estimatedReadingTime || lsn.estimatedReadTime || 5} min read
+                                        {lsn.estimatedReadingTime || lsn.estimatedReadTime || 5} min read
                                       </p>
                                     </div>
                                   </div>

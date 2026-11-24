@@ -10880,18 +10880,18 @@
       "sortOrder": 2,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-23T00:00:00.000Z",
+      "updatedAt": "2026-11-24T09:36:31.104Z",
       "modules": [
         {
           "id": "mod-playwright-mastery-1",
           "courseId": "course-playwright-mastery",
           "slug": "introduction-to-playwright",
-          "title": "Module 1: Introduction to Playwright",
+          "title": "Introduction to Playwright",
           "description": "Next-generation web automation, multi-engine support, and comparisons with Selenium and Cypress.",
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:34:24.529Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-1-1-playwright-architecture-browser-",
@@ -12490,12 +12490,12 @@
           "id": "mod-playwright-mastery-2",
           "courseId": "course-playwright-mastery",
           "slug": "getting-started-with-playwright",
-          "title": "Module 2: Getting Started with Playwright",
+          "title": "Getting Started with Playwright",
           "description": "Installation, configuration, directory layout, running first tests, and CLI flags.",
           "sortOrder": 2,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:34:38.201Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-2-1-installation-and-setup",
@@ -14092,12 +14092,12 @@
           "id": "mod-playwright-mastery-3",
           "courseId": "course-playwright-mastery",
           "slug": "core-concepts-and-architecture",
-          "title": "Module 3: Core Concepts and Architecture",
+          "title": "Core Concepts and Architecture",
           "description": "Deep dive into Browser, BrowserContext, Page, parallel worker models, and auto-waiting.",
           "sortOrder": 3,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:34:51.364Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-3-1-browser",
@@ -15467,12 +15467,12 @@
           "id": "mod-playwright-mastery-4",
           "courseId": "course-playwright-mastery",
           "slug": "locators-and-selectors",
-          "title": "Module 4: Locators and Selectors",
+          "title": "Locators and Selectors",
           "description": "Locator-first queries: getByRole, getByLabel, CSS, XPath, locator filtering, and strict mode.",
           "sortOrder": 4,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:35:06.216Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-4-1-playwright-locators",
@@ -17296,12 +17296,12 @@
           "id": "mod-playwright-mastery-5",
           "courseId": "course-playwright-mastery",
           "slug": "web-interactions-and-assertions",
-          "title": "Module 5: Web Interactions and Assertions",
+          "title": "Web Interactions and Assertions",
           "description": "Actionability checks: clicks, typing, checkboxes, file uploads, and web-first retrying assertions.",
           "sortOrder": 5,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:35:19.932Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-5-1-click",
@@ -19579,12 +19579,12 @@
           "id": "mod-playwright-mastery-6",
           "courseId": "course-playwright-mastery",
           "slug": "advanced-playwright-capabilities",
-          "title": "Module 6: Advanced Playwright Capabilities",
+          "title": "Advanced Playwright Capabilities",
           "description": "Network route mocking, API requests, storage state reuse, multi-tab popups, and downloads.",
           "sortOrder": 6,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:35:58.798Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-6-1-network-interception-and-mocking",
@@ -21181,12 +21181,12 @@
           "id": "mod-playwright-mastery-7",
           "courseId": "course-playwright-mastery",
           "slug": "playwright-tooling-debugging",
-          "title": "Module 7: Playwright Tooling & Debugging",
+          "title": "Playwright Tooling & Debugging",
           "description": "Inspector, Trace Viewer, Codegen test generator, UI Mode, and video recording.",
           "sortOrder": 7,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:36:09.551Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-7-1-playwright-inspector",
@@ -22783,12 +22783,12 @@
           "id": "mod-playwright-mastery-8",
           "courseId": "course-playwright-mastery",
           "slug": "enterprise-framework-architecture",
-          "title": "Module 8: Enterprise Framework Architecture",
+          "title": "Enterprise Framework Architecture",
           "description": "Page Object Model with TypeScript, custom fixtures, environment variables, and Allure reports.",
           "sortOrder": 8,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:36:19.371Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-8-1-page-object-model-in-playwright",
@@ -24158,12 +24158,12 @@
           "id": "mod-playwright-mastery-9",
           "courseId": "course-playwright-mastery",
           "slug": "real-world-scenarios-and-best-practices",
-          "title": "Module 9: Real-World Scenarios and Best Practices",
+          "title": "Real-World Scenarios and Best Practices",
           "description": "End-to-end design, CI sharding, preventing flakiness, security patterns, and enterprise standards.",
           "sortOrder": 9,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-23T00:00:00.000Z",
+          "updatedAt": "2026-11-24T09:36:31.104Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-9-1-end-to-end-test-design",
@@ -106673,6 +106673,15 @@
       "originalFilename": "image2.png",
       "displayOrder": 2,
       "createdAt": "2026-11-24T08:51:00.089Z"
+    },
+    {
+      "lessonId": "les-test-lsn-1795513176871",
+      "assetType": "diagram",
+      "filePath": "/uploads/learning/media/diagram_test.png",
+      "originalFilename": "diagram_test.png",
+      "displayOrder": 1,
+      "id": "asset-1795513177211-u3lka",
+      "createdAt": "2026-11-24T09:39:37.211Z"
     }
   ],
   "academyUserProgress": [
@@ -110019,6 +110028,22 @@
       "completionStatus": "completed",
       "lastAccessedAt": "2026-11-24T08:51:03.889Z",
       "completedAt": "2026-11-24T08:51:03.889Z"
+    },
+    {
+      "id": "prog-test-user-1795513177119-les-test-lsn-1795513176871",
+      "userId": "test-user-1795513177119",
+      "lessonId": "les-test-lsn-1795513176871",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T09:39:37.119Z",
+      "completedAt": "2026-11-24T09:39:37.119Z"
+    },
+    {
+      "id": "prog-usr_api_test_1795513177664-les-api-test",
+      "userId": "usr_api_test_1795513177664",
+      "lessonId": "les-api-test",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T09:39:37.664Z",
+      "completedAt": "2026-11-24T09:39:37.664Z"
     }
   ],
   "academyBookmarks": [
