@@ -234,3 +234,214 @@
     max-width: 100% !important;
   }
 }
+
+/* ========================================================================== */
+/* TIPTAP WYSIWYG DOCUMENT EDITOR & PUBLIC LESSON STYLING                      */
+/* ========================================================================== */
+
+.tiptap-canvas {
+  outline: none;
+}
+
+.tiptap-canvas p.is-editor-empty:first-child::before {
+  color: #71717A;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap-canvas h1,
+.standard-lesson-container h1 {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+  border-bottom: 1px solid #27272A;
+  padding-bottom: 0.5rem;
+}
+
+.tiptap-canvas h2,
+.standard-lesson-container h2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #F4F4F5;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.tiptap-canvas h3,
+.standard-lesson-container h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #E4E4E7;
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.35;
+}
+
+.tiptap-canvas h4,
+.standard-lesson-container h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #D4D4D8;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.tiptap-canvas p,
+.standard-lesson-container p {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  color: #D4D4D8;
+}
+
+.tiptap-canvas ul,
+.standard-lesson-container ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #D4D4D8;
+}
+
+.tiptap-canvas ol,
+.standard-lesson-container ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #D4D4D8;
+}
+
+.tiptap-canvas li,
+.standard-lesson-container li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+}
+
+.tiptap-canvas blockquote,
+.standard-lesson-container blockquote {
+  border-left: 4px solid #10B981;
+  padding-left: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: #A1A1AA;
+  background: rgba(16, 185, 129, 0.05);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.tiptap-canvas hr,
+.standard-lesson-container hr {
+  border: none;
+  border-top: 1px solid #27272A;
+  margin: 1.5rem 0;
+}
+
+/* Tiptap Tables */
+.tiptap-canvas table,
+.standard-lesson-container table {
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  width: 100%;
+  overflow-x: auto;
+  display: table;
+  border-radius: 0.75rem;
+  border: 1px solid #27272A;
+}
+
+.tiptap-canvas th,
+.standard-lesson-container th {
+  background-color: #1F1F23;
+  color: #FFFFFF;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: 1px solid #27272A;
+  font-size: 0.8125rem;
+}
+
+.tiptap-canvas td,
+.standard-lesson-container td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #27272A;
+  color: #D4D4D8;
+  font-size: 0.8125rem;
+}
+
+.tiptap-canvas tr:nth-child(even) td,
+.standard-lesson-container tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Callout Boxes */
+.tiptap-callout,
+.standard-lesson-container .tiptap-callout {
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border: 1px solid;
+  position: relative;
+}
+
+.tiptap-callout-info,
+.standard-lesson-container .tiptap-callout-info {
+  background-color: rgba(14, 165, 233, 0.08);
+  border-color: rgba(14, 165, 233, 0.3);
+  color: #BAE6FD;
+}
+
+.tiptap-callout-warning,
+.standard-lesson-container .tiptap-callout-warning {
+  background-color: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #FDE68A;
+}
+
+.tiptap-callout-important,
+.standard-lesson-container .tiptap-callout-important {
+  background-color: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #C7D2FE;
+}
+
+.tiptap-callout-tip,
+.standard-lesson-container .tiptap-callout-tip {
+  background-color: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #A7F3D0;
+}
+
+.tiptap-callout-best-practice,
+.standard-lesson-container .tiptap-callout-best-practice {
+  background-color: rgba(168, 85, 247, 0.08);
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #E9D5FF;
+}
+
+/* Image Wrappers */
+.tiptap-image-wrapper {
+  margin: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tiptap-image-left {
+  align-items: flex-start;
+}
+
+.tiptap-image-center {
+  align-items: center;
+}
+
+.tiptap-image-right {
+  align-items: flex-end;
+}

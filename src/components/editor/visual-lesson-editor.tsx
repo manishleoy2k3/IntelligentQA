@@ -1,0 +1,406 @@
+'use client';
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
+import Highlight from '@tiptap/extension-highlight';
+import TextAlign from '@tiptap/extension-text-align';
+import { Table } from '@tiptap/extension-table';
+import { TableRow } from '@tiptap/extension-table-row';
+import { TableCell } from '@tiptap/extension-table-cell';
+import { TableHeader } from '@tiptap/extension-table-header';
+import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
+import CharacterCount from '@tiptap/extension-character-count';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+
+import EditorToolbar from './editor-toolbar';
+import ImageUploadModal from './image-upload-modal';
+import { Callout } from './extensions/callout-extension';
+import { ResizableImage } from './extensions/resizable-image-extension';
+import { lowlight } from './extensions/lowlight-config';
+
+import {
+  Save,
+  Send,
+  Eye,
+  RotateCcw,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+  Code,
+  Layout,
+  ChevronRight,
+  BookOpen,
+} from 'lucide-react';
+
+export interface VisualLessonEditorProps {
+  courseTitle: string;
+  moduleTitle: string;
+  lessonTitle: string;
+  lessonId: string;
+  initialHtml: string;
+  initialBlockData?: any;
+  status: 'draft' | 'published' | 'archived';
+  onSaveDraft: (contentHtml: string, blockData?: any) => Promise<boolean>;
+  onPublish: (contentHtml: string, blockData?: any) => Promise<boolean>;
+  onPreview: (contentHtml: string) => void;
+  onCancel: () => void;
+}
+
+export default function VisualLessonEditor({
+  courseTitle,
+  moduleTitle,
+  lessonTitle,
+  lessonId,
+  initialHtml,
+  initialBlockData,
+  status,
+  onSaveDraft,
+  onPublish,
+  onPreview,
+  onCancel,
+}: VisualLessonEditorProps) {
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved' | 'error'>('saved');
+  const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
+  const [showImageModal, setShowImageModal] = useState<boolean>(false);
+  const [mode, setMode] = useState<'visual' | 'code'>('visual');
+  const [rawHtml, setRawHtml] = useState<string>(initialHtml || '');
+
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialMount = useRef<boolean>(true);
+
+  // Initialize Tiptap Editor
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        codeBlock: false, // Replaced by CodeBlockLowlight
+        heading: {
+          levels: [1, 2, 3, 4],
+        },
+      }),
+      Underline,
+      Highlight.configure({
+        multicolor: true,
+      }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph', 'image'],
+      }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-emerald-600 dark:text-emerald-400 underline font-semibold hover:text-emerald-500',
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        },
+      }),
+      Placeholder.configure({
+        placeholder: 'Write your comprehensive technical lesson content here. Start typing or insert headings, code snippets, tables, and architecture diagrams...',
+      }),
+      CharacterCount,
+      CodeBlockLowlight.configure({
+        lowlight,
+        defaultLanguage: 'typescript',
+        HTMLAttributes: {
+          class: 'tiptap-code-block rounded-2xl bg-[#0F0F12] border border-[#27272A] p-4 text-emerald-300 font-mono text-xs my-4 overflow-x-auto shadow-inner',
+        },
+      }),
+      Callout,
+      ResizableImage,
+    ],
+    content: initialBlockData?.tiptapJson || initialHtml || '<p>Start writing your lesson content...</p>',
+    editorProps: {
+      attributes: {
+        class:
+          'tiptap-canvas prose prose-invert max-w-none focus:outline-none min-h-[500px] p-6 sm:p-10 font-sans leading-relaxed text-[#2D3748] dark:text-[#E2E8F0] selection:bg-emerald-500/30',
+      },
+    },
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      setRawHtml(html);
+      setSaveStatus('unsaved');
+
+      // Debounced Auto-Save (3.5 seconds)
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+      autoSaveTimerRef.current = setTimeout(() => {
+        handleAutoSave();
+      }, 3500);
+    },
+    immediatelyRender: false,
+  });
+
+  const handleAutoSave = useCallback(async () => {
+    if (!editor) return;
+    setSaveStatus('saving');
+    try {
+      const currentHtml = editor.getHTML();
+      const currentJson = editor.getJSON();
+      const success = await onSaveDraft(currentHtml, { tiptapJson: currentJson });
+      if (success) {
+        setSaveStatus('saved');
+        setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      } else {
+        setSaveStatus('error');
+      }
+    } catch {
+      setSaveStatus('error');
+    }
+  }, [editor, onSaveDraft]);
+
+  // Clean timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Update rawHtml when editor changes or mode switches
+  const handleSwitchToCode = () => {
+    if (editor) {
+      setRawHtml(editor.getHTML());
+    }
+    setMode('code');
+  };
+
+  const handleSwitchToVisual = () => {
+    if (editor && rawHtml) {
+      editor.commands.setContent(rawHtml);
+    }
+    setMode('visual');
+  };
+
+  const handleManualSaveDraft = async () => {
+    const htmlToSave = mode === 'visual' && editor ? editor.getHTML() : rawHtml;
+    const jsonToSave = editor ? editor.getJSON() : undefined;
+    setSaveStatus('saving');
+    const success = await onSaveDraft(htmlToSave, jsonToSave ? { tiptapJson: jsonToSave } : undefined);
+    if (success) {
+      setSaveStatus('saved');
+      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    } else {
+      setSaveStatus('error');
+    }
+  };
+
+  const handleManualPublish = async () => {
+    const htmlToSave = mode === 'visual' && editor ? editor.getHTML() : rawHtml;
+    const jsonToSave = editor ? editor.getJSON() : undefined;
+    setSaveStatus('saving');
+    const success = await onPublish(htmlToSave, jsonToSave ? { tiptapJson: jsonToSave } : undefined);
+    if (success) {
+      setSaveStatus('saved');
+      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    } else {
+      setSaveStatus('error');
+    }
+  };
+
+  const handleInsertImage = (options: {
+    src: string;
+    alt?: string;
+    caption?: string;
+    width?: string;
+    alignment?: 'left' | 'center' | 'right';
+  }) => {
+    if (!editor) return;
+    editor.chain().focus().setImage(options).run();
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-[#121215] border border-[#27272A] rounded-3xl overflow-hidden shadow-2xl">
+      {/* =================================================================== */}
+      {/* A. EDITOR HEADER: BREADCRUMBS, STATUS, LAST SAVED, ACTIONS          */}
+      {/* =================================================================== */}
+      <header className="bg-[#18181B] border-b border-[#27272A] px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
+        <div className="space-y-1">
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-1.5 text-xs text-zinc-400 flex-wrap">
+            <span className="text-emerald-400 font-bold flex items-center gap-1">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>{courseTitle}</span>
+            </span>
+            <ChevronRight className="w-3 h-3 text-zinc-600" />
+            <span className="text-zinc-300 font-medium">{moduleTitle}</span>
+            <ChevronRight className="w-3 h-3 text-zinc-600" />
+            <span className="text-white font-bold">{lessonTitle}</span>
+          </div>
+
+          <div className="flex items-center gap-3 pt-0.5">
+            <span
+              className={`text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full border ${
+                status === 'published'
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                  : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+              }`}
+            >
+              {status}
+            </span>
+
+            {/* Auto-Save & Timestamp indicator */}
+            <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-mono">
+              {saveStatus === 'saving' && (
+                <span className="flex items-center gap-1 text-cyan-400">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                  <span>Saving...</span>
+                </span>
+              )}
+              {saveStatus === 'saved' && (
+                <span className="flex items-center gap-1 text-emerald-400">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Saved at {lastSavedTime}</span>
+                </span>
+              )}
+              {saveStatus === 'unsaved' && (
+                <span className="flex items-center gap-1 text-amber-400">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Unsaved changes</span>
+                </span>
+              )}
+              {saveStatus === 'error' && (
+                <span className="flex items-center gap-1 text-rose-400 font-semibold">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>Error saving draft</span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Mode Switcher */}
+          <div className="flex items-center bg-[#121215] border border-[#27272A] rounded-xl p-0.5 text-xs mr-2">
+            <button
+              type="button"
+              onClick={handleSwitchToVisual}
+              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                mode === 'visual'
+                  ? 'bg-purple-600 text-white shadow'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Layout className="w-3.5 h-3.5" />
+              <span>Visual Editor</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleSwitchToCode}
+              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                mode === 'code'
+                  ? 'bg-purple-600 text-white shadow'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Code className="w-3.5 h-3.5" />
+              <span>HTML Source</span>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onPreview(mode === 'visual' && editor ? editor.getHTML() : rawHtml)}
+            className="px-3.5 py-2 rounded-xl bg-[#202025] hover:bg-[#2A2A30] text-zinc-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Preview student rendered view"
+          >
+            <Eye className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Preview</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleManualSaveDraft}
+            disabled={saveStatus === 'saving'}
+            className="px-4 py-2 rounded-xl bg-[#1F2937] hover:bg-[#374151] text-zinc-100 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <Save className="w-3.5 h-3.5 text-zinc-300" />
+            <span>Save Draft</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleManualPublish}
+            disabled={saveStatus === 'saving'}
+            className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>Publish Lesson</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-3 py-2 rounded-xl text-zinc-400 hover:text-white text-xs transition-colors cursor-pointer"
+          >
+            Close
+          </button>
+        </div>
+      </header>
+
+      {/* =================================================================== */}
+      {/* B. FORMATTING TOOLBAR                                               */}
+      {/* =================================================================== */}
+      {mode === 'visual' && (
+        <EditorToolbar
+          editor={editor}
+          onOpenImageModal={() => setShowImageModal(true)}
+        />
+      )}
+
+      {/* =================================================================== */}
+      {/* C. MAIN EDITING AREA: DOCUMENT-LIKE CANVAS (WORD/DOCS AESTHETIC)   */}
+      {/* =================================================================== */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[#09090B] flex justify-center">
+        {mode === 'visual' ? (
+          <div className="w-full max-w-4xl bg-[#141417] dark:bg-[#18181B] border border-[#27272A] rounded-3xl shadow-2xl min-h-[700px] flex flex-col transition-all">
+            <EditorContent editor={editor} className="flex-1" />
+
+            {/* Character & Word Count Footer */}
+            {editor && (
+              <div className="px-8 py-3 border-t border-[#27272A] text-zinc-500 font-mono text-[11px] flex items-center justify-between select-none">
+                <span>
+                  {editor.storage.characterCount.words()} words • {editor.storage.characterCount.characters()} characters
+                </span>
+                <span className="text-zinc-600">Visual WYSIWYG Mode (Tiptap Engine)</span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="w-full max-w-4xl bg-[#141417] border border-[#27272A] rounded-3xl p-6 flex flex-col space-y-3">
+            <div className="flex items-center justify-between text-xs text-zinc-400 pb-2 border-b border-[#27272A]">
+              <span className="font-mono text-cyan-400">Raw HTML Source Mode</span>
+              <span>Changes sync automatically to visual editor when switching back</span>
+            </div>
+            <textarea
+              value={rawHtml}
+              onChange={(e) => {
+                setRawHtml(e.target.value);
+                setSaveStatus('unsaved');
+              }}
+              rows={25}
+              className="w-full flex-1 p-4 rounded-xl bg-[#09090B] border border-[#27272A] text-emerald-400 font-mono text-xs focus:outline-none focus:border-purple-500 resize-y leading-relaxed"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Image Upload / Insert Modal */}
+      <ImageUploadModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        onInsertImage={handleInsertImage}
+      />
+    </div>
+  );
+}

@@ -45,6 +45,7 @@ import {
 } from '@/types/learning-platform';
 import DocxUploadDropzone, { UploadedDocInfo } from './docx-upload-dropzone';
 import ContentPreviewModal from './content-preview-modal';
+import VisualLessonEditor from '@/components/editor/visual-lesson-editor';
 
 interface AcademyAdminConsoleProps {
   onNotify?: (msg: string, type?: 'success' | 'error') => void;
@@ -107,9 +108,16 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   const [lessonSlug, setLessonSlug] = useState<string>('');
   const [lessonSummary, setLessonSummary] = useState<string>('');
   const [lessonContentHtml, setLessonContentHtml] = useState<string>('');
+  const [lessonBlockData, setLessonBlockData] = useState<any>(null);
   const [lessonDocPath, setLessonDocPath] = useState<string>('');
   const [lessonStatus, setLessonStatus] = useState<AcademyPublishStatus>('draft');
   const [lessonReadTime, setLessonReadTime] = useState<number>(5);
+  const [showVisualEditor, setShowVisualEditor] = useState<boolean>(false);
+  const [activeVisualLesson, setActiveVisualLesson] = useState<{
+    course: AcademyCourse;
+    module: AcademyModule;
+    lesson: AcademyLesson;
+  } | null>(null);
 
   // Phase 8: Standard Lesson Sections & Diagram Builder state
   const [lessonEditorTab, setLessonEditorTab] = useState<'content' | 'diagram' | 'docx'>('content');
@@ -530,15 +538,118 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   };
 
   const handleOpenEditLesson = (courseId: string, moduleId: string, lesson: AcademyLesson) => {
+    // If the lesson exists, open directly into the new Visual WYSIWYG Editor
+    const course = courses.find((c) => c.id === courseId);
+    const mod = course?.modules?.find((m) => m.id === moduleId);
+
+    if (course && mod) {
+      setActiveVisualLesson({
+        course,
+        module: mod,
+        lesson,
+      });
+      setShowVisualEditor(true);
+      return;
+    }
+
     setEditingLessonTarget({ courseId, moduleId, lesson });
     setLessonTitle(lesson.title);
     setLessonSlug(lesson.slug);
     setLessonSummary(lesson.shortDescription || lesson.summary || '');
     setLessonContentHtml(lesson.contentHtml || '');
+    setLessonBlockData(lesson.blockData || null);
     setLessonDocPath(lesson.originalDocxPath || lesson.originalDocumentPath || '');
     setLessonStatus(lesson.status);
     setLessonReadTime(lesson.estimatedReadingTime || lesson.estimatedReadTime || 5);
     setShowLessonModal(true);
+  };
+
+  const handleOpenVisualEditorFromModal = () => {
+    if (!editingLessonTarget?.lesson) return;
+    const course = courses.find((c) => c.id === editingLessonTarget.courseId);
+    const mod = course?.modules?.find((m) => m.id === editingLessonTarget.moduleId);
+    if (course && mod) {
+      setActiveVisualLesson({
+        course,
+        module: mod,
+        lesson: {
+          ...editingLessonTarget.lesson,
+          title: lessonTitle,
+          slug: lessonSlug,
+          summary: lessonSummary,
+          contentHtml: lessonContentHtml,
+          blockData: lessonBlockData,
+          status: lessonStatus,
+        },
+      });
+      setShowLessonModal(false);
+      setShowVisualEditor(true);
+    }
+  };
+
+  const handleVisualEditorSaveDraft = async (contentHtml: string, blockData?: any): Promise<boolean> => {
+    if (!activeVisualLesson) return false;
+    try {
+      const res = await fetch(`/api/admin/learning/lessons/${activeVisualLesson.lesson.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin',
+        },
+        body: JSON.stringify({
+          contentHtml,
+          blockData: blockData || activeVisualLesson.lesson.blockData,
+          status: 'draft',
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to auto-save');
+      notify(`Draft saved for "${activeVisualLesson.lesson.title}"`);
+      fetchCurriculum();
+      return true;
+    } catch (err: any) {
+      notify(err.message, 'error');
+      return false;
+    }
+  };
+
+  const handleVisualEditorPublish = async (contentHtml: string, blockData?: any): Promise<boolean> => {
+    if (!activeVisualLesson) return false;
+    try {
+      const res = await fetch(`/api/admin/learning/lessons/${activeVisualLesson.lesson.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin',
+        },
+        body: JSON.stringify({
+          contentHtml,
+          blockData: blockData || activeVisualLesson.lesson.blockData,
+          status: 'published',
+          publishedAt: new Date().toISOString(),
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to publish lesson');
+      notify(`Lesson "${activeVisualLesson.lesson.title}" published successfully!`);
+      setActiveVisualLesson((prev) =>
+        prev
+          ? {
+              ...prev,
+              lesson: {
+                ...prev.lesson,
+                contentHtml,
+                status: 'published',
+              },
+            }
+          : null
+      );
+      fetchCurriculum();
+      return true;
+    } catch (err: any) {
+      notify(err.message, 'error');
+      return false;
+    }
   };
 
   const STANDARD_SECTION_TEMPLATES: Record<string, string> = {
@@ -1746,6 +1857,29 @@ test('deterministic enterprise verification', async ({ page }) => {
                 />
               </div>
 
+              {/* VISUAL WYSIWYG EDITOR CALLOUT BANNER */}
+              {editingLessonTarget?.lesson && (
+                <div className="p-4 rounded-xl bg-gradient-to-r from-purple-900/30 via-indigo-900/20 to-emerald-900/20 border border-purple-500/40 flex items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] font-mono font-bold uppercase text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                      Word / Docs Visual Editor
+                    </span>
+                    <h4 className="text-xs font-bold text-white">Visual WYSIWYG Content Studio</h4>
+                    <p className="text-[11px] text-zinc-300">
+                      Edit this lesson visually with rich text, code highlighting, tables, callouts, and images. Zero HTML required.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleOpenVisualEditorFromModal}
+                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg transition-colors cursor-pointer shrink-0"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    <span>Open Visual Editor</span>
+                  </button>
+                </div>
+              )}
+
               {/* EDITOR MODE TABS */}
               <div className="space-y-3">
                 <div className="flex items-center gap-1 p-1 bg-[#1A1A1A] rounded-xl border border-[#2D2D2D]">
@@ -2075,6 +2209,37 @@ test('deterministic enterprise verification', async ({ page }) => {
         }
         onSaveDraft={() => notify('Lesson saved in Draft mode.')}
       />
+
+      {/* 4E. FULL-SCREEN VISUAL WYSIWYG LESSON EDITOR (WORD / GOOGLE DOCS STYLE) */}
+      {showVisualEditor && activeVisualLesson && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md p-2 sm:p-6 overflow-hidden flex flex-col">
+          <VisualLessonEditor
+            courseTitle={activeVisualLesson.course.title}
+            moduleTitle={activeVisualLesson.module.title}
+            lessonTitle={activeVisualLesson.lesson.title}
+            lessonId={activeVisualLesson.lesson.id}
+            initialHtml={activeVisualLesson.lesson.contentHtml || ''}
+            initialBlockData={activeVisualLesson.lesson.blockData}
+            status={activeVisualLesson.lesson.status}
+            onSaveDraft={handleVisualEditorSaveDraft}
+            onPublish={handleVisualEditorPublish}
+            onPreview={(html) =>
+              setPreviewingLesson({
+                lesson: {
+                  ...activeVisualLesson.lesson,
+                  contentHtml: html,
+                },
+                courseTitle: activeVisualLesson.course.title,
+                moduleTitle: activeVisualLesson.module.title,
+              })
+            }
+            onCancel={() => {
+              setShowVisualEditor(false);
+              setActiveVisualLesson(null);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
