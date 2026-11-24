@@ -35,7 +35,7 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     badgeText: 'Autonomous SDET Suite • Agent 1',
     description: 'Generate production-ready user stories, Gherkin acceptance criteria (Given-When-Then), and comprehensive edge-case specifications from raw concepts.',
     defaultPrompt: 'As a customer, I want to transfer money between my accounts with 2FA verification so that my funds are secure.',
-    systemPrompt: 'You are an elite QA Product Analyst and SDET specialized in BDD Given-When-Then and edge case generation.',
+    systemPrompt: 'You are a Principal QA Business Analyst & Lead SDET Architect. Deconstruct user stories against INVEST criteria, identify high-risk ambiguities, and generate structured BDD Gherkin specifications (Happy Path, Boundary Outlines, Idempotency, Timeouts) and non-functional requirements.',
     color: 'text-cyan-500',
     isCustom: false,
   },
