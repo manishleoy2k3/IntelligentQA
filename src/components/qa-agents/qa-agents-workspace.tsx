@@ -156,6 +156,9 @@ export default function QAAgentsWorkspace() {
     edgeCases: true,
   });
 
+  // Review Mode for Code Reviewer Agent (REVIEW ONLY vs REVIEW AND FIX)
+  const [reviewMode, setReviewMode] = useState<'review_and_fix' | 'review_only'>('review_and_fix');
+
   // Project Files Context Integration (Accessible across ALL AI QA Agents)
   const [attachedProjectFiles, setAttachedProjectFiles] = useState<ProjectFile[]>([]);
   const [allProjectFiles, setAllProjectFiles] = useState<ProjectFile[]>([]);
@@ -373,6 +376,7 @@ export default function QAAgentsWorkspace() {
             coverage: coverageFilters,
             sourceFile: importedFile?.fileName,
             attachedFilesCount: attachedProjectFiles.length,
+            mode: reviewMode,
           },
         }),
       });
@@ -680,6 +684,36 @@ export default function QAAgentsWorkspace() {
                     </span>
                   )}
 
+                  {/* Mode Selector for Code Reviewer Agent */}
+                  {activeTab === 'code_review' && (
+                    <div className="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-300 dark:border-slate-700 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setReviewMode('review_and_fix')}
+                        className={`px-2 py-0.5 rounded-md font-semibold transition cursor-pointer ${
+                          reviewMode === 'review_and_fix'
+                            ? 'bg-amber-500 text-white shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                        title="Review code and provide complete corrected drop-in code"
+                      >
+                        Review &amp; Fix
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReviewMode('review_only')}
+                        className={`px-2 py-0.5 rounded-md font-semibold transition cursor-pointer ${
+                          reviewMode === 'review_only'
+                            ? 'bg-amber-500 text-white shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                        title="Analyze and report findings without changing code"
+                      >
+                        Review Only
+                      </button>
+                    </div>
+                  )}
+
                   {/* Attach Project Files Button */}
                   <button
                     type="button"
@@ -953,6 +987,61 @@ export default function QAAgentsWorkspace() {
 
                   {activeTab === 'code_review' && (
                     <>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            '// TEST 1: Playwright code with fixed timeout where locator assertion is appropriate\ntest("checkout order workflow", async ({ page }) => {\n  await page.goto("/checkout");\n  await page.click("#checkout");\n  await page.waitForTimeout(5000); // Fixed timeout sleep\n  await page.click("#confirm");\n});'
+                          )
+                        }
+                        className="px-2 py-1 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-200 font-medium rounded-lg cursor-pointer"
+                        title="TEST 1: Fixed timeout sleep vs web-first assertion"
+                      >
+                        TEST 1: Playwright Timeout
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            '// TEST 2: Selenium Java code with missing driver cleanup\npackage com.enterprise.qa;\n\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.testng.annotations.Test;\n\npublic class UserLoginTest {\n    @Test\n    public void testUserAuthentication() {\n        WebDriver driver = new ChromeDriver();\n        driver.get("https://app.enterprise.io/login");\n        // Missing @AfterMethod or teardown calling driver.quit()\n    }\n}'
+                          )
+                        }
+                        className="px-2 py-1 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-200 font-medium rounded-lg cursor-pointer"
+                        title="TEST 2: Selenium WebDriver missing driver.quit() cleanup"
+                      >
+                        TEST 2: Selenium Lifecycle
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            '// TEST 3: REST Assured code with missing response assertions\npackage com.enterprise.qa.api;\n\nimport io.restassured.RestAssured;\nimport static io.restassured.RestAssured.given;\nimport org.testng.annotations.Test;\n\npublic class AuthApiTest {\n    @Test\n    public void testLoginApi() {\n        given()\n            .contentType("application/json")\n            .body("{\\"email\\":\\"user@enterprise.io\\", \\"password\\":\\"Secret123\\"}")\n        .when()\n            .post("/api/v1/auth/login");\n        // Missing .then().statusCode(200) or response body validations!\n    }\n}'
+                          )
+                        }
+                        className="px-2 py-1 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-200 font-medium rounded-lg cursor-pointer"
+                        title="TEST 3: REST Assured missing HTTP status and body assertions"
+                      >
+                        TEST 3: REST Assured Assertions
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            '// TEST 4: Test containing hardcoded API token\nconst axios = require("axios");\n\ndescribe("Payments Gateway API Tests", () => {\n  const API_KEY = "Bearer sk_live_9a8b7c6d5e4f3a2b1c0d_prod_secret_token"; // Hardcoded token\n\n  it("should retrieve billing invoice", async () => {\n    const res = await axios.get("https://api.gateway.io/v1/invoices", {\n      headers: { Authorization: API_KEY },\n    });\n    expect(res.status).toBe(200);\n  });\n});'
+                          )
+                        }
+                        className="px-2 py-1 bg-red-100 dark:bg-red-950/60 hover:bg-red-200 dark:hover:bg-red-900 text-red-800 dark:text-red-200 font-medium rounded-lg cursor-pointer"
+                        title="TEST 4: Hardcoded secret token security defect"
+                      >
+                        TEST 4: Security Token
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            '// TEST 5: Uploaded multi-file framework project\n--- File: src/test/java/com/enterprise/qa/base/BaseTest.java ---\npackage com.enterprise.qa.base;\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.testng.annotations.BeforeMethod;\npublic class BaseTest {\n    public static WebDriver driver; // Static driver causes parallel collision\n    @BeforeMethod\n    public void setup() {\n        driver = new ChromeDriver();\n    }\n    // Missing @AfterMethod teardown\n}\n\n--- File: src/main/java/com/enterprise/qa/pages/LoginPage.java ---\npackage com.enterprise.qa.pages;\nimport org.openqa.selenium.By;\nimport org.openqa.selenium.WebDriver;\nimport org.testng.Assert;\npublic class LoginPage {\n    private WebDriver driver;\n    public LoginPage(WebDriver driver) { this.driver = driver; }\n    public void login(String user, String pass) {\n        driver.findElement(By.id("user")).sendKeys(user);\n        driver.findElement(By.id("pass")).sendKeys(pass);\n        driver.findElement(By.id("loginBtn")).click();\n        Assert.assertTrue(driver.findElement(By.id("dashboard")).isDisplayed()); // Assertion in POM!\n    }\n}\n\n--- File: src/test/java/com/enterprise/qa/tests/LoginTest.java ---\npackage com.enterprise.qa.tests;\nimport com.enterprise.qa.base.BaseTest;\nimport com.enterprise.qa.pages.LoginPage;\nimport org.testng.annotations.Test;\npublic class LoginTest extends BaseTest {\n    @Test\n    public void testLogin() {\n        driver.get("https://app.enterprise.io/login");\n        LoginPage loginPage = new LoginPage(driver);\n        loginPage.login("admin", "admin123");\n    }\n}'
+                          )
+                        }
+                        className="px-2 py-1 bg-indigo-100 dark:bg-indigo-950/60 hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-800 dark:text-indigo-200 font-medium rounded-lg cursor-pointer"
+                        title="TEST 5: Multi-file framework architectural analysis"
+                      >
+                        TEST 5: Multi-File Framework
+                      </button>
                       <button
                         onClick={() =>
                           setInputPrompt(
