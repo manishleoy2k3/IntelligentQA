@@ -92,17 +92,17 @@ export default function HomePage() {
   // Logged-in users should redirect immediately to the learning workspace
   if (currentUser) {
     return (
-      <div className="min-h-[85vh] flex flex-col items-center justify-center p-6 space-y-5 font-sans text-center bg-[#0B0B0C] text-white">
-        <div className="animate-spin w-12 h-12 border-4 border-[#81FF89] border-t-transparent rounded-full" />
-        <h2 className="text-2xl font-bold text-white">
+      <div className="min-h-[85vh] flex flex-col items-center justify-center p-6 space-y-5 font-sans text-center bg-slate-50 dark:bg-[#0B0B0C] text-slate-900 dark:text-white transition-colors">
+        <div className="animate-spin w-12 h-12 border-4 border-emerald-500 dark:border-[#81FF89] border-t-transparent rounded-full" />
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
           Loading your SDET Learning Dashboard...
         </h2>
-        <p className="text-[#A1A1AA] text-base max-w-sm">
+        <p className="text-slate-600 dark:text-[#A1A1AA] text-base max-w-sm">
           Redirecting you directly to your personalized learning workspace.
         </p>
         <Link
           href="/dashboard"
-          className="mt-2 py-3.5 px-7 bg-white hover:bg-neutral-200 text-black font-bold rounded-full text-base transition-all shadow-md inline-flex items-center gap-2 cursor-pointer"
+          className="mt-2 py-3.5 px-7 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-black font-bold rounded-full text-base transition-all shadow-md inline-flex items-center gap-2 cursor-pointer"
         >
           Go to Demo Dashboard
           <ArrowRight className="w-5 h-5" />
@@ -112,7 +112,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col space-y-24 md:space-y-32 py-6 sm:py-10 md:py-14 bg-[#0B0B0C] text-white font-sans overflow-x-hidden">
+    <div className="flex flex-col space-y-24 md:space-y-32 py-6 sm:py-10 md:py-14 bg-slate-50 dark:bg-[#0B0B0C] text-slate-900 dark:text-white font-sans overflow-x-hidden transition-colors duration-200">
       {/* 1. Split Hero Section: Emergent-style Sign Up + Interactive Showcase Carousel */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
@@ -133,13 +133,13 @@ export default function HomePage() {
       {/* 2. WHAT MANUAL TESTERS WILL GET HERE (3 Authentic, Honest Pillars) */}
       <section id="what-you-get" className="max-w-6xl mx-auto px-4 sm:px-6 space-y-14 scroll-mt-24">
         <div className="text-center space-y-3.5">
-          <span className="text-sm font-bold uppercase tracking-wider text-[#81FF89]">
+          <span className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-[#81FF89]">
             Platform Overview
           </span>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             What You Will Get on IntelligentQA
           </h2>
-          <p className="text-[#A1A1AA] text-lg max-w-xl mx-auto">
+          <p className="text-slate-600 dark:text-[#A1A1AA] text-lg max-w-xl mx-auto">
             Everything designed to remove friction, build genuine coding confidence, and prepare you for SDET roles.
           </p>
         </div>
@@ -147,55 +147,55 @@ export default function HomePage() {
         {/* 3 Clean Emergent Cards (Grounded in Genuine SDET Capabilities) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {/* Pillar 1 */}
-          <div className="emergent-card p-8 space-y-5 rounded-[26px]">
-            <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-[#81FF89] flex items-center justify-center">
+          <div className="emergent-card p-8 space-y-5 rounded-[26px] bg-white dark:bg-[#161616] border border-slate-200 dark:border-[#262626] shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-[#1F1F1F] border border-emerald-100 dark:border-[#2B2B2B] text-emerald-600 dark:text-[#81FF89] flex items-center justify-center">
               <Code2 className="w-7 h-7" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 1. Scratch-to-SDET Learning Roadmaps
               </h3>
-              <p className="text-base text-zinc-300 leading-relaxed">
+              <p className="text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
                 Step-by-step tracks covering <strong>Playwright (TypeScript)</strong>, <strong>Selenium (Java)</strong>, and <strong>REST API Automation</strong>. Concepts are taught by relating them directly to familiar manual testing workflows.
               </p>
             </div>
-            <div className="text-sm text-[#81FF89] font-semibold flex items-center gap-1.5 pt-1">
+            <div className="text-sm text-emerald-600 dark:text-[#81FF89] font-semibold flex items-center gap-1.5 pt-1">
               <span>Includes async/await, Page Object Models &amp; CI/CD</span>
             </div>
           </div>
 
           {/* Pillar 2 */}
-          <div className="emergent-card p-8 space-y-5 rounded-[26px]">
-            <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-purple-400 flex items-center justify-center">
+          <div className="emergent-card p-8 space-y-5 rounded-[26px] bg-white dark:bg-[#161616] border border-slate-200 dark:border-[#262626] shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-[#1F1F1F] border border-purple-100 dark:border-[#2B2B2B] text-purple-600 dark:text-purple-400 flex items-center justify-center">
               <Award className="w-7 h-7" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 2. 800+ Curated SDET Interview Scenarios
               </h3>
-              <p className="text-base text-zinc-300 leading-relaxed">
+              <p className="text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
                 Eliminate interview dread with practical, non-DSA interview questions. Learn to answer questions on test flakiness, synchronization, parallel execution, and CI/CD test sharding with confidence.
               </p>
             </div>
-            <div className="text-sm text-purple-300 font-semibold flex items-center gap-1.5 pt-1">
+            <div className="text-sm text-purple-600 dark:text-purple-300 font-semibold flex items-center gap-1.5 pt-1">
               <span>Full interview bank with crisp answers &amp; diagrams</span>
             </div>
           </div>
 
           {/* Pillar 3 */}
-          <div className="emergent-card p-8 space-y-5 rounded-[26px]">
-            <div className="w-14 h-14 rounded-2xl bg-[#1F1F1F] border border-[#2B2B2B] text-[#81FF89] flex items-center justify-center">
+          <div className="emergent-card p-8 space-y-5 rounded-[26px] bg-white dark:bg-[#161616] border border-slate-200 dark:border-[#262626] shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-[#1F1F1F] border border-emerald-100 dark:border-[#2B2B2B] text-emerald-600 dark:text-[#81FF89] flex items-center justify-center">
               <Sparkles className="w-7 h-7" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 3. Optional AI Features (Your Choice to Opt In or Out)
               </h3>
-              <p className="text-base text-zinc-300 leading-relaxed">
+              <p className="text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
                 Want to learn traditional automation first? You can opt out of AI and master pure coding. Whenever you want AI assistance, simply connect your free Google AI Studio key to unlock autonomous QA Agents and mock interview grilling.
               </p>
             </div>
-            <div className="text-sm text-[#81FF89] font-semibold flex items-center gap-1.5 pt-1">
+            <div className="text-sm text-emerald-600 dark:text-[#81FF89] font-semibold flex items-center gap-1.5 pt-1">
               <span>Runs on your free Google quota (1,500 req/day at $0)</span>
             </div>
           </div>
@@ -206,40 +206,40 @@ export default function HomePage() {
 
       {/* 3. INSIDE USER LOGIN PREVIEW */}
       <section id="curriculum-preview" className="max-w-5xl mx-auto px-4 sm:px-6 scroll-mt-24">
-        <div className="emergent-card p-8 md:p-12 space-y-9 rounded-[28px]">
+        <div className="emergent-card p-8 md:p-12 space-y-9 rounded-[28px] bg-white dark:bg-[#161616] border border-slate-200 dark:border-[#262626] shadow-sm">
           <div className="text-center space-y-3.5 max-w-xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold bg-[#1F1F1F] text-[#81FF89] border border-[#262626]">
-              <ShieldCheck className="w-4 h-4 text-[#81FF89]" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold bg-emerald-50 dark:bg-[#1F1F1F] text-emerald-800 dark:text-[#81FF89] border border-emerald-200 dark:border-[#262626]">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-[#81FF89]" />
               <span>Gated Inside User Login · 100% Free Forever</span>
             </div>
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               All Academy Courses, Practice Labs &amp; QA Agents Await Inside
             </h3>
-            <p className="text-base text-[#A1A1AA] leading-relaxed">
+            <p className="text-base text-slate-600 dark:text-[#A1A1AA] leading-relaxed">
               We keep the home page uncluttered so you can focus. Once you log in with Google or Email, your complete SDET suite opens up:
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2 text-sm">
-            <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-[#81FF89]/40 transition-colors">
-              <span className="font-bold text-[#81FF89] text-base block">🟢 Playwright TS Track</span>
-              <span className="text-[#D4D4D8] text-sm">12 interactive lessons &amp; code editor</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-emerald-500/40 transition-colors">
+              <span className="font-bold text-emerald-700 dark:text-[#81FF89] text-base block">🟢 Playwright TS Track</span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">12 interactive lessons &amp; code editor</span>
             </div>
-            <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-amber-400/40 transition-colors">
-              <span className="font-bold text-amber-400 text-base block">🟠 Selenium Java Track</span>
-              <span className="text-[#D4D4D8] text-sm">OOPs, POM &amp; WebDriver synchronization</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-amber-400/40 transition-colors">
+              <span className="font-bold text-amber-600 dark:text-amber-400 text-base block">🟠 Selenium Java Track</span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">OOPs, POM &amp; WebDriver synchronization</span>
             </div>
-            <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-purple-400/40 transition-colors">
-              <span className="font-bold text-purple-400 text-base block">🟣 API Mock Lab</span>
-              <span className="text-[#D4D4D8] text-sm">REST Assured, JWT &amp; latency testing</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-purple-400/40 transition-colors">
+              <span className="font-bold text-purple-600 dark:text-purple-400 text-base block">🟣 API Mock Lab</span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">REST Assured, JWT &amp; latency testing</span>
             </div>
-            <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-[#81FF89]/40 transition-colors">
-              <span className="font-bold text-[#81FF89] text-base block">⚡ Autonomous QA Agents</span>
-              <span className="text-[#D4D4D8] text-sm">Requirements to POM test generation</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-emerald-500/40 transition-colors">
+              <span className="font-bold text-emerald-700 dark:text-[#81FF89] text-base block">⚡ Autonomous QA Agents</span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">Requirements to POM test generation</span>
             </div>
-            <div className="p-5 rounded-2xl bg-[#141414] border border-[#262626] space-y-2 hover:border-rose-400/40 transition-colors">
-              <span className="font-bold text-rose-400 text-base block">🔴 Interview Griller</span>
-              <span className="text-[#D4D4D8] text-sm">Simulated lead SDET technical rounds</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-rose-400/40 transition-colors">
+              <span className="font-bold text-rose-600 dark:text-rose-400 text-base block">🔴 Interview Griller</span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">Simulated lead SDET technical rounds</span>
             </div>
           </div>
 
@@ -247,7 +247,7 @@ export default function HomePage() {
             {currentUser ? (
               <Link
                 href="/dashboard"
-                className="py-4 px-9 bg-white hover:bg-neutral-200 text-black font-bold rounded-full text-base inline-flex items-center gap-2 transition-all shadow-lg cursor-pointer"
+                className="py-4 px-9 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-black font-bold rounded-full text-base inline-flex items-center gap-2 transition-all shadow-lg cursor-pointer"
               >
                 Go to Demo Dashboard
                 <ArrowRight className="w-5 h-5" />
@@ -255,7 +255,7 @@ export default function HomePage() {
             ) : (
               <Link
                 href="/signup"
-                className="py-4 px-9 bg-white hover:bg-neutral-200 text-black font-bold rounded-full text-base inline-flex items-center gap-2 transition-all shadow-lg cursor-pointer active:scale-95"
+                className="py-4 px-9 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-full text-base inline-flex items-center gap-2 transition-all shadow-lg cursor-pointer active:scale-95"
               >
                 Create Your Free Account to Access Everything
                 <ArrowRight className="w-5 h-5" />
@@ -271,17 +271,17 @@ export default function HomePage() {
       <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 space-y-12 scroll-mt-24">
         {/* Header matching Emergent Reference Design */}
         <div className="text-center space-y-3">
-          <span className="text-xs font-mono uppercase tracking-[0.25em] text-[#81FF89]">
+          <span className="text-xs font-mono uppercase tracking-[0.25em] text-emerald-600 dark:text-[#81FF89]">
             FREQUENTLY ASKED QUESTIONS
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
             Curious about IntelligentQA?<br />
-            <span className="text-zinc-400 font-normal">We got you covered</span>
+            <span className="text-slate-500 dark:text-zinc-400 font-normal">We got you covered</span>
           </h2>
         </div>
 
         {/* Collapsible FAQs Accordion (Default: All Collapsed) */}
-        <div className="border-t border-[#262626] divide-y divide-[#262626]">
+        <div className="border-t border-slate-200 dark:border-[#262626] divide-y divide-slate-200 dark:divide-[#262626]">
           {FAQ_LIST.map((faq, index) => {
             const isOpen = openFaqIndices.includes(index);
             return (
@@ -292,17 +292,17 @@ export default function HomePage() {
                   className="w-full flex items-center justify-between text-left gap-4 group cursor-pointer focus:outline-none"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-base sm:text-lg font-medium text-white group-hover:text-[#81FF89] transition-colors">
+                  <span className="text-base sm:text-lg font-medium text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-[#81FF89] transition-colors">
                     {faq.question}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 text-zinc-400 group-hover:text-white shrink-0 transition-transform duration-300 ${
-                      isOpen ? 'rotate-180 text-[#81FF89]' : ''
+                    className={`w-5 h-5 text-slate-400 dark:text-zinc-400 group-hover:text-slate-900 dark:group-hover:text-white shrink-0 transition-transform duration-300 ${
+                      isOpen ? 'rotate-180 text-emerald-600 dark:text-[#81FF89]' : ''
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="pt-3.5 pr-8 text-sm sm:text-base text-zinc-400 leading-relaxed animate-in fade-in duration-200">
+                  <div className="pt-3.5 pr-8 text-sm sm:text-base text-slate-600 dark:text-zinc-400 leading-relaxed animate-in fade-in duration-200">
                     {faq.answer}
                   </div>
                 )}

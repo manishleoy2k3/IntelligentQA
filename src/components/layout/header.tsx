@@ -7,6 +7,7 @@ import QABrandLogo from '@/components/ui/qa-brand-logo';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import ProfileModal from '@/components/profile/profile-modal';
+import ThemeToggle from '@/components/layout/theme-toggle';
 import { QADatabase, getInitials } from '@/lib/qa-db';
 import {
   Menu,
@@ -113,7 +114,7 @@ export default function Header({
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#111111]/90 backdrop-blur-md border-b border-[#262626] transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-[#111111]/90 backdrop-blur-md border-b border-slate-200 dark:border-[#262626] text-slate-900 dark:text-white transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
         {/* Left Side: Mobile Sidebar Toggle + Brand Logo */}
         <div className="flex items-center gap-3">
@@ -186,20 +187,23 @@ export default function Header({
                 </span>
               </button>
 
+              {/* Visual Theme Toggle */}
+              <ThemeToggle showLabel={false} />
+
               {/* User Profile Menu with Clubbed Log Out & QA Details */}
-              <div id="user-profile-menu-container" className="relative pl-1 border-l border-[#262626]">
+              <div id="user-profile-menu-container" className="relative pl-1 border-l border-slate-200 dark:border-[#262626]">
                 <button
                   type="button"
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-[#161616] hover:bg-[#1E1E1E] border border-[#262626] text-white transition-all shadow-sm cursor-pointer"
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-[#161616] dark:hover:bg-[#1E1E1E] border border-slate-200 dark:border-[#262626] text-slate-900 dark:text-white transition-all shadow-sm cursor-pointer"
                   aria-expanded={profileMenuOpen}
                   aria-label="User profile menu"
                 >
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#81FF89] to-[#80FFF9] text-black font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-400 to-cyan-400 text-black font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
                     {getInitials(currentUser.displayName)}
                   </div>
                   <span className="max-w-[130px] truncate">{currentUser.displayName?.split(' ')[0] || 'Profile'}</span>
-                  <ChevronDown className={`w-4 h-4 text-[#A1A1AA] transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-slate-500 dark:text-[#A1A1AA] transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Profile Dropdown Menu */}
@@ -292,16 +296,17 @@ export default function Header({
             </>
           ) : (
             /* CLEAN GUEST ACTIONS (Emergent Pill Buttons) */
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <ThemeToggle showLabel={false} />
               <Link
                 href="/login"
-                className="px-5 py-2.5 rounded-full text-sm font-semibold text-[#D4D4D8] hover:text-white hover:bg-[#1E1E1E] transition-all"
+                className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-sm font-semibold text-slate-700 hover:text-slate-950 dark:text-[#D4D4D8] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-all"
               >
                 Log In
               </Link>
               <Link
                 href="/signup"
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold bg-white hover:bg-neutral-200 text-black transition-all shadow-md active:scale-95 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2 sm:px-6 sm:py-2.5 rounded-full text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-black transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>Get Started</span>

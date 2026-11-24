@@ -938,22 +938,22 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   const navItemClass = (active: boolean) =>
     `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group cursor-pointer ${
       active
-        ? 'bg-[#1E1E1E] text-[#81FF89] border border-[#262626] font-semibold shadow-sm'
-        : 'text-[#A1A1AA] hover:text-white hover:bg-[#1A1A1A]'
+        ? 'bg-slate-100 dark:bg-[#1E1E1E] text-emerald-700 dark:text-[#81FF89] border border-slate-200 dark:border-[#262626] font-bold shadow-xs'
+        : 'text-slate-700 dark:text-[#A1A1AA] hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1A1A1A]'
     }`;
 
   const childItemClass = (active: boolean) =>
     `flex items-center justify-between px-3.5 py-2 rounded-lg text-xs font-medium transition-all group cursor-pointer ${
       active
-        ? 'bg-[#1E1E1E] text-[#81FF89] font-semibold'
-        : 'text-[#A1A1AA] hover:text-white hover:bg-[#1A1A1A]'
+        ? 'bg-slate-100 dark:bg-[#1E1E1E] text-emerald-700 dark:text-[#81FF89] font-bold'
+        : 'text-slate-700 dark:text-[#A1A1AA] hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1A1A1A]'
     }`;
 
 
   const sidebarContent = (
-    <div className="flex flex-col h-full justify-between bg-[#141414] border-r border-[#262626] font-sans select-none text-white">
+    <div className="flex flex-col h-full justify-between bg-white dark:bg-[#141414] border-r border-slate-200 dark:border-[#262626] font-sans select-none text-slate-900 dark:text-white">
       {/* 1. TOP BRAND HEADER */}
-      <div className="p-4 border-b border-[#262626] flex items-center justify-between shrink-0">
+      <div className="p-4 border-b border-slate-200 dark:border-[#262626] flex items-center justify-between shrink-0">
         <Link
           href="/dashboard"
           onClick={onCloseMobile}
@@ -967,7 +967,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           <button
             type="button"
             onClick={onCloseMobile}
-            className="md:hidden p-1.5 rounded-lg text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] transition-colors cursor-pointer"
+            className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-950 dark:text-[#A1A1AA] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -975,21 +975,21 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       </div>
 
       {/* SEARCH BOX ON TOP OF LEFT NAVIGATION PANEL */}
-      <div className="px-3 py-2.5 border-b border-[#262626] shrink-0 bg-[#141414]">
+      <div className="px-3 py-2.5 border-b border-slate-200 dark:border-[#262626] shrink-0 bg-slate-50 dark:bg-[#141414]">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-[#A1A1AA] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-slate-400 dark:text-[#A1A1AA] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search courses & lessons..."
-            className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg bg-[#1E1E1E] border border-[#262626] text-white placeholder:text-[#71717A] focus:outline-none focus:border-emerald-500 transition-colors"
+            className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg bg-slate-100 dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#262626] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#71717A] focus:outline-none focus:border-emerald-500 transition-colors"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-[#71717A] hover:text-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 dark:text-[#71717A] hover:text-slate-950 dark:hover:text-white"
               title="Clear search"
             >
               <X className="w-3.5 h-3.5" />
@@ -1023,16 +1023,16 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             >
               <div className="flex items-center gap-3">
                 <BookOpen className="w-4 h-4 shrink-0 text-amber-500" />
-                <span>Courses</span>
+                <span className="font-bold">Courses</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-neutral-800 text-slate-500 dark:text-neutral-400">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-neutral-800 text-slate-800 dark:text-neutral-200 border border-slate-300 dark:border-neutral-700">
                   {filteredCourseTracks.length} Courses
                 </span>
                 {coursesOpen ? (
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform" />
                 ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400 transition-transform" />
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform" />
                 )}
               </div>
             </button>
@@ -1041,7 +1041,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             {coursesOpen && (
               <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
                 {filteredCourseTracks.length === 0 && searchQuery && (
-                  <div className="px-2 py-3 text-xs text-neutral-400 text-center">
+                  <div className="px-2 py-3 text-xs text-slate-500 dark:text-neutral-400 text-center">
                     No matching courses or lessons
                   </div>
                 )}
@@ -1057,10 +1057,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                     <div key={track.id} className="space-y-0.5">
                       {/* Track Parent Row (Navigates to Course Overview and expands syllabus) */}
                       <div
-                        className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all group cursor-pointer ${
+                        className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all group cursor-pointer ${
                           isTrackActive
-                            ? 'bg-slate-100/90 dark:bg-neutral-800/80 font-semibold text-emerald-600 dark:text-emerald-400'
-                            : 'hover:bg-slate-100/60 dark:hover:bg-neutral-800/40 text-slate-800 dark:text-neutral-200'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/40 font-bold text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shadow-xs'
+                            : 'hover:bg-slate-100 dark:hover:bg-neutral-800/60 text-slate-900 dark:text-white font-bold border border-transparent'
                         }`}
                         title={`${track.displayTitle}: Open Course Overview`}
                       >
@@ -1082,7 +1082,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           title={`${track.displayTitle}: Open Course Overview`}
                         >
                           <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
-                          <span className="truncate font-semibold">
+                          <span className="truncate font-bold text-slate-900 dark:text-neutral-100 text-xs">
                             {track.displayTitle}
                           </span>
                         </div>
@@ -1094,12 +1094,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                               e.stopPropagation();
                               toggleTrack(track.id);
                             }}
-                            className="flex items-center gap-1 text-[9px] font-mono font-bold text-slate-500 dark:text-neutral-400 group-hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 transition-colors ml-1 shrink-0 cursor-pointer"
+                            className="flex items-center gap-1 text-[10px] font-mono font-bold text-slate-700 dark:text-neutral-200 group-hover:text-slate-950 dark:group-hover:text-white px-2 py-0.5 rounded bg-slate-200/90 dark:bg-neutral-800 border border-slate-300/70 dark:border-neutral-700 transition-colors ml-1 shrink-0 cursor-pointer"
                             title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
                           >
                             <span>{track.lessons.length} Lessons</span>
                             <ChevronDown
-                              className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
+                              className={`w-3.5 h-3.5 text-slate-500 dark:text-neutral-400 transition-transform duration-200 ${
                                 isExpanded ? 'rotate-180' : ''
                               }`}
                             />
@@ -1131,24 +1131,24 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                   <button
                                     type="button"
                                     onClick={() => toggleModule(modId)}
-                                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-[10px] font-semibold text-slate-400 hover:text-white hover:bg-neutral-800/60 transition-colors group cursor-pointer text-left"
+                                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-[10px] font-semibold text-slate-600 dark:text-neutral-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/60 transition-colors group cursor-pointer text-left"
                                     title={isModOpen ? `Collapse ${mod.title}` : `Expand ${mod.title}`}
                                   >
                                     <div className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1">
                                       {(() => {
                                         const ModIcon = getSidebarModuleIcon(mod.title, track.id);
-                                        return <ModIcon className="w-3 h-3 text-slate-400 group-hover:text-slate-200 shrink-0" />;
+                                        return <ModIcon className="w-3 h-3 text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 shrink-0" />;
                                       })()}
-                                      <span className="truncate uppercase tracking-wider font-mono text-[9px] text-slate-300 group-hover:text-white">
+                                      <span className="truncate uppercase tracking-wider font-mono text-[9px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-950 dark:group-hover:text-white">
                                         {mod.title}
                                       </span>
                                     </div>
-                                    <div className="flex items-center gap-1 shrink-0 text-slate-400">
-                                      <span className="text-[9px] font-mono text-neutral-500">
+                                    <div className="flex items-center gap-1 shrink-0 text-slate-500 dark:text-slate-400">
+                                      <span className="text-[9px] font-mono font-bold text-slate-600 dark:text-neutral-400">
                                         {displayedLessons.length}
                                       </span>
                                       <ChevronDown
-                                        className={`w-3 h-3 text-neutral-400 transition-transform duration-200 ${
+                                        className={`w-3 h-3 text-slate-500 dark:text-neutral-400 transition-transform duration-200 ${
                                           isModOpen ? 'rotate-180' : ''
                                         }`}
                                       />
@@ -1157,7 +1157,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
                                   {/* Collapsible Module Lessons */}
                                   {isModOpen && (
-                                    <div className="pl-2 space-y-0.5 border-l border-slate-700/40 ml-2.5 my-0.5">
+                                    <div className="pl-2 space-y-0.5 border-l border-slate-200 dark:border-neutral-800 ml-2.5 my-0.5">
                                       {displayedLessons.map((lesson: any, lessonIdx: number) => {
                                         const lessonSlug = lesson.slug || lesson.id;
                                         const isLessonActive =
@@ -1177,8 +1177,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                               lesson.disabled ? 'opacity-65 bg-amber-500/5' : ''
                                             } ${
                                               isLessonActive
-                                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold shadow-xs'
-                                                : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-neutral-800/30'
+                                                ? 'bg-emerald-100/80 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-400 font-bold shadow-2xs'
+                                                : 'text-slate-700 dark:text-neutral-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/40'
                                             }`}
                                           >
                                             <Link

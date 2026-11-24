@@ -173,13 +173,13 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
   ];
 
   return (
-    <header className="w-full h-16 bg-[#141414]/95 backdrop-blur-md border-b border-[#262626] px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans">
+    <header className="w-full h-16 bg-white/95 dark:bg-[#141414]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#262626] text-slate-900 dark:text-white px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans transition-colors">
       {/* Left: Mobile Sidebar Toggle */}
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onToggleMobileSidebar}
-          className="md:hidden p-2 rounded-full text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] transition-colors cursor-pointer"
+          className="md:hidden p-2 rounded-full text-slate-600 dark:text-[#A1A1AA] hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors cursor-pointer"
           aria-label="Toggle Navigation Menu"
         >
           <Menu className="w-5 h-5" />

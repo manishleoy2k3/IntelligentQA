@@ -8713,6 +8713,108 @@
       "category": "Infographics",
       "uploadedAt": "2026-11-24T14:56:07.418Z",
       "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795534239546",
+      "filename": "infographic_1795534239545_5q95t.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795534239545_5q95t.png",
+      "mimeType": "image/png",
+      "size": 78472,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T15:30:39.546Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795534239887",
+      "filename": "infographic_1795534239887_7klp9.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795534239887_7klp9.png",
+      "mimeType": "image/png",
+      "size": 40971,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T15:30:39.887Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795534240179",
+      "filename": "infographic_1795534240178_epotj.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795534240178_epotj.png",
+      "mimeType": "image/png",
+      "size": 39261,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T15:30:40.179Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795534240606",
+      "filename": "infographic_1795534240605_8kxon.png",
+      "originalName": "Test Automation Pyramid.png",
+      "url": "/uploads/infographic_1795534240605_8kxon.png",
+      "mimeType": "image/png",
+      "size": 52716,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: Test Automation Pyramid",
+      "caption": "Figure: Technical Infographic — Test Automation Pyramid",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T15:30:40.606Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795534240932",
+      "filename": "infographic_1795534240931_jn5m1.png",
+      "originalName": "How API Authentication Works.png",
+      "url": "/uploads/infographic_1795534240931_jn5m1.png",
+      "mimeType": "image/png",
+      "size": 34912,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How API Authentication Works",
+      "caption": "Figure: Technical Infographic — How API Authentication Works",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T15:30:40.932Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795534241310",
+      "filename": "infographic_1795534241306_sfr8j.png",
+      "originalName": "RAG Pipeline Architecture.png",
+      "url": "/uploads/infographic_1795534241306_sfr8j.png",
+      "mimeType": "image/png",
+      "size": 31261,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: RAG Pipeline Architecture",
+      "caption": "Figure: Technical Infographic — RAG Pipeline Architecture",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T15:30:41.310Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
     }
   ],
   "cmsAuditLogs": [
@@ -9975,6 +10077,90 @@
       "entityId": "med-info-1795532167418",
       "entityTitle": "infographic_1795532167416_majtn.png",
       "details": "Uploaded media infographic_1795532167416_majtn.png (image/png)"
+    },
+    {
+      "id": "log-1795534239673",
+      "timestamp": "2026-11-24T15:30:39.673Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795534239546",
+      "entityTitle": "infographic_1795534239545_5q95t.png",
+      "details": "Uploaded media infographic_1795534239545_5q95t.png (image/png)"
+    },
+    {
+      "id": "log-1795534240005",
+      "timestamp": "2026-11-24T15:30:40.005Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795534239887",
+      "entityTitle": "infographic_1795534239887_7klp9.png",
+      "details": "Uploaded media infographic_1795534239887_7klp9.png (image/png)"
+    },
+    {
+      "id": "log-1795534240316",
+      "timestamp": "2026-11-24T15:30:40.316Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795534240179",
+      "entityTitle": "infographic_1795534240178_epotj.png",
+      "details": "Uploaded media infographic_1795534240178_epotj.png (image/png)"
+    },
+    {
+      "id": "log-1795534240721",
+      "timestamp": "2026-11-24T15:30:40.721Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795534240606",
+      "entityTitle": "infographic_1795534240605_8kxon.png",
+      "details": "Uploaded media infographic_1795534240605_8kxon.png (image/png)"
+    },
+    {
+      "id": "log-1795534241091",
+      "timestamp": "2026-11-24T15:30:41.091Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795534240932",
+      "entityTitle": "infographic_1795534240931_jn5m1.png",
+      "details": "Uploaded media infographic_1795534240931_jn5m1.png (image/png)"
+    },
+    {
+      "id": "log-1795534241442",
+      "timestamp": "2026-11-24T15:30:41.442Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795534241310",
+      "entityTitle": "infographic_1795534241306_sfr8j.png",
+      "details": "Uploaded media infographic_1795534241306_sfr8j.png (image/png)"
     }
   ],
   "academyCategories": [
@@ -111700,7 +111886,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-llm",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T15:01:13.242Z",
+      "lastAccessedAt": "2026-11-24T15:33:53.835Z",
       "completedAt": null
     },
     {
@@ -111708,7 +111894,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-how-llms-work",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T03:49:21.249Z",
+      "lastAccessedAt": "2026-11-24T15:33:46.696Z",
       "completedAt": null
     },
     {
@@ -112124,7 +112310,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-machine-learning",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T15:00:55.972Z",
+      "lastAccessedAt": "2026-11-24T15:33:20.723Z",
       "completedAt": null
     },
     {
@@ -112132,7 +112318,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-genai",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T03:41:07.413Z",
+      "lastAccessedAt": "2026-11-24T15:33:14.998Z",
       "completedAt": null
     },
     {
@@ -112140,7 +112326,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-transformer-architecture",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T03:49:44.009Z",
+      "lastAccessedAt": "2026-11-24T15:33:45.130Z",
       "completedAt": null
     },
     {
@@ -112469,6 +112655,14 @@
       "lessonId": "les-anatomy-of-a-good-prompt",
       "completionStatus": "in_progress",
       "lastAccessedAt": "2026-11-24T15:01:28.834Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-few-shot-prompting",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-few-shot-prompting",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T15:34:04.643Z",
       "completedAt": null
     }
   ],

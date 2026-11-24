@@ -833,116 +833,77 @@ export default function AcademyShell({
                     summary={currentLesson.summary}
                   />
 
-                  {/* GUEST ACCESS GATE: Reveal Teaser Snippet & Sign-up Gate Card */}
-                  {!currentUser ? (
-                    <div className="space-y-6">
-                      {/* Introductory Teaser Snippet with Fading Gradient */}
-                      {optimizedHtml && (
-                        <div className="relative my-6">
-                          <div
-                            className="prose dark:prose-invert max-w-none text-slate-800 dark:text-neutral-200 docx-rendered-content leading-relaxed max-h-56 overflow-hidden select-none filter blur-[0.2px]"
-                            dangerouslySetInnerHTML={{
-                              __html: (optimizedHtml.slice(0, 900).replace(/<img[^>]*>/gi, '').replace(/<figure[\s\S]*?<\/figure>/gi, '') + '</p>'),
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-[#0f1117]/85 dark:to-[#0f1117] pointer-events-none" />
-                        </div>
-                      )}
+                  {/* ================= FULL LESSON CONTENT & DIAGRAMS (100% UNBLURRED) ================= */}
+                  {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
+                  {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
+                    <LlmArchitectureInfographic />
+                  )}
 
-                      {/* High-Converting Member Access Gating Card */}
-                      <div className="my-8 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-slate-50 to-indigo-500/10 dark:from-emerald-950/20 dark:via-neutral-900 dark:to-indigo-950/20 border-2 border-emerald-500/30 text-center space-y-6 shadow-xl">
-                        <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg">
-                          <Lock className="w-8 h-8" />
-                        </div>
-                        <div className="max-w-xl mx-auto space-y-2">
-                          <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                            Academy Member Preview
-                          </span>
-                          <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                            Unlock Full Lesson &amp; Interactive QA Labs
-                          </h3>
-                          <p className="text-sm text-slate-600 dark:text-neutral-300 leading-relaxed">
-                            You are previewing an introduction to <strong>{currentLesson.title}</strong>. Create your free account in seconds to unlock the full technical architecture diagrams, production code implementations, AI Coding Coach guidance, and compiler sandboxes.
-                          </p>
-                        </div>
+                  {/* Uniform Technical Documentation Content (Prose format across all courses with Embedded Diagrams) */}
+                  {optimizedHtml && (
+                    <div
+                      className="prose dark:prose-invert max-w-none my-6 text-slate-900 dark:text-slate-100 docx-rendered-content leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: optimizedHtml }}
+                    />
+                  )}
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto text-left text-xs font-semibold text-slate-700 dark:text-neutral-200 py-2">
-                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                            <span>Full Technical Architecture &amp; Infographics</span>
-                          </div>
-                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                            <span>Interactive AI Coding Coach &amp; Assistance</span>
-                          </div>
-                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                            <span>Hands-on Code Runners &amp; Practice Labs</span>
-                          </div>
-                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                            <span>100% Free Forever — Zero Credit Card</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                          <Link
-                            href="/signup"
-                            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm shadow-md transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
-                          >
-                            Sign Up for Free Access
-                          </Link>
-                          <Link
-                            href="/login"
-                            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-slate-800 dark:text-white font-bold text-sm transition-all cursor-pointer"
-                          >
-                            Already a member? Log In
-                          </Link>
-                        </div>
+                  {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
+                  {currentLesson.sections && currentLesson.sections.length > 0 ? (
+                    <div className="space-y-4 my-2">
+                      {currentLesson.sections.map((section) => (
+                        <LessonSection key={section.id} section={section} />
+                      ))}
+                    </div>
+                  ) : !optimizedHtml ? (
+                    <div className="my-8 p-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 shadow-sm text-center space-y-4">
+                      <div className="w-12 h-12 mx-auto rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                        <FileQuestion className="w-6 h-6" />
+                      </div>
+                      <div className="max-w-md mx-auto space-y-2">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Curriculum Content Under Construction
+                        </span>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                          Building Fresh in Uniform Format
+                        </h3>
+                        <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
+                          This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
+                        </p>
                       </div>
                     </div>
-                  ) : (
-                    /* MEMBER FULL ACCESS: Full prose, architecture diagrams & interactive sections */
-                    <>
-                      {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
-                      {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
-                        <LlmArchitectureInfographic />
-                      )}
+                  ) : null}
 
-                      {/* Uniform Technical Documentation Content (Prose format across all courses) */}
-                      {optimizedHtml && (
-                        <div
-                          className="prose dark:prose-invert max-w-none my-6 text-slate-800 dark:text-neutral-200 docx-rendered-content leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: optimizedHtml }}
-                        />
-                      )}
-
-                      {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
-                      {currentLesson.sections && currentLesson.sections.length > 0 ? (
-                        <div className="space-y-4 my-2">
-                          {currentLesson.sections.map((section) => (
-                            <LessonSection key={section.id} section={section} />
-                          ))}
+                  {/* Clean Non-Obtrusive Sign-Up Banner at End of Lesson for Guest Users */}
+                  {!currentUser && (
+                    <div className="my-10 p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-slate-50 to-teal-500/10 dark:from-emerald-950/20 dark:via-neutral-900 dark:to-teal-950/20 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-sm">
+                      <div className="space-y-1.5 text-center sm:text-left">
+                        <div className="flex items-center justify-center sm:justify-start gap-2">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                            100% Free Forever
+                          </span>
+                          <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                            Ready to practice and track your progress?
+                          </h3>
                         </div>
-                      ) : !optimizedHtml ? (
-                        <div className="my-8 p-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 shadow-sm text-center space-y-4">
-                          <div className="w-12 h-12 mx-auto rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                            <FileQuestion className="w-6 h-6" />
-                          </div>
-                          <div className="max-w-md mx-auto space-y-2">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                              Curriculum Content Under Construction
-                            </span>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                              Building Fresh in Uniform Format
-                            </h3>
-                            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
-                              This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
-                            </p>
-                          </div>
-                        </div>
-                      ) : null}
-                    </>
+                        <p className="text-xs text-slate-600 dark:text-neutral-300">
+                          Create your free account to bookmark lessons, track your completed modules, and unlock interactive practice labs.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <Link
+                          href="/signup"
+                          className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-all hover:scale-[1.02] cursor-pointer"
+                        >
+                          Sign Up Free
+                        </Link>
+                        <Link
+                          href="/login"
+                          className="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-slate-800 dark:text-white font-semibold text-xs transition-colors cursor-pointer"
+                        >
+                          Log In
+                        </Link>
+                      </div>
+                    </div>
                   )}
 
                   {/* Recommended Related Lessons */}
