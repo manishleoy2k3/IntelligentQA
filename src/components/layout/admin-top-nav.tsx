@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { QADatabase, getInitials } from '@/lib/qa-db';
 import { UserProfile } from '@/types/qa';
 import ProfileModal from '@/components/profile/profile-modal';
+import ThemeToggle from '@/components/layout/theme-toggle';
 import {
   Menu,
   ShieldCheck,
@@ -113,6 +114,9 @@ export default function AdminTopNav({
 
       {/* Right Corner: Preview Student Portal & Profile Details */}
       <div className="flex items-center gap-3">
+        {/* Theme Switcher Toggle (Normal Light / Dark Mode) */}
+        <ThemeToggle showLabel={false} />
+
         {/* Preview Student Portal */}
         <Link
           href="/dashboard"

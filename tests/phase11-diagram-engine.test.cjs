@@ -10,6 +10,8 @@
  * TEST 6: Export, SVG Sanitization, Tiptap Insertion & Publishing Integrity
  */
 
+process.env.NODE_ENV = 'test';
+
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');

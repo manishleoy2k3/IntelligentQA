@@ -8,6 +8,7 @@ import ProfileModal from "@/components/profile/profile-modal";
 import GeminiKeyModal from "@/components/auth/gemini-key-modal";
 import AddGuideModal from "@/components/interview/add-guide-modal";
 import SuggestQuestionModal from "@/components/interview/suggest-question-modal";
+import ThemeToggle from "@/components/layout/theme-toggle";
 import { UserProfile } from "@/types/qa";
 import {
   Sparkles,
@@ -228,6 +229,9 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
           <span className="font-extrabold tracking-tight">Share your Knowledge</span>
           <span className="sr-only">Add Guide</span>
         </button>
+
+        {/* Theme Switcher Toggle (Normal Light / Dark Mode) */}
+        <ThemeToggle showLabel={false} />
 
         {/* 2. Notifications Bell & Popover */}
         <div ref={notifRef} className="relative">

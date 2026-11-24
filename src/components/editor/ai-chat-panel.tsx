@@ -26,6 +26,10 @@ import {
   Key,
   ArrowUpRight,
   ShieldCheck,
+  Maximize2,
+  Minimize2,
+  Minus,
+  ChevronsRight,
 } from 'lucide-react';
 import {
   AIEnhancementResponse,
@@ -47,6 +51,10 @@ interface AiChatPanelProps {
   onOpenCompare: (enhancedHtml: string) => void;
   onOpenDiagramStudio?: (initialPrompt?: string) => void;
   selectedEditorText?: string;
+  width?: number;
+  panelState?: 'normal' | 'maximized' | 'minimized';
+  onToggleMaximize?: () => void;
+  onToggleMinimize?: () => void;
 }
 
 interface ChatTurn {
@@ -69,6 +77,10 @@ export default function AiChatPanel({
   onOpenCompare,
   onOpenDiagramStudio,
   selectedEditorText,
+  width,
+  panelState = 'normal',
+  onToggleMaximize,
+  onToggleMinimize,
 }: AiChatPanelProps) {
   const [messages, setMessages] = useState<ChatTurn[]>([]);
   const [inputPrompt, setInputPrompt] = useState<string>('');
@@ -330,33 +342,101 @@ export default function AiChatPanel({
 
   if (!isOpen) return null;
 
+  if (panelState === 'minimized') {
+    return (
+      <aside className="w-12 h-full bg-slate-100 dark:bg-[#121215] border-l border-slate-200 dark:border-[#27272A] flex flex-col items-center py-4 justify-between z-30 transition-all select-none shadow-md shrink-0">
+        <div className="flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={onToggleMinimize}
+            className="p-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/20 transition-all cursor-pointer shadow-2xs group"
+            title="Restore Enhance with AI Panel"
+          >
+            <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+          </button>
+          <div
+            onClick={onToggleMinimize}
+            className="text-[11px] font-bold text-slate-600 dark:text-zinc-400 tracking-wider uppercase [writing-mode:vertical-rl] mt-6 flex items-center gap-2 cursor-pointer hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+          >
+            <span>Enhance with AI</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onToggleMinimize}
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          title="Expand Panel"
+        >
+          <ChevronsRight className="w-4 h-4 rotate-180" />
+        </button>
+      </aside>
+    );
+  }
+
+  const containerClass =
+    panelState === 'maximized'
+      ? 'flex-1 w-full h-full bg-slate-50 dark:bg-[#121215] border-l border-slate-200 dark:border-[#27272A] flex flex-col z-30 shadow-2xl overflow-hidden animate-in fade-in duration-150'
+      : 'w-full md:w-[480px] lg:w-[520px] shrink-0 h-full bg-slate-50 dark:bg-[#121215] border-l border-slate-200 dark:border-[#27272A] flex flex-col z-30 shadow-2xl overflow-hidden animate-in slide-in-from-right duration-200';
+
   return (
-    <aside className="w-full md:w-[460px] lg:w-[500px] h-full bg-[#121215] border-l border-[#27272A] flex flex-col z-30 shadow-2xl overflow-hidden animate-in slide-in-from-right duration-200">
+    <aside
+      style={panelState === 'normal' && width ? { width: `${width}px`, maxWidth: '85vw' } : undefined}
+      className={containerClass}
+    >
       {/* 1. HEADER */}
-      <div className="px-5 py-4 bg-[#18181B] border-b border-[#27272A] flex items-center justify-between shrink-0">
+      <div className="px-5 py-3.5 bg-white dark:bg-[#18181B] border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+          <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white tracking-wide">Enhance with AI</h3>
-              <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">Enhance with AI</h3>
+              <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
                 QA Architect
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400 truncate max-w-[280px]">
+            <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate max-w-[240px] sm:max-w-[280px]">
               {context.course.name} • {context.currentLesson.title}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-1">
+          {/* Maximize / Restore Toggle Button */}
+          {onToggleMaximize && (
+            <button
+              type="button"
+              onClick={onToggleMaximize}
+              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              title={panelState === 'maximized' ? 'Restore standard width' : 'Maximize for deep reading view'}
+            >
+              {panelState === 'maximized' ? (
+                <Minimize2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              ) : (
+                <Maximize2 className="w-4 h-4 text-slate-600 dark:text-zinc-400" />
+              )}
+            </button>
+          )}
+
+          {/* Minimize to Dock Button */}
+          {onToggleMinimize && (
+            <button
+              type="button"
+              onClick={onToggleMinimize}
+              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              title="Minimize to side dock"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+          )}
+
           {messages.length > 0 && (
             <button
               type="button"
               onClick={() => setMessages([])}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               title="Clear Conversation"
             >
               <RotateCcw className="w-4 h-4" />
@@ -365,7 +445,7 @@ export default function AiChatPanel({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             title="Close Assistant"
           >
             <X className="w-4 h-4" />

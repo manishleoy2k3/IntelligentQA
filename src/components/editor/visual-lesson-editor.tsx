@@ -23,6 +23,7 @@ import AiTechnicalReviewModal from '@/components/admin/academy/ai-technical-revi
 import { sharedTiptapExtensions } from './tiptap-schema';
 import { renderTiptapJsonToHtml } from './tiptap-renderer';
 import { LessonContextPackage } from '@/lib/ai/types';
+import ThemeToggle from '@/components/layout/theme-toggle';
 
 import {
   Save,
@@ -99,6 +100,63 @@ export default function VisualLessonEditor({
   const [mode, setMode] = useState<'visual' | 'code'>('visual');
   const [rawHtml, setRawHtml] = useState<string>(initialHtml || '');
 
+  // Split-pane resizing & maximize/minimize controls for Enhance with AI
+  const [aiPanelWidth, setAiPanelWidth] = useState<number>(500);
+  const [aiPanelState, setAiPanelState] = useState<'normal' | 'maximized' | 'minimized'>('normal');
+  const [isDraggingResize, setIsDraggingResize] = useState<boolean>(false);
+
+  // Restore user's preferred AI panel width from storage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('intelligentqa_ai_panel_width');
+        if (saved) {
+          const parsed = parseInt(saved, 10);
+          if (parsed >= 320 && parsed <= 1200) {
+            setAiPanelWidth(parsed);
+          }
+        }
+      } catch (e) {}
+    }
+  }, []);
+
+  const handleStartResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDraggingResize(true);
+    const startX = e.clientX;
+    const startWidth = aiPanelWidth;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const delta = startX - moveEvent.clientX;
+      const newWidth = Math.max(340, Math.min(window.innerWidth - 360, startWidth + delta));
+      setAiPanelWidth(newWidth);
+      try {
+        localStorage.setItem('intelligentqa_ai_panel_width', String(newWidth));
+      } catch (err) {}
+    };
+
+    const onMouseUp = () => {
+      setIsDraggingResize(false);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  const handleToggleMaximizeAi = () => {
+    setAiPanelState((prev) => (prev === 'maximized' ? 'normal' : 'maximized'));
+  };
+
+  const handleToggleMinimizeAi = () => {
+    setAiPanelState((prev) => (prev === 'minimized' ? 'normal' : 'minimized'));
+  };
+
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isInitialMount = useRef<boolean>(true);
 
@@ -115,7 +173,7 @@ export default function VisualLessonEditor({
     editorProps: {
       attributes: {
         class:
-          'tiptap-canvas prose prose-invert max-w-none focus:outline-none min-h-[500px] p-6 sm:p-10 font-sans leading-relaxed text-[#2D3748] dark:text-[#E2E8F0] selection:bg-emerald-500/30',
+          'tiptap-canvas prose dark:prose-invert max-w-none focus:outline-none min-h-[500px] p-6 sm:p-10 font-sans leading-relaxed text-slate-800 dark:text-[#E2E8F0] selection:bg-emerald-500/30',
       },
     },
     onUpdate: ({ editor }) => {
@@ -280,63 +338,63 @@ export default function VisualLessonEditor({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#121215] border border-[#27272A] rounded-3xl overflow-hidden shadow-2xl">
+    <div className="flex flex-col h-full bg-slate-100/90 dark:bg-[#121215] border border-slate-200 dark:border-[#27272A] rounded-3xl overflow-hidden shadow-2xl transition-colors">
       {/* =================================================================== */}
       {/* A. EDITOR HEADER: BREADCRUMBS, STATUS, LAST SAVED, ACTIONS          */}
       {/* =================================================================== */}
-      <header className="bg-[#18181B] border-b border-[#27272A] px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
+      <header className="bg-white dark:bg-[#18181B] border-b border-slate-200 dark:border-[#27272A] px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 transition-colors">
         <div className="space-y-1">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-1.5 text-xs text-zinc-400 flex-wrap">
-            <span className="text-emerald-400 font-bold flex items-center gap-1">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400 flex-wrap">
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
               <BookOpen className="w-3.5 h-3.5" />
               <span>{courseTitle}</span>
             </span>
-            <ChevronRight className="w-3 h-3 text-zinc-600" />
-            <span className="text-zinc-300 font-medium">{moduleTitle}</span>
-            <ChevronRight className="w-3 h-3 text-zinc-600" />
-            <span className="text-white font-bold">{lessonTitle}</span>
+            <ChevronRight className="w-3 h-3 text-slate-400 dark:text-zinc-600" />
+            <span className="text-slate-700 dark:text-zinc-300 font-medium">{moduleTitle}</span>
+            <ChevronRight className="w-3 h-3 text-slate-400 dark:text-zinc-600" />
+            <span className="text-slate-900 dark:text-white font-bold">{lessonTitle}</span>
           </div>
 
           <div className="flex items-center gap-3 pt-0.5">
             <span
               className={`text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full border ${
                 status === 'published'
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                  : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
               }`}
             >
               {status}
             </span>
 
             {/* Auto-Save & Timestamp indicator */}
-            <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-mono">
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
               {saveStatus === 'saving' && (
-                <span className="flex items-center gap-1 text-cyan-400">
+                <span className="flex items-center gap-1 text-cyan-500 dark:text-cyan-400">
                   <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                   <span>Saving...</span>
                 </span>
               )}
               {saveStatus === 'saved' && (
-                <span className="flex items-center gap-1 text-emerald-400">
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Saved at {lastSavedTime}</span>
                 </span>
               )}
               {saveStatus === 'unsaved' && (
-                <span className="flex items-center gap-1 text-amber-400">
+                <span className="flex items-center gap-1 text-amber-500 dark:text-amber-400">
                   <Clock className="w-3.5 h-3.5" />
                   <span>Unsaved changes</span>
                 </span>
               )}
               {saveStatus === 'error' && (
-                <span className="flex items-center gap-1 text-rose-400 font-semibold" title={errorMessage}>
+                <span className="flex items-center gap-1 text-rose-500 dark:text-rose-400 font-semibold" title={errorMessage}>
                   <AlertCircle className="w-3.5 h-3.5" />
                   <span>{errorMessage || 'Error saving draft'}</span>
                 </span>
               )}
               {saveStatus === 'publish-error' && (
-                <span className="flex items-center gap-1 text-rose-400 font-semibold" title={errorMessage}>
+                <span className="flex items-center gap-1 text-rose-500 dark:text-rose-400 font-semibold" title={errorMessage}>
                   <AlertCircle className="w-3.5 h-3.5" />
                   <span>{errorMessage || 'Error publishing lesson'}</span>
                 </span>
@@ -348,14 +406,14 @@ export default function VisualLessonEditor({
         {/* Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Mode Switcher */}
-          <div className="flex items-center bg-[#121215] border border-[#27272A] rounded-xl p-0.5 text-xs mr-2">
+          <div className="flex items-center bg-slate-100 dark:bg-[#121215] border border-slate-200 dark:border-[#27272A] rounded-xl p-0.5 text-xs mr-2">
             <button
               type="button"
               onClick={handleSwitchToVisual}
               className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
                 mode === 'visual'
                   ? 'bg-purple-600 text-white shadow'
-                  : 'text-zinc-400 hover:text-white'
+                  : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Layout className="w-3.5 h-3.5" />
@@ -367,7 +425,7 @@ export default function VisualLessonEditor({
               className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
                 mode === 'code'
                   ? 'bg-purple-600 text-white shadow'
-                  : 'text-zinc-400 hover:text-white'
+                  : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Code className="w-3.5 h-3.5" />
@@ -378,10 +436,10 @@ export default function VisualLessonEditor({
           <button
             type="button"
             onClick={() => onPreview(mode === 'visual' && editor ? editor.getHTML() : rawHtml)}
-            className="px-3.5 py-2 rounded-xl bg-[#202025] hover:bg-[#2A2A30] text-zinc-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#202025] dark:hover:bg-[#2A2A30] text-slate-700 dark:text-zinc-200 hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-200 dark:border-transparent"
             title="Preview student rendered view"
           >
-            <Eye className="w-3.5 h-3.5 text-cyan-400" />
+            <Eye className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
             <span>Preview</span>
           </button>
 
@@ -389,25 +447,31 @@ export default function VisualLessonEditor({
           <button
             type="button"
             onClick={() => setShowReviewModal(true)}
-            className="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 hover:text-white border border-purple-500/30"
+            className="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 hover:text-purple-900 dark:hover:text-white border border-purple-500/30"
             title="AI Technical Review & Content Audit"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
             <span>Review Content</span>
           </button>
 
           {/* Prominent Header Enhance with AI Button */}
           <button
             type="button"
-            onClick={() => setShowAiAssistant((prev) => !prev)}
+            onClick={() => {
+              if (showAiAssistant && aiPanelState === 'minimized') {
+                setAiPanelState('normal');
+              } else {
+                setShowAiAssistant((prev) => !prev);
+              }
+            }}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
-              showAiAssistant
+              showAiAssistant && aiPanelState !== 'minimized'
                 ? 'bg-purple-600 text-white shadow-purple-500/20'
-                : 'bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 hover:text-white border border-purple-500/30'
+                : 'bg-purple-600/10 hover:bg-purple-600/20 text-purple-700 dark:text-purple-300 hover:text-purple-900 dark:hover:text-white border border-purple-500/30'
             }`}
             title="Open AI Content Enhancement Assistant"
           >
-            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+            <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
             <span>Enhance with AI</span>
           </button>
 
@@ -415,7 +479,7 @@ export default function VisualLessonEditor({
             type="button"
             onClick={handleManualSaveDraft}
             disabled={saveStatus === 'saving'}
-            className="px-4 py-2 rounded-xl bg-[#1F2937] hover:bg-[#374151] text-zinc-100 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 dark:bg-[#1F2937] dark:hover:bg-[#374151] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5 text-zinc-300" />
             <span>Save Draft</span>
@@ -431,10 +495,13 @@ export default function VisualLessonEditor({
             <span>Publish Lesson</span>
           </button>
 
+          {/* Theme Switcher Toggle (Normal Light / Dark Mode) */}
+          <ThemeToggle showLabel={false} />
+
           <button
             type="button"
             onClick={onCancel}
-            className="px-3 py-2 rounded-xl text-zinc-400 hover:text-white text-xs transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white text-xs transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -459,27 +526,33 @@ export default function VisualLessonEditor({
       {/* =================================================================== */}
       {/* C. MAIN EDITING BODY: DUAL SPLIT (CANVAS + AI ASSISTANT PANEL)      */}
       {/* =================================================================== */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Left / Main Editor Area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[#09090B] flex justify-center">
+        <div
+          className={`overflow-y-auto p-4 sm:p-8 bg-slate-100/70 dark:bg-[#09090B] flex justify-center transition-all ${
+            showAiAssistant && aiPanelState === 'maximized'
+              ? 'hidden'
+              : 'flex-1 min-w-0'
+          }`}
+        >
           {mode === 'visual' ? (
-            <div className="w-full max-w-4xl bg-[#141417] dark:bg-[#18181B] border border-[#27272A] rounded-3xl shadow-2xl min-h-[700px] flex flex-col transition-all">
+            <div className="w-full max-w-4xl bg-white dark:bg-[#141417] border border-slate-200 dark:border-[#27272A] rounded-3xl shadow-xl min-h-[700px] flex flex-col transition-all">
               <EditorContent editor={editor} className="flex-1" />
 
               {/* Character & Word Count Footer */}
               {editor && (
-                <div className="px-8 py-3 border-t border-[#27272A] text-zinc-500 font-mono text-[11px] flex items-center justify-between select-none">
+                <div className="px-8 py-3 border-t border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-zinc-500 font-mono text-[11px] flex items-center justify-between select-none">
                   <span>
                     {editor.storage.characterCount.words()} words • {editor.storage.characterCount.characters()} characters
                   </span>
-                  <span className="text-zinc-600">Visual WYSIWYG Mode (Tiptap Engine)</span>
+                  <span className="text-slate-400 dark:text-zinc-600">Visual WYSIWYG Mode (Tiptap Engine)</span>
                 </div>
               )}
             </div>
           ) : (
-            <div className="w-full max-w-4xl bg-[#141417] border border-[#27272A] rounded-3xl p-6 flex flex-col space-y-3">
-              <div className="flex items-center justify-between text-xs text-zinc-400 pb-2 border-b border-[#27272A]">
-                <span className="font-mono text-cyan-400">Raw HTML Source Mode</span>
+            <div className="w-full max-w-4xl bg-white dark:bg-[#141417] border border-slate-200 dark:border-[#27272A] rounded-3xl p-6 flex flex-col space-y-3 shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400 pb-2 border-b border-slate-200 dark:border-[#27272A]">
+                <span className="font-mono text-cyan-600 dark:text-cyan-400">Raw HTML Source Mode</span>
                 <span>Changes sync automatically to visual editor when switching back</span>
               </div>
               <textarea
@@ -489,11 +562,26 @@ export default function VisualLessonEditor({
                   setSaveStatus('unsaved');
                 }}
                 rows={25}
-                className="w-full flex-1 p-4 rounded-xl bg-[#09090B] border border-[#27272A] text-emerald-400 font-mono text-xs focus:outline-none focus:border-purple-500 resize-y leading-relaxed"
+                className="w-full flex-1 p-4 rounded-xl bg-slate-50 dark:bg-[#09090B] border border-slate-200 dark:border-[#27272A] text-emerald-700 dark:text-emerald-400 font-mono text-xs focus:outline-none focus:border-purple-500 resize-y leading-relaxed"
               />
             </div>
           )}
         </div>
+
+        {/* Resizable Divider Handle (only shown in normal split mode) */}
+        {showAiAssistant && aiPanelState === 'normal' && (
+          <div
+            onMouseDown={handleStartResize}
+            className={`w-2.5 hover:w-3 select-none relative z-10 flex items-center justify-center shrink-0 transition-colors cursor-col-resize group ${
+              isDraggingResize
+                ? 'bg-purple-600 shadow-md'
+                : 'bg-slate-200 hover:bg-purple-500/50 dark:bg-[#202025] dark:hover:bg-purple-600/50'
+            }`}
+            title="Drag left/right to resize Editor and AI panel"
+          >
+            <div className="h-10 w-1 rounded-full bg-slate-400 dark:bg-zinc-600 group-hover:bg-white transition-colors" />
+          </div>
+        )}
 
         {/* Right / AI Content Assistant Panel */}
         {showAiAssistant && (
@@ -510,6 +598,10 @@ export default function VisualLessonEditor({
               setShowDiagramStudio(true);
             }}
             selectedEditorText={selectedTextForAi}
+            width={aiPanelWidth}
+            panelState={aiPanelState}
+            onToggleMaximize={handleToggleMaximizeAi}
+            onToggleMinimize={handleToggleMinimizeAi}
           />
         )}
       </div>

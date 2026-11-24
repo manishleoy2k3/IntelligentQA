@@ -15,8 +15,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#111111] text-[#FFFFFF] font-sans antialiased selection:bg-[#81FF89] selection:text-black">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('intelligentqa_theme') || 'light';
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.style.colorScheme = 'light';
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-slate-50 dark:bg-[#111111] text-slate-900 dark:text-[#FFFFFF] font-sans antialiased selection:bg-[#81FF89] selection:text-black transition-colors duration-150">
         <AppShell>{children}</AppShell>
         {/* Pre-Signup Guidance & Ask AI floating widget */}
         <AskAIWidget />

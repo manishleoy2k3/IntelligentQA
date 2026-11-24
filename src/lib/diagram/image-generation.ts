@@ -51,7 +51,11 @@ export function resetImageRateLimit(): void {
  * Checks image rate limits to prevent runaway usage or unexpected billing.
  */
 export function checkImageRateLimit(): { allowed: boolean; waitSeconds?: number } {
-  if (process.env.NODE_ENV === 'test') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    Boolean(process.env.NODE_TEST_CONTEXT) ||
+    process.argv.some((a) => a.includes('test'))
+  ) {
     return { allowed: true };
   }
   const now = Date.now();
