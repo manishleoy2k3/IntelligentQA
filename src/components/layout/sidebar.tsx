@@ -807,7 +807,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       tracks.push({
         id: 'cicd-concepts',
         rawId: 'course-cicd-concepts',
-        slug: githubCourse?.slug || 'github-actions-for-qa',
+        slug: 'cicd-concepts',
         displayTitle: 'CI/CD Concepts',
         fullTitle: 'CI/CD Concepts',
         tag: 'CI/CD',

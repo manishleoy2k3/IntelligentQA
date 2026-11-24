@@ -14,6 +14,12 @@ const KNOWN_COURSE_SLUGS = new Set([
   'playwright-ts',
   'selenium-java',
   'api-testing',
+  'cicd-concepts',
+  'course-cicd-concepts',
+  'ci-cd-concepts',
+  'ci-cd',
+  'git-cicd',
+  'cat-git-cicd',
   ...INITIAL_PUBLISHED_COURSES.map((c) => c.slug),
   ...INITIAL_PUBLISHED_COURSES.map((c) => c.id),
 ]);
@@ -27,7 +33,25 @@ export async function generateMetadata({
   const slug = resolvedParams?.slug;
   const targetSlug = slug && slug.length > 0 ? slug[slug.length - 1] : undefined;
 
-  if (!targetSlug || KNOWN_COURSE_SLUGS.has(targetSlug)) {
+  if (targetSlug && (targetSlug === 'cicd-concepts' || targetSlug === 'course-cicd-concepts' || targetSlug.includes('cicd') || targetSlug.includes('ci-cd'))) {
+    return {
+      title: 'CI/CD Concepts — Git, GitHub Actions, Azure DevOps & Jenkins | IntelligentQA',
+      description:
+        'Master modern Continuous Integration, automated quality gating, and Continuous Delivery for QA automation: Git branching models, GitHub Actions matrix runners, Azure DevOps release gates, and distributed Jenkins container pipelines.',
+    };
+  }
+
+  if (targetSlug && KNOWN_COURSE_SLUGS.has(targetSlug)) {
+    const course = INITIAL_PUBLISHED_COURSES.find(c => c.slug === targetSlug || c.id === targetSlug);
+    if (course) {
+      return {
+        title: `${course.title} — Technical Documentation & Quality Engineering | IntelligentQA`,
+        description: course.description,
+      };
+    }
+  }
+
+  if (!targetSlug || targetSlug === 'overview' || targetSlug.includes('ai')) {
     return {
       title: 'AI Academy — Technical Documentation & Quality Engineering | IntelligentQA',
       description:

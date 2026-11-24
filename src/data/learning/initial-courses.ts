@@ -1836,5 +1836,736 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
       ]
     }
   ]
+},
+  {
+  "id": "course-cicd-concepts",
+  "slug": "cicd-concepts",
+  "title": "CI/CD Concepts",
+  "subtitle": "Git Version Control, GitHub Actions, Azure DevOps & Declarative Jenkins Pipelines",
+  "description": "Master modern Continuous Integration, automated quality gating, and Continuous Delivery for QA automation: Git branching models, GitHub Actions matrix runners, Azure DevOps quality release gates, and distributed Jenkins container pipelines.",
+  "level": "Comprehensive",
+  "estimatedHours": 46,
+  "modules": [
+    {
+      "id": "mod-cicd-1-git",
+      "courseId": "course-cicd-concepts",
+      "slug": "git-version-control",
+      "title": "Module 1: Git & Version Control for QA",
+      "description": "Git fundamentals, commit DAG architecture, branching models (Trunk-Based, GitFlow), conflict resolution, and PR review quality gates.",
+      "lessons": [
+        {
+          "id": "les-git-1-1-what-is-git",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "what-is-git",
+          "title": "What is Git?",
+          "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-1-2-version-control-concepts",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "version-control-concepts",
+          "title": "Version Control Concepts",
+          "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-1-3-git-architecture",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "git-architecture",
+          "title": "Git Architecture",
+          "summary": "Git architecture is structured as a Directed Acyclic Graph (DAG) of content-addressable objects: Blobs (file contents), Trees (directories), Commits (snapshots with metadata), and Annotated Tags.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-1-4-git-vs-centralized-vcs",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "git-vs-centralized-vcs",
+          "title": "Git vs Centralized VCS",
+          "summary": "Git vs Centralized VCS is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-1-5-git-configuration",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "git-configuration",
+          "title": "Git Configuration",
+          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-1-6-core-git-commands",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "core-git-commands",
+          "title": "Core Git Commands",
+          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-2-1-branching-strategies-gitflow-tru",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "branching-strategies-gitflow-trunk-based",
+          "title": "Branching Strategies (GitFlow, Trunk-Based)",
+          "summary": "Git branching creates isolated lines of development, allowing engineers to develop and test new features without destabilizing the main branch.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-2-2-creating-and-switching-branches",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "creating-and-switching-branches",
+          "title": "Creating and Switching Branches",
+          "summary": "Git branching creates isolated lines of development, allowing engineers to develop and test new features without destabilizing the main branch.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-2-3-merging-and-merge-conflicts",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "merging-and-merge-conflicts",
+          "title": "Merging and Merge Conflicts",
+          "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-2-4-rebasing-vs-merging",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "rebasing-vs-merging",
+          "title": "Rebasing vs Merging",
+          "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-2-5-stashing-and-cherry-picking",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "stashing-and-cherry-picking",
+          "title": "Stashing and Cherry-Picking",
+          "summary": "Stashing and Cherry-Picking is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-3-1-remote-repositories",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "remote-repositories",
+          "title": "Remote Repositories",
+          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-3-2-push-pull-and-fetch",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "push-pull-and-fetch",
+          "title": "Push Pull and Fetch",
+          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-3-3-pull-requests-and-code-review",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "pull-requests-and-code-review",
+          "title": "Pull Requests and Code Review",
+          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-3-4-forking-workflow",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "forking-workflow",
+          "title": "Forking Workflow",
+          "summary": "Forking Workflow is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-3-5-handling-merge-conflicts-in-prs",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "handling-merge-conflicts-in-prs",
+          "title": "Handling Merge Conflicts in PRs",
+          "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-4-1-what-is-cicd",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "what-is-cicd",
+          "title": "What is CI/CD?",
+          "summary": "What is CI/CD? is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-4-2-continuous-integration-vs-contin",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "continuous-integration-vs-continuous-delivery-vs-continuous-deployment",
+          "title": "Continuous Integration vs Continuous Delivery vs Continuous Deployment",
+          "summary": "CI/CD (Continuous Integration and Continuous Delivery/Deployment) is the automated practice of integrating code changes into a shared repository and automatically deploying verified artifacts to environments.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-4-3-why-cicd-is-essential-for-qa",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "why-cicd-is-essential-for-qa",
+          "title": "Why CI/CD is Essential for QA",
+          "summary": "CI/CD (Continuous Integration and Continuous Delivery/Deployment) is the automated practice of integrating code changes into a shared repository and automatically deploying verified artifacts to environments.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-4-4-automated-quality-gates",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "automated-quality-gates",
+          "title": "Automated Quality Gates",
+          "summary": "Automated Quality Gates is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-4-5-test-automation-in-cicd",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "test-automation-in-cicd",
+          "title": "Test Automation in CI/CD",
+          "summary": "Test Automation in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-5-1-pipeline-architecture",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "pipeline-architecture",
+          "title": "Pipeline Architecture",
+          "summary": "Git architecture is structured as a Directed Acyclic Graph (DAG) of content-addressable objects: Blobs (file contents), Trees (directories), Commits (snapshots with metadata), and Annotated Tags.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-5-2-pipeline-stages-build-test-deplo",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "pipeline-stages-build-test-deploy",
+          "title": "Pipeline Stages (Build, Test, Deploy)",
+          "summary": "Pipeline Stages (Build, Test, Deploy) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-5-3-triggers-and-events",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "triggers-and-events",
+          "title": "Triggers and Events",
+          "summary": "Triggers and Events is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-5-4-environment-management",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "environment-management",
+          "title": "Environment Management",
+          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-5-5-artifact-management",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "artifact-management",
+          "title": "Artifact Management",
+          "summary": "Artifact Management is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-5-6-test-reporting-in-cicd",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "test-reporting-in-cicd",
+          "title": "Test Reporting in CI/CD",
+          "summary": "Test Reporting in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-6-1-smoke-tests-in-cicd",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "smoke-tests-in-cicd",
+          "title": "Smoke Tests in CI/CD",
+          "summary": "Smoke Tests in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-6-2-regression-pipeline-design",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "regression-pipeline-design",
+          "title": "Regression Pipeline Design",
+          "summary": "Regression Pipeline Design is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-6-3-parallel-test-execution-in-pipel",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "parallel-test-execution-in-pipelines",
+          "title": "Parallel Test Execution in Pipelines",
+          "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-6-4-handling-test-flakiness-in-ci",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "handling-test-flakiness-in-ci",
+          "title": "Handling Test Flakiness in CI",
+          "summary": "Handling Test Flakiness in CI is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-6-5-test-failure-notifications-and-a",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "test-failure-notifications-and-alerts",
+          "title": "Test Failure Notifications and Alerts",
+          "summary": "Test Failure Notifications and Alerts is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-6-6-quality-metrics-and-dashboards",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "quality-metrics-and-dashboards",
+          "title": "Quality Metrics and Dashboards",
+          "summary": "Quality Metrics and Dashboards is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-7-1-branch-protection-rules",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "branch-protection-rules",
+          "title": "Branch Protection Rules",
+          "summary": "Branch Protection Rules is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-7-2-pipeline-security-and-secrets",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "pipeline-security-and-secrets",
+          "title": "Pipeline Security and Secrets",
+          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-7-3-cost-optimization-for-ci-runners",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "cost-optimization-for-ci-runners",
+          "title": "Cost Optimization for CI Runners",
+          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-git-7-4-shift-left-testing-strategy",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "shift-left-testing-strategy",
+          "title": "Shift-Left Testing Strategy",
+          "summary": "Shift-Left Testing Strategy is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-git-7-5-rollback-strategies",
+          "moduleId": "mod-cicd-1-git",
+          "courseId": "course-cicd-concepts",
+          "slug": "rollback-strategies",
+          "title": "Rollback Strategies",
+          "summary": "Rollback Strategies is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-cicd-2-github-actions",
+      "courseId": "course-cicd-concepts",
+      "slug": "github-actions-pipelines",
+      "title": "Module 2: GitHub Actions CI/CD Pipelines",
+      "description": "Workflow triggers, job matrices, parallel test sharding, artifact caching, headless browser configurations, and custom composite actions.",
+      "lessons": [
+        {
+          "id": "les-github-actions-1-1-what-is-github-actions",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "what-is-github-actions",
+          "title": "What is GitHub Actions?",
+          "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-1-2-core-components-workflows-events",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "core-components-workflows-events-jobs-steps-actions-runners",
+          "title": "Core Components (Workflows, Events, Jobs, Steps, Actions, Runners)",
+          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-1-3-github-actions-vs-jenkins",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "github-actions-vs-jenkins",
+          "title": "GitHub Actions vs Jenkins",
+          "summary": "GitHub Actions vs Jenkins is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-1-4-workflow-file-syntax-yaml",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "workflow-file-syntax-yaml",
+          "title": "Workflow File Syntax (YAML)",
+          "summary": "Workflow File Syntax (YAML) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-2-1-workflow-triggers-push-pull-requ",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "workflow-triggers-push-pull-request-schedule-workflow-dispatch",
+          "title": "Workflow Triggers (push, pull_request, schedule, workflow_dispatch)",
+          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-2-2-job-configuration",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "job-configuration",
+          "title": "Job Configuration",
+          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-2-3-step-execution",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "step-execution",
+          "title": "Step Execution",
+          "summary": "Step Execution is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-2-4-dependencies-between-jobs-needs",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "dependencies-between-jobs-needs",
+          "title": "Dependencies Between Jobs (needs)",
+          "summary": "Dependencies Between Jobs (needs) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-2-5-conditional-execution-if",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "conditional-execution-if",
+          "title": "Conditional Execution (if)",
+          "summary": "Conditional Execution (if) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-3-1-github-hosted-runners",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "github-hosted-runners",
+          "title": "GitHub-Hosted Runners",
+          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-3-2-self-hosted-runners",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "self-hosted-runners",
+          "title": "Self-Hosted Runners",
+          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-3-3-matrix-strategy-parallel-testing",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "matrix-strategy-parallel-testing-across-osbrowser",
+          "title": "Matrix Strategy (Parallel Testing Across OS/Browser)",
+          "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-3-4-environment-variables-and-secret",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "environment-variables-and-secrets",
+          "title": "Environment Variables and Secrets",
+          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-3-5-managing-artifacts-and-caches",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "managing-artifacts-and-caches",
+          "title": "Managing Artifacts and Caches",
+          "summary": "Managing Artifacts and Caches is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-4-1-running-selenium-in-github-actio",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "running-selenium-in-github-actions",
+          "title": "Running Selenium in GitHub Actions",
+          "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-4-2-running-playwright-in-github-act",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "running-playwright-in-github-actions",
+          "title": "Running Playwright in GitHub Actions",
+          "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-4-3-running-api-tests-newmanrest-ass",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "running-api-tests-newmanrest-assured",
+          "title": "Running API Tests (Newman/Rest Assured)",
+          "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-4-4-headless-browser-configuration",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "headless-browser-configuration",
+          "title": "Headless Browser Configuration",
+          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-4-5-publishing-test-reports-allure-h",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "publishing-test-reports-allure-html",
+          "title": "Publishing Test Reports (Allure, HTML)",
+          "summary": "Publishing Test Reports (Allure, HTML) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-5-1-using-marketplace-actions",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "using-marketplace-actions",
+          "title": "Using Marketplace Actions",
+          "summary": "Custom and composite actions encapsulate reusable multi-step automation logic into versioned, shareable modules across multiple repositories.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-5-2-creating-custom-composite-action",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "creating-custom-composite-actions",
+          "title": "Creating Custom Composite Actions",
+          "summary": "Custom and composite actions encapsulate reusable multi-step automation logic into versioned, shareable modules across multiple repositories.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-5-3-creating-javascript-actions",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "creating-javascript-actions",
+          "title": "Creating JavaScript Actions",
+          "summary": "Creating JavaScript Actions is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-5-4-creating-docker-container-action",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "creating-docker-container-actions",
+          "title": "Creating Docker Container Actions",
+          "summary": "Creating Docker Container Actions is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-5-5-sharing-actions-across-repositor",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "sharing-actions-across-repositories",
+          "title": "Sharing Actions Across Repositories",
+          "summary": "Sharing Actions Across Repositories is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-6-1-secrets-and-environment-protecti",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "secrets-and-environment-protection",
+          "title": "Secrets and Environment Protection",
+          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-github-actions-6-2-concurrency-and-cancellation",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "concurrency-and-cancellation",
+          "title": "Concurrency and Cancellation",
+          "summary": "Reusable workflows (workflow_call) allow teams to define centralized CI/CD pipelines that can be invoked by multiple downstream repositories with parameterized inputs.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-6-3-reusable-workflows",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "reusable-workflows",
+          "title": "Reusable Workflows",
+          "summary": "Reusable workflows (workflow_call) allow teams to define centralized CI/CD pipelines that can be invoked by multiple downstream repositories with parameterized inputs.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-6-4-dynamic-matrix-builds",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "dynamic-matrix-builds",
+          "title": "Dynamic Matrix Builds",
+          "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-6-5-notifications-slack-email",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "notifications-slack-email",
+          "title": "Notifications (Slack, Email)",
+          "summary": "Notifications (Slack, Email) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-github-actions-6-6-enterprise-best-practices",
+          "moduleId": "mod-cicd-2-github-actions",
+          "courseId": "course-cicd-concepts",
+          "slug": "enterprise-best-practices",
+          "title": "Enterprise Best Practices",
+          "summary": "Enterprise Best Practices is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-cicd-3-azure-devops",
+      "courseId": "course-cicd-concepts",
+      "slug": "azure-devops-pipelines",
+      "title": "Module 3: Azure DevOps Pipelines for SDETs",
+      "description": "Multi-stage YAML pipelines, PublishTestResults@2 task, self-hosted vs Microsoft agent pools, Azure Test Plans traceability, and automated quality gates.",
+      "lessons": [
+        {
+          "id": "les-publishing-test-results-in-ado",
+          "moduleId": "mod-cicd-3-azure-devops",
+          "courseId": "course-cicd-concepts",
+          "slug": "publishing-test-results-in-ado",
+          "title": "1.1 PublishTestResults@2 Task & Reporting",
+          "summary": "PublishTestResults@2 is a core Azure DevOps pipeline task that parses JUnit, NUnit, VSTest, or xUnit XML report files generated by test automation runners and publishes them directly into the Azure Test Analytics engine.",
+          "estimatedReadingTime": 9
+        },
+        {
+          "id": "les-azure-pipelines-agent-pools",
+          "moduleId": "mod-cicd-3-azure-devops",
+          "courseId": "course-cicd-concepts",
+          "slug": "azure-pipelines-agent-pools",
+          "title": "1.2 Self-Hosted vs Microsoft-Hosted Build Agents",
+          "summary": "Azure Pipelines agent pools are execution compute resources that run your pipeline jobs. SDETs must choose between Microsoft-hosted agents (ephemeral, cloud-managed VMs) and Self-hosted agents (dedicated physical or virtual machines in your own network).",
+          "estimatedReadingTime": 8
+        },
+        {
+          "id": "les-azure-test-plans-automation-link",
+          "moduleId": "mod-cicd-3-azure-devops",
+          "courseId": "course-cicd-concepts",
+          "slug": "azure-test-plans-automation-link",
+          "title": "2.1 Azure Test Plans Automated Test Association",
+          "summary": "Azure Test Plans Automated Test Association is the mechanism for linking automated test methods (in Java, C#, TypeScript, Python) to work item Test Cases in Azure Test Plans.",
+          "estimatedReadingTime": 8
+        },
+        {
+          "id": "les-ado-release-pipeline-gates",
+          "moduleId": "mod-cicd-3-azure-devops",
+          "courseId": "course-cicd-concepts",
+          "slug": "ado-release-pipeline-gates",
+          "title": "2.2 Automated Release Gates & Quality Metrics",
+          "summary": "Automated Release Gates in Azure DevOps are pre-deployment and post-deployment quality checks that evaluate automated test metrics, pass rates, and system health before allowing code to deploy to staging or production environments.",
+          "estimatedReadingTime": 8
+        }
+      ]
+    },
+    {
+      "id": "mod-cicd-4-jenkins",
+      "courseId": "course-cicd-concepts",
+      "slug": "declarative-jenkins-pipelines",
+      "title": "Module 4: Declarative Jenkins Pipelines for QA Automation",
+      "description": "Declarative Jenkinsfile structure, multibranch webhook triggers, parallel test execution on Docker agents, HTML test reporting, and Slack alerts.",
+      "lessons": [
+        {
+          "id": "les-declarative-syntax-essentials",
+          "moduleId": "mod-cicd-4-jenkins",
+          "courseId": "course-cicd-concepts",
+          "slug": "declarative-syntax-essentials",
+          "title": "1.1 Declarative Jenkinsfile Structure for QA",
+          "summary": "Declarative Pipeline is the modern, standardized syntax for writing Jenkinsfiles in Jenkins. It provides a structured, opinionated syntax (pipeline { agent ... stages ... post ... }) that replaces fragile legacy Scripted Groovy pipelines.",
+          "estimatedReadingTime": 8
+        },
+        {
+          "id": "les-multibranch-webhook-triggers",
+          "moduleId": "mod-cicd-4-jenkins",
+          "courseId": "course-cicd-concepts",
+          "slug": "multibranch-webhook-triggers",
+          "title": "1.2 Multi-Branch Pipelines & Webhook Triggers",
+          "summary": "Multibranch Pipeline is a Jenkins project type that automatically discovers branches and pull requests in your Git repository, creating separate child pipelines for each branch that contains a Jenkinsfile.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-parallel-stages-docker-agents",
+          "moduleId": "mod-cicd-4-jenkins",
+          "courseId": "course-cicd-concepts",
+          "slug": "parallel-stages-docker-agents",
+          "title": "2.1 Parallel Test Execution on Docker Agents",
+          "summary": "Parallel test execution on Docker agents is the enterprise architecture of distributing test suites across multiple concurrent Docker containers running on Jenkins agents.",
+          "estimatedReadingTime": 7
+        },
+        {
+          "id": "les-jenkins-html-reporting-slack",
+          "moduleId": "mod-cicd-4-jenkins",
+          "courseId": "course-cicd-concepts",
+          "slug": "jenkins-html-reporting-slack",
+          "title": "2.2 Automated HTML Reports & Slack Notifications",
+          "summary": "Automated HTML Reporting and Slack Notifications is the pipeline stage responsible for publishing interactive test reports (Playwright HTML, Allure, ExtentReports) and dispatching actionable, rich alert notifications to QA and development communication channels.",
+          "estimatedReadingTime": 8
+        }
+      ]
+    }
+  ]
 }
 ];
