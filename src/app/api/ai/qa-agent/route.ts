@@ -613,8 +613,8 @@ ${isGapAnalysis ? `### Gap Analysis on Existing Test Suite:
 function generateAutomationCode(input: string, techStack: string): string {
   const isAppium = /\b(appium|mobile|android|ios|uiautomator|xcuitest|device)\b/i.test(input) || techStack.includes('appium');
   const isFrame = /\b(frame|iframe|switchto|defaultcontent)\b/i.test(input);
-  const isRestAssured = techStack === 'restassured' || /\b(rest assured|restassured|http|status code|endpoint|jsonpath)\b/i.test(input) && !isAppium;
-  const isSelenium = techStack === 'selenium-java' || (/\b(selenium|webdriver|testng|junit)\b/i.test(input) && !isAppium && !isRestAssured);
+  const isRestAssured = techStack === 'restassured' || (techStack !== 'playwright-ts' && (/\b(rest assured|restassured)\b/i.test(input) || (/\b(http|status code|endpoint|jsonpath)\b/i.test(input) && !isAppium)));
+  const isSelenium = techStack === 'selenium-java' || (techStack !== 'playwright-ts' && (/\b(selenium|webdriver|testng|junit)\b/i.test(input) && !isAppium && !isRestAssured));
   const isExistingProject = /package\s+([a-zA-Z0-9_.]+);/.test(input) || /extends\s+([A-Za-z0-9_]+Base[A-Za-z0-9_]*)/i.test(input);
 
   // Extract existing package if present in input
