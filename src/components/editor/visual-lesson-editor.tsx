@@ -83,7 +83,8 @@ export default function VisualLessonEditor({
   moduleContext,
   curriculumContext,
 }: VisualLessonEditorProps) {
-  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved' | 'error'>('saved');
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved' | 'error' | 'publish-error'>('saved');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
   const [showAiAssistant, setShowAiAssistant] = useState<boolean>(false);
@@ -186,12 +187,17 @@ export default function VisualLessonEditor({
     const htmlToSave = mode === 'visual' && editor ? editor.getHTML() : rawHtml;
     const jsonToSave = editor ? editor.getJSON() : undefined;
     setSaveStatus('saving');
-    const success = await onPublish(htmlToSave, jsonToSave ? { tiptapJson: jsonToSave } : undefined);
-    if (success) {
-      setSaveStatus('saved');
-      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-    } else {
-      setSaveStatus('error');
+    try {
+      const success = await onPublish(htmlToSave, jsonToSave ? { tiptapJson: jsonToSave } : undefined);
+      if (success) {
+        setSaveStatus('saved');
+        setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      } else {
+        setSaveStatus('publish-error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Error publishing lesson');
+      setSaveStatus('publish-error');
     }
   };
 
@@ -318,9 +324,15 @@ export default function VisualLessonEditor({
                 </span>
               )}
               {saveStatus === 'error' && (
-                <span className="flex items-center gap-1 text-rose-400 font-semibold">
+                <span className="flex items-center gap-1 text-rose-400 font-semibold" title={errorMessage}>
                   <AlertCircle className="w-3.5 h-3.5" />
-                  <span>Error saving draft</span>
+                  <span>{errorMessage || 'Error saving draft'}</span>
+                </span>
+              )}
+              {saveStatus === 'publish-error' && (
+                <span className="flex items-center gap-1 text-rose-400 font-semibold" title={errorMessage}>
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>{errorMessage || 'Error publishing lesson'}</span>
                 </span>
               )}
             </div>

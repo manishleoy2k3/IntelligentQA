@@ -7706,7 +7706,7 @@
       "sortOrder": 1,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-24T09:09:42.848Z",
+      "updatedAt": "2026-11-24T09:32:17.608Z",
       "modules": [
         {
           "id": "mod-intro-ai",
@@ -7717,7 +7717,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-24T09:09:42.848Z",
+          "updatedAt": "2026-11-24T09:32:17.608Z",
           "lessons": [
             {
               "id": "les-what-is-ai",
@@ -8813,8 +8813,8 @@
               "sortOrder": 4,
               "status": "published",
               "createdAt": "2026-11-23T00:00:00.000Z",
-              "updatedAt": "2026-11-24T09:09:42.848Z",
-              "publishedAt": "2026-11-24T09:09:42.821Z",
+              "updatedAt": "2026-11-24T09:32:17.605Z",
+              "publishedAt": "2026-11-24T09:32:17.398Z",
               "blockData": {
                 "tiptapJson": {
                   "type": "doc",
@@ -109273,7 +109273,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-llm",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T09:11:45.910Z",
+      "lastAccessedAt": "2026-11-24T09:19:59.115Z",
       "completedAt": null
     },
     {
