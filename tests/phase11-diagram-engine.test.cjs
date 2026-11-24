@@ -240,18 +240,18 @@ describe('Phase 11: Architecture Diagram Generation Engine Verification', () => 
     assert.ok(review.score >= 80, 'Well-formed architecture must receive high score');
     assert.strictEqual(review.passed, true, 'Well-formed architecture must pass');
 
-    // 5. Instruction Update Verification
+    // 5. Instruction Update Verification: Strict Prohibition of Mermaid & Flowcharts
     assert.match(
       QA_TECHNICAL_CONTENT_ARCHITECT,
-      /For professional architecture diagrams, always use the structured Architecture Diagram Generation Engine/
+      /STRICT PROHIBITION OF MERMAID & FLOWCHARTS/
     );
     assert.match(
       QA_TECHNICAL_CONTENT_ARCHITECT,
-      /Never use Mermaid as the default renderer for professional system architecture/
+      /Mermaid and flowchart generation are strictly forbidden/
     );
     assert.match(
       QA_TECHNICAL_CONTENT_ARCHITECT,
-      /For educational infographics, invoke the dedicated image-generation capability when available/
+      /DO NOT generate flowcharts or Mermaid code blocks/
     );
   });
 

@@ -27,6 +27,26 @@ export class GeminiProvider implements AIProvider {
     const rawKey = request.apiKey || process.env.GEMINI_API_KEY || process.env.Gemini_API_KEY || '';
     const apiKey = sanitizeGeminiKey(rawKey);
 
+    if (request.apiKey !== undefined && !request.apiKey) {
+      return {
+        success: false,
+        error: {
+          code: 'API_KEY_MISSING',
+          message: 'Gemini API key is required.',
+        },
+      };
+    }
+
+    if (request.apiKey && !validateGeminiKeySyntax(request.apiKey).valid) {
+      return {
+        success: false,
+        error: {
+          code: 'INVALID_API_KEY',
+          message: 'Invalid Gemini API key syntax.',
+        },
+      };
+    }
+
     if (!apiKey) {
       console.warn('[GeminiProvider] No API key provided, serving high-fidelity SDET fallback response.');
       const fallbackData = generateFallbackEnhancement(request);
@@ -330,7 +350,7 @@ export class GeminiProvider implements AIProvider {
 
     const cleanText = lessonContentHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     const wordCount = cleanText ? cleanText.split(' ').length : 0;
-    const hasMermaid = lessonContentHtml.includes('mermaid') || /graph (TD|LR)|flowchart|sequenceDiagram/i.test(lessonContentHtml);
+    const hasArchitecture = lessonContentHtml.includes('architecture') || lessonContentHtml.includes('<svg') || lessonContentHtml.includes('data-diagram-type');
     const hasCode = lessonContentHtml.includes('<pre') || lessonContentHtml.includes('<code>') || lessonContentHtml.includes('language-');
     const hasFailures = /exception|error|troubleshoot|failure|staleelement|timeout|debug/i.test(lessonContentHtml);
 
@@ -345,7 +365,7 @@ export class GeminiProvider implements AIProvider {
       codeExamples = hasCode ? (lessonContentHtml.includes('typescript') || lessonContentHtml.includes('java') ? 85 : 70) : 35;
     }
     if (diagrams === 0) {
-      diagrams = hasMermaid ? 90 : 25;
+      diagrams = hasArchitecture ? 90 : 25;
     }
     if (failureHandling === 0) {
       failureHandling = hasFailures ? 82 : 30;
@@ -388,11 +408,11 @@ export class GeminiProvider implements AIProvider {
           detail: wordCount > 300 ? 'Core architecture motivation and definitions are articulated clearly.' : 'Expand core technical definitions.',
         },
         {
-          type: hasMermaid ? 'Good' : 'Missing',
+          type: hasArchitecture ? 'Good' : 'Missing',
           category: 'Architecture',
-          title: hasMermaid ? 'Architecture diagram is present.' : 'No architecture diagram.',
-          detail: hasMermaid ? 'Visual Mermaid diagram conveys component relationships.' : 'Students need visual representation of execution flow.',
-          actionableStep: hasMermaid ? undefined : 'Add a Mermaid flowchart showing component interaction.',
+          title: hasArchitecture ? 'Architecture diagram is present.' : 'No architecture diagram.',
+          detail: hasArchitecture ? 'Visual architecture diagram conveys component relationships.' : 'Students need visual representation of system architecture.',
+          actionableStep: hasArchitecture ? undefined : 'Use the Diagram Studio to generate and insert an Architecture Diagram.',
         },
         {
           type: hasCode ? 'Improve' : 'Missing',

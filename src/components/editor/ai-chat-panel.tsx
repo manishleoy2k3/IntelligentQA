@@ -144,9 +144,10 @@ export default function AiChatPanel({
   const PREDEFINED_ACTIONS = [
     {
       id: 'generate_visual_diagram',
+      alias: 'add_diagram',
       label: 'Generate Visual Diagram',
       icon: Workflow,
-      desc: 'Architecture SVG, Educational Infographic, or Flowchart Studio',
+      desc: 'Professional Architecture Diagram (SVG) or Educational Infographic Studio',
       prompt: 'Generate Visual Diagram',
     },
     {
@@ -169,13 +170,6 @@ export default function AiChatPanel({
       icon: Code,
       desc: 'Real-world QA scenarios & working code patterns',
       prompt: 'Add real-world QA automation scenarios, practical implementation examples, and production-ready code patterns.',
-    },
-    {
-      id: 'add_diagram',
-      label: 'Add Architecture Diagram',
-      icon: Workflow,
-      desc: 'Generate valid Mermaid architecture & flow diagrams',
-      prompt: 'Generate relevant Mermaid architecture and execution flow diagrams for this concept, explaining each component from a QA engineering perspective.',
     },
     {
       id: 'add_failures',
@@ -248,10 +242,12 @@ export default function AiChatPanel({
 
     if (
       (actionId === 'generate_visual_diagram' ||
-        promptToSend.toLowerCase() === 'generate visual diagram') &&
+        actionId === 'add_diagram' ||
+        promptToSend.toLowerCase() === 'generate visual diagram' ||
+        promptToSend.toLowerCase().includes('architecture diagram')) &&
       onOpenDiagramStudio
     ) {
-      onOpenDiagramStudio('');
+      onOpenDiagramStudio(promptToSend.toLowerCase() === 'generate visual diagram' ? '' : promptToSend);
       if (!customPrompt) setInputPrompt('');
       return;
     }
@@ -566,37 +562,6 @@ export default function AiChatPanel({
                     }}
                   />
                 </div>
-
-                {/* Mermaid Diagrams Rendered Indicator */}
-                {resp?.diagrams && resp.diagrams.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-[#27272A]">
-                    <span className="text-[10px] font-mono text-cyan-400 uppercase font-bold flex items-center gap-1">
-                      <Workflow className="w-3.5 h-3.5" />
-                      Generated Architecture Diagram
-                    </span>
-                    {resp.diagrams.map((diag, idx) => (
-                      <div key={idx} className="p-3 bg-[#0D0D11] rounded-xl border border-cyan-500/20 space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-zinc-200 text-xs">{diag.title}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleCopyText(diag.syntax, `diag-${idx}`)}
-                            className="text-[10px] text-zinc-400 hover:text-white flex items-center gap-1 cursor-pointer"
-                          >
-                            {copiedId === `diag-${idx}` ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                            <span>Copy Syntax</span>
-                          </button>
-                        </div>
-                        <pre className="p-2 rounded bg-black/60 text-[10px] font-mono text-cyan-300 overflow-x-auto">
-                          {diag.syntax}
-                        </pre>
-                        {diag.explanation && (
-                          <p className="text-[10px] text-zinc-400">{diag.explanation}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
 
                 {/* Warnings / Assumptions */}
                 {resp?.technical_warnings && resp.technical_warnings.length > 0 && (

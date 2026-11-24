@@ -9,7 +9,6 @@ import {
   Image as ImageIcon,
   CheckCircle2,
   AlertCircle,
-  FileCode,
   Download,
   RotateCcw,
   Check,
@@ -63,9 +62,6 @@ export default function DiagramStudioModal({
   const [infographicImageUrl, setInfographicImageUrl] = useState<string | null>(null);
   const [infographicMeta, setInfographicMeta] = useState<any>(null);
 
-  // Mode C Results
-  const [mermaidCode, setMermaidCode] = useState<string | null>(null);
-
   // Step tracking: 1: Config & Prompt, 2: Preview & Editing, 3: Approved
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -112,16 +108,6 @@ export default function DiagramStudioModal({
       {
         label: 'Test Automation Pyramid',
         prompt: 'Educational infographic of the Enterprise Test Pyramid: Unit, Integration, Component, API, and E2E UI Tests.',
-      },
-    ],
-    MODE_C_FLOWCHART: [
-      {
-        label: 'Login Test Execution Flow',
-        prompt: 'Mermaid flowchart for standard authentication test execution with retry logic and screenshot capture.',
-      },
-      {
-        label: 'API Request/Response Sequence',
-        prompt: 'Mermaid sequence diagram for OAuth2 Token Refresh Flow before API test assertions.',
       },
     ],
   };
@@ -171,28 +157,11 @@ export default function DiagramStudioModal({
           setInfographicMeta(data);
           setCurrentStep(2);
         } else {
-          setErrorMessage(data.error || 'Failed to generate educational infographic.');
+          setErrorMessage(data.error || 'Failed to generate educational infographic. Please try again later.');
         }
-      } else if (selectedMode === 'MODE_C_FLOWCHART') {
-        // Generate Mermaid syntax
-        const code = `flowchart TD
-    A[Start: Test Trigger] --> B[Initialize WebDriver]
-    B --> C{Driver Healthy?}
-    C -->|Yes| D[Navigate to Target URL]
-    C -->|No| E[Trigger Auto-Retry]
-    E --> B
-    D --> F[Execute Page Object Actions]
-    F --> G{Assertion Passed?}
-    G -->|Yes| H[Log Pass & Metrics]
-    G -->|No| I[Capture DOM & Screenshot]
-    I --> J[Throw StaleElement or Timeout]
-    H --> K[Tear Down Session]
-    J --> K`;
-        setMermaidCode(code);
-        setCurrentStep(2);
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Network error while generating diagram.');
+      setErrorMessage('Architecture / Infographic generation is temporarily unavailable. Please try again later.');
     } finally {
       setIsGenerating(false);
     }
@@ -261,21 +230,6 @@ export default function DiagramStudioModal({
           title: prompt,
           imageUrl: infographicImageUrl,
           type: 'infographic',
-        });
-        onClose();
-      } else if (selectedMode === 'MODE_C_FLOWCHART' && mermaidCode) {
-        const mermaidHtml = `
-<div class="my-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm p-4 overflow-hidden" data-diagram-type="flowchart">
-  <div class="mb-3 border-b border-slate-100 dark:border-neutral-800 pb-2">
-    <h4 class="text-sm font-bold text-slate-900 dark:text-white">Technical Flowchart</h4>
-  </div>
-  <pre class="p-4 rounded-xl bg-[#161616] text-[#81FF89] text-xs font-mono overflow-x-auto border border-[#2D2D2D]"><code>${escapeAttr(mermaidCode)}</code></pre>
-</div>`;
-
-        onInsertDiagram(mermaidHtml, {
-          title: 'Technical Flowchart',
-          mermaidCode,
-          type: 'flowchart',
         });
         onClose();
       }
@@ -349,22 +303,6 @@ export default function DiagramStudioModal({
           >
             <ImageIcon className="w-4 h-4" />
             Mode B: Educational Infographic (Image Gen)
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedMode('MODE_C_FLOWCHART');
-              setCurrentStep(1);
-            }}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              selectedMode === 'MODE_C_FLOWCHART'
-                ? 'bg-purple-600 text-white shadow-xs'
-                : 'bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-slate-700 dark:text-neutral-300 hover:border-slate-300'
-            }`}
-          >
-            <FileCode className="w-4 h-4" />
-            Mode C: Simple Flowchart (Mermaid)
           </button>
         </div>
 
@@ -531,18 +469,6 @@ export default function DiagramStudioModal({
                       className="max-h-[500px] w-auto rounded-xl object-contain shadow-md"
                     />
                   </div>
-                </div>
-              )}
-
-              {/* MODE C: Mermaid Preview */}
-              {selectedMode === 'MODE_C_FLOWCHART' && mermaidCode && (
-                <div className="space-y-3">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">
-                    Flowchart Definition
-                  </span>
-                  <pre className="p-4 rounded-xl bg-[#161616] text-[#81FF89] text-xs font-mono overflow-x-auto border border-[#2D2D2D] leading-relaxed">
-                    <code>{mermaidCode}</code>
-                  </pre>
                 </div>
               )}
             </div>

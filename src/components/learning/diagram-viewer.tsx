@@ -24,7 +24,7 @@ interface DiagramViewerProps {
 
 export default function DiagramViewer({ config, className = '' }: DiagramViewerProps) {
   const [isZoomed, setIsZoomed] = useState(false);
-  const [activeTab, setActiveTab] = useState<'diagram' | 'mermaid' | 'components'>('diagram');
+  const [activeTab, setActiveTab] = useState<'diagram' | 'components'>('diagram');
 
   const getIcon = () => {
     switch (config.type) {
@@ -98,21 +98,6 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
             </div>
           )}
 
-          {config.mermaidCode && (
-            <button
-              type="button"
-              onClick={() => setActiveTab(activeTab === 'mermaid' ? 'diagram' : 'mermaid')}
-              className={`p-1.5 rounded-lg border text-xs font-medium transition cursor-pointer ${
-                activeTab === 'mermaid'
-                  ? 'bg-purple-500/10 border-purple-500/30 text-purple-600 dark:text-purple-400'
-                  : 'bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:text-slate-900'
-              }`}
-              title="View Mermaid Syntax"
-            >
-              <FileCode className="w-3.5 h-3.5" />
-            </button>
-          )}
-
           <button
             type="button"
             onClick={() => setIsZoomed(!isZoomed)}
@@ -126,17 +111,7 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
 
       {/* Main Canvas */}
       <div className="p-6">
-        {activeTab === 'mermaid' && config.mermaidCode ? (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-neutral-400">
-              <span className="font-mono">Mermaid.js Diagram Definition</span>
-              <span>Open Source Flow Specification</span>
-            </div>
-            <pre className="p-4 rounded-xl bg-[#161616] text-[#81FF89] text-xs font-mono overflow-x-auto border border-[#2D2D2D] leading-relaxed">
-              <code>{config.mermaidCode}</code>
-            </pre>
-          </div>
-        ) : activeTab === 'components' && Array.isArray(config.componentsExplanation) && config.componentsExplanation.length > 0 ? (
+        {activeTab === 'components' && Array.isArray(config.componentsExplanation) && config.componentsExplanation.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             {config.componentsExplanation.map((comp, idx) => (
               <div

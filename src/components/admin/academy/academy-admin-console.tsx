@@ -798,20 +798,7 @@ test('deterministic enterprise verification', async ({ page }) => {
 
   const handleInsertDiagram = () => {
     let diagramHtml = '';
-    if (diagramType === 'mermaid') {
-      diagramHtml = `
-<div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 p-6 space-y-4">
-  <div class="border-b border-slate-200 dark:border-neutral-800 pb-3 flex justify-between items-center">
-    <div>
-      <h4 class="text-lg font-bold text-slate-900 dark:text-white">${diagramTitle || 'Mermaid Architecture Diagram'}</h4>
-      ${diagramCaption ? `<p class="text-xs text-slate-500">${diagramCaption}</p>` : ''}
-    </div>
-    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-500 font-bold uppercase">Mermaid</span>
-  </div>
-  <pre class="mermaid text-xs p-4 rounded-xl bg-slate-900 text-emerald-400 font-mono overflow-x-auto"><code>${diagramMermaid}</code></pre>
-  ${diagramSourceAttr ? `<p class="text-[10px] text-slate-400">Source: ${diagramSourceAttr}</p>` : ''}
-</div>`;
-    } else if (diagramType === 'image') {
+    if (diagramType === 'image') {
       diagramHtml = `
 <div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
   <div class="border-b border-slate-200 dark:border-neutral-800 pb-3">
@@ -2044,7 +2031,6 @@ test('deterministic enterprise verification', async ({ page }) => {
                           <option value="architecture">System Architecture / Layered</option>
                           <option value="client-server">Client-Server Model</option>
                           <option value="sequence">Sequence Flow</option>
-                          <option value="mermaid">Mermaid.js Code</option>
                           <option value="image">Uploaded PNG / JPG / SVG / WebP</option>
                         </select>
                       </div>
@@ -2072,18 +2058,7 @@ test('deterministic enterprise verification', async ({ page }) => {
                       />
                     </div>
 
-                    {diagramType === 'mermaid' ? (
-                      <div>
-                        <label className="block text-zinc-400 font-medium mb-1">Mermaid Definition Code</label>
-                        <textarea
-                          value={diagramMermaid}
-                          onChange={(e) => setDiagramMermaid(e.target.value)}
-                          rows={5}
-                          className="w-full p-3 rounded-xl bg-[#141414] border border-[#2D2D2D] text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500 leading-relaxed"
-                          placeholder="graph TD&#10;  A[Client] --> B[Server]"
-                        />
-                      </div>
-                    ) : diagramType === 'image' ? (
+                    {diagramType === 'image' ? (
                       <div className="space-y-3">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>

@@ -7438,6 +7438,57 @@
       "category": "Infographics",
       "uploadedAt": "2026-11-24T11:49:00.958Z",
       "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795522714676",
+      "filename": "infographic_1795522714650_oofd5.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795522714650_oofd5.png",
+      "mimeType": "image/png",
+      "size": 9954,
+      "dimensions": {
+        "width": 1200,
+        "height": 675
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T12:18:34.676Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795522806866",
+      "filename": "infographic_1795522806841_6ah94.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795522806841_6ah94.png",
+      "mimeType": "image/png",
+      "size": 9954,
+      "dimensions": {
+        "width": 1200,
+        "height": 675
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T12:20:06.866Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795522859779",
+      "filename": "infographic_1795522859755_uhxm7.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795522859755_uhxm7.png",
+      "mimeType": "image/png",
+      "size": 9954,
+      "dimensions": {
+        "width": 1200,
+        "height": 675
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T12:20:59.779Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
     }
   ],
   "cmsAuditLogs": [
@@ -7650,6 +7701,48 @@
       "entityId": "med-info-1795520940958",
       "entityTitle": "infographic_1795520940933_odvsr.png",
       "details": "Uploaded media infographic_1795520940933_odvsr.png (image/png)"
+    },
+    {
+      "id": "log-1795522714814",
+      "timestamp": "2026-11-24T12:18:34.814Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795522714676",
+      "entityTitle": "infographic_1795522714650_oofd5.png",
+      "details": "Uploaded media infographic_1795522714650_oofd5.png (image/png)"
+    },
+    {
+      "id": "log-1795522807003",
+      "timestamp": "2026-11-24T12:20:07.003Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795522806866",
+      "entityTitle": "infographic_1795522806841_6ah94.png",
+      "details": "Uploaded media infographic_1795522806841_6ah94.png (image/png)"
+    },
+    {
+      "id": "log-1795522859927",
+      "timestamp": "2026-11-24T12:20:59.927Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795522859779",
+      "entityTitle": "infographic_1795522859755_uhxm7.png",
+      "details": "Uploaded media infographic_1795522859755_uhxm7.png (image/png)"
     }
   ],
   "academyCategories": [

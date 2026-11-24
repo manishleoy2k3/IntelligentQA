@@ -55,13 +55,12 @@ export interface InterviewQuestionItem {
 export interface TechnicalInterviewQuestion extends InterviewQuestionItem {}
 
 export interface TechnicalDiagramConfig {
-  type: 'pipeline' | 'layers' | 'client-server' | 'agent-loop' | 'sequence' | 'svg' | 'mermaid' | 'image';
+  type: 'pipeline' | 'layers' | 'client-server' | 'agent-loop' | 'sequence' | 'svg' | 'image';
   title: string;
   caption?: string;
   nodes?: ArchitectureNode[];
   connections?: ArchitectureConnection[];
   svgContent?: string;
-  mermaidCode?: string;
   imageUrl?: string;
   altText?: string;
   sourceAttribution?: string;

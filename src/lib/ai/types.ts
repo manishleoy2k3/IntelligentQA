@@ -96,7 +96,7 @@ export interface AIStructuredResponse {
   generated_content: string;
   review?: TechnicalReviewData;
   diagrams?: Array<{
-    type: 'mermaid' | 'svg' | 'ascii';
+    type: 'svg' | 'architecture' | 'image';
     title: string;
     syntax: string;
     explanation: string;

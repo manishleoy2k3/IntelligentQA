@@ -103,7 +103,7 @@ export interface DiagramReviewResult {
   issues: DiagramReviewIssue[];
 }
 
-export type DiagramEngineMode = 'MODE_A_ARCHITECTURE' | 'MODE_B_INFOGRAPHIC' | 'MODE_C_FLOWCHART';
+export type DiagramEngineMode = 'MODE_A_ARCHITECTURE' | 'MODE_B_INFOGRAPHIC';
 
 export interface StoredDiagramRecord {
   id: string;

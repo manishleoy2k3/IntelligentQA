@@ -14,7 +14,8 @@ Phase 11 transitions the **IntelligentQA Learning Academy** from basic Mermaid-s
 Rather than relying on basic flowchart boxes or asking generative image models to invent system components, the platform now utilizes a structured, deterministic architecture generation workflow:
 1. **Mode A — Professional Architecture Diagram**: Text-based QA Content Architect generates structured, schema-validated JSON representing real-world components, communication protocols, and architectural tiers. Layout is calculated using **ELK.js** (`elkjs`) and rendered interactively with **React Flow** (`@xyflow/react`) and standalone SVG vector graphics with 6 enterprise themes.
 2. **Mode B — Educational Technical Infographic**: Powered by a dedicated image-generation pipeline (**Google Gemini Imagen 3** / Local High-Resolution Rasterizer), generating persistent PNG graphics for complex conceptual breakdowns (e.g. LLMs, Tokenization, Self-Attention, Test Pyramid).
-3. **Mode C — Simple Technical Flowchart**: Preserves Mermaid exclusively for sequence diagrams, decision trees, and simple conditional workflows.
+
+> **Note on Flowchart / Mermaid Elimination:** In strict adherence to user requirements, Mermaid and generic flowchart generation have been **completely eliminated** across the entire academy (UI tabs, AI prompts, fallback generators, and lesson renderers). The platform generates only real architectural SVG diagrams and technical infographics. If generation is not possible, the system prompts the user to try again later rather than falling back to low-quality flowcharts.
 
 ---
 
@@ -28,40 +29,40 @@ The architecture separates structured data specification from vector rendering a
 │  (Triggered via: Enhance with AI / Lesson Editor / CMS Media Library)  │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
-        ┌───────────────────────────┼───────────────────────────┐
-        ▼                           ▼                           ▼
- ┌───────────────┐          ┌───────────────┐          ┌───────────────┐
- │    MODE A     │          │    MODE B     │          │    MODE C     │
- │ Architecture  │          │  Infographic  │          │   Flowchart   │
- └──────┬────────┘          └───────┬───────┘          └───────┬───────┘
-        │                           │                          │
-        ▼                           ▼                          ▼
- ┌───────────────┐          ┌───────────────┐          ┌───────────────┐
- │ Gemini Flash  │          │ Gemini Imagen │          │  Mermaid.js   │
- │ Text / SDET   │          │  (Dedicated   │          │  Live Syntax  │
- │ Template      │          │  Image Model) │          │  Renderer     │
- └──────┬────────┘          └───────┬───────┘          └───────┬───────┘
-        │                           │                          │
-        ▼                           ▼                          ▼
- ┌───────────────┐          ┌───────────────┐          ┌───────────────┐
- │ Zod Schema    │          │ Persistent    │          │ HTML Wrap &   │
- │ & AI Review   │          │ PNG Storage   │          │ Syntax Copy   │
- └──────┬────────┘          │ (/uploads/)   │          └───────┬───────┘
-        │                   └───────┬───────┘                  │
-        ▼                           │                          │
- ┌───────────────┐                  │                          │
- │  ELK.js Graph │                  │                          │
- │  Layout Auto  │                  │                          │
- └──────┬────────┘                  │                          │
-        │                           │                          │
-   ┌────┴──────────────────────────┐│                          │
-   ▼                               ▼│                          │
-┌───────────────────────┐ ┌────────────────────────┐           │
-│ React Flow Canvas     │ │ Standalone SVG & PNG   │           │
-│ (Interactive Editing) │ │ Vector Export          │           │
-└───────────┬───────────┘ └────────┬───────────────┘           │
-            │                      │                           │
-            └───────────┬──────────┴───────────────────────────┘
+        ┌───────────────────────────┴───────────────────────────┐
+        ▼                                                       ▼
+ ┌───────────────┐                                       ┌───────────────┐
+ │    MODE A     │                                       │    MODE B     │
+ │ Architecture  │                                       │  Infographic  │
+ └──────┬────────┘                                       └───────┬───────┘
+        │                                                        │
+        ▼                                                        ▼
+ ┌───────────────┐                                       ┌───────────────┐
+ │ Gemini Flash  │                                       │ Gemini Imagen │
+ │ Text / SDET   │                                       │  (Dedicated   │
+ │ Template      │                                       │  Image Model) │
+ └──────┬────────┘                                       └───────┬───────┘
+        │                                                        │
+        ▼                                                        ▼
+ ┌───────────────┐                                       ┌───────────────┐
+ │ Zod Schema    │                                       │ Persistent    │
+ │ & AI Review   │                                       │ PNG Storage   │
+ └──────┬────────┘                                       │ (/uploads/)   │
+        │                                                └───────┬───────┘
+        ▼                                                        │
+ ┌───────────────┐                                               │
+ │  ELK.js Graph │                                               │
+ │  Layout Auto  │                                               │
+ └──────┬────────┘                                               │
+        │                                                        │
+   ┌────┴──────────────────────────┐                             │
+   ▼                               ▼                             │
+┌───────────────────────┐ ┌────────────────────────┐             │
+│ React Flow Canvas     │ │ Standalone SVG & PNG   │             │
+│ (Interactive Editing) │ │ Vector Export          │             │
+└───────────┬───────────┘ └────────┬───────────────┘             │
+            │                      │                             │
+            └───────────┬──────────┴─────────────────────────────┘
                         ▼
        ┌─────────────────────────────────┐
        │   Tiptap WYSIWYG Lesson Editor  │
