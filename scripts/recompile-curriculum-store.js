@@ -1,0 +1,242 @@
+const fs = require('fs');
+const path = require('path');
+
+function escapeHtml(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function generateStandardLessonHtml(data) {
+  let html = '';
+
+  // 1. Overview Prose (No boxed cards, clean lead paragraphs matching AI Academy)
+  if (data.overview) {
+    if (data.overview.whatIsIt) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.overview.whatIsIt)}</p>\n`;
+    }
+    if (data.overview.whyImportant) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.overview.whyImportant)}</p>\n`;
+    }
+    if (data.overview.whereUsed) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300"><span style="color: #047857;"><strong>Testing Application: </strong></span>${escapeHtml(data.overview.whereUsed)}</p>\n`;
+    }
+  }
+
+  // 2. Learning Objectives (Clean heading, NO section labels)
+  if (Array.isArray(data.learningObjectives) && data.learningObjectives.length > 0) {
+    html += `
+<h2 id="1-learning-objectives" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">1. Learning Objectives</h2>
+<ul class="list-disc pl-6 space-y-1.5 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.learningObjectives.map(o => `<li class="leading-relaxed">${escapeHtml(o)}</li>`).join('\n  ')}
+</ul>
+`;
+  }
+
+  // 3. Concept Explanation (Clean heading, NO section labels)
+  if (data.conceptExplanation) {
+    html += `
+<h2 id="2-detailed-concept-explanation" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">2. Detailed Concept Explanation</h2>
+`;
+    if (Array.isArray(data.conceptExplanation.theory)) {
+      data.conceptExplanation.theory.forEach(t => {
+        html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(t)}</p>\n`;
+      });
+    }
+    if (data.conceptExplanation.practicalUnderstanding) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300"><span style="color: #047857;"><strong>Core Principle: </strong></span>${escapeHtml(data.conceptExplanation.practicalUnderstanding)}</p>\n`;
+    }
+    if (Array.isArray(data.conceptExplanation.terminology) && data.conceptExplanation.terminology.length > 0) {
+      html += `
+<div class="overflow-x-auto my-6 rounded-xl border border-slate-200 dark:border-neutral-800">
+  <table class="w-full text-left border-collapse text-xs bg-slate-50/50 dark:bg-neutral-950/60">
+    <thead>
+      <tr class="border-b border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-neutral-900">
+        <th class="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Terminology</th>
+        <th class="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Definition</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-200 dark:divide-neutral-800">
+      ${data.conceptExplanation.terminology.map(t => `<tr><td class="px-4 py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">${escapeHtml(t.term)}</td><td class="px-4 py-3 text-slate-600 dark:text-neutral-300 leading-relaxed">${escapeHtml(t.definition)}</td></tr>`).join('\n      ')}
+    </tbody>
+  </table>
+</div>
+`;
+    }
+  }
+
+  // 4. Execution Mechanics & Architecture
+  if (data.howItWorks && Array.isArray(data.howItWorks.steps) && data.howItWorks.steps.length > 0) {
+    html += `
+<h2 id="3-architecture-and-execution-mechanics" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">3. Architecture &amp; Execution Mechanics</h2>
+`;
+    if (data.howItWorks.internalMechanism) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.howItWorks.internalMechanism)}</p>\n`;
+    }
+    html += `
+<ol class="list-decimal pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.howItWorks.steps.map(s => `<li class="leading-relaxed"><strong>${escapeHtml(s.title)}:</strong> ${escapeHtml(s.description)}</li>`).join('\n  ')}
+</ol>
+`;
+  }
+
+  // 5. Step-by-Step Implementation Guide
+  if (data.practicalImplementation && Array.isArray(data.practicalImplementation.steps) && data.practicalImplementation.steps.length > 0) {
+    html += `
+<h2 id="4-step-by-step-implementation-guide" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">4. Step-by-Step Implementation Guide</h2>
+`;
+    if (data.practicalImplementation.overview) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.practicalImplementation.overview)}</p>\n`;
+    }
+    html += `
+<ol class="list-decimal pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.practicalImplementation.steps.map((st) => {
+    if (typeof st === 'string') {
+      return `<li class="leading-relaxed">${escapeHtml(st)}</li>`;
+    }
+    const label = st.title || st.action || '';
+    const details = st.details || '';
+    return `<li class="leading-relaxed">${label ? `<strong>${escapeHtml(label)}:</strong> ` : ''}${escapeHtml(details)}</li>`;
+  }).join('\n  ')}
+</ol>
+`;
+  }
+
+  // 6. Production Implementation Code
+  if (Array.isArray(data.codeExamples) && data.codeExamples.length > 0) {
+    html += `
+<h2 id="5-production-implementation-code" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">5. Production Implementation Code</h2>
+`;
+    data.codeExamples.forEach(codeItem => {
+      const headerTitle = codeItem.filename || codeItem.title || 'Code Example';
+      const lang = codeItem.language || 'text';
+      html += `
+<p class="text-xs font-mono font-bold text-slate-500 dark:text-neutral-400 mt-4 mb-2">${escapeHtml(headerTitle)} (${escapeHtml(lang)})</p>
+<div class="my-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-[#0d1117] overflow-hidden text-xs font-mono">
+  <pre class="p-4 text-[#81FF89] overflow-x-auto leading-relaxed"><code class="language-${escapeHtml(lang)}">${escapeHtml(codeItem.code)}</code></pre>
+</div>
+`;
+      if (codeItem.explanation) {
+        html += `<p class="text-xs text-slate-600 dark:text-neutral-400 my-2 leading-relaxed">${escapeHtml(codeItem.explanation)}</p>\n`;
+      }
+    });
+  }
+
+  // 7. Real-World QA Use Cases
+  if (Array.isArray(data.qaUseCases) && data.qaUseCases.length > 0) {
+    html += `
+<h2 id="6-real-world-qa-use-cases" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">6. Real-World QA Use Cases</h2>
+<ul class="list-disc pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.qaUseCases.map(u => `<li class="leading-relaxed"><strong>${escapeHtml(u.title)}:</strong> ${escapeHtml(u.scenario)} — <em>${escapeHtml(u.enterpriseApplication)}</em></li>`).join('\n  ')}
+</ul>
+`;
+  }
+
+  // 8. Common Pitfalls and Mitigation Strategies
+  if (Array.isArray(data.commonProblems) && data.commonProblems.length > 0) {
+    html += `
+<h2 id="7-common-pitfalls-and-mitigation-strategies" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">7. Common Pitfalls and Mitigation Strategies</h2>
+<div class="space-y-4 my-4">
+  ${data.commonProblems.map(p => {
+    const steps = Array.isArray(p.troubleshooting) ? p.troubleshooting : Array.isArray(p.troubleshootingSteps) ? p.troubleshootingSteps : [];
+    return `
+    <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2">
+      <p class="font-bold font-mono text-red-600 dark:text-red-400">⚠️ Error: ${escapeHtml(p.error)}</p>
+      <p class="text-slate-700 dark:text-neutral-300"><strong>Root Cause:</strong> ${escapeHtml(p.rootCause)}</p>
+      ${steps.length > 0 ? `<ul class="list-disc pl-5 space-y-1 text-slate-600 dark:text-neutral-400">${steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : ''}
+      ${p.codeFix ? `<pre class="p-3 rounded-lg bg-neutral-900 text-[#81FF89] font-mono text-[11px] overflow-x-auto my-2"><code>${escapeHtml(p.codeFix)}</code></pre>` : ''}
+    </div>
+    `;
+  }).join('\n  ')}
+</div>
+`;
+  }
+
+  // 9. Enterprise Best Practices
+  if (Array.isArray(data.bestPractices) && data.bestPractices.length > 0) {
+    html += `
+<h2 id="8-enterprise-best-practices" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">8. Enterprise Best Practices</h2>
+<ul class="list-disc pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.bestPractices.map(bp => `<li class="leading-relaxed"><strong>${escapeHtml(bp.title)} (${escapeHtml(bp.category)}):</strong> ${escapeHtml(bp.recommendation)}</li>`).join('\n  ')}
+</ul>
+`;
+  }
+
+  // 10. Key Takeaways & Summary
+  if (data.summary) {
+    html += `
+<h2 id="9-key-takeaways-summary" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">9. Key Takeaways &amp; Summary</h2>
+`;
+    if (Array.isArray(data.summary.takeaways) && data.summary.takeaways.length > 0) {
+      html += `
+<ul class="list-disc pl-6 space-y-1.5 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.summary.takeaways.map(t => `<li class="leading-relaxed">${escapeHtml(t)}</li>`).join('\n  ')}
+</ul>
+`;
+    }
+    if (data.summary.nextSteps) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300"><strong>Next Steps:</strong> ${escapeHtml(data.summary.nextSteps)}</p>\n`;
+    }
+  }
+
+  // 11. Top Interview Questions & Answers
+  if (Array.isArray(data.interviewQuestions) && data.interviewQuestions.length > 0) {
+    html += `
+<h2 id="10-top-interview-questions-answers" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">10. Top Interview Questions &amp; Answers</h2>
+`;
+    data.interviewQuestions.forEach((q, idx) => {
+      html += `
+<p class="my-3 leading-relaxed text-slate-900 dark:text-white"><strong>Q${idx + 1} (${escapeHtml(q.level)}): ${escapeHtml(q.question)}</strong></p>
+<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300 pl-4 border-l-2 border-emerald-500/40">${escapeHtml(q.answer)}</p>
+`;
+    });
+  }
+
+  return html;
+}
+
+const storePath = path.join(__dirname, '../src/lib/curriculum-data-store.json');
+const raw = fs.readFileSync(storePath, 'utf8');
+const store = JSON.parse(raw);
+
+// 1. Re-order categories: Playwright (2), Selenium (3)
+const pwCat = store.academyCategories.find(c => c.id === 'cat-playwright');
+const selCat = store.academyCategories.find(c => c.id === 'cat-selenium');
+if (pwCat && selCat) {
+  pwCat.sortOrder = 2;
+  selCat.sortOrder = 3;
+}
+store.academyCategories.sort((a, b) => a.sortOrder - b.sortOrder);
+
+// 2. Re-order courses: AI Academy (1), Playwright (2), Selenium (3)
+const pwCourse = store.academyCourses.find(c => c.id === 'course-playwright-mastery');
+const selCourse = store.academyCourses.find(c => c.id === 'course-selenium-mastery');
+if (pwCourse && selCourse) {
+  pwCourse.sortOrder = 2;
+  selCourse.sortOrder = 3;
+}
+store.academyCourses.sort((a, b) => a.sortOrder - b.sortOrder);
+
+// 3. Recompile all lessons to remove Section labels and boxed card wrappers
+let recompiledCount = 0;
+for (const course of (store.academyCourses || [])) {
+  for (const module of (course.modules || [])) {
+    for (const lesson of (module.lessons || [])) {
+      if (lesson.blockData?.standardData) {
+        lesson.contentHtml = generateStandardLessonHtml(lesson.blockData.standardData);
+        recompiledCount++;
+      } else if (lesson.contentHtml) {
+        lesson.contentHtml = lesson.contentHtml.replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '');
+        lesson.contentHtml = lesson.contentHtml.replace(/\b(?:SECTION|Section)\s*\d+\s*[·•-]\s*[^<\n]+/g, '');
+      }
+    }
+  }
+}
+
+fs.writeFileSync(storePath, JSON.stringify(store, null, 2), 'utf8');
+console.log(`Successfully recompiled ${recompiledCount} lessons into uniform prose format!`);
+console.log('Courses order:', store.academyCourses.map(c => `${c.title} (${c.sortOrder})`));
+console.log('Categories order:', store.academyCategories.map(c => `${c.title} (${c.sortOrder})`));

@@ -59,9 +59,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">
-                Section 1 · Foundation
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Lesson Overview
               </h3>
@@ -107,9 +104,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <Target className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-indigo-600 dark:text-indigo-400">
-                Section 2 · Goals
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Learning Objectives
               </h3>
@@ -137,9 +131,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-blue-600 dark:text-blue-400">
-                Section 3 · In-Depth Theory
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Concept Explanation &amp; Core Mechanics
               </h3>
@@ -188,10 +179,7 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
       {data.architectureDiagram && (
         <section id="section-diagram">
           <div className="mb-2 flex items-center gap-2">
-            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">
-              Section 4 · Visual Architecture
-            </span>
-          </div>
+            </div>
           <DiagramViewer config={data.architectureDiagram} />
         </section>
       )}
@@ -204,9 +192,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-600 dark:text-amber-400">
-                Section 5 · Execution Flow
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 How It Works: Step-by-Step Mechanism
               </h3>
@@ -257,9 +242,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <Terminal className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-violet-600 dark:text-violet-400">
-                Section 6 · Hands-on Guide
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Practical Step-by-Step Implementation
               </h3>
@@ -326,10 +308,7 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
       {data.codeExamples && data.codeExamples.length > 0 && (
         <section id="section-code" className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">
-              Section 7 · Working Code Examples
-            </span>
-          </div>
+            </div>
 
           {/* Multiple Language Tab Switcher */}
           {data.codeExamples.length > 1 && (
@@ -373,9 +352,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-cyan-600 dark:text-cyan-400">
-                Section 8 · Production Application
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Real-World QA &amp; SDET Use Cases
               </h3>
@@ -410,9 +386,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-red-600 dark:text-red-400">
-                Section 9 · Debugging &amp; RCA
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Common Failures, Root Causes &amp; Fixes
               </h3>
@@ -487,9 +460,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">
-                Section 10 · Enterprise Quality Gates
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Industry-Standard Best Practices
               </h3>
@@ -529,9 +499,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <Scale className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-purple-600 dark:text-purple-400">
-                Section 11 · Trade-off Analysis
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 {data.comparison.title || 'Comparison & Tool Alternatives'}
               </h3>
@@ -604,9 +571,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <HelpCircle className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-rose-600 dark:text-rose-400">
-                Section 12 · Technical Interview Prep
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Interview Questions: Beginner to Architect
               </h3>
@@ -674,9 +638,6 @@ export default function StandardLessonRenderer({ data, className = '' }: Standar
               <BookmarkCheck className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">
-                Section 13 · Review &amp; Next Steps
-              </span>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Lesson Summary &amp; Key Takeaways
               </h3>

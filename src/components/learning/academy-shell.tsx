@@ -13,7 +13,7 @@ import RelatedLessons from './related-lessons';
 import ModuleOverviewCard from './module-overview-card';
 import CourseOverviewCard from './course-overview-card';
 import LlmArchitectureInfographic from './llm-architecture-infographic';
-import StandardLessonRenderer from './standard-lesson-template';
+import { generateStandardLessonHtml } from '@/lib/standard-lesson-compiler';
 import {
   getLessonBySlug,
   getAdjacentLessons,
@@ -424,10 +424,17 @@ export default function AcademyShell({
   const moduleCompletedCount = moduleLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
   const modulePercent = moduleTotalLessons > 0 ? Math.round((moduleCompletedCount / moduleTotalLessons) * 100) : 0;
 
-  // Process HTML for performance: inject lazy loading on images and clean up duplicate starting headers/subtitles
+  // Process HTML for performance: compile standardData if present or clean up duplicate starting headers/subtitles
   const optimizedHtml = useMemo(() => {
-    if (!apiLessonData?.lesson?.contentHtml) return '';
-    let html = apiLessonData.lesson.contentHtml;
+    let html = '';
+    // If standardData is present, always compile fresh in clean uniform format
+    if (apiLessonData?.lesson?.blockData?.standardData) {
+      html = generateStandardLessonHtml(apiLessonData.lesson.blockData.standardData);
+    } else if (apiLessonData?.lesson?.contentHtml) {
+      html = apiLessonData.lesson.contentHtml;
+    }
+
+    if (!html) return '';
 
     // 1. Remove leading <h1>...</h1> tag (which duplicates LessonHeader's H1 title)
     html = html.replace(/^\s*<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '');
@@ -435,12 +442,16 @@ export default function AcademyShell({
     // 2. Remove immediately following subtitle/summary paragraph (which duplicates LessonHeader's summary)
     html = html.replace(/^\s*<p\b[^>]*>\s*(?:<span\b[^>]*>)?\s*<em\b[^>]*>[\s\S]*?<\/em>\s*(?:<\/span>)?\s*<\/p>\s*/i, '');
 
-    // 3. Inject lazy loading and decoding async on images
+    // 3. Remove any legacy section headers/labels like "SECTION 2 · OBJECTIVES" or "Section 1 · Overview"
+    html = html.replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '');
+    html = html.replace(/\b(?:SECTION|Section)\s*\d+\s*[·•-]\s*[^<\n]+/g, '');
+
+    // 4. Inject lazy loading and decoding async on images
     return html.replace(
       /<img\s+(?![^>]*\bloading=)/gi,
       '<img loading="lazy" decoding="async" '
     );
-  }, [apiLessonData?.lesson?.contentHtml]);
+  }, [apiLessonData?.lesson?.contentHtml, apiLessonData?.lesson?.blockData?.standardData]);
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
@@ -755,12 +766,7 @@ export default function AcademyShell({
                     <LlmArchitectureInfographic />
                   )}
 
-                  {/* Standardized 13-Section Template Data if provided */}
-                  {apiLessonData?.lesson?.blockData?.standardData && (
-                    <StandardLessonRenderer data={apiLessonData.lesson.blockData.standardData} />
-                  )}
-
-                  {/* Supplementary Document HTML if provided from uploaded document */}
+                  {/* Uniform Technical Documentation Content (Prose format across all courses) */}
                   {optimizedHtml && (
                     <div
                       className="prose dark:prose-invert max-w-none my-6 text-slate-800 dark:text-neutral-200 docx-rendered-content leading-relaxed"

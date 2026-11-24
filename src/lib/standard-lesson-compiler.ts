@@ -2,7 +2,7 @@ import { StandardLessonTemplateData } from '@/types/standard-lesson';
 
 /**
  * Utility: Compiles StandardLessonTemplateData into rich semantic HTML
- * for storage in curriculum-data-store.json or DOCX export
+ * in a clean, uniform technical article format identical to AI Academy.
  */
 export function generateStandardLessonHtml(data: StandardLessonTemplateData): string {
   const escapeHtml = (str: string) =>
@@ -13,167 +13,189 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
 
-  let html = `<div class="standard-lesson-container space-y-8 text-slate-800 dark:text-neutral-200">`;
+  let html = '';
 
-  // 1. Overview
+  // 1. Overview Prose (No boxed cards, clean lead paragraphs matching AI Academy)
   if (data.overview) {
-    html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
-          <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 1 · Overview</span>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Lesson Overview</h3>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
-            <h4 class="font-bold uppercase text-slate-500 mb-1">What is this concept?</h4>
-            <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">${escapeHtml(data.overview.whatIsIt)}</p>
-          </div>
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
-            <h4 class="font-bold uppercase text-slate-500 mb-1">Why is it important?</h4>
-            <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">${escapeHtml(data.overview.whyImportant)}</p>
-          </div>
-          <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <h4 class="font-bold uppercase text-emerald-500 mb-1">Where is it used in testing?</h4>
-            <p class="text-slate-700 dark:text-neutral-300 leading-relaxed">${escapeHtml(data.overview.whereUsed)}</p>
-          </div>
-        </div>
-      </div>
-    `;
+    if (data.overview.whatIsIt) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.overview.whatIsIt)}</p>\n`;
+    }
+    if (data.overview.whyImportant) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.overview.whyImportant)}</p>\n`;
+    }
+    if (data.overview.whereUsed) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300"><span style="color: #047857;"><strong>Testing Application: </strong></span>${escapeHtml(data.overview.whereUsed)}</p>\n`;
+    }
   }
 
-  // 2. Objectives
+  // 2. Learning Objectives
   if (Array.isArray(data.learningObjectives) && data.learningObjectives.length > 0) {
     html += `
-      <div class="rounded-2xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50/30 dark:bg-indigo-950/20 p-6 space-y-3">
-        <span class="text-xs font-mono font-bold uppercase text-indigo-500">Section 2 · Objectives</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Learning Objectives</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          ${data.learningObjectives.map(o => `<div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-indigo-100 dark:border-indigo-900 text-slate-700 dark:text-neutral-200 font-medium">✓ ${escapeHtml(o)}</div>`).join('')}
-        </div>
-      </div>
-    `;
+<h2 id="1-learning-objectives" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">1. Learning Objectives</h2>
+<ul class="list-disc pl-6 space-y-1.5 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.learningObjectives.map(o => `<li class="leading-relaxed">${escapeHtml(o)}</li>`).join('\n  ')}
+</ul>
+`;
   }
 
   // 3. Concept Explanation
   if (data.conceptExplanation) {
     html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
-          <span class="text-xs font-mono font-bold uppercase text-blue-500">Section 3 · Theory</span>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Concept Explanation</h3>
-        </div>
-        <div class="space-y-3 text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">
-          ${Array.isArray(data.conceptExplanation.theory) ? data.conceptExplanation.theory.map(t => `<p>${t}</p>`).join('') : ''}
-        </div>
-        ${Array.isArray(data.conceptExplanation.terminology) && data.conceptExplanation.terminology.length > 0 ? `
-          <div class="pt-2">
-            <h4 class="text-xs font-bold uppercase text-slate-500 mb-2">Key Terminology:</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              ${data.conceptExplanation.terminology.map(t => `<div class="p-3 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-xs"><strong class="block text-slate-900 dark:text-white mb-1">${escapeHtml(t.term)}</strong><span class="text-slate-600 dark:text-neutral-400">${escapeHtml(t.definition)}</span></div>`).join('')}
-            </div>
-          </div>
-        ` : ''}
-      </div>
-    `;
+<h2 id="2-detailed-concept-explanation" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">2. Detailed Concept Explanation</h2>
+`;
+    if (Array.isArray(data.conceptExplanation.theory)) {
+      data.conceptExplanation.theory.forEach(t => {
+        html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(t)}</p>\n`;
+      });
+    }
+    if (data.conceptExplanation.practicalUnderstanding) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300"><span style="color: #047857;"><strong>Core Principle: </strong></span>${escapeHtml(data.conceptExplanation.practicalUnderstanding)}</p>\n`;
+    }
+    if (Array.isArray(data.conceptExplanation.terminology) && data.conceptExplanation.terminology.length > 0) {
+      html += `
+<div class="overflow-x-auto my-6 rounded-xl border border-slate-200 dark:border-neutral-800">
+  <table class="w-full text-left border-collapse text-xs bg-slate-50/50 dark:bg-neutral-950/60">
+    <thead>
+      <tr class="border-b border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-neutral-900">
+        <th class="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Terminology</th>
+        <th class="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Definition</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-200 dark:divide-neutral-800">
+      ${data.conceptExplanation.terminology.map(t => `<tr><td class="px-4 py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">${escapeHtml(t.term)}</td><td class="px-4 py-3 text-slate-600 dark:text-neutral-300 leading-relaxed">${escapeHtml(t.definition)}</td></tr>`).join('\n      ')}
+    </tbody>
+  </table>
+</div>
+`;
+    }
   }
 
-  // 4. Code Examples
+  // 4. Execution Mechanics & Architecture
+  if (data.howItWorks && Array.isArray(data.howItWorks.steps) && data.howItWorks.steps.length > 0) {
+    html += `
+<h2 id="3-architecture-and-execution-mechanics" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">3. Architecture &amp; Execution Mechanics</h2>
+`;
+    if (data.howItWorks.internalMechanism) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.howItWorks.internalMechanism)}</p>\n`;
+    }
+    html += `
+<ol class="list-decimal pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.howItWorks.steps.map(s => `<li class="leading-relaxed"><strong>${escapeHtml(s.title)}:</strong> ${escapeHtml(s.description)}</li>`).join('\n  ')}
+</ol>
+`;
+  }
+
+  // 5. Step-by-Step Implementation Guide
+  if (data.practicalImplementation && Array.isArray(data.practicalImplementation.steps) && data.practicalImplementation.steps.length > 0) {
+    html += `
+<h2 id="4-step-by-step-implementation-guide" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">4. Step-by-Step Implementation Guide</h2>
+`;
+    if (data.practicalImplementation.overview) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300">${escapeHtml(data.practicalImplementation.overview)}</p>\n`;
+    }
+    html += `
+<ol class="list-decimal pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.practicalImplementation.steps.map((st: any) => {
+    if (typeof st === 'string') {
+      return `<li class="leading-relaxed">${escapeHtml(st)}</li>`;
+    }
+    const label = st.title || st.action || '';
+    const details = st.details || '';
+    return `<li class="leading-relaxed">${label ? `<strong>${escapeHtml(label)}:</strong> ` : ''}${escapeHtml(details)}</li>`;
+  }).join('\n  ')}
+</ol>
+`;
+  }
+
+  // 6. Production Implementation Code
   if (Array.isArray(data.codeExamples) && data.codeExamples.length > 0) {
     html += `
-      <div class="space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 7 · Implementation Code</span>
-        ${data.codeExamples.map(codeItem => `
-          <div class="rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-900 overflow-hidden font-mono text-xs">
-            <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 flex justify-between items-center text-slate-300">
-              <span class="font-bold text-slate-200">${escapeHtml(codeItem.filename || codeItem.title)}</span>
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 text-[10px] uppercase">${escapeHtml(codeItem.language)}</span>
-            </div>
-            <pre class="p-4 text-[#81FF89] overflow-x-auto leading-relaxed"><code>${escapeHtml(codeItem.code)}</code></pre>
-            ${codeItem.explanation ? `<div class="px-4 py-2 bg-slate-950 text-[11px] text-slate-400 border-t border-slate-800">${escapeHtml(codeItem.explanation)}</div>` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
+<h2 id="5-production-implementation-code" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">5. Production Implementation Code</h2>
+`;
+    data.codeExamples.forEach(codeItem => {
+      const headerTitle = codeItem.filename || codeItem.title || 'Code Example';
+      const lang = codeItem.language || 'text';
+      html += `
+<p class="text-xs font-mono font-bold text-slate-500 dark:text-neutral-400 mt-4 mb-2">${escapeHtml(headerTitle)} (${escapeHtml(lang)})</p>
+<div class="my-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-[#0d1117] overflow-hidden text-xs font-mono">
+  <pre class="p-4 text-[#81FF89] overflow-x-auto leading-relaxed"><code class="language-${escapeHtml(lang)}">${escapeHtml(codeItem.code)}</code></pre>
+</div>
+`;
+      if (codeItem.explanation) {
+        html += `<p class="text-xs text-slate-600 dark:text-neutral-400 my-2 leading-relaxed">${escapeHtml(codeItem.explanation)}</p>\n`;
+      }
+    });
   }
 
-  // 5. Troubleshooting
+  // 7. Real-World QA Use Cases
+  if (Array.isArray(data.qaUseCases) && data.qaUseCases.length > 0) {
+    html += `
+<h2 id="6-real-world-qa-use-cases" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">6. Real-World QA Use Cases</h2>
+<ul class="list-disc pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.qaUseCases.map(u => `<li class="leading-relaxed"><strong>${escapeHtml(u.title)}:</strong> ${escapeHtml(u.scenario)} — <em>${escapeHtml(u.enterpriseApplication)}</em></li>`).join('\n  ')}
+</ul>
+`;
+  }
+
+  // 8. Common Pitfalls and Mitigation Strategies
   if (Array.isArray(data.commonProblems) && data.commonProblems.length > 0) {
     html += `
-      <div class="rounded-2xl border border-red-200 dark:border-red-950 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-red-500">Section 9 · Troubleshooting</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Common Errors &amp; Solutions</h3>
-        <div class="space-y-3">
-          ${data.commonProblems.map(p => {
-            const steps = Array.isArray(p.troubleshooting) ? p.troubleshooting : Array.isArray(p.troubleshootingSteps) ? p.troubleshootingSteps : [];
-            return `
-            <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2">
-              <h4 class="font-bold font-mono text-red-600 dark:text-red-400">${escapeHtml(p.error)}</h4>
-              <p class="text-slate-600 dark:text-neutral-400"><strong>Root Cause:</strong> ${escapeHtml(p.rootCause)}</p>
-              ${steps.length > 0 ? `<ul class="list-disc list-inside space-y-1 text-slate-600 dark:text-neutral-400">${steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : ''}
-              ${p.codeFix ? `<pre class="p-3 rounded-lg bg-[#161616] text-[#81FF89] font-mono text-[11px] overflow-x-auto"><code>${escapeHtml(p.codeFix)}</code></pre>` : ''}
-            </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
+<h2 id="7-common-pitfalls-and-mitigation-strategies" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">7. Common Pitfalls and Mitigation Strategies</h2>
+<div class="space-y-4 my-4">
+  ${data.commonProblems.map(p => {
+    const steps = Array.isArray(p.troubleshooting) ? p.troubleshooting : Array.isArray(p.troubleshootingSteps) ? p.troubleshootingSteps : [];
+    return `
+    <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2">
+      <p class="font-bold font-mono text-red-600 dark:text-red-400">⚠️ Error: ${escapeHtml(p.error)}</p>
+      <p class="text-slate-700 dark:text-neutral-300"><strong>Root Cause:</strong> ${escapeHtml(p.rootCause)}</p>
+      ${steps.length > 0 ? `<ul class="list-disc pl-5 space-y-1 text-slate-600 dark:text-neutral-400">${steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : ''}
+      ${p.codeFix ? `<pre class="p-3 rounded-lg bg-neutral-900 text-[#81FF89] font-mono text-[11px] overflow-x-auto my-2"><code>${escapeHtml(p.codeFix)}</code></pre>` : ''}
+    </div>
     `;
+  }).join('\n  ')}
+</div>
+`;
   }
 
-  // 6. Best Practices
+  // 9. Enterprise Best Practices
   if (Array.isArray(data.bestPractices) && data.bestPractices.length > 0) {
     html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 10 · Best Practices</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Enterprise Recommendations</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          ${data.bestPractices.map(bp => `
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
-              <div class="flex justify-between items-center mb-1">
-                <strong class="text-slate-900 dark:text-white">${escapeHtml(bp.title)}</strong>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500">${escapeHtml(bp.category)}</span>
-              </div>
-              <p class="text-slate-600 dark:text-neutral-300">${escapeHtml(bp.recommendation)}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
+<h2 id="8-enterprise-best-practices" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">8. Enterprise Best Practices</h2>
+<ul class="list-disc pl-6 space-y-2 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.bestPractices.map(bp => `<li class="leading-relaxed"><strong>${escapeHtml(bp.title)} (${escapeHtml(bp.category)}):</strong> ${escapeHtml(bp.recommendation)}</li>`).join('\n  ')}
+</ul>
+`;
   }
 
-  // 7. Interview Questions
-  if (Array.isArray(data.interviewQuestions) && data.interviewQuestions.length > 0) {
-    html += `
-      <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-rose-500">Section 12 · Interview Questions</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Technical Interview Q&amp;A</h3>
-        <div class="space-y-3">
-          ${data.interviewQuestions.map(q => `
-            <div class="p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-800/50 text-xs space-y-1.5">
-              <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/10 text-rose-500">${escapeHtml(q.level)}</span>
-                <strong class="text-slate-900 dark:text-white">${escapeHtml(q.question)}</strong>
-              </div>
-              <p class="text-slate-600 dark:text-neutral-400 leading-relaxed">${escapeHtml(q.answer)}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 8. Summary
+  // 10. Key Takeaways & Summary
   if (data.summary) {
     html += `
-      <div class="rounded-2xl border border-emerald-200 dark:border-emerald-950 bg-emerald-50/20 dark:bg-emerald-950/20 p-6 space-y-4">
-        <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 13 · Summary</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Key Takeaways</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          ${Array.isArray(data.summary.takeaways) ? data.summary.takeaways.map(t => `<div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-emerald-100 dark:border-emerald-900/50 text-slate-700 dark:text-neutral-300">✓ ${escapeHtml(t)}</div>`).join('') : ''}
-        </div>
-      </div>
-    `;
+<h2 id="9-key-takeaways-summary" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">9. Key Takeaways &amp; Summary</h2>
+`;
+    if (Array.isArray(data.summary.takeaways) && data.summary.takeaways.length > 0) {
+      html += `
+<ul class="list-disc pl-6 space-y-1.5 my-3 text-slate-700 dark:text-neutral-300">
+  ${data.summary.takeaways.map(t => `<li class="leading-relaxed">${escapeHtml(t)}</li>`).join('\n  ')}
+</ul>
+`;
+    }
+    if (data.summary.nextSteps) {
+      html += `<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300"><strong>Next Steps:</strong> ${escapeHtml(data.summary.nextSteps)}</p>\n`;
+    }
   }
 
-  html += `</div>`;
+  // 11. Top Interview Questions & Answers
+  if (Array.isArray(data.interviewQuestions) && data.interviewQuestions.length > 0) {
+    html += `
+<h2 id="10-top-interview-questions-answers" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">10. Top Interview Questions &amp; Answers</h2>
+`;
+    data.interviewQuestions.forEach((q, idx) => {
+      html += `
+<p class="my-3 leading-relaxed text-slate-900 dark:text-white"><strong>Q${idx + 1} (${escapeHtml(q.level)}): ${escapeHtml(q.question)}</strong></p>
+<p class="my-3 leading-relaxed text-slate-700 dark:text-neutral-300 pl-4 border-l-2 border-emerald-500/40">${escapeHtml(q.answer)}</p>
+`;
+    });
+  }
+
   return html;
 }

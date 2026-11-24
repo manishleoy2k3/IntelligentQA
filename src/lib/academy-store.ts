@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { generateStandardLessonHtml } from './standard-lesson-compiler';
 import {
   AcademyPublishStatus,
   AcademyCategory,
@@ -41,11 +42,11 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     updatedAt: '2026-11-23T00:00:00.000Z',
   },
   {
-    id: 'cat-selenium',
-    slug: 'selenium',
-    title: 'Selenium',
-    description: 'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
-    icon: 'Globe',
+    id: 'cat-playwright',
+    slug: 'playwright',
+    title: 'Playwright',
+    description: 'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
+    icon: 'Code2',
     sortOrder: 2,
     parentCategoryId: null,
     isActive: true,
@@ -53,11 +54,11 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     updatedAt: '2026-11-23T00:00:00.000Z',
   },
   {
-    id: 'cat-playwright',
-    slug: 'playwright',
-    title: 'Playwright',
-    description: 'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
-    icon: 'Code2',
+    id: 'cat-selenium',
+    slug: 'selenium',
+    title: 'Selenium',
+    description: 'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
+    icon: 'Globe',
     sortOrder: 3,
     parentCategoryId: null,
     isActive: true,
@@ -213,60 +214,6 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     ],
   },
   {
-    id: 'course-selenium-mastery',
-    categoryId: 'cat-selenium',
-    slug: 'selenium-webdriver-enterprise',
-    title: 'Selenium WebDriver 4 Enterprise Framework Architecture',
-    subtitle: 'Production-Grade Java Test Automation Frameworks',
-    description: 'Deep dive into WebDriver 4 W3C protocol, dynamic wait strategies, ThreadLocal thread safety, and scalable Page Object Models.',
-    level: 'Intermediate',
-    estimatedHours: 24,
-    sortOrder: 1,
-    status: 'published',
-    createdAt: '2026-11-23T00:00:00.000Z',
-    updatedAt: '2026-11-23T00:00:00.000Z',
-    modules: [
-      {
-        id: 'mod-sel-1',
-        courseId: 'course-selenium-mastery',
-        slug: 'webdriver-architecture-and-waits',
-        title: 'Module 1: WebDriver Architecture & Dynamic Synchronization',
-        description: 'Understand the W3C communication model and master zero-flake explicit waits.',
-        sortOrder: 1,
-        status: 'published',
-        createdAt: '2026-11-23T00:00:00.000Z',
-        updatedAt: '2026-11-23T00:00:00.000Z',
-        lessons: [
-          {
-            id: 'les-sel-1-1',
-            moduleId: 'mod-sel-1',
-            courseId: 'course-selenium-mastery',
-            slug: 'w3c-protocol-and-driver-architecture',
-            title: '1.1 Selenium 4 Architecture & W3C Standardization',
-            summary: 'Learn how Selenium 4 communicates directly with browser drivers over W3C HTTP protocol without JSON Wire encoding.',
-            contentHtml: `
-              <h2>Selenium 4 Under the Hood</h2>
-              <p>In Selenium 4, the legacy JSON Wire Protocol has been completely deprecated in favor of the official W3C WebDriver Standard. This ensures direct, low-latency communication between your test client and browser engines (ChromeDriver, GeckoDriver, SafariDriver).</p>
-              <h3>Why W3C Standardization Matters:</h3>
-              <ol>
-                <li><strong>Native Browser Action Execution:</strong> Chrome, Firefox, and Safari execute commands directly without proxy translation layers.</li>
-                <li><strong>Standardized Status Codes:</strong> Consistent exception handling across all browser vendors.</li>
-                <li><strong>CDP & BiDi Protocol Integration:</strong> Direct access to Chrome DevTools Protocol for network throttling, console logs, and performance metrics.</li>
-              </ol>
-            `,
-            wordCount: 280,
-            estimatedReadTime: 3,
-            sortOrder: 1,
-            status: 'published',
-            publishedAt: '2026-11-23T00:00:00.000Z',
-            createdAt: '2026-11-23T00:00:00.000Z',
-            updatedAt: '2026-11-23T00:00:00.000Z',
-          },
-        ],
-      },
-    ],
-  },
-  {
     id: 'course-playwright-mastery',
     categoryId: 'cat-playwright',
     slug: 'playwright-ts-mastery',
@@ -312,6 +259,60 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
               </ul>
             `,
             wordCount: 310,
+            estimatedReadTime: 3,
+            sortOrder: 1,
+            status: 'published',
+            publishedAt: '2026-11-23T00:00:00.000Z',
+            createdAt: '2026-11-23T00:00:00.000Z',
+            updatedAt: '2026-11-23T00:00:00.000Z',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'course-selenium-mastery',
+    categoryId: 'cat-selenium',
+    slug: 'selenium-webdriver-enterprise',
+    title: 'Selenium WebDriver 4 Enterprise Framework Architecture',
+    subtitle: 'Production-Grade Java Test Automation Frameworks',
+    description: 'Deep dive into WebDriver 4 W3C protocol, dynamic wait strategies, ThreadLocal thread safety, and scalable Page Object Models.',
+    level: 'Intermediate',
+    estimatedHours: 24,
+    sortOrder: 1,
+    status: 'published',
+    createdAt: '2026-11-23T00:00:00.000Z',
+    updatedAt: '2026-11-23T00:00:00.000Z',
+    modules: [
+      {
+        id: 'mod-sel-1',
+        courseId: 'course-selenium-mastery',
+        slug: 'webdriver-architecture-and-waits',
+        title: 'Module 1: WebDriver Architecture & Dynamic Synchronization',
+        description: 'Understand the W3C communication model and master zero-flake explicit waits.',
+        sortOrder: 1,
+        status: 'published',
+        createdAt: '2026-11-23T00:00:00.000Z',
+        updatedAt: '2026-11-23T00:00:00.000Z',
+        lessons: [
+          {
+            id: 'les-sel-1-1',
+            moduleId: 'mod-sel-1',
+            courseId: 'course-selenium-mastery',
+            slug: 'w3c-protocol-and-driver-architecture',
+            title: '1.1 Selenium 4 Architecture & W3C Standardization',
+            summary: 'Learn how Selenium 4 communicates directly with browser drivers over W3C HTTP protocol without JSON Wire encoding.',
+            contentHtml: `
+              <h2>Selenium 4 Under the Hood</h2>
+              <p>In Selenium 4, the legacy JSON Wire Protocol has been completely deprecated in favor of the official W3C WebDriver Standard. This ensures direct, low-latency communication between your test client and browser engines (ChromeDriver, GeckoDriver, SafariDriver).</p>
+              <h3>Why W3C Standardization Matters:</h3>
+              <ol>
+                <li><strong>Native Browser Action Execution:</strong> Chrome, Firefox, and Safari execute commands directly without proxy translation layers.</li>
+                <li><strong>Standardized Status Codes:</strong> Consistent exception handling across all browser vendors.</li>
+                <li><strong>CDP & BiDi Protocol Integration:</strong> Direct access to Chrome DevTools Protocol for network throttling, console logs, and performance metrics.</li>
+              </ol>
+            `,
+            wordCount: 280,
             estimatedReadTime: 3,
             sortOrder: 1,
             status: 'published',
@@ -743,7 +744,27 @@ export class AcademyStore {
         // Load Courses
         if (Array.isArray(data.academyCourses) && data.academyCourses.length > 0) {
           this.courses.clear();
-          data.academyCourses.forEach((c: AcademyCourse) => this.courses.set(c.id, c));
+          data.academyCourses.forEach((c: AcademyCourse) => {
+            // Keep Playwright just below AI Academy
+            if (c.id === 'course-playwright-mastery') c.sortOrder = 2;
+            if (c.id === 'course-selenium-mastery') c.sortOrder = 3;
+
+            // Ensure all lessons with standardData compile into uniform prose and strip any section labels
+            if (c.modules) {
+              for (const mod of c.modules) {
+                if (mod.lessons) {
+                  for (const lsn of mod.lessons) {
+                    if (lsn.blockData?.standardData) {
+                      lsn.contentHtml = generateStandardLessonHtml(lsn.blockData.standardData);
+                    } else if (lsn.contentHtml) {
+                      lsn.contentHtml = lsn.contentHtml.replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '');
+                    }
+                  }
+                }
+              }
+            }
+            this.courses.set(c.id, c);
+          });
         } else {
           // Initialize with default courses
           this.courses.clear();

@@ -555,15 +555,15 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       };
     };
 
-    // AI, Selenium, Playwright come first if present
+    // AI Academy, Playwright, Selenium come first if present (Playwright just below AI Academy)
     const aiCourse = validCourses.find(c => (c.slug || '').includes('ai') || (c.title || '').toLowerCase().includes('ai academy'));
     if (aiCourse) tracks.push(buildTrack(aiCourse));
 
-    const seleniumCourse = validCourses.find(c => (c.slug || '').includes('selenium') || (c.title || '').toLowerCase().includes('selenium'));
-    if (seleniumCourse) tracks.push(buildTrack(seleniumCourse));
-
     const playwrightCourse = validCourses.find(c => (c.slug || '').includes('playwright') || (c.title || '').toLowerCase().includes('playwright'));
     if (playwrightCourse) tracks.push(buildTrack(playwrightCourse));
+
+    const seleniumCourse = validCourses.find(c => (c.slug || '').includes('selenium') || (c.title || '').toLowerCase().includes('selenium'));
+    if (seleniumCourse) tracks.push(buildTrack(seleniumCourse));
 
     // 3. API Testing & Automation (Child items: FullStack API & Contracts, Rest Assured)
     const apiModules: any[] = [];

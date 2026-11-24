@@ -545,7 +545,6 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     overview: `
 <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
   <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
-    <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 1 · Overview</span>
     <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Lesson Overview</h3>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
@@ -566,7 +565,6 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
 
     objectives: `
 <div class="rounded-2xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50/30 dark:bg-indigo-950/20 p-6 space-y-3 my-6">
-  <span class="text-xs font-mono font-bold uppercase text-indigo-500">Section 2 · Objectives</span>
   <h3 class="text-xl font-bold text-slate-900 dark:text-white">Learning Objectives</h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
     <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-indigo-100 dark:border-indigo-900 text-slate-700 dark:text-neutral-200 font-medium">✓ Master core architecture and runtime behavior</div>
@@ -579,7 +577,6 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     concept: `
 <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
   <div class="border-b border-slate-100 dark:border-neutral-800 pb-3">
-    <span class="text-xs font-mono font-bold uppercase text-blue-500">Section 3 · Theory</span>
     <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Concept Explanation</h3>
   </div>
   <p class="text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">In modern quality engineering, deterministic verification guarantees reliable feedback loops across distributed architectures.</p>
@@ -597,7 +594,6 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
 
     code: `
 <div class="my-6 space-y-4">
-  <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 7 · Implementation Code</span>
   <div class="rounded-xl border border-slate-800 bg-slate-950 overflow-hidden font-mono text-xs shadow-sm">
     <div class="px-4 py-2.5 bg-slate-900 border-b border-slate-800 flex justify-between items-center text-slate-300">
       <span class="font-bold text-slate-200">EnterpriseTest.ts</span>
@@ -617,7 +613,6 @@ test('deterministic enterprise verification', async ({ page }) => {
 
     usecases: `
 <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
-  <span class="text-xs font-mono font-bold uppercase text-cyan-500">Section 8 · Production Use Cases</span>
   <h3 class="text-xl font-bold text-slate-900 dark:text-white">Real-World QA Applications</h3>
   <div class="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 space-y-1.5 text-xs">
     <h4 class="font-bold text-slate-900 dark:text-white">Continuous Pull Request Quality Gate</h4>
@@ -628,7 +623,6 @@ test('deterministic enterprise verification', async ({ page }) => {
 
     troubleshooting: `
 <div class="rounded-2xl border border-red-200 dark:border-red-950 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
-  <span class="text-xs font-mono font-bold uppercase text-red-500">Section 9 · Debugging &amp; Troubleshooting</span>
   <h3 class="text-xl font-bold text-slate-900 dark:text-white">Common Errors &amp; Fixes</h3>
   <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2">
     <h4 class="font-bold font-mono text-red-600 dark:text-red-400">TimeoutException / StaleElementReferenceException</h4>
@@ -639,7 +633,6 @@ test('deterministic enterprise verification', async ({ page }) => {
 
     bestpractices: `
 <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
-  <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 10 · Best Practices</span>
   <h3 class="text-xl font-bold text-slate-900 dark:text-white">Enterprise Standards</h3>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
     <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700">
@@ -655,7 +648,6 @@ test('deterministic enterprise verification', async ({ page }) => {
 
     interview: `
 <div class="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4 my-6">
-  <span class="text-xs font-mono font-bold uppercase text-rose-500">Section 12 · Technical Interview Prep</span>
   <h3 class="text-xl font-bold text-slate-900 dark:text-white">Interview Questions</h3>
   <div class="p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-800/50 text-xs space-y-1.5">
     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/10 text-rose-500 border border-rose-500/20">Architect-Level</span>
@@ -666,7 +658,6 @@ test('deterministic enterprise verification', async ({ page }) => {
 
     summary: `
 <div class="rounded-2xl border border-emerald-200 dark:border-emerald-950 bg-emerald-50/20 dark:bg-emerald-950/20 p-6 space-y-4 my-6">
-  <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 13 · Review &amp; Summary</span>
   <h3 class="text-xl font-bold text-slate-900 dark:text-white">Key Takeaways</h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
     <div class="p-3 rounded-xl bg-white dark:bg-neutral-800 border border-emerald-100 dark:border-emerald-900/50 text-slate-700 dark:text-neutral-300">✓ Deterministic assertions and dynamic waits are mandatory</div>
@@ -690,7 +681,6 @@ test('deterministic enterprise verification', async ({ page }) => {
 <div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 p-6 space-y-4">
   <div class="border-b border-slate-200 dark:border-neutral-800 pb-3 flex justify-between items-center">
     <div>
-      <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 4 · Architecture</span>
       <h4 class="text-lg font-bold text-slate-900 dark:text-white">${diagramTitle || 'Mermaid Architecture Diagram'}</h4>
       ${diagramCaption ? `<p class="text-xs text-slate-500">${diagramCaption}</p>` : ''}
     </div>
@@ -703,7 +693,6 @@ test('deterministic enterprise verification', async ({ page }) => {
       diagramHtml = `
 <div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 space-y-4">
   <div class="border-b border-slate-200 dark:border-neutral-800 pb-3">
-    <span class="text-xs font-mono font-bold uppercase text-blue-500">Section 4 · Visual Diagram</span>
     <h4 class="text-lg font-bold text-slate-900 dark:text-white">${diagramTitle || 'Technical Illustration'}</h4>
   </div>
   <figure class="space-y-2 text-center">
@@ -717,7 +706,6 @@ test('deterministic enterprise verification', async ({ page }) => {
 <div class="my-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 p-6 space-y-4">
   <div class="border-b border-slate-200 dark:border-neutral-800 pb-3 flex justify-between items-center">
     <div>
-      <span class="text-xs font-mono font-bold uppercase text-emerald-500">Section 4 · Architecture</span>
       <h4 class="text-lg font-bold text-slate-900 dark:text-white">${diagramTitle || 'Component Execution Flow'}</h4>
       ${diagramCaption ? `<p class="text-xs text-slate-500">${diagramCaption}</p>` : ''}
     </div>
@@ -1813,15 +1801,15 @@ test('deterministic enterprise verification', async ({ page }) => {
                           onChange={(e) => setSelectedSectionTemplate(e.target.value)}
                           className="px-2.5 py-1.5 rounded-lg bg-[#222] border border-[#333] text-zinc-200 text-xs focus:outline-none"
                         >
-                          <option value="overview">Section 1: Overview</option>
-                          <option value="objectives">Section 2: Learning Objectives</option>
-                          <option value="concept">Section 3: Concept Explanation</option>
-                          <option value="code">Section 7: Code Example</option>
-                          <option value="usecases">Section 8: QA Use Cases</option>
-                          <option value="troubleshooting">Section 9: Troubleshooting</option>
-                          <option value="bestpractices">Section 10: Best Practices</option>
-                          <option value="interview">Section 12: Interview Questions</option>
-                          <option value="summary">Section 13: Lesson Summary</option>
+                          <option value="overview">Overview</option>
+                          <option value="objectives">Learning Objectives</option>
+                          <option value="concept">Concept Explanation</option>
+                          <option value="code">Code Example</option>
+                          <option value="usecases">QA Use Cases</option>
+                          <option value="troubleshooting">Troubleshooting</option>
+                          <option value="bestpractices">Best Practices</option>
+                          <option value="interview">Interview Questions</option>
+                          <option value="summary">Lesson Summary</option>
                         </select>
                         <button
                           type="button"

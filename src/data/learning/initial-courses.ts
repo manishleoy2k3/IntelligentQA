@@ -510,170 +510,6 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
     ]
   },
   {
-    "id": "course-selenium-mastery",
-    "slug": "selenium-webdriver-enterprise",
-    "title": "Selenium WebDriver 4 Enterprise Framework Architecture",
-    "subtitle": "Production-Grade Java Test Automation Frameworks",
-    "description": "Deep dive into WebDriver 4 W3C protocol, dynamic wait strategies, ThreadLocal thread safety, and scalable Page Object Models.",
-    "level": "Intermediate",
-    "estimatedHours": 24,
-    "modules": [
-      {
-        "id": "mod-sel-1",
-        "courseId": "course-selenium-mastery",
-        "slug": "module-1-core-java-oops-for-automation",
-        "title": "Module 1: Core Java OOPs for Automation",
-        "description": "Enterprise automation practices for Module 1: Core Java OOPs for Automation.",
-        "lessons": [
-          {
-            "id": "les-sel-java-oops-framework",
-            "moduleId": "mod-sel-1",
-            "courseId": "course-selenium-mastery",
-            "slug": "java-oops-framework",
-            "title": "1. Core Java OOPs for Automation",
-            "summary": "Map Encapsulation, Inheritance, Polymorphism, and Abstraction directly to QA framework architecture.",
-            "estimatedReadingTime": 10
-          },
-          {
-            "id": "les-sel-sel-webdriver-setup",
-            "moduleId": "mod-sel-1",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-webdriver-setup",
-            "title": "2. WebDriver 4 Architecture & Browser Setup",
-            "summary": "W3C standardization, Selenium Manager automated binary resolution, ChromeOptions, and headless execution.",
-            "estimatedReadingTime": 10
-          },
-          {
-            "id": "les-sel-sel-locators-xpath",
-            "moduleId": "mod-sel-1",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-locators-xpath",
-            "title": "3. Advanced Dynamic Locators (XPath & CSS)",
-            "summary": "Master relative XPath axes (following-sibling, ancestor, parent), text normalization, and robust CSS selectors.",
-            "estimatedReadingTime": 12
-          }
-        ]
-      },
-      {
-        "id": "mod-sel-2",
-        "courseId": "course-selenium-mastery",
-        "slug": "module-2-selenium-4-webdriver-setup-locators",
-        "title": "Module 2: Selenium 4 WebDriver Setup & Locators",
-        "description": "Enterprise automation practices for Module 2: Selenium 4 WebDriver Setup & Locators.",
-        "lessons": [
-          {
-            "id": "les-sel-sel-webelement-actions",
-            "moduleId": "mod-sel-2",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-webelement-actions",
-            "title": "4. WebElement Actions & Form Interactions",
-            "summary": "Handling inputs, select dropdowns (single/multi-select), checkboxes, radio buttons, and JavaScript clicks.",
-            "estimatedReadingTime": 8
-          },
-          {
-            "id": "les-sel-sel-sync-waits",
-            "moduleId": "mod-sel-2",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-sync-waits",
-            "title": "5. Synchronization & Dynamic Waits Strategy",
-            "summary": "Eliminate flakiness: Implicit vs Explicit vs FluentWait. Solving StaleElementReferenceException.",
-            "estimatedReadingTime": 12
-          },
-          {
-            "id": "les-sel-sel-actions-api",
-            "moduleId": "mod-sel-2",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-actions-api",
-            "title": "6. Advanced User Interactions (Actions API)",
-            "summary": "Master mouse hover, context-click (right-click), drag and drop, and keyboard shortcuts with Actions class.",
-            "estimatedReadingTime": 8
-          }
-        ]
-      },
-      {
-        "id": "mod-sel-3",
-        "courseId": "course-selenium-mastery",
-        "slug": "module-3-dynamic-waits-synchronization-frames",
-        "title": "Module 3: Dynamic Waits, Synchronization & Frames",
-        "description": "Enterprise automation practices for Module 3: Dynamic Waits, Synchronization & Frames.",
-        "lessons": [
-          {
-            "id": "les-sel-sel-frames-windows-shadow",
-            "moduleId": "mod-sel-3",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-frames-windows-shadow",
-            "title": "7. Frames, Windows & Shadow DOM Handling",
-            "summary": "Navigate nested iframes, switch between multi-browser tabs/windows, and pierce native Shadow DOM in Selenium 4.",
-            "estimatedReadingTime": 10
-          },
-          {
-            "id": "les-sel-sel-pom-pagefactory",
-            "moduleId": "mod-sel-3",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-pom-pagefactory",
-            "title": "8. Page Object Model & PageFactory Architecture",
-            "summary": "Architect scalable test frameworks: By locators vs @FindBy PageFactory annotations, method chaining, and clean separation.",
-            "estimatedReadingTime": 14
-          },
-          {
-            "id": "les-sel-sel-testng-parallel",
-            "moduleId": "mod-sel-3",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-testng-parallel",
-            "title": "9. TestNG Suite & Parallel Multi-Threading",
-            "summary": "Master testng.xml, @DataProvider for data-driven testing, @Parameters, ThreadLocal<WebDriver>, and parallel suites.",
-            "estimatedReadingTime": 12
-          }
-        ]
-      },
-      {
-        "id": "mod-sel-4",
-        "courseId": "course-selenium-mastery",
-        "slug": "module-4-enterprise-page-object-model-grids",
-        "title": "Module 4: Enterprise Page Object Model & Grids",
-        "description": "Enterprise automation practices for Module 4: Enterprise Page Object Model & Grids.",
-        "lessons": [
-          {
-            "id": "les-sel-sel-listeners-reports-cicd",
-            "moduleId": "mod-sel-4",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-listeners-reports-cicd",
-            "title": "10. Listeners, Screenshots & Maven CI/CD Execution",
-            "summary": "Implement ITestListener, automatic screenshot capture on test failure, ExtentReports / Allure, and Maven CI/CD integration.",
-            "estimatedReadingTime": 8
-          },
-          {
-            "id": "les-sel-sel-dynamic-waits",
-            "moduleId": "mod-sel-4",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-dynamic-waits",
-            "title": "11. Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep",
-            "summary": "Master dynamic synchronization to eliminate flaky tests, configure WebDriverWait, customize FluentWait polling intervals, and replace brittle sleep calls.",
-            "estimatedReadingTime": 8
-          },
-          {
-            "id": "les-sel-sel-threadlocal-driver",
-            "moduleId": "mod-sel-4",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-threadlocal-driver",
-            "title": "12. ThreadLocal WebDriver for Parallel Test Execution",
-            "summary": "Design thread-safe WebDriver architectures for multi-threaded parallel execution in TestNG and CI/CD pipelines.",
-            "estimatedReadingTime": 8
-          },
-          {
-            "id": "les-sel-sel-pom-pattern",
-            "moduleId": "mod-sel-4",
-            "courseId": "course-selenium-mastery",
-            "slug": "sel-pom-pattern",
-            "title": "13. Page Object Model (POM) & Component Architecture",
-            "summary": "Build scalable, maintainable test architectures by cleanly decoupling page locators and user actions from assertions.",
-            "estimatedReadingTime": 8
-          }
-        ]
-      }
-    ]
-  },
-  {
     "id": "course-playwright-mastery",
     "slug": "playwright-ts-mastery",
     "title": "Playwright Automation with TypeScript",
@@ -849,6 +685,170 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
             "slug": "pw-sharding-realtime-challenges",
             "title": "15. Real-Time Challenges in Test Sharding & Architectural Solutions",
             "summary": "Solve uneven shard runtimes (stragglers), shared database bottlenecks, matrix fail-fast cancellations, and merging blob reports with merge-reports.",
+            "estimatedReadingTime": 8
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "course-selenium-mastery",
+    "slug": "selenium-webdriver-enterprise",
+    "title": "Selenium WebDriver 4 Enterprise Framework Architecture",
+    "subtitle": "Production-Grade Java Test Automation Frameworks",
+    "description": "Deep dive into WebDriver 4 W3C protocol, dynamic wait strategies, ThreadLocal thread safety, and scalable Page Object Models.",
+    "level": "Intermediate",
+    "estimatedHours": 24,
+    "modules": [
+      {
+        "id": "mod-sel-1",
+        "courseId": "course-selenium-mastery",
+        "slug": "module-1-core-java-oops-for-automation",
+        "title": "Module 1: Core Java OOPs for Automation",
+        "description": "Enterprise automation practices for Module 1: Core Java OOPs for Automation.",
+        "lessons": [
+          {
+            "id": "les-sel-java-oops-framework",
+            "moduleId": "mod-sel-1",
+            "courseId": "course-selenium-mastery",
+            "slug": "java-oops-framework",
+            "title": "1. Core Java OOPs for Automation",
+            "summary": "Map Encapsulation, Inheritance, Polymorphism, and Abstraction directly to QA framework architecture.",
+            "estimatedReadingTime": 10
+          },
+          {
+            "id": "les-sel-sel-webdriver-setup",
+            "moduleId": "mod-sel-1",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-webdriver-setup",
+            "title": "2. WebDriver 4 Architecture & Browser Setup",
+            "summary": "W3C standardization, Selenium Manager automated binary resolution, ChromeOptions, and headless execution.",
+            "estimatedReadingTime": 10
+          },
+          {
+            "id": "les-sel-sel-locators-xpath",
+            "moduleId": "mod-sel-1",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-locators-xpath",
+            "title": "3. Advanced Dynamic Locators (XPath & CSS)",
+            "summary": "Master relative XPath axes (following-sibling, ancestor, parent), text normalization, and robust CSS selectors.",
+            "estimatedReadingTime": 12
+          }
+        ]
+      },
+      {
+        "id": "mod-sel-2",
+        "courseId": "course-selenium-mastery",
+        "slug": "module-2-selenium-4-webdriver-setup-locators",
+        "title": "Module 2: Selenium 4 WebDriver Setup & Locators",
+        "description": "Enterprise automation practices for Module 2: Selenium 4 WebDriver Setup & Locators.",
+        "lessons": [
+          {
+            "id": "les-sel-sel-webelement-actions",
+            "moduleId": "mod-sel-2",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-webelement-actions",
+            "title": "4. WebElement Actions & Form Interactions",
+            "summary": "Handling inputs, select dropdowns (single/multi-select), checkboxes, radio buttons, and JavaScript clicks.",
+            "estimatedReadingTime": 8
+          },
+          {
+            "id": "les-sel-sel-sync-waits",
+            "moduleId": "mod-sel-2",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-sync-waits",
+            "title": "5. Synchronization & Dynamic Waits Strategy",
+            "summary": "Eliminate flakiness: Implicit vs Explicit vs FluentWait. Solving StaleElementReferenceException.",
+            "estimatedReadingTime": 12
+          },
+          {
+            "id": "les-sel-sel-actions-api",
+            "moduleId": "mod-sel-2",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-actions-api",
+            "title": "6. Advanced User Interactions (Actions API)",
+            "summary": "Master mouse hover, context-click (right-click), drag and drop, and keyboard shortcuts with Actions class.",
+            "estimatedReadingTime": 8
+          }
+        ]
+      },
+      {
+        "id": "mod-sel-3",
+        "courseId": "course-selenium-mastery",
+        "slug": "module-3-dynamic-waits-synchronization-frames",
+        "title": "Module 3: Dynamic Waits, Synchronization & Frames",
+        "description": "Enterprise automation practices for Module 3: Dynamic Waits, Synchronization & Frames.",
+        "lessons": [
+          {
+            "id": "les-sel-sel-frames-windows-shadow",
+            "moduleId": "mod-sel-3",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-frames-windows-shadow",
+            "title": "7. Frames, Windows & Shadow DOM Handling",
+            "summary": "Navigate nested iframes, switch between multi-browser tabs/windows, and pierce native Shadow DOM in Selenium 4.",
+            "estimatedReadingTime": 10
+          },
+          {
+            "id": "les-sel-sel-pom-pagefactory",
+            "moduleId": "mod-sel-3",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-pom-pagefactory",
+            "title": "8. Page Object Model & PageFactory Architecture",
+            "summary": "Architect scalable test frameworks: By locators vs @FindBy PageFactory annotations, method chaining, and clean separation.",
+            "estimatedReadingTime": 14
+          },
+          {
+            "id": "les-sel-sel-testng-parallel",
+            "moduleId": "mod-sel-3",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-testng-parallel",
+            "title": "9. TestNG Suite & Parallel Multi-Threading",
+            "summary": "Master testng.xml, @DataProvider for data-driven testing, @Parameters, ThreadLocal<WebDriver>, and parallel suites.",
+            "estimatedReadingTime": 12
+          }
+        ]
+      },
+      {
+        "id": "mod-sel-4",
+        "courseId": "course-selenium-mastery",
+        "slug": "module-4-enterprise-page-object-model-grids",
+        "title": "Module 4: Enterprise Page Object Model & Grids",
+        "description": "Enterprise automation practices for Module 4: Enterprise Page Object Model & Grids.",
+        "lessons": [
+          {
+            "id": "les-sel-sel-listeners-reports-cicd",
+            "moduleId": "mod-sel-4",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-listeners-reports-cicd",
+            "title": "10. Listeners, Screenshots & Maven CI/CD Execution",
+            "summary": "Implement ITestListener, automatic screenshot capture on test failure, ExtentReports / Allure, and Maven CI/CD integration.",
+            "estimatedReadingTime": 8
+          },
+          {
+            "id": "les-sel-sel-dynamic-waits",
+            "moduleId": "mod-sel-4",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-dynamic-waits",
+            "title": "11. Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep",
+            "summary": "Master dynamic synchronization to eliminate flaky tests, configure WebDriverWait, customize FluentWait polling intervals, and replace brittle sleep calls.",
+            "estimatedReadingTime": 8
+          },
+          {
+            "id": "les-sel-sel-threadlocal-driver",
+            "moduleId": "mod-sel-4",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-threadlocal-driver",
+            "title": "12. ThreadLocal WebDriver for Parallel Test Execution",
+            "summary": "Design thread-safe WebDriver architectures for multi-threaded parallel execution in TestNG and CI/CD pipelines.",
+            "estimatedReadingTime": 8
+          },
+          {
+            "id": "les-sel-sel-pom-pattern",
+            "moduleId": "mod-sel-4",
+            "courseId": "course-selenium-mastery",
+            "slug": "sel-pom-pattern",
+            "title": "13. Page Object Model (POM) & Component Architecture",
+            "summary": "Build scalable, maintainable test architectures by cleanly decoupling page locators and user actions from assertions.",
             "estimatedReadingTime": 8
           }
         ]
