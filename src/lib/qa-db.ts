@@ -58,7 +58,7 @@ export const DEMO_ADMIN_USER: UserProfile = {
   displayName: 'Course Administrator',
   email: 'admin@intelligentqa.io',
   targetRole: 'Test Architect',
-  primaryTrack: 'selenium-java',
+  primaryTrack: 'playwright-ts',
   experienceYears: 10,
   streakCount: 25,
   role: 'admin',

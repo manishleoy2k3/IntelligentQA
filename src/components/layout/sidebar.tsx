@@ -218,8 +218,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   // Individual Track collapsible states (collapsed by default to prevent heavy scrolling)
   const [openTracks, setOpenTracks] = useState<Record<string, boolean>>({
-    'selenium-java': false,
     'playwright-ts': false,
+    'selenium-java': false,
     'api-testing': false,
     'ai-qa': false,
   });
@@ -436,7 +436,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   const isInterviewActive = pathname?.includes('/interview-questions');
 
   // Progression sequence for Manual QA Transition:
-  // Stage 1: 'selenium-java' -> Stage 2: 'playwright-ts' -> Stage 3: 'api-testing' -> Stage 4: 'ai-qa'
+  // Stage 1: 'ai-qa' -> Stage 2: 'playwright-ts' -> Stage 3: 'selenium-java' -> Stage 3: 'api-testing' -> Stage 4: 'ai-qa'
   // Legacy track compatibility routes: /tracks/selenium-java | /tracks/playwright-ts | /tracks/api-testing | /tracks/ai-qa
   // Static track placeholder: { id: 'ai-qa', displayTitle: 'AI Academy', lessons: [] }
 

@@ -101,7 +101,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
   }, [pathname]);
 
   // Detect current track from URL if user is viewing a track or guide, otherwise default to user's primary track or selenium
-  let currentGuideTrack = 'selenium';
+  let currentGuideTrack = 'playwright';
   if (pathname?.includes('/tracks/playwright') || pathname?.includes('/guides/playwright')) {
     currentGuideTrack = 'playwright';
   } else if (pathname?.includes('/tracks/api-testing') || pathname?.includes('/guides/api-testing')) {

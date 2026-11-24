@@ -107255,7 +107255,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-git-1-1-what-is-git",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T05:57:58.361Z",
+      "lastAccessedAt": "2026-11-24T06:04:44.421Z",
       "completedAt": null
     },
     {
@@ -107712,6 +107712,14 @@
       "lessonId": "les-playwright-mastery-1-2-what-is-playwright",
       "completionStatus": "in_progress",
       "lastAccessedAt": "2026-11-24T05:55:57.583Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-git-4-1-what-is-cicd",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-git-4-1-what-is-cicd",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T06:10:46.562Z",
       "completedAt": null
     }
   ],

@@ -90,7 +90,7 @@ function AdminDashboardContent() {
 
   // Data Stores
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [selectedTrackId, setSelectedTrackId] = useState<string>('selenium-java');
+  const [selectedTrackId, setSelectedTrackId] = useState<string>('playwright-ts');
   const [codingProblems, setCodingProblems] = useState<CodingProblem[]>([]);
   const [agentConfigs, setAgentConfigs] = useState<AgentConfigItem[]>([]);
   const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestionItem[]>([]);
