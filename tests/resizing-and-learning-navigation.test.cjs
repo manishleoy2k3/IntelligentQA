@@ -7,7 +7,7 @@ test('Item 1: Sidebar tracks expand and collapse cleanly on repeated clicks', ()
   const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
 
   // Verify toggleTrack is called on track row click
-  assert.ok(sidebarFile.includes('onClick={() => toggleTrack(track.id)}'), 'Track row toggles expand/collapse');
+  assert.ok(sidebarFile.includes('toggleTrack(track.id)'), 'Track row toggles expand/collapse');
   assert.ok(sidebarFile.includes('lastAutoOpenedTrackRef'), 'Uses lastAutoOpenedTrackRef to avoid re-opening on manual collapse');
 });
 

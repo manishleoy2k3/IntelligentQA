@@ -394,18 +394,12 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                   </button>
 
                   <Link
-                    href={
-                      pathname?.startsWith("/kids") ? "/kids" : "/dashboard"
-                    }
+                    href="/dashboard"
                     onClick={() => setProfileMenuOpen(false)}
                     className="w-full px-3.5 py-2.5 text-left rounded-xl hover:bg-[#222222] text-[#D4D4D8] hover:text-white font-medium flex items-center gap-2.5 transition-colors"
                   >
                     <Layers className="w-4 h-4 text-[#80FFF9] shrink-0" />
-                    <span>
-                      {pathname?.startsWith("/kids")
-                        ? "Kids Coding Hub"
-                        : "Learning Dashboard"}
-                    </span>
+                    <span>Learning Dashboard</span>
                   </Link>
                 </div>
 

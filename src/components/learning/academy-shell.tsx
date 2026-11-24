@@ -38,6 +38,7 @@ import {
 } from '@/data/learning/academy-curriculum';
 import { INITIAL_PUBLISHED_COURSES } from '@/data/learning/initial-courses';
 import { QADatabase } from '@/lib/qa-db';
+import { useAppTheme } from '@/lib/theme';
 
 interface AcademyShellProps {
   initialLessonSlug?: string;
@@ -116,9 +117,9 @@ export default function AcademyShell({
   // Load saved theme preference on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('intelligentqa_academy_theme');
+      const savedTheme = localStorage.getItem('intelligentqa_theme') || localStorage.getItem('intelligentqa_academy_theme');
       if (savedTheme === 'dark' || savedTheme === 'light') {
-        setTheme(savedTheme);
+        setTheme(savedTheme as any);
       } else {
         setTheme('light');
       }
@@ -130,6 +131,16 @@ export default function AcademyShell({
     setTheme(nextTheme);
     if (typeof window !== 'undefined') {
       localStorage.setItem('intelligentqa_academy_theme', nextTheme);
+      localStorage.setItem('intelligentqa_theme', nextTheme);
+      const root = document.documentElement;
+      if (nextTheme === 'dark') {
+        root.classList.add('dark');
+        root.setAttribute('data-theme', 'dark');
+      } else {
+        root.classList.remove('dark');
+        root.setAttribute('data-theme', 'light');
+      }
+      window.dispatchEvent(new CustomEvent('intelligentqa_theme_changed', { detail: { theme: nextTheme } }));
     }
   };
 
@@ -484,7 +495,11 @@ export default function AcademyShell({
     html = html.replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '');
     html = html.replace(/\b(?:SECTION|Section)\s*\d+\s*[·•-]\s*[^<\n]+/g, '');
 
-    // 4. Inject lazy loading and decoding async on images
+    // 4. Strip out hardcoded washed-out text color classes that break normal (light) mode contrast
+    html = html.replace(/\btext-(?:white|slate-100|slate-200|slate-300|slate-400|neutral-100|neutral-200|neutral-300|neutral-400|zinc-100|zinc-200|zinc-300|zinc-400|gray-100|gray-200|gray-300|gray-400)\b/g, '');
+    html = html.replace(/\bstyle="[^"]*color:\s*(?:#ffffff|#fff|#cbd5e1|#d4d4d8|#64748B|#94a3b8|#e2e8f0|rgb\(255,\s*255,\s*255\)|rgb\(203,\s*213,\s*225\))[^"]*"/gi, '');
+
+    // 5. Inject lazy loading and decoding async on images
     return html.replace(
       /<img\s+(?![^>]*\bloading=)/gi,
       '<img loading="lazy" decoding="async" '
@@ -842,7 +857,7 @@ export default function AcademyShell({
                   {/* Uniform Technical Documentation Content (Prose format across all courses with Embedded Diagrams) */}
                   {optimizedHtml && (
                     <div
-                      className="prose dark:prose-invert max-w-none my-6 text-slate-900 dark:text-slate-100 docx-rendered-content leading-relaxed"
+                      className="w-full my-6 text-slate-900 dark:text-slate-100 docx-rendered-content leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: optimizedHtml }}
                     />
                   )}

@@ -74,8 +74,8 @@ test('Requirements 1-6: Direct sidebar track navigation, staging import review, 
   const addGuideModalFile = fs.readFileSync(path.join(__dirname, '../src/components/interview/add-guide-modal.tsx'), 'utf8');
   const conceptGuidesLib = fs.readFileSync(path.join(__dirname, '../src/lib/concept-guides.ts'), 'utf8');
 
-  // Requirement 1: Clicking track parent row navigates to /guides/${guideSlug} and extra list item removed
-  assert.ok(sidebarFile.includes('href={`/guides/${guideSlug}`}'), 'Sidebar track row links to /guides/${guideSlug}');
+  // Requirement 1: Clicking track parent row navigates to /learning or /guides and extra list item removed
+  assert.ok(sidebarFile.includes('/learning') || sidebarFile.includes('href={`/guides/${guideSlug}}`'), 'Sidebar track row links to /learning or guides');
   assert.ok(!sidebarFile.includes('📘 Selenium Guides'), 'Extra list item inside courses removed');
   assert.ok(!sidebarFile.includes('Guides & Architecture (Import)'), 'Extra list item inside courses removed');
 

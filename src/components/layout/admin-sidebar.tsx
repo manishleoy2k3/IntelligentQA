@@ -39,7 +39,7 @@ export default function AdminSidebar({
     },
     {
       id: 'academy',
-      name: 'Content Management Studio',
+      name: 'Course Content (CMS Studio)',
       href: '/admin?section=academy',
       icon: GraduationCap,
       color: 'text-emerald-400',

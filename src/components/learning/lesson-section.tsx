@@ -33,7 +33,7 @@ export default function LessonSection({ section }: LessonSectionProps) {
       {section.content.map((paragraph, pIdx) => (
         <p
           key={pIdx}
-          className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-4 font-normal"
+          className="text-base text-slate-900 dark:text-slate-100 leading-relaxed mb-4 font-normal"
           dangerouslySetInnerHTML={{ __html: paragraph }}
         />
       ))}

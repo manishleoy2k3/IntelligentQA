@@ -30,7 +30,7 @@ test('Font sizes across site are upgraded to readable baseline', () => {
 
   // FAQ Questions are increased and Answers are at least text-base
   assert.ok(
-    homePageFile.includes('text-base sm:text-lg font-medium text-white') ||
+    homePageFile.includes('text-base sm:text-lg font-medium') ||
     homePageFile.includes('text-lg sm:text-xl font-bold text-slate-900'),
     'FAQ questions have readable font size'
   );

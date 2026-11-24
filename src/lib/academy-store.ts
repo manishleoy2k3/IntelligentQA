@@ -756,8 +756,12 @@ export class AcademyStore {
                   for (const lsn of mod.lessons) {
                     if (lsn.blockData?.standardData) {
                       lsn.contentHtml = generateStandardLessonHtml(lsn.blockData.standardData);
-                    } else if (lsn.contentHtml) {
-                      lsn.contentHtml = lsn.contentHtml.replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '');
+                    }
+                    if (lsn.contentHtml) {
+                      lsn.contentHtml = lsn.contentHtml
+                        .replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '')
+                        .replace(/\btext-(?:white|slate-100|slate-200|slate-300|slate-400|neutral-100|neutral-200|neutral-300|neutral-400|zinc-100|zinc-200|zinc-300|zinc-400)\b/g, '')
+                        .replace(/\bstyle="[^"]*color:\s*(?:#ffffff|#fff|#cbd5e1|#d4d4d8|#64748B|#94a3b8|#e2e8f0)[^"]*"/gi, '');
                     }
                   }
                 }

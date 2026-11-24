@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
@@ -294,7 +296,7 @@
 .docx-rendered-content h1 {
   font-size: 1.875rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #0F172A !important;
   margin-top: 1.75rem;
   margin-bottom: 0.75rem;
   line-height: 1.25;
@@ -305,7 +307,7 @@
 .dark .tiptap-canvas h1,
 .dark .standard-lesson-container h1,
 .dark .docx-rendered-content h1 {
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   border-bottom-color: #27272A;
 }
 
@@ -314,7 +316,7 @@
 .docx-rendered-content h2 {
   font-size: 1.45rem;
   font-weight: 700;
-  color: #0F172A;
+  color: #0F172A !important;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
   line-height: 1.3;
@@ -323,7 +325,7 @@
 .dark .tiptap-canvas h2,
 .dark .standard-lesson-container h2,
 .dark .docx-rendered-content h2 {
-  color: #F8FAFC;
+  color: #F8FAFC !important;
 }
 
 .tiptap-canvas h3,
@@ -331,7 +333,7 @@
 .docx-rendered-content h3 {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1E293B;
+  color: #1E293B !important;
   margin-top: 1.25rem;
   margin-bottom: 0.35rem;
   line-height: 1.35;
@@ -340,7 +342,7 @@
 .dark .tiptap-canvas h3,
 .dark .standard-lesson-container h3,
 .dark .docx-rendered-content h3 {
-  color: #F1F5F9;
+  color: #F1F5F9 !important;
 }
 
 .tiptap-canvas h4,
@@ -348,7 +350,7 @@
 .docx-rendered-content h4 {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #334155;
+  color: #334155 !important;
   margin-top: 1rem;
   margin-bottom: 0.25rem;
 }
@@ -356,23 +358,45 @@
 .dark .tiptap-canvas h4,
 .dark .standard-lesson-container h4,
 .dark .docx-rendered-content h4 {
-  color: #E2E8F0;
+  color: #E2E8F0 !important;
 }
 
 .tiptap-canvas p,
 .standard-lesson-container p,
-.docx-rendered-content p {
+.docx-rendered-content p,
+.docx-rendered-content li,
+.docx-rendered-content ol,
+.docx-rendered-content ul,
+.docx-rendered-content td,
+.docx-rendered-content span:not([style*="color: #047857"]):not([style*="color: #10B981"]):not([style*="color: #B91C1C"]):not([style*="color: #D97706"]) {
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
   line-height: 1.7;
-  color: #0F172A;
+  color: #0F172A !important;
   font-weight: 400;
+}
+
+.docx-rendered-content strong,
+.docx-rendered-content b {
+  color: #000000 !important;
+  font-weight: 700 !important;
 }
 
 .dark .tiptap-canvas p,
 .dark .standard-lesson-container p,
-.dark .docx-rendered-content p {
-  color: #E2E8F0;
+.dark .docx-rendered-content p,
+.dark .docx-rendered-content li,
+.dark .docx-rendered-content ol,
+.dark .docx-rendered-content ul,
+.dark .docx-rendered-content td,
+.dark .docx-rendered-content span:not([style*="color: #047857"]):not([style*="color: #10B981"]):not([style*="color: #B91C1C"]):not([style*="color: #D97706"]) {
+  color: #F1F5F9 !important;
+}
+
+.dark .docx-rendered-content strong,
+.dark .docx-rendered-content b {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
 }
 
 .tiptap-canvas ul,
@@ -382,13 +406,13 @@
   padding-left: 1.5rem;
   margin-top: 0.5rem;
   margin-bottom: 0.75rem;
-  color: #0F172A;
+  color: #0F172A !important;
 }
 
 .dark .tiptap-canvas ul,
 .dark .standard-lesson-container ul,
 .dark .docx-rendered-content ul {
-  color: #E2E8F0;
+  color: #E2E8F0 !important;
 }
 
 .tiptap-canvas ol,
@@ -398,13 +422,13 @@
   padding-left: 1.5rem;
   margin-top: 0.5rem;
   margin-bottom: 0.75rem;
-  color: #0F172A;
+  color: #0F172A !important;
 }
 
 .dark .tiptap-canvas ol,
 .dark .standard-lesson-container ol,
 .dark .docx-rendered-content ol {
-  color: #E2E8F0;
+  color: #E2E8F0 !important;
 }
 
 .tiptap-canvas li,
@@ -413,7 +437,13 @@
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   line-height: 1.6;
-  color: inherit;
+  color: #0F172A !important;
+}
+
+.dark .tiptap-canvas li,
+.dark .standard-lesson-container li,
+.dark .docx-rendered-content li {
+  color: #E2E8F0 !important;
 }
 
 .tiptap-canvas blockquote,

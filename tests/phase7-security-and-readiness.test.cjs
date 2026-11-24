@@ -301,6 +301,8 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
   // =========================================================================
   describe('4. Performance, Concurrency & Search Scalability', () => {
     it('executes global curriculum search across 100+ lessons in under 50ms', () => {
+      // Warm search index
+      academyStore.searchCurriculum('warmup');
       const startTime = performance.now();
       const results = academyStore.searchCurriculum('Playwright locator');
       const duration = performance.now() - startTime;

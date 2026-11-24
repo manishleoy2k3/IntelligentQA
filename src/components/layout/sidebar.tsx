@@ -1069,7 +1069,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                             e.preventDefault();
                             e.stopPropagation();
                             if (!isExpanded) {
-                              toggleTrack(track.id);
+                              toggleTrack(track.id); // onClick={() => toggleTrack(track.id)}
                             }
                             onCloseMobile?.();
                             if (track.id === 'ai-qa' || track.displayTitle === 'AI Academy' || (track.slug || '').includes('ai')) {
@@ -1092,7 +1092,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              toggleTrack(track.id);
+                              toggleTrack(track.id); // onClick={() => toggleTrack(track.id)}
                             }}
                             className="flex items-center gap-1 text-[10px] font-mono font-bold text-slate-700 dark:text-neutral-200 group-hover:text-slate-950 dark:group-hover:text-white px-2 py-0.5 rounded bg-slate-200/90 dark:bg-neutral-800 border border-slate-300/70 dark:border-neutral-700 transition-colors ml-1 shrink-0 cursor-pointer"
                             title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}

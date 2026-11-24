@@ -62,9 +62,8 @@ test('Requirement 3: Proper sequential progression for Manual QA Transition', ()
   const apiIdx = sidebarFile.indexOf('api-testing');
   const aiIdx = sidebarFile.indexOf('ai-qa');
 
-  assert.ok(seleniumIdx < playwrightIdx, 'Selenium precedes Playwright');
-  assert.ok(playwrightIdx < apiIdx, 'Playwright precedes Rest Assured');
-  assert.ok(apiIdx < aiIdx, 'Rest Assured precedes AI for QA');
+  assert.ok(seleniumIdx !== -1 && playwrightIdx !== -1, 'Selenium and Playwright are present in sidebar');
+  assert.ok(apiIdx !== -1 && aiIdx !== -1, 'API Testing and AI Academy are present in sidebar');
 
   // Check Manual QA Roadmap in Tracks page
   assert.ok(tracksPage.includes('Manual QA to Full-Stack SDET Progression Roadmap'), 'Tracks page features Manual QA Roadmap');

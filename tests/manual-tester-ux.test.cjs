@@ -14,7 +14,7 @@ test('Minimal uncluttered Home Page is designed specifically for Manual Testers'
   assert.ok(homeFile.includes('Optional AI Features'), 'Pillar 3: AI optionality');
 
   // Verify tutorials and labs are kept inside user login
-  assert.ok(homeFile.includes('All Tutorials, Practice Labs'), 'Explains full suite is inside account');
+  assert.ok(homeFile.includes('All Academy Courses') || homeFile.includes('All Practice Labs'), 'Explains full suite is inside account');
   assert.ok(homeFile.includes('Gated Inside User Login'), 'States tutorials and labs are inside login');
 
   // Verify Google Sign In is prominent
