@@ -1955,6 +1955,444 @@ public class TestRunner extends AbstractTestNGCucumberTests {
   }
 ];
 
+// Enterprise Knowledge Entries for Agent 05 Principal SDET & Architect Mentorship
+export const ENTERPRISE_SDET_KNOWLEDGE: QAKnowledgeEntry[] = [
+  // 37. Unified Playwright Framework for Multi-Squad / Multi-App (Test 1)
+  {
+    id: 'enterprise-playwright-multisquad',
+    topic: 'Unified Playwright Framework for 50 Squads and 20 Applications',
+    category: 'playwright',
+    keywords: [
+      'unified playwright',
+      '50 squads',
+      '20 applications',
+      'monorepo architecture',
+      'playwright monorepo',
+      'enterprise playwright',
+      'multi-app framework',
+      'multi-team automation'
+    ],
+    question: 'How do you design a unified Playwright framework for 50 squads and 20 applications?',
+    shortAnswer: 'Design a federated monorepo (e.g. Nx / Turborepo / pnpm workspaces) with shared core libraries (@org/playwright-core), domain-specific Page Object libraries, decentralized test ownership across squad directories, containerized parallel execution sharding in CI/CD, and centralized telemetry/governance.',
+    detailedAnswer: `### 🏛️ Architectural Blueprint: Federated Monorepo for 50 Squads & 20 Apps
+
+#### 1. Repository & Workspace Topology:
+• **Monorepo Structure (pnpm workspaces / Nx)**:
+\`\`\`
+repo-root/
+├── packages/
+│   ├── core-playwright/         # Shared fixtures, auth managers, network mocks, custom reporters
+│   ├── ui-components/           # Reusable design-system component locators (e.g. DatePicker, Modal)
+│   └── test-utils/              # Test data generators (Faker), DB seeds, JWT minting
+├── apps/
+│   ├── app-checkout/            # Squad-owned test suite (spec files, local fixtures, app POM)
+│   ├── app-dashboard/
+│   └── app-billing/
+├── pnpm-workspace.yaml
+├── playwright.config.base.ts    # Base configuration extended by individual apps
+└── package.json
+\`\`\`
+
+#### 2. Component Responsibilities & Ownership:
+• **Core Platform Team (SDET Architects)**: Owns \`packages/core-playwright\`, base configuration, CI/CD pipeline templates, custom reporters, and runner infrastructure.
+• **Product Squads (SDETs / Product Engineers)**: Own \`apps/<app-name>\` tests, feature Page Objects, test data fixtures, and sprint regression suites. Zero cross-squad blocking.
+
+#### 3. Execution, Parallelization & CI/CD Pipeline:
+• **Smart Change Detection (Nx Affected / Turborepo filter)**: On PR, run tests ONLY for affected applications. A change in \`app-checkout\` executes checkout tests only, saving 90% CI compute.
+• **Playwright Native Sharding**: Run shards in parallel across ephemeral GitHub Actions or Kubernetes runners:
+\`\`\`bash
+npx playwright test --project=chromium --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+\`\`\`
+• **Blob Reporting & Merge**: Merge individual shard test blobs into a single enterprise dashboard using \`npx playwright merge-reports\`.
+
+#### 4. Shared Authentication & State Management:
+• Avoid repetitive UI logins via Playwright \`storageState\` and global auth setup fixtures. Cache tokens per role (Admin, Customer, Vendor) with short TTLs and re-use across test workers.
+
+#### 5. Scalability & Governance Trade-Offs:
+• **Monorepo vs Multi-repo**: Monorepo guarantees atomic updates and zero version fragmentation across shared libraries, but requires strict CODEOWNERS and granular CI pipeline caching.`,
+    codeSnippet: {
+      playwright: `// packages/core-playwright/src/base-test.ts
+import { test as base, expect, Page } from '@playwright/test';
+import { AuthManager } from './auth/AuthManager';
+
+type EnterpriseFixtures = {
+  authenticatedPage: Page;
+  testUserRole: 'ADMIN' | 'CUSTOMER';
+};
+
+export const test = base.extend<EnterpriseFixtures>({
+  testUserRole: ['CUSTOMER', { option: true }],
+  authenticatedPage: async ({ browser, testUserRole }, use) => {
+    // Generate or fetch cached storageState for the designated role
+    const storageStatePath = await AuthManager.getStorageState(testUserRole);
+    const context = await browser.newContext({ storageState: storageStatePath });
+    const page = await context.newPage();
+    await use(page);
+    await context.close();
+  },
+});
+
+export { expect };`
+    },
+    bestPractices: [
+      'Enforce CODEOWNERS for core packages so framework changes require Architect review',
+      'Use Nx/Turborepo affected commands to only run tests for modified packages/apps',
+      'Distribute execution using native Playwright sharding (--shard=x/y) with merged blob reports',
+      'Pre-generate auth states via API calls or storageState to avoid UI login bottlenecks'
+    ],
+    antiPatterns: [
+      'Creating one massive sequential test suite that all 50 squads must wait for',
+      'Allowing squads to fork or copy-paste base driver initialization code',
+      'Executing 20 application suites on every single commit regardless of diffs'
+    ],
+    interviewTips: 'Emphasize federated ownership (core platform team vs feature squad ownership), affected-test CI execution, and Playwright blob reporting to demonstrate Staff/Principal level architecture.'
+  },
+
+  // 38. 90-Day Flaky Test Remediation Roadmap (Test 2)
+  {
+    id: 'flaky-test-remediation-90days',
+    topic: 'Flaky Test Remediation Strategy over 90 Days (4,000 Flaky Tests)',
+    category: 'framework',
+    keywords: [
+      'flaky tests',
+      '4000 flaky tests',
+      'flakiness',
+      'reduce flakiness',
+      '90 days',
+      'flaky test roadmap',
+      'quarantine',
+      'test flakiness'
+    ],
+    question: 'We have 4,000 flaky tests. How do we reduce flakiness over 90 days?',
+    shortAnswer: 'Execute a disciplined 3-phase, 90-day turnaround: Phase 1 (Days 1–15): Stop the bleeding with quarantine quality gates and metrics. Phase 2 (Days 16–60): Systematic root-cause classification and squad-level burndown. Phase 3 (Days 61–90): Preventive framework hardening, deterministic test data, and CI guardrails.',
+    detailedAnswer: `### 📉 90-Day Enterprise Flaky Test Elimination Roadmap
+
+#### Executive Reality:
+4,000 flaky tests means the automation suite has **lost trust**—engineers ignore red pipelines and click "re-run". To restore pipeline trust, we treat flakiness as a high-severity production reliability crisis.
+
+---
+
+### Phase 1: Stop the Bleeding & Triage (Days 1 – 15)
+1. **Immediate Quarantine Protocol**:
+   • Any test failing inconsistently across the last 10 CI runs is automatically tagged with \`@quarantine\` or moved to an isolated quarantine pipeline.
+   • **Golden Rule**: Quarantined tests DO NOT block PR merges. The main CI gate immediately returns to 100% green and trusted.
+2. **Telemetry & Flakiness Index**:
+   • Deploy flakiness tracking (Datadog, Allure, or custom JUnit XML ingest).
+   • Calculate Flakiness Index: $\\text{Flakiness Rate} = \\frac{\\text{Retry Passes} + \\text{Inconsistent Runs}}{\\text{Total Runs}} \\times 100\\%$.
+3. **Establish Clear Squad Ownership**:
+   • Parse test metadata and assign all 4,000 tests to specific feature squads via CODEOWNERS. No orphan tests.
+
+---
+
+### Phase 2: Root-Cause Classification & Burndown (Days 16 – 60)
+Classify the 4,000 tests into the 4 Classical Root-Cause Categories:
+1. **Synchronization & Timing (45% of cases)**:
+   • *Symptom*: Element not found, click intercepted, animation collision.
+   • *Action*: Replace hardcoded sleeps and brittle custom waits with auto-waiting web-first assertions (\`expect(locator).toBeVisible()\`).
+2. **Shared State & Test Pollution (30% of cases)**:
+   • *Symptom*: Test passes in isolation, fails when run in parallel or in full suite.
+   • *Action*: Isolate test data. Inject unique UUIDs per entity; eliminate dependency on static records (e.g. \`testuser@org.com\`).
+3. **Environment & External Dependencies (15% of cases)**:
+   • *Symptom*: 3rd party payment gateway timeouts, slow dev environments.
+   • *Action*: Mock 3rd party APIs with WireMock or Playwright \`page.route()\`.
+4. **Obsolete / Duplicate Tests (10% of cases)**:
+   • *Action*: Ruthlessly delete deprecated feature tests and push lower-level assertions to API/Unit layer.
+• **Sprint Burndown Target**: Each squad fixes 10–15 quarantined tests per engineer per sprint as part of their committed sprint capacity.
+
+---
+
+### Phase 3: Prevention & CI Hardening (Days 61 – 90)
+1. **Strict Graduation Criteria**:
+   • A quarantined test must pass **50 consecutive runs** in CI before graduating back to the blocking PR pipeline.
+2. **Pre-Merge Stress Verification (Flake Check)**:
+   • New or modified tests must run 10x in parallel in the PR pipeline before merge. If it flakes once, the PR is blocked.
+3. **Continuous Governance**:
+   • Weekly QA CoE dashboard tracking flakiness rate (<1% target) and Test Defect Leakage.`,
+    codeSnippet: {
+      playwright: `// packages/test-utils/src/stress-runner.ts
+// Example: Pre-Merge Flake Detector Script for CI
+import { execSync } from 'child_process';
+
+const testFile = process.env.CHANGED_TEST_FILE;
+const REPEAT_COUNT = 10;
+
+console.log(\`Running \${testFile} \${REPEAT_COUNT} times to verify zero flakiness...\`);
+
+for (let i = 1; i <= REPEAT_COUNT; i++) {
+  try {
+    execSync(\`npx playwright test \${testFile} --repeat-each=1\`, { stdio: 'inherit' });
+    console.log(\`Iteration \${i}/\${REPEAT_COUNT} PASSED\`);
+  } catch (error) {
+    console.error(\`❌ Flakiness detected on iteration \${i}! PR blocked.\`);
+    process.exit(1);
+  }
+}`
+    },
+    bestPractices: [
+      'Quarantine immediately: Never let flaky tests block engineers on main PR pipelines',
+      'Enforce 50-run consecutive green streak before releasing tests from quarantine',
+      'Use UUIDs and isolated DB transactions to eliminate test pollution and shared state',
+      'Track Flakiness Index weekly at QA CoE and Engineering Leadership level'
+    ],
+    antiPatterns: [
+      'Increasing global timeouts from 30s to 120s (masks the latency problem and inflates CI cost)',
+      'Adding retry: 3 without investigating root causes (turns flaky tests into permanent technical debt)',
+      'Treating flakiness as purely a QA problem rather than a shared engineering quality crisis'
+    ],
+    interviewTips: 'Structure your answer around the 3 phases: Triage & Quarantine, Root-Cause Classification & Squad Burndown, and Automated CI Guardrails to demonstrate strategic quality leadership.'
+  },
+
+  // 39. Introducing AI Agents into an Existing QA CoE (Test 3)
+  {
+    id: 'ai-agents-qa-coe-strategy',
+    topic: 'How to Introduce AI Agents into an Existing QA CoE',
+    category: 'ai-qa',
+    keywords: [
+      'ai agents',
+      'qa coe',
+      'introduce ai agents',
+      'rag',
+      'mcp',
+      'model context protocol',
+      'agentic workflows',
+      'ai in qa'
+    ],
+    question: 'How should we introduce AI agents into an existing QA CoE?',
+    shortAnswer: 'Adopt a phased Enterprise Agentic Rollout: Start with high-yield, low-risk use cases (test triage, synthetic data, selector healing), integrate secure Model Context Protocol (MCP) and RAG architecture with human-in-the-loop review, enforce data privacy guardrails, and track concrete ROI metrics (MTTD, test maintenance hours, sprint velocity).',
+    detailedAnswer: `### 🤖 Enterprise Strategy: Integrating AI Agents into a QA CoE
+
+#### 1. High-Yield Enterprise Use Cases (Start Narrow, Expand by Value):
+• **Tier 1 (Instant ROI, Zero Risk)**: Automated Defect Triage & Log Analysis. Agent analyzes CI run failures, correlates browser console errors and backend logs, categorizes failure into (App Bug vs Flaky Test vs Environment), and drafts Jira defect.
+• **Tier 2 (Engineering Accelerator)**: Synthetic Test Data Generation. Generating complex domain-valid JSON payloads adhering to JSON Schemas and business rules.
+• **Tier 3 (Automation Assistance)**: Spec-to-Gherkin / Locator Healing Agent. Translates Jira User Stories into Playwright test skeletons using existing design-system components.
+
+#### 2. Agent Architecture: RAG + Model Context Protocol (MCP):
+• **Context Retrieval via RAG**:
+  - Vector database (Chroma/Pinecone) indexing your organization's Page Object Model library, design tokens, and existing test standards.
+  - When prompting the agent, RAG injects relevant existing Page classes, preventing hallucinated methods.
+• **Tool Invocation via MCP (Model Context Protocol)**:
+  - Agent interacts with real systems using standardized MCP servers:
+    - *Git MCP*: Reads branch diffs and creates draft PRs.
+    - *Playwright/CDP MCP*: Launches headless browser, navigates to DOM, evaluates locators.
+    - *Jira MCP*: Queries acceptance criteria and posts triage comments.
+
+#### 3. Security, Privacy & Guardrails:
+• **Zero Data Ingestion / Enterprise Privacy**: Ensure LLM provider has Zero Data Retention (ZDR) agreements. No customer PII or proprietary IP sent to public models.
+• **Human-in-the-Loop (HITL) Mandate**: AI agents NEVER merge code directly to main or auto-close production defects. All agent outputs are submitted as draft Pull Requests or review comments requiring human SDET approval.
+
+#### 4. ROI Measurement & Governance:
+• **Time Saved on Triage**: Reduction in triage time from 45 minutes to < 5 minutes per failed build.
+• **Framework Maintenance Velocity**: % reduction in broken locators after UI redesigns.
+• **Defect Detection Percentage (DDP)**: Pre-release catch rate enhancement.`,
+    codeSnippet: {
+      playwright: `// Example: MCP Tool definition for Automated Test Execution & DOM Inspection
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { chromium } from 'playwright';
+
+const server = new McpServer({ name: 'qa-playwright-agent', version: '1.0.0' });
+
+server.tool('inspect-dom-element', { selector: { type: 'string' } }, async ({ selector }) => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(process.env.STAGING_URL!);
+  
+  const locator = page.locator(selector);
+  const isVisible = await locator.isVisible();
+  const count = await locator.count();
+  await browser.close();
+
+  return { content: [{ type: 'text', text: JSON.stringify({ selector, isVisible, count }) }] };
+});`
+    },
+    bestPractices: [
+      'Enforce Human-in-the-Loop (HITL): Agents create draft PRs, humans approve them',
+      'Use Model Context Protocol (MCP) to standardize tool connections across browsers, Git, and CI/CD',
+      'Index internal Page Objects in RAG so agents generate code matching company standards',
+      'Establish enterprise security guardrails with zero data retention'
+    ],
+    antiPatterns: [
+      'Allowing autonomous agents to execute unreviewed write/delete operations in staging or prod',
+      'Feeding full production databases containing customer PII into LLM prompts',
+      'Deploying agents without concrete baseline metrics (triage duration, maintenance hours)'
+    ],
+    interviewTips: 'Emphasize architectural guardrails: RAG for repo awareness, MCP for deterministic tool invocation, HITL governance, and hard metrics (MTTD reduction).'
+  },
+
+  // 40. Selenium vs Playwright for New Automation Framework (Test 4)
+  {
+    id: 'selenium-vs-playwright-decision-matrix',
+    topic: 'Selenium vs Playwright Decision Matrix for Greenfield Frameworks',
+    category: 'playwright',
+    keywords: [
+      'selenium vs playwright',
+      'selenium or playwright',
+      'choose selenium or playwright',
+      'playwright vs selenium',
+      'automation tool comparison',
+      'new automation framework'
+    ],
+    question: 'Should we use Selenium or Playwright for a new automation framework?',
+    shortAnswer: 'There is no universal one-size-fits-all answer; evaluate based on architectural context. For modern SPAs, fast CI/CD pipelines, and teams comfortable with TypeScript/Python, Playwright is superior due to auto-waiting, network mocking, and multi-tab isolation. For legacy Java enterprise stacks, real Safari/IE compatibility, or established Selenium Grid grids, Selenium 4 remains appropriate.',
+    detailedAnswer: `### ⚖️ Technical Decision Matrix: Selenium 4 vs Playwright
+
+#### Architecture Under the Hood:
+• **Selenium 4**: Communicates over W3C WebDriver HTTP/REST protocol. Each command (\`click\`, \`findElement\`) is an independent HTTP round-trip request to browser drivers (\`chromedriver\`, \`geckodriver\`). Requires external synchronization (\`WebDriverWait\`).
+• **Playwright**: Communicates over a persistent, bi-directional **WebSocket** connection directly into browser engine internals (Chrome DevTools Protocol for Chromium, WebKit internal protocol, Gecko internal protocol). Executes actions with an integrated auto-waiting actionability pipeline.
+
+---
+
+### Comparative Evaluation Matrix:
+
+| Feature / Criterion | Playwright | Selenium WebDriver 4 |
+|:---|:---|:---|
+| **Underlying Protocol** | Bi-directional WebSocket | W3C HTTP Wire Protocol + CDP BiDi |
+| **Execution Speed** | 🚀 Extremely fast (in-process event loop) | Slower (HTTP request overhead per action) |
+| **Synchronization** | Native auto-waiting (Actionability Matrix) | Manual (WebDriverWait / FluentWait) |
+| **Network Interception** | Native (\`page.route\`, mock API, abort) | Partial (CDP Network domain, complex setup) |
+| **Browser Contexts** | Microsecond browser contexts (isolated cookies/storage) | Heavyweight separate browser instances |
+| **Multi-tab & iFrames** | First-class (\`page.frameLocator\`, event loop) | Manual window handle switching |
+| **Language Ecosystem** | TypeScript (1st class), Python, C#, Java | Java (Dominant), Python, C#, JS, Ruby |
+| **Legacy & Safari Engine** | Apple WebKit engine build | Real Safari browser on macOS (\`safaridriver\`) |
+| **Grid Infrastructure** | Native sharding (\`--shard\`), Docker | Massive cloud grids (SauceLabs, BrowserStack, Grid 4) |
+
+---
+
+### When to Choose Playwright:
+1. Building modern web applications (React, Angular, Next.js, Vue).
+2. Prioritizing developer-in-the-loop testing where frontend engineers and SDETs share TypeScript tooling.
+3. Needing advanced network mocking, API interception, and multi-tab workflows.
+4. Requiring rich out-of-the-box debugging (Playwright Trace Viewer, UI Mode, time-travel debugging).
+
+---
+
+### When to Choose Selenium 4:
+1. Massive existing enterprise Java test suites with thousands of established Page Objects and custom reporting.
+2. Hard requirement for real Safari execution on native macOS devices (e.g. strict banking compliance).
+3. Teams with deep Java expertise and zero JavaScript/TypeScript appetite.
+4. Legacy applications requiring testing across older browser versions or IE compatibility mode.`,
+    codeSnippet: {
+      playwright: `// Playwright: Effortless API Interception & Auto-Waiting
+await page.route('**/api/v1/profile', async route => {
+  await route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ user: 'Principal SDET', permissions: ['ADMIN'] })
+  });
+});
+
+await page.goto('/profile');
+// Auto-waits for element to be visible, enabled, and receive pointer events
+await page.getByRole('button', { name: 'Save Changes' }).click();`
+    },
+    bestPractices: [
+      'Choose Playwright for modern greenfield SPAs to eliminate timing flakiness and enable fast parallel sharding',
+      'Choose Selenium if organizational constraints mandate Java-only skills and existing Selenium Grid infrastructure',
+      'Avoid hybrid Frankenstein frameworks that wrap both tools unless executing an active migration'
+    ],
+    antiPatterns: [
+      'Defaulting to Selenium purely out of habit without considering developer velocity and CI runtime',
+      'Rewriting 20,000 working Selenium tests to Playwright without clear business justification or ROI',
+      'Choosing Playwright but writing Selenium-style code (e.g. hardcoding waitForTimeout or manual sleeps)'
+    ],
+    interviewTips: 'Articulate the architectural differences (WebSocket CDP connection vs W3C HTTP Wire protocol) and frame the decision around organizational context, team skill set, and CI/CD velocity.'
+  },
+
+  // 41. Enterprise Test Governance & Quality Gates (Test 5)
+  {
+    id: 'enterprise-test-governance-framework',
+    topic: 'How to Design Enterprise Test Governance and Quality Gates',
+    category: 'framework',
+    keywords: [
+      'test governance',
+      'enterprise test governance',
+      'quality governance',
+      'quality gates',
+      'release governance',
+      'qa metrics',
+      'defect leakage'
+    ],
+    question: 'Explain how to design enterprise test governance.',
+    shortAnswer: 'Enterprise test governance establishes federated quality ownership across squads, standardized engineering standards, automated CI/CD quality gates, data-driven quality metrics (DDP, Escape Rate, Flakiness Index), and a risk-based release approval framework.',
+    detailedAnswer: `### 🏛️ Enterprise Test Governance & Release Quality Operating Model
+
+#### 1. Governance Operating Model & Ownership Structure:
+• **Federated Quality Model (Hub-and-Spoke)**:
+  - **Hub (QA CoE / Quality Architecture Team)**: Sets global standards, framework libraries, security compliance, tooling budgets, and automated quality gates.
+  - **Spoke (Embedded SDETs in Product Squads)**: Owns sprint test planning, automation authoring, local test data, and squad release readiness.
+• **Quality is an Engineering Outcome**: Developers and SDETs share ownership of test authoring; QA is not a downstream gatekeeper.
+
+---
+
+#### 2. Tiered Quality Gates Across the CI/CD Lifecycle:
+
+| Pipeline Stage | Quality Gate Criteria | Action on Breach |
+|:---|:---|:---|
+| **PR Build (Commit)** | 100% Unit test pass; >80% Line/Branch coverage; Lint & Security SAST pass; Flake check (10x run on modified tests) | Block PR Merge |
+| **Merge to Main** | Automated component integration tests pass; Contract tests (Pact) pass; Staging smoke suite passes | Halt Deployment |
+| **Pre-Release (Staging)** | Full regression suite passes (<1% flakiness); Non-Functional SLAs met (P95 latency < 500ms); Zero P0/P1 open defects | Block Release Cut |
+| **Post-Release (Canary)** | Synthetic production monitors pass; Error budget / crash-free rate > 99.9% | Automated Rollback |
+
+---
+
+#### 3. Core Enterprise Quality Metrics & KPIs:
+1. **Defect Detection Percentage (DDP)**:
+   $$\\text{DDP} = \\frac{\\text{Defects found in QA}}{\\text{Defects found in QA} + \\text{Defects found in Prod}} \\times 100\\%$$
+   *Target: $\\ge 95\\%$*.
+2. **Defect Escape Rate (Production Leakage)**:
+   *Target: $< 5\\%$ of total defects discovered post-production release*.
+3. **Flakiness Index**:
+   *Target: $< 1\\%$ across all automated pipeline runs*.
+4. **Mean Time to Detect (MTTD) & Mean Time to Recover (MTTR)**.
+5. **Automation ROI & Velocity**: Test execution time trend, test maintenance hours per sprint.
+
+---
+
+#### 4. Release Governance & Sign-Off Framework:
+• **Automated Release Readiness Dashboard**: Replaces lengthy manual QA sign-off emails. Aggregates Jira release tickets, pipeline test results, security scans, and APM health into a single green/red release indicator.
+• **Risk-Based Go/No-Go Decision Criteria**: P0/P1 blockers require VP/Director sign-off; P2/P3 defects require committed remediation Jira tickets in the upcoming sprint.`,
+    codeSnippet: {
+      playwright: `// Example: Enterprise CI Quality Gate Validation Script
+import fs from 'fs';
+
+interface TestSummary {
+  total: number;
+  passed: number;
+  failed: number;
+  flaky: number;
+}
+
+const summary: TestSummary = JSON.parse(fs.readFileSync('test-results/summary.json', 'utf8'));
+
+const flakinessRate = (summary.flaky / summary.total) * 100;
+const passRate = (summary.passed / summary.total) * 100;
+
+console.log(\`Pass Rate: \${passRate.toFixed(2)}% | Flakiness Rate: \${flakinessRate.toFixed(2)}%\`);
+
+if (passRate < 99.0 || flakinessRate > 1.0 || summary.failed > 0) {
+  console.error('❌ Enterprise Quality Gate Failed! Deployment blocked.');
+  process.exit(1);
+}
+
+console.log('✅ Enterprise Quality Gate Passed! Proceeding to deployment.');`
+    },
+    bestPractices: [
+      'Implement Hub-and-Spoke federated ownership so quality is built into feature squads',
+      'Automate quality gates directly into CI/CD pipelines instead of manual checklist sign-offs',
+      'Track Defect Detection Percentage (DDP) and Flakiness Index as primary quality KPIs',
+      'Automate release readiness dashboards aggregating test, security, and APM telemetry'
+    ],
+    antiPatterns: [
+      'Manual "QA sign-off" approval bottlenecks that delay agile deployment cadence',
+      'Measuring quality purely by count of automated test cases written rather than DDP or escape rate',
+      'Treating test flakiness as acceptable and allowing broken pipelines to be bypassed'
+    ],
+    interviewTips: 'Emphasize the Hub-and-Spoke operating model, objective mathematical metrics (DDP, Escape Rate), automated CI/CD quality gates, and risk-based release governance.'
+  }
+];
+
+// Combine all entries
+QA_KNOWLEDGE_BASE.push(...ENTERPRISE_SDET_KNOWLEDGE);
+
 export function getNextStepSuggestion(category?: string, topic?: string): string {
   const t = (topic || '').toLowerCase();
   const c = (category || '').toLowerCase();
@@ -1984,15 +2422,15 @@ export function getNextStepSuggestion(category?: string, topic?: string): string
 export function formatCrispChatAnswer(entry: QAKnowledgeEntry): string {
   let output = `${entry.shortAnswer}\n\n`;
 
-  // If detailed breakdown exists and there is no code snippet, include the detailed architectural content
-  if (entry.detailedAnswer && !entry.codeSnippet) {
+  // If detailed breakdown exists, include the detailed architectural content
+  if (entry.detailedAnswer) {
     output += `${entry.detailedAnswer.trim()}\n\n`;
   }
 
   // Add key bullet points
   if (entry.bestPractices && entry.bestPractices.length > 0) {
     output += `**Key Practical Guidance:**\n`;
-    entry.bestPractices.slice(0, 3).forEach(bp => {
+    entry.bestPractices.slice(0, 4).forEach(bp => {
       output += `• ${bp}\n`;
     });
     output += '\n';
