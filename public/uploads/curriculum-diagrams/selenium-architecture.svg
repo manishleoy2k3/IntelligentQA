@@ -1,0 +1,735 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 1535 700" 
+  width="1535" 
+  height="700" 
+  style="background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; display: block; max-width: 100%; border-radius: 16px;"
+>
+  <defs>
+    <!-- Arrow Marker -->
+    <marker 
+      id="arrow-automation-framework" 
+      viewBox="0 0 10 10" 
+      refX="8" 
+      refY="5" 
+      markerWidth="6" 
+      markerHeight="6" 
+      orient="auto-start-reverse"
+    >
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16A34A" />
+    </marker>
+
+    <!-- Node Drop Shadow Filter -->
+    <filter id="shadow-node" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.06"/>
+    </filter>
+
+    <filter id="shadow-subtle" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.04"/>
+    </filter>
+
+    <!-- Canvas Grid Pattern -->
+    <pattern id="grid-pattern" width="30" height="30" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#BBF7D0" />
+    </pattern>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect x="0" y="0" width="1535" height="700" fill="#FFFFFF" rx="16"/>
+  <rect x="0" y="0" width="1535" height="700" fill="url(#grid-pattern)" opacity="0.6"/>
+
+  <!-- Architecture Header -->
+  <g transform="translate(60, 48)">
+    <text font-size="22" font-weight="800" fill="#14532D" letter-spacing="-0.3">
+      Selenium WebDriver Architecture
+    </text>
+    
+    <text y="24" font-size="13" font-weight="400" fill="#15803D">
+      End-to-end W3C WebDriver communication flow from Test Code to Native Browser Engine
+    </text>
+  </g>
+
+  <!-- Diagram Content Container -->
+  <g transform="translate(20, 60)">
+    
+    <!-- Layer: Test Automation Layer -->
+    <g class="architecture-layer" id="layer-automation-layer">
+      <rect 
+        x="54" 
+        y="36" 
+        width="637" 
+        height="194" 
+        rx="16" 
+        fill="rgba(220, 252, 231, 0.55)" 
+        stroke="#86EFAC" 
+        stroke-width="1.5" 
+        stroke-dasharray="6 4"
+      />
+      <rect 
+        x="70" 
+        y="48" 
+        width="221" 
+        height="26" 
+        rx="6" 
+        fill="#FFFFFF" 
+        stroke="#86EFAC" 
+        stroke-width="1"
+      />
+      <text 
+        x="82" 
+        y="65" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="12" 
+        font-weight="700" 
+        fill="#166534"
+        letter-spacing="0.5"
+      >
+        TEST AUTOMATION LAYER
+      </text>
+    </g>
+
+    <!-- Layer: Browser Driver Layer -->
+    <g class="architecture-layer" id="layer-driver-layer">
+      <rect 
+        x="704" 
+        y="36" 
+        width="312" 
+        height="194" 
+        rx="16" 
+        fill="rgba(220, 252, 231, 0.55)" 
+        stroke="#86EFAC" 
+        stroke-width="1.5" 
+        stroke-dasharray="6 4"
+      />
+      <rect 
+        x="720" 
+        y="48" 
+        width="212" 
+        height="26" 
+        rx="6" 
+        fill="#FFFFFF" 
+        stroke="#86EFAC" 
+        stroke-width="1"
+      />
+      <text 
+        x="732" 
+        y="65" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="12" 
+        font-weight="700" 
+        fill="#166534"
+        letter-spacing="0.5"
+      >
+        BROWSER DRIVER LAYER
+      </text>
+    </g>
+
+    <!-- Layer: Browser Engine Layer -->
+    <g class="architecture-layer" id="layer-browser-layer">
+      <rect 
+        x="1029" 
+        y="36" 
+        width="312" 
+        height="194" 
+        rx="16" 
+        fill="rgba(220, 252, 231, 0.55)" 
+        stroke="#86EFAC" 
+        stroke-width="1.5" 
+        stroke-dasharray="6 4"
+      />
+      <rect 
+        x="1045" 
+        y="48" 
+        width="212" 
+        height="26" 
+        rx="6" 
+        fill="#FFFFFF" 
+        stroke="#86EFAC" 
+        stroke-width="1"
+      />
+      <text 
+        x="1057" 
+        y="65" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="12" 
+        font-weight="700" 
+        fill="#166534"
+        letter-spacing="0.5"
+      >
+        BROWSER ENGINE LAYER
+      </text>
+    </g>
+    
+    <!-- Edge: test_script -> selenium_client -->
+    <g class="architecture-edge" id="edge-e1">
+      <path 
+        d="M 330 140 C 372.5 140, 372.5 140, 415 140" 
+        fill="none" 
+        stroke="#2563EB" 
+        stroke-width="2" 
+        
+        marker-end="url(#arrow-automation-framework)"
+      />
+      
+      <g transform="translate(372.5, 140)">
+        <rect 
+          x="-90" 
+          y="-14" 
+          width="180" 
+          height="28" 
+          rx="6" 
+          fill="#FFFFFF" 
+          stroke="#86EFAC" 
+          stroke-width="1"
+          filter="url(#shadow-subtle)"
+        />
+        <text 
+          x="0" 
+          y="-1" 
+          text-anchor="middle" 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+          font-size="11" 
+          font-weight="600" 
+          fill="#14532D"
+        >
+          Method Invocations
+        </text>
+        
+        <text 
+          x="0" 
+          y="10" 
+          text-anchor="middle" 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+          font-size="9" 
+          font-weight="500" 
+          fill="#2563EB"
+        >
+          [Java API]
+        </text>
+      </g>
+    </g>
+
+    <!-- Edge: selenium_client -> browser_driver -->
+    <g class="architecture-edge" id="edge-e2">
+      <path 
+        d="M 655 140 C 697.5 140, 697.5 140, 740 140" 
+        fill="none" 
+        stroke="#2563EB" 
+        stroke-width="2" 
+        
+        marker-end="url(#arrow-automation-framework)"
+      />
+      
+      <g transform="translate(697.5, 140)">
+        <rect 
+          x="-154" 
+          y="-14" 
+          width="308" 
+          height="28" 
+          rx="6" 
+          fill="#FFFFFF" 
+          stroke="#86EFAC" 
+          stroke-width="1"
+          filter="url(#shadow-subtle)"
+        />
+        <text 
+          x="0" 
+          y="-1" 
+          text-anchor="middle" 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+          font-size="11" 
+          font-weight="600" 
+          fill="#14532D"
+        >
+          WebDriver Commands
+        </text>
+        
+        <text 
+          x="0" 
+          y="10" 
+          text-anchor="middle" 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+          font-size="9" 
+          font-weight="500" 
+          fill="#2563EB"
+        >
+          [W3C WebDriver Protocol (HTTP/JSON)]
+        </text>
+      </g>
+    </g>
+
+    <!-- Edge: browser_driver -> chrome_browser -->
+    <g class="architecture-edge" id="edge-e3">
+      <path 
+        d="M 980 140 C 1022.5 140, 1022.5 140, 1065 140" 
+        fill="none" 
+        stroke="#2563EB" 
+        stroke-width="2" 
+        
+        marker-end="url(#arrow-automation-framework)"
+      />
+      
+      <g transform="translate(1022.5, 140)">
+        <rect 
+          x="-114" 
+          y="-14" 
+          width="228" 
+          height="28" 
+          rx="6" 
+          fill="#FFFFFF" 
+          stroke="#86EFAC" 
+          stroke-width="1"
+          filter="url(#shadow-subtle)"
+        />
+        <text 
+          x="0" 
+          y="-1" 
+          text-anchor="middle" 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+          font-size="11" 
+          font-weight="600" 
+          fill="#14532D"
+        >
+          Native OS Events
+        </text>
+        
+        <text 
+          x="0" 
+          y="10" 
+          text-anchor="middle" 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+          font-size="9" 
+          font-weight="500" 
+          fill="#2563EB"
+        >
+          [DevTools / Native Socket]
+        </text>
+      </g>
+    </g>
+    
+    <!-- Node: test_script (client) -->
+    <g class="architecture-node" id="node-test_script" transform="translate(90, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#93C5FD" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#2563EB"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#DBEAFE"
+      />
+      <g transform="translate(19, 19)" color="#2563EB">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="20" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#EFF6FF"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#1D4ED8"
+      >
+        CLIENT
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#14532D"
+      >
+        Test Script
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#2563EB"
+      >
+        Java / TestNG
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="11" 
+        fill="#15803D"
+      >
+        Executes test scenarios &amp; a…
+      </text>
+    </g>
+
+    <!-- Node: selenium_client (application) -->
+    <g class="architecture-node" id="node-selenium_client" transform="translate(415, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#A5B4FC" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#4F46E5"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#E0E7FF"
+      />
+      <g transform="translate(19, 19)" color="#4F46E5">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <polygon points="12 2 2 7 12 12 22 7 12 2" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 17 12 22 22 17" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 12 12 17 22 12" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#EEF2FF"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#4338CA"
+      >
+        APPLICATION
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#14532D"
+      >
+        Selenium Client Lib…
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#4F46E5"
+      >
+        Selenium Java 4.x
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="11" 
+        fill="#15803D"
+      >
+        Translates test commands to W3C…
+      </text>
+    </g>
+
+    <!-- Node: browser_driver (server) -->
+    <g class="architecture-node" id="node-browser_driver" transform="translate(740, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#94A3B8" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#475569"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#E2E8F0"
+      />
+      <g transform="translate(19, 19)" color="#475569">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <rect x="2" y="2" width="20" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="2" y="14" width="20" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="6.01" y2="6" stroke="currentColor" stroke-width="2"/><line x1="6" y1="18" x2="6.01" y2="18" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#F8FAFC"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#334155"
+      >
+        SERVER
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#14532D"
+      >
+        Browser Driver
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#475569"
+      >
+        ChromeDriver / GeckoDriver
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="11" 
+        fill="#15803D"
+      >
+        Lightweight HTTP server interpr…
+      </text>
+    </g>
+
+    <!-- Node: chrome_browser (browser) -->
+    <g class="architecture-node" id="node-chrome_browser" transform="translate(1065, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#6EE7B7" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#059669"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#D1FAE5"
+      />
+      <g transform="translate(19, 19)" color="#059669">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#ECFDF5"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#047857"
+      >
+        BROWSER
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#14532D"
+      >
+        Chrome Browser
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#059669"
+      >
+        Chromium Engine
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" 
+        font-size="11" 
+        fill="#15803D"
+      >
+        Executes actions directly in th…
+      </text>
+    </g>
+  </g>
+
+  <!-- Legend / Footer -->
+  
+    <g transform="translate(60, 635)">
+      <text font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" font-weight="700" fill="#14532D">Legend:</text>
+      
+        <circle cx="70" cy="-4" r="5" fill="#16A34A" />
+        <text x="82" y="0" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#15803D">Language Bindings</text>
+      
+        <circle cx="230" cy="-4" r="5" fill="#2563EB" />
+        <text x="242" y="0" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#15803D">W3C Protocol</text>
+      
+        <circle cx="390" cy="-4" r="5" fill="#059669" />
+        <text x="402" y="0" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#15803D">Native Browser</text>
+      
+    </g>
+
+  <!-- Watermark / Standard Signature -->
+  <text 
+    x="1475" 
+    y="676" 
+    text-anchor="end" 
+    font-size="10" 
+    font-weight="600" 
+    fill="#15803D" 
+    letter-spacing="0.4"
+  >
+    IntelligentQA Architecture Visualization Engine
+  </text>
+</svg>

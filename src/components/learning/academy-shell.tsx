@@ -2,7 +2,22 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, AlertCircle, CheckCircle2, FileQuestion, RefreshCw, Eye, EyeOff, Bookmark, Printer, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import {
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  FileQuestion,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  Bookmark,
+  Printer,
+  ArrowRight,
+  Lock,
+  Sparkles,
+  ShieldCheck,
+} from 'lucide-react';
 import AcademyHeader from './academy-header';
 import CourseSidebar from './course-sidebar';
 import CourseSearch from './course-search';
@@ -69,6 +84,20 @@ export default function AcademyShell({
   const [isSavingProgress, setIsSavingProgress] = useState(false);
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
   const [courseProgressStats, setCourseProgressStats] = useState<any | null>(null);
+
+  // User Authentication state for guest gating & teaser preview
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentUser(QADatabase.getCurrentUser());
+      const handleAuth = () => {
+        setCurrentUser(QADatabase.getCurrentUser());
+      };
+      window.addEventListener('intelligentqa_auth_changed', handleAuth);
+      return () => window.removeEventListener('intelligentqa_auth_changed', handleAuth);
+    }
+  }, []);
 
   // Sync with props when URL or course selection changes
   useEffect(() => {
@@ -591,27 +620,59 @@ export default function AcademyShell({
                     percentCompleted={coursePercent}
                   />
 
-                  {/* Ready to begin? Primary Action Callout */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white mb-0.5">
-                        {completedInCourseCount > 0 ? 'Pick up where you left off' : 'Ready to start learning?'}
-                      </h3>
-                      <p className="text-xs text-slate-600 dark:text-neutral-400">
-                        Follow the structured curriculum below or jump straight into the first lesson.
-                      </p>
+                  {/* Ready to begin? Primary Action Callout or Guest Sign-up Teaser */}
+                  {!currentUser ? (
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/10 border border-emerald-500/30 text-emerald-950 dark:text-emerald-200 shadow-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+                            Free Guest Preview
+                          </span>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                            Explore Curriculum &amp; Syllabus Overview
+                          </h3>
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-neutral-300">
+                          Review all modules below. Create your free account in seconds to unlock full lessons, visual architecture diagrams, production code, and interactive practice labs.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Link
+                          href="/signup"
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-all hover:scale-[1.02] cursor-pointer"
+                        >
+                          Sign Up Free
+                        </Link>
+                        <Link
+                          href="/login"
+                          className="px-3.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-slate-800 dark:text-white font-semibold text-xs transition-colors cursor-pointer"
+                        >
+                          Log In
+                        </Link>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => {
-                        const firstLesson = activeCourse.modules[0]?.lessons[0]?.slug || 'what-is-artificial-intelligence';
-                        handleSelectLesson(firstLesson);
-                      }}
-                      className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0"
-                    >
-                      <span>{completedInCourseCount > 0 ? 'Continue Learning' : 'Start Course'}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
+                      <div>
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-0.5">
+                          {completedInCourseCount > 0 ? 'Pick up where you left off' : 'Ready to start learning?'}
+                        </h3>
+                        <p className="text-xs text-slate-600 dark:text-neutral-400">
+                          Follow the structured curriculum below or jump straight into the first lesson.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const firstLesson = activeCourse.modules[0]?.lessons[0]?.slug || 'what-is-artificial-intelligence';
+                          handleSelectLesson(firstLesson);
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0"
+                      >
+                        <span>{completedInCourseCount > 0 ? 'Continue Learning' : 'Start Course'}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
 
                   {/* Course Syllabus & Modules Breakdown */}
                   <div className="space-y-6">
@@ -716,48 +777,50 @@ export default function AcademyShell({
               ) : (!isLoading || apiLessonData) && !isNotFound ? (
                 /* ================= LESSON READING PAGE ================= */
                 <>
-                  {/* Clean Utility Action Toolbar (Bookmark, Print, Mark Complete) - NO breadcrumbs, NO overview button */}
-                  <div className="flex items-center justify-end gap-2 pb-3 mb-6 border-b border-slate-100 dark:border-neutral-800/80 no-print">
-                    {/* Bookmark Button */}
-                    <button
-                      onClick={handleToggleBookmark}
-                      aria-label={isBookmarked ? 'Remove Bookmark' : 'Bookmark Lesson'}
-                      title={isBookmarked ? 'Remove from My Bookmarks' : 'Bookmark this lesson'}
-                      className={`p-1.5 px-2.5 rounded-lg border text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-                        isBookmarked
-                          ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 hover:bg-amber-500/20'
-                          : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
-                      <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}`} />
-                      <span className="hidden md:inline">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
-                    </button>
+                  {/* Clean Utility Action Toolbar (Visible ONLY to authenticated members) */}
+                  {currentUser && (
+                    <div className="flex items-center justify-end gap-2 pb-3 mb-6 border-b border-slate-100 dark:border-neutral-800/80 no-print">
+                      {/* Bookmark Button */}
+                      <button
+                        onClick={handleToggleBookmark}
+                        aria-label={isBookmarked ? 'Remove Bookmark' : 'Bookmark Lesson'}
+                        title={isBookmarked ? 'Remove from My Bookmarks' : 'Bookmark this lesson'}
+                        className={`p-1.5 px-2.5 rounded-lg border text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                          isBookmarked
+                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 hover:bg-amber-500/20'
+                            : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}`} />
+                        <span className="hidden md:inline">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+                      </button>
 
-                    {/* Print Button */}
-                    <button
-                      onClick={handlePrintLesson}
-                      aria-label="Print Lesson"
-                      title="Print or Save as PDF"
-                      className="p-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-700 bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5"
-                    >
-                      <Printer className="w-3.5 h-3.5" />
-                      <span className="hidden md:inline">Print</span>
-                    </button>
+                      {/* Print Button */}
+                      <button
+                        onClick={handlePrintLesson}
+                        aria-label="Print Lesson"
+                        title="Print or Save as PDF"
+                        className="p-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-700 bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline">Print</span>
+                      </button>
 
-                    {/* Mark Complete Button */}
-                    <button
-                      onClick={handleToggleComplete}
-                      disabled={isSavingProgress}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                        isCompleted
-                          ? 'bg-emerald-500 text-white shadow-xs'
-                          : 'bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700 border border-slate-200 dark:border-neutral-700'
-                      }`}
-                    >
-                      <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
-                      <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
-                    </button>
-                  </div>
+                      {/* Mark Complete Button */}
+                      <button
+                        onClick={handleToggleComplete}
+                        disabled={isSavingProgress}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                          isCompleted
+                            ? 'bg-emerald-500 text-white shadow-xs'
+                            : 'bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700 border border-slate-200 dark:border-neutral-700'
+                        }`}
+                      >
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
+                        <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
+                      </button>
+                    </div>
+                  )}
 
                   {/* Clean Lesson Header with Reading Time, Difficulty, Updated Date, Summary */}
                   <LessonHeader
@@ -770,44 +833,117 @@ export default function AcademyShell({
                     summary={currentLesson.summary}
                   />
 
-                  {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
-                  {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
-                    <LlmArchitectureInfographic />
-                  )}
+                  {/* GUEST ACCESS GATE: Reveal Teaser Snippet & Sign-up Gate Card */}
+                  {!currentUser ? (
+                    <div className="space-y-6">
+                      {/* Introductory Teaser Snippet with Fading Gradient */}
+                      {optimizedHtml && (
+                        <div className="relative my-6">
+                          <div
+                            className="prose dark:prose-invert max-w-none text-slate-800 dark:text-neutral-200 docx-rendered-content leading-relaxed max-h-56 overflow-hidden select-none filter blur-[0.2px]"
+                            dangerouslySetInnerHTML={{
+                              __html: (optimizedHtml.slice(0, 900).replace(/<img[^>]*>/gi, '').replace(/<figure[\s\S]*?<\/figure>/gi, '') + '</p>'),
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-[#0f1117]/85 dark:to-[#0f1117] pointer-events-none" />
+                        </div>
+                      )}
 
-                  {/* Uniform Technical Documentation Content (Prose format across all courses) */}
-                  {optimizedHtml && (
-                    <div
-                      className="prose dark:prose-invert max-w-none my-6 text-slate-800 dark:text-neutral-200 docx-rendered-content leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: optimizedHtml }}
-                    />
-                  )}
+                      {/* High-Converting Member Access Gating Card */}
+                      <div className="my-8 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-slate-50 to-indigo-500/10 dark:from-emerald-950/20 dark:via-neutral-900 dark:to-indigo-950/20 border-2 border-emerald-500/30 text-center space-y-6 shadow-xl">
+                        <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg">
+                          <Lock className="w-8 h-8" />
+                        </div>
+                        <div className="max-w-xl mx-auto space-y-2">
+                          <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                            Academy Member Preview
+                          </span>
+                          <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            Unlock Full Lesson &amp; Interactive QA Labs
+                          </h3>
+                          <p className="text-sm text-slate-600 dark:text-neutral-300 leading-relaxed">
+                            You are previewing an introduction to <strong>{currentLesson.title}</strong>. Create your free account in seconds to unlock the full technical architecture diagrams, production code implementations, AI Coding Coach guidance, and compiler sandboxes.
+                          </p>
+                        </div>
 
-                  {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
-                  {currentLesson.sections && currentLesson.sections.length > 0 ? (
-                    <div className="space-y-4 my-2">
-                      {currentLesson.sections.map((section) => (
-                        <LessonSection key={section.id} section={section} />
-                      ))}
-                    </div>
-                  ) : !optimizedHtml ? (
-                    <div className="my-8 p-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 shadow-sm text-center space-y-4">
-                      <div className="w-12 h-12 mx-auto rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                        <FileQuestion className="w-6 h-6" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto text-left text-xs font-semibold text-slate-700 dark:text-neutral-200 py-2">
+                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                            <span>Full Technical Architecture &amp; Infographics</span>
+                          </div>
+                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                            <span>Interactive AI Coding Coach &amp; Assistance</span>
+                          </div>
+                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                            <span>Hands-on Code Runners &amp; Practice Labs</span>
+                          </div>
+                          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/90 dark:bg-neutral-800/90 border border-slate-200 dark:border-neutral-700 shadow-2xs">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                            <span>100% Free Forever — Zero Credit Card</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                          <Link
+                            href="/signup"
+                            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm shadow-md transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+                          >
+                            Sign Up for Free Access
+                          </Link>
+                          <Link
+                            href="/login"
+                            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-slate-800 dark:text-white font-bold text-sm transition-all cursor-pointer"
+                          >
+                            Already a member? Log In
+                          </Link>
+                        </div>
                       </div>
-                      <div className="max-w-md mx-auto space-y-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          Curriculum Content Under Construction
-                        </span>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                          Building Fresh in Uniform Format
-                        </h3>
-                        <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
-                          This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
-                        </p>
-                      </div>
                     </div>
-                  ) : null}
+                  ) : (
+                    /* MEMBER FULL ACCESS: Full prose, architecture diagrams & interactive sections */
+                    <>
+                      {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
+                      {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
+                        <LlmArchitectureInfographic />
+                      )}
+
+                      {/* Uniform Technical Documentation Content (Prose format across all courses) */}
+                      {optimizedHtml && (
+                        <div
+                          className="prose dark:prose-invert max-w-none my-6 text-slate-800 dark:text-neutral-200 docx-rendered-content leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: optimizedHtml }}
+                        />
+                      )}
+
+                      {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
+                      {currentLesson.sections && currentLesson.sections.length > 0 ? (
+                        <div className="space-y-4 my-2">
+                          {currentLesson.sections.map((section) => (
+                            <LessonSection key={section.id} section={section} />
+                          ))}
+                        </div>
+                      ) : !optimizedHtml ? (
+                        <div className="my-8 p-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 shadow-sm text-center space-y-4">
+                          <div className="w-12 h-12 mx-auto rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                            <FileQuestion className="w-6 h-6" />
+                          </div>
+                          <div className="max-w-md mx-auto space-y-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                              Curriculum Content Under Construction
+                            </span>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                              Building Fresh in Uniform Format
+                            </h3>
+                            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
+                              This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+                    </>
+                  )}
 
                   {/* Recommended Related Lessons */}
                   {apiLessonData?.relatedLessons && apiLessonData.relatedLessons.length > 0 && (

@@ -1,0 +1,65 @@
+<svg width="1360" height="765" viewBox="0 0 1360 765" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+  </defs>
+  <rect width="1360" height="765" fill="#f8fafc" />
+  <rect width="1360" height="110" fill="url(#headerGrad)" />
+  <rect x="0" y="107" width="1360" height="3" fill="#10b981" />
+  <text x="50" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="800" fill="#ffffff">Transformer Self-Attention — Query, Key, and Value Mechanics</text>
+  <text x="50" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#94a3b8">How Neural Models Model Long-Range Relationships Across Test Code for QA Engineers and SDETs</text>
+
+  <!-- Center Formula Callout -->
+  <rect x="50" y="135" width="1260" height="75" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="75" y="178" font-family="Monaco, 'Courier New', monospace" font-size="18" font-weight="800" fill="#0f172a">Attention(Q, K, V) = softmax( (Q · K^T) / √d_k ) · V</text>
+  <text x="940" y="178" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#059669">Scaled Dot-Product Formula</text>
+
+  <!-- 3 Vectors Breakdown: Q, K, V -->
+  <!-- QUERY CARD -->
+  <g transform="translate(50, 230)">
+    <rect width="390" height="390" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect width="390" height="42" rx="12" fill="#3b82f6" />
+    <text x="20" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="800" fill="#ffffff">QUERY VECTOR (Q)</text>
+    <text x="20" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">&quot;What am I looking for?&quot;</text>
+    <text x="20" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">The current token probes context tokens to find related information.</text>
+    <rect x="20" y="125" width="350" height="120" rx="8" fill="#eff6ff" stroke="#bfdbfe" />
+    <text x="35" y="155" font-family="Monaco, monospace" font-size="11" fill="#1e40af">Current Token: &quot;driver.findElement&quot;</text>
+    <text x="35" y="180" font-family="Monaco, monospace" font-size="11" fill="#1e40af">Q-Projection: Linear(W_Q · X)</text>
+    <text x="35" y="205" font-family="Monaco, monospace" font-size="11" fill="#1e40af">Dimension: [batch, heads, seq, d_k]</text>
+  </g>
+
+  <!-- KEY CARD -->
+  <g transform="translate(480, 230)">
+    <rect width="390" height="390" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect width="390" height="42" rx="12" fill="#10b981" />
+    <text x="20" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="800" fill="#ffffff">KEY VECTOR (K)</text>
+    <text x="20" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">&quot;What do I contain?&quot;</text>
+    <text x="20" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Every preceding context token broadcasts its identity and role.</text>
+    <rect x="20" y="125" width="350" height="120" rx="8" fill="#ecfdf5" stroke="#a7f3d0" />
+    <text x="35" y="155" font-family="Monaco, monospace" font-size="11" fill="#065f46">Candidate Token: &quot;By.xpath(...)&quot;</text>
+    <text x="35" y="180" font-family="Monaco, monospace" font-size="11" fill="#065f46">K-Projection: Linear(W_K · X)</text>
+    <text x="35" y="205" font-family="Monaco, monospace" font-size="11" fill="#065f46">Dot product Q · K^T = Relevance Score</text>
+  </g>
+
+  <!-- VALUE CARD -->
+  <g transform="translate(910, 230)">
+    <rect width="390" height="390" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect width="390" height="42" rx="12" fill="#8b5cf6" />
+    <text x="20" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="800" fill="#ffffff">VALUE VECTOR (V)</text>
+    <text x="20" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#0f172a">&quot;Information passed forward&quot;</text>
+    <text x="20" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Weighted by softmax attention scores, blended into final context.</text>
+    <rect x="20" y="125" width="350" height="120" rx="8" fill="#f5f3ff" stroke="#ddd6fe" />
+    <text x="35" y="155" font-family="Monaco, monospace" font-size="11" fill="#4c1d95">V-Projection: Linear(W_V · X)</text>
+    <text x="35" y="180" font-family="Monaco, monospace" font-size="11" fill="#4c1d95">Attention Weight: softmax(Score)</text>
+    <text x="35" y="205" font-family="Monaco, monospace" font-size="11" fill="#4c1d95">Output = Σ (Weight_i · Value_i)</text>
+  </g>
+
+  <!-- Footer -->
+  <rect x="50" y="650" width="1260" height="65" rx="10" fill="#1e293b" />
+  <text x="75" y="688" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#cbd5e1">
+    <tspan font-weight="700" fill="#38bdf8">SDET INSIGHT: </tspan>
+    Self-attention enables the LLM to connect variable declarations at line 5 with assertions at line 85 without losing track.
+  </text>
+</svg>

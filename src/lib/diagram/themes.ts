@@ -47,7 +47,7 @@ export const THEME_CONFIGS: Record<ArchitectureDiagramTheme, { name: string; des
       nodeBg: '#FFFFFF',
       nodeBorder: '#E2E8F0',
       nodeShadow: '0 4px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif',
     },
   },
   'modern-technical': {
@@ -91,7 +91,7 @@ export const THEME_CONFIGS: Record<ArchitectureDiagramTheme, { name: string; des
       nodeBg: '#FFFFFF',
       nodeBorder: '#BAE6FD',
       nodeShadow: '0 4px 12px rgba(2, 132, 199, 0.08)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
     },
   },
   'ai-architecture': {
@@ -135,7 +135,7 @@ export const THEME_CONFIGS: Record<ArchitectureDiagramTheme, { name: string; des
       nodeBg: '#FFFFFF',
       nodeBorder: '#DCFCE7',
       nodeShadow: '0 4px 12px rgba(22, 163, 74, 0.08)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
     },
   },
   'minimal-documentation': {

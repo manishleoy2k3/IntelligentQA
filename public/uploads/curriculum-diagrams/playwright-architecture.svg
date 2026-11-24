@@ -1,0 +1,847 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 1860 700" 
+  width="1860" 
+  height="700" 
+  style="background-color: #FAFAFB; font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; display: block; max-width: 100%; border-radius: 16px;"
+>
+  <defs>
+    <!-- Arrow Marker -->
+    <marker 
+      id="arrow-modern-technical" 
+      viewBox="0 0 10 10" 
+      refX="8" 
+      refY="5" 
+      markerWidth="6" 
+      markerHeight="6" 
+      orient="auto-start-reverse"
+    >
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4F46E5" />
+    </marker>
+
+    <!-- Node Drop Shadow Filter -->
+    <filter id="shadow-node" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.06"/>
+    </filter>
+
+    <filter id="shadow-subtle" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.04"/>
+    </filter>
+
+    <!-- Canvas Grid Pattern -->
+    <pattern id="grid-pattern" width="30" height="30" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#E0E7FF" />
+    </pattern>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect x="0" y="0" width="1860" height="700" fill="#FAFAFB" rx="16"/>
+  <rect x="0" y="0" width="1860" height="700" fill="url(#grid-pattern)" opacity="0.6"/>
+
+  <!-- Architecture Header -->
+  <g transform="translate(60, 48)">
+    <text font-size="22" font-weight="800" fill="#18181B" letter-spacing="-0.3">
+      Playwright Unified Process Architecture
+    </text>
+    
+    <text y="24" font-size="13" font-weight="400" fill="#71717A">
+      Single WebSocket connection driving multiple isolated BrowserContexts and Pages
+    </text>
+  </g>
+
+  <!-- Diagram Content Container -->
+  <g transform="translate(20, 60)">
+    
+    <!-- Layer: Test Runner Layer -->
+    <g class="architecture-layer" id="layer-client-layer">
+      <rect 
+        x="54" 
+        y="36" 
+        width="637" 
+        height="194" 
+        rx="16" 
+        fill="rgba(238, 242, 255, 0.6)" 
+        stroke="#C7D2FE" 
+        stroke-width="1.5" 
+        stroke-dasharray="6 4"
+      />
+      <rect 
+        x="70" 
+        y="48" 
+        width="185" 
+        height="26" 
+        rx="6" 
+        fill="#FAFAFB" 
+        stroke="#C7D2FE" 
+        stroke-width="1"
+      />
+      <text 
+        x="82" 
+        y="65" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="12" 
+        font-weight="700" 
+        fill="#3730A3"
+        letter-spacing="0.5"
+      >
+        TEST RUNNER LAYER
+      </text>
+    </g>
+
+    <!-- Layer: Browser Hierarchy Layer -->
+    <g class="architecture-layer" id="layer-browser-layer">
+      <rect 
+        x="704" 
+        y="36" 
+        width="962" 
+        height="194" 
+        rx="16" 
+        fill="rgba(238, 242, 255, 0.6)" 
+        stroke="#C7D2FE" 
+        stroke-width="1.5" 
+        stroke-dasharray="6 4"
+      />
+      <rect 
+        x="720" 
+        y="48" 
+        width="239" 
+        height="26" 
+        rx="6" 
+        fill="#FAFAFB" 
+        stroke="#C7D2FE" 
+        stroke-width="1"
+      />
+      <text 
+        x="732" 
+        y="65" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="12" 
+        font-weight="700" 
+        fill="#3730A3"
+        letter-spacing="0.5"
+      >
+        BROWSER HIERARCHY LAYER
+      </text>
+    </g>
+    
+    <!-- Edge: test_runner -> playwright_api -->
+    <g class="architecture-edge" id="edge-pw_e1">
+      <path 
+        d="M 330 140 C 372.5 140, 372.5 140, 415 140" 
+        fill="none" 
+        stroke="#2563EB" 
+        stroke-width="2" 
+        
+        marker-end="url(#arrow-modern-technical)"
+      />
+      
+      <g transform="translate(372.5, 140)">
+        <rect 
+          x="-74" 
+          y="-14" 
+          width="148" 
+          height="28" 
+          rx="6" 
+          fill="#FFFFFF" 
+          stroke="#C7D2FE" 
+          stroke-width="1"
+          filter="url(#shadow-subtle)"
+        />
+        <text 
+          x="0" 
+          y="-1" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="11" 
+          font-weight="600" 
+          fill="#312E81"
+        >
+          Test Execution
+        </text>
+        
+        <text 
+          x="0" 
+          y="10" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="9" 
+          font-weight="500" 
+          fill="#2563EB"
+        >
+          [TypeScript API]
+        </text>
+      </g>
+    </g>
+
+    <!-- Edge: playwright_api -> browser_process -->
+    <g class="architecture-edge" id="edge-pw_e2">
+      <path 
+        d="M 655 140 C 697.5 140, 697.5 140, 740 140" 
+        fill="none" 
+        stroke="#7C3AED" 
+        stroke-width="2" 
+        stroke-dasharray="4 4"
+        marker-end="url(#arrow-modern-technical)"
+      />
+      
+      <g transform="translate(697.5, 140)">
+        <rect 
+          x="-106" 
+          y="-14" 
+          width="212" 
+          height="28" 
+          rx="6" 
+          fill="#FFFFFF" 
+          stroke="#C7D2FE" 
+          stroke-width="1"
+          filter="url(#shadow-subtle)"
+        />
+        <text 
+          x="0" 
+          y="-1" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="11" 
+          font-weight="600" 
+          fill="#312E81"
+        >
+          Bi-directional Channel
+        </text>
+        
+        <text 
+          x="0" 
+          y="10" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="9" 
+          font-weight="500" 
+          fill="#7C3AED"
+        >
+          [WebSocket / Pipe (CDP)]
+        </text>
+      </g>
+    </g>
+
+    <!-- Edge: browser_process -> browser_context -->
+    <g class="architecture-edge" id="edge-pw_e3">
+      <path 
+        d="M 980 140 C 1022.5 140, 1022.5 140, 1065 140" 
+        fill="none" 
+        stroke="#2563EB" 
+        stroke-width="2" 
+        
+        marker-end="url(#arrow-modern-technical)"
+      />
+      
+      <g transform="translate(1022.5, 140)">
+        <rect 
+          x="-110" 
+          y="-14" 
+          width="220" 
+          height="28" 
+          rx="6" 
+          fill="#FFFFFF" 
+          stroke="#C7D2FE" 
+          stroke-width="1"
+          filter="url(#shadow-subtle)"
+        />
+        <text 
+          x="0" 
+          y="-1" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="11" 
+          font-weight="600" 
+          fill="#312E81"
+        >
+          Creates Session
+        </text>
+        
+        <text 
+          x="0" 
+          y="10" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="9" 
+          font-weight="500" 
+          fill="#2563EB"
+        >
+          [Internal Process Bridge]
+        </text>
+      </g>
+    </g>
+
+    <!-- Edge: browser_context -> page_target -->
+    <g class="architecture-edge" id="edge-pw_e4">
+      <path 
+        d="M 1305 140 C 1347.5 140, 1347.5 140, 1390 140" 
+        fill="none" 
+        stroke="#2563EB" 
+        stroke-width="2" 
+        
+        marker-end="url(#arrow-modern-technical)"
+      />
+      
+      <g transform="translate(1347.5, 140)">
+        <rect 
+          x="-94" 
+          y="-14" 
+          width="188" 
+          height="28" 
+          rx="6" 
+          fill="#FFFFFF" 
+          stroke="#C7D2FE" 
+          stroke-width="1"
+          filter="url(#shadow-subtle)"
+        />
+        <text 
+          x="0" 
+          y="-1" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="11" 
+          font-weight="600" 
+          fill="#312E81"
+        >
+          Spawns Tab
+        </text>
+        
+        <text 
+          x="0" 
+          y="10" 
+          text-anchor="middle" 
+          font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+          font-size="9" 
+          font-weight="500" 
+          fill="#2563EB"
+        >
+          [Frame Tree Protocol]
+        </text>
+      </g>
+    </g>
+    
+    <!-- Node: test_runner (test-runner) -->
+    <g class="architecture-node" id="node-test_runner" transform="translate(90, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#86EFAC" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#16A34A"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#DCFCE7"
+      />
+      <g transform="translate(19, 19)" color="#16A34A">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <polygon points="5 3 19 12 5 21 5 3" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#F0FDF4"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#15803D"
+      >
+        TEST RUNNER
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#18181B"
+      >
+        Test Runner
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#16A34A"
+      >
+        Playwright Test Runner
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="11" 
+        fill="#71717A"
+      >
+        Orchestrates workers, fixtures,…
+      </text>
+    </g>
+
+    <!-- Node: playwright_api (application) -->
+    <g class="architecture-node" id="node-playwright_api" transform="translate(415, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#A5B4FC" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#4F46E5"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#E0E7FF"
+      />
+      <g transform="translate(19, 19)" color="#4F46E5">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <polygon points="12 2 2 7 12 12 22 7 12 2" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 17 12 22 22 17" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 12 12 17 22 12" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#EEF2FF"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#4338CA"
+      >
+        APPLICATION
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#18181B"
+      >
+        Playwright Client A…
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#4F46E5"
+      >
+        TypeScript / Node.js
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="11" 
+        fill="#71717A"
+      >
+        High-level user automation API
+      </text>
+    </g>
+
+    <!-- Node: browser_process (browser) -->
+    <g class="architecture-node" id="node-browser_process" transform="translate(740, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#6EE7B7" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#059669"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#D1FAE5"
+      />
+      <g transform="translate(19, 19)" color="#059669">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#ECFDF5"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#047857"
+      >
+        BROWSER
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#18181B"
+      >
+        Browser Instance
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#059669"
+      >
+        Chromium / Firefox / WebKit
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="11" 
+        fill="#71717A"
+      >
+        Single headless or headed brows…
+      </text>
+    </g>
+
+    <!-- Node: browser_context (container) -->
+    <g class="architecture-node" id="node-browser_context" transform="translate(1065, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#5EEAD4" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#0D9488"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#CCFBF1"
+      />
+      <g transform="translate(19, 19)" color="#0D9488">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#F0FDFA"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#0F766E"
+      >
+        CONTAINER
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#18181B"
+      >
+        BrowserContext
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#0D9488"
+      >
+        Incognito Isolation
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="11" 
+        fill="#71717A"
+      >
+        Fast, isolated session with pri…
+      </text>
+    </g>
+
+    <!-- Node: page_target (browser) -->
+    <g class="architecture-node" id="node-page_target" transform="translate(1390, 90)">
+      <!-- Node Card Container -->
+      <rect 
+        x="0" 
+        y="0" 
+        width="240" 
+        height="100" 
+        rx="12" 
+        fill="#FFFFFF" 
+        stroke="#6EE7B7" 
+        stroke-width="1.5" 
+        filter="url(#shadow-node)"
+      />
+      
+      <!-- Left Accent Line -->
+      <rect 
+        x="0" 
+        y="8" 
+        width="4" 
+        height="84" 
+        rx="2" 
+        fill="#059669"
+      />
+
+      <!-- Icon Box -->
+      <rect 
+        x="14" 
+        y="14" 
+        width="34" 
+        height="34" 
+        rx="8" 
+        fill="#D1FAE5"
+      />
+      <g transform="translate(19, 19)" color="#059669">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </g>
+
+      <!-- Node Type Badge -->
+      <rect 
+        x="148" 
+        y="14" 
+        width="78" 
+        height="18" 
+        rx="4" 
+        fill="#ECFDF5"
+      />
+      <text 
+        x="187" 
+        y="27" 
+        text-anchor="middle" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="9" 
+        font-weight="700" 
+        letter-spacing="0.5" 
+        fill="#047857"
+      >
+        BROWSER
+      </text>
+
+      <!-- Component Title -->
+      <text 
+        x="56" 
+        y="34" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="13" 
+        font-weight="700" 
+        fill="#18181B"
+      >
+        Page Target
+      </text>
+
+      <!-- Technology Tag or Version -->
+      
+      <text 
+        x="56" 
+        y="50" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="10" 
+        font-weight="600" 
+        fill="#059669"
+      >
+        Tab / Frame DOM
+      </text>
+
+      <!-- Description Line -->
+      <text 
+        x="16" 
+        y="76" 
+        font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="11" 
+        fill="#71717A"
+      >
+        Single tab executing auto-waiti…
+      </text>
+    </g>
+  </g>
+
+  <!-- Legend / Footer -->
+  
+    <g transform="translate(60, 635)">
+      <text font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="700" fill="#18181B">Legend:</text>
+      
+        <circle cx="70" cy="-4" r="5" fill="#4F46E5" />
+        <text x="82" y="0" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#71717A">Runner Process</text>
+      
+        <circle cx="230" cy="-4" r="5" fill="#7C3AED" />
+        <text x="242" y="0" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#71717A">WebSocket Stream</text>
+      
+        <circle cx="390" cy="-4" r="5" fill="#059669" />
+        <text x="402" y="0" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#71717A">Browser Hierarchy</text>
+      
+    </g>
+
+  <!-- Watermark / Standard Signature -->
+  <text 
+    x="1800" 
+    y="676" 
+    text-anchor="end" 
+    font-size="10" 
+    font-weight="600" 
+    fill="#71717A" 
+    letter-spacing="0.4"
+  >
+    IntelligentQA Architecture Visualization Engine
+  </text>
+</svg>

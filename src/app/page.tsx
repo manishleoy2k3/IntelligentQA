@@ -35,7 +35,7 @@ const FAQ_LIST: FaqItem[] = [
   {
     question: 'How does IntelligentQA\'s pricing work?',
     answer:
-      'IntelligentQA is 100% free forever. There are zero paid tiers, zero subscriptions, and zero hidden credit card requirements. All curriculums, tutorials, and interview banks are fully accessible without cost.',
+      'IntelligentQA is 100% free forever. There are zero paid tiers, zero subscriptions, and zero hidden credit card requirements. All academy courses, learning tracks, and interview banks are fully accessible without cost.',
   },
   {
     question: 'Can I opt out of AI and only learn traditional automation?',
@@ -213,7 +213,7 @@ export default function HomePage() {
               <span>Gated Inside User Login · 100% Free Forever</span>
             </div>
             <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              All Tutorials, Practice Labs &amp; QA Agents Await Inside
+              All Academy Courses, Practice Labs &amp; QA Agents Await Inside
             </h3>
             <p className="text-base text-[#A1A1AA] leading-relaxed">
               We keep the home page uncluttered so you can focus. Once you log in with Google or Email, your complete SDET suite opens up:

@@ -188,50 +188,52 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
       {/* Right Corner: Action Controls, Notifications and Profiles */}
       <div className="flex items-center gap-2 sm:gap-3.5 ml-auto">
-        {/* Gemini API Key Button */}
-        <button
-          type="button"
-          onClick={() => setShowKeyModal(true)}
-          className={`flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-white ${
-            hasGeminiKey
-              ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 shadow-[0_0_18px_rgba(245,158,11,0.35)] border border-amber-400/40 hover:opacity-95"
-              : "bg-gradient-to-r from-zinc-800 via-amber-950 to-zinc-800 text-amber-200 border border-amber-500/40 hover:bg-zinc-800"
-          }`}
-          title="Gemini API Key: Configure your free Google AI Studio key"
-        >
-          <Key className="w-4 h-4 text-white shrink-0" />
-          <span className="font-extrabold tracking-tight">{hasGeminiKey ? "Gemini Key: Active" : "Add Gemini Key"}</span>
-        </button>
-
-        {/* 1. "AI Coding Coach" Button (formerly "Ask AI") */}
-        <button
-          type="button"
-          onClick={handleOpenAskAI}
-          aria-label="AI Coding Coach"
-          className="flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(129,255,137,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm border border-emerald-400/30"
-          title="AI Coding Coach: Coding queries, algorithms, syntax, and programming help (Ask AI)"
-        >
-          <Sparkles className="w-4 h-4 text-white shrink-0" />
-          <span className="font-extrabold tracking-tight">AI Coding Coach</span>
-          <span className="sr-only">Ask AI</span>
-          <span className="sr-only">Ask SDET AI</span>
-        </button>
-
-        {/* Share your Knowledge / Add Guide Button (Opens modal window just like Gemini Key button) */}
-        <button
-          type="button"
-          onClick={() => setShowAddGuideModal(true)}
-          aria-label="Share your Knowledge"
-          className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:opacity-95 text-white border border-purple-400/40 rounded-full font-extrabold text-xs sm:text-sm shadow-[0_0_18px_rgba(168,85,247,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
-          title="Share your Knowledge: Review staged guides, import JSON/CSV/Excel/Word, or download templates"
-        >
-          <BookPlus className="w-4 h-4 text-white shrink-0" />
-          <span className="font-extrabold tracking-tight">Share your Knowledge</span>
-          <span className="sr-only">Add Guide</span>
-        </button>
-
         {/* Theme Switcher Toggle (Normal Light / Dark Mode) */}
         <ThemeToggle showLabel={false} />
+
+        {currentUser ? (
+          <>
+            {/* Gemini API Key Button */}
+            <button
+              type="button"
+              onClick={() => setShowKeyModal(true)}
+              className={`flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-white ${
+                hasGeminiKey
+                  ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 shadow-[0_0_18px_rgba(245,158,11,0.35)] border border-amber-400/40 hover:opacity-95"
+                  : "bg-gradient-to-r from-zinc-800 via-amber-950 to-zinc-800 text-amber-200 border border-amber-500/40 hover:bg-zinc-800"
+              }`}
+              title="Gemini API Key: Configure your free Google AI Studio key"
+            >
+              <Key className="w-4 h-4 text-white shrink-0" />
+              <span className="font-extrabold tracking-tight">{hasGeminiKey ? "Gemini Key: Active" : "Add Gemini Key"}</span>
+            </button>
+
+            {/* 1. "AI Coding Coach" Button (formerly "Ask AI") */}
+            <button
+              type="button"
+              onClick={handleOpenAskAI}
+              aria-label="AI Coding Coach"
+              className="flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-600 hover:opacity-95 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(129,255,137,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none text-xs sm:text-sm border border-emerald-400/30"
+              title="AI Coding Coach: Coding queries, algorithms, syntax, and programming help (Ask AI)"
+            >
+              <Sparkles className="w-4 h-4 text-white shrink-0" />
+              <span className="font-extrabold tracking-tight">AI Coding Coach</span>
+              <span className="sr-only">Ask AI</span>
+              <span className="sr-only">Ask SDET AI</span>
+            </button>
+
+            {/* Share your Knowledge / Add Guide Button (Opens modal window just like Gemini Key button) */}
+            <button
+              type="button"
+              onClick={() => setShowAddGuideModal(true)}
+              aria-label="Share your Knowledge"
+              className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:opacity-95 text-white border border-purple-400/40 rounded-full font-extrabold text-xs sm:text-sm shadow-[0_0_18px_rgba(168,85,247,0.35)] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer select-none"
+              title="Share your Knowledge: Review staged guides, import JSON/CSV/Excel/Word, or download templates"
+            >
+              <BookPlus className="w-4 h-4 text-white shrink-0" />
+              <span className="font-extrabold tracking-tight">Share your Knowledge</span>
+              <span className="sr-only">Add Guide</span>
+            </button>
 
         {/* 2. Notifications Bell & Popover */}
         <div ref={notifRef} className="relative">
@@ -280,12 +282,11 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         </div>
 
         {/* 3. Profiles Dropdown Container */}
-        {currentUser && (
-          <div
-            ref={profileRef}
-            id="user-profile-menu-container"
-            className="relative"
-          >
+        <div
+          ref={profileRef}
+          id="user-profile-menu-container"
+          className="relative"
+        >
             <button
               type="button"
               onClick={() => setProfileMenuOpen(!profileMenuOpen)}
@@ -402,7 +403,7 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
                     <Layers className="w-4 h-4 text-[#80FFF9] shrink-0" />
                     <span>
                       {pathname?.startsWith("/kids")
-                        ? "Coding Tutorial Hub"
+                        ? "Kids Coding Hub"
                         : "Learning Dashboard"}
                     </span>
                   </Link>
@@ -422,8 +423,25 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
               </div>
             )}
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        /* Guest Unauthenticated State */
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/login"
+            className="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold text-slate-700 dark:text-zinc-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/signup"
+            className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all hover:scale-[1.02] active:scale-95"
+          >
+            Get Started Free
+          </Link>
+        </div>
+      )}
+    </div>
 
       {/* Embedded Profile Modal */}
       {showProfileModal && (

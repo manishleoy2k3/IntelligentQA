@@ -7982,6 +7982,737 @@
       "category": "Infographics",
       "uploadedAt": "2026-11-24T14:30:38.714Z",
       "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531487108",
+      "filename": "infographic_1795531487107_noowp.png",
+      "originalName": "How does RAG work?.png",
+      "url": "/uploads/infographic_1795531487107_noowp.png",
+      "mimeType": "image/png",
+      "size": 31065,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does RAG work?",
+      "caption": "Figure: Technical Infographic — How does RAG work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:44:47.108Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531487582",
+      "filename": "infographic_1795531487581_d14ky.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795531487581_d14ky.png",
+      "mimeType": "image/png",
+      "size": 78250,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:44:47.582Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531487925",
+      "filename": "infographic_1795531487924_fetgi.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795531487924_fetgi.png",
+      "mimeType": "image/png",
+      "size": 41262,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:44:47.925Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531488309",
+      "filename": "infographic_1795531488309_qyngx.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795531488309_qyngx.png",
+      "mimeType": "image/png",
+      "size": 40911,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:44:48.309Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531488682",
+      "filename": "infographic_1795531488682_atjwc.png",
+      "originalName": "What is Context Engineering?.png",
+      "url": "/uploads/infographic_1795531488682_atjwc.png",
+      "mimeType": "image/png",
+      "size": 33752,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Context Engineering?",
+      "caption": "Figure: Technical Infographic — What is Context Engineering?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:44:48.682Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531539183",
+      "filename": "infographic_1795531539182_gbxs9.png",
+      "originalName": "How does RAG work?.png",
+      "url": "/uploads/infographic_1795531539182_gbxs9.png",
+      "mimeType": "image/png",
+      "size": 31065,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does RAG work?",
+      "caption": "Figure: Technical Infographic — How does RAG work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:39.183Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531539636",
+      "filename": "infographic_1795531539635_wn1hb.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795531539635_wn1hb.png",
+      "mimeType": "image/png",
+      "size": 78250,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:39.636Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531540135",
+      "filename": "infographic_1795531540134_y8ynx.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795531540134_y8ynx.png",
+      "mimeType": "image/png",
+      "size": 41262,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:40.135Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531540498",
+      "filename": "infographic_1795531540497_6q7hh.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795531540497_6q7hh.png",
+      "mimeType": "image/png",
+      "size": 40911,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:40.498Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531540860",
+      "filename": "infographic_1795531540859_2s54q.png",
+      "originalName": "What is Context Engineering?.png",
+      "url": "/uploads/infographic_1795531540859_2s54q.png",
+      "mimeType": "image/png",
+      "size": 33752,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Context Engineering?",
+      "caption": "Figure: Technical Infographic — What is Context Engineering?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:40.860Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531541324",
+      "filename": "infographic_1795531541323_u3f5n.png",
+      "originalName": "What is Test Pyramid?.png",
+      "url": "/uploads/infographic_1795531541323_u3f5n.png",
+      "mimeType": "image/png",
+      "size": 53788,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Test Pyramid?",
+      "caption": "Figure: Technical Infographic — What is Test Pyramid?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:41.324Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531541655",
+      "filename": "infographic_1795531541654_nrvcq.png",
+      "originalName": "How does API Authentication wo.png",
+      "url": "/uploads/infographic_1795531541654_nrvcq.png",
+      "mimeType": "image/png",
+      "size": 34912,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does API Authentication work?",
+      "caption": "Figure: Technical Infographic — How does API Authentication work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:41.655Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531542011",
+      "filename": "infographic_1795531542010_pnegb.png",
+      "originalName": "GitHub Actions Architecture CI.png",
+      "url": "/uploads/infographic_1795531542010_pnegb.png",
+      "mimeType": "image/png",
+      "size": 32704,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: GitHub Actions Architecture CI/CD Pipeline",
+      "caption": "Figure: Technical Infographic — GitHub Actions Architecture CI/CD Pipeline",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:45:42.011Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531613557",
+      "filename": "infographic_1795531613556_ldfzc.png",
+      "originalName": "How does RAG work?.png",
+      "url": "/uploads/infographic_1795531613556_ldfzc.png",
+      "mimeType": "image/png",
+      "size": 31065,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does RAG work?",
+      "caption": "Figure: Technical Infographic — How does RAG work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:53.557Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531614003",
+      "filename": "infographic_1795531614002_gr0rv.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795531614002_gr0rv.png",
+      "mimeType": "image/png",
+      "size": 78250,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:54.003Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531614350",
+      "filename": "infographic_1795531614349_dvzhy.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795531614349_dvzhy.png",
+      "mimeType": "image/png",
+      "size": 41262,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:54.350Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531614642",
+      "filename": "infographic_1795531614641_8sjty.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795531614641_8sjty.png",
+      "mimeType": "image/png",
+      "size": 40911,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:54.642Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531614972",
+      "filename": "infographic_1795531614972_9x1kp.png",
+      "originalName": "What is Context Engineering?.png",
+      "url": "/uploads/infographic_1795531614972_9x1kp.png",
+      "mimeType": "image/png",
+      "size": 33752,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Context Engineering?",
+      "caption": "Figure: Technical Infographic — What is Context Engineering?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:54.973Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531615444",
+      "filename": "infographic_1795531615443_34ser.png",
+      "originalName": "What is Test Pyramid?.png",
+      "url": "/uploads/infographic_1795531615443_34ser.png",
+      "mimeType": "image/png",
+      "size": 53788,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Test Pyramid?",
+      "caption": "Figure: Technical Infographic — What is Test Pyramid?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:55.444Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531615824",
+      "filename": "infographic_1795531615824_b8z7e.png",
+      "originalName": "How does API Authentication wo.png",
+      "url": "/uploads/infographic_1795531615824_b8z7e.png",
+      "mimeType": "image/png",
+      "size": 34912,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does API Authentication work?",
+      "caption": "Figure: Technical Infographic — How does API Authentication work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:55.824Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531616206",
+      "filename": "infographic_1795531616205_ubgb4.png",
+      "originalName": "GitHub Actions Architecture CI.png",
+      "url": "/uploads/infographic_1795531616205_ubgb4.png",
+      "mimeType": "image/png",
+      "size": 32704,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: GitHub Actions Architecture CI/CD Pipeline",
+      "caption": "Figure: Technical Infographic — GitHub Actions Architecture CI/CD Pipeline",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:46:56.206Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531646335",
+      "filename": "infographic_1795531646334_90lz0.png",
+      "originalName": "How does RAG work?.png",
+      "url": "/uploads/infographic_1795531646334_90lz0.png",
+      "mimeType": "image/png",
+      "size": 31065,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does RAG work?",
+      "caption": "Figure: Technical Infographic — How does RAG work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:26.335Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531646712",
+      "filename": "infographic_1795531646711_95yn0.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795531646711_95yn0.png",
+      "mimeType": "image/png",
+      "size": 78250,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:26.712Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531647074",
+      "filename": "infographic_1795531647073_4n94p.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795531647073_4n94p.png",
+      "mimeType": "image/png",
+      "size": 41262,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:27.074Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531647384",
+      "filename": "infographic_1795531647383_cngde.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795531647383_cngde.png",
+      "mimeType": "image/png",
+      "size": 40911,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:27.384Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531647779",
+      "filename": "infographic_1795531647779_oexqj.png",
+      "originalName": "What is Context Engineering?.png",
+      "url": "/uploads/infographic_1795531647779_oexqj.png",
+      "mimeType": "image/png",
+      "size": 33752,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Context Engineering?",
+      "caption": "Figure: Technical Infographic — What is Context Engineering?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:27.779Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531648162",
+      "filename": "infographic_1795531648161_ax6cv.png",
+      "originalName": "What is Test Pyramid?.png",
+      "url": "/uploads/infographic_1795531648161_ax6cv.png",
+      "mimeType": "image/png",
+      "size": 53788,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Test Pyramid?",
+      "caption": "Figure: Technical Infographic — What is Test Pyramid?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:28.162Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531648603",
+      "filename": "infographic_1795531648601_zulxy.png",
+      "originalName": "How does API Authentication wo.png",
+      "url": "/uploads/infographic_1795531648601_zulxy.png",
+      "mimeType": "image/png",
+      "size": 34912,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does API Authentication work?",
+      "caption": "Figure: Technical Infographic — How does API Authentication work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:28.603Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531648957",
+      "filename": "infographic_1795531648956_7plmv.png",
+      "originalName": "GitHub Actions Architecture CI.png",
+      "url": "/uploads/infographic_1795531648956_7plmv.png",
+      "mimeType": "image/png",
+      "size": 32704,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: GitHub Actions Architecture CI/CD Pipeline",
+      "caption": "Figure: Technical Infographic — GitHub Actions Architecture CI/CD Pipeline",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:47:28.957Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531699973",
+      "filename": "infographic_1795531699973_xdvv9.png",
+      "originalName": "How does RAG work?.png",
+      "url": "/uploads/infographic_1795531699973_xdvv9.png",
+      "mimeType": "image/png",
+      "size": 31065,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does RAG work?",
+      "caption": "Figure: Technical Infographic — How does RAG work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:19.973Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531700422",
+      "filename": "infographic_1795531700421_55ztu.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795531700421_55ztu.png",
+      "mimeType": "image/png",
+      "size": 78250,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:20.422Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531700791",
+      "filename": "infographic_1795531700790_j18l3.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795531700790_j18l3.png",
+      "mimeType": "image/png",
+      "size": 41262,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:20.791Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531701163",
+      "filename": "infographic_1795531701163_rr1i0.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795531701163_rr1i0.png",
+      "mimeType": "image/png",
+      "size": 40911,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:21.163Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531701587",
+      "filename": "infographic_1795531701586_zrhfp.png",
+      "originalName": "What is Context Engineering?.png",
+      "url": "/uploads/infographic_1795531701586_zrhfp.png",
+      "mimeType": "image/png",
+      "size": 33752,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Context Engineering?",
+      "caption": "Figure: Technical Infographic — What is Context Engineering?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:21.587Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531702022",
+      "filename": "infographic_1795531702021_3irex.png",
+      "originalName": "What is Test Pyramid?.png",
+      "url": "/uploads/infographic_1795531702021_3irex.png",
+      "mimeType": "image/png",
+      "size": 53788,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Test Pyramid?",
+      "caption": "Figure: Technical Infographic — What is Test Pyramid?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:22.022Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531702376",
+      "filename": "infographic_1795531702374_fgikz.png",
+      "originalName": "How does API Authentication wo.png",
+      "url": "/uploads/infographic_1795531702374_fgikz.png",
+      "mimeType": "image/png",
+      "size": 34912,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How does API Authentication work?",
+      "caption": "Figure: Technical Infographic — How does API Authentication work?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:22.376Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795531702747",
+      "filename": "infographic_1795531702746_i0tdd.png",
+      "originalName": "GitHub Actions Architecture CI.png",
+      "url": "/uploads/infographic_1795531702746_i0tdd.png",
+      "mimeType": "image/png",
+      "size": 32704,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: GitHub Actions Architecture CI/CD Pipeline",
+      "caption": "Figure: Technical Infographic — GitHub Actions Architecture CI/CD Pipeline",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:48:22.747Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795532165485",
+      "filename": "infographic_1795532165484_7pyyu.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795532165484_7pyyu.png",
+      "mimeType": "image/png",
+      "size": 78472,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:56:05.485Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795532165828",
+      "filename": "infographic_1795532165828_87ndf.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795532165828_87ndf.png",
+      "mimeType": "image/png",
+      "size": 40971,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:56:05.828Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795532166182",
+      "filename": "infographic_1795532166181_tqgha.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795532166181_tqgha.png",
+      "mimeType": "image/png",
+      "size": 39261,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:56:06.182Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795532166721",
+      "filename": "infographic_1795532166720_85kz3.png",
+      "originalName": "Test Automation Pyramid.png",
+      "url": "/uploads/infographic_1795532166720_85kz3.png",
+      "mimeType": "image/png",
+      "size": 52716,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: Test Automation Pyramid",
+      "caption": "Figure: Technical Infographic — Test Automation Pyramid",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:56:06.721Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795532167104",
+      "filename": "infographic_1795532167103_464vn.png",
+      "originalName": "How API Authentication Works.png",
+      "url": "/uploads/infographic_1795532167103_464vn.png",
+      "mimeType": "image/png",
+      "size": 34912,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How API Authentication Works",
+      "caption": "Figure: Technical Infographic — How API Authentication Works",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:56:07.104Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795532167418",
+      "filename": "infographic_1795532167416_majtn.png",
+      "originalName": "RAG Pipeline Architecture.png",
+      "url": "/uploads/infographic_1795532167416_majtn.png",
+      "mimeType": "image/png",
+      "size": 31261,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: RAG Pipeline Architecture",
+      "caption": "Figure: Technical Infographic — RAG Pipeline Architecture",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T14:56:07.418Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
     }
   ],
   "cmsAuditLogs": [
@@ -8642,6 +9373,608 @@
       "entityId": "med-info-1795530638714",
       "entityTitle": "infographic_1795530638713_611wq.png",
       "details": "Uploaded media infographic_1795530638713_611wq.png (image/png)"
+    },
+    {
+      "id": "log-1795531487236",
+      "timestamp": "2026-11-24T14:44:47.236Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531487108",
+      "entityTitle": "infographic_1795531487107_noowp.png",
+      "details": "Uploaded media infographic_1795531487107_noowp.png (image/png)"
+    },
+    {
+      "id": "log-1795531487694",
+      "timestamp": "2026-11-24T14:44:47.694Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531487582",
+      "entityTitle": "infographic_1795531487581_d14ky.png",
+      "details": "Uploaded media infographic_1795531487581_d14ky.png (image/png)"
+    },
+    {
+      "id": "log-1795531488083",
+      "timestamp": "2026-11-24T14:44:48.083Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531487925",
+      "entityTitle": "infographic_1795531487924_fetgi.png",
+      "details": "Uploaded media infographic_1795531487924_fetgi.png (image/png)"
+    },
+    {
+      "id": "log-1795531488429",
+      "timestamp": "2026-11-24T14:44:48.429Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531488309",
+      "entityTitle": "infographic_1795531488309_qyngx.png",
+      "details": "Uploaded media infographic_1795531488309_qyngx.png (image/png)"
+    },
+    {
+      "id": "log-1795531488816",
+      "timestamp": "2026-11-24T14:44:48.816Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531488682",
+      "entityTitle": "infographic_1795531488682_atjwc.png",
+      "details": "Uploaded media infographic_1795531488682_atjwc.png (image/png)"
+    },
+    {
+      "id": "log-1795531539325",
+      "timestamp": "2026-11-24T14:45:39.326Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531539183",
+      "entityTitle": "infographic_1795531539182_gbxs9.png",
+      "details": "Uploaded media infographic_1795531539182_gbxs9.png (image/png)"
+    },
+    {
+      "id": "log-1795531539825",
+      "timestamp": "2026-11-24T14:45:39.825Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531539636",
+      "entityTitle": "infographic_1795531539635_wn1hb.png",
+      "details": "Uploaded media infographic_1795531539635_wn1hb.png (image/png)"
+    },
+    {
+      "id": "log-1795531540276",
+      "timestamp": "2026-11-24T14:45:40.276Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531540135",
+      "entityTitle": "infographic_1795531540134_y8ynx.png",
+      "details": "Uploaded media infographic_1795531540134_y8ynx.png (image/png)"
+    },
+    {
+      "id": "log-1795531540641",
+      "timestamp": "2026-11-24T14:45:40.641Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531540498",
+      "entityTitle": "infographic_1795531540497_6q7hh.png",
+      "details": "Uploaded media infographic_1795531540497_6q7hh.png (image/png)"
+    },
+    {
+      "id": "log-1795531540995",
+      "timestamp": "2026-11-24T14:45:40.995Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531540860",
+      "entityTitle": "infographic_1795531540859_2s54q.png",
+      "details": "Uploaded media infographic_1795531540859_2s54q.png (image/png)"
+    },
+    {
+      "id": "log-1795531541439",
+      "timestamp": "2026-11-24T14:45:41.439Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531541324",
+      "entityTitle": "infographic_1795531541323_u3f5n.png",
+      "details": "Uploaded media infographic_1795531541323_u3f5n.png (image/png)"
+    },
+    {
+      "id": "log-1795531541833",
+      "timestamp": "2026-11-24T14:45:41.833Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531541655",
+      "entityTitle": "infographic_1795531541654_nrvcq.png",
+      "details": "Uploaded media infographic_1795531541654_nrvcq.png (image/png)"
+    },
+    {
+      "id": "log-1795531542136",
+      "timestamp": "2026-11-24T14:45:42.136Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531542011",
+      "entityTitle": "infographic_1795531542010_pnegb.png",
+      "details": "Uploaded media infographic_1795531542010_pnegb.png (image/png)"
+    },
+    {
+      "id": "log-1795531613691",
+      "timestamp": "2026-11-24T14:46:53.691Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531613557",
+      "entityTitle": "infographic_1795531613556_ldfzc.png",
+      "details": "Uploaded media infographic_1795531613556_ldfzc.png (image/png)"
+    },
+    {
+      "id": "log-1795531614117",
+      "timestamp": "2026-11-24T14:46:54.117Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531614003",
+      "entityTitle": "infographic_1795531614002_gr0rv.png",
+      "details": "Uploaded media infographic_1795531614002_gr0rv.png (image/png)"
+    },
+    {
+      "id": "log-1795531614473",
+      "timestamp": "2026-11-24T14:46:54.473Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531614350",
+      "entityTitle": "infographic_1795531614349_dvzhy.png",
+      "details": "Uploaded media infographic_1795531614349_dvzhy.png (image/png)"
+    },
+    {
+      "id": "log-1795531614778",
+      "timestamp": "2026-11-24T14:46:54.778Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531614642",
+      "entityTitle": "infographic_1795531614641_8sjty.png",
+      "details": "Uploaded media infographic_1795531614641_8sjty.png (image/png)"
+    },
+    {
+      "id": "log-1795531615111",
+      "timestamp": "2026-11-24T14:46:55.111Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531614972",
+      "entityTitle": "infographic_1795531614972_9x1kp.png",
+      "details": "Uploaded media infographic_1795531614972_9x1kp.png (image/png)"
+    },
+    {
+      "id": "log-1795531615580",
+      "timestamp": "2026-11-24T14:46:55.580Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531615444",
+      "entityTitle": "infographic_1795531615443_34ser.png",
+      "details": "Uploaded media infographic_1795531615443_34ser.png (image/png)"
+    },
+    {
+      "id": "log-1795531615944",
+      "timestamp": "2026-11-24T14:46:55.944Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531615824",
+      "entityTitle": "infographic_1795531615824_b8z7e.png",
+      "details": "Uploaded media infographic_1795531615824_b8z7e.png (image/png)"
+    },
+    {
+      "id": "log-1795531616371",
+      "timestamp": "2026-11-24T14:46:56.371Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531616206",
+      "entityTitle": "infographic_1795531616205_ubgb4.png",
+      "details": "Uploaded media infographic_1795531616205_ubgb4.png (image/png)"
+    },
+    {
+      "id": "log-1795531646449",
+      "timestamp": "2026-11-24T14:47:26.449Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531646335",
+      "entityTitle": "infographic_1795531646334_90lz0.png",
+      "details": "Uploaded media infographic_1795531646334_90lz0.png (image/png)"
+    },
+    {
+      "id": "log-1795531646825",
+      "timestamp": "2026-11-24T14:47:26.825Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531646712",
+      "entityTitle": "infographic_1795531646711_95yn0.png",
+      "details": "Uploaded media infographic_1795531646711_95yn0.png (image/png)"
+    },
+    {
+      "id": "log-1795531647201",
+      "timestamp": "2026-11-24T14:47:27.201Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531647074",
+      "entityTitle": "infographic_1795531647073_4n94p.png",
+      "details": "Uploaded media infographic_1795531647073_4n94p.png (image/png)"
+    },
+    {
+      "id": "log-1795531647526",
+      "timestamp": "2026-11-24T14:47:27.526Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531647384",
+      "entityTitle": "infographic_1795531647383_cngde.png",
+      "details": "Uploaded media infographic_1795531647383_cngde.png (image/png)"
+    },
+    {
+      "id": "log-1795531647890",
+      "timestamp": "2026-11-24T14:47:27.890Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531647779",
+      "entityTitle": "infographic_1795531647779_oexqj.png",
+      "details": "Uploaded media infographic_1795531647779_oexqj.png (image/png)"
+    },
+    {
+      "id": "log-1795531648357",
+      "timestamp": "2026-11-24T14:47:28.357Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531648162",
+      "entityTitle": "infographic_1795531648161_ax6cv.png",
+      "details": "Uploaded media infographic_1795531648161_ax6cv.png (image/png)"
+    },
+    {
+      "id": "log-1795531648767",
+      "timestamp": "2026-11-24T14:47:28.767Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531648603",
+      "entityTitle": "infographic_1795531648601_zulxy.png",
+      "details": "Uploaded media infographic_1795531648601_zulxy.png (image/png)"
+    },
+    {
+      "id": "log-1795531649093",
+      "timestamp": "2026-11-24T14:47:29.093Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531648957",
+      "entityTitle": "infographic_1795531648956_7plmv.png",
+      "details": "Uploaded media infographic_1795531648956_7plmv.png (image/png)"
+    },
+    {
+      "id": "log-1795531700118",
+      "timestamp": "2026-11-24T14:48:20.118Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531699973",
+      "entityTitle": "infographic_1795531699973_xdvv9.png",
+      "details": "Uploaded media infographic_1795531699973_xdvv9.png (image/png)"
+    },
+    {
+      "id": "log-1795531700542",
+      "timestamp": "2026-11-24T14:48:20.542Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531700422",
+      "entityTitle": "infographic_1795531700421_55ztu.png",
+      "details": "Uploaded media infographic_1795531700421_55ztu.png (image/png)"
+    },
+    {
+      "id": "log-1795531700934",
+      "timestamp": "2026-11-24T14:48:20.934Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531700791",
+      "entityTitle": "infographic_1795531700790_j18l3.png",
+      "details": "Uploaded media infographic_1795531700790_j18l3.png (image/png)"
+    },
+    {
+      "id": "log-1795531701314",
+      "timestamp": "2026-11-24T14:48:21.314Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531701163",
+      "entityTitle": "infographic_1795531701163_rr1i0.png",
+      "details": "Uploaded media infographic_1795531701163_rr1i0.png (image/png)"
+    },
+    {
+      "id": "log-1795531701724",
+      "timestamp": "2026-11-24T14:48:21.724Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531701587",
+      "entityTitle": "infographic_1795531701586_zrhfp.png",
+      "details": "Uploaded media infographic_1795531701586_zrhfp.png (image/png)"
+    },
+    {
+      "id": "log-1795531702151",
+      "timestamp": "2026-11-24T14:48:22.151Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531702022",
+      "entityTitle": "infographic_1795531702021_3irex.png",
+      "details": "Uploaded media infographic_1795531702021_3irex.png (image/png)"
+    },
+    {
+      "id": "log-1795531702536",
+      "timestamp": "2026-11-24T14:48:22.536Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531702376",
+      "entityTitle": "infographic_1795531702374_fgikz.png",
+      "details": "Uploaded media infographic_1795531702374_fgikz.png (image/png)"
+    },
+    {
+      "id": "log-1795531702893",
+      "timestamp": "2026-11-24T14:48:22.893Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795531702747",
+      "entityTitle": "infographic_1795531702746_i0tdd.png",
+      "details": "Uploaded media infographic_1795531702746_i0tdd.png (image/png)"
+    },
+    {
+      "id": "log-1795532165615",
+      "timestamp": "2026-11-24T14:56:05.615Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795532165485",
+      "entityTitle": "infographic_1795532165484_7pyyu.png",
+      "details": "Uploaded media infographic_1795532165484_7pyyu.png (image/png)"
+    },
+    {
+      "id": "log-1795532165953",
+      "timestamp": "2026-11-24T14:56:05.953Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795532165828",
+      "entityTitle": "infographic_1795532165828_87ndf.png",
+      "details": "Uploaded media infographic_1795532165828_87ndf.png (image/png)"
+    },
+    {
+      "id": "log-1795532166333",
+      "timestamp": "2026-11-24T14:56:06.333Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795532166182",
+      "entityTitle": "infographic_1795532166181_tqgha.png",
+      "details": "Uploaded media infographic_1795532166181_tqgha.png (image/png)"
+    },
+    {
+      "id": "log-1795532166866",
+      "timestamp": "2026-11-24T14:56:06.866Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795532166721",
+      "entityTitle": "infographic_1795532166720_85kz3.png",
+      "details": "Uploaded media infographic_1795532166720_85kz3.png (image/png)"
+    },
+    {
+      "id": "log-1795532167240",
+      "timestamp": "2026-11-24T14:56:07.240Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795532167104",
+      "entityTitle": "infographic_1795532167103_464vn.png",
+      "details": "Uploaded media infographic_1795532167103_464vn.png (image/png)"
+    },
+    {
+      "id": "log-1795532167568",
+      "timestamp": "2026-11-24T14:56:07.568Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795532167418",
+      "entityTitle": "infographic_1795532167416_majtn.png",
+      "details": "Uploaded media infographic_1795532167416_majtn.png (image/png)"
     }
   ],
   "academyCategories": [
@@ -110367,7 +111700,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-llm",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T09:19:59.115Z",
+      "lastAccessedAt": "2026-11-24T15:01:13.242Z",
       "completedAt": null
     },
     {
@@ -110791,7 +112124,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-machine-learning",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T13:10:14.631Z",
+      "lastAccessedAt": "2026-11-24T15:00:55.972Z",
       "completedAt": null
     },
     {
@@ -111129,6 +112462,14 @@
       "completionStatus": "completed",
       "lastAccessedAt": "2026-11-24T09:39:37.664Z",
       "completedAt": "2026-11-24T09:39:37.664Z"
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-anatomy-of-a-good-prompt",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-anatomy-of-a-good-prompt",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T15:01:28.834Z",
+      "completedAt": null
     }
   ],
   "academyBookmarks": [

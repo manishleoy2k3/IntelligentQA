@@ -309,9 +309,9 @@ export function generateArchitectureSvg(
 <svg 
   xmlns="http://www.w3.org/2000/svg" 
   viewBox="0 0 ${width} ${height}" 
-  width="100%" 
-  height="100%" 
-  style="background-color: ${colors.background}; font-family: ${colors.fontFamily}; display: block; max-width: 100%; border-radius: 16px;"
+  width="${width}" 
+  height="${height}" 
+  style="background-color: ${colors.background}; font-family: ${colors.fontFamily.replace(/"/g, '&quot;')}; display: block; max-width: 100%; border-radius: 16px;"
 >
   <defs>
     <!-- Arrow Marker -->
