@@ -2052,7 +2052,7 @@ export class AcademyStore {
 
     const scoredResults: Array<{ result: AcademySearchResult; score: number }> = [];
 
-    for (const item of this.searchIndexCache) {
+    for (const item of (this.searchIndexCache || [])) {
       if (!includeDrafts && item.status !== 'published') continue;
 
       const titleLower = item.lessonTitle.toLowerCase();

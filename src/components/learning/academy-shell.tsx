@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, AlertCircle, CheckCircle2, FileQuestion, RefreshCw, LayoutGrid, Eye, EyeOff } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, FileQuestion, RefreshCw, LayoutGrid, Eye, EyeOff, Bookmark, Printer } from 'lucide-react';
 import AcademyHeader from './academy-header';
 import CourseSidebar from './course-sidebar';
 import CourseSearch from './course-search';
@@ -502,8 +502,8 @@ export default function AcademyShell({
               {/* 4. ACTIVE CONTENT STATE */}
               {(!isLoading || apiLessonData) && !isNotFound && (
                 <>
-                  {/* Top Bar with Completion & Course Overview Toggles */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pb-3 mb-4 border-b border-slate-100 dark:border-neutral-800/80 no-print">
+                  {/* Top Bar with Breadcrumbs & Unified Action Toolbar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-6 border-b border-slate-100 dark:border-neutral-800/80 no-print">
                     <LessonBreadcrumb
                       items={
                         apiLessonData?.breadcrumbs && apiLessonData.breadcrumbs.length > 0
@@ -513,30 +513,59 @@ export default function AcademyShell({
                               { label: currentLesson.title, active: true },
                             ]
                       }
+                      className="min-w-0 flex-1"
                     />
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                      {/* Bookmark Button */}
+                      <button
+                        onClick={handleToggleBookmark}
+                        aria-label={isBookmarked ? 'Remove Bookmark' : 'Bookmark Lesson'}
+                        title={isBookmarked ? 'Remove from My Bookmarks' : 'Bookmark this lesson'}
+                        className={`p-1.5 px-2.5 rounded-lg border text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                          isBookmarked
+                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 hover:bg-amber-500/20'
+                            : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}`} />
+                        <span className="hidden md:inline">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+                      </button>
+
+                      {/* Print Button */}
+                      <button
+                        onClick={handlePrintLesson}
+                        aria-label="Print Lesson"
+                        title="Print or Save as PDF"
+                        className="p-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-700 bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline">Print</span>
+                      </button>
+
+                      {/* Course & Module Overview Toggle */}
                       {apiLessonData?.course && (
                         <button
                           onClick={() => setShowCourseOverview((prev) => !prev)}
-                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
+                          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
                             showCourseOverview
                               ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
                               : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700'
                           }`}
                         >
                           <LayoutGrid className="w-3.5 h-3.5" />
-                          <span>{showCourseOverview ? 'Hide Overview' : 'Course Overview'}</span>
+                          <span>{showCourseOverview ? 'Hide Overview' : 'Overview'}</span>
                         </button>
                       )}
 
+                      {/* Mark Complete Button */}
                       <button
                         onClick={handleToggleComplete}
                         disabled={isSavingProgress}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                           isCompleted
-                            ? 'bg-emerald-500 text-white shadow-sm'
-                            : 'bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700'
+                            ? 'bg-emerald-500 text-white shadow-xs'
+                            : 'bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700 border border-slate-200 dark:border-neutral-700'
                         }`}
                       >
                         <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
@@ -545,37 +574,40 @@ export default function AcademyShell({
                     </div>
                   </div>
 
-                  {/* Optional Course Overview Banner */}
-                  {showCourseOverview && apiLessonData?.course && (
-                    <CourseOverviewCard
-                      courseTitle={apiLessonData.course.title}
-                      subtitle={apiLessonData.course.subtitle}
-                      description={apiLessonData.course.description}
-                      level={apiLessonData.course.level}
-                      estimatedHours={apiLessonData.course.estimatedHours}
-                      totalModules={apiLessonData.course.modules?.length || 6}
-                      totalLessons={apiLessonData.courseOverview?.totalLessons || 46}
-                      completedLessons={completedLessonIds.size}
-                      percentCompleted={
-                        apiLessonData.courseOverview?.totalLessons
-                          ? Math.round((completedLessonIds.size / apiLessonData.courseOverview.totalLessons) * 100)
-                          : 0
-                      }
-                    />
+                  {/* Optional Course & Module Overview (Only visible when user toggles Overview) */}
+                  {showCourseOverview && (
+                    <div className="space-y-4 mb-8">
+                      {apiLessonData?.course && (
+                        <CourseOverviewCard
+                          courseTitle={apiLessonData.course.title}
+                          subtitle={apiLessonData.course.subtitle}
+                          description={apiLessonData.course.description}
+                          level={apiLessonData.course.level}
+                          estimatedHours={apiLessonData.course.estimatedHours}
+                          totalModules={apiLessonData.course.modules?.length || 6}
+                          totalLessons={apiLessonData.courseOverview?.totalLessons || 46}
+                          completedLessons={completedLessonIds.size}
+                          percentCompleted={
+                            apiLessonData.courseOverview?.totalLessons
+                              ? Math.round((completedLessonIds.size / apiLessonData.courseOverview.totalLessons) * 100)
+                              : 0
+                          }
+                        />
+                      )}
+
+                      {apiLessonData?.module && (
+                        <ModuleOverviewCard
+                          title={apiLessonData.module.title}
+                          description={apiLessonData.module.description}
+                          totalLessons={moduleTotalLessons}
+                          completedLessons={moduleCompletedCount}
+                          percentCompleted={modulePercent}
+                        />
+                      )}
+                    </div>
                   )}
 
-                  {/* Module Overview Card */}
-                  {apiLessonData?.module && (
-                    <ModuleOverviewCard
-                      title={apiLessonData.module.title}
-                      description={apiLessonData.module.description}
-                      totalLessons={moduleTotalLessons}
-                      completedLessons={moduleCompletedCount}
-                      percentCompleted={modulePercent}
-                    />
-                  )}
-
-                  {/* Lesson Header with Reading Time, Updated Date, Bookmark, Print */}
+                  {/* Clean Lesson Header with Reading Time, Difficulty, Updated Date, Summary */}
                   <LessonHeader
                     title={currentLesson.title}
                     moduleTitle={currentLesson.moduleTitle}
@@ -585,9 +617,6 @@ export default function AcademyShell({
                     difficulty={currentLesson.difficulty}
                     tags={currentLesson.tags}
                     summary={currentLesson.summary}
-                    isBookmarked={isBookmarked}
-                    onToggleBookmark={handleToggleBookmark}
-                    onPrintLesson={handlePrintLesson}
                   />
 
                   {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
