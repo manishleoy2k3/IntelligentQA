@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Calendar, Tag } from 'lucide-react';
+import { Clock, Calendar } from 'lucide-react';
 
 interface LessonHeaderProps {
   title: string;
@@ -8,7 +8,6 @@ interface LessonHeaderProps {
   estimatedTime?: string;
   lastUpdated?: string;
   difficulty?: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels' | string;
-  tags?: string[];
   summary?: string;
   className?: string;
 }
@@ -18,7 +17,6 @@ export default function LessonHeader({
   estimatedTime = '10 min read',
   lastUpdated,
   difficulty = 'Beginner',
-  tags = [],
   summary,
   className = '',
 }: LessonHeaderProps) {
@@ -79,21 +77,6 @@ export default function LessonHeader({
         <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
           {summary}
         </p>
-      )}
-
-      {/* Tags (if present) */}
-      {tags && tags.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5 pt-3">
-          <Tag className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-500 mr-1" />
-          {tags.map((tag, idx) => (
-            <span
-              key={idx}
-              className="text-[11px] px-2 py-0.5 rounded bg-slate-100 dark:bg-neutral-800/80 text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-neutral-700"
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
       )}
     </header>
   );

@@ -105271,7 +105271,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-ai",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T02:50:57.700Z",
+      "lastAccessedAt": "2026-11-24T04:14:28.220Z",
       "completedAt": null
     },
     {
@@ -107215,7 +107215,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-llm",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T03:07:55.540Z",
+      "lastAccessedAt": "2026-11-24T03:41:12.434Z",
       "completedAt": null
     },
     {
@@ -107223,7 +107223,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-how-llms-work",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T03:02:56.246Z",
+      "lastAccessedAt": "2026-11-24T03:49:21.249Z",
       "completedAt": null
     },
     {
@@ -107247,7 +107247,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-selenium-mastery-1-1-what-is-selenium",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-23T18:48:10.474Z",
+      "lastAccessedAt": "2026-11-24T04:17:11.973Z",
       "completedAt": null
     },
     {
@@ -107615,7 +107615,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-selenium-mastery-1-2-why-selenium-is-used",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-23T18:48:16.632Z",
+      "lastAccessedAt": "2026-11-24T03:52:38.829Z",
       "completedAt": null
     },
     {
@@ -107623,7 +107623,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-selenium-mastery-1-3-selenium-architecture",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-23T18:48:20.006Z",
+      "lastAccessedAt": "2026-11-24T04:14:09.136Z",
       "completedAt": null
     },
     {
@@ -107639,7 +107639,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-machine-learning",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T02:51:10.001Z",
+      "lastAccessedAt": "2026-11-24T03:41:03.694Z",
       "completedAt": null
     },
     {
@@ -107647,7 +107647,7 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-what-is-genai",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T02:51:11.338Z",
+      "lastAccessedAt": "2026-11-24T03:41:07.413Z",
       "completedAt": null
     },
     {
@@ -107655,7 +107655,39 @@
       "userId": "usr_manishleoy2k3_gmail_com",
       "lessonId": "les-transformer-architecture",
       "completionStatus": "in_progress",
-      "lastAccessedAt": "2026-11-24T03:03:08.646Z",
+      "lastAccessedAt": "2026-11-24T03:49:44.009Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-tokens-embeddings-and-attention",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-tokens-embeddings-and-attention",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T03:40:49.867Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-selenium-mastery-1-8-selenium-vs-other-automation-too",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-selenium-mastery-1-8-selenium-vs-other-automation-too",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T03:52:03.632Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-selenium-mastery-1-6-selenium-ide",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-selenium-mastery-1-6-selenium-ide",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T04:14:10.316Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-usr_manishleoy2k3_gmail_com-les-playwright-mastery-1-1-playwright-architecture-browser-",
+      "userId": "usr_manishleoy2k3_gmail_com",
+      "lessonId": "les-playwright-mastery-1-1-playwright-architecture-browser-",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T04:14:24.715Z",
       "completedAt": null
     }
   ],

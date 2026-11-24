@@ -424,10 +424,19 @@ export default function AcademyShell({
   const moduleCompletedCount = moduleLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
   const modulePercent = moduleTotalLessons > 0 ? Math.round((moduleCompletedCount / moduleTotalLessons) * 100) : 0;
 
-  // Process HTML for performance: inject lazy loading on images
+  // Process HTML for performance: inject lazy loading on images and clean up duplicate starting headers/subtitles
   const optimizedHtml = useMemo(() => {
     if (!apiLessonData?.lesson?.contentHtml) return '';
-    return apiLessonData.lesson.contentHtml.replace(
+    let html = apiLessonData.lesson.contentHtml;
+
+    // 1. Remove leading <h1>...</h1> tag (which duplicates LessonHeader's H1 title)
+    html = html.replace(/^\s*<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '');
+
+    // 2. Remove immediately following subtitle/summary paragraph (which duplicates LessonHeader's summary)
+    html = html.replace(/^\s*<p\b[^>]*>\s*(?:<span\b[^>]*>)?\s*<em\b[^>]*>[\s\S]*?<\/em>\s*(?:<\/span>)?\s*<\/p>\s*/i, '');
+
+    // 3. Inject lazy loading and decoding async on images
+    return html.replace(
       /<img\s+(?![^>]*\bloading=)/gi,
       '<img loading="lazy" decoding="async" '
     );
@@ -738,7 +747,6 @@ export default function AcademyShell({
                     estimatedTime={currentLesson.estimatedTime}
                     lastUpdated={apiLessonData?.lesson?.updatedAt || apiLessonData?.lesson?.createdAt}
                     difficulty={currentLesson.difficulty}
-                    tags={currentLesson.tags}
                     summary={currentLesson.summary}
                   />
 

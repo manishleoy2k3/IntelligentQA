@@ -1607,8 +1607,17 @@ export class AcademyStore {
       totalLessons: (module.lessons || []).filter((l) => l.status === 'published').length,
     };
 
+    const cleanContentHtml = lesson.contentHtml
+      ? lesson.contentHtml
+          .replace(/^\s*<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '')
+          .replace(/^\s*<p\b[^>]*>\s*(?:<span\b[^>]*>)?\s*<em\b[^>]*>[\s\S]*?<\/em>\s*(?:<\/span>)?\s*<\/p>\s*/i, '')
+      : lesson.contentHtml;
+
     return {
-      lesson,
+      lesson: {
+        ...lesson,
+        contentHtml: cleanContentHtml,
+      },
       course,
       module,
       category,
