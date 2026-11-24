@@ -1,0 +1,147 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 1400 700" 
+  width="1400" 
+  height="700" 
+  style="background-color: #FAFAF9; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: block; max-width: 100%; border-radius: 16px;"
+>
+  <defs>
+    <marker id="ado-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0078D4" />
+    </marker>
+    <filter id="ado-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <pattern id="ado-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#E2E8F0" />
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="700" fill="#FAFAF9" rx="16"/>
+  <rect x="0" y="0" width="1400" height="700" fill="url(#ado-grid)" opacity="0.7"/>
+
+  <!-- Title & Header -->
+  <g transform="translate(60, 48)">
+    <text font-size="24" font-weight="800" fill="#0F172A" letter-spacing="-0.4">
+      Azure DevOps Multi-Stage YAML Testing Pipeline &amp; Quality Release Gates
+    </text>
+    <text y="26" font-size="14" font-weight="500" fill="#64748B">
+      Architecture: Code Trigger → Agent Pools → Test Execution → PublishTestResults@2 → Azure Test Plans &amp; Release Gates
+    </text>
+  </g>
+
+  <!-- Stage 1: Trigger & Source Repos -->
+  <g transform="translate(60, 120)" filter="url(#ado-shadow)">
+    <rect width="260" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="260" height="48" rx="14" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#0369A1">1. Pipeline Triggers</text>
+    
+    <rect x="20" y="70" width="220" height="110" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="32" y="95" font-size="12" font-weight="700" fill="#0F172A">Trigger Types</text>
+    <text x="32" y="120" font-size="11" fill="#475569">• PR Validation (PR to main)</text>
+    <text x="32" y="142" font-size="11" fill="#475569">• Scheduled Cron (Nightly suite)</text>
+    <text x="32" y="164" font-size="11" fill="#475569">• Release Tag / CD Event</text>
+
+    <rect x="20" y="200" width="220" height="260" rx="8" fill="#0F172A"/>
+    <text x="32" y="225" font-size="11" font-family="monospace" fill="#38BDF8"># azure-pipelines.yml</text>
+    <text x="32" y="248" font-size="10" font-family="monospace" fill="#F8FAFC">trigger:</text>
+    <text x="44" y="268" font-size="10" font-family="monospace" fill="#F8FAFC">branches:</text>
+    <text x="56" y="288" font-size="10" font-family="monospace" fill="#81FF89">include: [ main, release/* ]</text>
+    <text x="32" y="312" font-size="10" font-family="monospace" fill="#F8FAFC">pr:</text>
+    <text x="44" y="332" font-size="10" font-family="monospace" fill="#81FF89">branches: [ main ]</text>
+    <text x="32" y="356" font-size="10" font-family="monospace" fill="#F8FAFC">stages:</text>
+    <text x="44" y="376" font-size="10" font-family="monospace" fill="#CBD5E1">- stage: Build</text>
+    <text x="44" y="396" font-size="10" font-family="monospace" fill="#CBD5E1">- stage: SmokeTest</text>
+    <text x="44" y="416" font-size="10" font-family="monospace" fill="#CBD5E1">- stage: FullRegression</text>
+    <text x="44" y="436" font-size="10" font-family="monospace" fill="#CBD5E1">- stage: DeployToStaging</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="320" y1="280" x2="360" y2="280" stroke="#0078D4" stroke-width="2.5" marker-end="url(#ado-arrow)" />
+
+  <!-- Stage 2: Agent Pools Execution -->
+  <g transform="translate(365, 120)" filter="url(#ado-shadow)">
+    <rect width="300" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="300" height="48" rx="14" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#1E40AF">2. Agent Pools &amp; Jobs</text>
+
+    <!-- Microsoft-hosted vs Self-hosted -->
+    <rect x="20" y="70" width="260" height="130" rx="8" fill="#F0FDF4" stroke="#86EFAC"/>
+    <text x="32" y="95" font-size="12" font-weight="700" fill="#166534">Microsoft-Hosted Agents</text>
+    <text x="32" y="118" font-size="11" fill="#14532D">• vmImage: 'ubuntu-latest'</text>
+    <text x="32" y="138" font-size="11" fill="#14532D">• Fresh ephemeral container every job</text>
+    <text x="32" y="158" font-size="11" fill="#14532D">• Pre-installed Node, Java, Docker, Python</text>
+    <text x="32" y="178" font-size="11" fill="#14532D">• Zero maintenance overhead</text>
+
+    <rect x="20" y="215" width="260" height="130" rx="8" fill="#FEFCE8" stroke="#FDE047"/>
+    <text x="32" y="240" font-size="12" font-weight="700" fill="#854D0E">Self-Hosted Agent Pools</text>
+    <text x="32" y="263" font-size="11" fill="#713F12">• pool: name: 'SDET-Dedicated-Pool'</text>
+    <text x="32" y="283" font-size="11" fill="#713F12">• Internal VPC &amp; private microservices</text>
+    <text x="32" y="303" font-size="11" fill="#713F12">• Pre-cached browser binaries (Playwright/Chrome)</text>
+    <text x="32" y="323" font-size="11" fill="#713F12">• High concurrency (16+ parallel jobs)</text>
+
+    <rect x="20" y="360" width="260" height="110" rx="8" fill="#F8FAFC" stroke="#CBD5E1"/>
+    <text x="32" y="385" font-size="12" font-weight="700" fill="#0F172A">Test Runners Executed</text>
+    <text x="32" y="408" font-size="11" font-family="monospace" fill="#2563EB">npx playwright test</text>
+    <text x="32" y="428" font-size="11" font-family="monospace" fill="#2563EB">mvn test (Rest Assured / Selenium)</text>
+    <text x="32" y="448" font-size="11" font-family="monospace" fill="#2563EB">newman run api-collection.json</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="665" y1="280" x2="705" y2="280" stroke="#0078D4" stroke-width="2.5" marker-end="url(#ado-arrow)" />
+
+  <!-- Stage 3: PublishTestResults@2 & Artifacts -->
+  <g transform="translate(710, 120)" filter="url(#ado-shadow)">
+    <rect width="320" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="320" height="48" rx="14" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#6B21A8">3. PublishTestResults@2</text>
+
+    <rect x="20" y="70" width="280" height="180" rx="8" fill="#0F172A"/>
+    <text x="32" y="95" font-size="11" font-family="monospace" fill="#38BDF8">- task: PublishTestResults@2</text>
+    <text x="32" y="118" font-size="10" font-family="monospace" fill="#E2E8F0">  inputs:</text>
+    <text x="44" y="138" font-size="10" font-family="monospace" fill="#81FF89">    testResultsFormat: 'JUnit'</text>
+    <text x="44" y="158" font-size="10" font-family="monospace" fill="#81FF89">    testResultsFiles: '**/results/*.xml'</text>
+    <text x="44" y="178" font-size="10" font-family="monospace" fill="#81FF89">    searchFolder: '$(System.DefaultWorkingDir)'</text>
+    <text x="44" y="198" font-size="10" font-family="monospace" fill="#81FF89">    mergeTestResults: true</text>
+    <text x="44" y="218" font-size="10" font-family="monospace" fill="#81FF89">    failTaskOnFailedTests: true</text>
+    <text x="44" y="238" font-size="10" font-family="monospace" fill="#81FF89">    testRunTitle: 'E2E Regression Run'</text>
+
+    <rect x="20" y="265" width="280" height="210" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="32" y="290" font-size="12" font-weight="700" fill="#0F172A">Azure DevOps Analytics Dashboard</text>
+    <text x="32" y="315" font-size="11" fill="#334155">• Pass/Fail % breakdown &amp; duration trends</text>
+    <text x="32" y="337" font-size="11" fill="#334155">• Automatic Flaky Test Tagging &amp; metrics</text>
+    <text x="32" y="359" font-size="11" fill="#334155">• Stack trace &amp; screenshot attachments</text>
+    <text x="32" y="381" font-size="11" fill="#334155">• Pipeline failure root cause insights</text>
+    <text x="32" y="403" font-size="11" fill="#334155">• Export to PowerBI quality reports</text>
+    <text x="32" y="435" font-size="11" font-weight="700" fill="#059669">✓ Condition: always() ensures upload on fail</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="1030" y1="280" x2="1065" y2="280" stroke="#0078D4" stroke-width="2.5" marker-end="url(#ado-arrow)" />
+
+  <!-- Stage 4: Test Plans & Release Gates -->
+  <g transform="translate(1070, 120)" filter="url(#ado-shadow)">
+    <rect width="270" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="270" height="48" rx="14" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#991B1B">4. Test Plans &amp; Gates</text>
+
+    <rect x="20" y="70" width="230" height="150" rx="8" fill="#FFF1F2" stroke="#FDA4AF"/>
+    <text x="32" y="95" font-size="12" font-weight="700" fill="#9F1239">Azure Test Plans Traceability</text>
+    <text x="32" y="120" font-size="11" fill="#881337">• Link automated test method</text>
+    <text x="32" y="142" font-size="11" fill="#881337">  to Manual TestCase ID</text>
+    <text x="32" y="164" font-size="11" fill="#881337">• Bidirectional traceability matrix</text>
+    <text x="32" y="186" font-size="11" fill="#881337">• Requirements coverage report</text>
+    <text x="32" y="208" font-size="11" fill="#881337">• Compliance &amp; audit evidence</text>
+
+    <rect x="20" y="235" width="230" height="235" rx="8" fill="#F0FDF4" stroke="#86EFAC"/>
+    <text x="32" y="260" font-size="12" font-weight="700" fill="#166534">Pre-Deployment Gates</text>
+    <text x="32" y="285" font-size="11" fill="#14532D">• Pass rate gate: ≥ 98%</text>
+    <text x="32" y="307" font-size="11" fill="#14532D">• Zero critical / blocker defects</text>
+    <text x="32" y="329" font-size="11" fill="#14532D">• Azure Monitor Alert checking</text>
+    <text x="32" y="351" font-size="11" fill="#14532D">• Security scan gate (SonarQube)</text>
+    <text x="32" y="373" font-size="11" fill="#14532D">• Automated rollback if health</text>
+    <text x="32" y="393" font-size="11" fill="#14532D">  probes fail post-deploy</text>
+    <rect x="30" y="415" width="210" height="35" rx="6" fill="#15803D" />
+    <text x="135" y="437" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">GATE PASSED: DEPLOY OK</text>
+  </g>
+</svg>

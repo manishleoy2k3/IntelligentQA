@@ -1,0 +1,152 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 1400 700" 
+  width="1400" 
+  height="700" 
+  style="background-color: #FAFAF9; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: block; max-width: 100%; border-radius: 16px;"
+>
+  <defs>
+    <marker id="jen-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D97706" />
+    </marker>
+    <filter id="jen-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <pattern id="jen-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#E2E8F0" />
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="700" fill="#FAFAF9" rx="16"/>
+  <rect x="0" y="0" width="1400" height="700" fill="url(#jen-grid)" opacity="0.7"/>
+
+  <!-- Title & Header -->
+  <g transform="translate(60, 48)">
+    <text font-size="24" font-weight="800" fill="#0F172A" letter-spacing="-0.4">
+      Declarative Jenkins Distributed Test Architecture &amp; Notifications
+    </text>
+    <text y="26" font-size="14" font-weight="500" fill="#64748B">
+      Master-Agent Architecture: Multibranch Webhook → Docker Agent Containers → Parallel Stages → HTML Reports &amp; Slack
+    </text>
+  </g>
+
+  <!-- Stage 1: Controller & Multibranch -->
+  <g transform="translate(60, 120)" filter="url(#jen-shadow)">
+    <rect width="270" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="270" height="48" rx="14" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#B45309">1. Jenkins Controller</text>
+
+    <rect x="20" y="70" width="230" height="120" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="32" y="95" font-size="12" font-weight="700" fill="#0F172A">Multibranch Pipeline</text>
+    <text x="32" y="120" font-size="11" fill="#475569">• GitHub / Bitbucket Webhook</text>
+    <text x="32" y="142" font-size="11" fill="#475569">• Auto branch discovery</text>
+    <text x="32" y="164" font-size="11" fill="#475569">• Scan PRs &amp; tag builds</text>
+
+    <rect x="20" y="205" width="230" height="260" rx="8" fill="#0F172A"/>
+    <text x="32" y="230" font-size="11" font-family="monospace" fill="#FBBF24">// Jenkinsfile</text>
+    <text x="32" y="250" font-size="10" font-family="monospace" fill="#F8FAFC">pipeline {</text>
+    <text x="44" y="270" font-size="10" font-family="monospace" fill="#F8FAFC">  agent none</text>
+    <text x="44" y="290" font-size="10" font-family="monospace" fill="#F8FAFC">  options {</text>
+    <text x="56" y="310" font-size="10" font-family="monospace" fill="#81FF89">    timeout(time: 1, unit: 'HOURS')</text>
+    <text x="56" y="330" font-size="10" font-family="monospace" fill="#81FF89">    retry(1)</text>
+    <text x="44" y="350" font-size="10" font-family="monospace" fill="#F8FAFC">  }</text>
+    <text x="44" y="370" font-size="10" font-family="monospace" fill="#F8FAFC">  stages {</text>
+    <text x="56" y="390" font-size="10" font-family="monospace" fill="#38BDF8">    stage('Build &amp; Lint')</text>
+    <text x="56" y="410" font-size="10" font-family="monospace" fill="#38BDF8">    stage('Parallel E2E')</text>
+    <text x="56" y="430" font-size="10" font-family="monospace" fill="#38BDF8">    stage('Quality Gate')</text>
+    <text x="44" y="450" font-size="10" font-family="monospace" fill="#F8FAFC">  }</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="330" y1="280" x2="370" y2="280" stroke="#D97706" stroke-width="2.5" marker-end="url(#jen-arrow)" />
+
+  <!-- Stage 2: Docker Agents & Parallel Stages -->
+  <g transform="translate(375, 120)" filter="url(#jen-shadow)">
+    <rect width="360" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="360" height="48" rx="14" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#1D4ED8">2. Docker Agents &amp; Parallel Execution</text>
+
+    <!-- Shard 1 -->
+    <rect x="20" y="70" width="320" height="110" rx="8" fill="#F0FDF4" stroke="#86EFAC"/>
+    <text x="32" y="95" font-size="12" font-weight="700" fill="#166534">Stage: Playwright UI Tests (Chromium/Firefox)</text>
+    <text x="32" y="118" font-size="11" font-family="monospace" fill="#14532D">agent { docker { image 'mcr.microsoft.com/playwright:v1.49.0' } }</text>
+    <text x="32" y="140" font-size="11" fill="#14532D">sh 'npx playwright test --shard=1/2'</text>
+    <text x="32" y="160" font-size="11" font-weight="600" fill="#15803D">✓ Isolated headless browser container</text>
+
+    <!-- Shard 2 -->
+    <rect x="20" y="195" width="320" height="110" rx="8" fill="#EFF6FF" stroke="#93C5FD"/>
+    <text x="32" y="220" font-size="12" font-weight="700" fill="#1E40AF">Stage: Rest Assured API Microservice Tests</text>
+    <text x="32" y="243" font-size="11" font-family="monospace" fill="#1E3A8A">agent { docker { image 'maven:3.9-eclipse-temurin-21' } }</text>
+    <text x="32" y="265" font-size="11" fill="#1E3A8A">sh 'mvn clean test -Dsuite=api-regression.xml'</text>
+    <text x="32" y="285" font-size="11" font-weight="600" fill="#2563EB">✓ Fast parallel execution (zero UI overhead)</text>
+
+    <!-- Shard 3 -->
+    <rect x="20" y="320" width="320" height="110" rx="8" fill="#FAF5FF" stroke="#D8B4FE"/>
+    <text x="32" y="345" font-size="12" font-weight="700" fill="#6B21A8">Stage: Mobile Appium / Cross-Browser Smoke</text>
+    <text x="32" y="368" font-size="11" font-family="monospace" fill="#581C87">agent { label 'appium-mac-runner' }</text>
+    <text x="32" y="390" font-size="11" fill="#581C87">sh './run-appium-ios-simulator.sh'</text>
+    <text x="32" y="410" font-size="11" font-weight="600" fill="#7E22CE">✓ Bare-metal iOS/Android device farm</text>
+
+    <text x="32" y="455" font-size="11" font-weight="700" fill="#0F172A">Total Wall-Clock Time Reduced by 75% with parallel { ... }</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="735" y1="280" x2="775" y2="280" stroke="#D97706" stroke-width="2.5" marker-end="url(#jen-arrow)" />
+
+  <!-- Stage 3: Test Reporting & Post Actions -->
+  <g transform="translate(780, 120)" filter="url(#jen-shadow)">
+    <rect width="280" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="280" height="48" rx="14" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#166534">3. Post Actions &amp; Reporting</text>
+
+    <rect x="20" y="70" width="240" height="150" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="32" y="95" font-size="12" font-weight="700" fill="#0F172A">JUnit XML Publishing</text>
+    <text x="32" y="118" font-size="11" font-family="monospace" fill="#2563EB">junit '**/surefire-reports/*.xml'</text>
+    <text x="32" y="140" font-size="11" fill="#475569">• Jenkins test trend graph</text>
+    <text x="32" y="162" font-size="11" fill="#475569">• Failed test age &amp; regression delta</text>
+    <text x="32" y="184" font-size="11" fill="#475569">• Automatic build health score (weather)</text>
+
+    <rect x="20" y="235" width="240" height="150" rx="8" fill="#F5F3FF" stroke="#DDD6FE"/>
+    <text x="32" y="260" font-size="12" font-weight="700" fill="#5B21B6">publishHTML &amp; Allure</text>
+    <text x="32" y="283" font-size="11" font-family="monospace" fill="#7C3AED">publishHTML(target: [ ... ])</text>
+    <text x="32" y="305" font-size="11" fill="#6D28D9">• Playwright HTML report archive</text>
+    <text x="32" y="327" font-size="11" fill="#6D28D9">• Video recordings &amp; trace viewer</text>
+    <text x="32" y="349" font-size="11" fill="#6D28D9">• Allure history trends &amp; categories</text>
+    <text x="32" y="371" font-size="11" fill="#6D28D9">• Interactive drill-down per test</text>
+
+    <rect x="20" y="400" width="240" height="70" rx="8" fill="#FEF2F2" stroke="#FCA5A5"/>
+    <text x="32" y="425" font-size="11" font-weight="700" fill="#991B1B">post { always { ... } }</text>
+    <text x="32" y="448" font-size="11" fill="#7F1D1D">Ensures test report archive on failure!</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="1060" y1="280" x2="1100" y2="280" stroke="#D97706" stroke-width="2.5" marker-end="url(#jen-arrow)" />
+
+  <!-- Stage 4: Slack Notifications & Alerts -->
+  <g transform="translate(1105, 120)" filter="url(#jen-shadow)">
+    <rect width="245" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="245" height="48" rx="14" fill="#FAF5FF" stroke="#F3E8FF" stroke-width="1.5" />
+    <text x="24" y="29" font-size="14" font-weight="700" fill="#6B21A8">4. Slack &amp; Teams Alerts</text>
+
+    <rect x="15" y="70" width="215" height="200" rx="8" fill="#0F172A"/>
+    <text x="25" y="95" font-size="11" font-family="monospace" fill="#F472B6">post {</text>
+    <text x="32" y="118" font-size="10" font-family="monospace" fill="#F87171">  failure {</text>
+    <text x="40" y="138" font-size="10" font-family="monospace" fill="#F8FAFC">    slackSend(</text>
+    <text x="48" y="158" font-size="10" font-family="monospace" fill="#F8FAFC">      color: '#FF0000',</text>
+    <text x="48" y="178" font-size="10" font-family="monospace" fill="#81FF89">      channel: '#qa-alerts',</text>
+    <text x="48" y="198" font-size="10" font-family="monospace" fill="#CBD5E1">      message: &quot;❌ Build</text>
+    <text x="48" y="218" font-size="10" font-family="monospace" fill="#CBD5E1">      FAILED: ${env.JOB_NAME}&quot;</text>
+    <text x="40" y="238" font-size="10" font-family="monospace" fill="#F8FAFC">    )</text>
+    <text x="32" y="258" font-size="10" font-family="monospace" fill="#F87171">  }</text>
+    <text x="25" y="278" font-size="11" font-family="monospace" fill="#F472B6">}</text>
+
+    <rect x="15" y="285" width="215" height="185" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="25" y="310" font-size="12" font-weight="700" fill="#0F172A">Enterprise Alert Routing</text>
+    <text x="25" y="335" font-size="11" fill="#334155">• Direct @mention to author</text>
+    <text x="25" y="357" font-size="11" fill="#334155">• Deep link to Playwright trace</text>
+    <text x="25" y="379" font-size="11" fill="#334155">• Top 3 failed spec titles</text>
+    <text x="25" y="401" font-size="11" fill="#334155">• Auto-quarantine flaky tests</text>
+    <text x="25" y="423" font-size="11" fill="#334155">• PagerDuty for release block</text>
+    <text x="25" y="452" font-size="11" font-weight="700" fill="#059669">✓ Real-time SDET triage</text>
+  </g>
+</svg>

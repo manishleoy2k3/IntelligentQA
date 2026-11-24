@@ -1,0 +1,107 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 1400 700" 
+  width="1400" 
+  height="700" 
+  style="background-color: #FAFAF9; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: block; max-width: 100%; border-radius: 16px;"
+>
+  <defs>
+    <marker id="branch-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4F46E5" />
+    </marker>
+    <filter id="br-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <pattern id="br-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#E2E8F0" />
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="700" fill="#FAFAF9" rx="16"/>
+  <rect x="0" y="0" width="1400" height="700" fill="url(#br-grid)" opacity="0.7"/>
+
+  <!-- Title & Header -->
+  <g transform="translate(60, 48)">
+    <text font-size="24" font-weight="800" fill="#0F172A" letter-spacing="-0.4">
+      Git Branching Models for Test Automation: Trunk-Based vs GitFlow
+    </text>
+    <text y="26" font-size="14" font-weight="500" fill="#64748B">
+      Evaluating velocity, merge conflict risks, and automated CI quality gate enforcement
+    </text>
+  </g>
+
+  <!-- Left: Trunk-Based Development -->
+  <g transform="translate(60, 120)" filter="url(#br-shadow)">
+    <rect width="600" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="600" height="48" rx="14" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1.5" />
+    <text x="24" y="29" font-size="15" font-weight="700" fill="#065F46">Model A: Trunk-Based Development (Recommended for Modern QA)</text>
+
+    <!-- Visual Trunk Diagram -->
+    <g transform="translate(40, 70)">
+      <!-- Main trunk line -->
+      <line x1="20" y1="60" x2="500" y2="60" stroke="#059669" stroke-width="6" stroke-linecap="round"/>
+      <text x="510" y="65" font-size="13" font-weight="700" fill="#059669">main</text>
+
+      <!-- Commits on main -->
+      <circle cx="60" cy="60" r="12" fill="#059669" stroke="#FFFFFF" stroke-width="3"/>
+      <circle cx="180" cy="60" r="12" fill="#059669" stroke="#FFFFFF" stroke-width="3"/>
+      <circle cx="300" cy="60" r="12" fill="#059669" stroke="#FFFFFF" stroke-width="3"/>
+      <circle cx="440" cy="60" r="12" fill="#059669" stroke="#FFFFFF" stroke-width="3"/>
+
+      <!-- Short-lived branch 1 -->
+      <path d="M 60 60 C 90 120, 150 120, 180 60" fill="none" stroke="#2563EB" stroke-width="3" stroke-dasharray="4 4"/>
+      <circle cx="120" cy="105" r="9" fill="#2563EB" stroke="#FFFFFF" stroke-width="2"/>
+      <text x="120" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#1E40AF">feat/add-cart-tests (&lt; 24h)</text>
+
+      <!-- Short-lived branch 2 -->
+      <path d="M 180 60 C 210 120, 270 120, 300 60" fill="none" stroke="#7C3AED" stroke-width="3" stroke-dasharray="4 4"/>
+      <circle cx="240" cy="105" r="9" fill="#7C3AED" stroke="#FFFFFF" stroke-width="2"/>
+      <text x="240" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#5B21B6">fix/flaky-auth-wait (&lt; 12h)</text>
+    </g>
+
+    <rect x="30" y="240" width="540" height="220" rx="8" fill="#F0FDF4" stroke="#86EFAC"/>
+    <text x="45" y="265" font-size="13" font-weight="700" fill="#166534">Trunk-Based QA Advantages</text>
+    <text x="45" y="295" font-size="12" fill="#14532D">1. Zero Long-Lived Merge Conflicts: Branch lifetime is under 24 hours.</text>
+    <text x="45" y="325" font-size="12" fill="#14532D">2. Continuous Feedback: Every PR triggers full test suites before merge.</text>
+    <text x="45" y="355" font-size="12" fill="#14532D">3. Feature Flags in Tests: Test features in dark mode prior to user release.</text>
+    <text x="45" y="385" font-size="12" fill="#14532D">4. High Release Cadence: Multiple daily production deployments safely.</text>
+    <text x="45" y="415" font-size="12" font-weight="700" fill="#047857">✓ Best for: Agile, Cloud-Native, Continuous Delivery teams.</text>
+  </g>
+
+  <!-- Right: GitFlow Model -->
+  <g transform="translate(740, 120)" filter="url(#br-shadow)">
+    <rect width="600" height="500" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="600" height="48" rx="14" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5" />
+    <text x="24" y="29" font-size="15" font-weight="700" fill="#1E40AF">Model B: Traditional GitFlow (Legacy Enterprise)</text>
+
+    <!-- Visual GitFlow Diagram -->
+    <g transform="translate(40, 70)">
+      <!-- main line -->
+      <line x1="20" y1="30" x2="500" y2="30" stroke="#0F172A" stroke-width="4"/>
+      <text x="510" y="35" font-size="12" font-weight="700" fill="#0F172A">main</text>
+      <!-- develop line -->
+      <line x1="20" y1="80" x2="500" y2="80" stroke="#2563EB" stroke-width="4"/>
+      <text x="510" y="85" font-size="12" font-weight="700" fill="#2563EB">develop</text>
+      <!-- release branch -->
+      <line x1="260" y1="130" x2="420" y2="130" stroke="#D97706" stroke-width="3" stroke-dasharray="3 3"/>
+      <text x="430" y="135" font-size="11" font-weight="700" fill="#D97706">release/v2.1</text>
+      <!-- feature branch -->
+      <line x1="80" y1="170" x2="220" y2="170" stroke="#7C3AED" stroke-width="3" stroke-dasharray="3 3"/>
+      <text x="230" y="175" font-size="11" font-weight="700" fill="#7C3AED">feature/...</text>
+
+      <circle cx="80" cy="30" r="7" fill="#0F172A"/>
+      <circle cx="440" cy="30" r="7" fill="#0F172A"/>
+      <circle cx="60" cy="80" r="7" fill="#2563EB"/>
+      <circle cx="240" cy="80" r="7" fill="#2563EB"/>
+      <circle cx="480" cy="80" r="7" fill="#2563EB"/>
+    </g>
+
+    <rect x="30" y="240" width="540" height="220" rx="8" fill="#FFFBEB" stroke="#FDE68A"/>
+    <text x="45" y="265" font-size="13" font-weight="700" fill="#92400E">GitFlow Considerations for QA</text>
+    <text x="45" y="295" font-size="12" fill="#78350F">1. Complex Multi-Branch Sync: Tests must be verified across develop &amp; main.</text>
+    <text x="45" y="325" font-size="12" fill="#78350F">2. Merge Hell at Release Cut: Regressions discovered late during release branch.</text>
+    <text x="45" y="355" font-size="12" fill="#78350F">3. Heavy Stale Test Divergence: Feature branches living weeks drift from HEAD.</text>
+    <text x="45" y="385" font-size="12" fill="#78350F">4. Strict Auditability: Beneficial for quarterly scheduled medical/banking releases.</text>
+    <text x="45" y="415" font-size="12" font-weight="700" fill="#B45309">⚠️ Warning: Higher maintenance overhead for automated test suites.</text>
+  </g>
+</svg>

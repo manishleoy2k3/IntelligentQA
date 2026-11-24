@@ -38,6 +38,22 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
 `;
   }
 
+  // 2b. Visual Architecture Diagram / Infographic (Embedded within curriculum)
+  if (data.architectureDiagram && data.architectureDiagram.imageUrl) {
+    const title = data.architectureDiagram.title || 'Technical Architecture Diagram';
+    const caption = data.architectureDiagram.caption || title;
+    html += `
+<figure data-curriculum-diagram="true" class="my-8 p-4 sm:p-6 bg-slate-50 dark:bg-neutral-900/70 border border-slate-200 dark:border-neutral-800 rounded-2xl shadow-sm text-center">
+  <div class="relative overflow-hidden rounded-xl border border-slate-200/80 dark:border-neutral-700/80 bg-white dark:bg-neutral-950 flex items-center justify-center p-2 sm:p-4">
+    <img src="${escapeHtml(data.architectureDiagram.imageUrl)}" alt="${escapeHtml(title)}" class="w-full max-h-[520px] object-contain mx-auto" loading="lazy" decoding="async" />
+  </div>
+  <figcaption class="mt-3 text-xs sm:text-sm font-semibold text-slate-700 dark:text-neutral-300">
+    📐 ${escapeHtml(caption)}
+  </figcaption>
+</figure>
+`;
+  }
+
   // 3. Concept Explanation
   if (data.conceptExplanation) {
     html += `

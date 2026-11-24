@@ -74,10 +74,34 @@ const diagramMappings = [
     alt: 'Test Pyramid Infographic'
   },
   {
-    slugs: ['what-is-github-actions', 'running-playwright-in-github-actions', 'running-selenium-in-github-actions', 'cicd-integration', 'smoke-tests-in-cicd'],
+    slugs: ['what-is-github-actions', 'running-playwright-in-github-actions', 'running-selenium-in-github-actions', 'cicd-integration', 'smoke-tests-in-cicd', 'pipeline-architecture'],
     src: '/uploads/curriculum-diagrams/github-actions-cicd.png',
     title: 'Enterprise CI/CD Automation Pipeline with GitHub Actions',
     alt: 'CI/CD Pipeline Diagram'
+  },
+  {
+    slugs: ['what-is-git', 'git-architecture', 'version-control-concepts', 'core-git-commands'],
+    src: '/uploads/curriculum-diagrams/git-workflow-architecture.svg',
+    title: 'Git 4-Stage Lifecycle & Collaboration Architecture',
+    alt: 'Git Workflow Architecture Diagram'
+  },
+  {
+    slugs: ['branching-strategies-gitflow-trunk-based', 'creating-and-switching-branches', 'merging-and-merge-conflicts'],
+    src: '/uploads/curriculum-diagrams/git-branching-architecture.svg',
+    title: 'Git Branching Models for Test Automation: Trunk-Based vs GitFlow',
+    alt: 'Git Branching Models Diagram'
+  },
+  {
+    slugs: ['publishing-test-results-in-ado', 'azure-pipelines-agent-pools', 'azure-test-plans-automation-link', 'ado-release-pipeline-gates'],
+    src: '/uploads/curriculum-diagrams/azure-devops-pipeline-architecture.svg',
+    title: 'Azure DevOps Multi-Stage YAML Pipeline & Quality Gates',
+    alt: 'Azure DevOps Pipeline Architecture Diagram'
+  },
+  {
+    slugs: ['declarative-syntax-essentials', 'multibranch-webhook-triggers', 'parallel-stages-docker-agents', 'jenkins-html-reporting-slack'],
+    src: '/uploads/curriculum-diagrams/jenkins-pipeline-architecture.svg',
+    title: 'Declarative Jenkins Distributed Test Architecture & Notifications',
+    alt: 'Jenkins Pipeline Architecture Diagram'
   }
 ];
 
