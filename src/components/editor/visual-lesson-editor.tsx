@@ -16,6 +16,7 @@ import CharacterCount from '@tiptap/extension-character-count';
 
 import EditorToolbar from './editor-toolbar';
 import ImageUploadModal from './image-upload-modal';
+import DiagramStudioModal from '@/components/diagram/diagram-studio-modal';
 import AiChatPanel from './ai-chat-panel';
 import ContentComparisonModal from './content-comparison-modal';
 import AiTechnicalReviewModal from '@/components/admin/academy/ai-technical-review-modal';
@@ -89,6 +90,8 @@ export default function VisualLessonEditor({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
+  const [showDiagramStudio, setShowDiagramStudio] = useState<boolean>(false);
+  const [diagramStudioPrompt, setDiagramStudioPrompt] = useState<string>('');
   const [showAiAssistant, setShowAiAssistant] = useState<boolean>(false);
   const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
   const [showCompareModal, setShowCompareModal] = useState<boolean>(false);
@@ -446,6 +449,10 @@ export default function VisualLessonEditor({
           editor={editor}
           onOpenImageModal={() => setShowImageModal(true)}
           onOpenAiAssistant={() => setShowAiAssistant((prev) => !prev)}
+          onOpenDiagramStudio={() => {
+            setDiagramStudioPrompt('');
+            setShowDiagramStudio(true);
+          }}
         />
       )}
 
@@ -498,6 +505,10 @@ export default function VisualLessonEditor({
             onReplaceContent={handleAiReplaceContent}
             onReplaceSelected={handleAiReplaceSelected}
             onOpenCompare={handleOpenCompare}
+            onOpenDiagramStudio={(p) => {
+              setDiagramStudioPrompt(p || '');
+              setShowDiagramStudio(true);
+            }}
             selectedEditorText={selectedTextForAi}
           />
         )}
@@ -509,6 +520,32 @@ export default function VisualLessonEditor({
         onClose={() => setShowImageModal(false)}
         onInsertImage={handleInsertImage}
       />
+
+      {/* Diagram Studio Modal (Phase 11 Engine) */}
+      {showDiagramStudio && (
+        <DiagramStudioModal
+          isOpen={showDiagramStudio}
+          onClose={() => setShowDiagramStudio(false)}
+          initialPrompt={diagramStudioPrompt}
+          lessonContext={{
+            courseTitle,
+            moduleTitle,
+            lessonTitle,
+            currentContent: mode === 'visual' && editor ? editor.getHTML() : rawHtml,
+            lessonId,
+          }}
+          onInsertDiagram={(diagramHtml) => {
+            if (mode === 'visual' && editor) {
+              editor.chain().focus().insertContent(diagramHtml).run();
+              setRawHtml(editor.getHTML());
+              setSaveStatus('unsaved');
+            } else {
+              setRawHtml((prev) => prev + '\n' + diagramHtml);
+              setSaveStatus('unsaved');
+            }
+          }}
+        />
+      )}
 
       {/* AI Technical Review Modal */}
       {showReviewModal && (

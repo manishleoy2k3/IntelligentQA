@@ -45,6 +45,7 @@ interface AiChatPanelProps {
   onReplaceContent: (html: string) => void;
   onReplaceSelected: (html: string) => void;
   onOpenCompare: (enhancedHtml: string) => void;
+  onOpenDiagramStudio?: (initialPrompt?: string) => void;
   selectedEditorText?: string;
 }
 
@@ -66,6 +67,7 @@ export default function AiChatPanel({
   onReplaceContent,
   onReplaceSelected,
   onOpenCompare,
+  onOpenDiagramStudio,
   selectedEditorText,
 }: AiChatPanelProps) {
   const [messages, setMessages] = useState<ChatTurn[]>([]);
@@ -140,6 +142,13 @@ export default function AiChatPanel({
 
   // Predefined shortcut actions
   const PREDEFINED_ACTIONS = [
+    {
+      id: 'generate_visual_diagram',
+      label: 'Generate Visual Diagram',
+      icon: Workflow,
+      desc: 'Architecture SVG, Educational Infographic, or Flowchart Studio',
+      prompt: 'Generate Visual Diagram',
+    },
     {
       id: 'improve_content',
       label: 'Improve Existing Content',
@@ -236,6 +245,16 @@ export default function AiChatPanel({
   const handleSend = async (customPrompt?: string, actionId?: string) => {
     const promptToSend = customPrompt || inputPrompt.trim();
     if (!promptToSend || isLoading) return;
+
+    if (
+      (actionId === 'generate_visual_diagram' ||
+        promptToSend.toLowerCase() === 'generate visual diagram') &&
+      onOpenDiagramStudio
+    ) {
+      onOpenDiagramStudio('');
+      if (!customPrompt) setInputPrompt('');
+      return;
+    }
 
     setErrorMessage(null);
     const userTurn: ChatTurn = {

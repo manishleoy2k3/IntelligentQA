@@ -7387,6 +7387,57 @@
       "category": "Architecture",
       "uploadedAt": "2026-11-15T09:00:00.000Z",
       "uploadedBy": "Course Administrator"
+    },
+    {
+      "id": "med-info-1795520445720",
+      "filename": "infographic_1795520445694_x1zoh.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795520445694_x1zoh.png",
+      "mimeType": "image/png",
+      "size": 9954,
+      "dimensions": {
+        "width": 1200,
+        "height": 675
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T11:40:45.720Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795520486602",
+      "filename": "infographic_1795520486577_d8knq.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795520486577_d8knq.png",
+      "mimeType": "image/png",
+      "size": 9954,
+      "dimensions": {
+        "width": 1200,
+        "height": 675
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T11:41:26.602Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795520940958",
+      "filename": "infographic_1795520940933_odvsr.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795520940933_odvsr.png",
+      "mimeType": "image/png",
+      "size": 9954,
+      "dimensions": {
+        "width": 1200,
+        "height": 675
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-24T11:49:00.958Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
     }
   ],
   "cmsAuditLogs": [
@@ -7557,6 +7608,48 @@
       "entityId": "art-selenium-java-001",
       "entityTitle": "Selenium with Java Tutorial: The Ultimate Guide for Beginners & SDETs",
       "details": "Article \"Selenium with Java Tutorial: The Ultimate Guide for Beginners & SDETs\" (published) saved"
+    },
+    {
+      "id": "log-1795520445852",
+      "timestamp": "2026-11-24T11:40:45.852Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795520445720",
+      "entityTitle": "infographic_1795520445694_x1zoh.png",
+      "details": "Uploaded media infographic_1795520445694_x1zoh.png (image/png)"
+    },
+    {
+      "id": "log-1795520486740",
+      "timestamp": "2026-11-24T11:41:26.740Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795520486602",
+      "entityTitle": "infographic_1795520486577_d8knq.png",
+      "details": "Uploaded media infographic_1795520486577_d8knq.png (image/png)"
+    },
+    {
+      "id": "log-1795520941089",
+      "timestamp": "2026-11-24T11:49:01.089Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795520940958",
+      "entityTitle": "infographic_1795520940933_odvsr.png",
+      "details": "Uploaded media infographic_1795520940933_odvsr.png (image/png)"
     }
   ],
   "academyCategories": [

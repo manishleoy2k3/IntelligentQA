@@ -15,8 +15,10 @@ import {
   Plus,
   Loader2,
   FileImage,
+  Workflow,
 } from 'lucide-react';
 import { CMSMediaItem } from '@/types/cms';
+import DiagramStudioModal from '@/components/diagram/diagram-studio-modal';
 
 interface MediaLibraryModalProps {
   isOpen: boolean;
@@ -38,6 +40,7 @@ export default function MediaLibraryModal({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showDiagramStudio, setShowDiagramStudio] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -287,6 +290,14 @@ export default function MediaLibraryModal({
               accept="image/*"
               className="hidden"
             />
+            <button
+              type="button"
+              onClick={() => setShowDiagramStudio(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow transition-colors cursor-pointer"
+            >
+              <Workflow className="w-4 h-4" />
+              <span>Create Diagram</span>
+            </button>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -548,6 +559,17 @@ export default function MediaLibraryModal({
           </div>
         </div>
       </div>
+
+      {showDiagramStudio && (
+        <DiagramStudioModal
+          isOpen={showDiagramStudio}
+          onClose={() => setShowDiagramStudio(false)}
+          onInsertDiagram={() => {
+            fetchMedia();
+            setShowDiagramStudio(false);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -36,6 +36,7 @@ import {
   Plus,
   Trash2,
   Sparkles,
+  Workflow,
 } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from './extensions/lowlight-config';
 
@@ -43,9 +44,15 @@ interface EditorToolbarProps {
   editor: Editor | null;
   onOpenImageModal: () => void;
   onOpenAiAssistant?: () => void;
+  onOpenDiagramStudio?: () => void;
 }
 
-export default function EditorToolbar({ editor, onOpenImageModal, onOpenAiAssistant }: EditorToolbarProps) {
+export default function EditorToolbar({
+  editor,
+  onOpenImageModal,
+  onOpenAiAssistant,
+  onOpenDiagramStudio,
+}: EditorToolbarProps) {
   const [showTableMenu, setShowTableMenu] = useState(false);
   const [showCalloutMenu, setShowCalloutMenu] = useState(false);
   const [showCodeLangMenu, setShowCodeLangMenu] = useState(false);
@@ -322,6 +329,19 @@ export default function EditorToolbar({ editor, onOpenImageModal, onOpenAiAssist
           <ImageIcon className="w-4 h-4" />
           <span className="text-xs font-semibold hidden md:inline">Image</span>
         </button>
+
+        {/* Dedicated Diagram Studio Button */}
+        {onOpenDiagramStudio && (
+          <button
+            type="button"
+            onClick={onOpenDiagramStudio}
+            className="p-1.5 rounded-lg hover:bg-[#27272A] hover:text-white text-cyan-400 transition-colors cursor-pointer flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/20"
+            title="Professional AI Architecture Diagram & Infographic Studio"
+          >
+            <Workflow className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-bold text-cyan-400 hidden lg:inline">Diagram Studio</span>
+          </button>
+        )}
 
         {/* Code Block Dropdown */}
         <div className="relative">
