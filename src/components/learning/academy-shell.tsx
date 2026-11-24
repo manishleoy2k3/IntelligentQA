@@ -14,6 +14,7 @@ import ModuleOverviewCard from './module-overview-card';
 import CourseOverviewCard from './course-overview-card';
 import LlmArchitectureInfographic from './llm-architecture-infographic';
 import { generateStandardLessonHtml } from '@/lib/standard-lesson-compiler';
+import { renderTiptapJsonToHtml } from '@/components/editor/tiptap-renderer';
 import {
   getLessonBySlug,
   getAdjacentLessons,
@@ -424,13 +425,21 @@ export default function AcademyShell({
   const moduleCompletedCount = moduleLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
   const modulePercent = moduleTotalLessons > 0 ? Math.round((moduleCompletedCount / moduleTotalLessons) * 100) : 0;
 
-  // Process HTML for performance: compile standardData if present or clean up duplicate starting headers/subtitles
+  // Process HTML for performance: prioritize canonical tiptapJson, then standardData, then contentHtml
   const optimizedHtml = useMemo(() => {
     let html = '';
-    // If standardData is present, always compile fresh in clean uniform format
-    if (apiLessonData?.lesson?.blockData?.standardData) {
-      html = generateStandardLessonHtml(apiLessonData.lesson.blockData.standardData);
-    } else if (apiLessonData?.lesson?.contentHtml) {
+    const blockData = apiLessonData?.lesson?.blockData;
+
+    // 1. If canonical Tiptap JSON is present, render directly from the unified editor schema
+    if (blockData?.tiptapJson) {
+      html = renderTiptapJsonToHtml(blockData.tiptapJson);
+    }
+    // 2. Fallback to standardData if present
+    else if (blockData?.standardData) {
+      html = generateStandardLessonHtml(blockData.standardData);
+    }
+    // 3. Fallback to raw contentHtml
+    else if (apiLessonData?.lesson?.contentHtml) {
       html = apiLessonData.lesson.contentHtml;
     }
 
@@ -451,7 +460,7 @@ export default function AcademyShell({
       /<img\s+(?![^>]*\bloading=)/gi,
       '<img loading="lazy" decoding="async" '
     );
-  }, [apiLessonData?.lesson?.contentHtml, apiLessonData?.lesson?.blockData?.standardData]);
+  }, [apiLessonData?.lesson?.contentHtml, apiLessonData?.lesson?.blockData]);
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>

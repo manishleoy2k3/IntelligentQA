@@ -13,13 +13,11 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import CharacterCount from '@tiptap/extension-character-count';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
 import EditorToolbar from './editor-toolbar';
 import ImageUploadModal from './image-upload-modal';
-import { Callout } from './extensions/callout-extension';
-import { ResizableImage } from './extensions/resizable-image-extension';
-import { lowlight } from './extensions/lowlight-config';
+import { sharedTiptapExtensions } from './tiptap-schema';
+import { renderTiptapJsonToHtml } from './tiptap-renderer';
 
 import {
   Save,
@@ -72,49 +70,14 @@ export default function VisualLessonEditor({
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isInitialMount = useRef<boolean>(true);
 
-  // Initialize Tiptap Editor
+  // Initialize Tiptap Editor with canonical shared schema
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        codeBlock: false, // Replaced by CodeBlockLowlight
-        heading: {
-          levels: [1, 2, 3, 4],
-        },
-      }),
-      Underline,
-      Highlight.configure({
-        multicolor: true,
-      }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph', 'image'],
-      }),
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-emerald-600 dark:text-emerald-400 underline font-semibold hover:text-emerald-500',
-          rel: 'noopener noreferrer',
-          target: '_blank',
-        },
-      }),
+      ...sharedTiptapExtensions,
       Placeholder.configure({
         placeholder: 'Write your comprehensive technical lesson content here. Start typing or insert headings, code snippets, tables, and architecture diagrams...',
       }),
       CharacterCount,
-      CodeBlockLowlight.configure({
-        lowlight,
-        defaultLanguage: 'typescript',
-        HTMLAttributes: {
-          class: 'tiptap-code-block rounded-2xl bg-[#0F0F12] border border-[#27272A] p-4 text-emerald-300 font-mono text-xs my-4 overflow-x-auto shadow-inner',
-        },
-      }),
-      Callout,
-      ResizableImage,
     ],
     content: initialBlockData?.tiptapJson || initialHtml || '<p>Start writing your lesson content...</p>',
     editorProps: {
