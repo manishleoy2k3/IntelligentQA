@@ -35,15 +35,17 @@ import {
   Upload,
   Plus,
   Trash2,
+  Sparkles,
 } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from './extensions/lowlight-config';
 
 interface EditorToolbarProps {
   editor: Editor | null;
   onOpenImageModal: () => void;
+  onOpenAiAssistant?: () => void;
 }
 
-export default function EditorToolbar({ editor, onOpenImageModal }: EditorToolbarProps) {
+export default function EditorToolbar({ editor, onOpenImageModal, onOpenAiAssistant }: EditorToolbarProps) {
   const [showTableMenu, setShowTableMenu] = useState(false);
   const [showCalloutMenu, setShowCalloutMenu] = useState(false);
   const [showCodeLangMenu, setShowCodeLangMenu] = useState(false);
@@ -497,6 +499,21 @@ export default function EditorToolbar({ editor, onOpenImageModal }: EditorToolba
             </div>
           )}
         </div>
+
+        {/* ENHANCE WITH AI BUTTON */}
+        {onOpenAiAssistant && (
+          <div className="pl-1.5 ml-1 border-l border-[#27272A]">
+            <button
+              type="button"
+              onClick={onOpenAiAssistant}
+              className="px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 hover:text-white border border-purple-500/30 hover:border-purple-500/60 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm group"
+              title="Enhance with AI Assistant"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform" />
+              <span className="text-xs font-bold">Enhance with AI</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

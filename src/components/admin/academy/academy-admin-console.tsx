@@ -2221,6 +2221,18 @@ test('deterministic enterprise verification', async ({ page }) => {
             initialHtml={activeVisualLesson.lesson.contentHtml || ''}
             initialBlockData={activeVisualLesson.lesson.blockData}
             status={activeVisualLesson.lesson.status}
+            courseContext={{
+              description: activeVisualLesson.course.description,
+              category: activeVisualLesson.course.categoryId,
+            }}
+            moduleContext={{
+              description: activeVisualLesson.module.description,
+              position: activeVisualLesson.module.sortOrder,
+              relatedLessons: activeVisualLesson.module.lessons?.map((l: any) => l.title) || [],
+            }}
+            curriculumContext={{
+              moduleHierarchy: [activeVisualLesson.course.title, activeVisualLesson.module.title, activeVisualLesson.lesson.title],
+            }}
             onSaveDraft={handleVisualEditorSaveDraft}
             onPublish={handleVisualEditorPublish}
             onPreview={(html) =>

@@ -7706,7 +7706,7 @@
       "sortOrder": 1,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-24T06:54:42.186Z",
+      "updatedAt": "2026-11-24T08:02:44.967Z",
       "modules": [
         {
           "id": "mod-intro-ai",
@@ -7717,7 +7717,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-24T06:53:23.777Z",
+          "updatedAt": "2026-11-24T08:02:44.967Z",
           "lessons": [
             {
               "id": "les-what-is-ai",
@@ -104150,6 +104150,21 @@
           ]
         }
       ]
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795507363443",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [],
+      "id": "course-fidelity-course-1795507363443",
+      "createdAt": "2026-11-24T08:02:43.443Z",
+      "updatedAt": "2026-11-24T08:02:43.443Z"
     }
   ],
   "academyDocSources": [
@@ -105605,6 +105620,24 @@
       "originalFilename": "image1.png",
       "displayOrder": 1,
       "createdAt": "2026-11-23T18:45:12.830Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwueq41c",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-24T08:02:43.056Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwueq478",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-24T08:02:43.269Z"
     }
   ],
   "academyUserProgress": [
@@ -108791,8 +108824,108 @@
       "completionStatus": "in_progress",
       "lastAccessedAt": "2026-11-24T07:00:22.008Z",
       "completedAt": null
+    },
+    {
+      "id": "prog-user-alpha-1795507365244-les-what-is-ai",
+      "userId": "user-alpha-1795507365244",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:02:45.245Z",
+      "completedAt": "2026-11-24T08:02:45.245Z"
+    },
+    {
+      "id": "prog-perf-user-1795507368667-0-les-what-is-ai",
+      "userId": "perf-user-1795507368667-0",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:02:48.667Z",
+      "completedAt": "2026-11-24T08:02:48.667Z"
+    },
+    {
+      "id": "prog-perf-user-1795507368667-1-les-what-is-ai",
+      "userId": "perf-user-1795507368667-1",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T08:02:49.561Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795507368667-2-les-what-is-ai",
+      "userId": "perf-user-1795507368667-2",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:02:49.768Z",
+      "completedAt": "2026-11-24T08:02:49.768Z"
+    },
+    {
+      "id": "prog-perf-user-1795507368667-3-les-what-is-ai",
+      "userId": "perf-user-1795507368667-3",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T08:02:50.182Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795507368667-4-les-what-is-ai",
+      "userId": "perf-user-1795507368667-4",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:02:50.371Z",
+      "completedAt": "2026-11-24T08:02:50.371Z"
+    },
+    {
+      "id": "prog-perf-user-1795507368667-5-les-what-is-ai",
+      "userId": "perf-user-1795507368667-5",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T08:02:50.502Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795507368667-6-les-what-is-ai",
+      "userId": "perf-user-1795507368667-6",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:02:50.716Z",
+      "completedAt": "2026-11-24T08:02:50.716Z"
+    },
+    {
+      "id": "prog-perf-user-1795507368667-7-les-what-is-ai",
+      "userId": "perf-user-1795507368667-7",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T08:02:50.961Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795507368667-8-les-what-is-ai",
+      "userId": "perf-user-1795507368667-8",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-24T08:02:51.120Z",
+      "completedAt": "2026-11-24T08:02:51.120Z"
+    },
+    {
+      "id": "prog-perf-user-1795507368667-9-les-what-is-ai",
+      "userId": "perf-user-1795507368667-9",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-24T08:02:51.317Z",
+      "completedAt": null
     }
   ],
-  "academyBookmarks": [],
+  "academyBookmarks": [
+    {
+      "id": "bm-user-alpha-1795507365244-les-what-is-ai",
+      "userId": "user-alpha-1795507365244",
+      "lessonId": "les-what-is-ai",
+      "lessonSlug": "what-is-artificial-intelligence",
+      "lessonTitle": "What is Artificial Intelligence?",
+      "moduleTitle": "ntroduction to AI",
+      "courseTitle": "AI Academy",
+      "courseSlug": "ai-for-qa-mastery",
+      "createdAt": "2026-11-24T08:02:45.600Z"
+    }
+  ],
   "academyEnrolledCourses": []
 }

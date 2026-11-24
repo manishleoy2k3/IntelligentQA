@@ -16,8 +16,11 @@ import CharacterCount from '@tiptap/extension-character-count';
 
 import EditorToolbar from './editor-toolbar';
 import ImageUploadModal from './image-upload-modal';
+import AiChatPanel from './ai-chat-panel';
+import ContentComparisonModal from './content-comparison-modal';
 import { sharedTiptapExtensions } from './tiptap-schema';
 import { renderTiptapJsonToHtml } from './tiptap-renderer';
+import { LessonContextPackage } from '@/lib/ai/types';
 
 import {
   Save,
@@ -32,6 +35,7 @@ import {
   Layout,
   ChevronRight,
   BookOpen,
+  Sparkles,
 } from 'lucide-react';
 
 export interface VisualLessonEditorProps {
@@ -46,6 +50,21 @@ export interface VisualLessonEditorProps {
   onPublish: (contentHtml: string, blockData?: any) => Promise<boolean>;
   onPreview: (contentHtml: string) => void;
   onCancel: () => void;
+  courseContext?: {
+    description?: string;
+    objectives?: string[];
+    category?: string;
+  };
+  moduleContext?: {
+    description?: string;
+    position?: number;
+    relatedLessons?: string[];
+  };
+  curriculumContext?: {
+    previousLessonTitle?: string;
+    nextLessonTitle?: string;
+    moduleHierarchy?: string[];
+  };
 }
 
 export default function VisualLessonEditor({
@@ -60,10 +79,16 @@ export default function VisualLessonEditor({
   onPublish,
   onPreview,
   onCancel,
+  courseContext,
+  moduleContext,
+  curriculumContext,
 }: VisualLessonEditorProps) {
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved' | 'error'>('saved');
   const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
+  const [showAiAssistant, setShowAiAssistant] = useState<boolean>(false);
+  const [showCompareModal, setShowCompareModal] = useState<boolean>(false);
+  const [compareEnhancedHtml, setCompareEnhancedHtml] = useState<string>('');
   const [mode, setMode] = useState<'visual' | 'code'>('visual');
   const [rawHtml, setRawHtml] = useState<string>(initialHtml || '');
 
@@ -181,6 +206,67 @@ export default function VisualLessonEditor({
     editor.chain().focus().setImage(options).run();
   };
 
+  // AI Content Handlers
+  const handleAiInsertContent = (contentHtml: string) => {
+    if (!editor || !contentHtml) return;
+    // Insert at current cursor position
+    editor.chain().focus().insertContent(contentHtml).run();
+    setSaveStatus('unsaved');
+  };
+
+  const handleAiReplaceContent = (contentHtml: string) => {
+    if (!contentHtml) return;
+    if (editor) {
+      editor.commands.setContent(contentHtml);
+    }
+    setRawHtml(contentHtml);
+    setSaveStatus('unsaved');
+  };
+
+  const handleAiReplaceSelected = (contentHtml: string) => {
+    if (!editor || !contentHtml) return;
+    // Replace current selection with content
+    editor.chain().focus().insertContent(contentHtml).run();
+    setSaveStatus('unsaved');
+  };
+
+  const handleOpenCompare = (enhancedHtml: string) => {
+    setCompareEnhancedHtml(enhancedHtml);
+    setShowCompareModal(true);
+  };
+
+  const handleAcceptCompare = (enhancedHtml: string) => {
+    handleAiReplaceContent(enhancedHtml);
+    setShowCompareModal(false);
+  };
+
+  // Construct Context Package for AI
+  const currentContentForAi = mode === 'visual' && editor ? editor.getHTML() : rawHtml;
+  const selectedTextForAi = editor && !editor.state.selection.empty
+    ? editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to, ' ')
+    : undefined;
+
+  const lessonContextPackage: LessonContextPackage = {
+    course: {
+      name: courseTitle,
+      description: courseContext?.description,
+      objectives: courseContext?.objectives,
+      category: courseContext?.category,
+    },
+    module: {
+      name: moduleTitle,
+      description: moduleContext?.description,
+      position: moduleContext?.position,
+      relatedLessons: moduleContext?.relatedLessons,
+    },
+    currentLesson: {
+      id: lessonId,
+      title: lessonTitle,
+      contentHtml: currentContentForAi,
+    },
+    curriculum: curriculumContext,
+  };
+
   return (
     <div className="flex flex-col h-full bg-[#121215] border border-[#27272A] rounded-3xl overflow-hidden shadow-2xl">
       {/* =================================================================== */}
@@ -281,6 +367,21 @@ export default function VisualLessonEditor({
             <span>Preview</span>
           </button>
 
+          {/* Prominent Header Enhance with AI Button */}
+          <button
+            type="button"
+            onClick={() => setShowAiAssistant((prev) => !prev)}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+              showAiAssistant
+                ? 'bg-purple-600 text-white shadow-purple-500/20'
+                : 'bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 hover:text-white border border-purple-500/30'
+            }`}
+            title="Open AI Content Enhancement Assistant"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+            <span>Enhance with AI</span>
+          </button>
+
           <button
             type="button"
             onClick={handleManualSaveDraft}
@@ -318,43 +419,61 @@ export default function VisualLessonEditor({
         <EditorToolbar
           editor={editor}
           onOpenImageModal={() => setShowImageModal(true)}
+          onOpenAiAssistant={() => setShowAiAssistant((prev) => !prev)}
         />
       )}
 
       {/* =================================================================== */}
-      {/* C. MAIN EDITING AREA: DOCUMENT-LIKE CANVAS (WORD/DOCS AESTHETIC)   */}
+      {/* C. MAIN EDITING BODY: DUAL SPLIT (CANVAS + AI ASSISTANT PANEL)      */}
       {/* =================================================================== */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[#09090B] flex justify-center">
-        {mode === 'visual' ? (
-          <div className="w-full max-w-4xl bg-[#141417] dark:bg-[#18181B] border border-[#27272A] rounded-3xl shadow-2xl min-h-[700px] flex flex-col transition-all">
-            <EditorContent editor={editor} className="flex-1" />
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left / Main Editor Area */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[#09090B] flex justify-center">
+          {mode === 'visual' ? (
+            <div className="w-full max-w-4xl bg-[#141417] dark:bg-[#18181B] border border-[#27272A] rounded-3xl shadow-2xl min-h-[700px] flex flex-col transition-all">
+              <EditorContent editor={editor} className="flex-1" />
 
-            {/* Character & Word Count Footer */}
-            {editor && (
-              <div className="px-8 py-3 border-t border-[#27272A] text-zinc-500 font-mono text-[11px] flex items-center justify-between select-none">
-                <span>
-                  {editor.storage.characterCount.words()} words • {editor.storage.characterCount.characters()} characters
-                </span>
-                <span className="text-zinc-600">Visual WYSIWYG Mode (Tiptap Engine)</span>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="w-full max-w-4xl bg-[#141417] border border-[#27272A] rounded-3xl p-6 flex flex-col space-y-3">
-            <div className="flex items-center justify-between text-xs text-zinc-400 pb-2 border-b border-[#27272A]">
-              <span className="font-mono text-cyan-400">Raw HTML Source Mode</span>
-              <span>Changes sync automatically to visual editor when switching back</span>
+              {/* Character & Word Count Footer */}
+              {editor && (
+                <div className="px-8 py-3 border-t border-[#27272A] text-zinc-500 font-mono text-[11px] flex items-center justify-between select-none">
+                  <span>
+                    {editor.storage.characterCount.words()} words • {editor.storage.characterCount.characters()} characters
+                  </span>
+                  <span className="text-zinc-600">Visual WYSIWYG Mode (Tiptap Engine)</span>
+                </div>
+              )}
             </div>
-            <textarea
-              value={rawHtml}
-              onChange={(e) => {
-                setRawHtml(e.target.value);
-                setSaveStatus('unsaved');
-              }}
-              rows={25}
-              className="w-full flex-1 p-4 rounded-xl bg-[#09090B] border border-[#27272A] text-emerald-400 font-mono text-xs focus:outline-none focus:border-purple-500 resize-y leading-relaxed"
-            />
-          </div>
+          ) : (
+            <div className="w-full max-w-4xl bg-[#141417] border border-[#27272A] rounded-3xl p-6 flex flex-col space-y-3">
+              <div className="flex items-center justify-between text-xs text-zinc-400 pb-2 border-b border-[#27272A]">
+                <span className="font-mono text-cyan-400">Raw HTML Source Mode</span>
+                <span>Changes sync automatically to visual editor when switching back</span>
+              </div>
+              <textarea
+                value={rawHtml}
+                onChange={(e) => {
+                  setRawHtml(e.target.value);
+                  setSaveStatus('unsaved');
+                }}
+                rows={25}
+                className="w-full flex-1 p-4 rounded-xl bg-[#09090B] border border-[#27272A] text-emerald-400 font-mono text-xs focus:outline-none focus:border-purple-500 resize-y leading-relaxed"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Right / AI Content Assistant Panel */}
+        {showAiAssistant && (
+          <AiChatPanel
+            isOpen={showAiAssistant}
+            onClose={() => setShowAiAssistant(false)}
+            context={lessonContextPackage}
+            onInsertContent={handleAiInsertContent}
+            onReplaceContent={handleAiReplaceContent}
+            onReplaceSelected={handleAiReplaceSelected}
+            onOpenCompare={handleOpenCompare}
+            selectedEditorText={selectedTextForAi}
+          />
         )}
       </div>
 
@@ -363,6 +482,16 @@ export default function VisualLessonEditor({
         isOpen={showImageModal}
         onClose={() => setShowImageModal(false)}
         onInsertImage={handleInsertImage}
+      />
+
+      {/* Side-by-Side Diff Comparison Modal */}
+      <ContentComparisonModal
+        isOpen={showCompareModal}
+        onClose={() => setShowCompareModal(false)}
+        originalHtml={currentContentForAi}
+        enhancedHtml={compareEnhancedHtml}
+        onAccept={handleAcceptCompare}
+        onKeepOriginal={() => setShowCompareModal(false)}
       />
     </div>
   );
