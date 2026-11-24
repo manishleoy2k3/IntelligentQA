@@ -51,7 +51,11 @@ export async function generateArchitectureFromPrompt(
                   {
                     text: `Generate a structured Architecture Diagram JSON for the following technical request:
 Prompt: "${prompt}"
-${lessonContext ? `Lesson Context: Course="${lessonContext.courseTitle || ''}", Module="${lessonContext.moduleTitle || ''}", Lesson="${lessonContext.lessonTitle || ''}"` : ''}
+${lessonContext ? `Lesson Context:
+- Course: "${lessonContext.courseTitle || ''}"
+- Module: "${lessonContext.moduleTitle || ''}"
+- Lesson: "${lessonContext.lessonTitle || ''}"
+${lessonContext.currentContent ? `- Lesson Content Excerpt: "${lessonContext.currentContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 1500)}"` : ''}` : ''}
 
 Output must adhere to this exact schema:
 {
@@ -144,9 +148,10 @@ Output must adhere to this exact schema:
  */
 export function generateSdetArchitectureTemplate(
   prompt: string,
-  context?: { courseTitle?: string; moduleTitle?: string; lessonTitle?: string }
+  context?: { courseTitle?: string; moduleTitle?: string; lessonTitle?: string; currentContent?: string }
 ): ArchitectureDiagramData {
-  const p = (prompt + ' ' + (context?.lessonTitle || '')).toLowerCase();
+  const cleanContent = context?.currentContent ? context.currentContent.replace(/<[^>]+>/g, ' ') : '';
+  const p = `${prompt} ${context?.lessonTitle || ''} ${context?.moduleTitle || ''} ${context?.courseTitle || ''} ${cleanContent}`.toLowerCase();
 
   // SCENARIO 1: Selenium Architecture
   if (p.includes('selenium') || p.includes('webdriver')) {

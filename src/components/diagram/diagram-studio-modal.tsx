@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Workflow,
@@ -48,10 +48,33 @@ export default function DiagramStudioModal({
   lessonContext,
   initialPrompt = '',
 }: DiagramStudioModalProps) {
-  const [selectedMode, setSelectedMode] = useState<DiagramEngineMode>('MODE_A_ARCHITECTURE');
-  const [prompt, setPrompt] = useState<string>(initialPrompt);
+  // Auto-detect topic and mode from lesson context if not explicitly provided
+  const contextDetectionText = `${initialPrompt} ${lessonContext?.lessonTitle || ''} ${lessonContext?.moduleTitle || ''} ${lessonContext?.courseTitle || ''}`.toLowerCase();
+  const isInfographicDetected = /what is|how does|how it works|concept|infographic|tokenization|token|llm|transformer|self-attention|attention|pyramid|authentication|auth/i.test(contextDetectionText);
+
+  const initialMode: DiagramEngineMode = isInfographicDetected ? 'MODE_B_INFOGRAPHIC' : 'MODE_A_ARCHITECTURE';
+  const defaultPromptValue = initialPrompt || lessonContext?.lessonTitle || lessonContext?.moduleTitle || '';
+
+  const [selectedMode, setSelectedMode] = useState<DiagramEngineMode>(initialMode);
+  const [prompt, setPrompt] = useState<string>(defaultPromptValue);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Sync state when modal opens or context changes
+  useEffect(() => {
+    if (initialPrompt) {
+      setPrompt(initialPrompt);
+      if (initialPrompt.toLowerCase().includes('infographic')) {
+        setSelectedMode('MODE_B_INFOGRAPHIC');
+      }
+    } else if (lessonContext?.lessonTitle) {
+      setPrompt(lessonContext.lessonTitle);
+      const isInfo = /what is|how does|how it works|concept|infographic|tokenization|token|llm|transformer|self-attention|attention|pyramid|authentication|auth/i.test(
+        `${lessonContext.lessonTitle} ${lessonContext.moduleTitle || ''}`
+      );
+      setSelectedMode(isInfo ? 'MODE_B_INFOGRAPHIC' : 'MODE_A_ARCHITECTURE');
+    }
+  }, [initialPrompt, lessonContext?.lessonTitle, lessonContext?.moduleTitle]);
 
   // Mode A Results
   const [architectureData, setArchitectureData] = useState<ArchitectureDiagramData | null>(null);
@@ -112,8 +135,16 @@ export default function DiagramStudioModal({
     ],
   };
 
-  const handleGenerate = async () => {
-    if (!prompt.trim() || isGenerating) return;
+  const handleGenerate = async (overridePrompt?: string) => {
+    const effectivePrompt = (
+      overridePrompt ||
+      prompt ||
+      lessonContext?.lessonTitle ||
+      lessonContext?.moduleTitle ||
+      (selectedMode === 'MODE_A_ARCHITECTURE' ? 'System Architecture' : 'Educational Technical Concept')
+    ).trim();
+
+    if (!effectivePrompt || isGenerating) return;
 
     setIsGenerating(true);
     setErrorMessage(null);
@@ -125,7 +156,7 @@ export default function DiagramStudioModal({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'generate_architecture',
-            prompt: prompt.trim(),
+            prompt: effectivePrompt,
             context: lessonContext,
           }),
         });
@@ -145,9 +176,10 @@ export default function DiagramStudioModal({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'generate_infographic',
-            prompt: prompt.trim(),
-            subject: prompt.trim(),
+            prompt: effectivePrompt,
+            subject: effectivePrompt,
             targetLearner: 'QA Automation Engineers and SDETs',
+            context: lessonContext,
           }),
         });
 
@@ -315,21 +347,54 @@ export default function DiagramStudioModal({
             </div>
           )}
 
+          {/* Active Lesson Context Banner */}
+          {lessonContext?.lessonTitle && (
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-slate-100 dark:via-neutral-800 to-transparent border border-emerald-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                    Lesson Context Active
+                  </span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
+                    {lessonContext.courseTitle ? `${lessonContext.courseTitle} › ` : ''}{lessonContext.lessonTitle}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-neutral-400">
+                  AI will analyze this lesson&apos;s curriculum context and content to generate the {selectedMode === 'MODE_A_ARCHITECTURE' ? 'architecture diagram' : 'educational infographic'}.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleGenerate()}
+                disabled={isGenerating}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Generate from Current Lesson</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
           {/* STEP 1: Prompt & Configuration */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-slate-800 dark:text-neutral-200">
                 {selectedMode === 'MODE_A_ARCHITECTURE'
-                  ? 'Architecture Subject / Prompt'
-                  : selectedMode === 'MODE_B_INFOGRAPHIC'
-                  ? 'Educational Technical Concept'
-                  : 'Flowchart Specification'}
+                  ? 'Architecture Topic'
+                  : 'Infographic Topic'}
               </label>
-              {lessonContext?.lessonTitle && (
-                <span className="text-[11px] text-slate-500 dark:text-neutral-400">
-                  Context: <strong className="text-emerald-600 dark:text-emerald-400">{lessonContext.lessonTitle}</strong>
-                </span>
-              )}
+              <span className="text-[11px] text-slate-500 dark:text-neutral-400">
+                Auto-populated from lesson context
+              </span>
             </div>
 
             <div className="flex gap-2">
@@ -339,10 +404,8 @@ export default function DiagramStudioModal({
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={
                   selectedMode === 'MODE_A_ARCHITECTURE'
-                    ? 'e.g. Selenium Architecture or Playwright Execution Flow'
-                    : selectedMode === 'MODE_B_INFOGRAPHIC'
-                    ? 'e.g. What is an LLM? or How does Self-Attention work?'
-                    : 'e.g. Login test execution sequence'
+                    ? (lessonContext?.lessonTitle || 'e.g. Selenium Architecture')
+                    : (lessonContext?.lessonTitle || 'e.g. What is an LLM?')
                 }
                 className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
                 onKeyDown={(e) => {
@@ -351,8 +414,8 @@ export default function DiagramStudioModal({
               />
               <button
                 type="button"
-                onClick={handleGenerate}
-                disabled={!prompt.trim() || isGenerating}
+                onClick={() => handleGenerate()}
+                disabled={(!prompt.trim() && !lessonContext?.lessonTitle) || isGenerating}
                 className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
               >
                 {isGenerating ? (

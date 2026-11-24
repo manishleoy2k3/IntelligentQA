@@ -450,7 +450,7 @@ export default function VisualLessonEditor({
           onOpenImageModal={() => setShowImageModal(true)}
           onOpenAiAssistant={() => setShowAiAssistant((prev) => !prev)}
           onOpenDiagramStudio={() => {
-            setDiagramStudioPrompt('');
+            setDiagramStudioPrompt(lessonTitle || courseTitle || '');
             setShowDiagramStudio(true);
           }}
         />

@@ -34,6 +34,7 @@ const {
   generateEducationalInfographic,
   DEFAULT_GEMINI_IMAGE_MODEL,
 } = jiti('../src/lib/diagram/image-generation.ts');
+const { generateHighFidelityInfographicSvg } = jiti('../src/lib/diagram/infographic-templates.ts');
 const { QA_TECHNICAL_CONTENT_ARCHITECT } = jiti('../src/lib/ai/system-instructions.ts');
 
 describe('Phase 11: Architecture Diagram Generation Engine Verification', () => {
@@ -153,9 +154,9 @@ describe('Phase 11: Architecture Diagram Generation Engine Verification', () => 
   });
 
   // -------------------------------------------------------------
-  // TEST 5: LLM Educational Infographic Scenario
+  // TEST 5: Educational Technical Infographic Generation & Fidelity Verification
   // -------------------------------------------------------------
-  it('TEST 5: LLM Educational Infographic — Persistent Image File Generation', async () => {
+  it('TEST 5: LLM Educational Infographic — Persistent High-Resolution Image File Generation', async () => {
     assert.strictEqual(DEFAULT_GEMINI_IMAGE_MODEL, 'imagen-3.0-generate-002', 'Image model must default to imagen-3.0-generate-002');
 
     const result = await generateEducationalInfographic({
@@ -178,12 +179,13 @@ describe('Phase 11: Architecture Diagram Generation Engine Verification', () => 
     assert.ok(result.imageUrl.startsWith('/uploads/'), 'Must save to persistent /uploads/ storage');
     assert.ok(result.imageUrl.endsWith('.png'), 'Output must be a PNG image file');
 
-    // Verify physical file exists on disk and is a REAL PNG binary (not text, SVG, or Mermaid)
+    // 1. Verify physical PNG binary exists on disk and has substantial high-resolution payload
     const filePath = path.join(process.cwd(), 'public', result.imageUrl);
     assert.ok(fs.existsSync(filePath), `Physical image file must exist at ${filePath}`);
 
     const fileBuffer = fs.readFileSync(filePath);
-    assert.ok(fileBuffer.length > 500, 'Image file size must be substantial');
+    // Real rendered graphics with typography, diagrams, and cards are substantial (> 15 KB), NEVER a blank 500-byte mockup!
+    assert.ok(fileBuffer.length > 15000, `Image file size must be high-resolution and substantial (>15KB), got ${fileBuffer.length} bytes`);
 
     // PNG Magic Header check (89 50 4E 47 0D 0A 1A 0A)
     assert.strictEqual(fileBuffer[0], 0x89, 'Byte 0 must be 0x89');
@@ -191,10 +193,81 @@ describe('Phase 11: Architecture Diagram Generation Engine Verification', () => 
     assert.strictEqual(fileBuffer[2], 0x4e, 'Byte 2 must be 0x4E (N)');
     assert.strictEqual(fileBuffer[3], 0x47, 'Byte 3 must be 0x47 (G)');
 
-    const fileContent = fileBuffer.toString('utf-8');
-    assert.ok(!fileContent.includes('graph TD'), 'Must NOT be Mermaid code');
-    assert.ok(!fileContent.includes('flowchart'), 'Must NOT be Mermaid code');
-    assert.ok(!fileContent.startsWith('<svg'), 'Must NOT be raw SVG code');
+    // 2. Verify companion vector SVG exists on disk and contains actual educational content
+    const svgFilePath = filePath.replace('.png', '.svg');
+    assert.ok(fs.existsSync(svgFilePath), 'Must create companion SVG file for 100% vector fidelity');
+
+    const svgContent = fs.readFileSync(svgFilePath, 'utf-8');
+    assert.ok(svgContent.includes('Large Language Models'), 'Infographic must render title');
+    assert.ok(svgContent.includes('PHASE 01') && svgContent.includes('Tokens'), 'Must include Tokenization section');
+    assert.ok(svgContent.includes('PHASE 03') && svgContent.includes('Self-Attention'), 'Must include Self-Attention section');
+    assert.ok(svgContent.includes('softmax'), 'Must include mathematical attention formula');
+    assert.ok(svgContent.includes('SDET / QA Implication'), 'Must include QA takeaways');
+    assert.ok(!svgContent.includes('graph TD'), 'Must NOT be Mermaid code');
+
+    // 3. Verify Test Pyramid Infographic generation fidelity
+    const pyramidSvg = generateHighFidelityInfographicSvg({
+      prompt: 'Test Automation Pyramid',
+      targetLearner: 'QA Automation Engineers and SDETs',
+    });
+    assert.ok(pyramidSvg.includes('Enterprise Test Automation Pyramid'), 'Pyramid must render header');
+    assert.ok(pyramidSvg.includes('E2E UI TESTS'), 'Pyramid must render E2E UI tier');
+    assert.ok(pyramidSvg.includes('API &amp; INTEGRATION'), 'Pyramid must render API tier');
+    assert.ok(pyramidSvg.includes('UNIT TESTS'), 'Pyramid must render Unit tier');
+    assert.ok(pyramidSvg.includes('Playwright') || pyramidSvg.includes('Selenium'), 'Must include real automation tools');
+    assert.ok(pyramidSvg.includes('TIER METRIC COMPARISON MATRIX'), 'Must include trade-off matrix');
+
+    // 4. Verify Tokenization Infographic generation fidelity
+    const tokenSvg = generateHighFidelityInfographicSvg({
+      prompt: 'What is Tokenization?',
+      targetLearner: 'SDETs',
+    });
+    assert.ok(tokenSvg.includes('Tokenization Mechanics'), 'Tokenization infographic must render title');
+    assert.ok(tokenSvg.includes('BPE SUBWORDS'), 'Must render BPE subword segmentation');
+    assert.ok(tokenSvg.includes('VOCABULARY IDS'), 'Must render token lookup IDs');
+    assert.ok(tokenSvg.includes('DENSE EMBEDDINGS'), 'Must render embedding vectors');
+
+    // 5. Verify Self-Attention Infographic generation fidelity
+    const attentionSvg = generateHighFidelityInfographicSvg({
+      prompt: 'What is Self-Attention?',
+      targetLearner: 'SDETs',
+    });
+    assert.ok(attentionSvg.includes('Transformer Self-Attention'), 'Self-attention must render title');
+    assert.ok(attentionSvg.includes('QUERY VECTOR (Q)'), 'Must render Query vector section');
+    assert.ok(attentionSvg.includes('KEY VECTOR (K)'), 'Must render Key vector section');
+    assert.ok(attentionSvg.includes('VALUE VECTOR (V)'), 'Must render Value vector section');
+  });
+
+  // -------------------------------------------------------------
+  // TEST 5B: Multi-Concept Infographic Fidelity — Generates High-Resolution Visuals for All Core Topics
+  // -------------------------------------------------------------
+  it('TEST 5B: Multi-Concept Infographic Fidelity — Generates High-Resolution Visuals for All Core Topics', async () => {
+    const topics = [
+      { prompt: 'What is Tokenization?', expectedText: 'Tokenization Mechanics' },
+      { prompt: 'What is Self-Attention?', expectedText: 'Transformer Self-Attention' },
+      { prompt: 'Test Automation Pyramid', expectedText: 'Enterprise Test Automation Pyramid' },
+      { prompt: 'How API Authentication Works', expectedText: 'API Authentication Architecture' },
+      { prompt: 'RAG Pipeline Architecture', expectedText: 'Retrieval-Augmented Generation' },
+    ];
+
+    for (const item of topics) {
+      const res = await generateEducationalInfographic({
+        prompt: item.prompt,
+        targetLearner: 'QA Engineers',
+      });
+      assert.strictEqual(res.success, true);
+      assert.ok(res.imageUrl.endsWith('.png'));
+
+      const filePath = path.join(process.cwd(), 'public', res.imageUrl);
+      assert.ok(fs.existsSync(filePath));
+      const buf = fs.readFileSync(filePath);
+      assert.ok(buf.length > 15000, `File size for "${item.prompt}" must be high-resolution (>15KB), got ${buf.length}`);
+
+      const svgPath = filePath.replace('.png', '.svg');
+      assert.ok(fs.existsSync(svgPath));
+      const svg = fs.readFileSync(svgPath, 'utf-8');
+      assert.ok(svg.includes(item.expectedText), `SVG must contain "${item.expectedText}"`);
+    }
   });
 
   // -------------------------------------------------------------

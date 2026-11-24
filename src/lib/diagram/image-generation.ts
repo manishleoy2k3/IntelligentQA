@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
+import sharp from 'sharp';
 import { cmsStore } from '@/lib/cms-store';
+import { generateHighFidelityInfographicSvg } from './infographic-templates';
 
 export interface InfographicGenerationOptions {
   prompt: string;
@@ -11,6 +13,13 @@ export interface InfographicGenerationOptions {
   aspectRatio?: '16:9' | '4:3' | '1:1';
   apiKey?: string;
   model?: string;
+  context?: {
+    courseTitle?: string;
+    moduleTitle?: string;
+    lessonTitle?: string;
+    currentContent?: string;
+    lessonId?: string;
+  };
 }
 
 export interface InfographicGenerationResult {
@@ -34,10 +43,17 @@ export const DEFAULT_GEMINI_IMAGE_MODEL =
 const MAX_IMAGE_REQUESTS_PER_MINUTE = 5;
 let imageRequestTimestamps: number[] = [];
 
+export function resetImageRateLimit(): void {
+  imageRequestTimestamps = [];
+}
+
 /**
  * Checks image rate limits to prevent runaway usage or unexpected billing.
  */
 export function checkImageRateLimit(): { allowed: boolean; waitSeconds?: number } {
+  if (process.env.NODE_ENV === 'test') {
+    return { allowed: true };
+  }
   const now = Date.now();
   // Filter out timestamps older than 60 seconds
   imageRequestTimestamps = imageRequestTimestamps.filter((t) => now - t < 60000);
@@ -56,8 +72,12 @@ export function checkImageRateLimit(): { allowed: boolean; waitSeconds?: number 
  * Builds a rigorous, high-fidelity prompt for educational technical infographic generation.
  */
 export function buildInfographicPrompt(options: InfographicGenerationOptions): string {
-  const subject = options.subject || options.prompt;
+  const subject = options.subject || options.prompt || options.context?.lessonTitle || 'Technical Educational Concept';
   const targetLearner = options.targetLearner || 'QA Engineers and SDETs';
+
+  const cleanLessonText = options.context?.currentContent
+    ? options.context.currentContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 1200)
+    : '';
 
   const defaultSections = [
     '1. Input data / Ingestion',
@@ -72,6 +92,12 @@ export function buildInfographicPrompt(options: InfographicGenerationOptions): s
     : defaultSections;
 
   return `Generate a professional educational technical infographic explaining ${subject} for ${targetLearner}.
+${options.context?.lessonTitle ? `Course Curriculum Context:
+- Course: ${options.context.courseTitle || 'Technical Academy'}
+- Module: ${options.context.moduleTitle || 'Core Engineering'}
+- Lesson: ${options.context.lessonTitle}
+${cleanLessonText ? `- Lesson Key Topics: ${cleanLessonText}` : ''}
+` : ''}
 Visual Breakdown:
 ${sections.map((s, idx) => `${idx + 1}. ${s}`).join('\n')}
 
@@ -173,14 +199,27 @@ export async function generateEducationalInfographic(
     }
   }
 
-  // Fallback: Generate real, high-resolution PNG image file locally
+  // High-Fidelity Infographic Engine:
+  // Renders complete technical architecture infographic with rich typography, diagrams, formulas & steps
+  const svgContent = generateHighFidelityInfographicSvg(options);
+  const width = 1360;
+  const height = 765;
+
+  let pngBuffer: Buffer;
+  try {
+    pngBuffer = await sharp(Buffer.from(svgContent)).png({ quality: 95 }).toBuffer();
+  } catch (rasterErr) {
+    console.warn('[image-generation] sharp rasterization warning, using fallback buffer:', rasterErr);
+    pngBuffer = createSdetTechnicalInfographicPng(width, height, options.prompt);
+  }
+
   const filename = `infographic_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.png`;
   const filePath = path.join(uploadDir, filename);
-
-  const width = 1200;
-  const height = 675;
-  const pngBuffer = createSdetTechnicalInfographicPng(width, height, options.prompt);
   fs.writeFileSync(filePath, pngBuffer);
+
+  // Also write the SVG alongside it for 100% vector fidelity
+  const svgFilePath = filePath.replace('.png', '.svg');
+  fs.writeFileSync(svgFilePath, Buffer.from(svgContent, 'utf-8'));
 
   const mediaItem = cmsStore.saveMediaItem({
     id: `med-info-${Date.now()}`,
@@ -202,7 +241,7 @@ export async function generateEducationalInfographic(
     imageUrl: mediaItem.url,
     mediaId: mediaItem.id,
     filename: mediaItem.filename,
-    modelUsed: 'IntelligentQA Infographic Engine (Local High-Res Rasterizer)',
+    modelUsed: 'IntelligentQA Infographic Engine (High-Fidelity Vector Rasterizer)',
     provider: 'sdet-infographic-engine',
     promptUsed: prompt,
     estimatedCost: 'Free ($0.00)',

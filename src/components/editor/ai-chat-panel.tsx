@@ -244,10 +244,15 @@ export default function AiChatPanel({
       (actionId === 'generate_visual_diagram' ||
         actionId === 'add_diagram' ||
         promptToSend.toLowerCase() === 'generate visual diagram' ||
-        promptToSend.toLowerCase().includes('architecture diagram')) &&
+        promptToSend.toLowerCase().includes('architecture diagram') ||
+        promptToSend.toLowerCase().includes('infographic')) &&
       onOpenDiagramStudio
     ) {
-      onOpenDiagramStudio(promptToSend.toLowerCase() === 'generate visual diagram' ? '' : promptToSend);
+      const defaultTopic =
+        promptToSend.toLowerCase() === 'generate visual diagram' || !promptToSend.trim()
+          ? (context.currentLesson.title || context.module.name || context.course.name || '')
+          : promptToSend;
+      onOpenDiagramStudio(defaultTopic);
       if (!customPrompt) setInputPrompt('');
       return;
     }

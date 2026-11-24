@@ -102,19 +102,21 @@ export async function POST(req: NextRequest) {
 
     // ACTION 3: Generate Educational Infographic (Mode B)
     if (action === 'generate_infographic') {
-      const { prompt, subject, targetLearner, technicalSections, aspectRatio } = body;
-      if (!prompt) {
-        return NextResponse.json({ success: false, error: 'Prompt is required' }, { status: 400 });
+      const { prompt, subject, targetLearner, technicalSections, aspectRatio, context } = body;
+      const effectiveSubject = subject || prompt || context?.lessonTitle;
+      if (!effectiveSubject) {
+        return NextResponse.json({ success: false, error: 'Prompt or lesson context is required' }, { status: 400 });
       }
 
       const result = await generateEducationalInfographic({
-        prompt,
-        subject,
-        targetLearner,
+        prompt: prompt || effectiveSubject,
+        subject: effectiveSubject,
+        targetLearner: targetLearner || 'QA Automation Engineers and SDETs',
         technicalSections,
         aspectRatio,
         apiKey: effectiveApiKey,
         model: body.imageModel,
+        context,
       });
 
       return NextResponse.json(result);
