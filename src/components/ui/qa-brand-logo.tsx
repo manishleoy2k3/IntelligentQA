@@ -132,21 +132,21 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
         )}
       </svg>
 
-      {/* Typography with clean Emergent style */}
+      {/* Typography with clean Testsigma-level enterprise contrast */}
       {showText && (
         <div className="flex flex-col leading-tight">
           <div className="flex items-center gap-1.5">
-            <span className="font-extrabold tracking-tight text-white text-lg">
-              Intelligent<span className="bg-gradient-to-r from-[#81FF89] to-[#80FFF9] bg-clip-text text-transparent">QA</span>
+            <span className="font-extrabold tracking-tight text-slate-950 dark:text-white text-lg">
+              Intelligent<span className="text-emerald-600 dark:text-[#81FF89]">QA</span>
             </span>
             {showZeroCostBadge && (
-              <span className="text-xs font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[#1A1A1A] text-[#81FF89] border border-[#262626]">
+              <span className="text-xs font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-[#1A1A1A] text-emerald-700 dark:text-[#81FF89] border border-emerald-200 dark:border-[#262626]">
                 Zero-Cost
               </span>
             )}
           </div>
           {textVariant === 'full' && (
-            <span className="text-xs font-medium text-[#A1A1AA] -mt-0.5">
+            <span className="text-xs font-semibold text-slate-500 dark:text-[#A1A1AA] -mt-0.5">
               SDET &amp; AI Transformation
             </span>
           )}

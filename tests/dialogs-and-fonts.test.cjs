@@ -56,7 +56,7 @@ test('Font sizes across site are upgraded to readable baseline', () => {
 
   // Header navigation has upgraded text-sm font size (not tiny text-xs)
   const headerFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/header.tsx'), 'utf8');
-  assert.ok(headerFile.includes('text-sm font-semibold text-slate-600'), 'Header nav links are text-sm');
+  assert.ok(headerFile.includes('text-sm font-semibold text-slate-') || headerFile.includes('text-sm font-semibold'), 'Header nav links are text-sm');
 
   // Footer has upgraded text-sm font size
   const footerFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/footer.tsx'), 'utf8');
