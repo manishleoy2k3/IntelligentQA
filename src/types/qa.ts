@@ -186,8 +186,39 @@ export interface QuestionBookmark {
   createdAt: string;
 }
 
-export type InterviewDifficulty = 'Easy' | 'Medium' | 'Hard' | 'Junior' | 'Mid' | 'Senior' | 'Architect';
-export type InterviewExperienceTier = '0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years';
+export type InterviewDifficulty =
+  | 'Easy'
+  | 'Medium'
+  | 'Hard'
+  | 'Junior'
+  | 'Mid'
+  | 'Senior'
+  | 'Beginner'
+  | 'Intermediate'
+  | 'Advanced'
+  | 'Expert'
+  | 'Architect'
+  | string;
+
+export type InterviewExperienceTier =
+  | '0-2 Years'
+  | '3-5 Years'
+  | '6-9 Years'
+  | '10+ Years'
+  | '0–2 years'
+  | '2–5 years'
+  | '5–8 years'
+  | '8–12 years'
+  | '12–15 years'
+  | '15+ years'
+  | '0-2 years'
+  | '2-5 years'
+  | '5-8 years'
+  | '8-12 years'
+  | '12-15 years'
+  | '15+ years'
+  | string;
+
 export type InterviewDomainCategory =
   | 'Manual QA Processes'
   | 'Coding & DSA'
@@ -197,7 +228,45 @@ export type InterviewDomainCategory =
   | 'API Testing & Automation'
   | 'Mobile Manual Testing (Android & iOS)'
   | 'Mobile Automation (Appium)'
+  | 'Manual Testing'
+  | 'Selenium'
+  | 'Playwright'
+  | 'Rest Assured'
+  | 'Appium'
+  | 'Java'
+  | 'TypeScript'
+  | 'Python'
+  | 'API Testing'
+  | 'CI/CD'
+  | 'Git'
+  | 'GitHub Actions'
+  | 'Performance Testing'
+  | 'JMeter'
+  | 'APM'
+  | 'AI for QA'
+  | 'LLM'
+  | 'MCP'
+  | 'RAG'
+  | 'Test Architecture'
+  | 'QA Leadership'
   | string;
+
+export interface RubricScores {
+  technicalAccuracy: number; // 1-5
+  conceptualUnderstanding: number; // 1-5
+  practicalImplementation: number; // 1-5
+  problemSolving: number; // 1-5
+  architectureKnowledge: number; // 1-5
+  communicationClarity: number; // 1-5
+}
+
+export interface DetailedEvaluationFeedback {
+  whatWasCorrect: string[];
+  whatWasMissing: string[];
+  whatWasIncorrect: string[];
+  excellentAnswerShouldInclude: string;
+  recommendedImprovement: string;
+}
 
 export interface InterviewQuestionItem {
   id: string;
@@ -214,6 +283,8 @@ export interface InterviewQuestionItem {
   codeSnippet?: string;
   bestPractice: string;
   pitfallToAvoid: string;
+  source?: 'internal_knowledge_base' | 'ai_generated' | 'external_research';
+  sourceCitation?: string;
 }
 
 export interface DiagnosticQuestion {

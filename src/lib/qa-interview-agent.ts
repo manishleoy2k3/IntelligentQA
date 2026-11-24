@@ -20,11 +20,17 @@ export interface CandidateProfile {
   experienceYears?: number;
   experienceLevel?: string;
   experienceTier?: string;
-  difficulty?: 'Easy' | 'Medium' | 'Hard' | string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard' | 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert' | 'Architect' | string;
   track?: string;
+  category?: string;
+  technology?: string;
+  role?: string;
   skills?: string[];
   apiKey?: string;
   count?: number;
+  enableWebSearch?: boolean;
+  sourcePreference?: 'internal_knowledge_base' | 'ai_generated' | 'external_research' | 'all';
+  interviewScope?: 'specific' | 'multiple' | 'complete_qa' | 'role_specific';
 }
 
 export interface AdaptiveInterviewTurn {
@@ -39,6 +45,8 @@ export interface AdaptiveInterviewTurn {
   answerSummary?: string;
   bestPractice?: string;
   pitfallToAvoid?: string;
+  source?: 'internal_knowledge_base' | 'ai_generated' | 'external_research';
+  sourceCitation?: string;
 }
 
 export interface AgentEvaluation {
@@ -52,6 +60,19 @@ export interface AgentEvaluation {
   referenceCode?: string;
   bestPractice?: string;
   pitfallToAvoid?: string;
+  rubricScores?: {
+    technicalAccuracy: number;
+    conceptualUnderstanding: number;
+    practicalImplementation: number;
+    problemSolving: number;
+    architectureKnowledge: number;
+    communicationClarity: number;
+  };
+  whatWasCorrect?: string[];
+  whatWasMissing?: string[];
+  whatWasIncorrect?: string[];
+  excellentAnswerShouldInclude?: string;
+  recommendedImprovement?: string;
 }
 
 export interface ComprehensiveReport {
@@ -61,7 +82,7 @@ export interface ComprehensiveReport {
   communicationScore: number;
   structureScore?: number;
   summary: string;
-  hiringRecommendation: 'Strong Hire' | 'Hire' | 'Leaning Hire' | 'Needs Practice';
+  hiringRecommendation: 'Strong Hire' | 'Hire' | 'Leaning Hire' | 'Needs Practice' | 'Borderline' | 'Needs Improvement' | string;
   seniorityCalibration: string;
   strengths: string[];
   areasForImprovement: string[];
@@ -74,7 +95,66 @@ export interface ComprehensiveReport {
     verdict: 'Correct' | 'Partially Correct' | 'Incorrect';
     score: number;
     keyGap?: string;
+    source?: 'internal_knowledge_base' | 'ai_generated' | 'external_research';
+    sourceCitation?: string;
   }[];
+
+  // Agent 06 Comprehensive A-J Structured Sections
+  candidateOverview?: {
+    role: string;
+    experienceLevel: string;
+    selectedTechnologies: string[];
+    difficulty: string;
+    interviewMode: string;
+    totalQuestions: number;
+  };
+  interviewSummary?: string;
+  questionsAsked?: {
+    questionNumber: number;
+    question: string;
+    category: string;
+    source: 'internal_knowledge_base' | 'ai_generated' | 'external_research';
+    sourceCitation?: string;
+  }[];
+  questionWiseEvaluation?: {
+    questionNumber: number;
+    question: string;
+    candidateAnswer: string;
+    rubricScores: {
+      technicalAccuracy: number;
+      conceptualUnderstanding: number;
+      practicalImplementation: number;
+      problemSolving: number;
+      architectureKnowledge: number;
+      communicationClarity: number;
+    };
+    scorePercent: number;
+    verdict: 'Correct' | 'Partially Correct' | 'Incorrect';
+    whatWasCorrect: string[];
+    whatWasMissing: string[];
+    whatWasIncorrect: string[];
+    excellentAnswerShouldInclude: string;
+    recommendedImprovement: string;
+  }[];
+  technicalScoresBreakdown?: {
+    rubricAverages: {
+      technicalAccuracy: number;
+      conceptualUnderstanding: number;
+      practicalImplementation: number;
+      problemSolving: number;
+      architectureKnowledge: number;
+      communicationClarity: number;
+    };
+    overallScore: number;
+    technicalScore: number;
+    architectureScore: number;
+    communicationScore: number;
+  };
+  overallAssessment?: {
+    rating: 'Strong Hire' | 'Hire' | 'Borderline' | 'Needs Improvement';
+    reasoning: string;
+    disclaimer: string;
+  };
 }
 
 /**
@@ -200,10 +280,14 @@ export class QAInterviewAgent {
     let sampled = getQuestionsByLevelAndDifficulty({
       difficulty: diff,
       experienceYears: profile.experienceYears,
-      experienceTier: tier,
+      experienceTier: profile.experienceLevel || profile.experienceTier || tier,
+      technology: profile.technology,
+      category: profile.category,
+      track: profile.track,
+      skills: profile.skills,
+      role: profile.role,
+      interviewScope: profile.interviewScope,
       count,
-      track,
-      skills,
     });
 
     if (!sampled || sampled.length === 0) {
@@ -228,6 +312,9 @@ export class QAInterviewAgent {
         answerSummary: q.answerSummary || '',
         bestPractice: q.bestPractice || '',
         pitfallToAvoid: q.pitfallToAvoid || '',
+        technology: q.technology || 'Quality Engineering',
+        source: (q.source || 'internal_knowledge_base') as 'internal_knowledge_base' | 'ai_generated' | 'external_research',
+        sourceCitation: q.sourceCitation || undefined,
       })),
     };
   }
@@ -557,6 +644,99 @@ Respond strictly in valid JSON:
       ? `Calibrated at ${params.candidateProfile.experienceTier || 'Mid-Level SDET'} with good technical foundations`
       : `Performing at Junior / Associate level with critical architectural gaps`;
 
+    // Compute Average 6D Rubric Scores across turns
+    const allRubrics = [
+      ...params.turns.map((t: any) => t.rubricScores || {
+        technicalAccuracy: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
+        conceptualUnderstanding: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
+        practicalImplementation: Math.min(5, Math.max(1, Math.round(((t.score || 60) / 100) * 5))),
+        problemSolving: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
+        architectureKnowledge: Math.min(5, Math.max(1, Math.round(((t.score || 60) / 100) * 5))),
+        communicationClarity: 4,
+      }),
+      params.finalEvaluation.rubricScores || {
+        technicalAccuracy: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
+        conceptualUnderstanding: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
+        practicalImplementation: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
+        problemSolving: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
+        architectureKnowledge: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
+        communicationClarity: params.finalEvaluation.turnScore === 0 ? 1 : 4,
+      },
+    ];
+
+    const avgRubric = {
+      technicalAccuracy: Math.round((allRubrics.reduce((s, r) => s + r.technicalAccuracy, 0) / allRubrics.length) * 10) / 10,
+      conceptualUnderstanding: Math.round((allRubrics.reduce((s, r) => s + r.conceptualUnderstanding, 0) / allRubrics.length) * 10) / 10,
+      practicalImplementation: Math.round((allRubrics.reduce((s, r) => s + r.practicalImplementation, 0) / allRubrics.length) * 10) / 10,
+      problemSolving: Math.round((allRubrics.reduce((s, r) => s + r.problemSolving, 0) / allRubrics.length) * 10) / 10,
+      architectureKnowledge: Math.round((allRubrics.reduce((s, r) => s + r.architectureKnowledge, 0) / allRubrics.length) * 10) / 10,
+      communicationClarity: Math.round((allRubrics.reduce((s, r) => s + r.communicationClarity, 0) / allRubrics.length) * 10) / 10,
+    };
+
+    const overallRating: 'Strong Hire' | 'Hire' | 'Borderline' | 'Needs Improvement' =
+      overallScore >= 85 ? 'Strong Hire' : overallScore >= 70 ? 'Hire' : overallScore >= 50 ? 'Borderline' : 'Needs Improvement';
+
+    const candidateOverview = {
+      role: params.candidateProfile.role || 'SDET / Automation Engineer',
+      experienceLevel: params.candidateProfile.experienceLevel || `${params.candidateProfile.experienceYears || '3-5'} Years`,
+      selectedTechnologies: params.candidateProfile.skills && params.candidateProfile.skills.length > 0 ? params.candidateProfile.skills : [params.candidateProfile.track || 'Test Automation'],
+      difficulty: params.candidateProfile.difficulty || 'Medium',
+      interviewMode: 'Technical Interview Panel',
+      totalQuestions: params.turns.length + 1,
+    };
+
+    const questionsAsked = [
+      ...params.turns.map((t: any, idx: number) => ({
+        questionNumber: idx + 1,
+        question: t.question || params.questionList[idx]?.question || `Question ${idx + 1}`,
+        category: params.questionList[idx]?.category || 'Quality Engineering',
+        source: (params.questionList[idx]?.source || 'internal_knowledge_base') as 'internal_knowledge_base' | 'ai_generated' | 'external_research',
+        sourceCitation: params.questionList[idx]?.sourceCitation,
+      })),
+      {
+        questionNumber: params.turns.length + 1,
+        question: params.questionList[params.turns.length]?.question || 'Final Technical Assessment',
+        category: params.questionList[params.turns.length]?.category || 'Quality Engineering',
+        source: (params.questionList[params.turns.length]?.source || 'internal_knowledge_base') as 'internal_knowledge_base' | 'ai_generated' | 'external_research',
+        sourceCitation: params.questionList[params.turns.length]?.sourceCitation,
+      },
+    ];
+
+    const questionWiseEvaluation = [
+      ...params.turns.map((t: any, idx: number) => ({
+        questionNumber: idx + 1,
+        question: t.question || params.questionList[idx]?.question || `Question ${idx + 1}`,
+        candidateAnswer: t.answer || '[No Answer Provided]',
+        rubricScores: t.rubricScores || allRubrics[idx],
+        scorePercent: typeof t.score === 'number' ? t.score : 65,
+        verdict: (t.score >= 80 ? 'Correct' : t.score >= 50 ? 'Partially Correct' : 'Incorrect') as 'Correct' | 'Partially Correct' | 'Incorrect',
+        whatWasCorrect: t.whatWasCorrect || ['Covered core topic objectives'],
+        whatWasMissing: t.whatWasMissing || (t.mistakesAndGaps || []),
+        whatWasIncorrect: t.whatWasIncorrect || [],
+        excellentAnswerShouldInclude: params.questionList[idx]?.answerSummary || 'Clear architectural separation and robust assertions.',
+        recommendedImprovement: 'Deepen edge case validation and concurrency safety.',
+      })),
+      {
+        questionNumber: params.turns.length + 1,
+        question: params.questionList[params.turns.length]?.question || 'Final Technical Assessment',
+        candidateAnswer: params.finalEvaluation.whatUserMissed ? '[Evaluated Turn]' : 'Completed answer',
+        rubricScores: params.finalEvaluation.rubricScores || allRubrics[params.turns.length],
+        scorePercent: params.finalEvaluation.turnScore,
+        verdict: params.finalEvaluation.verdict,
+        whatWasCorrect: params.finalEvaluation.whatWasCorrect || (params.finalEvaluation.turnScore >= 70 ? ['Demonstrated key architectural patterns'] : []),
+        whatWasMissing: params.finalEvaluation.whatWasMissing || params.finalEvaluation.mistakesAndGaps || [],
+        whatWasIncorrect: params.finalEvaluation.whatWasIncorrect || [],
+        excellentAnswerShouldInclude: params.finalEvaluation.idealAnswer || params.questionList[params.turns.length]?.answerSummary || '',
+        recommendedImprovement: params.finalEvaluation.recommendedImprovement || 'Focus on concrete implementation details rather than abstract high-level statements.',
+      },
+    ];
+
+    const overallAssessment = {
+      rating: overallRating,
+      reasoning: `Candidate demonstrated ${overallScore >= 75 ? 'command over core engineering standards' : overallScore >= 50 ? 'foundational competence with identifiable gaps' : 'significant conceptual and practical shortcomings'} across ${params.turns.length + 1} technical interview turns. Technical Accuracy averaged ${avgRubric.technicalAccuracy}/5, Practical Implementation averaged ${avgRubric.practicalImplementation}/5, and Architecture Knowledge averaged ${avgRubric.architectureKnowledge}/5.`,
+      disclaimer: 'Simulated interview assessment, not an actual hiring decision.',
+    };
+
     return {
       overallScore,
       technicalScore,
@@ -577,6 +757,20 @@ Respond strictly in valid JSON:
         'Consumer-Driven Contract Testing (Pact) for Distributed Microservices',
       ],
       questionBreakdown: this.buildQuestionBreakdown(params.turns, params.finalEvaluation, params.questionList),
+
+      // Agent 06 Comprehensive A-J Structured Report Sections
+      candidateOverview,
+      interviewSummary: `Candidate was evaluated for ${candidateOverview.role} (${candidateOverview.experienceLevel}) with target difficulty set to ${candidateOverview.difficulty}. The interview covered ${candidateOverview.totalQuestions} technical questions across ${candidateOverview.selectedTechnologies.join(', ')}. Final calibrated score is ${overallScore}% with rating "${overallRating}".`,
+      questionsAsked,
+      questionWiseEvaluation,
+      technicalScoresBreakdown: {
+        rubricAverages: avgRubric,
+        overallScore,
+        technicalScore,
+        architectureScore,
+        communicationScore,
+      },
+      overallAssessment,
     };
   }
 

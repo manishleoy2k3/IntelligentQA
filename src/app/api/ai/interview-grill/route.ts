@@ -7,6 +7,7 @@ import {
   InterviewQuestionItem,
 } from '@/lib/interview-questions-bank';
 import { QAInterviewAgent } from '@/lib/qa-interview-agent';
+import { QAInterviewResearcher } from '@/lib/qa-interview-researcher';
 
 interface EvaluationResult {
   verdict: 'Correct' | 'Partially Correct' | 'Incorrect';
@@ -19,6 +20,19 @@ interface EvaluationResult {
   referenceCode?: string;
   bestPractice?: string;
   pitfallToAvoid?: string;
+  rubricScores?: {
+    technicalAccuracy: number;
+    conceptualUnderstanding: number;
+    practicalImplementation: number;
+    problemSolving: number;
+    architectureKnowledge: number;
+    communicationClarity: number;
+  };
+  whatWasCorrect?: string[];
+  whatWasMissing?: string[];
+  whatWasIncorrect?: string[];
+  excellentAnswerShouldInclude?: string;
+  recommendedImprovement?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -64,11 +78,196 @@ export async function POST(req: NextRequest) {
         experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
         experienceLevel,
         track,
+        category: body.category,
+        technology: body.technology,
+        role: body.role,
         skills: candidateSkills,
         apiKey: effectiveApiKey,
         count,
+        sourcePreference: body.sourcePreference,
+        enableWebSearch: body.enableWebSearch,
+        interviewScope: body.interviewScope,
       });
       return NextResponse.json(initialSession);
+    }
+
+    // Action 1.1: Pause session
+    if (action === 'pause') {
+      return NextResponse.json({
+        status: 'paused',
+        turnIndex: turns.length,
+        message: 'Interview session paused. Timers frozen. Click Resume to continue.',
+      });
+    }
+
+    // Action 1.2: Resume session
+    if (action === 'resume') {
+      const activeQ = questionList[turns.length] || {};
+      return NextResponse.json({
+        status: 'active',
+        turnIndex: turns.length,
+        currentQuestion: activeQ.question || 'Interview session active.',
+        message: 'Interview session resumed.',
+      });
+    }
+
+    // Action 1.3: Repeat current question with focused guidance
+    if (action === 'repeat') {
+      const activeQ = questionList[turns.length] || {};
+      return NextResponse.json({
+        status: 'active',
+        questionNumber: turns.length + 1,
+        question: activeQ.question || 'Please provide your technical response.',
+        clarification: `Interviewer repeating Question ${turns.length + 1}: ${activeQ.question}. Key focus: ${activeQ.expectedFocus || 'Address the technical design and edge cases.'}`,
+      });
+    }
+
+    // Action 1.4: Skip question
+    if (action === 'skip') {
+      const turnIndex = turns.length;
+      const maxTurns = (Array.isArray(questionList) && questionList.length >= 3) ? questionList.length : 3;
+      const isFinal = turnIndex >= maxTurns - 1;
+      const currentQ = questionList[turnIndex] || { question: 'Skipped Question' };
+
+      const skippedEvaluation = {
+        verdict: 'Incorrect' as const,
+        turnScore: 0,
+        feedback: 'Question was skipped by candidate. Score for this turn is 0.',
+        mistakesAndGaps: ['Candidate skipped the question without submitting technical details'],
+        whatUserMissed: currentQ.answerSummary || currentQ.expectedFocus || 'Expected technical solution',
+        probingQuestion: 'How would you approach this problem if encountered in a production release environment?',
+        idealAnswer: currentQ.answerSummary || '',
+        referenceCode: currentQ.codeSnippet || '',
+        bestPractice: currentQ.bestPractice || '',
+        pitfallToAvoid: currentQ.pitfallToAvoid || '',
+        rubricScores: {
+          technicalAccuracy: 1,
+          conceptualUnderstanding: 1,
+          practicalImplementation: 1,
+          problemSolving: 1,
+          architectureKnowledge: 1,
+          communicationClarity: 1,
+        },
+        whatWasCorrect: [],
+        whatWasMissing: [currentQ.expectedFocus || 'Complete technical solution'],
+        whatWasIncorrect: ['Candidate skipped the question'],
+        excellentAnswerShouldInclude: currentQ.answerSummary || '',
+        recommendedImprovement: 'Review the technical concepts in this domain to avoid skipping in real panels.',
+      };
+
+      const updatedTurns = [
+        ...turns,
+        {
+          question: currentQ.question,
+          answer: '[Question Skipped]',
+          feedback: 'Question was skipped (0%).',
+          score: 0,
+          rubricScores: skippedEvaluation.rubricScores,
+          whatWasCorrect: [],
+          whatWasMissing: skippedEvaluation.whatWasMissing,
+          whatWasIncorrect: skippedEvaluation.whatWasIncorrect,
+        },
+      ];
+
+      if (isFinal) {
+        const report = await QAInterviewAgent.generateComprehensiveReport({
+          apiKey: effectiveApiKey,
+          turns: updatedTurns.slice(0, -1),
+          finalEvaluation: skippedEvaluation,
+          questionList,
+          candidateProfile: {
+            difficulty,
+            experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
+            experienceLevel,
+            track: body.track || body.category,
+            skills: Array.isArray(skills) && skills.length > 0 ? skills : Array.isArray(body.skills) ? body.skills : [],
+          },
+        });
+
+        return NextResponse.json({
+          isFinished: true,
+          turnIndex,
+          skipped: true,
+          evaluation: skippedEvaluation,
+          scorecard: report,
+        });
+      }
+
+      const nextQIndex = turnIndex + 1;
+      const fallbackQ = questionList[nextQIndex] || {
+        question: 'How do you design a resilient test automation architecture?',
+        expectedFocus: 'Page Object Models, thread safety, and CI integration.',
+      };
+
+      return NextResponse.json({
+        isFinished: false,
+        turnIndex,
+        skipped: true,
+        evaluation: skippedEvaluation,
+        nextQuestion: {
+          questionNumber: nextQIndex + 1,
+          totalQuestions: maxTurns,
+          question: fallbackQ.question,
+          category: fallbackQ.category || 'QA Engineering',
+          expectedFocus: fallbackQ.expectedFocus || fallbackQ.answerSummary,
+          codeContext: fallbackQ.codeSnippet || '',
+          source: fallbackQ.source || 'internal_knowledge_base',
+        },
+      });
+    }
+
+    // Action 1.45: End interview prematurely
+    if (action === 'end') {
+      const turnIndex = turns.length;
+      const currentQ = questionList[turnIndex] || { question: 'Technical Assessment' };
+      const placeholderEvaluation = {
+        verdict: (turns.length > 0 ? (turns[turns.length - 1].score >= 70 ? 'Correct' : 'Partially Correct') : 'Incorrect') as any,
+        turnScore: turns.length > 0 ? (turns[turns.length - 1].score || 50) : 0,
+        feedback: 'Interview concluded early upon candidate request.',
+        mistakesAndGaps: [],
+        whatUserMissed: '',
+        probingQuestion: '',
+        idealAnswer: currentQ.answerSummary || '',
+      };
+
+      const report = await QAInterviewAgent.generateComprehensiveReport({
+        apiKey: effectiveApiKey,
+        turns: turns.slice(0, Math.max(0, turns.length - 1)),
+        finalEvaluation: turns.length > 0 ? {
+          verdict: (turns[turns.length - 1].score >= 70 ? 'Correct' : 'Partially Correct') as any,
+          turnScore: turns[turns.length - 1].score || 60,
+          feedback: turns[turns.length - 1].feedback || 'Completed turn',
+          mistakesAndGaps: [],
+          whatUserMissed: '',
+          probingQuestion: '',
+        } : placeholderEvaluation,
+        questionList,
+        candidateProfile: {
+          difficulty,
+          experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
+          experienceLevel,
+          track: body.track || body.category,
+          skills: Array.isArray(skills) && skills.length > 0 ? skills : Array.isArray(body.skills) ? body.skills : [],
+        },
+      });
+
+      return NextResponse.json({
+        isFinished: true,
+        turnIndex,
+        concludedEarly: true,
+        scorecard: report,
+      });
+    }
+
+    // Action 1.48: Research Questions via Source B
+    if (action === 'research_questions') {
+      const research = await QAInterviewResearcher.researchQuestion({
+        technology: body.technology || 'Playwright',
+        difficulty: body.difficulty || 'Advanced',
+        category: body.category,
+        enableWebSearch: Boolean(body.enableWebSearch),
+      });
+      return NextResponse.json(research);
     }
 
     // Action 1.5: Real-time PREP / STAR Live Coach (Freemockinterview dynamic rubric)
@@ -239,6 +438,19 @@ export async function POST(req: NextRequest) {
         referenceCode: currentQ.codeSnippet || evaluation.referenceCode || '',
         bestPractice: currentQ.bestPractice || evaluation.bestPractice || '',
         pitfallToAvoid: currentQ.pitfallToAvoid || evaluation.pitfallToAvoid || '',
+        rubricScores: evaluation.rubricScores || {
+          technicalAccuracy: Math.min(5, Math.max(1, Math.round((evaluation.turnScore / 100) * 5))),
+          conceptualUnderstanding: Math.min(5, Math.max(1, Math.round((evaluation.turnScore / 100) * 5))),
+          practicalImplementation: Math.min(5, Math.max(1, Math.round((evaluation.turnScore / 100) * 5))),
+          problemSolving: Math.min(5, Math.max(1, Math.round((evaluation.turnScore / 100) * 5))),
+          architectureKnowledge: Math.min(5, Math.max(1, Math.round((evaluation.turnScore / 100) * 5))),
+          communicationClarity: evaluation.turnScore === 0 ? 1 : 4,
+        },
+        whatWasCorrect: evaluation.whatWasCorrect || (evaluation.turnScore >= 70 ? ['Demonstrated key technical knowledge'] : []),
+        whatWasMissing: evaluation.whatWasMissing || evaluation.mistakesAndGaps || [],
+        whatWasIncorrect: evaluation.whatWasIncorrect || [],
+        excellentAnswerShouldInclude: evaluation.excellentAnswerShouldInclude || currentQ.answerSummary || '',
+        recommendedImprovement: evaluation.recommendedImprovement || 'Focus on concrete engineering implementation details and failure handling.',
       };
 
       if (isFinal) {
@@ -450,6 +662,53 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 1,
+        conceptualUnderstanding: 1,
+        practicalImplementation: 1,
+        problemSolving: 1,
+        architectureKnowledge: 1,
+        communicationClarity: 1,
+      },
+      whatWasCorrect: [],
+      whatWasMissing: [qMeta.expectedFocus || 'Complete technical solution'],
+      whatWasIncorrect: ['Candidate stated they do not know the answer'],
+      excellentAnswerShouldInclude: idealAnswer,
+      recommendedImprovement: 'Review core engineering documentation and practice formulating structured technical answers.',
+    };
+  }
+
+  // 2.2 Vague Answer Challenge: E.g., Playwright browser contexts
+  const isBrowserContextQ = /browser\s+context/i.test(qMeta.question || '') || /browser\s+context/i.test(qMeta.expectedFocus || '');
+  const isVagueContextAns = isBrowserContextQ && /separate\s+sessions?|different\s+sessions?|isolated\s+sessions?/i.test(combined) && !/parallel|auth|user|storage|cooki/i.test(combined);
+  if (isVagueContextAns) {
+    return {
+      verdict: 'Partially Correct',
+      turnScore: 55,
+      feedback: 'Partially correct: you noted that browser contexts provide separate sessions. However, in an SDET or Test Architect panel, a vague one-sentence definition is insufficient without practical implementation.',
+      mistakesAndGaps: [
+        'Provided high-level definition without practical implementation',
+        'Did not explain multi-user parallel execution or authentication isolation',
+      ],
+      whatUserMissed: 'Practical usage of browser contexts for parallel multi-user testing without shared auth state.',
+      probingQuestion: 'How would you use browser contexts to run multiple users in parallel without sharing authentication state?',
+      idealAnswer,
+      referenceCode,
+      bestPractice,
+      pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 3,
+        conceptualUnderstanding: 3,
+        practicalImplementation: 2,
+        problemSolving: 3,
+        architectureKnowledge: 2,
+        communicationClarity: 3,
+      },
+      whatWasCorrect: ['Correctly identified that browser contexts provide separate browser sessions.'],
+      whatWasMissing: ['Did not explain how to run multiple users in parallel without sharing authentication state.', 'Did not mention storageState, cookies/cache isolation, or parallel test worker allocation.'],
+      whatWasIncorrect: [],
+      excellentAnswerShouldInclude: 'Instantiate multiple isolated contexts via browser.newContext(), passing separate storageState tokens or logging in independently to run parallel concurrent user sessions within a single browser instance.',
+      recommendedImprovement: 'Provide concrete architectural details showing how browser contexts prevent test pollution in parallel multi-role test suites.',
     };
   }
 
@@ -471,6 +730,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 2,
+        conceptualUnderstanding: 2,
+        practicalImplementation: 1,
+        problemSolving: 2,
+        architectureKnowledge: 1,
+        communicationClarity: 3,
+      },
+      whatWasCorrect: ['Addressed the need for synchronization timing'],
+      whatWasMissing: ['Event-driven synchronization', 'Polling assertions (Web-first assertions / WebDriverWait)'],
+      whatWasIncorrect: ['Introduced hardcoded sleep / static wait delay (critical anti-pattern)'],
+      excellentAnswerShouldInclude: 'Use framework-native event-driven waiting such as Playwright auto-waiting/web-first assertions or Selenium WebDriverWait with ExpectedConditions, never static sleep delays.',
+      recommendedImprovement: 'Replace arbitrary sleep calls with explicit element state predicates and poll-based assertions.',
     };
   }
 
@@ -490,6 +762,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 2,
+        conceptualUnderstanding: 2,
+        practicalImplementation: 1,
+        problemSolving: 2,
+        architectureKnowledge: 2,
+        communicationClarity: 3,
+      },
+      whatWasCorrect: ['Targeted the required UI element'],
+      whatWasMissing: ['Accessible locator strategies (getByRole, getByLabel, getByText)', 'Resilience to DOM restructuring'],
+      whatWasIncorrect: ['Used absolute / structural XPath locator (/html/body...)'],
+      excellentAnswerShouldInclude: 'Select elements based on accessibility role and accessible name (e.g. page.getByRole("button", { name: "Submit" })) or dedicated data-testid attributes.',
+      recommendedImprovement: 'Adopt accessibility-first queries that mirror user perception and withstand refactoring.',
     };
   }
 
@@ -511,6 +796,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 2,
+        conceptualUnderstanding: 3,
+        practicalImplementation: 2,
+        problemSolving: 2,
+        architectureKnowledge: 2,
+        communicationClarity: 3,
+      },
+      whatWasCorrect: ['Constructed user interaction flow'],
+      whatWasMissing: ['Explicit state verification assertions'],
+      whatWasIncorrect: ['Omitted verification checks entirely'],
+      excellentAnswerShouldInclude: 'Every interaction must conclude with explicit assertions validating visual state, DOM attributes, or API response payloads.',
+      recommendedImprovement: 'Add web-first assertions validating post-conditions and error boundaries.',
     };
   }
 
@@ -530,6 +828,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 3,
+        conceptualUnderstanding: 2,
+        practicalImplementation: 2,
+        problemSolving: 2,
+        architectureKnowledge: 2,
+        communicationClarity: 3,
+      },
+      whatWasCorrect: ['Used Playwright page API actions'],
+      whatWasMissing: ['Asynchronous promise management (await)'],
+      whatWasIncorrect: ['Unawaited async page actions'],
+      excellentAnswerShouldInclude: 'In Playwright, all page interactions and locator actions return Promises that must be awaited sequentially.',
+      recommendedImprovement: 'Always prefix asynchronous locator and page calls with `await`.',
     };
   }
 
@@ -549,6 +860,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 2,
+        conceptualUnderstanding: 2,
+        practicalImplementation: 1,
+        problemSolving: 2,
+        architectureKnowledge: 1,
+        communicationClarity: 3,
+      },
+      whatWasCorrect: ['Configured test runner for parallel execution'],
+      whatWasMissing: ['Thread-safe session isolation via ThreadLocal<WebDriver>'],
+      whatWasIncorrect: ['Declared WebDriver as static in multi-threaded environment'],
+      excellentAnswerShouldInclude: 'Encapsulate WebDriver inside ThreadLocal<WebDriver> with strict thread-cleanup in teardown listeners.',
+      recommendedImprovement: 'Isolate WebDriver sessions per test thread to eliminate parallel race conditions.',
     };
   }
 
@@ -568,6 +892,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 3,
+        conceptualUnderstanding: 4,
+        practicalImplementation: 3,
+        problemSolving: 4,
+        architectureKnowledge: 3,
+        communicationClarity: 4,
+      },
+      whatWasCorrect: ['Clarified operational scope and boundary constraints before jumping into implementation'],
+      whatWasMissing: ['Concrete architectural pattern and code implementation'],
+      whatWasIncorrect: [],
+      excellentAnswerShouldInclude: 'Follow requirements clarification immediately with the concrete technical blueprint and implementation choices.',
+      recommendedImprovement: 'State reasonable working assumptions and proceed directly into the architectural implementation.',
     };
   }
 
@@ -597,6 +934,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 5,
+        conceptualUnderstanding: 5,
+        practicalImplementation: 4,
+        problemSolving: 4,
+        architectureKnowledge: 4,
+        communicationClarity: 5,
+      },
+      whatWasCorrect: [`Addressed key domain criteria: ${matchedKeywords.join(', ') || 'Core architecture'}`, 'Demonstrated sound engineering intuition'],
+      whatWasMissing: ['Deeper analysis of edge cases and cloud resource consumption'],
+      whatWasIncorrect: [],
+      excellentAnswerShouldInclude: idealAnswer,
+      recommendedImprovement: 'Expand on failure isolation and infrastructure cost trade-offs under high-concurrency loads.',
     };
   }
 
@@ -617,6 +967,19 @@ function evaluateHeuristically(
       referenceCode,
       bestPractice,
       pitfallToAvoid,
+      rubricScores: {
+        technicalAccuracy: 3,
+        conceptualUnderstanding: 3,
+        practicalImplementation: 3,
+        problemSolving: 3,
+        architectureKnowledge: 3,
+        communicationClarity: 3,
+      },
+      whatWasCorrect: [`Covered foundational principles: ${matchedKeywords.join(', ') || 'Basic concept'}`],
+      whatWasMissing: [`Omitted detailed implementation of: ${qMeta.expectedFocus || idealAnswer}`],
+      whatWasIncorrect: [],
+      excellentAnswerShouldInclude: idealAnswer,
+      recommendedImprovement: 'Incorporate concrete code examples and specific framework APIs to elevate response to staff-level.',
     };
   }
 
@@ -635,6 +998,19 @@ function evaluateHeuristically(
     referenceCode,
     bestPractice,
     pitfallToAvoid,
+    rubricScores: {
+      technicalAccuracy: 2,
+      conceptualUnderstanding: 2,
+      practicalImplementation: 1,
+      problemSolving: 1,
+      architectureKnowledge: 1,
+      communicationClarity: 2,
+    },
+    whatWasCorrect: [],
+    whatWasMissing: [`Did not cover required architecture: ${qMeta.expectedFocus || idealAnswer}`],
+    whatWasIncorrect: ['Response is overly vague or superficial with zero technical implementation'],
+    excellentAnswerShouldInclude: idealAnswer,
+    recommendedImprovement: 'Structure answer using the PREP model and cite concrete frameworks and design patterns.',
   };
 }
 

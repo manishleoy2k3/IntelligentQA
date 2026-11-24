@@ -54,37 +54,64 @@ export const AVAILABLE_SKILLS: SkillOption[] = [
   { id: 'Playwright', name: 'Playwright', category: 'Automation Frameworks', desc: 'Auto-waiting, network mocking via page.route(), storageState auth, web-first assertions' },
   { id: 'Selenium', name: 'Selenium WebDriver', category: 'Automation Frameworks', desc: 'Selenium 4 Grid, WebDriver waits, Page Object Models, BiDi CDP network logging' },
   { id: 'REST Assured', name: 'REST Assured', category: 'API & Backend', desc: 'Java BDD Given-When-Then, RequestSpecBuilder, JSON schema validation, POJO mapping' },
-  { id: 'Cypress', name: 'Cypress', category: 'Automation Frameworks', desc: 'Fast front-end runner, cy.intercept route stubbing, asynchronous command queue' },
   { id: 'Appium', name: 'Appium (Mobile)', category: 'Automation Frameworks', desc: 'iOS & Android native and hybrid automation, WEBVIEW context, W3C touch actions' },
+  { id: 'Cypress', name: 'Cypress', category: 'Automation Frameworks', desc: 'Fast front-end runner, cy.intercept route stubbing, asynchronous command queue' },
+
   // Programming Languages
-  { id: 'TypeScript', name: 'TypeScript', category: 'Programming Languages', desc: 'Strict typing, modern async/await, interfaces, Playwright/Node runtime' },
   { id: 'Java', name: 'Java', category: 'Programming Languages', desc: 'Project Loom virtual threads, ThreadLocal, TestNG/JUnit, Streams, concurrency' },
+  { id: 'TypeScript', name: 'TypeScript', category: 'Programming Languages', desc: 'Strict typing, modern async/await, interfaces, Playwright/Node runtime' },
   { id: 'Python', name: 'Python (Pytest)', category: 'Programming Languages', desc: 'Pytest fixtures, yield teardowns, pytest-xdist parallelization' },
   { id: 'JavaScript', name: 'JavaScript (Node.js)', category: 'Programming Languages', desc: 'ES Modules, Promise concurrency, event loop, dynamic typing' },
+
   // API & Backend
+  { id: 'API Testing', name: 'API Testing (General)', category: 'API & Backend', desc: 'REST, GraphQL, gRPC, OAuth2/JWT auth, payload contracts, mock services' },
   { id: 'Postman', name: 'Postman & Newman', category: 'API & Backend', desc: 'Collections, environment variables, pre-request scripts, CLI test runners' },
   { id: 'Pact', name: 'Pact Contract Testing', category: 'API & Backend', desc: 'Consumer-driven contracts, provider verification, Pact broker matrix' },
+
   // QA Strategy & Ops
-  { id: 'Manual QA', name: 'Manual QA & Strategy', category: 'QA Strategy & Ops', desc: 'Boundary Value Analysis, Equivalence Partitioning, Bug Triage, Test Charters' },
-  { id: 'CI/CD (GitHub Actions)', name: 'CI/CD & DevOps', category: 'QA Strategy & Ops', desc: 'Matrix sharding, caching node_modules/maven, artifact quarantine, Allure reports' },
-  { id: 'Performance (k6/JMeter)', name: 'Performance Testing', category: 'QA Strategy & Ops', desc: 'Distributed load, SLA latency gates, virtual user metrics, k6 scripts' },
+  { id: 'Manual Testing', name: 'Manual Testing & Strategy', category: 'QA Strategy & Ops', desc: 'Boundary Value Analysis, Equivalence Partitioning, Bug Triage, Test Charters' },
+  { id: 'Manual QA', name: 'Manual QA Processes', category: 'QA Strategy & Ops', desc: 'Exploratory testing, test plan creation, defect severity/priority, regression cycles' },
+  { id: 'CI/CD', name: 'CI/CD Pipelines', category: 'QA Strategy & Ops', desc: 'Automated test execution in CI, matrix sharding, dockerized test runners' },
+  { id: 'Git', name: 'Git & Version Control', category: 'QA Strategy & Ops', desc: 'Git branch strategies, merge conflict resolution, pre-commit quality hooks' },
+  { id: 'GitHub Actions', name: 'GitHub Actions CI', category: 'QA Strategy & Ops', desc: 'Workflow YAMLs, matrix strategy, artifact uploads, secrets management' },
+  { id: 'Performance Testing', name: 'Performance Testing', category: 'QA Strategy & Ops', desc: 'k6, JMeter, distributed load, spike testing, SLA latency thresholds' },
+  { id: 'JMeter', name: 'Apache JMeter', category: 'QA Strategy & Ops', desc: 'Thread groups, HTTP request samplers, CSV data config, non-GUI CLI runs' },
+  { id: 'APM', name: 'APM & Observability', category: 'QA Strategy & Ops', desc: 'Application Performance Monitoring, Datadog/Grafana metrics, latency bottlenecks' },
+
+  // AI & Advanced
+  { id: 'AI for QA', name: 'AI for QA Engineering', category: 'QA Strategy & Ops', desc: 'Autonomous test agents, self-healing locators, synthetic data generation' },
+  { id: 'LLM', name: 'LLM Evaluation & QA', category: 'QA Strategy & Ops', desc: 'Benchmarking LLMs, prompt regression testing, hallucination detection' },
+  { id: 'MCP', name: 'Model Context Protocol (MCP)', category: 'QA Strategy & Ops', desc: 'Exposing QA tools to AI agents via MCP server specifications' },
+  { id: 'RAG', name: 'RAG Testing & Verification', category: 'QA Strategy & Ops', desc: 'Retrieval Augmented Generation validation, chunking fidelity, citation checks' },
+  { id: 'Test Architecture', name: 'Test Architecture (Staff/Lead)', category: 'QA Strategy & Ops', desc: '50-squad monorepo design, flaky test quarantine, reporting platform, ROI metrics' },
+  { id: 'QA Leadership', name: 'QA Leadership & Governance', category: 'QA Strategy & Ops', desc: 'Quality gates, defect leakage burndown, team topologies, CoE roadmaps' },
 ];
 
 export const SKILL_PRESETS = [
   {
+    name: 'Complete QA Interview',
+    desc: 'Holistic round spanning UI, API, Manual Testing, CI/CD, and Coding',
+    skills: ['Playwright', 'Selenium', 'Manual Testing', 'API Testing', 'CI/CD'],
+  },
+  {
     name: 'Playwright + TypeScript SDET',
     desc: 'Modern web automation, TypeScript, REST Assured, and CI/CD pipelines',
-    skills: ['Playwright', 'TypeScript', 'REST Assured', 'CI/CD (GitHub Actions)'],
+    skills: ['Playwright', 'TypeScript', 'REST Assured', 'GitHub Actions'],
   },
   {
     name: 'Enterprise Selenium + Java SDET',
     desc: 'Selenium 4, Java, REST Assured, and CI/CD pipelines',
-    skills: ['Selenium', 'Java', 'REST Assured', 'CI/CD (GitHub Actions)'],
+    skills: ['Selenium', 'Java', 'REST Assured', 'CI/CD'],
+  },
+  {
+    name: 'Test Architect / Staff QE',
+    desc: 'Enterprise architecture, flaky test quarantine, CI/CD gates, and AI for QA',
+    skills: ['Test Architecture', 'CI/CD', 'QA Leadership', 'AI for QA'],
   },
   {
     name: 'Python SDET Specialist',
     desc: 'Pytest fixtures, Python, and Playwright / API test suites',
-    skills: ['Playwright', 'Python', 'CI/CD (GitHub Actions)'],
+    skills: ['Playwright', 'Python', 'CI/CD'],
   },
   {
     name: 'Mobile QE Specialist (Appium)',
@@ -94,7 +121,7 @@ export const SKILL_PRESETS = [
   {
     name: 'Manual QA & Test Lead',
     desc: 'Test design (BVA/EP), bug triage, Postman API, and release gates',
-    skills: ['Manual QA', 'Postman', 'CI/CD (GitHub Actions)'],
+    skills: ['Manual Testing', 'Postman', 'CI/CD'],
   },
 ];
 
@@ -154,11 +181,14 @@ interface ChatMessage {
 
 export default function InterviewGriller() {
   // Config states: Difficulty, Experience Level, Track, Mode
-  const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
-  const [experienceTier, setExperienceTier] = useState<'0-2 Years' | '3-5 Years' | '6-9 Years' | '10+ Years'>('0-2 Years');
+  const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard' | 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert' | 'Architect' | string>('Medium');
+  const [experienceTier, setExperienceTier] = useState<string>('0-2 Years');
   const [experienceYears, setExperienceYears] = useState<number>(1);
   const [interviewMode, setInterviewMode] = useState<'chat' | 'audio'>('chat');
   const [selectedTrack, setSelectedTrack] = useState<string>('Test Automation');
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [sourcePreference, setSourcePreference] = useState<'internal_knowledge_base' | 'external_research'>('internal_knowledge_base');
+  const [enableWebSearch, setEnableWebSearch] = useState<boolean>(false);
 
   // Candidate Tech Stack & Skills Multi-Select state
   const [selectedSkills, setSelectedSkills] = useState<string[]>(['Playwright', 'TypeScript', 'REST Assured']);
@@ -1025,6 +1055,127 @@ export default function InterviewGriller() {
     startInterview(overrideSkills);
   };
 
+  const pauseInterview = async () => {
+    setIsPaused(true);
+    try {
+      await fetch('/api/ai/interview-grill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'pause', turns }),
+      });
+    } catch {}
+  };
+
+  const resumeInterview = async () => {
+    setIsPaused(false);
+    try {
+      await fetch('/api/ai/interview-grill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'resume', turns, questionList }),
+      });
+    } catch {}
+  };
+
+  const repeatQuestion = async () => {
+    try {
+      const res = await fetch('/api/ai/interview-grill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'repeat', turns, questionList }),
+      });
+      const data = await res.json();
+      if (data.clarification) {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `repeat-${Date.now()}`,
+            sender: 'interviewer',
+            senderName: 'Interviewer (Agent 06)',
+            avatarText: '06',
+            content: data.clarification,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+        if (interviewMode === 'audio') {
+          speakText(data.clarification);
+        }
+      }
+    } catch {}
+  };
+
+  const skipQuestion = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/ai/interview-grill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'skip',
+          turns,
+          questionList,
+          difficulty,
+          experienceTier,
+          skills: selectedSkills,
+        }),
+      });
+      const data = await res.json();
+      if (data.isFinished) {
+        setScorecard(data.scorecard);
+      } else if (data.nextQuestion) {
+        setCurrentQuestion(data.nextQuestion.question);
+        setQuestionNumber(data.nextQuestion.questionNumber);
+        setTurns(prev => [...prev, { question: currentQuestion, answer: '[Question Skipped]', feedback: 'Skipped (0%)', score: 0 }]);
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `skip-${Date.now()}`,
+            sender: 'interviewer',
+            senderName: 'Interviewer (Agent 06)',
+            avatarText: '06',
+            content: `Question ${questionNumber} was skipped. Moving to Question ${data.nextQuestion.questionNumber}: ${data.nextQuestion.question}`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            questionNumber: data.nextQuestion.questionNumber,
+            totalQuestions,
+          },
+        ]);
+        if (interviewMode === 'audio') {
+          speakText(`Moving to Question ${data.nextQuestion.questionNumber}: ${data.nextQuestion.question}`);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to skip question:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const endInterview = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/ai/interview-grill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'end',
+          turns,
+          questionList,
+          difficulty,
+          experienceTier,
+          skills: selectedSkills,
+        }),
+      });
+      const data = await res.json();
+      if (data.scorecard) {
+        setScorecard(data.scorecard);
+      }
+    } catch (e) {
+      console.error('Failed to end interview:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Keyboard shortcut: Shift+Enter for new line, Enter to submit
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1136,6 +1287,50 @@ export default function InterviewGriller() {
               title={interviewMode === 'audio' ? 'Audio Mode Active (Click to mute)' : 'Switch to Audio Voice Mode'}
             >
               {interviewMode === 'audio' ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            </button>
+
+            {/* Repeat Question Button */}
+            <button
+              onClick={repeatQuestion}
+              disabled={loading || isPaused}
+              className="px-2 py-1 rounded-lg text-xs font-medium text-neutral-400 hover:text-emerald-300 hover:bg-neutral-800/60 border border-neutral-800 transition-all cursor-pointer disabled:opacity-40"
+              title="Ask interviewer to repeat the question"
+            >
+              Repeat
+            </button>
+
+            {/* Skip Question Button */}
+            <button
+              onClick={skipQuestion}
+              disabled={loading || isPaused}
+              className="px-2 py-1 rounded-lg text-xs font-medium text-neutral-400 hover:text-amber-300 hover:bg-amber-950/30 border border-neutral-800 transition-all cursor-pointer disabled:opacity-40"
+              title="Skip this question (Score 0)"
+            >
+              Skip
+            </button>
+
+            {/* Pause / Resume Button */}
+            <button
+              onClick={isPaused ? resumeInterview : pauseInterview}
+              disabled={loading}
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
+                isPaused
+                  ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 animate-pulse'
+                  : 'bg-[#111920] border-neutral-800 text-neutral-300 hover:bg-neutral-800'
+              }`}
+              title={isPaused ? 'Resume Interview' : 'Pause Interview and freeze timer'}
+            >
+              {isPaused ? 'Resume' : 'Pause'}
+            </button>
+
+            {/* End Interview Button */}
+            <button
+              onClick={endInterview}
+              disabled={loading}
+              className="px-2 py-1 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 border border-rose-950/50 transition-all cursor-pointer disabled:opacity-40"
+              title="End interview and view final scorecard"
+            >
+              End
             </button>
 
             {/* Running Total Timer (e.g. TOTAL 04:33) */}
