@@ -149,6 +149,16 @@ function getCourseMeta(course: any) {
       hours: `${course.estimatedHours || 16}h`,
     };
   }
+  if (slug.includes('apm') || slug.includes('performance') || title.includes('performance') || title.includes('apm')) {
+    return {
+      displayTitle: 'APM & Enterprise Performance',
+      tag: 'Perf',
+      icon: Cpu,
+      iconColor: 'text-teal-500',
+      badgeClass: 'text-teal-600 dark:text-teal-400 bg-teal-500/10',
+      hours: `${course.estimatedHours || 30}h`,
+    };
+  }
 
   return {
     displayTitle: course.title,
@@ -442,13 +452,14 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   // Map courses to sidebar courseTracks
   const courseTracks = useMemo(() => {
-    // 1. Filter out test fidelity and unwanted test courses
+    // 1. Filter out test fidelity, demo courses, and unwanted test courses
     const validCourses = academyCourses.filter((c) => {
       const title = (c.title || '').toLowerCase();
       const id = (c.id || '').toLowerCase();
       const slug = (c.slug || '').toLowerCase();
       if (title.includes('test automated backend') || id.includes('test-backend-course') || slug.includes('test-backend-course')) return false;
       if (title.includes('fidelity assessment') || id.includes('fidelity-course') || slug.includes('fidelity-course')) return false;
+      if (title.includes('(admin console demo)') || id.includes('demo-') || slug.includes('demo-')) return false;
       return true;
     });
 
@@ -853,8 +864,9 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   };
 
   // Keep active track expanded once when navigating into it, without re-opening on manual collapse
+  // For unauthenticated guests on the home page or general exploration, keep courses collapsed matching the overview state
   useEffect(() => {
-    if (!pathname) return;
+    if (!pathname || !currentUser) return;
     const currentSlug = pathname.startsWith('/learning/') ? pathname.replace('/learning/', '').split('/')[0] : '';
     const matched = courseTracks.find(t =>
       t.id === currentSlug ||
@@ -866,7 +878,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       setOpenTracks(p => ({ ...p, [matched.id]: true }));
       setCoursesOpen(true);
     }
-  }, [pathname, courseTracks]);
+  }, [pathname, courseTracks, currentUser]);
 
   // Automatically expand all courses when user types in the search box
   useEffect(() => {

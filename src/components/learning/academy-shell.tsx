@@ -401,6 +401,14 @@ export default function AcademyShell({
         sections: [],
       };
 
+  // Check if current lesson is locked for guests
+  const isLessonLocked = useMemo(() => {
+    if (currentUser) return false;
+    const trackId = selectedCourseId || apiLessonData?.course?.id || 'course-ai-qa-mastery';
+    const lessonId = currentLesson.id || currentLesson.slug;
+    return QADatabase.isLessonLocked(trackId, lessonId, false);
+  }, [currentUser, selectedCourseId, apiLessonData?.course?.id, currentLesson.id, currentLesson.slug]);
+
   // Resolve adjacent lessons for navigation footer
   const { previousLesson, nextLesson } = apiLessonData?.previousLesson || apiLessonData?.nextLesson
     ? {
@@ -434,11 +442,16 @@ export default function AcademyShell({
   // Resolve active course for Course Overview mode
   const activeCourse = useMemo(() => {
     if (selectedCourseId) {
+      const query = selectedCourseId.toLowerCase().trim();
       const match = INITIAL_PUBLISHED_COURSES.find(
         (c) =>
-          c.id === selectedCourseId ||
-          c.slug === selectedCourseId ||
-          c.title.toLowerCase().includes(selectedCourseId.toLowerCase())
+          c.id.toLowerCase() === query ||
+          c.slug.toLowerCase() === query ||
+          c.title.toLowerCase().includes(query) ||
+          query.includes(c.id.toLowerCase()) ||
+          query.includes(c.slug.toLowerCase()) ||
+          (query.includes('apm') && c.id.includes('apm')) ||
+          (query.includes('performance') && c.id.includes('performance'))
       );
       if (match) return match;
     }
@@ -848,45 +861,98 @@ export default function AcademyShell({
                     summary={currentLesson.summary}
                   />
 
-                  {/* ================= FULL LESSON CONTENT & DIAGRAMS (100% UNBLURRED) ================= */}
-                  {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
-                  {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
-                    <LlmArchitectureInfographic />
-                  )}
-
-                  {/* Uniform Technical Documentation Content (Prose format across all courses with Embedded Diagrams) */}
-                  {optimizedHtml && (
-                    <div
-                      className="w-full my-6 text-slate-900 dark:text-slate-100 docx-rendered-content leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: optimizedHtml }}
-                    />
-                  )}
-
-                  {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
-                  {currentLesson.sections && currentLesson.sections.length > 0 ? (
-                    <div className="space-y-4 my-2">
-                      {currentLesson.sections.map((section) => (
-                        <LessonSection key={section.id} section={section} />
-                      ))}
-                    </div>
-                  ) : !optimizedHtml ? (
-                    <div className="my-8 p-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 shadow-sm text-center space-y-4">
-                      <div className="w-12 h-12 mx-auto rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                        <FileQuestion className="w-6 h-6" />
+                  {/* ================= GUEST ACCESS GATEWAY / LOCKED LESSON ================= */}
+                  {isLessonLocked ? (
+                    <div className="my-8 p-6 sm:p-10 rounded-3xl bg-gradient-to-b from-slate-50 to-emerald-50/20 dark:from-neutral-900 dark:to-emerald-950/20 border-2 border-emerald-500/30 text-center shadow-lg space-y-6">
+                      <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20 shadow-xs">
+                        <Lock className="w-8 h-8" />
                       </div>
-                      <div className="max-w-md mx-auto space-y-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          Curriculum Content Under Construction
+                      
+                      <div className="max-w-xl mx-auto space-y-2.5">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Free Account Required
                         </span>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                          Building Fresh in Uniform Format
+                        <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                          Unlock Full Lesson &amp; Architectural Diagrams
                         </h3>
-                        <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
-                          This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
+                        <p className="text-sm text-slate-600 dark:text-neutral-300 leading-relaxed">
+                          Lesson 1 is available as an instant guest preview. To access full production code, deep architectural infographics, interactive exercises, and progress tracking, create your free account in under 30 seconds.
                         </p>
                       </div>
+
+                      <div className="p-4 max-w-md mx-auto rounded-2xl bg-white/80 dark:bg-neutral-800/80 border border-slate-200 dark:border-neutral-700 text-left text-xs space-y-2 text-slate-700 dark:text-neutral-300">
+                        <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                          What You Get With Your Free Account:
+                        </div>
+                        <ul className="space-y-1 pl-6 list-disc text-slate-600 dark:text-neutral-400">
+                          <li>Instant access to all 450+ enterprise lessons &amp; courses</li>
+                          <li>Downloadable production frameworks &amp; architectural diagrams</li>
+                          <li>Unlimited online code compilers &amp; API sandboxes</li>
+                          <li>800+ curated SDET interview scenarios &amp; model answers</li>
+                        </ul>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                        <Link
+                          href="/signup"
+                          className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-md transition-all hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          <span>Sign Up Free in 30 Seconds</span>
+                        </Link>
+                        <Link
+                          href="/login"
+                          className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-slate-900 dark:text-white font-bold text-sm transition-colors cursor-pointer text-center"
+                        >
+                          Already have an account? Log In
+                        </Link>
+                      </div>
                     </div>
-                  ) : null}
+                  ) : (
+                    <>
+                      {/* ================= FULL LESSON CONTENT & DIAGRAMS (100% UNBLURRED) ================= */}
+                      {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
+                      {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
+                        <LlmArchitectureInfographic />
+                      )}
+
+                      {/* Uniform Technical Documentation Content (Prose format across all courses with Embedded Diagrams) */}
+                      {optimizedHtml && (
+                        <div
+                          className="w-full my-6 text-slate-900 dark:text-slate-100 docx-rendered-content leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: optimizedHtml }}
+                        />
+                      )}
+
+                      {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
+                      {currentLesson.sections && currentLesson.sections.length > 0 ? (
+                        <div className="space-y-4 my-2">
+                          {currentLesson.sections.map((section) => (
+                            <LessonSection key={section.id} section={section} />
+                          ))}
+                        </div>
+                      ) : !optimizedHtml ? (
+                        <div className="my-8 p-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 shadow-sm text-center space-y-4">
+                          <div className="w-12 h-12 mx-auto rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                            <FileQuestion className="w-6 h-6" />
+                          </div>
+                          <div className="max-w-md mx-auto space-y-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                              Curriculum Content Under Construction
+                            </span>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                              Building Fresh in Uniform Format
+                            </h3>
+                            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
+                              This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+                    </>
+                  )}
 
                   {/* Clean Non-Obtrusive Sign-Up Banner at End of Lesson for Guest Users */}
                   {!currentUser && (

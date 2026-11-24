@@ -1411,4 +1411,430 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
       }
     ]
   }
+,
+{
+  "id": "course-apm-performance",
+  "slug": "apm-and-performance-testing",
+  "title": "APM & Enterprise Performance Testing",
+  "subtitle": "Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM",
+  "description": "Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.",
+  "level": "Comprehensive",
+  "estimatedHours": 30,
+  "modules": [
+    {
+      "id": "mod-apm-performance-1",
+      "courseId": "course-apm-performance",
+      "slug": "performance-testing-fundamentals",
+      "title": "Module 1: Performance Testing Fundamentals",
+      "description": "Load, stress, endurance, and spike testing, response time metrics, throughput, latency, and SLAs/SLOs.",
+      "lessons": [
+        {
+          "id": "les-apm-performance-1-1-what-is-performance-testing",
+          "moduleId": "mod-apm-performance-1",
+          "courseId": "course-apm-performance",
+          "slug": "what-is-performance-testing",
+          "title": "What is Performance Testing?",
+          "summary": "Master What is Performance Testing? in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-1-2-types-of-performance-testing-loa",
+          "moduleId": "mod-apm-performance-1",
+          "courseId": "course-apm-performance",
+          "slug": "types-of-performance-testing-load-stress-endurance-spike-volume",
+          "title": "Types of Performance Testing (Load, Stress, Endurance, Spike, Volume)",
+          "summary": "Master Types of Performance Testing (Load, Stress, Endurance, Spike, Volume) in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-1-3-key-metrics-response-time-throug",
+          "moduleId": "mod-apm-performance-1",
+          "courseId": "course-apm-performance",
+          "slug": "key-metrics-response-time-throughput-error-rate-latency",
+          "title": "Key Metrics (Response Time, Throughput, Error Rate, Latency)",
+          "summary": "Master Key Metrics (Response Time, Throughput, Error Rate, Latency) in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-1-4-performance-testing-lifecycle",
+          "moduleId": "mod-apm-performance-1",
+          "courseId": "course-apm-performance",
+          "slug": "performance-testing-lifecycle",
+          "title": "Performance Testing Lifecycle",
+          "summary": "Master Performance Testing Lifecycle in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-1-5-sla-slo-and-sli",
+          "moduleId": "mod-apm-performance-1",
+          "courseId": "course-apm-performance",
+          "slug": "sla-slo-and-sli",
+          "title": "SLA SLO and SLI",
+          "summary": "Master SLA SLO and SLI in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-apm-performance-2",
+      "courseId": "course-apm-performance",
+      "slug": "performance-testing-with-jmeter",
+      "title": "Module 2: Performance Testing with JMeter",
+      "description": "Apache JMeter architecture, Thread Groups, samplers, timers, listeners, parameterization, and distributed load.",
+      "lessons": [
+        {
+          "id": "les-apm-performance-2-1-introduction-to-apache-jmeter",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "introduction-to-apache-jmeter",
+          "title": "Introduction to Apache JMeter",
+          "summary": "Master Introduction to Apache JMeter in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-2-2-jmeter-architecture",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "jmeter-architecture",
+          "title": "JMeter Architecture",
+          "summary": "Master JMeter Architecture in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-2-3-thread-groups-and-virtual-users",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "thread-groups-and-virtual-users",
+          "title": "Thread Groups and Virtual Users",
+          "summary": "Master Thread Groups and Virtual Users in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-2-4-samplers-timers-and-listeners",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "samplers-timers-and-listeners",
+          "title": "Samplers, Timers and Listeners",
+          "summary": "Master Samplers, Timers and Listeners in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-2-5-assertions",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "assertions",
+          "title": "Assertions",
+          "summary": "Master Assertions in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-2-6-parameterization-and-data-driven",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "parameterization-and-data-driven-testing",
+          "title": "Parameterization and Data-Driven Testing",
+          "summary": "Master Parameterization and Data-Driven Testing in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-2-7-correlation-and-regular-expressi",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "correlation-and-regular-expressions",
+          "title": "Correlation and Regular Expressions",
+          "summary": "Master Correlation and Regular Expressions in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-2-8-distributed-testing-with-jmeter",
+          "moduleId": "mod-apm-performance-2",
+          "courseId": "course-apm-performance",
+          "slug": "distributed-testing-with-jmeter",
+          "title": "Distributed Testing with JMeter",
+          "summary": "Master Distributed Testing with JMeter in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-apm-performance-3",
+      "courseId": "course-apm-performance",
+      "slug": "modern-performance-testing-k6-gatling",
+      "title": "Module 3: Modern Performance Testing (k6 / Gatling)",
+      "description": "Scripting performance in JavaScript with Grafana k6, virtual user ramp-ups, thresholds, and InfluxDB/Grafana.",
+      "lessons": [
+        {
+          "id": "les-apm-performance-3-1-introduction-to-k6",
+          "moduleId": "mod-apm-performance-3",
+          "courseId": "course-apm-performance",
+          "slug": "introduction-to-k6",
+          "title": "Introduction to k6",
+          "summary": "Master Introduction to k6 in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-3-2-scripting-performance-tests-in-j",
+          "moduleId": "mod-apm-performance-3",
+          "courseId": "course-apm-performance",
+          "slug": "scripting-performance-tests-in-javascript",
+          "title": "Scripting Performance Tests in JavaScript",
+          "summary": "Master Scripting Performance Tests in JavaScript in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-3-3-virtual-users-and-thresholds",
+          "moduleId": "mod-apm-performance-3",
+          "courseId": "course-apm-performance",
+          "slug": "virtual-users-and-thresholds",
+          "title": "Virtual Users and Thresholds",
+          "summary": "Master Virtual Users and Thresholds in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-3-4-k6-cloud-and-influxdbgrafana-int",
+          "moduleId": "mod-apm-performance-3",
+          "courseId": "course-apm-performance",
+          "slug": "k6-cloud-and-influxdbgrafana-integration",
+          "title": "k6 Cloud and InfluxDB/Grafana Integration",
+          "summary": "Master k6 Cloud and InfluxDB/Grafana Integration in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-3-5-k6-vs-jmeter",
+          "moduleId": "mod-apm-performance-3",
+          "courseId": "course-apm-performance",
+          "slug": "k6-vs-jmeter",
+          "title": "k6 vs JMeter",
+          "summary": "Master k6 vs JMeter in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-3-6-gatling-overview",
+          "moduleId": "mod-apm-performance-3",
+          "courseId": "course-apm-performance",
+          "slug": "gatling-overview",
+          "title": "Gatling Overview",
+          "summary": "Master Gatling Overview in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-apm-performance-4",
+      "courseId": "course-apm-performance",
+      "slug": "application-performance-monitoring-apm-concepts",
+      "title": "Module 4: Application Performance Monitoring (APM) Concepts",
+      "description": "The three pillars of observability (metrics, logs, traces), distributed tracing, and APM platforms.",
+      "lessons": [
+        {
+          "id": "les-apm-performance-4-1-what-is-apm",
+          "moduleId": "mod-apm-performance-4",
+          "courseId": "course-apm-performance",
+          "slug": "what-is-apm",
+          "title": "What is APM?",
+          "summary": "Master What is APM? in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-4-2-key-apm-pillars-metrics-logs-tra",
+          "moduleId": "mod-apm-performance-4",
+          "courseId": "course-apm-performance",
+          "slug": "key-apm-pillars-metrics-logs-traces",
+          "title": "Key APM Pillars (Metrics, Logs, Traces)",
+          "summary": "Master Key APM Pillars (Metrics, Logs, Traces) in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-4-3-understanding-distributed-tracin",
+          "moduleId": "mod-apm-performance-4",
+          "courseId": "course-apm-performance",
+          "slug": "understanding-distributed-tracing",
+          "title": "Understanding Distributed Tracing",
+          "summary": "Master Understanding Distributed Tracing in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-4-4-apm-tools-landscape-datadog-dyna",
+          "moduleId": "mod-apm-performance-4",
+          "courseId": "course-apm-performance",
+          "slug": "apm-tools-landscape-datadog-dynatrace-new-relic-opentelemetry",
+          "title": "APM Tools Landscape (Datadog, Dynatrace, New Relic, OpenTelemetry)",
+          "summary": "Master APM Tools Landscape (Datadog, Dynatrace, New Relic, OpenTelemetry) in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-4-5-why-qa-engineers-need-apm-knowle",
+          "moduleId": "mod-apm-performance-4",
+          "courseId": "course-apm-performance",
+          "slug": "why-qa-engineers-need-apm-knowledge",
+          "title": "Why QA Engineers Need APM Knowledge",
+          "summary": "Master Why QA Engineers Need APM Knowledge in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-apm-performance-5",
+      "courseId": "course-apm-performance",
+      "slug": "monitoring-metrics-and-diagnostics",
+      "title": "Module 5: Monitoring Metrics and Diagnostics",
+      "description": "Analyzing CPU, memory, garbage collection pauses, thread contention, and slow SQL query bottlenecks.",
+      "lessons": [
+        {
+          "id": "les-apm-performance-5-1-cpu-and-memory-utilization",
+          "moduleId": "mod-apm-performance-5",
+          "courseId": "course-apm-performance",
+          "slug": "cpu-and-memory-utilization",
+          "title": "CPU and Memory Utilization",
+          "summary": "Master CPU and Memory Utilization in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-5-2-garbage-collection-analysis",
+          "moduleId": "mod-apm-performance-5",
+          "courseId": "course-apm-performance",
+          "slug": "garbage-collection-analysis",
+          "title": "Garbage Collection Analysis",
+          "summary": "Master Garbage Collection Analysis in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-5-3-thread-contention-and-deadlocks",
+          "moduleId": "mod-apm-performance-5",
+          "courseId": "course-apm-performance",
+          "slug": "thread-contention-and-deadlocks",
+          "title": "Thread Contention and Deadlocks",
+          "summary": "Master Thread Contention and Deadlocks in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-5-4-database-query-performance-and-s",
+          "moduleId": "mod-apm-performance-5",
+          "courseId": "course-apm-performance",
+          "slug": "database-query-performance-and-slow-queries",
+          "title": "Database Query Performance and Slow Queries",
+          "summary": "Master Database Query Performance and Slow Queries in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-5-5-network-latency-and-bottlenecks",
+          "moduleId": "mod-apm-performance-5",
+          "courseId": "course-apm-performance",
+          "slug": "network-latency-and-bottlenecks",
+          "title": "Network Latency and Bottlenecks",
+          "summary": "Master Network Latency and Bottlenecks in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-apm-performance-6",
+      "courseId": "course-apm-performance",
+      "slug": "performance-engineering-in-cicd",
+      "title": "Module 6: Performance Engineering in CI/CD",
+      "description": "Shift-Left performance testing, automated threshold quality gates in CI/CD, and regression detection.",
+      "lessons": [
+        {
+          "id": "les-apm-performance-6-1-shift-left-performance-testing",
+          "moduleId": "mod-apm-performance-6",
+          "courseId": "course-apm-performance",
+          "slug": "shift-left-performance-testing",
+          "title": "Shift-Left Performance Testing",
+          "summary": "Master Shift-Left Performance Testing in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-6-2-automated-performance-gates-in-p",
+          "moduleId": "mod-apm-performance-6",
+          "courseId": "course-apm-performance",
+          "slug": "automated-performance-gates-in-pipelines",
+          "title": "Automated Performance Gates in Pipelines",
+          "summary": "Master Automated Performance Gates in Pipelines in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-6-3-baseline-comparison-and-regressi",
+          "moduleId": "mod-apm-performance-6",
+          "courseId": "course-apm-performance",
+          "slug": "baseline-comparison-and-regression-detection",
+          "title": "Baseline Comparison and Regression Detection",
+          "summary": "Master Baseline Comparison and Regression Detection in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-6-4-continuous-profiling",
+          "moduleId": "mod-apm-performance-6",
+          "courseId": "course-apm-performance",
+          "slug": "continuous-profiling",
+          "title": "Continuous Profiling",
+          "summary": "Master Continuous Profiling in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-6-5-alerting-and-anomaly-detection",
+          "moduleId": "mod-apm-performance-6",
+          "courseId": "course-apm-performance",
+          "slug": "alerting-and-anomaly-detection",
+          "title": "Alerting and Anomaly Detection",
+          "summary": "Master Alerting and Anomaly Detection in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    },
+    {
+      "id": "mod-apm-performance-7",
+      "courseId": "course-apm-performance",
+      "slug": "enterprise-performance-best-practices",
+      "title": "Module 7: Enterprise Performance Best Practices",
+      "description": "Production-like test environments, bottleneck troubleshooting methodology, capacity planning, and scalability.",
+      "lessons": [
+        {
+          "id": "les-apm-performance-7-1-performance-test-strategy-design",
+          "moduleId": "mod-apm-performance-7",
+          "courseId": "course-apm-performance",
+          "slug": "performance-test-strategy-design",
+          "title": "Performance Test Strategy Design",
+          "summary": "Master Performance Test Strategy Design in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-7-2-production-like-environment-sizi",
+          "moduleId": "mod-apm-performance-7",
+          "courseId": "course-apm-performance",
+          "slug": "production-like-environment-sizing",
+          "title": "Production-Like Environment Sizing",
+          "summary": "Master Production-Like Environment Sizing in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-7-3-performance-troubleshooting-meth",
+          "moduleId": "mod-apm-performance-7",
+          "courseId": "course-apm-performance",
+          "slug": "performance-troubleshooting-methodology",
+          "title": "Performance Troubleshooting Methodology",
+          "summary": "Master Performance Troubleshooting Methodology in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-7-4-capacity-planning",
+          "moduleId": "mod-apm-performance-7",
+          "courseId": "course-apm-performance",
+          "slug": "capacity-planning",
+          "title": "Capacity Planning",
+          "summary": "Master Capacity Planning in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        },
+        {
+          "id": "les-apm-performance-7-5-scalability-architecture-analysi",
+          "moduleId": "mod-apm-performance-7",
+          "courseId": "course-apm-performance",
+          "slug": "scalability-architecture-analysis",
+          "title": "Scalability Architecture Analysis",
+          "summary": "Master Scalability Architecture Analysis in enterprise software quality engineering and automated testing architectures.",
+          "estimatedReadingTime": 6
+        }
+      ]
+    }
+  ]
+}
 ];
