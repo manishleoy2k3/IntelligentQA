@@ -36,7 +36,9 @@ import {
   ArrowRight,
   GripVertical,
   ChevronDown,
+  GitCompare,
 } from 'lucide-react';
+import CoverageGapAnalyzer from '@/components/qa-agents/coverage-gap-analyzer';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 import {
@@ -56,7 +58,8 @@ import {
 } from '@/lib/project-files';
 import { CODE_REVIEWER_DEBUGGER_AGENT_MD } from '@/data/agents/code-reviewer-debugger-agent';
 
-export type AgentTab = 'requirements' | 'test_cases' | 'automation_code' | 'code_review' | 'chat';
+export type AgentTab =
+  'requirements' | 'test_cases' | 'automation_code' | 'code_review' | 'chat' | 'gap_analysis';
 
 const tabDefaultPrompts: Record<AgentTab, string> = {
   requirements:
@@ -73,6 +76,7 @@ test("checkout workflow", async ({ page }) => {
   await page.click("#confirm");
 });`,
   chat: '',
+  gap_analysis: '',
 };
 
 export const AGENT_CONFIGS: Record<
@@ -137,6 +141,16 @@ export const AGENT_CONFIGS: Record<
       'Interactive technical coaching with an expert SDET mentor on framework architecture, CI/CD pipelines, flakiness triage, and interview mastery.',
     icon: MessageSquare,
     color: 'text-purple-500',
+  },
+  gap_analysis: {
+    num: '7',
+    tabName: '7. Coverage Gap Analyzer',
+    title: 'Test Coverage Gap Analysis Engine',
+    badgeText: '',
+    description:
+      'Compare requirements against test cases, perform bidirectional traceability analysis, identify coverage gaps across 12 scenario dimensions, and generate multi-sheet Excel reports.',
+    icon: GitCompare,
+    color: 'text-rose-500',
   },
 };
 
@@ -328,7 +342,14 @@ export default function QAAgentsWorkspace() {
     const tabParam = params.get('tab') as AgentTab;
     if (
       tabParam &&
-      ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(tabParam)
+      [
+        'requirements',
+        'test_cases',
+        'automation_code',
+        'code_review',
+        'chat',
+        'gap_analysis',
+      ].includes(tabParam)
     ) {
       handleTabSwitch(tabParam);
     }
@@ -336,9 +357,14 @@ export default function QAAgentsWorkspace() {
     const handleSwitch = (e: any) => {
       if (
         e.detail?.tab &&
-        ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(
-          e.detail.tab
-        )
+        [
+          'requirements',
+          'test_cases',
+          'automation_code',
+          'code_review',
+          'chat',
+          'gap_analysis',
+        ].includes(e.detail.tab)
       ) {
         handleTabSwitch(e.detail.tab);
       }
@@ -858,7 +884,9 @@ export default function QAAgentsWorkspace() {
       ) : null}
 
       {/* Main Workspace Area */}
-      {activeTab !== 'chat' ? (
+      {activeTab === 'gap_analysis' ? (
+        <CoverageGapAnalyzer apiKey={geminiKey} onOpenKeyModal={() => setShowKeyModal(true)} />
+      ) : activeTab !== 'chat' ? (
         <div
           ref={splitContainerRef}
           className={`flex flex-col lg:flex-row items-stretch gap-6 lg:gap-0 relative ${
@@ -1490,9 +1518,46 @@ export default function QAAgentsWorkspace() {
           <div
             onPointerDown={handleResizePointerDown}
             onDoubleClick={() => setReqSplitPercent(50)}
-            className="hidden lg:flex w-4 -mx-1 group items-center justify-center cursor-col-resize z-10 shrink-0 select-none py-4"
-            title="Drag to resize panels (Double-click to reset to 50/50)"
+            className="hidden lg:flex flex-col items-center justify-center w-6 -mx-2 group cursor-col-resize z-10 shrink-0 select-none py-4"
+            title="Drag to resize panels (Double-click to reset to 50:50)"
           >
+            {/* Quick preset ratio buttons */}
+            <div className="flex flex-col gap-1 mb-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setReqSplitPercent(35);
+                }}
+                className="px-1 py-0.5 text-[9px] font-mono rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white"
+                title="Preset 35:65"
+              >
+                35:65
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setReqSplitPercent(50);
+                }}
+                className="px-1 py-0.5 text-[9px] font-mono rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white"
+                title="Preset 50:50"
+              >
+                50:50
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setReqSplitPercent(65);
+                }}
+                className="px-1 py-0.5 text-[9px] font-mono rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white"
+                title="Preset 65:35"
+              >
+                65:35
+              </button>
+            </div>
+
             <div
               className={`w-1.5 h-full min-h-[300px] rounded-full transition-all flex items-center justify-center ${
                 isDragging

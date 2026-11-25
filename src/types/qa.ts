@@ -117,7 +117,8 @@ export interface CodeSubmission {
 export interface QAGeneratedArtifact {
   id: string;
   userId: string;
-  agentType: 'requirements' | 'test_cases' | 'automation_code' | 'code_review' | 'chat';
+  agentType:
+    'requirements' | 'test_cases' | 'automation_code' | 'code_review' | 'chat' | 'gap_analysis';
   title: string;
   techStack: 'playwright-ts' | 'selenium-java' | 'restassured' | 'playwright-api';
   inputPrompt: string;

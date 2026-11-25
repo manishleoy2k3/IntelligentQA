@@ -107,6 +107,21 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     color: 'text-purple-500',
     isCustom: false,
   },
+  {
+    id: 'agent-7-gap',
+    tabKey: 'gap_analysis',
+    num: '7',
+    tabName: '7. Coverage Gap Analyzer',
+    title: 'Test Coverage Gap Analysis Engine',
+    badgeText: '',
+    description:
+      'Compare requirements against test cases, perform bidirectional traceability analysis, identify coverage gaps across 12 dimensions, and generate multi-sheet Excel reports.',
+    defaultPrompt: 'Requirements vs Test Suite Gap Analysis',
+    systemPrompt:
+      'You are a Principal QA Architect and Requirement Traceability Authority performing bidirectional traceability and test coverage gap analysis.',
+    color: 'text-rose-500',
+    isCustom: false,
+  },
 ];
 
 const AGENT_CONFIGS_KEY = 'intelligentqa_admin_agent_configs';

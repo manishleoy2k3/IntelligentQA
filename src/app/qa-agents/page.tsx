@@ -4,7 +4,7 @@ import AuthGuard from '@/components/auth/auth-guard';
 export const metadata = {
   title: 'QA Agents Suite | IntelligentQA',
   description:
-    '5 autonomous SDET agents: Requirement Generator, Test Case Generator, Automation Code Generator, Code Reviewer & Quality Auditor, and Senior SDET Mentor.',
+    'Autonomous QA Agents Suite: Requirement Analyzer, Test Case Generator, Automation Code Generator, Code Reviewer & Quality Auditor, Senior SDET Mentor, and Test Coverage Gap Analysis Engine.',
 };
 
 export default function QAAgentsPage() {

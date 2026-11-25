@@ -5,11 +5,67 @@ import { TEST_CASE_GENERATOR_SYSTEM_PROMPT } from '@/data/agents/test-case-gener
 import { AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT } from '@/data/agents/automation-code-generator-agent';
 import { CODE_REVIEWER_DEBUGGER_SYSTEM_PROMPT } from '@/data/agents/code-reviewer-debugger-agent';
 import { validateAndCorrectTestCasesMarkdown } from '@/lib/excel-export';
+import { runCoverageGapAnalysis } from '@/lib/gap-analysis/ai-gap-analyzer';
+import { parsePastedRequirements, parsePastedTestCases } from '@/lib/gap-analysis/input-parser';
+import { NormalizedRequirement, NormalizedTestCase } from '@/types/coverage-gap';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { action, input, techStack = 'playwright-ts', options } = body;
+
+    // Agent 07: Coverage Gap Analysis Handler
+    if (action === 'gap_analysis') {
+      const rawApiKey = req.headers.get('x-gemini-api-key') || body.apiKey;
+      const effectiveApiKey = sanitizeGeminiKey(rawApiKey || '');
+
+      let requirements: NormalizedRequirement[] = Array.isArray(body.requirements)
+        ? body.requirements
+        : [];
+      let testCases: NormalizedTestCase[] = Array.isArray(body.testCases) ? body.testCases : [];
+
+      if (requirements.length === 0 && body.requirementsText) {
+        requirements = parsePastedRequirements(body.requirementsText);
+      }
+      if (testCases.length === 0 && body.testCasesText) {
+        testCases = parsePastedTestCases(body.testCasesText);
+      }
+
+      // If passed as single string in input
+      if (
+        requirements.length === 0 &&
+        typeof input === 'string' &&
+        input.includes('---TEST_CASES---')
+      ) {
+        const parts = input.split('---TEST_CASES---');
+        requirements = parsePastedRequirements(parts[0]);
+        testCases = parsePastedTestCases(parts[1]);
+      }
+
+      if (requirements.length === 0 || testCases.length === 0) {
+        return NextResponse.json(
+          {
+            error: 'MISSING_DATASETS',
+            message:
+              'Both datasets must contain at least one valid requirement and one valid test case.',
+          },
+          { status: 400 }
+        );
+      }
+
+      const { result, isLiveAI, engine } = await runCoverageGapAnalysis(
+        requirements,
+        testCases,
+        effectiveApiKey
+      );
+
+      return NextResponse.json({
+        action: 'gap_analysis',
+        result,
+        isLiveAI,
+        engine,
+      });
+    }
 
     if (!input || typeof input !== 'string') {
       return NextResponse.json({ error: 'Input is required' }, { status: 400 });
