@@ -1529,46 +1529,6 @@ export default function QAAgentsWorkspace() {
                           ? 'Scaffolded Automation Code'
                           : 'Quality Audit & Refactoring Report'}
                   </span>
-                  {isLg && (
-                    <span className="hidden xl:inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] text-slate-500 ml-1">
-                      <button
-                        type="button"
-                        onClick={() => setReqSplitPercent(35)}
-                        className={`px-1.5 py-0.5 rounded font-medium transition cursor-pointer ${
-                          reqSplitPercent === 35
-                            ? 'bg-cyan-600 text-white shadow-xs'
-                            : 'hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                        title="Wide Output View (35% Left / 65% Output)"
-                      >
-                        35:65
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setReqSplitPercent(50)}
-                        className={`px-1.5 py-0.5 rounded font-medium transition cursor-pointer ${
-                          reqSplitPercent === 50
-                            ? 'bg-cyan-600 text-white shadow-xs'
-                            : 'hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                        title="Balanced View (50% Left / 50% Output)"
-                      >
-                        50:50
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setReqSplitPercent(65)}
-                        className={`px-1.5 py-0.5 rounded font-medium transition cursor-pointer ${
-                          reqSplitPercent === 65
-                            ? 'bg-cyan-600 text-white shadow-xs'
-                            : 'hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                        title="Wide Input View (65% Left / 35% Output)"
-                      >
-                        65:35
-                      </button>
-                    </span>
-                  )}
                 </label>
 
                 {outputResult && (
