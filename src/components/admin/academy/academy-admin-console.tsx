@@ -22,6 +22,8 @@ import {
   Folder,
   ChevronRight,
   ChevronDown,
+  ChevronUp,
+  ArrowUpDown,
   Clock,
   Sparkles,
   ExternalLink,
@@ -80,6 +82,7 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   // =========================================================================
   // 1. Course Modal
   const [showCourseModal, setShowCourseModal] = useState<boolean>(false);
+  const [showReorderModal, setShowReorderModal] = useState<boolean>(false);
   const [editingCourse, setEditingCourse] = useState<AcademyCourse | null>(null);
   const [courseTitle, setCourseTitle] = useState<string>('');
   const [courseSlug, setCourseSlug] = useState<string>('');
@@ -345,6 +348,9 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       }
 
       setShowCourseModal(false);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+      }
       fetchCurriculum();
     } catch (err: any) {
       notify(err.message, 'error');
@@ -369,6 +375,9 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || 'Failed to update status');
       notify(`Course is now ${nextStatus === 'published' ? 'Published' : 'Draft'}.`);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+      }
       fetchCurriculum();
     } catch (err: any) {
       notify(err.message, 'error');
@@ -398,6 +407,9 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || 'Failed to reorder');
       notify('Courses reordered successfully.');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+      }
       fetchCurriculum();
     } catch (err: any) {
       notify(err.message, 'error');
@@ -417,6 +429,9 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
       if (!res.ok || !json.success) throw new Error(json.error || 'Failed to delete course');
       notify(`Course "${title}" deleted successfully.`);
       setSelectedCourseId('');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('intelligentqa_curriculum_updated'));
+      }
       fetchCurriculum();
     } catch (err: any) {
       notify(err.message, 'error');
@@ -1248,14 +1263,25 @@ test('deterministic enterprise verification', async ({ page }) => {
               })}
             </div>
 
-            <button
-              type="button"
-              onClick={handleOpenAddCourse}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222222] hover:bg-[#2A2A2A] text-emerald-400 border border-emerald-500/30 text-xs font-bold transition-all cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Course</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowReorderModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222222] hover:bg-[#2A2A2A] text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all cursor-pointer"
+                title="Manage and reorder all courses"
+              >
+                <ArrowUpDown className="w-3.5 h-3.5" />
+                <span>Reorder Courses</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleOpenAddCourse}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222222] hover:bg-[#2A2A2A] text-emerald-400 border border-emerald-500/30 text-xs font-bold transition-all cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Course</span>
+              </button>
+            </div>
           </div>
 
           {/* Active Course Banner & Action Card */}
@@ -1290,6 +1316,40 @@ test('deterministic enterprise verification', async ({ page }) => {
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Preview in Academy</span>
                   </a>
+
+                  {/* Course Reorder Position Controls */}
+                  {(() => {
+                    const activeIndex = courses.findIndex((c) => c.id === activeCourse.id);
+                    if (activeIndex === -1) return null;
+                    const isFirst = activeIndex === 0;
+                    const isLast = activeIndex === courses.length - 1;
+                    return (
+                      <div className="flex items-center bg-[#222222] border border-[#333] rounded-xl p-0.5" title={`Course Order #${activeIndex + 1} of ${courses.length}`}>
+                        <span className="text-[10px] font-mono text-zinc-400 px-2 font-bold">
+                          #{activeIndex + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleReorderCourses(activeIndex, 'up')}
+                          disabled={isFirst}
+                          className="p-1 rounded-lg hover:bg-[#333] text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          title="Move course up in order"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleReorderCourses(activeIndex, 'down')}
+                          disabled={isLast}
+                          className="p-1 rounded-lg hover:bg-[#333] text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          title="Move course down in order"
+                        >
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })()}
+
                   <button
                     type="button"
                     onClick={() => handleToggleCoursePublish(activeCourse)}
@@ -1595,6 +1655,108 @@ test('deterministic enterprise verification', async ({ page }) => {
       {/* ========================================================================= */}
       {/* 4. MODALS SECTION                                                         */}
       {/* ========================================================================= */}
+
+      {/* 4A-0. REORDER COURSES MODAL */}
+      {showReorderModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+        >
+          <div className="relative w-full max-w-xl bg-[#161616] border border-[#2A2A2A] rounded-2xl shadow-2xl p-6 space-y-4 text-white max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-[#262626]">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-cyan-400" />
+                <h3 className="text-sm font-bold text-white">Reorder Academy Courses</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowReorderModal(false)}
+                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-zinc-400">
+              Shift courses up or down to set their display sequence. Changes sync immediately to the left navigation tree.
+            </p>
+
+            <div className="overflow-y-auto space-y-2 pr-1 flex-1">
+              {courses.map((course, idx) => {
+                const totalLessons = (course.modules || []).reduce((acc, m) => acc + (m.lessons?.length || 0), 0);
+                const isFirst = idx === 0;
+                const isLast = idx === courses.length - 1;
+
+                return (
+                  <div
+                    key={course.id}
+                    className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all ${
+                      course.id === selectedCourseId
+                        ? 'bg-emerald-950/20 border-emerald-500/40 text-white'
+                        : 'bg-[#1C1C1C] border-[#2A2A2A] text-zinc-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-zinc-800 font-mono text-xs font-bold text-zinc-300 shrink-0">
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-xs truncate">{course.title}</span>
+                          <span
+                            className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                              course.status === 'published'
+                                ? 'bg-emerald-500/20 text-emerald-400'
+                                : 'bg-amber-500/20 text-amber-300'
+                            }`}
+                          >
+                            {course.status}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-zinc-500">
+                          {course.modules?.length || 0} Modules • {totalLessons} Lessons
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleReorderCourses(idx, 'up')}
+                        disabled={isFirst}
+                        className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        title="Move Up"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReorderCourses(idx, 'down')}
+                        disabled={isLast}
+                        className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        title="Move Down"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="pt-3 border-t border-[#262626] flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowReorderModal(false)}
+                className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-colors cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 4A. CREATE / EDIT COURSE MODAL */}
       {showCourseModal && (

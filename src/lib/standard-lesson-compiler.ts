@@ -43,9 +43,27 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     const title = data.architectureDiagram.title || 'Technical Architecture Diagram';
     const caption = data.architectureDiagram.caption || title;
     html += `
-<figure data-curriculum-diagram="true" class="my-8 p-4 sm:p-6 bg-slate-50 dark:bg-neutral-900/70 border border-slate-200 dark:border-neutral-800 rounded-2xl shadow-sm text-center">
-  <div class="relative overflow-hidden rounded-xl border border-slate-200/80 dark:border-neutral-700/80 bg-white dark:bg-neutral-950 flex items-center justify-center p-2 sm:p-4">
-    <img src="${escapeHtml(data.architectureDiagram.imageUrl)}" alt="${escapeHtml(title)}" class="w-full max-h-[520px] object-contain mx-auto" loading="lazy" decoding="async" />
+<figure data-curriculum-diagram="true" class="curriculum-diagram-card group my-8 p-4 sm:p-6 bg-slate-50 dark:bg-neutral-900/70 border border-slate-200 dark:border-neutral-800 rounded-2xl shadow-sm text-center">
+  <div class="diagram-toolbar flex items-center justify-between pb-3 mb-3 border-b border-slate-200/80 dark:border-neutral-800 text-left">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+        📐 Architectural Blueprint
+      </span>
+      <span class="text-[11px] text-slate-500 dark:text-neutral-400 hidden sm:inline font-medium">Click to enlarge crystal clear</span>
+    </div>
+    <button type="button" class="expand-diagram-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition-all hover:scale-105 cursor-pointer" title="Expand to crystal clear high-resolution view">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      <span>Expand View</span>
+    </button>
+  </div>
+  <div class="diagram-img-wrapper group relative overflow-hidden rounded-xl border border-slate-200/80 dark:border-neutral-700/80 bg-white dark:bg-neutral-950 flex items-center justify-center p-2 sm:p-4 cursor-zoom-in">
+    <img src="${escapeHtml(data.architectureDiagram.imageUrl)}" alt="${escapeHtml(title)}" class="w-full max-h-[680px] object-contain mx-auto transition-transform duration-200 group-hover:scale-[1.01]" loading="lazy" decoding="async" title="Click to enlarge in crystal clear high-resolution" />
+    <div class="absolute inset-0 bg-neutral-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none rounded-xl z-10">
+      <span class="px-3 py-1.5 rounded-full bg-neutral-900/90 text-white text-xs font-semibold shadow-lg backdrop-blur-xs flex items-center gap-1.5 border border-neutral-700">
+        <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        Click to enlarge full-screen
+      </span>
+    </div>
   </div>
   <figcaption class="mt-3 text-xs sm:text-sm font-semibold text-slate-700 dark:text-neutral-300">
     📐 ${escapeHtml(caption)}

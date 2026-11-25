@@ -26,6 +26,8 @@ export interface AcademyClientCourse {
   description: string;
   level: string;
   estimatedHours: number;
+  sortOrder?: number;
+  status?: string;
   modules: AcademyClientModule[];
 }
 

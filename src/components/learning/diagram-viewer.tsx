@@ -133,13 +133,22 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
             ))}
           </div>
         ) : config.type === 'image' && config.imageUrl ? (
-          <div className="flex flex-col items-center">
-            <img
-              src={config.imageUrl}
-              alt={config.altText || config.title}
-              className="max-h-[500px] w-auto rounded-xl object-contain shadow-xs border border-slate-200 dark:border-neutral-800"
-              loading="lazy"
-            />
+          <div className="flex flex-col items-center group relative cursor-zoom-in" onClick={() => setIsZoomed(true)}>
+            <div className="relative overflow-hidden rounded-xl">
+              <img
+                src={config.imageUrl}
+                alt={config.altText || config.title}
+                className="max-h-[640px] w-auto rounded-xl object-contain shadow-xs border border-slate-200 dark:border-neutral-800 transition-transform duration-200 group-hover:scale-[1.01]"
+                loading="lazy"
+                title="Click to expand fullscreen"
+              />
+              <div className="absolute inset-0 bg-neutral-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none rounded-xl">
+                <span className="px-3 py-1.5 rounded-full bg-neutral-900/90 text-white text-xs font-semibold shadow-lg backdrop-blur-xs flex items-center gap-1.5 border border-neutral-700">
+                  <Maximize2 className="w-3.5 h-3.5 text-emerald-400" />
+                  Click to enlarge
+                </span>
+              </div>
+            </div>
             {config.sourceAttribution && (
               <p className="text-[11px] text-slate-400 dark:text-neutral-500 mt-2 italic">
                 Source: {config.sourceAttribution}

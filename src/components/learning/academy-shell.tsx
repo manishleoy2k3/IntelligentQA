@@ -28,6 +28,7 @@ import RelatedLessons from './related-lessons';
 import ModuleOverviewCard from './module-overview-card';
 import CourseOverviewCard from './course-overview-card';
 import LlmArchitectureInfographic from './llm-architecture-infographic';
+import ContentImageLightbox from './content-image-lightbox';
 import { generateStandardLessonHtml } from '@/lib/standard-lesson-compiler';
 import { renderTiptapJsonToHtml } from '@/components/editor/tiptap-renderer';
 import {
@@ -88,6 +89,52 @@ export default function AcademyShell({
 
   // User Authentication state for guest gating & teaser preview
   const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // Lightbox modal state for crystal clear image and diagram enlargement
+  const [lightboxState, setLightboxState] = useState<{
+    isOpen: boolean;
+    imageUrl: string;
+    altText?: string;
+    title?: string;
+    caption?: string;
+  }>({
+    isOpen: false,
+    imageUrl: '',
+    altText: '',
+    title: '',
+    caption: '',
+  });
+
+  // Event delegation to capture clicks on any diagram or image across all course contents
+  const handleContentClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const figure = target.closest('figure');
+    const clickedImg = (target.tagName.toLowerCase() === 'img' ? target : null) as HTMLImageElement | null;
+    const expandBtn = target.closest('.expand-diagram-btn');
+    const diagramWrapper = target.closest('.diagram-img-wrapper') || target.closest('[data-curriculum-diagram="true"]');
+
+    const img =
+      clickedImg ||
+      (figure ? (figure.querySelector('img') as HTMLImageElement | null) : null) ||
+      (diagramWrapper ? (diagramWrapper.querySelector('img') as HTMLImageElement | null) : null);
+
+    if (img && (clickedImg || expandBtn || figure || diagramWrapper)) {
+      const src = img.getAttribute('src') || img.src;
+      if (src) {
+        e.preventDefault();
+        e.stopPropagation();
+        const figcaption = figure?.querySelector('figcaption')?.textContent?.trim() || '';
+        const titleText = figure?.getAttribute('data-diagram-title') || img.alt || '';
+        setLightboxState({
+          isOpen: true,
+          imageUrl: src,
+          altText: img.alt || 'Course Diagram',
+          title: titleText || img.alt || 'Architecture Diagram',
+          caption: figcaption || img.alt || '',
+        });
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -529,10 +576,62 @@ export default function AcademyShell({
     html = html.replace(/\btext-(?:white|slate-100|slate-200|slate-300|slate-400|neutral-100|neutral-200|neutral-300|neutral-400|zinc-100|zinc-200|zinc-300|zinc-400|gray-100|gray-200|gray-300|gray-400)\b/g, '');
     html = html.replace(/\bstyle="[^"]*color:\s*(?:#ffffff|#fff|#cbd5e1|#d4d4d8|#64748B|#94a3b8|#e2e8f0|rgb\(255,\s*255,\s*255\)|rgb\(203,\s*213,\s*225\))[^"]*"/gi, '');
 
-    // 5. Inject lazy loading and decoding async on images
+    // 5. Enhance curriculum diagrams with expand button, crystal clear rendering & zoom affordances
+    html = html.replace(
+      /(<figure\b[^>]*data-curriculum-diagram="true"[^>]*>)([\s\S]*?)(<\/figure>)/gi,
+      (match, openTag, content, closeTag) => {
+        let enhancedContent = content;
+
+        // Add diagram toolbar if not already present
+        if (!enhancedContent.includes('diagram-toolbar')) {
+          const toolbar = `
+<div class="diagram-toolbar flex items-center justify-between pb-3 mb-3 border-b border-slate-200/80 dark:border-neutral-800 text-left">
+  <div class="flex items-center gap-2">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+      📐 Architecture Blueprint
+    </span>
+    <span class="text-[11px] text-slate-500 dark:text-neutral-400 hidden sm:inline font-medium">Click image to expand full-screen</span>
+  </div>
+  <button type="button" class="expand-diagram-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition-all hover:scale-105 cursor-pointer" title="Expand to crystal clear high-resolution view">
+    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    <span>Expand View</span>
+  </button>
+</div>`;
+          enhancedContent = toolbar + enhancedContent;
+        }
+
+        // Add hover overlay and cursor-zoom-in to the image container if not already present
+        if (!enhancedContent.includes('diagram-img-wrapper')) {
+          enhancedContent = enhancedContent.replace(
+            /<div class="relative overflow-hidden rounded-xl border border-slate-200\/80 dark:border-neutral-700\/80 bg-white dark:bg-neutral-950 flex items-center justify-center p-2 sm:p-4">/gi,
+            `<div class="diagram-img-wrapper group relative overflow-hidden rounded-xl border border-slate-200/80 dark:border-neutral-700/80 bg-white dark:bg-neutral-950 flex items-center justify-center p-2 sm:p-4 cursor-zoom-in">
+    <div class="absolute inset-0 bg-neutral-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none rounded-xl z-10">
+      <span class="px-3 py-1.5 rounded-full bg-neutral-900/90 text-white text-xs font-semibold shadow-lg backdrop-blur-xs flex items-center gap-1.5 border border-neutral-700">
+        <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        Click to enlarge full-screen
+      </span>
+    </div>`
+          );
+        }
+
+        // Upgrade max-h-[520px] to max-h-[680px]
+        enhancedContent = enhancedContent.replace(
+          /max-h-\[520px\]/g,
+          'max-h-[680px] cursor-zoom-in transition-transform duration-200 group-hover:scale-[1.01]'
+        );
+
+        const updatedOpenTag = openTag.includes('curriculum-diagram-card')
+          ? openTag
+          : openTag.replace(/class="([^"]*)"/i, 'class="$1 curriculum-diagram-card cursor-zoom-in group"');
+
+        return `${updatedOpenTag}${enhancedContent}${closeTag}`;
+      }
+    );
+
+    // 6. Inject lazy loading and decoding async on images
     return html.replace(
       /<img\s+(?![^>]*\bloading=)/gi,
-      '<img loading="lazy" decoding="async" '
+      '<img loading="lazy" decoding="async" title="Click to enlarge in crystal clear high-resolution" '
     );
   }, [apiLessonData?.lesson?.contentHtml, apiLessonData?.lesson?.blockData]);
 
@@ -940,12 +1039,13 @@ export default function AcademyShell({
                         <div
                           className="w-full my-6 text-slate-900 dark:text-slate-100 docx-rendered-content leading-relaxed"
                           dangerouslySetInnerHTML={{ __html: optimizedHtml }}
+                          onClick={handleContentClick}
                         />
                       )}
 
                       {/* Interactive Curriculum Sections (Pipeline Diagrams, Code Blocks, Callouts, Tables) */}
                       {currentLesson.sections && currentLesson.sections.length > 0 ? (
-                        <div className="space-y-4 my-2">
+                        <div className="space-y-4 my-2" onClick={handleContentClick}>
                           {currentLesson.sections.map((section) => (
                             <LessonSection key={section.id} section={section} />
                           ))}
@@ -1035,6 +1135,16 @@ export default function AcademyShell({
         <CourseSearch
           isOpen={isSearchOpen}
           onClose={() => setIsSearchOpen(false)}
+        />
+
+        {/* Full-Screen Crystal Clear Image & Diagram Lightbox Modal */}
+        <ContentImageLightbox
+          isOpen={lightboxState.isOpen}
+          onClose={() => setLightboxState((prev) => ({ ...prev, isOpen: false }))}
+          imageUrl={lightboxState.imageUrl}
+          altText={lightboxState.altText}
+          title={lightboxState.title}
+          caption={lightboxState.caption}
         />
       </div>
     </div>

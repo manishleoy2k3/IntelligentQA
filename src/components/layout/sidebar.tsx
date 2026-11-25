@@ -119,6 +119,16 @@ function getCourseMeta(course: any) {
       hours: `${course.estimatedHours || 26}h`,
     };
   }
+  if (slug.includes('cicd') || title.includes('ci/cd') || id.includes('cicd')) {
+    return {
+      displayTitle: 'CI/CD Concepts',
+      tag: 'CI/CD',
+      icon: GitBranch,
+      iconColor: 'text-orange-500',
+      badgeClass: 'text-orange-600 dark:text-orange-400 bg-orange-500/10',
+      hours: `${course.estimatedHours || 46}h`,
+    };
+  }
   if (slug.includes('github') || title.includes('github')) {
     return {
       displayTitle: 'GitHub Actions CI/CD',
@@ -450,9 +460,9 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   // Legacy track compatibility routes: /tracks/selenium-java | /tracks/playwright-ts | /tracks/api-testing | /tracks/ai-qa
   // Static track placeholder: { id: 'ai-qa', displayTitle: 'AI Academy', lessons: [] }
 
-  // Map courses to sidebar courseTracks
+  // Map published courses to sidebar courseTracks strictly following Admin sortOrder
   const courseTracks = useMemo(() => {
-    // 1. Filter out test fidelity, demo courses, and unwanted test courses
+    // 1. Filter out demo/test courses and draft courses
     const validCourses = academyCourses.filter((c) => {
       const title = (c.title || '').toLowerCase();
       const id = (c.id || '').toLowerCase();
@@ -460,73 +470,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       if (title.includes('test automated backend') || id.includes('test-backend-course') || slug.includes('test-backend-course')) return false;
       if (title.includes('fidelity assessment') || id.includes('fidelity-course') || slug.includes('fidelity-course')) return false;
       if (title.includes('(admin console demo)') || id.includes('demo-') || slug.includes('demo-')) return false;
+      if (c.status === 'draft') return false;
       return true;
     });
 
-    const extractLessons = (course: any) => {
-      const modules = (course?.modules || []).map((m: any) => ({
-        id: m.id || m.slug,
-        slug: m.slug || m.id,
-        title: m.title,
-        description: m.description,
-        lessons: (m.lessons || []).map((l: any) => ({
-          id: l.id || l.slug,
-          slug: l.slug || l.id,
-          title: l.title,
-          summary: l.summary || l.shortDescription || '',
-          estimatedReadingTime: l.estimatedReadingTime || 5,
-          durationMinutes: (l.estimatedReadingTime || 5) * 2,
-        })),
-      }));
-      return modules.flatMap((m: any) => m.lessons);
-    };
-
-    // 2. Identify grouped courses
-    // API Testing & Automation: FullStack API & Contracts + Rest Assured
-    const fullStackCourse = validCourses.find(c =>
-      (c.id || '').includes('api-testing') || (c.slug || '').includes('api-testing') || (c.title || '').toLowerCase().includes('full-stack api')
-    );
-    const restAssuredCourse = validCourses.find(c =>
-      (c.id || '').includes('rest-assured') || (c.slug || '').includes('rest-assured') || (c.title || '').toLowerCase().includes('rest assured')
-    );
-
-    // Mobile Testing & Automation: Mobile Testing + Appium
-    const mobileTestingCourse = validCourses.find(c =>
-      (c.id || '') === 'course-mobile-testing' ||
-      (c.slug || '').includes('mobile-testing') ||
-      ((c.title || '').toLowerCase().includes('mobile testing') && !(c.title || '').toLowerCase().includes('appium'))
-    );
-    const appiumCourse = validCourses.find(c =>
-      (c.id || '') === 'course-appium' ||
-      (c.slug || '').includes('appium') ||
-      (c.title || '').toLowerCase().includes('appium')
-    );
-
-    // CI/CD Concepts: Git + GitHub Actions + Azure DevOps + Jenkins
-    const gitCourse = validCourses.find(c =>
-      (c.id || '') === 'course-git' || (c.slug || '').includes('git-for-qa') || ((c.title || '').toLowerCase().includes('git') && !(c.title || '').toLowerCase().includes('github'))
-    );
-    const githubCourse = validCourses.find(c =>
-      (c.id || '').includes('github-actions') || (c.slug || '').includes('github-actions') || (c.title || '').toLowerCase().includes('github actions')
-    );
-    const azureCourse = validCourses.find(c =>
-      (c.id || '').includes('azure-devops') || (c.slug || '').includes('azure-devops') || (c.title || '').toLowerCase().includes('azure devops')
-    );
-    const jenkinsCourse = validCourses.find(c =>
-      (c.id || '').includes('jenkins') || (c.slug || '').includes('jenkins') || (c.title || '').toLowerCase().includes('jenkins')
-    );
-
-    const groupedIds = new Set<string>();
-    if (fullStackCourse) groupedIds.add(fullStackCourse.id);
-    if (restAssuredCourse) groupedIds.add(restAssuredCourse.id);
-    if (mobileTestingCourse) groupedIds.add(mobileTestingCourse.id);
-    if (appiumCourse) groupedIds.add(appiumCourse.id);
-    if (gitCourse) groupedIds.add(gitCourse.id);
-    if (githubCourse) groupedIds.add(githubCourse.id);
-    if (azureCourse) groupedIds.add(azureCourse.id);
-    if (jenkinsCourse) groupedIds.add(jenkinsCourse.id);
-
-    // Build the standalone courses list
     const tracks: any[] = [];
 
     // Helper to build a regular track
@@ -550,10 +497,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       const allLessons = modules.flatMap((m: any) => m.lessons);
 
       return {
-        id: c.slug || c.id,
+        id: c.id, // Strictly unique identifier
         rawId: c.id,
-        slug: c.slug,
-        displayTitle: meta.displayTitle,
+        slug: c.slug || c.id,
+        displayTitle: meta.displayTitle || c.title,
         fullTitle: c.title,
         tag: meta.tag,
         stage: meta.tag,
@@ -561,287 +508,57 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         icon: meta.icon,
         iconColor: meta.iconColor,
         badgeClass: meta.badgeClass,
+        sortOrder: c.sortOrder ?? 999,
         modules,
         lessons: allLessons,
       };
     };
 
-    // AI Academy, Playwright, Selenium come first if present (Playwright just below AI Academy)
-    const aiCourse = validCourses.find(c => (c.slug || '').includes('ai') || (c.title || '').toLowerCase().includes('ai academy'));
-    if (aiCourse) tracks.push(buildTrack(aiCourse));
+    // Sort courses strictly by sortOrder configured by Admin
+    const sortedCourses = [...validCourses].sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
 
-    const playwrightCourse = validCourses.find(c => (c.slug || '').includes('playwright') || (c.title || '').toLowerCase().includes('playwright'));
-    if (playwrightCourse) tracks.push(buildTrack(playwrightCourse));
+    // Check if unified master CI/CD course exists
+    const hasUnifiedCicd = sortedCourses.some(
+      (c) => c.id === 'course-cicd-concepts' || c.slug === 'cicd-concepts' || (c.title || '').toLowerCase() === 'ci/cd concepts'
+    );
 
-    const seleniumCourse = validCourses.find(c => (c.slug || '').includes('selenium') || (c.title || '').toLowerCase().includes('selenium'));
-    if (seleniumCourse) tracks.push(buildTrack(seleniumCourse));
+    const seenTrackIds = new Set<string>();
+    const seenNormalizedTitles = new Set<string>();
 
-    // 3. API Testing & Automation (Child items: FullStack API & Contracts, Rest Assured)
-    const apiModules: any[] = [];
-    let apiLessons: any[] = [];
-
-    if (fullStackCourse) {
-      const fullStackLessons = extractLessons(fullStackCourse);
-      apiLessons = apiLessons.concat(fullStackLessons);
-      apiModules.push({
-        id: 'fullstack-api-contracts',
-        slug: fullStackCourse.slug || 'api-testing-and-contracts',
-        title: 'FullStack API & Contracts',
-        description: fullStackCourse.description || 'Full-Stack API Testing & Consumer-Driven Contracts',
-        lessons: fullStackLessons,
-      });
-    }
-
-    if (restAssuredCourse) {
-      const restAssuredLessons = extractLessons(restAssuredCourse);
-      apiLessons = apiLessons.concat(restAssuredLessons);
-      apiModules.push({
-        id: 'rest-assured',
-        slug: restAssuredCourse.slug || 'rest-assured-api-automation',
-        title: 'Rest Assured',
-        description: restAssuredCourse.description || 'REST Assured: Enterprise API Automation with Java',
-        lessons: restAssuredLessons,
-      });
-    }
-
-    if (apiModules.length > 0) {
-      tracks.push({
-        id: 'api-testing-automation',
-        rawId: 'course-api-testing-automation',
-        slug: fullStackCourse?.slug || 'api-testing-and-contracts',
-        displayTitle: 'API Testing & Automation',
-        fullTitle: 'API Testing & Automation',
-        tag: 'API',
-        stage: 'API',
-        totalHours: '38h',
-        icon: Server,
-        iconColor: 'text-purple-500',
-        badgeClass: 'text-purple-600 dark:text-purple-400 bg-purple-500/10',
-        modules: apiModules,
-        lessons: apiLessons,
-      });
-    }
-
-    // 4. Mobile Testing & Automation (Child items: Mobile Testing, Appium)
-    const mobileModules: any[] = [];
-    let mobileLessons: any[] = [];
-
-    // Child item 1: Mobile Testing
-    const mobileTestingLessonsList = mobileTestingCourse ? extractLessons(mobileTestingCourse) : [
-      {
-        id: 'les-mobile-testing-foundations',
-        slug: 'mobile-testing-fundamentals',
-        title: '1.1 Mobile Testing Fundamentals: Native, Hybrid & Mobile Web Apps',
-        summary: 'Architectural differences between Native (Kotlin/Swift), Hybrid (Flutter/React Native), and Web apps.',
-        estimatedReadingTime: 5,
-        durationMinutes: 10,
-      },
-      {
-        id: 'les-mobile-device-matrix',
-        slug: 'device-matrix-emulators-simulators',
-        title: '1.2 Device Matrix, Emulators, Simulators & Cloud Device Farms',
-        summary: 'Real devices vs Android Emulators vs iOS Simulators, screen fragmentation, and cloud execution farms.',
-        estimatedReadingTime: 6,
-        durationMinutes: 12,
-      },
-      {
-        id: 'les-mobile-gestures-ux',
-        slug: 'mobile-touch-actions-gestures-testing',
-        title: '1.3 Mobile Touch Actions, Gestures & Interruption Testing',
-        summary: 'Verifying taps, multi-touch pinch/zoom, swipes, incoming calls, network switches, and battery throttling.',
-        estimatedReadingTime: 5,
-        durationMinutes: 10,
-      },
-      {
-        id: 'les-mobile-debugging-logs',
-        slug: 'mobile-logs-adb-instruments-debugging',
-        title: '1.4 Mobile Performance, Memory Leaks, ADB & Xcode Instruments',
-        summary: 'Extracting ADB logcat, iOS crash logs, memory footprints, network profiling, and battery consumption.',
-        estimatedReadingTime: 6,
-        durationMinutes: 12,
-      },
-    ];
-    mobileLessons = mobileLessons.concat(mobileTestingLessonsList);
-    mobileModules.push({
-      id: 'mobile-testing',
-      slug: mobileTestingCourse?.slug || 'mobile-testing-fundamentals',
-      title: 'Mobile Testing',
-      description: mobileTestingCourse?.description || 'Mobile Testing Fundamentals, Native/Hybrid/Web, ADB & Device Matrices',
-      lessons: mobileTestingLessonsList,
-    });
-
-    // Child item 2: Appium
-    const appiumLessonsList = appiumCourse ? extractLessons(appiumCourse) : [
-      {
-        id: 'les-appium-2-modular-ecosystem',
-        slug: 'appium-2-modular-ecosystem',
-        title: '1.1 Appium 2.0 Modular Drivers & Plugins',
-        summary: 'Understand independent driver lifecycle, CLI management, and plugin architecture.',
-        estimatedReadingTime: 5,
-        durationMinutes: 10,
-      },
-      {
-        id: 'les-android-ios-driver-capabilities',
-        slug: 'android-ios-driver-capabilities',
-        title: '1.2 UiAutomator2 & XCUITest Capabilities Matrix',
-        summary: 'Configure W3C capabilities, automationName, bundleId, and appPackage across platforms.',
-        estimatedReadingTime: 6,
-        durationMinutes: 12,
-      },
-      {
-        id: 'les-w3c-mobile-actions-gestures',
-        slug: 'w3c-mobile-actions-gestures',
-        title: '2.1 W3C Pointer Actions & Smooth Scrolling',
-        summary: 'Implement fluent W3C Actions API for scrolls, drags, and multi-finger gestures.',
-        estimatedReadingTime: 5,
-        durationMinutes: 10,
-      },
-      {
-        id: 'les-mobile-page-object-model',
-        slug: 'mobile-page-object-model',
-        title: '2.2 Mobile Page Object Model & Cloud Execution',
-        summary: 'Scalable Page Object Model architecture with AppiumFieldDecorator and cloud test grids.',
-        estimatedReadingTime: 6,
-        durationMinutes: 12,
-      },
-    ];
-    mobileLessons = mobileLessons.concat(appiumLessonsList);
-    mobileModules.push({
-      id: 'appium',
-      slug: appiumCourse?.slug || 'appium-mobile-automation',
-      title: 'Appium',
-      description: appiumCourse?.description || 'Appium 2.0 Mobile Automation Masterclass',
-      lessons: appiumLessonsList,
-    });
-
-    if (mobileModules.length > 0) {
-      tracks.push({
-        id: 'mobile-testing-automation',
-        rawId: 'course-mobile-testing-automation',
-        slug: mobileTestingCourse?.slug || appiumCourse?.slug || 'mobile-testing-and-automation',
-        displayTitle: 'Mobile Testing & Automation',
-        fullTitle: 'Mobile Testing & Automation',
-        tag: 'Mobile',
-        stage: 'Mobile',
-        totalHours: '26h',
-        icon: Smartphone,
-        iconColor: 'text-pink-500',
-        badgeClass: 'text-pink-600 dark:text-pink-400 bg-pink-500/10',
-        modules: mobileModules,
-        lessons: mobileLessons,
-      });
-    }
-
-    // 5. CI/CD Concepts (Child items: Git, Github Actions, Azure DevOps, Jenkins)
-    const cicdModules: any[] = [];
-    let cicdLessons: any[] = [];
-
-    // Git
-    const gitLessonsList = gitCourse ? extractLessons(gitCourse) : [
-      {
-        id: 'les-git-foundations',
-        slug: 'git-foundations-for-qa',
-        title: '1.1 Git Essentials: Commits, Remotes & .gitignore for Test Frameworks',
-        summary: 'Initialize local repositories, stage test scripts, configure .gitignore, and sync with remote origins.',
-        estimatedReadingTime: 4,
-        durationMinutes: 8,
-      },
-      {
-        id: 'les-git-branching-pr',
-        slug: 'git-branching-and-pr-gates',
-        title: '1.2 Branching Strategies, Rebase & Pull Request Reviews',
-        summary: 'Feature branches, interactive rebasing, squash merging, and PR quality check criteria.',
-        estimatedReadingTime: 5,
-        durationMinutes: 10,
-      },
-    ];
-    cicdLessons = cicdLessons.concat(gitLessonsList);
-    cicdModules.push({
-      id: 'git',
-      slug: 'git-for-qa-engineers',
-      title: 'Git',
-      description: 'Git Version Control, Commits, Branching & PR Gates',
-      lessons: gitLessonsList,
-    });
-
-    // GitHub Actions
-    if (githubCourse) {
-      const ghaLessons = extractLessons(githubCourse);
-      cicdLessons = cicdLessons.concat(ghaLessons);
-      cicdModules.push({
-        id: 'github-actions',
-        slug: githubCourse.slug || 'github-actions-for-qa',
-        title: 'Github Actions',
-        description: githubCourse.description || 'GitHub Actions CI/CD Pipelines for QA Automation',
-        lessons: ghaLessons,
-      });
-    }
-
-    // Azure DevOps
-    if (azureCourse) {
-      const adoLessons = extractLessons(azureCourse);
-      cicdLessons = cicdLessons.concat(adoLessons);
-      cicdModules.push({
-        id: 'azure-devops',
-        slug: azureCourse.slug || 'azure-devops-test-pipelines',
-        title: 'Azure DevOps',
-        description: azureCourse.description || 'Azure DevOps Pipelines for SDETs',
-        lessons: adoLessons,
-      });
-    }
-
-    // Jenkins
-    if (jenkinsCourse) {
-      const jenLessons = extractLessons(jenkinsCourse);
-      cicdLessons = cicdLessons.concat(jenLessons);
-      cicdModules.push({
-        id: 'jenkins',
-        slug: jenkinsCourse.slug || 'declarative-jenkins-pipelines',
-        title: 'Jenkins',
-        description: jenkinsCourse.description || 'Declarative Jenkins Pipelines for QA Automation',
-        lessons: jenLessons,
-      });
-    }
-
-    if (cicdModules.length > 0) {
-      tracks.push({
-        id: 'cicd-concepts',
-        rawId: 'course-cicd-concepts',
-        slug: 'cicd-concepts',
-        displayTitle: 'CI/CD Concepts',
-        fullTitle: 'CI/CD Concepts',
-        tag: 'CI/CD',
-        stage: 'CI/CD',
-        totalHours: '46h',
-        icon: GitBranch,
-        iconColor: 'text-orange-500',
-        badgeClass: 'text-orange-600 dark:text-orange-400 bg-orange-500/10',
-        modules: cicdModules,
-        lessons: cicdLessons,
-      });
-    }
-
-    // Remaining non-grouped courses
-    const alreadyHandled = new Set([
-      aiCourse?.id,
-      seleniumCourse?.id,
-      playwrightCourse?.id,
-      mobileTestingCourse?.id,
-      appiumCourse?.id,
-      ...groupedIds,
-    ]);
-
-    validCourses.forEach((c) => {
-      if (!alreadyHandled.has(c.id)) {
-        tracks.push(buildTrack(c));
+    sortedCourses.forEach((c) => {
+      // If unified master CI/CD Concepts exists, suppress legacy fragment courses so they don't produce duplicates
+      if (hasUnifiedCicd && ['course-git', 'course-github-actions', 'course-azure-devops', 'course-jenkins'].includes(c.id)) {
+        return;
       }
+
+      const meta = getCourseMeta(c);
+      const normalizedTitle = (meta.displayTitle || c.title).trim().toLowerCase();
+
+      // Deduplicate by course id and normalized title
+      if (seenTrackIds.has(c.id) || seenNormalizedTitles.has(normalizedTitle)) {
+        return;
+      }
+
+      seenTrackIds.add(c.id);
+      seenNormalizedTitles.add(normalizedTitle);
+      tracks.push(buildTrack(c));
     });
 
     return tracks;
   }, [academyCourses]);
 
+  const manuallyClosedTracksRef = useRef<Set<string>>(new Set());
+
   const toggleTrack = (trackId: string) => {
-    const isNowOpen = !openTracks[trackId];
+    const isCurrentlyOpen = !!openTracks[trackId];
+    const isNowOpen = !isCurrentlyOpen;
+
+    if (!isNowOpen) {
+      manuallyClosedTracksRef.current.add(trackId);
+    } else {
+      manuallyClosedTracksRef.current.delete(trackId);
+    }
+
     setOpenTracks(prev => ({
       ...prev,
       [trackId]: isNowOpen,
@@ -873,7 +590,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       t.slug === currentSlug ||
       t.lessons.some((l: any) => (l.slug || l.id) === currentSlug)
     );
-    if (matched && lastAutoOpenedTrackRef.current !== matched.id) {
+    if (matched && lastAutoOpenedTrackRef.current !== matched.id && !manuallyClosedTracksRef.current.has(matched.id)) {
       lastAutoOpenedTrackRef.current = matched.id;
       setOpenTracks(p => ({ ...p, [matched.id]: true }));
       setCoursesOpen(true);
@@ -1080,9 +797,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            if (!isExpanded) {
-                              toggleTrack(track.id); // onClick={() => toggleTrack(track.id)}
-                            }
+                            toggleTrack(track.id);
                             onCloseMobile?.();
                             if (track.id === 'ai-qa' || track.displayTitle === 'AI Academy' || (track.slug || '').includes('ai')) {
                               router.push('/learning');

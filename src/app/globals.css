@@ -643,3 +643,65 @@
 .tiptap-image-right {
   align-items: flex-end;
 }
+
+/* ========================================================================== */
+/* CRYSTAL CLEAR DIAGRAM & COURSE CONTENT IMAGE RENDERING                     */
+/* ========================================================================== */
+
+/* High-contrast and crisp rendering across all figures and diagrams */
+.docx-rendered-content figure[data-curriculum-diagram="true"],
+.standard-lesson-container figure[data-curriculum-diagram="true"],
+figure[data-curriculum-diagram="true"],
+.curriculum-diagram-card {
+  position: relative;
+  cursor: zoom-in;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.docx-rendered-content figure[data-curriculum-diagram="true"]:hover,
+.standard-lesson-container figure[data-curriculum-diagram="true"]:hover,
+.curriculum-diagram-card:hover {
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.08), 0 8px 12px -4px rgba(0, 0, 0, 0.04) !important;
+}
+
+.dark .docx-rendered-content figure[data-curriculum-diagram="true"]:hover,
+.dark .standard-lesson-container figure[data-curriculum-diagram="true"]:hover,
+.dark .curriculum-diagram-card:hover {
+  border-color: rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.4), 0 8px 12px -4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Ensure crisp vector and raster rendering across modern high-DPI displays */
+.docx-rendered-content img,
+.standard-lesson-container img,
+figure[data-curriculum-diagram="true"] img,
+.curriculum-diagram-card img,
+.diagram-img-wrapper img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+  cursor: zoom-in;
+}
+
+/* Give SVGs and diagrams unconstrained, crystal-clear vertical room */
+.docx-rendered-content figure[data-curriculum-diagram="true"] img,
+.standard-lesson-container figure[data-curriculum-diagram="true"] img,
+.curriculum-diagram-card img {
+  max-height: 680px;
+  width: 100%;
+  object-fit: contain;
+}
+
+/* Diagram interactive toolbar */
+.diagram-toolbar {
+  user-select: none;
+}
+
+.diagram-img-wrapper {
+  position: relative;
+  cursor: zoom-in;
+}
+

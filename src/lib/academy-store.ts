@@ -26,6 +26,7 @@ import {
 } from '@/types/learning-platform';
 
 const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+const TMP_DATA_FILE = path.join('/tmp', 'curriculum-data-store.json');
 
 // Default initial categories requested in requirements
 export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
@@ -727,8 +728,21 @@ export class AcademyStore {
   private loadFromDisk() {
     try {
       this.searchIndexCache = null;
-      if (fs.existsSync(DATA_FILE)) {
-        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+      let raw: string | null = null;
+
+      // Check /tmp first for serverless persisted state
+      if (fs.existsSync(TMP_DATA_FILE)) {
+        try {
+          raw = fs.readFileSync(TMP_DATA_FILE, 'utf-8');
+        } catch {
+          raw = null;
+        }
+      }
+      if (!raw && fs.existsSync(DATA_FILE)) {
+        raw = fs.readFileSync(DATA_FILE, 'utf-8');
+      }
+
+      if (raw) {
         const data = JSON.parse(raw);
 
         // Load Categories
@@ -745,9 +759,12 @@ export class AcademyStore {
         if (Array.isArray(data.academyCourses) && data.academyCourses.length > 0) {
           this.courses.clear();
           data.academyCourses.forEach((c: AcademyCourse) => {
-            // Keep Playwright just below AI Academy
-            if (c.id === 'course-playwright-mastery') c.sortOrder = 2;
-            if (c.id === 'course-selenium-mastery') c.sortOrder = 3;
+            // Keep default ordering only if sortOrder is not already configured by Admin
+            if (c.sortOrder === undefined || c.sortOrder === null) {
+              if (c.id === 'course-ai-qa-mastery') c.sortOrder = 1;
+              if (c.id === 'course-playwright-mastery') c.sortOrder = 2;
+              if (c.id === 'course-selenium-mastery') c.sortOrder = 3;
+            }
 
             // Ensure all lessons with standardData compile into uniform prose and strip any section labels
             if (c.modules) {
@@ -864,9 +881,18 @@ export class AcademyStore {
   private saveToDisk() {
     try {
       let existingData: Record<string, any> = {};
-      if (fs.existsSync(DATA_FILE)) {
-        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
-        existingData = JSON.parse(raw);
+      if (fs.existsSync(TMP_DATA_FILE)) {
+        try {
+          existingData = JSON.parse(fs.readFileSync(TMP_DATA_FILE, 'utf-8'));
+        } catch {
+          existingData = {};
+        }
+      } else if (fs.existsSync(DATA_FILE)) {
+        try {
+          existingData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+        } catch {
+          existingData = {};
+        }
       }
 
       existingData.academyCategories = Array.from(this.categories.values());
@@ -881,22 +907,36 @@ export class AcademyStore {
         courses: Array.from(courses),
       }));
 
-      const tempFile = `${DATA_FILE}.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).substring(2, 8)}`;
-      fs.writeFileSync(tempFile, JSON.stringify(existingData, null, 2), 'utf-8');
+      const payloadStr = JSON.stringify(existingData, null, 2);
+
+      // Attempt primary write to DATA_FILE atomically
       try {
-        fs.renameSync(tempFile, DATA_FILE);
-      } catch {
-        // Fallback for filesystem collision
-        fs.writeFileSync(DATA_FILE, JSON.stringify(existingData, null, 2), 'utf-8');
+        const tempFile = `${DATA_FILE}.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).substring(2, 8)}`;
+        fs.writeFileSync(tempFile, payloadStr, 'utf-8');
         try {
-          if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
+          fs.renameSync(tempFile, DATA_FILE);
         } catch {
-          // ignore
+          // Fallback for filesystem collision
+          fs.writeFileSync(DATA_FILE, payloadStr, 'utf-8');
+          try {
+            if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
+          } catch {
+            // ignore
+          }
         }
+      } catch (writeErr: any) {
+        // Fall back to /tmp/curriculum-data-store.json for serverless environments (e.g. AWS Lambda / Vercel Serverless /var/task)
+        console.warn('[AcademyStore] Primary write to DATA_FILE failed (' + (writeErr?.code || writeErr?.message) + '). Persisting to /tmp fallback.');
+        try {
+          fs.writeFileSync(TMP_DATA_FILE, payloadStr, 'utf-8');
+        } catch (tmpErr) {
+          console.warn('[AcademyStore] Failed to write to /tmp fallback:', tmpErr);
+        }
+        // In-memory state in AcademyStore is updated and valid
+        return;
       }
-    } catch (e) {
-      console.error('Failed to persist Academy data to disk:', e);
-      throw e;
+    } catch (e: any) {
+      console.warn('[AcademyStore] Non-fatal error persisting Academy data to disk:', e?.message || e);
     }
   }
 
