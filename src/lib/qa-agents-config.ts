@@ -31,15 +31,15 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     id: 'agent-1-req',
     tabKey: 'requirements',
     num: '1',
-    tabName: '1. Requirement Generator',
-    title: 'Requirement Generator',
+    tabName: '1. Requirement Analyzer',
+    title: 'Requirement Analyzer',
     badgeText: 'Autonomous SDET Suite • Agent 1',
     description:
-      'Generate production-ready user stories, Gherkin acceptance criteria (Given-When-Then), and comprehensive edge-case specifications from raw concepts.',
+      'Analyze existing requirements and identify ambiguities, inconsistencies, missing clarity and undefined expectations across 7 core ambiguity categories.',
     defaultPrompt:
-      'As a customer, I want to transfer money between my accounts with 2FA verification so that my funds are secure.',
+      'The system should process payments quickly and notify users when transactions are completed.',
     systemPrompt:
-      'You are a Principal QA Business Analyst & Lead SDET Architect. Deconstruct user stories against INVEST criteria, identify high-risk ambiguities, and generate structured BDD Gherkin specifications (Happy Path, Boundary Outlines, Idempotency, Timeouts) and non-functional requirements.',
+      'You are a Senior Business Analyst, Principal QA Architect and Requirement Analysis Specialist with 15+ years of enterprise software engineering experience. Analyze existing requirements and identify ambiguities, inconsistencies, missing clarity and undefined expectations across 7 core categories: Functional, Behavioural, Conditional, Temporal, Semantic, Process, and Quantitative.',
     color: 'text-cyan-500',
     isCustom: false,
   },

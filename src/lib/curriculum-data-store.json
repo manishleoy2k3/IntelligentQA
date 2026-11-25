@@ -9665,79 +9665,94 @@
       "category": "Infographics",
       "uploadedAt": "2026-11-25T08:30:02.199Z",
       "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795610529134",
+      "filename": "infographic_1795610529134_7w7wl.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795610529134_7w7wl.png",
+      "mimeType": "image/png",
+      "size": 40971,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-25T12:42:09.134Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795610529451",
+      "filename": "infographic_1795610529451_h0o0h.png",
+      "originalName": "What is Self-Attention?.png",
+      "url": "/uploads/infographic_1795610529451_h0o0h.png",
+      "mimeType": "image/png",
+      "size": 39261,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Self-Attention?",
+      "caption": "Figure: Technical Infographic — What is Self-Attention?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-25T12:42:09.451Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795610530638",
+      "filename": "infographic_1795610530638_d909v.png",
+      "originalName": "Test Automation Pyramid.png",
+      "url": "/uploads/infographic_1795610530638_d909v.png",
+      "mimeType": "image/png",
+      "size": 52716,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: Test Automation Pyramid",
+      "caption": "Figure: Technical Infographic — Test Automation Pyramid",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-25T12:42:10.638Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795610530986",
+      "filename": "infographic_1795610530986_tjd0c.png",
+      "originalName": "How API Authentication Works.png",
+      "url": "/uploads/infographic_1795610530986_tjd0c.png",
+      "mimeType": "image/png",
+      "size": 34912,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: How API Authentication Works",
+      "caption": "Figure: Technical Infographic — How API Authentication Works",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-25T12:42:10.986Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795610531377",
+      "filename": "infographic_1795610531377_otd4a.png",
+      "originalName": "RAG Pipeline Architecture.png",
+      "url": "/uploads/infographic_1795610531377_otd4a.png",
+      "mimeType": "image/png",
+      "size": 31261,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: RAG Pipeline Architecture",
+      "caption": "Figure: Technical Infographic — RAG Pipeline Architecture",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-25T12:42:11.377Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
     }
   ],
   "cmsAuditLogs": [
-    {
-      "id": "log-1795530638513",
-      "timestamp": "2026-11-24T14:30:38.513Z",
-      "user": {
-        "id": "admin",
-        "name": "Admin",
-        "email": "admin@intelligentqa.io"
-      },
-      "action": "upload_media",
-      "entityType": "media",
-      "entityId": "med-info-1795530638379",
-      "entityTitle": "infographic_1795530638379_yiod7.png",
-      "details": "Uploaded media infographic_1795530638379_yiod7.png (image/png)"
-    },
-    {
-      "id": "log-1795530638829",
-      "timestamp": "2026-11-24T14:30:38.829Z",
-      "user": {
-        "id": "admin",
-        "name": "Admin",
-        "email": "admin@intelligentqa.io"
-      },
-      "action": "upload_media",
-      "entityType": "media",
-      "entityId": "med-info-1795530638714",
-      "entityTitle": "infographic_1795530638713_611wq.png",
-      "details": "Uploaded media infographic_1795530638713_611wq.png (image/png)"
-    },
-    {
-      "id": "log-1795531487236",
-      "timestamp": "2026-11-24T14:44:47.236Z",
-      "user": {
-        "id": "admin",
-        "name": "Admin",
-        "email": "admin@intelligentqa.io"
-      },
-      "action": "upload_media",
-      "entityType": "media",
-      "entityId": "med-info-1795531487108",
-      "entityTitle": "infographic_1795531487107_noowp.png",
-      "details": "Uploaded media infographic_1795531487107_noowp.png (image/png)"
-    },
-    {
-      "id": "log-1795531487694",
-      "timestamp": "2026-11-24T14:44:47.694Z",
-      "user": {
-        "id": "admin",
-        "name": "Admin",
-        "email": "admin@intelligentqa.io"
-      },
-      "action": "upload_media",
-      "entityType": "media",
-      "entityId": "med-info-1795531487582",
-      "entityTitle": "infographic_1795531487581_d14ky.png",
-      "details": "Uploaded media infographic_1795531487581_d14ky.png (image/png)"
-    },
-    {
-      "id": "log-1795531488083",
-      "timestamp": "2026-11-24T14:44:48.083Z",
-      "user": {
-        "id": "admin",
-        "name": "Admin",
-        "email": "admin@intelligentqa.io"
-      },
-      "action": "upload_media",
-      "entityType": "media",
-      "entityId": "med-info-1795531487925",
-      "entityTitle": "infographic_1795531487924_fetgi.png",
-      "details": "Uploaded media infographic_1795531487924_fetgi.png (image/png)"
-    },
     {
       "id": "log-1795531488429",
       "timestamp": "2026-11-24T14:44:48.429Z",
@@ -11067,6 +11082,76 @@
       "entityId": "med-info-1795595402199",
       "entityTitle": "infographic_1795595402199_0wdbh.png",
       "details": "Uploaded media infographic_1795595402199_0wdbh.png (image/png)"
+    },
+    {
+      "id": "log-1795610529251",
+      "timestamp": "2026-11-25T12:42:09.251Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795610529134",
+      "entityTitle": "infographic_1795610529134_7w7wl.png",
+      "details": "Uploaded media infographic_1795610529134_7w7wl.png (image/png)"
+    },
+    {
+      "id": "log-1795610529754",
+      "timestamp": "2026-11-25T12:42:09.754Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795610529451",
+      "entityTitle": "infographic_1795610529451_h0o0h.png",
+      "details": "Uploaded media infographic_1795610529451_h0o0h.png (image/png)"
+    },
+    {
+      "id": "log-1795610530746",
+      "timestamp": "2026-11-25T12:42:10.746Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795610530638",
+      "entityTitle": "infographic_1795610530638_d909v.png",
+      "details": "Uploaded media infographic_1795610530638_d909v.png (image/png)"
+    },
+    {
+      "id": "log-1795610531215",
+      "timestamp": "2026-11-25T12:42:11.215Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795610530986",
+      "entityTitle": "infographic_1795610530986_tjd0c.png",
+      "details": "Uploaded media infographic_1795610530986_tjd0c.png (image/png)"
+    },
+    {
+      "id": "log-1795610531626",
+      "timestamp": "2026-11-25T12:42:11.626Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795610531377",
+      "entityTitle": "infographic_1795610531377_otd4a.png",
+      "details": "Uploaded media infographic_1795610531377_otd4a.png (image/png)"
     }
   ],
   "academyCategories": [
@@ -11216,7 +11301,7 @@
       "sortOrder": 1,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-25T08:29:54.279Z",
+      "updatedAt": "2026-11-25T12:37:35.707Z",
       "modules": [
         {
           "id": "mod-intro-ai",
@@ -11227,7 +11312,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-25T08:29:54.279Z",
+          "updatedAt": "2026-11-25T12:37:35.707Z",
           "lessons": [
             {
               "id": "les-what-is-ai",
@@ -104945,6 +105030,33 @@
           ]
         }
       ]
+    },
+    {
+      "categoryId": "cat-selenium",
+      "title": "Test Automated Backend Course",
+      "slug": "test-backend-course-1795610252701",
+      "description": "Integration test course",
+      "level": "Intermediate",
+      "estimatedHours": 8,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Test Backend Module 1",
+          "slug": "test-mod-1795610252866",
+          "description": "Module testing",
+          "sortOrder": 1,
+          "status": "published",
+          "id": "mod-test-mod-1795610252866",
+          "courseId": "course-test-backend-course-1795610252701",
+          "lessons": [],
+          "createdAt": "2026-11-25T12:37:32.866Z",
+          "updatedAt": "2026-11-25T12:37:32.866Z"
+        }
+      ],
+      "id": "course-test-backend-course-1795610252701",
+      "createdAt": "2026-11-25T12:37:32.701Z",
+      "updatedAt": "2026-11-25T12:37:32.866Z"
     }
   ],
   "academyDocSources": [
@@ -110923,6 +111035,78 @@
       "completionStatus": "completed",
       "lastAccessedAt": "2026-11-25T08:30:00.074Z",
       "completedAt": "2026-11-25T08:30:00.074Z"
+    },
+    {
+      "id": "prog-user-alpha-1795610255910-les-what-is-ai",
+      "userId": "user-alpha-1795610255910",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-25T12:37:35.910Z",
+      "completedAt": "2026-11-25T12:37:35.910Z"
+    },
+    {
+      "id": "prog-perf-user-1795610526065-0-les-what-is-ai",
+      "userId": "perf-user-1795610526065-0",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-25T12:42:06.065Z",
+      "completedAt": "2026-11-25T12:42:06.065Z"
+    },
+    {
+      "id": "prog-perf-user-1795610526065-1-les-what-is-ai",
+      "userId": "perf-user-1795610526065-1",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-25T12:42:06.441Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795610526065-2-les-what-is-ai",
+      "userId": "perf-user-1795610526065-2",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-25T12:42:07.436Z",
+      "completedAt": "2026-11-25T12:42:07.436Z"
+    },
+    {
+      "id": "prog-perf-user-1795610526065-3-les-what-is-ai",
+      "userId": "perf-user-1795610526065-3",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-25T12:42:07.584Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795610526065-4-les-what-is-ai",
+      "userId": "perf-user-1795610526065-4",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-25T12:42:08.136Z",
+      "completedAt": "2026-11-25T12:42:08.136Z"
+    },
+    {
+      "id": "prog-perf-user-1795610526065-5-les-what-is-ai",
+      "userId": "perf-user-1795610526065-5",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-25T12:42:08.262Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795610526065-6-les-what-is-ai",
+      "userId": "perf-user-1795610526065-6",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-25T12:42:08.708Z",
+      "completedAt": "2026-11-25T12:42:08.708Z"
+    },
+    {
+      "id": "prog-perf-user-1795610526065-7-les-what-is-ai",
+      "userId": "perf-user-1795610526065-7",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-25T12:42:08.940Z",
+      "completedAt": null
     }
   ],
   "academyBookmarks": [

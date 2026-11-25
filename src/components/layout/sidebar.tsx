@@ -1243,7 +1243,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
           {aiToolsSectionOpen && (
             <div className="pl-2 pr-1 py-1 space-y-1 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
-              {/* 1. Requirement Generator */}
+              {/* 1. Requirement Analyzer (formerly Requirement Generator) */}
               <Link
                 href="/qa-agents?tab=requirements"
                 onClick={(e) => handleAgentClick(e, 'requirements')}
@@ -1253,7 +1253,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               >
                 <div className="flex items-center gap-2 truncate">
                   <FileText className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                  <span className="truncate">Requirement Generator</span>
+                  <span className="truncate">Requirement Analyzer</span>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 px-1 py-0.2 rounded">
                   REQ

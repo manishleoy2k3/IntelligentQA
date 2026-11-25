@@ -279,12 +279,118 @@ export function generateExcelWorkbookXml(
 }
 
 /**
- * Downloads generated requirements as an Excel (.xls) file
+ * Parses markdown ambiguity analysis table into structured rows
+ */
+export function parseAmbiguityTableToRows(markdown: string): {
+  serialNumber: string;
+  title: string;
+  ambiguity: string;
+  type: string;
+  priority: string;
+  lineNumber: string;
+  recommendation: string;
+}[] {
+  const rows: {
+    serialNumber: string;
+    title: string;
+    ambiguity: string;
+    type: string;
+    priority: string;
+    lineNumber: string;
+    recommendation: string;
+  }[] = [];
+
+  if (!markdown) return rows;
+
+  const lines = markdown.split('\n');
+  let inTable = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('|') && /serial number|ambiguity title/i.test(trimmed)) {
+      inTable = true;
+      continue;
+    }
+    if (inTable) {
+      if (!trimmed.startsWith('|')) {
+        inTable = false;
+        continue;
+      }
+      // Skip separator row e.g. |:---|:---|
+      if (/^\|[\s\-:]+\|/.test(trimmed)) {
+        continue;
+      }
+      const cells = trimmed
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim());
+
+      if (cells.length >= 7) {
+        rows.push({
+          serialNumber: cells[0] || String(rows.length + 1),
+          title: cells[1] || '',
+          ambiguity: cells[2] || '',
+          type: cells[3] || '',
+          priority: cells[4] || '',
+          lineNumber: cells[5] || '',
+          recommendation: cells[6] || '',
+        });
+      }
+    }
+  }
+
+  return rows;
+}
+
+/**
+ * Downloads generated requirements or ambiguity analysis as an Excel (.xls) file
  */
 export function exportRequirementsToExcel(
   markdown: string,
   filenamePrefix = 'intelligentqa-requirements'
 ): void {
+  // Check if this is an Ambiguity Analysis report
+  const isAmbiguityReport =
+    markdown.includes('Ambiguity Title') ||
+    markdown.includes('Ambiguity Type') ||
+    markdown.includes('Ambiguity Analysis');
+
+  if (isAmbiguityReport) {
+    const ambiguityRows = parseAmbiguityTableToRows(markdown);
+    if (ambiguityRows.length > 0) {
+      const headers = [
+        'Serial Number',
+        'Ambiguity Title',
+        'Ambiguity',
+        'Ambiguity Type',
+        'Priority',
+        'Line Number',
+        'Recommendation',
+      ];
+      const dataRows = ambiguityRows.map((r) => [
+        r.serialNumber,
+        r.title,
+        r.ambiguity,
+        r.type,
+        r.priority,
+        r.lineNumber,
+        r.recommendation,
+      ]);
+
+      const xmlContent = generateExcelWorkbookXml('Ambiguity Analysis', headers, dataRows);
+      const blob = new Blob([xmlContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `requirement-ambiguity-analysis-${Date.now()}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      return;
+    }
+  }
+
   const rows = parseRequirementsToRows(markdown);
   const headers = [
     'Requirement ID',

@@ -37,7 +37,11 @@ import {
 } from 'lucide-react';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
-import { exportRequirementsToExcel, exportTestMatrixToExcel } from '@/lib/excel-export';
+import {
+  exportRequirementsToExcel,
+  exportTestMatrixToExcel,
+  parseAmbiguityTableToRows,
+} from '@/lib/excel-export';
 import { parseRequirementsFile, ParsedRequirementFile } from '@/lib/file-parser';
 import {
   ProjectFile,
@@ -52,7 +56,7 @@ export type AgentTab = 'requirements' | 'test_cases' | 'automation_code' | 'code
 
 const tabDefaultPrompts: Record<AgentTab, string> = {
   requirements:
-    'As a customer, I want to transfer money between my accounts with 2FA verification so that my funds are secure.',
+    'The system should process payments quickly and notify users when transactions are completed.',
   test_cases:
     'User Account Transfer Workflow with 2FA Verification, Daily Limits ($10,000 max), and Idempotent Transaction Submissions.',
   automation_code:
@@ -79,13 +83,14 @@ export const AGENT_CONFIGS: Record<
     color: string;
   }
 > = {
+  // 1. Requirement Generator -> 1. Requirement Analyzer
   requirements: {
     num: '1',
-    tabName: '1. Requirement Generator',
-    title: 'Requirement Generator',
+    tabName: '1. Requirement Analyzer',
+    title: 'Requirement Analyzer',
     badgeText: 'Autonomous SDET Suite • Agent 1',
     description:
-      'Generate production-ready user stories, Gherkin acceptance criteria (Given-When-Then), and comprehensive edge-case specifications from raw concepts.',
+      'Analyze existing requirements and identify ambiguities, inconsistencies, missing clarity and undefined expectations across 7 core ambiguity categories.',
     icon: FileText,
     color: 'text-cyan-500',
   },
@@ -148,6 +153,7 @@ export default function QAAgentsWorkspace() {
   const [importedFile, setImportedFile] = useState<ParsedRequirementFile | null>(null);
   const [isParsingFile, setIsParsingFile] = useState<boolean>(false);
   const [fileParseError, setFileParseError] = useState<string>('');
+  const [reqViewMode, setReqViewMode] = useState<'table' | 'raw'>('table');
 
   // Coverage filters for Test Case Generator
   const [coverageFilters, setCoverageFilters] = useState({
@@ -664,7 +670,7 @@ export default function QAAgentsWorkspace() {
                   {activeTab === 'requirements' && (
                     <>
                       <FileText className="w-4 h-4 text-cyan-500" />
-                      <span>Feature Spec / User Story</span>
+                      <span>Requirements Specification &amp; Analysis</span>
                     </>
                   )}
                   {activeTab === 'test_cases' && (
@@ -698,7 +704,7 @@ export default function QAAgentsWorkspace() {
                     <span className="text-[11px] text-slate-400">
                       Output:{' '}
                       <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">
-                        Gherkin BDD &amp; Criteria
+                        Gherkin BDD &amp; Ambiguity Analysis
                       </strong>
                     </span>
                   ) : (
@@ -825,9 +831,9 @@ export default function QAAgentsWorkspace() {
                 </div>
               )}
 
-              {/* SPECIALIZED FEATURE: File Import (Word, Excel, PDF) for Test Case Generator */}
-              {activeTab === 'test_cases' && (
-                <div className="bg-slate-50 dark:bg-slate-950/70 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500/70 dark:hover:border-emerald-500/70 rounded-xl p-3.5 space-y-2 transition-colors">
+              {/* SPECIALIZED FEATURE: File Import (Word, Excel, PDF) for Requirement Analyzer and Test Case Generator */}
+              {(activeTab === 'requirements' || activeTab === 'test_cases') && (
+                <div className="bg-slate-50 dark:bg-slate-950/70 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-cyan-500/70 dark:hover:border-cyan-500/70 rounded-xl p-3.5 space-y-2 transition-colors">
                   {!importedFile ? (
                     <div>
                       <input
@@ -841,21 +847,43 @@ export default function QAAgentsWorkspace() {
                         htmlFor="test-case-file-import"
                         className="cursor-pointer flex flex-col items-center justify-center gap-1.5 py-1.5"
                       >
-                        <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm">
+                        <div
+                          className={`w-9 h-9 rounded-full ${
+                            activeTab === 'requirements'
+                              ? 'bg-cyan-100 dark:bg-cyan-950/80 text-cyan-600 dark:text-cyan-400'
+                              : 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400'
+                          } flex items-center justify-center shadow-sm`}
+                        >
                           <UploadCloud className="w-5 h-5" />
                         </div>
                         <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                          Import Requirements Document
+                          {activeTab === 'requirements'
+                            ? 'Import Requirements Document (.docx, .xlsx, .pdf, text)'
+                            : 'Import Requirements Document'}
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center max-w-sm">
-                          Upload your requirements file (<strong>Excel .xlsx / .csv</strong>,{' '}
-                          <strong>Word .docx</strong>, <strong>PDF .pdf</strong>, or text) to
-                          generate test cases automatically.
+                          {activeTab === 'requirements' ? (
+                            <>
+                              Upload your requirements file (<strong>Word .docx</strong>,{' '}
+                              <strong>Excel .xlsx / .xls / .csv</strong>, <strong>PDF</strong>, or
+                              text) to detect ambiguities and inconsistencies automatically.
+                            </>
+                          ) : (
+                            <>
+                              Upload your requirements file (<strong>Excel .xlsx / .csv</strong>,{' '}
+                              <strong>Word .docx</strong>, <strong>PDF .pdf</strong>, or text) to
+                              generate test cases automatically.
+                            </>
+                          )}
                         </p>
                       </label>
 
                       {isParsingFile && (
-                        <div className="flex items-center justify-center gap-2 text-xs text-emerald-600 py-1 font-semibold">
+                        <div
+                          className={`flex items-center justify-center gap-2 text-xs ${
+                            activeTab === 'requirements' ? 'text-cyan-600' : 'text-emerald-600'
+                          } py-1 font-semibold`}
+                        >
                           <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                           <span>Extracting requirements from document...</span>
                         </div>
@@ -867,14 +895,30 @@ export default function QAAgentsWorkspace() {
                       )}
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-lg text-left">
+                    <div
+                      className={`flex items-center justify-between p-2.5 ${
+                        activeTab === 'requirements'
+                          ? 'bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-300 dark:border-cyan-800'
+                          : 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800'
+                      } rounded-lg text-left`}
+                    >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <FileSpreadsheet className="w-5 h-5 text-emerald-600 shrink-0" />
+                        <FileSpreadsheet
+                          className={`w-5 h-5 ${
+                            activeTab === 'requirements' ? 'text-cyan-600' : 'text-emerald-600'
+                          } shrink-0`}
+                        />
                         <div className="min-w-0">
                           <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
                             {importedFile.fileName}
                           </div>
-                          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                          <div
+                            className={`text-[10px] ${
+                              activeTab === 'requirements'
+                                ? 'text-cyan-600 dark:text-cyan-400'
+                                : 'text-emerald-600 dark:text-emerald-400'
+                            } font-medium`}
+                          >
                             {importedFile.summary} · {(importedFile.fileSize / 1024).toFixed(1)} KB
                           </div>
                         </div>
@@ -883,9 +927,9 @@ export default function QAAgentsWorkspace() {
                         type="button"
                         onClick={() => {
                           setImportedFile(null);
-                          setInputPrompt(tabDefaultPrompts.test_cases);
+                          setInputPrompt(tabDefaultPrompts[activeTab]);
                         }}
-                        className="p-1 hover:bg-emerald-200 dark:hover:bg-emerald-900 rounded text-slate-500 hover:text-slate-800 dark:hover:text-white text-xs shrink-0 cursor-pointer"
+                        className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded text-slate-500 hover:text-slate-800 dark:hover:text-white text-xs shrink-0 cursor-pointer"
                         title="Remove file"
                       >
                         <X className="w-4 h-4" />
@@ -900,10 +944,10 @@ export default function QAAgentsWorkspace() {
                 value={inputPrompt}
                 onChange={(e) => setInputPrompt(e.target.value)}
                 rows={activeTab === 'test_cases' ? 8 : 11}
-                className="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none leading-relaxed"
+                className="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none leading-relaxed"
                 placeholder={
                   activeTab === 'requirements'
-                    ? 'Paste your user story, PRD feature draft, or high-level business requirement here (e.g., "As a customer, I want to transfer money between my accounts with 2FA verification...")'
+                    ? 'Paste your requirements, user story, PRD notes, or acceptance criteria here to detect ambiguities, inconsistencies, and undefined expectations (e.g., "The system should process payments quickly and notify users when transactions are completed.")'
                     : activeTab === 'test_cases'
                       ? 'Paste requirement text or import an Excel/Word/PDF document above to synthesize positive, negative, and boundary test cases...'
                       : activeTab === 'code_review'
@@ -916,7 +960,7 @@ export default function QAAgentsWorkspace() {
               <div className="space-y-1.5">
                 <span className="text-[11px] font-semibold text-slate-400">
                   {activeTab === 'requirements'
-                    ? 'Sample Feature Specs:'
+                    ? 'Sample Requirements to Analyze:'
                     : activeTab === 'test_cases'
                       ? 'Sample Test Case Requirements:'
                       : activeTab === 'code_review'
@@ -929,32 +973,102 @@ export default function QAAgentsWorkspace() {
                       <button
                         onClick={() =>
                           setInputPrompt(
-                            'As a customer, I want to transfer money between my accounts with 2FA SMS verification and daily limit validation ($10,000 max) so that my funds are secure.'
+                            'The system should process payments quickly and notify users when transactions are completed.'
                           )
                         }
                         className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Direct Chat Input (Test 1)"
                       >
-                        2FA Account Transfer
+                        Payment Notification
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt('Users should be able to manage their profiles.')
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Functional Ambiguity (Test 2)"
+                      >
+                        Profile CRUD
                       </button>
                       <button
                         onClick={() =>
                           setInputPrompt(
-                            'As an online shopper, I want to apply promotional coupon codes during cart checkout with instant price recalculation and error handling for expired codes.'
+                            'The application should handle failed login attempts appropriately.'
                           )
                         }
                         className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Behavioural Ambiguity (Test 3)"
                       >
-                        Coupon &amp; Checkout Rules
+                        Failed Login
+                      </button>
+                      <button
+                        onClick={() => setInputPrompt('Eligible customers can receive discounts.')}
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Conditional Ambiguity (Test 4)"
+                      >
+                        Discounts
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt('Expired accounts should be deactivated automatically.')
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Temporal Ambiguity (Test 5)"
+                      >
+                        Account Expiry
                       </button>
                       <button
                         onClick={() =>
                           setInputPrompt(
-                            'As an admin, I want to assign role-based permissions (Admin, QA, Viewer) with mandatory password expiration every 90 days and audit logging.'
+                            'The application should provide fast and user-friendly search.'
                           )
                         }
                         className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Semantic Ambiguity (Test 6)"
                       >
-                        RBAC &amp; Audit Logs
+                        Fast Search
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt('Refunds must be approved before they are processed.')
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Process Ambiguity (Test 7)"
+                      >
+                        Refund Approvals
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'The application should support a high number of concurrent transactions.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
+                        title="Quantitative Ambiguity (Test 8)"
+                      >
+                        High Concurrency
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'Feature: Dual Notification Dispatch. The user must always receive SMS alerts and simultaneously cannot receive any SMS messages when notification is disabled. These conflicting rules apply.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-rose-500 rounded-lg cursor-pointer"
+                        title="Conflicting Requirements (Test 11)"
+                      >
+                        Conflicting Rules
+                      </button>
+                      <button
+                        onClick={() =>
+                          setInputPrompt(
+                            'The user must enter a password containing at least 12 characters, including one uppercase letter, one lowercase letter, one digit and one special character.'
+                          )
+                        }
+                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-emerald-500 rounded-lg cursor-pointer"
+                        title="Clear Requirement (Test 12)"
+                      >
+                        Clear Password Spec
                       </button>
                     </>
                   )}
@@ -1141,7 +1255,7 @@ export default function QAAgentsWorkspace() {
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
                     {activeTab === 'requirements'
-                      ? 'Generating Requirements...'
+                      ? 'Analyzing Requirements...' /* 'Generating Requirements...' */
                       : activeTab === 'test_cases'
                         ? 'Generating Test Cases...'
                         : activeTab === 'automation_code'
@@ -1153,7 +1267,7 @@ export default function QAAgentsWorkspace() {
                     <Sparkles className="w-4 h-4" />
                     {/* Rename button specifically for Requirement Generator (Req 2) and Test Case Generator (Req 4) */}
                     {activeTab === 'requirements'
-                      ? 'Generate Requirements'
+                      ? 'Analyze Requirements' /* 'Generate Requirements' */
                       : activeTab === 'test_cases'
                         ? 'Generate Test Cases'
                         : activeTab === 'automation_code'
@@ -1172,7 +1286,7 @@ export default function QAAgentsWorkspace() {
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
                   <span>
                     {activeTab === 'requirements'
-                      ? 'Generated Requirements & Criteria'
+                      ? 'Requirement Ambiguity Analysis'
                       : activeTab === 'test_cases'
                         ? 'Synthesized QA Test Matrix'
                         : activeTab === 'automation_code'
@@ -1188,6 +1302,35 @@ export default function QAAgentsWorkspace() {
 
                 {outputResult && (
                   <div className="flex items-center gap-2 flex-wrap">
+                    {/* View Switcher for Requirements */}
+                    {activeTab === 'requirements' &&
+                      parseAmbiguityTableToRows(outputResult).length > 0 && (
+                        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                          <button
+                            type="button"
+                            onClick={() => setReqViewMode('table')}
+                            className={`px-2 py-0.5 rounded text-[11px] font-semibold transition cursor-pointer ${
+                              reqViewMode === 'table'
+                                ? 'bg-cyan-600 text-white shadow-xs'
+                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                            }`}
+                          >
+                            Table View
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setReqViewMode('raw')}
+                            className={`px-2 py-0.5 rounded text-[11px] font-semibold transition cursor-pointer ${
+                              reqViewMode === 'raw'
+                                ? 'bg-cyan-600 text-white shadow-xs'
+                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                            }`}
+                          >
+                            Markdown
+                          </button>
+                        </div>
+                      )}
+
                     {/* Copy button */}
                     <button
                       onClick={copyToClipboard}
@@ -1206,10 +1349,10 @@ export default function QAAgentsWorkspace() {
                     {activeTab === 'requirements' && (
                       <button
                         onClick={() => exportRequirementsToExcel(outputResult)}
-                        className="p-1.5 px-2.5 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs flex items-center gap-1.5 transition-colors font-semibold cursor-pointer shadow-sm"
-                        title="Export generated requirements into an Excel spreadsheet (.xls / .xlsx)"
+                        className="p-1.5 px-2.5 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-800 rounded-lg hover:bg-cyan-100 dark:hover:bg-cyan-900/60 text-xs flex items-center gap-1.5 transition-colors font-semibold cursor-pointer shadow-sm"
+                        title="Export ambiguity analysis into an Excel spreadsheet (.xls / .xlsx)"
                       >
-                        <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <FileSpreadsheet className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                         <span className="text-[11px]">Export in Excel</span>
                       </button>
                     )}
@@ -1239,15 +1382,126 @@ export default function QAAgentsWorkspace() {
               </div>
 
               {/* Output Content Container */}
-              <div className="min-h-[340px] max-h-[500px] overflow-y-auto p-4 bg-slate-950 text-slate-200 rounded-xl font-mono text-xs leading-relaxed whitespace-pre-wrap border border-slate-800">
+              <div className="min-h-[340px] max-h-[560px] overflow-y-auto p-4 bg-slate-950 text-slate-200 rounded-xl font-mono text-xs leading-relaxed border border-slate-800">
                 {outputResult ? (
-                  outputResult
+                  activeTab === 'requirements' &&
+                  reqViewMode === 'table' &&
+                  parseAmbiguityTableToRows(outputResult).length > 0 ? (
+                    <div className="space-y-4 font-sans not-italic text-left">
+                      {/* Structured Ambiguity Table */}
+                      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60">
+                        <table className="w-full text-left text-xs border-collapse min-w-[760px]">
+                          <thead>
+                            <tr className="border-b border-slate-800 bg-slate-900 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
+                              <th className="py-2.5 px-3 w-12 text-center">#</th>
+                              <th className="py-2.5 px-3 min-w-[150px]">Ambiguity Title</th>
+                              <th className="py-2.5 px-3 min-w-[200px]">Ambiguity</th>
+                              <th className="py-2.5 px-3 min-w-[100px]">Type</th>
+                              <th className="py-2.5 px-3 min-w-[80px]">Priority</th>
+                              <th className="py-2.5 px-3 min-w-[100px]">Line Number</th>
+                              <th className="py-2.5 px-3 min-w-[220px]">Recommendation</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-800/80">
+                            {parseAmbiguityTableToRows(outputResult).map((row, idx) => (
+                              <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
+                                <td className="py-2.5 px-3 text-center font-mono text-slate-400 font-bold text-[11px]">
+                                  {row.serialNumber}
+                                </td>
+                                <td className="py-2.5 px-3 font-semibold text-slate-100">
+                                  {row.title}
+                                </td>
+                                <td className="py-2.5 px-3 text-slate-300 leading-relaxed text-[11px]">
+                                  {row.ambiguity}
+                                </td>
+                                <td className="py-2.5 px-3">
+                                  <span
+                                    className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                                      row.type === 'Functional'
+                                        ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                                        : row.type === 'Behavioural'
+                                          ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
+                                          : row.type === 'Conditional'
+                                            ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                                            : row.type === 'Temporal'
+                                              ? 'bg-blue-500/15 text-blue-300 border-blue-500/30'
+                                              : row.type === 'Semantic'
+                                                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                                                : row.type === 'Process'
+                                                  ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30'
+                                                  : 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+                                    }`}
+                                  >
+                                    {row.type}
+                                  </span>
+                                </td>
+                                <td className="py-2.5 px-3">
+                                  <span
+                                    className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                                      row.priority.toLowerCase() === 'high'
+                                        ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
+                                        : row.priority.toLowerCase() === 'medium'
+                                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                                          : 'bg-blue-500/20 text-blue-400 border-blue-500/40'
+                                    }`}
+                                  >
+                                    {row.priority}
+                                  </span>
+                                </td>
+                                <td className="py-2.5 px-3">
+                                  <span className="font-mono text-[10px] text-cyan-300 bg-cyan-950/40 border border-cyan-800/60 px-1.5 py-0.5 rounded">
+                                    {row.lineNumber}
+                                  </span>
+                                </td>
+                                <td className="py-2.5 px-3 text-slate-300 leading-relaxed text-[11px]">
+                                  {row.recommendation}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Summary Section */}
+                      {outputResult.includes('## Analysis Summary') && (
+                        <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-2 text-xs">
+                          <div className="font-bold text-cyan-400 uppercase tracking-wider text-[11px]">
+                            Analysis Summary &amp; Quality Assessment
+                          </div>
+                          <div className="text-slate-300 text-[11px] leading-relaxed whitespace-pre-wrap font-sans">
+                            {outputResult
+                              .split('## Analysis Summary')[1]
+                              ?.split('## Questions Requiring')[0]
+                              ?.trim()}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Clarification Questions Section */}
+                      {outputResult.includes('## Questions Requiring') && (
+                        <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-2 text-xs">
+                          <div className="font-bold text-amber-400 uppercase tracking-wider text-[11px]">
+                            Questions Requiring Business / Product Owner Clarification
+                          </div>
+                          <div className="text-slate-300 text-[11px] leading-relaxed whitespace-pre-wrap font-sans">
+                            {outputResult
+                              .split(
+                                '## Questions Requiring Business/Product Owner Clarification'
+                              )[1]
+                              ?.trim()}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="whitespace-pre-wrap">{outputResult}</div>
+                  )
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-2 py-16">
                     <Terminal className="w-8 h-8 opacity-40" />
                     <p className="text-xs">
                       {activeTab === 'requirements'
-                        ? 'Generated Gherkin Acceptance Criteria and requirements matrix will appear here.'
+                        ? 'Ambiguity analysis table, summary, and clarification questions will appear here after clicking Analyze Requirements.'
                         : activeTab === 'test_cases'
                           ? 'Synthesized QA Test Matrix will appear here after clicking Generate Test Cases.'
                           : activeTab === 'automation_code'

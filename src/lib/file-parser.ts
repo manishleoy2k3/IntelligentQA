@@ -75,14 +75,15 @@ async function parseTextFile(file: File): Promise<string> {
 
 /**
  * Word .docx parser
- * DOCX is a zip archive containing word/document.xml with <w:t> tags
+ * DOCX is a zip archive containing word/document.xml with <w:p> and <w:t> tags
+ * Extracts text with structured paragraph, heading, and table references.
  */
 async function parseDocxFile(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const textFromZip = await extractTextFromZip(arrayBuffer, ['word/document.xml']);
 
   if (textFromZip) {
-    return extractXmlText(textFromZip);
+    return extractStructuredDocxText(textFromZip);
   }
 
   // Fallback: scan printable text and w:t tags from raw binary buffer
@@ -90,31 +91,154 @@ async function parseDocxFile(file: File): Promise<string> {
 }
 
 /**
+ * Parses Word document.xml into structured text with paragraph and heading references
+ */
+function extractStructuredDocxText(xml: string): string {
+  const outputLines: string[] = [];
+  let paragraphCount = 0;
+  let tableCount = 0;
+
+  // Split by tables and paragraphs
+  const pRegex = /<w:p[\s>][\s\S]*?<\/w:p>/g;
+  const pMatches = xml.match(pRegex);
+
+  if (pMatches && pMatches.length > 0) {
+    for (const pXml of pMatches) {
+      // Extract text content inside <w:t> tags
+      const tMatches = pXml.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g);
+      if (!tMatches || tMatches.length === 0) continue;
+
+      const pText = tMatches
+        .map((m) => m.replace(/<[^>]+>/g, ''))
+        .join('')
+        .trim();
+
+      if (!pText) continue;
+
+      paragraphCount++;
+
+      // Check if this paragraph is a heading
+      const headingMatch = pXml.match(/<w:pStyle[^>]*w:val="Heading(\d+)"/i);
+      const isHeading = !!headingMatch || (/<w:b\/>/i.test(pXml) && pText.length < 80);
+
+      if (headingMatch) {
+        outputLines.push(`[Heading ${headingMatch[1]}: ${pText}]`);
+      } else if (isHeading && paragraphCount <= 3) {
+        outputLines.push(`[Heading: ${pText}]`);
+      } else {
+        outputLines.push(`[Paragraph ${paragraphCount}] ${pText}`);
+      }
+    }
+  }
+
+  if (outputLines.length > 0) {
+    return outputLines.join('\n\n');
+  }
+
+  return extractXmlText(xml);
+}
+
+/**
  * Excel .xlsx / .xls parser
  * XLSX is a zip containing xl/sharedStrings.xml and xl/worksheets/sheet1.xml
+ * Extracts rows tagged with sheet name and row numbers for precise source tracing.
  */
 async function parseExcelFile(file: File): Promise<string> {
   const ext = file.name.split('.').pop()?.toLowerCase();
   if (ext === 'csv') {
-    return parseTextFile(file);
+    const raw = await parseTextFile(file);
+    const csvLines = raw.split('\n').filter((l) => l.trim().length > 0);
+    return csvLines
+      .map((line, idx) => `[Sheet: Sheet1, Row: ${idx + 1}] ${line.trim()}`)
+      .join('\n');
   }
 
   const arrayBuffer = await file.arrayBuffer();
-  // Try extracting shared strings and sheet data
-  const sharedStringsXml = await extractTextFromZip(arrayBuffer, ['xl/sharedStrings.xml']);
-  const sheetXml = await extractTextFromZip(arrayBuffer, ['xl/worksheets/sheet1.xml']);
 
-  const extractedRows: string[] = [];
-
-  if (sharedStringsXml) {
-    const stringMatches = sharedStringsXml.match(/<t[^>]*>([^<]+)<\/t>/gi);
-    if (stringMatches && stringMatches.length > 0) {
-      const strings = stringMatches.map((m) => m.replace(/<[^>]+>/g, '').trim()).filter(Boolean);
-      return strings.join('\n');
+  // Try reading workbook.xml for sheet names
+  const workbookXml = await extractTextFromZip(arrayBuffer, ['xl/workbook.xml']);
+  let sheetName = 'Sheet1';
+  if (workbookXml) {
+    const sheetNameMatch = workbookXml.match(/<sheet[^>]*name="([^"]+)"/i);
+    if (sheetNameMatch && sheetNameMatch[1]) {
+      sheetName = sheetNameMatch[1];
     }
   }
 
-  // Fallback: extract string cells or printable text
+  // Extract shared strings
+  const sharedStringsXml = await extractTextFromZip(arrayBuffer, ['xl/sharedStrings.xml']);
+  const sharedStrings: string[] = [];
+  if (sharedStringsXml) {
+    const siMatches = sharedStringsXml.match(/<si[\s>][\s\S]*?<\/si>/g);
+    if (siMatches) {
+      for (const si of siMatches) {
+        const tMatches = si.match(/<t[^>]*>([\s\S]*?)<\/t>/g);
+        if (tMatches) {
+          sharedStrings.push(tMatches.map((t) => t.replace(/<[^>]+>/g, '')).join(''));
+        } else {
+          sharedStrings.push('');
+        }
+      }
+    }
+  }
+
+  // Extract worksheet XML (try sheet1.xml)
+  const sheetXml = await extractTextFromZip(arrayBuffer, ['xl/worksheets/sheet1.xml']);
+  if (sheetXml) {
+    const rowMatches = sheetXml.match(/<row[^>]*r="(\d+)"[\s\S]*?<\/row>/g);
+    if (rowMatches && rowMatches.length > 0) {
+      const formattedRows: string[] = [];
+      for (const rowXml of rowMatches) {
+        const rowNumMatch = rowXml.match(/<row[^>]*r="(\d+)"/);
+        const rowNum = rowNumMatch ? rowNumMatch[1] : '';
+
+        // Extract cells in this row
+        const cellMatches = rowXml.match(/<c[^>]*>[\s\S]*?<\/c>/g);
+        if (!cellMatches) continue;
+
+        const cellValues: string[] = [];
+        for (const cellXml of cellMatches) {
+          const isSharedString = /t="s"/i.test(cellXml);
+          const valMatch = cellXml.match(/<v>([^<]+)<\/v>/);
+          if (valMatch) {
+            const rawVal = valMatch[1];
+            if (isSharedString) {
+              const idx = parseInt(rawVal, 10);
+              if (!isNaN(idx) && sharedStrings[idx] !== undefined) {
+                cellValues.push(sharedStrings[idx].trim());
+              }
+            } else {
+              cellValues.push(rawVal.trim());
+            }
+          } else {
+            const inlineMatch = cellXml.match(/<is><t[^>]*>([^<]+)<\/t><\/is>/);
+            if (inlineMatch) {
+              cellValues.push(inlineMatch[1].trim());
+            }
+          }
+        }
+
+        const rowText = cellValues.filter(Boolean).join(' | ');
+        if (rowText) {
+          formattedRows.push(`[Sheet: ${sheetName}, Row: ${rowNum}] ${rowText}`);
+        }
+      }
+
+      if (formattedRows.length > 0) {
+        return formattedRows.join('\n');
+      }
+    }
+  }
+
+  // Fallback to shared strings if row parsing was empty
+  if (sharedStrings.length > 0) {
+    return sharedStrings
+      .filter((s) => s.trim().length > 0)
+      .map((s, idx) => `[Sheet: ${sheetName}, Row: ${idx + 1}] ${s.trim()}`)
+      .join('\n');
+  }
+
+  // Binary Fallback
   const fallback = extractExcelRegexFallback(arrayBuffer);
   return fallback || (await parseTextFile(file));
 }

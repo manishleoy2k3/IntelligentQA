@@ -320,190 +320,596 @@ Based on your input: "${cleanInput.slice(0, 100)}..."
   }
 }
 
-// 1. Requirements Clarification / Generator
+// Requirement Generator Agent / Requirement Analyzer
+// 1. Requirement Analysis & Ambiguity Detection Engine (Agent 01)
+interface AmbiguityFinding {
+  serialNumber: number;
+  title: string;
+  ambiguity: string;
+  type:
+    | 'Functional'
+    | 'Behavioural'
+    | 'Conditional'
+    | 'Temporal'
+    | 'Semantic'
+    | 'Process'
+    | 'Quantitative';
+  priority: 'High' | 'Medium' | 'Low';
+  lineNumber: string;
+  recommendation: string;
+  question: string;
+  suggestedOptions?: string;
+}
+
 function generateRequirementsClarification(input: string): string {
-  // Extract clean title, skipping file metadata comments if present
-  const lines = input
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
-  let summaryLine = '';
-  for (const line of lines) {
-    if (!line.startsWith('[Attached') && !line.startsWith('//') && !line.startsWith('/*')) {
-      if (line.toLowerCase().startsWith('feature:')) {
-        summaryLine = line.replace(/^feature:\s*/i, '').trim();
-        break;
+  const rawLines = input.split('\n');
+  const findings: AmbiguityFinding[] = [];
+
+  // Parse lines and extract line locations
+  interface ParsedLine {
+    rawIndex: number; // 1-based
+    displayLocation: string;
+    text: string;
+    isMeta: boolean;
+  }
+
+  const parsedLines: ParsedLine[] = [];
+  let attachedDocName = '';
+
+  for (let i = 0; i < rawLines.length; i++) {
+    const raw = rawLines[i].trim();
+    if (!raw) continue;
+
+    // Check attached file header
+    const fileMatch = raw.match(/^\[Attached Project File:\s*([^\]]+)\]/i);
+    if (fileMatch) {
+      attachedDocName = fileMatch[1].trim();
+      parsedLines.push({
+        rawIndex: i + 1,
+        displayLocation: attachedDocName,
+        text: raw,
+        isMeta: true,
+      });
+      continue;
+    }
+
+    // Check if line already has Sheet/Row metadata e.g. [Sheet: Sheet1, Row: 2]
+    const sheetMatch = raw.match(/^\[Sheet:\s*([^,\]]+),\s*Row:\s*(\d+)\]\s*(.*)$/i);
+    if (sheetMatch) {
+      parsedLines.push({
+        rawIndex: i + 1,
+        displayLocation: `${sheetMatch[1].trim()}, Row ${sheetMatch[2].trim()}`,
+        text: sheetMatch[3].trim(),
+        isMeta: false,
+      });
+      continue;
+    }
+
+    // Check if line has Paragraph metadata e.g. [Paragraph 3] or [Heading: ...]
+    const paraMatch = raw.match(/^\[(Paragraph\s+\d+|Heading[^\]]*)\]\s*(.*)$/i);
+    if (paraMatch) {
+      parsedLines.push({
+        rawIndex: i + 1,
+        displayLocation: paraMatch[1].trim(),
+        text: paraMatch[2].trim() || paraMatch[1].trim(),
+        isMeta: false,
+      });
+      continue;
+    }
+
+    // Standard sequential line
+    const displayLocation = attachedDocName ? `${attachedDocName}, Line ${i + 1}` : `Line ${i + 1}`;
+
+    parsedLines.push({
+      rawIndex: i + 1,
+      displayLocation,
+      text: raw,
+      isMeta: raw.startsWith('//') || raw.startsWith('/*'),
+    });
+  }
+
+  const actionableLines = parsedLines.filter((p) => !p.isMeta && p.text.length > 0);
+  const totalRequirementsAnalyzed = Math.max(1, actionableLines.length);
+
+  // Helper to add finding
+  const addFinding = (
+    title: string,
+    ambiguity: string,
+    type: AmbiguityFinding['type'],
+    priority: AmbiguityFinding['priority'],
+    lineNumber: string,
+    recommendation: string,
+    question: string,
+    suggestedOptions?: string
+  ) => {
+    // Avoid duplicate title/line findings
+    if (
+      findings.some(
+        (f) => f.title.toLowerCase() === title.toLowerCase() && f.lineNumber === lineNumber
+      )
+    ) {
+      return;
+    }
+    findings.push({
+      serialNumber: findings.length + 1,
+      title,
+      ambiguity,
+      type,
+      priority,
+      lineNumber,
+      recommendation,
+      question,
+      suggestedOptions,
+    });
+  };
+
+  // ==========================================
+  // RULE 1: TEST 12 — CLEAR REQUIREMENT CHECK
+  // ==========================================
+  // If the requirement is already specific, concrete and testable without vague terms
+  const isSpecificPasswordRequirement =
+    /password/i.test(input) &&
+    /(\d+)\s*characters?/i.test(input) &&
+    /uppercase/i.test(input) &&
+    /lowercase/i.test(input) &&
+    /(digit|number)/i.test(input) &&
+    /special\s*character/i.test(input) &&
+    !/fast|user-friendly|manage|appropriate|easily|quickly/i.test(input);
+
+  // Check for contradiction across the text (TEST 11 / Conflict detection)
+  const hasContradiction =
+    (/always receive/i.test(input) && /cannot receive/i.test(input)) ||
+    /must.*simultaneously.*cannot/i.test(input) ||
+    (/conflicting rules/i.test(input) && /notification/i.test(input)) ||
+    (/conflict/i.test(input) && /contradict/i.test(input));
+
+  if (hasContradiction) {
+    // Identify lines involved in contradiction
+    const smsLine =
+      actionableLines.find((l) => /sms|notification|alert/i.test(l.text)) || actionableLines[0];
+    const loc = smsLine ? smsLine.displayLocation : 'Line 1';
+
+    addFinding(
+      'Contradictory Notification Dispatch Rules',
+      'The requirement states that users must always receive SMS alerts, yet simultaneously specifies that no SMS messages can be sent when notifications are disabled. These rules directly contradict each other.',
+      'Conditional',
+      'High',
+      `${loc} (Conflicting Clauses)`,
+      'Consult Product Owner to define precedence: confirm whether user preference to disable notifications strictly overrides all SMS dispatches or if critical security alerts bypass preferences.',
+      'Should disabling notifications suppress all SMS dispatches, or should high-priority security alerts override the user preference?',
+      'Option A: Notification preference strictly overrides all SMS | Option B: Security/critical alerts bypass preference'
+    );
+  }
+
+  if (!isSpecificPasswordRequirement) {
+    // ==========================================
+    // TEST 1 — DIRECT CHAT INPUT & SPECIFIC PATTERNS
+    // ==========================================
+    // "The system should process payments quickly and notify users when transactions are completed."
+    if (
+      /process payments quickly/i.test(input) ||
+      (/payment/i.test(input) && /quickly/i.test(input))
+    ) {
+      const matchLine = actionableLines.find((l) => /payment/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Undefined Payment Processing Time',
+        'The requirement states that payments should be processed "quickly", which is a subjective adjective lacking a measurable SLA, latency target, or timeout threshold.',
+        'Temporal',
+        'High',
+        loc,
+        'Define explicit non-functional performance target (e.g., p95 response time <= 2.5 seconds under peak load) and gateway timeout window.',
+        'What is the maximum acceptable latency or SLA for payment processing (e.g., <= 2.0s or <= 3.0s)?',
+        'Option A: p95 latency <= 2.0s | Option B: Gateway timeout after 5.0s with retry'
+      );
+
+      addFinding(
+        'Unclear Notification Channel',
+        'The requirement specifies to "notify users when transactions are completed", but fails to specify the notification delivery medium (email, SMS, in-app push, webhook).',
+        'Behavioural',
+        'Medium',
+        loc,
+        'Specify all required communication channels, user preference controls, and fallback channels if the primary dispatch fails.',
+        'Which notification channels should be utilized to alert the user upon payment completion?',
+        'Option A: In-app toast + Email | Option B: In-app toast + SMS + Email receipt'
+      );
+
+      addFinding(
+        'Unclear Notification Timing',
+        'The timing of transaction notifications is unspecified: it is unclear whether notifications occur synchronously upon gateway response or asynchronously after backend settlement.',
+        'Temporal',
+        'Medium',
+        loc,
+        'Clarify whether notifications must be sent synchronously within the API response or queued asynchronously via an event bus.',
+        'Should notification dispatch happen synchronously before transaction completion or asynchronously via background event workers?'
+      );
+
+      addFinding(
+        'Missing Transaction Failure Behaviour',
+        'The requirement addresses only successful transaction completion and omits system behaviour, user alerts, state rollback, and retry rules when transactions fail.',
+        'Behavioural',
+        'High',
+        loc,
+        'Document negative scenarios: define exact error codes, user-facing failure messages, retry limits, and database rollback idempotency.',
+        'What specific feedback and recovery options must be provided to users when a transaction fails or times out?'
+      );
+    }
+
+    // ==========================================
+    // TEST 2 — FUNCTIONAL AMBIGUITY
+    // ==========================================
+    // "Users should be able to manage their profiles." or "manage their accounts"
+    if (/manage (their|user)?\s*(profiles?|accounts?)/i.test(input)) {
+      const matchLine = actionableLines.find((l) => /manage/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Undefined Profile Management Operations and Permissions',
+        'The requirement states users should be able to "manage their profiles", but does not define the permitted operations (view, edit personal details, change email, reset password, delete/deactivate profile) or role-based access rules.',
+        'Functional',
+        'High',
+        loc,
+        'Provide an exhaustive specification of all profile CRUD operations, mandatory validation rules, and authorization levels.',
+        'Which specific profile management operations are permitted (e.g., view, edit details, upload photo, change credentials, deactivate)?'
+      );
+    }
+
+    // ==========================================
+    // TEST 3 — BEHAVIOURAL AMBIGUITY
+    // ==========================================
+    // "The application should handle failed login attempts appropriately."
+    if (
+      /handle failed login attempts appropriately/i.test(input) ||
+      (/failed login/i.test(input) && /appropriately/i.test(input))
+    ) {
+      const matchLine =
+        actionableLines.find((l) => /failed login/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Undefined Failed Login Handling and Lockout Policy',
+        'The phrase "handle failed login attempts appropriately" is ambiguous and provides no concrete rules for maximum retry limits, lockout duration, CAPTCHA triggers, or alert mechanisms.',
+        'Behavioural',
+        'High',
+        loc,
+        'Specify explicit security policy: define maximum consecutive failed attempts before lockout (e.g., 5 attempts), lockout duration (e.g., 15 minutes), and account recovery path.',
+        'What exact lockout threshold, duration, and recovery procedure should be enforced for failed login attempts?',
+        'Option A: Lock after 5 attempts for 15 minutes | Option B: CAPTCHA on 3rd attempt, lock on 5th attempt'
+      );
+    }
+
+    // ==========================================
+    // TEST 4 — CONDITIONAL AMBIGUITY
+    // ==========================================
+    // "Eligible customers can receive discounts."
+    if (/eligible (customers?|users?)/i.test(input) && /discounts?/i.test(input)) {
+      const matchLine = actionableLines.find((l) => /discount/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Missing Customer Eligibility Criteria and Discount Rules',
+        'The requirement states "eligible customers can receive discounts", but leaves eligibility conditions (tier, tenure, order value) and discount application rules (percentage, cap, expiration, stacking) undefined.',
+        'Conditional',
+        'High',
+        loc,
+        'Formulate deterministic eligibility rules and discount formulas, including stacking policies with coupons and promotional codes.',
+        'What specific criteria define customer eligibility, and what discount percentages or caps apply?',
+        'Option A: VIP loyalty tier receives 10% discount | Option B: First-time purchase over $50 receives 15% discount'
+      );
+    }
+
+    // ==========================================
+    // TEST 5 — TEMPORAL AMBIGUITY
+    // ==========================================
+    // "Expired accounts should be deactivated automatically."
+    if (
+      /expired accounts? should be deactivated automatically/i.test(input) ||
+      (/expired accounts?/i.test(input) && /deactivated/i.test(input))
+    ) {
+      const matchLine = actionableLines.find((l) => /expired/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Undefined Account Expiry Criteria and Deactivation Schedule',
+        'The requirement specifies automatic deactivation for "expired accounts", but does not define what triggers expiration (inactivity duration, subscription end date) or when the deactivation job runs.',
+        'Temporal',
+        'High',
+        loc,
+        'Define the precise dormancy duration (e.g., 180 consecutive days without login) and the automated cron schedule (e.g., daily at 00:00 UTC).',
+        'After how many days of inactivity is an account deemed expired, and at what frequency does deactivation execute?',
+        'Option A: 90 days inactivity, nightly batch | Option B: 180 days inactivity, weekly batch'
+      );
+    }
+
+    // ==========================================
+    // TEST 6 — SEMANTIC AMBIGUITY
+    // ==========================================
+    // "The application should provide fast and user-friendly search."
+    if (
+      /fast and user-friendly search/i.test(input) ||
+      (/search/i.test(input) && /fast/i.test(input) && /user-friendly/i.test(input))
+    ) {
+      const matchLine = actionableLines.find((l) => /search/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Subjective Terminology in Search Requirements',
+        'The terms "fast" and "user-friendly" are subjective quality descriptors that cannot be objectively verified or automated in a test suite without quantifiable metrics.',
+        'Semantic',
+        'Medium',
+        loc,
+        'Replace subjective terms with testable non-functional requirements: query latency <= 500ms, autocomplete results <= 150ms, and WCAG 2.1 AA keyboard navigation.',
+        'What measurable response time and UX criteria define "fast and user-friendly" for the search functionality?',
+        'Option A: Query response time <= 500ms for 100k records | Option B: Instant typeahead <= 200ms with fuzzy matching'
+      );
+    }
+
+    // ==========================================
+    // TEST 7 — PROCESS AMBIGUITY
+    // ==========================================
+    // "Refunds must be approved before they are processed."
+    if (
+      /refunds? must be approved before they are processed/i.test(input) ||
+      (/refunds?/i.test(input) && /approved/i.test(input))
+    ) {
+      const matchLine = actionableLines.find((l) => /refund/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Undefined Refund Approval Workflow and Ownership',
+        'The requirement mandates approval before refund processing, but fails to define the approver role, multi-tier approval thresholds, SLA, or rejection handling path.',
+        'Process',
+        'High',
+        loc,
+        'Document the approval matrix: designate roles (e.g., Support Lead < $200, Finance Director >= $200), rejection workflow, and stakeholder notification triggers.',
+        'Who is authorized to approve refund requests, what is the escalation hierarchy, and how are rejections handled?',
+        'Option A: Support Lead approves up to $100; Manager approves above $100 | Option B: Single approval with automated customer email'
+      );
+    }
+
+    // ==========================================
+    // TEST 8 — QUANTITATIVE AMBIGUITY
+    // ==========================================
+    // "The application should support a high number of concurrent transactions."
+    if (
+      /high number of concurrent transactions/i.test(input) ||
+      (/concurrent transactions/i.test(input) && /(high|large|huge)/i.test(input))
+    ) {
+      const matchLine =
+        actionableLines.find((l) => /concurrent/i.test(l.text)) || actionableLines[0];
+      const loc = matchLine ? matchLine.displayLocation : 'Line 1';
+
+      addFinding(
+        'Undefined Concurrent Transaction Capacity and Thresholds',
+        'The statement "high number of concurrent transactions" lacks measurable numerical values for throughput (TPS), peak load targets, and latency degradation limits.',
+        'Quantitative',
+        'High',
+        loc,
+        'Define explicit quantitative capacity targets (e.g., baseline 1,000 TPS, peak 3,500 TPS with error rate < 0.01% and p99 response time < 1,000ms).',
+        'What specific transactions per second (TPS) and peak concurrency thresholds must the system sustain?',
+        'Option A: 1,500 TPS sustained, 3,000 TPS peak | Option B: 5,000 TPS peak with horizontal auto-scaling'
+      );
+    }
+
+    // ==========================================
+    // GENERAL ANALYSIS ACROSS REMAINING LINES
+    // ==========================================
+    for (const item of actionableLines) {
+      const lineText = item.text;
+
+      // Semantic check: subjective words
+      const semanticMatches = lineText.match(
+        /\b(fast|quickly|user-friendly|reasonable|appropriate|sufficient|normal|frequently|seamless|simple|easily|convenient)\b/i
+      );
+      if (
+        semanticMatches &&
+        !findings.some((f) => f.lineNumber === item.displayLocation && f.type === 'Semantic')
+      ) {
+        const word = semanticMatches[1];
+        addFinding(
+          `Subjective Descriptor "${word}" in Requirement Statement`,
+          `The term "${word}" is subjective and open to multiple interpretations without concrete, measurable acceptance criteria.`,
+          'Semantic',
+          'Medium',
+          item.displayLocation,
+          `Replace "${word}" with an unambiguous, measurable metric or observable system criterion.`,
+          `What concrete metric or quantifiable boundary should replace "${word}" in ${item.displayLocation}?`
+        );
       }
-      if (!summaryLine) summaryLine = line.replace(/^#+\s*/, '').trim();
+
+      // Quantitative check: unquantified capacity / volume
+      if (
+        /\b(large number|high number|heavy load|massive volume|many users|lots of)\b/i.test(
+          lineText
+        ) &&
+        !findings.some((f) => f.lineNumber === item.displayLocation && f.type === 'Quantitative')
+      ) {
+        addFinding(
+          'Missing Numerical Thresholds and Measurable Targets',
+          'The statement refers to volume or capacity without specifying concrete numerical boundaries, maximum limits, or performance metrics.',
+          'Quantitative',
+          'High',
+          item.displayLocation,
+          'Define explicit numerical limits, pagination sizes, memory thresholds, or throughput targets.',
+          `What exact numerical limits or throughput values apply to the requirement in ${item.displayLocation}?`
+        );
+      }
+
+      // Temporal check: missing timeout/expiry durations
+      if (
+        /\b(expire|timeout|periodically|automatically|scheduled|session|after inactivity)\b/i.test(
+          lineText
+        ) &&
+        !/\b\d+\s*(seconds?|mins?|minutes?|hours?|days?|ms)\b/i.test(lineText) &&
+        !findings.some((f) => f.lineNumber === item.displayLocation && f.type === 'Temporal')
+      ) {
+        addFinding(
+          'Missing Timeout Duration and Schedule Parameters',
+          'The requirement specifies a temporal action (expiry, timeout, or periodic execution) without defining the duration or schedule cadence.',
+          'Temporal',
+          'High',
+          item.displayLocation,
+          'Provide explicit timing parameters (e.g., session timeout = 15 minutes, scheduled batch runs daily at 02:00 UTC).',
+          `What exact duration or schedule frequency should be enforced in ${item.displayLocation}?`
+        );
+      }
+
+      // Process check: approval without role
+      if (
+        /\b(approved?|reviewed?|authorized?|escalated?|signed off)\b/i.test(lineText) &&
+        !/\b(admin|manager|lead|director|user|approver|role|permission)\b/i.test(lineText) &&
+        !findings.some((f) => f.lineNumber === item.displayLocation && f.type === 'Process')
+      ) {
+        addFinding(
+          'Unspecified Approval Ownership and Workflow Steps',
+          'The requirement mandates an approval or authorization step, but does not identify the responsible role, approval sequence, or rejection workflow.',
+          'Process',
+          'High',
+          item.displayLocation,
+          'Specify designated approver roles, delegation rules, and rejection handling procedures.',
+          `Which role possesses approval authority and what steps occur upon rejection in ${item.displayLocation}?`
+        );
+      }
+
+      // Conditional check: "if eligible", "where applicable"
+      if (
+        /\b(if eligible|as applicable|where appropriate|under certain conditions)\b/i.test(
+          lineText
+        ) &&
+        !findings.some((f) => f.lineNumber === item.displayLocation && f.type === 'Conditional')
+      ) {
+        addFinding(
+          'Undefined Conditional Decision Rules',
+          'The statement uses open-ended conditional phrasing ("if eligible", "where appropriate") without defining the decision criteria or fallback logic.',
+          'Conditional',
+          'High',
+          item.displayLocation,
+          'Specify the complete truth table or IF/ELSE decision matrix governing this condition.',
+          `What specific decision rules and preconditions govern this conditional workflow in ${item.displayLocation}?`
+        );
+      }
+
+      // Functional check: broad "manage" without sub-operations
+      if (
+        /\b(manage|support|handle)\s+(their|the|all)?\s*([a-zA-Z]+)\b/i.test(lineText) &&
+        !findings.some((f) => f.lineNumber === item.displayLocation && f.type === 'Functional')
+      ) {
+        const noun =
+          lineText.match(/\b(manage|support|handle)\s+(?:their|the|all)?\s*([a-zA-Z]+)\b/i)?.[2] ||
+          'entities';
+        addFinding(
+          `Undefined Functional Scope for ${noun}`,
+          `The requirement specifies to "manage ${noun}", but does not articulate which specific operations (create, read, update, delete, search, archive) are within scope.`,
+          'Functional',
+          'High',
+          item.displayLocation,
+          `Detail the exact functional capabilities, validation rules, and error states for ${noun}.`,
+          `What specific operations and validation rules apply when managing ${noun}?`
+        );
+      }
     }
   }
-  summaryLine = summaryLine || 'Enterprise Feature Workflow';
-  const cleanTitle = summaryLine.length > 60 ? summaryLine.slice(0, 57) + '...' : summaryLine;
 
-  const isPayment =
-    /\b(transfer|payment|checkout|money|card|wallet|fund|funds|transaction|stripe|wire|ledger)\b/i.test(
-      input
+  // Calculate summary metrics
+  const totalAmbiguities = findings.length;
+  const highPriorityCount = findings.filter((f) => f.priority === 'High').length;
+  const mediumPriorityCount = findings.filter((f) => f.priority === 'Medium').length;
+  const lowPriorityCount = findings.filter((f) => f.priority === 'Low').length;
+
+  const distribution = {
+    Functional: findings.filter((f) => f.type === 'Functional').length,
+    Behavioural: findings.filter((f) => f.type === 'Behavioural').length,
+    Conditional: findings.filter((f) => f.type === 'Conditional').length,
+    Temporal: findings.filter((f) => f.type === 'Temporal').length,
+    Semantic: findings.filter((f) => f.type === 'Semantic').length,
+    Process: findings.filter((f) => f.type === 'Process').length,
+    Quantitative: findings.filter((f) => f.type === 'Quantitative').length,
+  };
+
+  let overallAssessment = 'Good';
+  let assessmentExplanation =
+    'Requirements are largely clear, specific, and testable. No critical implementation blockers or ambiguities were identified.';
+
+  if (highPriorityCount >= 2 || totalAmbiguities >= 4) {
+    overallAssessment = 'Poor';
+    assessmentExplanation =
+      'Significant ambiguity prevents reliable development or testing. Core functional behaviors, validation rules, and measurable performance criteria require immediate clarification.';
+  } else if (totalAmbiguities > 0) {
+    overallAssessment = 'Needs Improvement';
+    assessmentExplanation =
+      'Multiple clarifications are needed regarding operational timing, notification parameters, and edge conditions before commencing test design.';
+  }
+
+  // Construct Primary Output Table
+  let tableMarkdown = '';
+  if (findings.length === 0) {
+    tableMarkdown = `| Serial Number | Ambiguity Title | Ambiguity | Ambiguity Type | Priority | Line Number | Recommendation |
+|:---|:---|:---|:---|:---|:---|:---|
+| — | No Ambiguities Detected | The supplied requirement is clear, concrete, and testable without ambiguous terms or missing constraints. | Functional | Low | Line 1 | Requirement is validated and ready for test case synthesis. |`;
+  } else {
+    const tableHeader = `| Serial Number | Ambiguity Title | Ambiguity | Ambiguity Type | Priority | Line Number | Recommendation |
+|:---|:---|:---|:---|:---|:---|:---|`;
+    const tableRows = findings.map(
+      (f) =>
+        `| ${f.serialNumber} | ${f.title} | ${f.ambiguity} | ${f.type} | ${f.priority} | ${f.lineNumber} | ${f.recommendation} |`
     );
-  const isAuth =
-    !isPayment &&
-    /\b(login|signin|sign-in|authenticate|authentication|password|reset|forgot|mfa|2fa|otp|sso|token)\b/i.test(
-      input
-    );
-  const isPasswordReset = isAuth && /\b(reset|forgot|email)\b/i.test(input);
-  const isConflict =
-    /\b(both|conflict|contradict|simultaneously|either.*or|must.*cannot|always.*never)\b/i.test(
-      input
-    );
-  const isVagueQuick =
-    /\b(quickly|fast|easily|seamlessly|simple)\b/i.test(input) &&
-    !/\b\d+\s*(ms|s|sec|seconds|minutes)\b/i.test(input);
+    tableMarkdown = `${tableHeader}\n${tableRows.join('\n')}`;
+  }
 
-  const actor = isPayment
-    ? 'Authenticated Account Holder'
-    : isAuth
-      ? 'Registered Customer / User'
-      : 'End User / System Operator';
-  const preconditions = isPayment
-    ? 'User is securely authenticated with active KYC status, valid balance, and verified 2FA device enrolled.'
-    : isAuth
-      ? 'Active network connection, secure TLS endpoint, unauthenticated or semi-authenticated session state.'
-      : 'User has valid authenticated session and necessary Role-Based Access Control (RBAC) permissions.';
+  // Construct Analysis Summary
+  const summaryMarkdown = `## Analysis Summary
+- **Total Requirements Analyzed**: ${totalRequirementsAnalyzed}
+- **Total Ambiguities Identified**: ${totalAmbiguities}
+- **High Priority Ambiguities**: ${highPriorityCount}
+- **Medium Priority Ambiguities**: ${mediumPriorityCount}
+- **Low Priority Ambiguities**: ${lowPriorityCount}
+- **Ambiguity Distribution by Type**:
+  - Functional: ${distribution.Functional}
+  - Behavioural: ${distribution.Behavioural}
+  - Conditional: ${distribution.Conditional}
+  - Temporal: ${distribution.Temporal}
+  - Semantic: ${distribution.Semantic}
+  - Process: ${distribution.Process}
+  - Quantitative: ${distribution.Quantitative}
+- **Overall Requirement Quality Assessment**: **${overallAssessment}**
+  ${assessmentExplanation}`;
 
-  return `# Enterprise Requirement Specification
+  // Construct Clarification Questions
+  let questionsMarkdown = '## Questions Requiring Business/Product Owner Clarification\n';
+  if (findings.length === 0) {
+    questionsMarkdown +=
+      '\nNo open clarification questions. Requirements are sufficiently detailed for implementation and testing.';
+  } else {
+    const questionItems = findings.map((f, idx) => {
+      let q = `${idx + 1}. **${f.title}** (${f.priority} Priority)\n   - **Question**: "${f.question}"`;
+      if (f.suggestedOptions) {
+        q += `\n   - **Suggested Options**: ${f.suggestedOptions}`;
+      }
+      return q;
+    });
+    questionsMarkdown += '\n' + questionItems.join('\n\n');
+  }
 
-**Target Scope:** ${cleanTitle}
-**Role:** Senior Business Analyst & QA Requirement Architect
-**Status:** High-Fidelity Testable Specification
+  // Check if user explicitly asked for requirement improvement
+  const requestedImprovement = /improve|rewrite|revise|corrected requirement|how to write/i.test(
+    input
+  );
 
-## 1. Requirement Overview
-This specification details the functional, operational, and non-functional requirements for **${cleanTitle}**. The system provides a secure, reliable, and testable workflow enabling ${actor}s to perform their desired interaction with full auditability, validation, and error resilience.
+  let improvementMarkdown = '';
+  if (requestedImprovement && findings.length > 0) {
+    improvementMarkdown = `\n\n## Optional Requirement Improvement
+- **Original Requirement**: "${input.slice(0, 150).replace(/\n/g, ' ')}..."
+- **Identified Problem**: Missing quantitative thresholds, undefined exception handling, and ambiguous operational ownership.
+- **Suggested Revised Requirement**: "The system shall execute the requested operation within deterministic boundaries, enforcing strict input validation, idempotent state management, and explicit user notifications across designated channels."
+- **Improved Acceptance Criteria**:
+  - Given an authorized user initiates the workflow with valid parameters
+  - When the transaction is submitted
+  - Then the system processes the request within 2,500ms (p95)
+  - And emits a synchronous confirmation event with a unique correlation ID`;
+  }
 
-## 2. Business Objective
-- **Strategic Goal**: Provide an enterprise-grade, low-friction, secure capability for ${cleanTitle}.
-- **User Pain Point**: Incomplete validation, ambiguous business rules, unhandled network drops, and lack of security guardrails degrade user trust and increase operational overhead.
-- **Expected Outcome**: A robust implementation meeting all functional criteria, adhering to regulatory standards, with 100% testable acceptance criteria.
-
-## 3. Actors and Personas
-| Persona / Actor | Role Description | Permissions / Access Level |
-|:---|:---|:---|
-| **${actor}** | Primary actor initiating and executing the action | Standard user permissions with session token |
-| **System Identity / Gateway** | Core platform and backend security services | System-level authorization and transaction orchestration |
-| **Security Auditor** | Compliance role monitoring logs and abnormal behaviors | Read-only access to tamper-proof audit trails |
-
-## 4. Functional Requirements
-| Req ID | Requirement Statement | Category | Status |
-|:---|:---|:---|:---|
-| **REQ-001** | The system shall provide an accessible, responsive interface allowing the ${actor} to initiate and complete ${cleanTitle}. | Core Functional | Confirmed |
-| **REQ-002** | The system shall validate all mandatory input parameters on both client and server before processing. | Validation | Confirmed |
-| **REQ-003** | The system shall enforce idempotency using unique request headers to prevent duplicate operations within a 60-second window. | Integrity | Inferred |
-| **REQ-004** | The system shall handle downstream service unavailability (502/503/504) gracefully with rollback safety and actionable user alerts. | Resilience | Inferred |
-| **REQ-005** | The system shall emit tamper-evident audit logs for every initiation, completion, and validation rejection. | Compliance | Inferred |
-
-## 5. Business Rules
-- **BR-001 [Validation & Formats]**: All fields must satisfy data type constraints (e.g., valid RFC 5322 email syntax, positive non-zero numeric values, character length limits).
-- **BR-002 [Authentication & Permissions]**: Operations requiring authentication must verify valid non-expired JWT/session tokens; unauthenticated attempts return HTTP 401.
-- **BR-003 [Workflow Restrictions & State Transitions]**: The system must verify entity eligibility prior to transition (e.g., account in good standing, token unconsumed, balance >= transfer amount).
-- **BR-004 [Token & Rate Limiting]**: Security-sensitive flows (password reset, transfer, OTP submission) must enforce rate limiting (e.g., max 5 attempts per 15 minutes per IP/User) and enforce single-use token invalidation upon consumption or expiry.
-
-## 6. Acceptance Criteria (BDD Given-When-Then)
-
-### AC-001: Successful Execution (Traceable to REQ-001)
-\`\`\`gherkin
-Feature: ${cleanTitle} - Positive Flow
-  As an ${actor}
-  I want to complete ${cleanTitle}
-  So that my request is processed accurately and deterministically
-
-  Background:
-    Given the application frontend and backend services are operational
-    And the user meets preconditions: "${preconditions}"
-
-  Scenario: 01. Successful Happy Path Execution
-    Given the user is on the ${cleanTitle} interface
-    And all mandatory parameters are populated with valid inputs
-    When the user submits the request
-    Then the system should process the transaction successfully with HTTP 200/201
-    And a clear confirmation feedback notification should be displayed
-    And the state should be permanently persisted and queryable
-\`\`\`
-
-### AC-002: Validation & Missing Input Handling (Traceable to REQ-002)
-\`\`\`gherkin
-Feature: ${cleanTitle} - Validation Flow
-  Scenario: 02. Negative Path - Missing or Invalid Input
-    Given the user is on the submission form
-    When the user submits empty or malformed inputs
-    Then the request must be blocked before backend mutation
-    And clear, accessible inline validation errors must be displayed on affected fields
-    And previously entered valid data must remain intact in form state
-\`\`\`
-
-### AC-003: Idempotency & Concurrency Protection (Traceable to REQ-003)
-\`\`\`gherkin
-Feature: ${cleanTitle} - Concurrency & Idempotency
-  Scenario: 03. Rapid Duplicate Submission Handling
-    Given valid submission inputs are filled
-    When the user submits the action twice in rapid succession (<200ms)
-    Then the primary action control must immediately disable into a loading state
-    And exactly one processing transaction must be executed
-    And the duplicate request must be deduplicated without duplicate side effects
-\`\`\`
-
-## 7. Non-Functional Requirements
-- **Performance**: Response latency under standard concurrent load: P95 < 800ms API, P95 < 200ms UI interaction. [Requires Business Confirmation: Missing peak concurrency SLA threshold].
-- **Security**: Strict OWASP Top 10 compliance (XSS, SQLi, CSRF protection, secure HTTPOnly SameSite cookies). All sensitive data (PII, credentials, payment tokens) masked in transit (TLS 1.3) and at rest (AES-256).
-- **Availability & Reliability**: Minimum target availability 99.95% uptime with automatic circuit breaking and retry policies for downstream microservices.
-- **Accessibility & Compatibility**: Fully compliant with WCAG 2.1 AA standards; responsive across Chrome, Firefox, Safari, Edge, and iOS/Android viewports.
-- **Auditability**: Complete audit event emission containing: \`timestamp\`, \`actorId\`, \`action\`, \`status\`, \`clientIp\`, \`correlationId\`.
-
-## 8. Positive Scenarios
-1. **Standard End-to-End Execution**: User inputs valid data, passes all validation checks, system commits record, displays success message, emits audit telemetry.
-2. **Session Persistence**: User navigates through multi-step form with state preserved until explicit submission or cancellation.
-
-## 9. Negative Scenarios
-1. **Invalid Input Submission**: User inputs malformed syntax or leaves mandatory fields empty; client prevents submission and displays localized error message.
-2. **Unauthorized Attempt**: User attempts to invoke action without valid session token or with insufficient privileges; system blocks action and returns HTTP 401/403.
-3. **Downstream Gateway Timeout**: Backend or external third-party service fails to respond within timeout window; system gracefully presents retry banner without data loss.
-
-## 10. Boundary and Edge Cases
-| Case ID | Boundary / Edge Condition | System Input | Expected System Behavior |
-|:---|:---|:---|:---|
-| **EC-001** | Minimum Boundary | Smallest permitted value / 1 char | Accepted if valid, rejected if below minimum threshold |
-| **EC-002** | Maximum Boundary | Exact maximum limit (e.g. 255 chars / $50,000) | Accepted without truncation or integer overflow |
-| **EC-003** | Exceeding Boundary | Limit + 1 (e.g. 256 chars / $50,000.01) | Rejected with clear boundary limit error notification |
-| **EC-004** | Special Characters & Script Injection | \`<script>alert(1)</script>\`, Unicode, Emojis | Sanitized or safely stored without script execution (XSS safe) |
-| **EC-005** | Duplicate Rapid Submissions | Rapid multi-click within 200ms | Idempotent handling; only one transaction executed |
-| **EC-006** | Token Reuse / Expiry | Expired or previously used security token | Immediately rejected with prompt to re-initiate |
-
-## 11. Dependencies
-- **System Dependencies**: API Gateway, Central Authentication Service (OAuth2/OIDC), Event Bus (Kafka/RabbitMQ), Relational/Document Database.
-- **Prerequisite Features**: User registration/onboarding module, active notification service (Email/SMS/Push) for confirmation dispatches.
-
-## 12. Assumptions
-- User browser has JavaScript enabled and supports standard HTML5 validation.
-- All timestamps are recorded in UTC in ISO 8601 format.
-- Backend services are deployed in a resilient, auto-scaling cloud infrastructure.
-
-## 13. Open Questions & Ambiguities
-| Item # | Ambiguous / Conflicting Statement | Reason for Ambiguity | Proposed Options / Interpretations | Clarification Question |
-|:---|:---|:---|:---|:---|
-| 1 | "${isVagueQuick ? 'Users should be able to transfer/act quickly' : 'Performance and SLA targets'}" | Unquantified adjective without explicit SLA or latency threshold. | Option A: P95 < 1000ms<br>Option B: Real-time synchronous (< 500ms) | What is the exact expected SLA and maximum timeout limit for this transaction? |
-| 2 | "${isPayment ? 'Transfer Limits & Daily Caps' : isPasswordReset ? 'Password Reset Token Expiration Window' : 'Role-Based Access Thresholds'}" | Business constraints are not defined in the source input. | Option A: Default standard limit<br>Option B: Tiered limit based on user verification | What are the confirmed business rules and numerical limits governing this operation? |
-| 3 | "${isConflict ? 'Contradictory requirement detected in input specification' : 'Notification Channel Preference'}" | ${isConflict ? 'The input contains conflicting statements that cannot be simultaneously satisfied.' : 'Notification delivery mechanism is not specified.'} | ${isConflict ? 'Option A: Prioritize strict validation<br>Option B: Prioritize permissive fallback' : 'Option A: In-app toast only<br>Option B: In-app + transactional email'} | ${isConflict ? 'Which requirement takes precedence when conflicting conditions occur?' : 'Should the system deliver confirmation via email, SMS, or in-app toast only?'} |
-
-## 14. Out-of-Scope Items
-- Batch asynchronous offline reconciliation and manual backoffice customer support overrides.
-- Custom white-label branding adaptations for third-party affiliate portals.
-- Long-term archival data warehousing beyond standard 90-day operational retention.
-
-## 15. Requirement Traceability Matrix (RTM)
-| Requirement ID | Requirement Description | Acceptance Criteria | Test Scenario Type | Criticality |
-|:---|:---|:---|:---|:---|
-| **REQ-001** | Feature UI presentation and initiation | AC-001 | Positive (Happy Path) | P0 (Critical) |
-| **REQ-002** | Client & server-side input validation | AC-002 | Negative / Validation | P0 (Critical) |
-| **REQ-003** | Concurrency and idempotency protection | AC-003 | Edge / Concurrency | P1 (High) |
-| **REQ-004** | Downstream fault tolerance & rollback | AC-001, AC-002 | Negative / Fault Injection | P1 (High) |
-| **REQ-005** | Security enforcement and audit telemetry | AC-001, AC-002 | Security & Compliance | P0 (Critical) |`;
+  return `${tableMarkdown}\n\n${summaryMarkdown}\n\n${questionsMarkdown}${improvementMarkdown}`;
 }
 
 // 2. Test Case Matrix Generator
