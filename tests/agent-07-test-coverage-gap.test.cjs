@@ -702,6 +702,9 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       'utf8'
     );
     assert.ok(sidebarCode.includes('/interview-griller'), 'Agent 06 Interview Griller is intact');
-    assert.ok(sidebarCode.includes('Coverage Gap Analyzer'), 'Agent 07 is added');
+    assert.ok(
+      sidebarCode.includes('Test Coverage Gap Analysis') || sidebarCode.includes('Coverage Gap Analyzer'),
+      'Agent 07 is added'
+    );
   });
 });

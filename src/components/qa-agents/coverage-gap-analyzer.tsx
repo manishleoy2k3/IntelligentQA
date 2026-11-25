@@ -24,6 +24,7 @@ import {
   Sparkles,
   ExternalLink,
   ShieldAlert,
+  GripVertical,
 } from 'lucide-react';
 import {
   NormalizedRequirement,
@@ -125,6 +126,52 @@ export default function CoverageGapAnalyzer({ apiKey, onOpenKeyModal }: Coverage
   const abortControllerRef = useRef<AbortController | null>(null);
   const reqFileInputRef = useRef<HTMLInputElement>(null);
   const tcFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Resizable layout state for Requirements vs Test Cases input split
+  const [inputSplitPercent, setInputSplitPercent] = useState<number>(50);
+  const [isInputDragging, setIsInputDragging] = useState<boolean>(false);
+  const [isLg, setIsLg] = useState<boolean>(true);
+  const inputSplitContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    setIsLg(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsLg(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const handleResizePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    setIsInputDragging(true);
+  };
+
+  useEffect(() => {
+    if (!isInputDragging) return;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!inputSplitContainerRef.current) return;
+      const rect = inputSplitContainerRef.current.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const clientX = e.clientX;
+      const offset = clientX - rect.left;
+      const percent = (offset / rect.width) * 100;
+      setInputSplitPercent(Math.max(20, Math.min(80, percent)));
+    };
+
+    const handlePointerUp = () => {
+      setIsInputDragging(false);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [isInputDragging]);
 
   // File Upload Handlers
   const handleReqFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -454,10 +501,20 @@ export default function CoverageGapAnalyzer({ apiKey, onOpenKeyModal }: Coverage
 
   return (
     <div className="space-y-8">
-      {/* SECTION A: TWO CLEARLY SEPARATED INPUT PANELS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* SECTION A: TWO CLEARLY SEPARATED RESIZABLE INPUT PANELS */}
+      <div
+        ref={inputSplitContainerRef}
+        className={`flex flex-col lg:flex-row items-stretch gap-6 lg:gap-0 relative ${
+          isInputDragging ? 'select-none cursor-col-resize' : ''
+        }`}
+      >
         {/* Panel 1: Requirements Input */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between">
+        <div
+          style={isLg ? { width: `calc(${inputSplitPercent}% - 12px)` } : undefined}
+          className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between ${
+            isLg ? 'shrink-0 min-w-[280px]' : ''
+          }`}
+        >
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -468,9 +525,6 @@ export default function CoverageGapAnalyzer({ apiKey, onOpenKeyModal }: Coverage
                   Requirements Input
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                .xls, .xlsx, .md, .json
-              </span>
             </div>
 
             {/* Paste Area */}
@@ -573,8 +627,74 @@ export default function CoverageGapAnalyzer({ apiKey, onOpenKeyModal }: Coverage
           </div>
         </div>
 
+        {/* Resizer Divider Bar (Desktop Horizontal Resizer) */}
+        <div
+          onPointerDown={handleResizePointerDown}
+          onDoubleClick={() => setInputSplitPercent(50)}
+          className="hidden lg:flex flex-col items-center justify-center w-6 -mx-0 group cursor-col-resize z-10 shrink-0 select-none py-4"
+          title="Drag to resize panels (Double-click to reset to 50:50)"
+        >
+          {/* Quick preset ratio buttons */}
+          <div className="flex flex-col gap-1 mb-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setInputSplitPercent(35);
+              }}
+              className="px-1 py-0.5 text-[9px] font-mono rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white"
+              title="Preset 35:65"
+            >
+              35:65
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setInputSplitPercent(50);
+              }}
+              className="px-1 py-0.5 text-[9px] font-mono rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white"
+              title="Preset 50:50"
+            >
+              50:50
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setInputSplitPercent(65);
+              }}
+              className="px-1 py-0.5 text-[9px] font-mono rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-cyan-500 hover:text-white"
+              title="Preset 65:35"
+            >
+              65:35
+            </button>
+          </div>
+
+          <div
+            className={`w-1.5 h-full min-h-[300px] rounded-full transition-all flex items-center justify-center ${
+              isInputDragging
+                ? 'bg-cyan-500 shadow-md ring-2 ring-cyan-400/50'
+                : 'bg-slate-200 dark:bg-slate-700/80 group-hover:bg-cyan-400 group-hover:w-2'
+            }`}
+          >
+            <GripVertical
+              className={`w-3.5 h-3.5 transition-colors ${
+                isInputDragging
+                  ? 'text-white'
+                  : 'text-slate-400 dark:text-slate-500 group-hover:text-cyan-900 dark:group-hover:text-cyan-100'
+              }`}
+            />
+          </div>
+        </div>
+
         {/* Panel 2: Test Cases Input */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between">
+        <div
+          style={isLg ? { width: `calc(${100 - inputSplitPercent}% - 12px)` } : undefined}
+          className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between ${
+            isLg ? 'shrink-0 min-w-[280px]' : ''
+          }`}
+        >
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -585,9 +705,6 @@ export default function CoverageGapAnalyzer({ apiKey, onOpenKeyModal }: Coverage
                   Test Cases Input
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                .xls, .xlsx, .md, .json
-              </span>
             </div>
 
             {/* Paste Area */}

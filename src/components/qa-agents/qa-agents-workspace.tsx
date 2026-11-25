@@ -144,8 +144,8 @@ export const AGENT_CONFIGS: Record<
   },
   gap_analysis: {
     num: '7',
-    tabName: '7. Coverage Gap Analyzer',
-    title: 'Test Coverage Gap Analysis Engine',
+    tabName: 'Test Coverage Gap Analysis',
+    title: 'Test Coverage Gap Analysis',
     badgeText: '',
     description:
       'Compare requirements against test cases, perform bidirectional traceability analysis, identify coverage gaps across 12 scenario dimensions, and generate multi-sheet Excel reports.',

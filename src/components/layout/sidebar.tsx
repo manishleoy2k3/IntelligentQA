@@ -175,7 +175,7 @@ function getCourseMeta(course: any) {
     title.includes('apm')
   ) {
     return {
-      displayTitle: 'APM & Enterprise Performance',
+      displayTitle: 'Performance Testing',
       tag: 'Perf',
       icon: Cpu,
       iconColor: 'text-teal-500',
@@ -1280,6 +1280,24 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </span>
               </Link>
 
+              {/* Test Coverage Gap Analysis (Agent 07) */}
+              <Link
+                href="/qa-agents?tab=gap_analysis"
+                onClick={(e) => handleAgentClick(e, 'gap_analysis')}
+                className={childItemClass(
+                  pathname === '/qa-agents' && activeAgentTab === 'gap_analysis'
+                )}
+                title="Agent 07: Test Coverage Gap Analysis Engine"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Layers className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span className="truncate">Test Coverage Gap Analysis</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1 py-0.2 rounded">
+                  GAP
+                </span>
+              </Link>
+
               {/* 3. Automation Code Generator */}
               <Link
                 href="/qa-agents?tab=automation_code"
@@ -1350,24 +1368,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 </div>
                 <span className="text-[9px] font-mono font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded shrink-0">
                   MOCK
-                </span>
-              </Link>
-
-              {/* 7. Coverage Gap Analyzer (Agent 07) */}
-              <Link
-                href="/qa-agents?tab=gap_analysis"
-                onClick={(e) => handleAgentClick(e, 'gap_analysis')}
-                className={childItemClass(
-                  pathname === '/qa-agents' && activeAgentTab === 'gap_analysis'
-                )}
-                title="Agent 07: Test Coverage Gap Analysis Engine"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Layers className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                  <span className="truncate">Coverage Gap Analyzer</span>
-                </div>
-                <span className="text-[9px] font-mono font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1 py-0.2 rounded">
-                  GAP
                 </span>
               </Link>
 

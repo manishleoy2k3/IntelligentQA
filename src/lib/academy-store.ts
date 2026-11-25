@@ -555,7 +555,7 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     id: 'course-apm-performance',
     categoryId: 'cat-apm-perf',
     slug: 'apm-and-performance-testing',
-    title: 'APM & Enterprise Performance Testing',
+    title: 'Performance Testing',
     subtitle: 'Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM',
     description:
       'Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.',
