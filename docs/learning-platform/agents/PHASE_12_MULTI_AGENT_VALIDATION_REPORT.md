@@ -47,6 +47,7 @@ The **IntelligentQA Learning Academy** operates an integrated ecosystem of six s
 ```
 
 All 5 core workflows were executed using the real production agent implementations, verifying:
+
 1. **Traceability**: `REQ-XXX` -> `AC-XXX` -> `TC-XXX` -> `test('TC-XXX: ...')` -> `[FINDING-XXX]`.
 2. **Context Preservation**: Zero invented entities; boundary conditions and business constraints were preserved across transitions.
 3. **Multi-Model & Deterministic Fallbacks**: Full operational reliability both with live Gemini API keys and instant zero-latency deterministic engines.
@@ -57,6 +58,7 @@ All 5 core workflows were executed using the real production agent implementatio
 ## 2. Workflow 1 — Requirement to Test Cases
 
 ### 2.1 Input User Story
+
 ```gherkin
 Feature: User Multi-Factor Authentication & Account Transfer
 As an authenticated account holder,
@@ -65,6 +67,7 @@ So that my funds are securely transferred without unauthorized access or duplica
 ```
 
 ### 2.2 Execution & Outputs (Agent 1: Requirement Generator)
+
 - **Engine**: `REQUIREMENT_GENERATOR_SYSTEM_PROMPT` / `generateRequirementsClarification()`
 - **Generated Artifact**: High-fidelity specification containing:
   - **Actors**: `Authenticated Account Holder`, `System Identity / Gateway`, `Security Auditor`.
@@ -74,9 +77,11 @@ So that my funds are securely transferred without unauthorized access or duplica
   - **Initial RTM**: Mapped `REQ-001..005` to corresponding AC blocks.
 
 ### 2.3 Hand-off & Ingestion (Agent 2: Test Case Generator)
+
 The raw output of Agent 1 was piped directly into Agent 2 as input context without manual reformatting.
 
 ### 2.4 Test Matrix Output Verification
+
 - **Generated Test Cases**: `TC-001` through `TC-010`
   - `TC-001` (P0 Smoke): Valid transfer with 2FA verification (Mapped to `REQ-001`).
   - `TC-002` (P0 Negative): Empty mandatory parameters rejected with 400/422 (Mapped to `REQ-002`).
@@ -95,10 +100,13 @@ The raw output of Agent 1 was piped directly into Agent 2 as input context witho
 ## 3. Workflow 2 — Test Cases to Automation Code
 
 ### 3.1 Input Context
+
 The generated Test Matrix from Workflow 1 was submitted to Agent 3 with `techStack = 'playwright-ts'`.
 
 ### 3.2 Output Verification (Agent 3: Automation Code Generator)
+
 Agent 3 synthesized a modular, production-ready Playwright TypeScript automation suite:
+
 1. **File Structure & Setup**:
    - `e2e/pages/login.page.ts` (Page Object Model)
    - `e2e/tests/login.spec.ts` (Test Specifications)
@@ -120,9 +128,11 @@ Agent 3 synthesized a modular, production-ready Playwright TypeScript automation
 ## 4. Workflow 3 — Automation Code Review
 
 ### 4.1 Input Script & Defect Injection
+
 The generated Playwright code was submitted to Agent 4 (`Code Reviewer & Debugger`) with an injected flaky checkout method containing a hardcoded fixed sleep (`await page.waitForTimeout(5000)`).
 
 ### 4.2 Code Review Results
+
 - **Engine**: `CODE_REVIEWER_DEBUGGER_SYSTEM_PROMPT` / `reviewAutomationCode()`
 - **Mode Tested**: `review_and_fix`
 - **Findings Reported**:
@@ -145,18 +155,19 @@ The generated Playwright code was submitted to Agent 4 (`Code Reviewer & Debugge
 
 Four enterprise architecture questions were submitted to Agent 5 (`SDET AI Mentor`). All responses were validated against the 10-step Principal SDET mentoring standard:
 
-| Question Submitted | Key Architectural Elements Verified | Assessment |
-|:---|:---|:---:|
-| **1. How should we scale this framework across 50 squads?** | Monorepo architecture, `@company/qa-core` shared npm packages, decentralized squad ownership, containerized sharding in CI/CD, centralized Blob reporting, governance metrics. | **PASS** (Architect Grade) |
-| **2. How should we manage flaky tests?** | Automated quarantine pipeline, 3-phase 90-day reduction roadmap, Flakiness Index calculation ($F_i = \text{failed retries} / \text{total executions}$), root-cause taxonomy (timing, state, network), dedicated squad remediation SLAs. | **PASS** (Architect Grade) |
-| **3. What changes are needed for enterprise CI/CD?** | Fast PR smoke gates (<5 mins), matrix worker sharding, dynamic test selection (test impact analysis), automated quality gates blocking merge on flakiness, artifact/trace archiving. | **PASS** (Architect Grade) |
-| **4. How should we introduce AI agents into this workflow?** | High-yield triage use cases, RAG on test repositories and failure logs, Model Context Protocol (MCP) tool integration, Human-in-the-Loop (HITL) approval gates, quantifiable ROI measurement. | **PASS** (Architect Grade) |
+| Question Submitted                                           | Key Architectural Elements Verified                                                                                                                                                                                                     |         Assessment         |
+| :----------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------: |
+| **1. How should we scale this framework across 50 squads?**  | Monorepo architecture, `@company/qa-core` shared npm packages, decentralized squad ownership, containerized sharding in CI/CD, centralized Blob reporting, governance metrics.                                                          | **PASS** (Architect Grade) |
+| **2. How should we manage flaky tests?**                     | Automated quarantine pipeline, 3-phase 90-day reduction roadmap, Flakiness Index calculation ($F_i = \text{failed retries} / \text{total executions}$), root-cause taxonomy (timing, state, network), dedicated squad remediation SLAs. | **PASS** (Architect Grade) |
+| **3. What changes are needed for enterprise CI/CD?**         | Fast PR smoke gates (<5 mins), matrix worker sharding, dynamic test selection (test impact analysis), automated quality gates blocking merge on flakiness, artifact/trace archiving.                                                    | **PASS** (Architect Grade) |
+| **4. How should we introduce AI agents into this workflow?** | High-yield triage use cases, RAG on test repositories and failure logs, Model Context Protocol (MCP) tool integration, Human-in-the-Loop (HITL) approval gates, quantifiable ROI measurement.                                           | **PASS** (Architect Grade) |
 
 ---
 
 ## 6. Workflow 5 — Senior SDET Technical Interview Griller
 
 ### 6.1 Session Setup & Calibration
+
 - **Role**: Senior SDET / Automation Architect
 - **Experience Level**: 8–12 years (10 years calibrated)
 - **Target Difficulty**: Advanced
@@ -164,18 +175,21 @@ Four enterprise architecture questions were submitted to Agent 5 (`SDET AI Mento
 - **Source**: Sourced directly from internal 800+ question repository (`source: 'internal_knowledge_base'`)
 
 ### 6.2 Turn-by-Turn Execution
+
 - **Turn 1 (Browser Context Isolation)**:
-  - *Question*: Probed browser context architecture and state leakage prevention.
-  - *Candidate Answer*: Detailed independent browser contexts per worker with cookie isolation.
-  - *Evaluation*: Scored across 6 dimensions (`Technical Accuracy: 5/5`, `Conceptual Depth: 4/5`, `Practical Implementation: 4/5`, `Problem Solving: 4/5`, `Architecture Knowledge: 4/5`, `Communication: 5/5`).
-  - *Adaptive Probing*: Challenged candidate with a follow-up scenario regarding parallel execution without shared state.
+  - _Question_: Probed browser context architecture and state leakage prevention.
+  - _Candidate Answer_: Detailed independent browser contexts per worker with cookie isolation.
+  - _Evaluation_: Scored across 6 dimensions (`Technical Accuracy: 5/5`, `Conceptual Depth: 4/5`, `Practical Implementation: 4/5`, `Problem Solving: 4/5`, `Architecture Knowledge: 4/5`, `Communication: 5/5`).
+  - _Adaptive Probing_: Challenged candidate with a follow-up scenario regarding parallel execution without shared state.
 - **Turn 2 (Network Interception & Resilient Stubbing)**:
   - Evaluated `page.route()` usage, HAR replay, and failure handling.
 - **Turn 3 (Enterprise CI/CD Sharding & Reporting)**:
   - Evaluated matrix sharding, blob report merging, and flaky quarantine.
 
 ### 6.3 End-of-Interview Comprehensive Report (Sections A–J)
+
 Upon conclusion, Agent 6 emitted the structured 10-section scorecard:
+
 - **Section A**: Candidate Overview (Role, Experience Tier, Track, Total Questions).
 - **Section B**: Executive Interview Summary.
 - **Section C**: Questions Asked (with source attribution IDs).
@@ -222,25 +236,26 @@ The four foundational capabilities highlighted in the user recommendation were e
 
 ## 8. Data Format Compatibility & Handoff Pipeline Analysis
 
-| Transition | Producer Output Format | Consumer Input Format | Compatibility | Hand-off Mechanism |
-|:---|:---|:---|:---:|:---|
-| **Agent 1 -> Agent 2** | Markdown with Gherkin BDD & RTM Table | Requirements text or attached PRD doc | **100% Compatible** | Direct copy / UI "Generate Missing Edge Tests" handoff |
-| **Agent 2 -> Agent 3** | Markdown Test Matrix with `TC-XXX` IDs | Functional scenarios & tech stack spec | **100% Compatible** | Direct prompt ingestion with stack selector |
-| **Agent 3 -> Agent 4** | TypeScript / Java Page Object Model & Specs | Code snippet or multi-file framework files | **100% Compatible** | UI "Refactor Full Suite -> Agent 3" handoff |
-| **Agent 4 -> Agent 5** | Findings Matrix & Refactored Source Code | Architectural question prompt | **100% Compatible** | Contextual advisory chat with attached project files |
-| **All Agents -> Agent 6** | Learned concepts, technologies, and patterns | Candidate profile (role, skills, seniority) | **100% Compatible** | Dynamic question retrieval filtered by tech stack |
+| Transition                | Producer Output Format                       | Consumer Input Format                       |    Compatibility    | Hand-off Mechanism                                     |
+| :------------------------ | :------------------------------------------- | :------------------------------------------ | :-----------------: | :----------------------------------------------------- |
+| **Agent 1 -> Agent 2**    | Markdown with Gherkin BDD & RTM Table        | Requirements text or attached PRD doc       | **100% Compatible** | Direct copy / UI "Generate Missing Edge Tests" handoff |
+| **Agent 2 -> Agent 3**    | Markdown Test Matrix with `TC-XXX` IDs       | Functional scenarios & tech stack spec      | **100% Compatible** | Direct prompt ingestion with stack selector            |
+| **Agent 3 -> Agent 4**    | TypeScript / Java Page Object Model & Specs  | Code snippet or multi-file framework files  | **100% Compatible** | UI "Refactor Full Suite -> Agent 3" handoff            |
+| **Agent 4 -> Agent 5**    | Findings Matrix & Refactored Source Code     | Architectural question prompt               | **100% Compatible** | Contextual advisory chat with attached project files   |
+| **All Agents -> Agent 6** | Learned concepts, technologies, and patterns | Candidate profile (role, skills, seniority) | **100% Compatible** | Dynamic question retrieval filtered by tech stack      |
 
 ---
 
 ## 9. Integration Gaps & Friction Points Resolved
 
 During Phase 12 validation, two edge-case integration friction points were identified and resolved:
+
 1. **TechStack Priority Resolution in Agent 3**:
-   - *Issue*: When test cases generated by Agent 2 contained phrases like "HTTP status code 200", the deterministic fallback in Agent 3 previously triggered `isRestAssured` even if the user explicitly selected `techStack = 'playwright-ts'`.
-   - *Fix*: Refactored `src/app/api/ai/qa-agent/route.ts` to strictly prioritize explicit user-selected `techStack` over opportunistic keyword scanning, ensuring Playwright TypeScript is faithfully generated when requested.
+   - _Issue_: When test cases generated by Agent 2 contained phrases like "HTTP status code 200", the deterministic fallback in Agent 3 previously triggered `isRestAssured` even if the user explicitly selected `techStack = 'playwright-ts'`.
+   - _Fix_: Refactored `src/app/api/ai/qa-agent/route.ts` to strictly prioritize explicit user-selected `techStack` over opportunistic keyword scanning, ensuring Playwright TypeScript is faithfully generated when requested.
 2. **Scorecard Property Consistency in Agent 6**:
-   - *Issue*: The final interview route emitted `scorecard: report` while integration clients expected either `scorecard` or `finalReport`.
-   - *Fix*: Standardized the test assertions and API contract to support both accessors interchangeably.
+   - _Issue_: The final interview route emitted `scorecard: report` while integration clients expected either `scorecard` or `finalReport`.
+   - _Fix_: Standardized the test assertions and API contract to support both accessors interchangeably.
 
 ---
 
@@ -305,6 +320,7 @@ node --test tests/phase-12-multi-agent-workflow.test.cjs
 ## 12. Sign-off & Final Certification
 
 As **Principal AI Systems Architect**, I certify that:
+
 - All six QA Learning Academy Agents operate cohesively as an integrated Quality Engineering ecosystem.
 - Requirements, test cases, automation code, code review findings, architectural advisory, and interview grilling maintain strict end-to-end traceability.
 - Zero individual agents were rebuilt or replaced; all integrations utilize the verified, battle-tested agent implementations.

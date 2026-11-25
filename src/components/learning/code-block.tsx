@@ -80,9 +80,7 @@ export default function CodeBlock({
                     {idx + 1}
                   </td>
                 )}
-                <td className="whitespace-pre font-mono text-slate-100 pl-2">
-                  {line || ' '}
-                </td>
+                <td className="whitespace-pre font-mono text-slate-100 pl-2">{line || ' '}</td>
               </tr>
             ))}
           </tbody>

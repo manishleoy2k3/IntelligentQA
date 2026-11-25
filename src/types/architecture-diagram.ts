@@ -89,7 +89,8 @@ export interface ArchitectureDiagramData {
 
 export interface DiagramReviewIssue {
   severity: 'error' | 'warning' | 'info';
-  category: 'relationship' | 'missing-component' | 'ambiguous-connection' | 'protocol' | 'assumption';
+  category:
+    'relationship' | 'missing-component' | 'ambiguous-connection' | 'protocol' | 'assumption';
   message: string;
   nodeIds?: string[];
   edgeIds?: string[];

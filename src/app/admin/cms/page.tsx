@@ -260,7 +260,9 @@ function CMSPortalContent() {
       setArticleCategory(art.category);
       setArticleTagsInput(art.tags.join(', '));
       setArticleFeaturedImg(art.featuredImage || '/images/selenium-architecture.svg');
-      setArticleImgCaption(art.featuredImageCaption || 'Figure 1: Test Automation Architecture & Workflow');
+      setArticleImgCaption(
+        art.featuredImageCaption || 'Figure 1: Test Automation Architecture & Workflow'
+      );
       setArticleStatus(art.status);
       setArticleContent(art.content || { blocks: [] });
       setArticleSeoTitle(art.seoTitle || '');
@@ -671,7 +673,8 @@ function CMSPortalContent() {
         return;
       }
       const newLessonId = `lsn-${Date.now()}`;
-      const targetModule = course.modules.find((m) => m.id === lessonForm.moduleId) || course.modules[0];
+      const targetModule =
+        course.modules.find((m) => m.id === lessonForm.moduleId) || course.modules[0];
       const newLesson: Lesson = {
         id: newLessonId,
         trackId: course.id,
@@ -679,7 +682,11 @@ function CMSPortalContent() {
         title: lessonForm.title.trim(),
         description: lessonForm.description.trim() || 'Interactive lesson',
         durationMinutes: Number(lessonForm.durationMinutes) || 15,
-        badge: (course.id.includes('playwright') ? 'Playwright' : course.id.includes('api') ? 'REST Assured' : 'Selenium') as any,
+        badge: (course.id.includes('playwright')
+          ? 'Playwright'
+          : course.id.includes('api')
+            ? 'REST Assured'
+            : 'Selenium') as any,
         level: 'Intermediate',
         disabled: false,
         order: (targetModule?.lessons?.length || 0) + 1,
@@ -882,7 +889,8 @@ function CMSPortalContent() {
               </span>
             </div>
             <p className="text-xs text-[#A1A1AA]">
-              Publish and format technical tutorials, rich articles, and structured courses without code
+              Publish and format technical tutorials, rich articles, and structured courses without
+              code
             </p>
           </div>
         </div>
@@ -960,7 +968,8 @@ function CMSPortalContent() {
             <div>
               <h4 className="text-sm font-bold text-white">Content Management Studio</h4>
               <p className="text-xs text-zinc-300">
-                To manage courses, modules, lessons, and DOCX document publishing, use the unified Content Management Studio.
+                To manage courses, modules, lessons, and DOCX document publishing, use the unified
+                Content Management Studio.
               </p>
             </div>
           </div>
@@ -1088,7 +1097,9 @@ function CMSPortalContent() {
                         <div className="flex items-center gap-2 text-[10px] text-[#71717A] mt-1">
                           <span className="text-emerald-400">{art.category}</span>
                           <span>•</span>
-                          <span>Published {new Date(art.publishedDate || 0).toLocaleDateString()}</span>
+                          <span>
+                            Published {new Date(art.publishedDate || 0).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
                       <Link
@@ -1140,7 +1151,13 @@ function CMSPortalContent() {
                 </select>
 
                 <select
-                  value={activeTab === 'drafts' ? 'draft' : activeTab === 'published' ? 'published' : statusFilter}
+                  value={
+                    activeTab === 'drafts'
+                      ? 'draft'
+                      : activeTab === 'published'
+                        ? 'published'
+                        : statusFilter
+                  }
                   onChange={(e) => setStatusFilter(e.target.value)}
                   disabled={activeTab === 'drafts' || activeTab === 'published'}
                   className="bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-[#D4D4D8] px-3 py-1.5 focus:outline-none focus:border-purple-500 disabled:opacity-50"
@@ -1206,8 +1223,8 @@ function CMSPortalContent() {
                               art.status === 'published'
                                 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                                 : art.status === 'draft'
-                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                                : 'bg-purple-500/10 text-purple-400 border border-purple-500/30'
+                                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                                  : 'bg-purple-500/10 text-purple-400 border border-purple-500/30'
                             }`}
                           >
                             {art.status}
@@ -1421,15 +1438,25 @@ function CMSPortalContent() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleToggleLessonDisabled(currentCourse.id, mod.id, les.id)}
+                            onClick={() =>
+                              handleToggleLessonDisabled(currentCourse.id, mod.id, les.id)
+                            }
                             className={`p-1.5 rounded transition-colors ${
                               les.disabled
                                 ? 'text-rose-400 bg-rose-500/10 hover:bg-rose-500/20'
                                 : 'text-[#71717A] hover:text-white hover:bg-[#27272A]'
                             }`}
-                            title={les.disabled ? 'Enable Lesson (Publish to students)' : 'Hide/Disable Lesson'}
+                            title={
+                              les.disabled
+                                ? 'Enable Lesson (Publish to students)'
+                                : 'Hide/Disable Lesson'
+                            }
                           >
-                            {les.disabled ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                            {les.disabled ? (
+                              <EyeOff className="w-3.5 h-3.5" />
+                            ) : (
+                              <Eye className="w-3.5 h-3.5" />
+                            )}
                           </button>
                           <button
                             type="button"
@@ -1543,7 +1570,8 @@ function CMSPortalContent() {
               <ImageIcon className="w-12 h-12 text-purple-400 mx-auto" />
               <p className="text-sm text-white font-semibold">Centralized Media Library</p>
               <p className="text-xs text-[#A1A1AA] max-w-md mx-auto">
-                Store, resize, preview and reuse screenshots, diagrams, and figures across tutorials.
+                Store, resize, preview and reuse screenshots, diagrams, and figures across
+                tutorials.
               </p>
               <button
                 type="button"
@@ -1570,7 +1598,8 @@ function CMSPortalContent() {
                 <div className="p-4 rounded-xl border border-[#27272A] bg-[#18181C] space-y-2">
                   <span className="font-bold text-white block">XML Sitemap Integration</span>
                   <p className="text-[#A1A1AA]">
-                    Dynamic sitemap exposes all published articles with lastmod timestamps for Googlebot crawlers.
+                    Dynamic sitemap exposes all published articles with lastmod timestamps for
+                    Googlebot crawlers.
                   </p>
                   <span className="text-emerald-400 font-mono text-[11px] block">
                     URL: /sitemap.xml
@@ -1579,7 +1608,8 @@ function CMSPortalContent() {
                 <div className="p-4 rounded-xl border border-[#27272A] bg-[#18181C] space-y-2">
                   <span className="font-bold text-white block">Schema.org JSON-LD</span>
                   <p className="text-[#A1A1AA]">
-                    Automatically generates BlogPosting, BreadcrumbList, and FAQPage structured data on all public views.
+                    Automatically generates BlogPosting, BreadcrumbList, and FAQPage structured data
+                    on all public views.
                   </p>
                   <span className="text-emerald-400 font-mono text-[11px] block">
                     Status: Active &amp; Validated
@@ -1668,11 +1698,13 @@ function CMSPortalContent() {
                   {editingLessonContext
                     ? `Curriculum Lesson: ${editingLessonContext.courseId} / ${editingLessonContext.lessonId}`
                     : editingArticle
-                    ? 'Edit Tutorial'
-                    : 'New Technical Article'}
+                      ? 'Edit Tutorial'
+                      : 'New Technical Article'}
                 </span>
                 <span className="text-[10px] text-purple-400 ml-2 font-mono">
-                  {editingLessonContext ? 'STUDENTS LIVE WORKSPACE' : `Status: ${articleStatus.toUpperCase()}`}
+                  {editingLessonContext
+                    ? 'STUDENTS LIVE WORKSPACE'
+                    : `Status: ${articleStatus.toUpperCase()}`}
                 </span>
               </div>
             </div>
@@ -1707,7 +1739,9 @@ function CMSPortalContent() {
               </label>
               <input
                 type="text"
-                placeholder={editingLessonContext ? 'Lesson Title...' : 'Selenium with Java Tutorial...'}
+                placeholder={
+                  editingLessonContext ? 'Lesson Title...' : 'Selenium with Java Tutorial...'
+                }
                 value={articleTitle}
                 onChange={(e) => setArticleTitle(e.target.value)}
                 className="w-full px-2.5 py-1 bg-[#09090B] border border-[#27272A] rounded-lg text-white font-bold"
@@ -1862,7 +1896,9 @@ function CMSPortalContent() {
                     type="button"
                     onClick={() => {
                       setArticleFeaturedImg('/images/selenium-architecture.svg');
-                      setArticleImgCaption('Figure 1: Selenium WebDriver 4 Architecture Diagram & W3C Flow');
+                      setArticleImgCaption(
+                        'Figure 1: Selenium WebDriver 4 Architecture Diagram & W3C Flow'
+                      );
                       showBanner('Applied Selenium Architecture Diagram', 'success');
                     }}
                     className="px-2 py-0.5 rounded bg-[#18181C] hover:bg-purple-600/20 text-[10px] font-mono text-purple-300 border border-[#27272A] cursor-pointer"
@@ -1874,7 +1910,9 @@ function CMSPortalContent() {
                     type="button"
                     onClick={() => {
                       setArticleFeaturedImg('/images/locators-dom-inspector.svg');
-                      setArticleImgCaption('Figure 2: Chrome DevTools DOM Elements & Priority Locators');
+                      setArticleImgCaption(
+                        'Figure 2: Chrome DevTools DOM Elements & Priority Locators'
+                      );
                       showBanner('Applied DOM Inspector Diagram', 'success');
                     }}
                     className="px-2 py-0.5 rounded bg-[#18181C] hover:bg-teal-600/20 text-[10px] font-mono text-teal-300 border border-[#27272A] cursor-pointer"
@@ -1886,7 +1924,9 @@ function CMSPortalContent() {
                     type="button"
                     onClick={() => {
                       setArticleFeaturedImg('/images/test-execution-report.svg');
-                      setArticleImgCaption('Figure 3: TestNG & Allure Real-Time Execution Dashboard');
+                      setArticleImgCaption(
+                        'Figure 3: TestNG & Allure Real-Time Execution Dashboard'
+                      );
                       showBanner('Applied Execution Report SVG', 'success');
                     }}
                     className="px-2 py-0.5 rounded bg-[#18181C] hover:bg-amber-600/20 text-[10px] font-mono text-amber-300 border border-[#27272A] cursor-pointer"
@@ -2033,7 +2073,9 @@ function CMSPortalContent() {
             {courseModalMode === 'edit_track' && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Track Title</label>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">
+                    Track Title
+                  </label>
                   <input
                     type="text"
                     value={trackForm.title}
@@ -2043,7 +2085,9 @@ function CMSPortalContent() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Tagline / Subtitle</label>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">
+                    Tagline / Subtitle
+                  </label>
                   <input
                     type="text"
                     value={trackForm.tagline}
@@ -2053,7 +2097,9 @@ function CMSPortalContent() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Description</label>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">
+                    Description
+                  </label>
                   <textarea
                     rows={3}
                     value={trackForm.description}
@@ -2069,7 +2115,9 @@ function CMSPortalContent() {
             {(courseModalMode === 'add_module' || courseModalMode === 'edit_module') && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Module Title</label>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">
+                    Module Title
+                  </label>
                   <input
                     type="text"
                     value={moduleForm.title}
@@ -2085,7 +2133,9 @@ function CMSPortalContent() {
             {(courseModalMode === 'add_lesson' || courseModalMode === 'edit_lesson') && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Lesson Title</label>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">
+                    Lesson Title
+                  </label>
                   <input
                     type="text"
                     value={lessonForm.title}
@@ -2095,7 +2145,9 @@ function CMSPortalContent() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Short Description</label>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">
+                    Short Description
+                  </label>
                   <textarea
                     rows={2}
                     value={lessonForm.description}
@@ -2105,13 +2157,17 @@ function CMSPortalContent() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">Estimated Duration (Minutes)</label>
+                  <label className="text-xs text-[#A1A1AA] font-semibold block mb-1">
+                    Estimated Duration (Minutes)
+                  </label>
                   <input
                     type="number"
                     min={5}
                     max={180}
                     value={lessonForm.durationMinutes}
-                    onChange={(e) => setLessonForm({ ...lessonForm, durationMinutes: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setLessonForm({ ...lessonForm, durationMinutes: Number(e.target.value) })
+                    }
                     className="w-full px-3 py-2 bg-[#09090B] border border-[#27272A] rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"
                   />
                 </div>
@@ -2149,8 +2205,10 @@ function CMSPortalContent() {
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-white">Confirm Permanent Deletion</h3>
               <p className="text-xs text-[#A1A1AA]">
-                Are you sure you want to delete {deleteConfirmTarget.type === 'lesson' ? 'lesson' : 'module'}{' '}
-                <strong className="text-white">&quot;{deleteConfirmTarget.title}&quot;</strong>? This action cannot be undone.
+                Are you sure you want to delete{' '}
+                {deleteConfirmTarget.type === 'lesson' ? 'lesson' : 'module'}{' '}
+                <strong className="text-white">&quot;{deleteConfirmTarget.title}&quot;</strong>?
+                This action cannot be undone.
               </p>
             </div>
 

@@ -4,12 +4,21 @@ const fs = require('fs');
 const path = require('path');
 
 test('Requirement 1 & 2: Curriculum tracks have exact lesson counts and hours matching user specifications', () => {
-  const curriculumFile = fs.readFileSync(path.join(__dirname, '../src/lib/qa-curriculum.ts'), 'utf8');
+  const curriculumFile = fs.readFileSync(
+    path.join(__dirname, '../src/lib/qa-curriculum.ts'),
+    'utf8'
+  );
 
   // Selenium (Java): 13 lessons
   assert.ok(curriculumFile.includes("id: 'selenium-java'"), 'Contains selenium-java track');
-  assert.ok(curriculumFile.includes('estimatedHours: 32') || curriculumFile.includes('estimatedHours: 26'), 'Selenium estimated hours defined');
-  assert.ok(curriculumFile.includes('totalLessons: 13') || curriculumFile.includes('totalLessons: 10'), 'Selenium total lessons defined');
+  assert.ok(
+    curriculumFile.includes('estimatedHours: 32') || curriculumFile.includes('estimatedHours: 26'),
+    'Selenium estimated hours defined'
+  );
+  assert.ok(
+    curriculumFile.includes('totalLessons: 13') || curriculumFile.includes('totalLessons: 10'),
+    'Selenium total lessons defined'
+  );
 
   // Playwright (TS): 15 comprehensive lessons summing to 30 Hours
   assert.ok(curriculumFile.includes("id: 'playwright-ts'"), 'Contains playwright-ts track');
@@ -18,8 +27,14 @@ test('Requirement 1 & 2: Curriculum tracks have exact lesson counts and hours ma
 
   // Rest Assured (API): 10 lessons
   assert.ok(curriculumFile.includes("id: 'api-testing'"), 'Contains api-testing track');
-  assert.ok(curriculumFile.includes('estimatedHours: 22') || curriculumFile.includes('estimatedHours: 18'), 'Rest Assured estimated hours defined');
-  assert.ok(curriculumFile.includes('totalLessons: 10') || curriculumFile.includes('totalLessons: 8'), 'Rest Assured total lessons defined');
+  assert.ok(
+    curriculumFile.includes('estimatedHours: 22') || curriculumFile.includes('estimatedHours: 18'),
+    'Rest Assured estimated hours defined'
+  );
+  assert.ok(
+    curriculumFile.includes('totalLessons: 10') || curriculumFile.includes('totalLessons: 8'),
+    'Rest Assured total lessons defined'
+  );
 
   // AI for QA: 8 lessons summing to 20 Hours
   assert.ok(curriculumFile.includes("id: 'ai-qa'"), 'Contains ai-qa track');
@@ -31,7 +46,10 @@ test('Requirement 1 & 2: Curriculum tracks have exact lesson counts and hours ma
 });
 
 test('Requirement 1 & 2: Left navigation sidebar renders individual lessons and hours under each track', () => {
-  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const sidebarFile = fs.readFileSync(
+    path.join(__dirname, '../src/components/layout/sidebar.tsx'),
+    'utf8'
+  );
 
   // Check that QA_TRACKS and getLessonHours are imported
   assert.ok(sidebarFile.includes('QA_TRACKS'), 'Imports QA_TRACKS in sidebar');
@@ -45,15 +63,24 @@ test('Requirement 1 & 2: Left navigation sidebar renders individual lessons and 
   assert.ok(sidebarFile.includes('Selenium (Java)'), 'Lists Selenium (Java)');
   assert.ok(sidebarFile.includes('Playwright (TS)'), 'Lists Playwright (TS)');
   assert.ok(sidebarFile.includes('Rest Assured (API)'), 'Lists Rest Assured (API)');
-  assert.ok(sidebarFile.includes('AI Academy') || sidebarFile.includes('AI for QA'), 'Lists AI Academy');
+  assert.ok(
+    sidebarFile.includes('AI Academy') || sidebarFile.includes('AI for QA'),
+    'Lists AI Academy'
+  );
 
   // Check that individual hours are rendered for lessons
-  assert.ok(sidebarFile.includes('getLessonHours(lesson.durationMinutes)'), 'Computes individual lesson hours');
+  assert.ok(
+    sidebarFile.includes('getLessonHours(lesson.durationMinutes)'),
+    'Computes individual lesson hours'
+  );
   assert.ok(sidebarFile.includes('lesson.title'), 'Renders individual lesson titles');
 });
 
 test('Requirement 3: Proper sequential progression for Manual QA Transition', () => {
-  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const sidebarFile = fs.readFileSync(
+    path.join(__dirname, '../src/components/layout/sidebar.tsx'),
+    'utf8'
+  );
   const tracksPage = fs.readFileSync(path.join(__dirname, '../src/app/tracks/page.tsx'), 'utf8');
 
   // Check sequence order in sidebar tracks array: Selenium -> Playwright -> Rest Assured -> AI
@@ -62,11 +89,17 @@ test('Requirement 3: Proper sequential progression for Manual QA Transition', ()
   const apiIdx = sidebarFile.indexOf('api-testing');
   const aiIdx = sidebarFile.indexOf('ai-qa');
 
-  assert.ok(seleniumIdx !== -1 && playwrightIdx !== -1, 'Selenium and Playwright are present in sidebar');
+  assert.ok(
+    seleniumIdx !== -1 && playwrightIdx !== -1,
+    'Selenium and Playwright are present in sidebar'
+  );
   assert.ok(apiIdx !== -1 && aiIdx !== -1, 'API Testing and AI Academy are present in sidebar');
 
   // Check Manual QA Roadmap in Tracks page
-  assert.ok(tracksPage.includes('Manual QA to Full-Stack SDET Progression Roadmap'), 'Tracks page features Manual QA Roadmap');
+  assert.ok(
+    tracksPage.includes('Manual QA to Full-Stack SDET Progression Roadmap'),
+    'Tracks page features Manual QA Roadmap'
+  );
   assert.ok(tracksPage.includes('Stage 1'), 'Has Stage 1');
   assert.ok(tracksPage.includes('Stage 2'), 'Has Stage 2');
   assert.ok(tracksPage.includes('Stage 3'), 'Has Stage 3');
@@ -74,7 +107,10 @@ test('Requirement 3: Proper sequential progression for Manual QA Transition', ()
 });
 
 test('Requirement 4: Practice Labs section has Online Compilers first, then Coding Library, API, AI', () => {
-  const sidebarFile = fs.readFileSync(path.join(__dirname, '../src/components/layout/sidebar.tsx'), 'utf8');
+  const sidebarFile = fs.readFileSync(
+    path.join(__dirname, '../src/components/layout/sidebar.tsx'),
+    'utf8'
+  );
 
   // Verify sequential order in Practice Labs section: Online Compilers, Coding Library, API, AI
   const pOnlineCompilersIdx = sidebarFile.indexOf('Online Compilers');
@@ -87,7 +123,10 @@ test('Requirement 4: Practice Labs section has Online Compilers first, then Codi
   assert.ok(pApiIdx !== -1, 'Practice Labs contains API Testing Lab');
   assert.ok(pAiIdx !== -1, 'Practice Labs contains AI Prompt Lab');
 
-  assert.ok(pOnlineCompilersIdx < pCodingLibraryIdx, 'Online Compilers is first, preceding Coding Library');
+  assert.ok(
+    pOnlineCompilersIdx < pCodingLibraryIdx,
+    'Online Compilers is first, preceding Coding Library'
+  );
   assert.ok(pCodingLibraryIdx < pApiIdx, 'Coding Library precedes API Lab');
   assert.ok(pApiIdx < pAiIdx, 'API Lab precedes AI Lab');
 

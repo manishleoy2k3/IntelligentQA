@@ -36,7 +36,12 @@ export class QAInterviewResearcher {
   static isWebSearchAvailable(): boolean {
     // In local sandbox environment without an outbound search proxy or SERP API key,
     // we accurately report web search integration status rather than pretending.
-    return typeof process !== 'undefined' && Boolean(process.env.SERPAPI_KEY || process.env.GOOGLE_SEARCH_API_KEY || process.env.TAVILY_API_KEY);
+    return (
+      typeof process !== 'undefined' &&
+      Boolean(
+        process.env.SERPAPI_KEY || process.env.GOOGLE_SEARCH_API_KEY || process.env.TAVILY_API_KEY
+      )
+    );
   }
 
   /**
@@ -73,7 +78,8 @@ export class QAInterviewResearcher {
         source: 'ai_generated',
         isWebSearchActive: false,
         searchQuery: `${tech} ${diff} architecture scenarios`,
-        notes: 'Live web search integration is currently offline or unconfigured. Question generated using AI model training weights without fabricated web citations.',
+        notes:
+          'Live web search integration is currently offline or unconfigured. Question generated using AI model training weights without fabricated web citations.',
       };
     }
 

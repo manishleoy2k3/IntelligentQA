@@ -55,7 +55,9 @@ export default function ProjectFilesWorkspace() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
-  const [banner, setBanner] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [banner, setBanner] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(
+    null
+  );
 
   // Modals state
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -103,7 +105,7 @@ export default function ProjectFilesWorkspace() {
   };
 
   // Filtered files
-  const filteredFiles = files.filter(f => {
+  const filteredFiles = files.filter((f) => {
     const matchesFolder = selectedFolder === 'All' || f.folder === selectedFolder;
     const matchesQuery =
       !searchQuery.trim() ||
@@ -118,13 +120,13 @@ export default function ProjectFilesWorkspace() {
     if (selectedFileIds.length === filteredFiles.length) {
       setSelectedFileIds([]);
     } else {
-      setSelectedFileIds(filteredFiles.map(f => f.id));
+      setSelectedFileIds(filteredFiles.map((f) => f.id));
     }
   };
 
   const handleToggleSelectOne = (id: string) => {
-    setSelectedFileIds(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    setSelectedFileIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
@@ -159,7 +161,9 @@ export default function ProjectFilesWorkspace() {
           userId: uId,
           name: file.name,
           folder: folderToUse,
-          type: (['pdf', 'md', 'xlsx', 'xls', 'pptx', 'ppt', 'docx', 'txt', 'json', 'csv'].includes(ext)
+          type: (['pdf', 'md', 'xlsx', 'xls', 'pptx', 'ppt', 'docx', 'txt', 'json', 'csv'].includes(
+            ext
+          )
             ? ext
             : 'other') as any,
           size: file.size,
@@ -173,7 +177,10 @@ export default function ProjectFilesWorkspace() {
         successCount++;
       } catch (err: any) {
         console.error('File parsing error:', err);
-        showNotification('error', `Could not parse ${file.name}: ${err?.message || 'Unknown error'}`);
+        showNotification(
+          'error',
+          `Could not parse ${file.name}: ${err?.message || 'Unknown error'}`
+        );
       }
     }
 
@@ -182,7 +189,10 @@ export default function ProjectFilesWorkspace() {
     if (fileInputRef.current) fileInputRef.current.value = '';
 
     if (successCount > 0) {
-      showNotification('success', `🎉 Successfully imported and indexed ${successCount} file(s) into "${folderToUse}"!`);
+      showNotification(
+        'success',
+        `🎉 Successfully imported and indexed ${successCount} file(s) into "${folderToUse}"!`
+      );
       loadData();
     }
   };
@@ -230,7 +240,10 @@ export default function ProjectFilesWorkspace() {
     if (selectedFileIds.length === 0) return;
     const uId = currentUser?.id || 'default';
     await moveFilesToFolder(selectedFileIds, targetMoveFolder, uId);
-    showNotification('success', `Moved ${selectedFileIds.length} file(s) to "${targetMoveFolder}".`);
+    showNotification(
+      'success',
+      `Moved ${selectedFileIds.length} file(s) to "${targetMoveFolder}".`
+    );
     setSelectedFileIds([]);
     setShowMoveModal(false);
     loadData();
@@ -240,7 +253,10 @@ export default function ProjectFilesWorkspace() {
   const handleSendToQAAgents = (fileIdsToSend: string[] = selectedFileIds) => {
     if (fileIdsToSend.length === 0) return;
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('intelligentqa_selected_agent_files', JSON.stringify(fileIdsToSend));
+      window.localStorage.setItem(
+        'intelligentqa_selected_agent_files',
+        JSON.stringify(fileIdsToSend)
+      );
       router.push('/qa-agents?tab=test_cases');
     }
   };
@@ -249,9 +265,11 @@ export default function ProjectFilesWorkspace() {
   const getFileIcon = (type: string) => {
     const t = type.toLowerCase();
     if (t === 'pdf') return <FileText className="w-4 h-4 text-rose-500" />;
-    if (t === 'xlsx' || t === 'xls' || t === 'csv') return <FileSpreadsheet className="w-4 h-4 text-emerald-500" />;
+    if (t === 'xlsx' || t === 'xls' || t === 'csv')
+      return <FileSpreadsheet className="w-4 h-4 text-emerald-500" />;
     if (t === 'pptx' || t === 'ppt') return <Presentation className="w-4 h-4 text-amber-500" />;
-    if (t === 'md' || t === 'txt' || t === 'json') return <FileCode className="w-4 h-4 text-cyan-500" />;
+    if (t === 'md' || t === 'txt' || t === 'json')
+      return <FileCode className="w-4 h-4 text-cyan-500" />;
     return <FileCheck2 className="w-4 h-4 text-blue-500" />;
   };
 
@@ -275,7 +293,9 @@ export default function ProjectFilesWorkspace() {
             <span>Project Files &amp; Folders</span>
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-3xl leading-relaxed">
-            Upload and organize project requirements, test matrices, specs, and slide decks (<strong>.pdf, .md, .xlsx, .pptx</strong>). Select and inject any file directly into AI QA Agent context.
+            Upload and organize project requirements, test matrices, specs, and slide decks (
+            <strong>.pdf, .md, .xlsx, .pptx</strong>). Select and inject any file directly into AI
+            QA Agent context.
           </p>
         </div>
 
@@ -308,8 +328,8 @@ export default function ProjectFilesWorkspace() {
             banner.type === 'success'
               ? 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
               : banner.type === 'error'
-              ? 'bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200'
-              : 'bg-blue-50 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-800 text-blue-800 dark:text-blue-200'
+                ? 'bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200'
+                : 'bg-blue-50 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-800 text-blue-800 dark:text-blue-200'
           }`}
         >
           {banner.type === 'success' ? (
@@ -320,7 +340,11 @@ export default function ProjectFilesWorkspace() {
             <FileCheck2 className="w-4 h-4 text-blue-500 shrink-0" />
           )}
           <span className="flex-1 font-medium">{banner.text}</span>
-          <button type="button" onClick={() => setBanner(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+          <button
+            type="button"
+            onClick={() => setBanner(null)}
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
+          >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -372,9 +396,15 @@ export default function ProjectFilesWorkspace() {
               </button>
 
               {/* Individual Folders */}
-              {folders.map(folderName => {
-                const count = files.filter(f => f.folder === folderName).length;
-                const isCustom = !['Root', 'Requirements & PRDs', 'Test Matrices & Plans', 'Architecture & Specs', 'Defect Logs & Sprints'].includes(folderName);
+              {folders.map((folderName) => {
+                const count = files.filter((f) => f.folder === folderName).length;
+                const isCustom = ![
+                  'Root',
+                  'Requirements & PRDs',
+                  'Test Matrices & Plans',
+                  'Architecture & Specs',
+                  'Defect Logs & Sprints',
+                ].includes(folderName);
 
                 return (
                   <div key={folderName} className="group flex items-center justify-between">
@@ -425,7 +455,9 @@ export default function ProjectFilesWorkspace() {
               <span>AI QA Agent Integration</span>
             </div>
             <p className="text-[11px] leading-relaxed">
-              Check the boxes in front of any files and click <strong>&quot;Inject into QA Agents&quot;</strong> to ground your Test Case, Automation, and Requirement Generators with real project specs.
+              Check the boxes in front of any files and click{' '}
+              <strong>&quot;Inject into QA Agents&quot;</strong> to ground your Test Case,
+              Automation, and Requirement Generators with real project specs.
             </p>
           </div>
         </div>
@@ -439,7 +471,7 @@ export default function ProjectFilesWorkspace() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search files by name, type, or extracted contents..."
                 className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white dark:bg-[#0F0F0F] border border-slate-300 dark:border-[#333] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -447,7 +479,9 @@ export default function ProjectFilesWorkspace() {
 
             <div className="flex items-center gap-2 self-end sm:self-auto text-xs text-slate-500 dark:text-zinc-400">
               <span>Showing:</span>
-              <span className="font-bold text-slate-900 dark:text-white">{filteredFiles.length} file(s)</span>
+              <span className="font-bold text-slate-900 dark:text-white">
+                {filteredFiles.length} file(s)
+              </span>
             </div>
           </div>
 
@@ -507,7 +541,8 @@ export default function ProjectFilesWorkspace() {
                     No Files Found in &quot;{selectedFolder}&quot;
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-sm mx-auto">
-                    Upload your project documents (.pdf, .md, .xlsx, .pptx) to start extracting requirements and test scenarios.
+                    Upload your project documents (.pdf, .md, .xlsx, .pptx) to start extracting
+                    requirements and test scenarios.
                   </p>
                 </div>
                 <button
@@ -531,7 +566,8 @@ export default function ProjectFilesWorkspace() {
                           className="cursor-pointer text-slate-600 dark:text-zinc-400 hover:text-blue-500"
                           title="Select / Deselect all"
                         >
-                          {selectedFileIds.length === filteredFiles.length && filteredFiles.length > 0 ? (
+                          {selectedFileIds.length === filteredFiles.length &&
+                          filteredFiles.length > 0 ? (
                             <CheckSquare className="w-4 h-4 text-blue-500" />
                           ) : (
                             <Square className="w-4 h-4" />
@@ -547,7 +583,7 @@ export default function ProjectFilesWorkspace() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 dark:divide-[#242424]">
-                    {filteredFiles.map(file => {
+                    {filteredFiles.map((file) => {
                       const isSelected = selectedFileIds.includes(file.id);
 
                       return (
@@ -604,7 +640,10 @@ export default function ProjectFilesWorkspace() {
                           </td>
 
                           {/* Summary */}
-                          <td className="p-3.5 text-slate-600 dark:text-zinc-400 max-w-xs truncate" title={file.summary}>
+                          <td
+                            className="p-3.5 text-slate-600 dark:text-zinc-400 max-w-xs truncate"
+                            title={file.summary}
+                          >
                             {file.summary}
                           </td>
 
@@ -685,10 +724,10 @@ export default function ProjectFilesWorkspace() {
                 </label>
                 <select
                   value={selectedFolder === 'All' ? 'Root' : selectedFolder}
-                  onChange={e => setSelectedFolder(e.target.value)}
+                  onChange={(e) => setSelectedFolder(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#0F0F0F] border border-slate-300 dark:border-[#333] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {folders.map(f => (
+                  {folders.map((f) => (
                     <option key={f} value={f}>
                       {f}
                     </option>
@@ -751,9 +790,15 @@ export default function ProjectFilesWorkspace() {
             <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-[#262626]">
               <div className="flex items-center gap-2">
                 <FolderPlus className="w-5 h-5 text-purple-400" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Create New Folder</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Create New Folder
+                </h3>
               </div>
-              <button type="button" onClick={() => setShowNewFolderModal(false)} className="text-slate-400 hover:text-white">
+              <button
+                type="button"
+                onClick={() => setShowNewFolderModal(false)}
+                className="text-slate-400 hover:text-white"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -767,7 +812,7 @@ export default function ProjectFilesWorkspace() {
                   type="text"
                   required
                   value={newFolderName}
-                  onChange={e => setNewFolderName(e.target.value)}
+                  onChange={(e) => setNewFolderName(e.target.value)}
                   placeholder="e.g. Sprint 42 Requirements, Payment APIs"
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#0F0F0F] border border-slate-300 dark:border-[#333] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
@@ -806,7 +851,11 @@ export default function ProjectFilesWorkspace() {
                   Move {selectedFileIds.length} File(s)
                 </h3>
               </div>
-              <button type="button" onClick={() => setShowMoveModal(false)} className="text-slate-400 hover:text-white">
+              <button
+                type="button"
+                onClick={() => setShowMoveModal(false)}
+                className="text-slate-400 hover:text-white"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -818,10 +867,10 @@ export default function ProjectFilesWorkspace() {
                 </label>
                 <select
                   value={targetMoveFolder}
-                  onChange={e => setTargetMoveFolder(e.target.value)}
+                  onChange={(e) => setTargetMoveFolder(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#0F0F0F] border border-slate-300 dark:border-[#333] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {folders.map(f => (
+                  {folders.map((f) => (
                     <option key={f} value={f}>
                       {f}
                     </option>

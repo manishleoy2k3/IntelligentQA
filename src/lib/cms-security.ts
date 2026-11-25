@@ -20,7 +20,11 @@ export function verifyAdminAccess(req: NextRequest): { authorized: boolean; reas
   const adminEmailHeader = req.headers.get('x-admin-email') || '';
 
   // In demo / development environment, allow recognized admin users or elevated tokens
-  if (authHeader.includes('admin') || adminEmailHeader.includes('admin') || adminEmailHeader === 'admin@intelligentqa.io') {
+  if (
+    authHeader.includes('admin') ||
+    adminEmailHeader.includes('admin') ||
+    adminEmailHeader === 'admin@intelligentqa.io'
+  ) {
     return { authorized: true };
   }
 

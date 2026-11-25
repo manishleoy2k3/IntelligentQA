@@ -23,7 +23,12 @@ CRITICAL RULES:
 
 export async function generateArchitectureFromPrompt(
   prompt: string,
-  lessonContext?: { courseTitle?: string; moduleTitle?: string; lessonTitle?: string; currentContent?: string },
+  lessonContext?: {
+    courseTitle?: string;
+    moduleTitle?: string;
+    lessonTitle?: string;
+    currentContent?: string;
+  },
   apiKey?: string
 ): Promise<{
   success: boolean;
@@ -51,11 +56,23 @@ export async function generateArchitectureFromPrompt(
                   {
                     text: `Generate a structured Architecture Diagram JSON for the following technical request:
 Prompt: "${prompt}"
-${lessonContext ? `Lesson Context:
+${
+  lessonContext
+    ? `Lesson Context:
 - Course: "${lessonContext.courseTitle || ''}"
 - Module: "${lessonContext.moduleTitle || ''}"
 - Lesson: "${lessonContext.lessonTitle || ''}"
-${lessonContext.currentContent ? `- Lesson Content Excerpt: "${lessonContext.currentContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 1500)}"` : ''}` : ''}
+${
+  lessonContext.currentContent
+    ? `- Lesson Content Excerpt: "${lessonContext.currentContent
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .substring(0, 1500)}"`
+    : ''
+}`
+    : ''
+}
 
 Output must adhere to this exact schema:
 {
@@ -148,24 +165,41 @@ Output must adhere to this exact schema:
  */
 export function generateSdetArchitectureTemplate(
   prompt: string,
-  context?: { courseTitle?: string; moduleTitle?: string; lessonTitle?: string; currentContent?: string }
+  context?: {
+    courseTitle?: string;
+    moduleTitle?: string;
+    lessonTitle?: string;
+    currentContent?: string;
+  }
 ): ArchitectureDiagramData {
-  const cleanContent = context?.currentContent ? context.currentContent.replace(/<[^>]+>/g, ' ') : '';
-  const p = `${prompt} ${context?.lessonTitle || ''} ${context?.moduleTitle || ''} ${context?.courseTitle || ''} ${cleanContent}`.toLowerCase();
+  const cleanContent = context?.currentContent
+    ? context.currentContent.replace(/<[^>]+>/g, ' ')
+    : '';
+  const p =
+    `${prompt} ${context?.lessonTitle || ''} ${context?.moduleTitle || ''} ${context?.courseTitle || ''} ${cleanContent}`.toLowerCase();
 
   // SCENARIO 1: Selenium Architecture
   if (p.includes('selenium') || p.includes('webdriver')) {
     return {
       diagramType: 'architecture',
       title: 'Selenium WebDriver Architecture',
-      description: 'End-to-end W3C WebDriver communication flow from Test Code to Native Browser Engine',
+      description:
+        'End-to-end W3C WebDriver communication flow from Test Code to Native Browser Engine',
       layout: 'layered',
       direction: 'LR',
       theme: 'automation-framework',
       layers: [
-        { id: 'automation-layer', label: 'Test Automation Layer', description: 'Test scripts and language bindings' },
+        {
+          id: 'automation-layer',
+          label: 'Test Automation Layer',
+          description: 'Test scripts and language bindings',
+        },
         { id: 'driver-layer', label: 'Browser Driver Layer', description: 'Native binary bridge' },
-        { id: 'browser-layer', label: 'Browser Engine Layer', description: 'Target browser processes' },
+        {
+          id: 'browser-layer',
+          label: 'Browser Engine Layer',
+          description: 'Target browser processes',
+        },
       ],
       nodes: [
         {
@@ -248,14 +282,23 @@ export function generateSdetArchitectureTemplate(
     return {
       diagramType: 'architecture',
       title: 'Playwright Unified Process Architecture',
-      description: 'Single WebSocket connection driving multiple isolated BrowserContexts and Pages',
+      description:
+        'Single WebSocket connection driving multiple isolated BrowserContexts and Pages',
       layout: 'layered',
       direction: 'LR',
       theme: 'modern-technical',
       layers: [
         { id: 'client-layer', label: 'Test Runner Layer', description: 'Test execution process' },
-        { id: 'driver-layer', label: 'Playwright Server Layer', description: 'Node.js driver process' },
-        { id: 'browser-layer', label: 'Browser Hierarchy Layer', description: 'Browser, contexts, and pages' },
+        {
+          id: 'driver-layer',
+          label: 'Playwright Server Layer',
+          description: 'Node.js driver process',
+        },
+        {
+          id: 'browser-layer',
+          label: 'Browser Hierarchy Layer',
+          description: 'Browser, contexts, and pages',
+        },
       ],
       nodes: [
         {
@@ -359,10 +402,26 @@ export function generateSdetArchitectureTemplate(
       direction: 'LR',
       theme: 'clean-enterprise',
       layers: [
-        { id: 'client-layer', label: 'Client Automation Layer', description: 'Test client language bindings' },
-        { id: 'server-layer', label: 'Appium Server Layer', description: 'Node.js REST server & plugins' },
-        { id: 'driver-layer', label: 'Driver Engine Layer', description: 'Platform driver & mobile agent' },
-        { id: 'device-layer', label: 'Mobile Device Layer', description: 'Target emulator or physical device' },
+        {
+          id: 'client-layer',
+          label: 'Client Automation Layer',
+          description: 'Test client language bindings',
+        },
+        {
+          id: 'server-layer',
+          label: 'Appium Server Layer',
+          description: 'Node.js REST server & plugins',
+        },
+        {
+          id: 'driver-layer',
+          label: 'Driver Engine Layer',
+          description: 'Platform driver & mobile agent',
+        },
+        {
+          id: 'device-layer',
+          label: 'Mobile Device Layer',
+          description: 'Target emulator or physical device',
+        },
       ],
       nodes: [
         {
@@ -445,15 +504,28 @@ export function generateSdetArchitectureTemplate(
     return {
       diagramType: 'architecture',
       title: 'Model Context Protocol (MCP) Architecture',
-      description: 'Standardized client-server protocol enabling LLMs to securely query external tools and data',
+      description:
+        'Standardized client-server protocol enabling LLMs to securely query external tools and data',
       layout: 'layered',
       direction: 'LR',
       theme: 'ai-architecture',
       layers: [
-        { id: 'host-layer', label: 'MCP Host Layer', description: 'Application hosting the AI model' },
-        { id: 'client-layer', label: 'MCP Client Layer', description: 'Protocol client maintaining 1:1 server sessions' },
+        {
+          id: 'host-layer',
+          label: 'MCP Host Layer',
+          description: 'Application hosting the AI model',
+        },
+        {
+          id: 'client-layer',
+          label: 'MCP Client Layer',
+          description: 'Protocol client maintaining 1:1 server sessions',
+        },
         { id: 'server-layer', label: 'MCP Server Layer', description: 'Resource & tool providers' },
-        { id: 'integration-layer', label: 'External Systems', description: 'Live databases, APIs & test engines' },
+        {
+          id: 'integration-layer',
+          label: 'External Systems',
+          description: 'Live databases, APIs & test engines',
+        },
       ],
       nodes: [
         {
@@ -602,9 +674,7 @@ export function generateSdetArchitectureTemplate(
  * Advisory AI Technical Review Step
  * Reviews architecture diagram data for completeness, correct protocols, and SDET accuracy.
  */
-export function reviewArchitectureDiagram(
-  diagram: ArchitectureDiagramData
-): DiagramReviewResult {
+export function reviewArchitectureDiagram(diagram: ArchitectureDiagramData): DiagramReviewResult {
   const issues: DiagramReviewIssue[] = [];
   const nodeMap = new Map(diagram.nodes.map((n) => [n.id, n]));
 
@@ -630,15 +700,25 @@ export function reviewArchitectureDiagram(
   // Check 2: Selenium Protocol validation
   const isSelenium = diagram.title.toLowerCase().includes('selenium');
   if (isSelenium) {
-    const hasClient = diagram.nodes.some((n) => n.id.toLowerCase().includes('client') || n.label.toLowerCase().includes('selenium'));
-    const hasDriver = diagram.nodes.some((n) => n.id.toLowerCase().includes('driver') || n.label.toLowerCase().includes('driver'));
-    const hasBrowser = diagram.nodes.some((n) => n.id.toLowerCase().includes('chrome') || n.label.toLowerCase().includes('browser') || n.type === 'browser');
+    const hasClient = diagram.nodes.some(
+      (n) => n.id.toLowerCase().includes('client') || n.label.toLowerCase().includes('selenium')
+    );
+    const hasDriver = diagram.nodes.some(
+      (n) => n.id.toLowerCase().includes('driver') || n.label.toLowerCase().includes('driver')
+    );
+    const hasBrowser = diagram.nodes.some(
+      (n) =>
+        n.id.toLowerCase().includes('chrome') ||
+        n.label.toLowerCase().includes('browser') ||
+        n.type === 'browser'
+    );
 
     if (!hasDriver) {
       issues.push({
         severity: 'error',
         category: 'missing-component',
-        message: 'Missing Browser Driver component (e.g. ChromeDriver). Selenium cannot drive browsers without an intermediate driver binary.',
+        message:
+          'Missing Browser Driver component (e.g. ChromeDriver). Selenium cannot drive browsers without an intermediate driver binary.',
         suggestion: 'Add a Browser Driver node between the client library and browser.',
       });
     }
@@ -650,23 +730,30 @@ export function reviewArchitectureDiagram(
       return src.includes('selenium') && tgt.includes('driver');
     });
 
-    if (clientDriverEdge && (!clientDriverEdge.protocol || !clientDriverEdge.protocol.toLowerCase().includes('webdriver'))) {
+    if (
+      clientDriverEdge &&
+      (!clientDriverEdge.protocol || !clientDriverEdge.protocol.toLowerCase().includes('webdriver'))
+    ) {
       issues.push({
         severity: 'warning',
         category: 'protocol',
-        message: 'The communication between Selenium Client and Browser Driver should specify "W3C WebDriver Protocol".',
+        message:
+          'The communication between Selenium Client and Browser Driver should specify "W3C WebDriver Protocol".',
         edgeIds: [clientDriverEdge.id],
         suggestion: 'Update protocol to "W3C WebDriver Protocol".',
       });
     }
 
     // Check for erroneous Selenium Grid assumption
-    const hasGrid = diagram.nodes.some((n) => n.label.toLowerCase().includes('grid') || n.id.toLowerCase().includes('grid'));
+    const hasGrid = diagram.nodes.some(
+      (n) => n.label.toLowerCase().includes('grid') || n.id.toLowerCase().includes('grid')
+    );
     if (hasGrid && !diagram.title.toLowerCase().includes('grid')) {
       issues.push({
         severity: 'info',
         category: 'assumption',
-        message: 'Selenium Grid is included in a standard local WebDriver diagram. Local execution connects directly to the local browser driver without Grid.',
+        message:
+          'Selenium Grid is included in a standard local WebDriver diagram. Local execution connects directly to the local browser driver without Grid.',
         suggestion: 'Verify if Grid is required for this specific lesson scenario.',
       });
     }
@@ -683,14 +770,17 @@ export function reviewArchitectureDiagram(
       issues.push({
         severity: 'warning',
         category: 'missing-component',
-        message: 'Missing "BrowserContext" node. BrowserContext is Playwright\'s core isolation unit between the Browser and Page.',
-        suggestion: 'Add BrowserContext to highlight Playwright\'s browser process hierarchy.',
+        message:
+          'Missing "BrowserContext" node. BrowserContext is Playwright\'s core isolation unit between the Browser and Page.',
+        suggestion: "Add BrowserContext to highlight Playwright's browser process hierarchy.",
       });
     }
   }
 
   // Check 4: MCP Architecture verification
-  const isMcp = diagram.title.toLowerCase().includes('mcp') || diagram.title.toLowerCase().includes('model context');
+  const isMcp =
+    diagram.title.toLowerCase().includes('mcp') ||
+    diagram.title.toLowerCase().includes('model context');
   if (isMcp) {
     const hasHost = diagram.nodes.some((n) => n.label.toLowerCase().includes('host'));
     const hasClient = diagram.nodes.some((n) => n.label.toLowerCase().includes('client'));
@@ -701,19 +791,26 @@ export function reviewArchitectureDiagram(
         severity: 'warning',
         category: 'missing-component',
         message: 'MCP Architecture standard requires: MCP Host, MCP Client, and MCP Server.',
-        suggestion: 'Ensure all three distinct tiers (Host, Client, Server) are explicitly modeled.',
+        suggestion:
+          'Ensure all three distinct tiers (Host, Client, Server) are explicitly modeled.',
       });
     }
   }
 
-  const score = Math.max(100 - issues.filter((i) => i.severity === 'error').length * 30 - issues.filter((i) => i.severity === 'warning').length * 10, 60);
+  const score = Math.max(
+    100 -
+      issues.filter((i) => i.severity === 'error').length * 30 -
+      issues.filter((i) => i.severity === 'warning').length * 10,
+    60
+  );
 
   return {
     passed: !issues.some((i) => i.severity === 'error'),
     score,
-    summary: issues.length === 0
-      ? 'Architecture diagram adheres to enterprise standards with verified components and protocols.'
-      : `Identified ${issues.length} technical advisory observation(s) across components and protocol semantics.`,
+    summary:
+      issues.length === 0
+        ? 'Architecture diagram adheres to enterprise standards with verified components and protocols.'
+        : `Identified ${issues.length} technical advisory observation(s) across components and protocol semantics.`,
     issues,
   };
 }

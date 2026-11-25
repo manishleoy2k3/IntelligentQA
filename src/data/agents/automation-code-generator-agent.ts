@@ -129,4 +129,7 @@ You MUST format your output using the following exact 10-section structure:
 \`\`\`
 `;
 
-export const AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT = AUTOMATION_CODE_GENERATOR_AGENT_MD.replace(/^---[\s\S]*?---\n/, '').trim();
+export const AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT = AUTOMATION_CODE_GENERATOR_AGENT_MD.replace(
+  /^---[\s\S]*?---\n/,
+  ''
+).trim();

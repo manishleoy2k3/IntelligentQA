@@ -26,15 +26,85 @@ export interface DuplicateCheckReport {
 
 // Stopwords to ignore in keyword extraction
 const STOPWORDS = new Set([
-  'a', 'an', 'the', 'and', 'or', 'but', 'if', 'then', 'else', 'when',
-  'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through',
-  'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down',
-  'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then',
-  'once', 'here', 'there', 'all', 'any', 'both', 'each', 'few', 'more',
-  'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own',
-  'same', 'so', 'than', 'too', 'very', 'can', 'will', 'just', 'should',
-  'now', 'how', 'what', 'why', 'where', 'which', 'who', 'vs', 'versus',
-  'using', 'via', 'guide', 'test', 'tests', 'testing'
+  'a',
+  'an',
+  'the',
+  'and',
+  'or',
+  'but',
+  'if',
+  'then',
+  'else',
+  'when',
+  'at',
+  'by',
+  'for',
+  'with',
+  'about',
+  'against',
+  'between',
+  'into',
+  'through',
+  'during',
+  'before',
+  'after',
+  'above',
+  'below',
+  'to',
+  'from',
+  'up',
+  'down',
+  'in',
+  'out',
+  'on',
+  'off',
+  'over',
+  'under',
+  'again',
+  'further',
+  'then',
+  'once',
+  'here',
+  'there',
+  'all',
+  'any',
+  'both',
+  'each',
+  'few',
+  'more',
+  'most',
+  'other',
+  'some',
+  'such',
+  'no',
+  'nor',
+  'not',
+  'only',
+  'own',
+  'same',
+  'so',
+  'than',
+  'too',
+  'very',
+  'can',
+  'will',
+  'just',
+  'should',
+  'now',
+  'how',
+  'what',
+  'why',
+  'where',
+  'which',
+  'who',
+  'vs',
+  'versus',
+  'using',
+  'via',
+  'guide',
+  'test',
+  'tests',
+  'testing',
 ]);
 
 function normalizeString(str: string): string {
@@ -128,17 +198,15 @@ export function checkGuideDuplicate(
 
   // Gather all guides to check against
   const guidesToCheck =
-    existingGuidesList && existingGuidesList.length > 0
-      ? existingGuidesList
-      : getAllGuides();
+    existingGuidesList && existingGuidesList.length > 0 ? existingGuidesList : getAllGuides();
 
   // Gather all course curriculum lessons to check against
   const tracksToCheck =
     existingTracksList && existingTracksList.length > 0
       ? existingTracksList
       : typeof window !== 'undefined'
-      ? QADatabase.getTracks()
-      : [];
+        ? QADatabase.getTracks()
+        : [];
 
   const matches: DuplicateMatchItem[] = [];
 
@@ -184,9 +252,7 @@ export function checkGuideDuplicate(
 
     // Weighted combined similarity
     // Title is weighted heavily (60%), Content keywords (30%), Code (10%)
-    const combinedScore = Math.round(
-      (titleSim * 0.6 + keywordSim * 0.3 + codeSim * 0.1) * 100
-    );
+    const combinedScore = Math.round((titleSim * 0.6 + keywordSim * 0.3 + codeSim * 0.1) * 100);
 
     if (combinedScore >= 30) {
       let reason = '';

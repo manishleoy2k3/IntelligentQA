@@ -1,4 +1,8 @@
-import { ArchitectureDiagramTheme, ArchitectureNodeType, ArchitectureConnectionType } from '@/types/architecture-diagram';
+import {
+  ArchitectureDiagramTheme,
+  ArchitectureNodeType,
+  ArchitectureConnectionType,
+} from '@/types/architecture-diagram';
 
 export interface ThemeColors {
   background: string;
@@ -27,10 +31,14 @@ export interface NodeTypeColorConfig {
   accentBorder: string;
 }
 
-export const THEME_CONFIGS: Record<ArchitectureDiagramTheme, { name: string; description: string; colors: ThemeColors }> = {
+export const THEME_CONFIGS: Record<
+  ArchitectureDiagramTheme,
+  { name: string; description: string; colors: ThemeColors }
+> = {
   'clean-enterprise': {
     name: 'Clean Enterprise',
-    description: 'Corporate slate palette, crisp borders, high readability for production architectures',
+    description:
+      'Corporate slate palette, crisp borders, high readability for production architectures',
     colors: {
       background: '#FFFFFF',
       canvasBg: '#F8FAFC',
@@ -47,12 +55,14 @@ export const THEME_CONFIGS: Record<ArchitectureDiagramTheme, { name: string; des
       nodeBg: '#FFFFFF',
       nodeBorder: '#E2E8F0',
       nodeShadow: '0 4px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif',
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif',
     },
   },
   'modern-technical': {
     name: 'Modern Technical',
-    description: 'Indigo & cyan highlights with refined geometric contrast for cloud & developer platforms',
+    description:
+      'Indigo & cyan highlights with refined geometric contrast for cloud & developer platforms',
     colors: {
       background: '#FAFAFB',
       canvasBg: '#F4F5F8',
@@ -118,7 +128,8 @@ export const THEME_CONFIGS: Record<ArchitectureDiagramTheme, { name: string; des
   },
   'automation-framework': {
     name: 'Automation Framework',
-    description: 'Emerald, teal & amber styling for test automation, CI/CD and QA execution engines',
+    description:
+      'Emerald, teal & amber styling for test automation, CI/CD and QA execution engines',
     colors: {
       background: '#FFFFFF',
       canvasBg: '#F0FDF4',
@@ -270,7 +281,10 @@ export const NODE_TYPE_PALETTES: Record<ArchitectureNodeType, NodeTypeColorConfi
   },
 };
 
-export const PROTOCOL_STYLES: Record<ArchitectureConnectionType, { strokeDasharray?: string; color: string; label: string }> = {
+export const PROTOCOL_STYLES: Record<
+  ArchitectureConnectionType,
+  { strokeDasharray?: string; color: string; label: string }
+> = {
   sync: { color: '#2563EB', label: 'Synchronous' },
   async: { strokeDasharray: '6 4', color: '#D97706', label: 'Asynchronous' },
   http: { color: '#059669', label: 'HTTP' },

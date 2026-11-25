@@ -5,21 +5,35 @@ import { sanitizeSvg } from './sanitizer';
 
 // Inline vector icon SVG paths for zero-dependency standalone rendering
 const NODE_ICONS_SVG: Record<ArchitectureNodeType, string> = {
-  client: '<rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="20" stroke="currentColor" stroke-width="2"/>',
-  browser: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="currentColor" stroke-width="2"/>',
-  application: '<polygon points="12 2 2 7 12 12 22 7 12 2" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 17 12 22 22 17" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 12 12 17 22 12" fill="none" stroke="currentColor" stroke-width="2"/>',
+  client:
+    '<rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="20" stroke="currentColor" stroke-width="2"/>',
+  browser:
+    '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="none" stroke="currentColor" stroke-width="2"/>',
+  application:
+    '<polygon points="12 2 2 7 12 12 22 7 12 2" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 17 12 22 22 17" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="2 12 12 17 22 12" fill="none" stroke="currentColor" stroke-width="2"/>',
   api: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke="currentColor" stroke-width="2"/>',
-  server: '<rect x="2" y="2" width="20" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="2" y="14" width="20" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="6.01" y2="6" stroke="currentColor" stroke-width="2"/><line x1="6" y1="18" x2="6.01" y2="18" stroke="currentColor" stroke-width="2"/>',
-  database: '<ellipse cx="12" cy="5" rx="9" ry="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" fill="none" stroke="currentColor" stroke-width="2"/>',
-  'ai-model': '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>',
-  agent: '<rect x="3" y="11" width="18" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v4" stroke="currentColor" stroke-width="2"/><line x1="8" y1="16" x2="8.01" y2="16" stroke="currentColor" stroke-width="2"/><line x1="16" y1="16" x2="16.01" y2="16" stroke="currentColor" stroke-width="2"/>',
-  'external-service': '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="15 3 21 3 21 9" fill="none" stroke="currentColor" stroke-width="2"/><line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2"/>',
-  queue: '<line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" stroke-width="2"/><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="2"/><line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="6" r="1" fill="currentColor"/><circle cx="8" cy="12" r="1" fill="currentColor"/><circle cx="8" cy="18" r="1" fill="currentColor"/>',
-  container: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2"/>',
-  monitoring: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" fill="none" stroke="currentColor" stroke-width="2"/>',
-  'test-runner': '<polygon points="5 3 19 12 5 21 5 3" fill="none" stroke="currentColor" stroke-width="2"/>',
-  'cloud-service': '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="none" stroke="currentColor" stroke-width="2"/>',
-  security: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2"/>',
+  server:
+    '<rect x="2" y="2" width="20" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="2" y="14" width="20" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="6.01" y2="6" stroke="currentColor" stroke-width="2"/><line x1="6" y1="18" x2="6.01" y2="18" stroke="currentColor" stroke-width="2"/>',
+  database:
+    '<ellipse cx="12" cy="5" rx="9" ry="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" fill="none" stroke="currentColor" stroke-width="2"/>',
+  'ai-model':
+    '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>',
+  agent:
+    '<rect x="3" y="11" width="18" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v4" stroke="currentColor" stroke-width="2"/><line x1="8" y1="16" x2="8.01" y2="16" stroke="currentColor" stroke-width="2"/><line x1="16" y1="16" x2="16.01" y2="16" stroke="currentColor" stroke-width="2"/>',
+  'external-service':
+    '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="15 3 21 3 21 9" fill="none" stroke="currentColor" stroke-width="2"/><line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2"/>',
+  queue:
+    '<line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" stroke-width="2"/><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="2"/><line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="6" r="1" fill="currentColor"/><circle cx="8" cy="12" r="1" fill="currentColor"/><circle cx="8" cy="18" r="1" fill="currentColor"/>',
+  container:
+    '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2"/>',
+  monitoring:
+    '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" fill="none" stroke="currentColor" stroke-width="2"/>',
+  'test-runner':
+    '<polygon points="5 3 19 12 5 21 5 3" fill="none" stroke="currentColor" stroke-width="2"/>',
+  'cloud-service':
+    '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="none" stroke="currentColor" stroke-width="2"/>',
+  security:
+    '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2"/>',
 };
 
 /**
@@ -95,7 +109,12 @@ export function generateArchitectureSvg(
         ? PROTOCOL_STYLES[edge.communicationType]
         : PROTOCOL_STYLES['api'];
       const strokeColor = protoStyle?.color || colors.edgeStroke;
-      const dashArray = edge.style === 'dashed' ? '6 4' : edge.style === 'dotted' ? '3 3' : (protoStyle?.strokeDasharray || '');
+      const dashArray =
+        edge.style === 'dashed'
+          ? '6 4'
+          : edge.style === 'dotted'
+            ? '3 3'
+            : protoStyle?.strokeDasharray || '';
 
       // Calculate connection endpoints
       let x1 = sourceNode.x + sourceNode.width;
@@ -118,14 +137,17 @@ export function generateArchitectureSvg(
       // Orthogonal or smooth bezier path
       const midX = (x1 + x2) / 2;
       const midY = (y1 + y2) / 2;
-      const pathData = diagram.direction === 'TB'
-        ? `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`
-        : `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+      const pathData =
+        diagram.direction === 'TB'
+          ? `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`
+          : `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
 
       const label = edge.label ? escapeXml(edge.label) : '';
       const protocol = edge.protocol ? escapeXml(edge.protocol) : '';
 
-      const labelGroup = label || protocol ? `
+      const labelGroup =
+        label || protocol
+          ? `
       <g transform="translate(${midX}, ${midY})">
         <rect 
           x="-${Math.max(label.length, protocol.length) * 4 + 18}" 
@@ -149,7 +171,9 @@ export function generateArchitectureSvg(
         >
           ${label}
         </text>
-        ${protocol ? `
+        ${
+          protocol
+            ? `
         <text 
           x="0" 
           y="10" 
@@ -160,8 +184,11 @@ export function generateArchitectureSvg(
           fill="${strokeColor}"
         >
           [${protocol}]
-        </text>` : ''}
-      </g>` : '';
+        </text>`
+            : ''
+        }
+      </g>`
+          : '';
 
       return `
     <!-- Edge: ${edge.source} -> ${edge.target} -->
@@ -265,7 +292,9 @@ export function generateArchitectureSvg(
       </text>
 
       <!-- Technology Tag or Version -->
-      ${tech || ver ? `
+      ${
+        tech || ver
+          ? `
       <text 
         x="56" 
         y="50" 
@@ -275,7 +304,9 @@ export function generateArchitectureSvg(
         fill="${palette.iconColor}"
       >
         ${tech}${ver ? ` v${ver}` : ''}
-      </text>` : ''}
+      </text>`
+          : ''
+      }
 
       <!-- Description Line -->
       <text 
@@ -296,14 +327,21 @@ export function generateArchitectureSvg(
   const descText = diagram.description ? escapeXml(diagram.description) : '';
 
   // Notes and Legend Footer
-  const legendSvg = diagram.legend && diagram.legend.length > 0 ? `
+  const legendSvg =
+    diagram.legend && diagram.legend.length > 0
+      ? `
     <g transform="translate(60, ${height - 65})">
       <text font-family="${colors.fontFamily}" font-size="11" font-weight="700" fill="${colors.textColor}">Legend:</text>
-      ${diagram.legend.map((item, i) => `
+      ${diagram.legend
+        .map(
+          (item, i) => `
         <circle cx="${70 + i * 160}" cy="-4" r="5" fill="${item.color || colors.edgeStroke}" />
         <text x="${82 + i * 160}" y="0" font-family="${colors.fontFamily}" font-size="11" fill="${colors.textMuted}">${escapeXml(item.label)}</text>
-      `).join('')}
-    </g>` : '';
+      `
+        )
+        .join('')}
+    </g>`
+      : '';
 
   const fullSvg = `
 <svg 
@@ -351,10 +389,14 @@ export function generateArchitectureSvg(
     <text font-size="22" font-weight="800" fill="${colors.textColor}" letter-spacing="-0.3">
       ${titleText}
     </text>
-    ${descText ? `
+    ${
+      descText
+        ? `
     <text y="24" font-size="13" font-weight="400" fill="${colors.textMuted}">
       ${descText}
-    </text>` : ''}
+    </text>`
+        : ''
+    }
   </g>
 
   <!-- Diagram Content Container -->

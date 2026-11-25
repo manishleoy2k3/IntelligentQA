@@ -28,7 +28,9 @@ export default function LearningDashboard({ userId, className = '' }: LearningDa
   const [stats, setStats] = useState<any | null>(null);
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'progress' | 'recent' | 'completed' | 'bookmarks'>('progress');
+  const [activeTab, setActiveTab] = useState<'progress' | 'recent' | 'completed' | 'bookmarks'>(
+    'progress'
+  );
 
   const resolvedUserId = userId || QADatabase.getCurrentUser()?.id || DEMO_USER.id;
 
@@ -75,9 +77,12 @@ export default function LearningDashboard({ userId, className = '' }: LearningDa
 
   const handleRemoveBookmark = async (lessonId: string) => {
     try {
-      await fetch(`/api/learning/bookmarks?userId=${encodeURIComponent(resolvedUserId)}&lessonId=${encodeURIComponent(lessonId)}`, {
-        method: 'DELETE',
-      });
+      await fetch(
+        `/api/learning/bookmarks?userId=${encodeURIComponent(resolvedUserId)}&lessonId=${encodeURIComponent(lessonId)}`,
+        {
+          method: 'DELETE',
+        }
+      );
       setBookmarks((prev) => prev.filter((b) => b.lessonId !== lessonId));
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('intelligentqa_bookmarks_updated'));
@@ -123,7 +128,8 @@ export default function LearningDashboard({ userId, className = '' }: LearningDa
             <span>Learning Academy Dashboard</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mt-1 leading-relaxed">
-            Track your visited lessons, completed modules, and bookmarked documentation across AI Academy and test automation tracks with zero subscriptions or paywalls.
+            Track your visited lessons, completed modules, and bookmarked documentation across AI
+            Academy and test automation tracks with zero subscriptions or paywalls.
           </p>
         </div>
 
@@ -257,7 +263,9 @@ export default function LearningDashboard({ userId, className = '' }: LearningDa
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {courseList.map((course: any) => {
-              const isEnrolled = course.visitedLessons > 0 || (stats?.enrolledCourseIds || []).includes(course.courseId);
+              const isEnrolled =
+                course.visitedLessons > 0 ||
+                (stats?.enrolledCourseIds || []).includes(course.courseId);
 
               return (
                 <div
@@ -305,7 +313,10 @@ export default function LearningDashboard({ userId, className = '' }: LearningDa
                         </span>
                         <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                           {course.modules.map((m: any) => (
-                            <div key={m.moduleId} className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-xs flex items-center justify-between gap-2">
+                            <div
+                              key={m.moduleId}
+                              className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-xs flex items-center justify-between gap-2"
+                            >
                               <span className="truncate text-slate-700 dark:text-neutral-300 font-medium">
                                 {m.moduleTitle}
                               </span>
@@ -469,9 +480,7 @@ export default function LearningDashboard({ userId, className = '' }: LearningDa
                       <span className="text-[10px] font-semibold px-2 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
                         {bm.courseTitle}
                       </span>
-                      <span className="text-[11px] text-slate-400 truncate">
-                        {bm.moduleTitle}
-                      </span>
+                      <span className="text-[11px] text-slate-400 truncate">{bm.moduleTitle}</span>
                     </div>
                     <Link
                       href={`/learning/${bm.lessonSlug}`}

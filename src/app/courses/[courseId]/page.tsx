@@ -90,9 +90,7 @@ export default async function PublicCoursePage({ params }: PageProps) {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
             {track.title}
           </h1>
-          <p className="text-base text-[#A1A1AA] max-w-3xl leading-relaxed">
-            {track.description}
-          </p>
+          <p className="text-base text-[#A1A1AA] max-w-3xl leading-relaxed">{track.description}</p>
           <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-[#A1A1AA]">
             <span className="flex items-center gap-1.5">
               <Layers className="w-4 h-4 text-emerald-400" />

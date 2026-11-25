@@ -43,11 +43,26 @@ async function runAllTests() {
   // Test 0: System Prompt Integrity & 10 Mandatory Sections
   console.log('Testing: Specification & System Prompt Integrity...');
   assert(TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('TC-001'), 'Must define deterministic TC IDs');
-  assert(TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Test Strategy Summary'), 'Must require Section 1 Test Strategy');
-  assert(TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Requirements Traceability Matrix'), 'Must require Section 7 RTM');
-  assert(TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Automation Suitability Matrix'), 'Must require Section 8 Automation Matrix');
-  assert(TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Coverage Gaps & Gap Analysis'), 'Must require Section 9 Coverage Gaps');
-  assert(TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Playwright'), 'Must recommend modern automation frameworks');
+  assert(
+    TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Test Strategy Summary'),
+    'Must require Section 1 Test Strategy'
+  );
+  assert(
+    TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Requirements Traceability Matrix'),
+    'Must require Section 7 RTM'
+  );
+  assert(
+    TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Automation Suitability Matrix'),
+    'Must require Section 8 Automation Matrix'
+  );
+  assert(
+    TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Coverage Gaps & Gap Analysis'),
+    'Must require Section 9 Coverage Gaps'
+  );
+  assert(
+    TEST_CASE_GENERATOR_SYSTEM_PROMPT.includes('Playwright'),
+    'Must recommend modern automation frameworks'
+  );
   console.log('Testing: Specification & System Prompt Integrity... ✅ PASSED');
 
   // TEST 1: Password-Reset Requirements
@@ -70,7 +85,10 @@ Rules:
   assert(output1.includes('## 4. Detailed Test Cases'), 'Must contain Section 4');
   assert(output1.includes('## 5. Realistic Test Data Strategy'), 'Must contain Section 5');
   assert(output1.includes('## 6. Risk and Priority Matrix'), 'Must contain Section 6');
-  assert(output1.includes('## 7. Requirements Traceability Matrix (RTM)'), 'Must contain Section 7');
+  assert(
+    output1.includes('## 7. Requirements Traceability Matrix (RTM)'),
+    'Must contain Section 7'
+  );
   assert(output1.includes('## 8. Automation Suitability Matrix'), 'Must contain Section 8');
   assert(output1.includes('## 9. Coverage Gaps & Gap Analysis'), 'Must contain Section 9');
   assert(output1.includes('## 10. Assumptions and Clarifications'), 'Must contain Section 10');
@@ -121,7 +139,10 @@ Rules:
 5. Max discount cannot exceed $50.00.`;
   const output3 = await simulateAgent2(test3Input);
 
-  assert(/decision table|state transition|rule/i.test(output3), 'Must apply decision logic or state transitions');
+  assert(
+    /decision table|state transition|rule/i.test(output3),
+    'Must apply decision logic or state transitions'
+  );
   assert(/boundary/i.test(output3), 'Must cover boundary conditions ($100, $50 max discount)');
   console.log('Testing: TEST 3 - Multiple Business Rules... ✅ PASSED');
 
@@ -134,7 +155,10 @@ Rules:
   const output4 = await simulateAgent2(test4Input);
 
   assert(/duplicate/i.test(output4), 'Must detect duplicate test cases');
-  assert(/missing/i.test(output4) || /gap/i.test(output4), 'Must identify missing negative and boundary tests');
+  assert(
+    /missing/i.test(output4) || /gap/i.test(output4),
+    'Must identify missing negative and boundary tests'
+  );
   assert(/traceability|RTM/i.test(output4), 'Must evaluate requirement traceability');
   console.log('Testing: TEST 4 - Existing Test Cases Gap Analysis... ✅ PASSED');
 
@@ -148,10 +172,16 @@ Rules:
 5. Backend inventory decrement API call.`;
   const output5 = await simulateAgent2(test5Input);
 
-  assert(output5.includes('## 8. Automation Suitability Matrix'), 'Must feature Automation Suitability section');
+  assert(
+    output5.includes('## 8. Automation Suitability Matrix'),
+    'Must feature Automation Suitability section'
+  );
   assert(/highly suitable|suitable/i.test(output5), 'Must classify suitability');
   assert(/Playwright|Selenium|REST Assured/i.test(output5), 'Must recommend automation frameworks');
-  assert(/rationale/i.test(output5) || /classification/i.test(output5), 'Must provide clear reasoning');
+  assert(
+    /rationale/i.test(output5) || /classification/i.test(output5),
+    'Must provide clear reasoning'
+  );
   console.log('Testing: TEST 5 - Automation Suitability Analysis... ✅ PASSED');
 
   console.log('\n========================================');

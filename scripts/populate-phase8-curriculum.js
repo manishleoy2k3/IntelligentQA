@@ -21,14 +21,15 @@ function slugify(text) {
 }
 
 // 1. Ensure Categories Exist
-const existingCatIds = new Set(store.academyCategories.map(c => c.id));
+const existingCatIds = new Set(store.academyCategories.map((c) => c.id));
 
 const requiredCategories = [
   {
     id: 'cat-ai-for-qa',
     slug: 'ai-for-qa',
     title: 'AI Academy',
-    description: 'AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.',
+    description:
+      'AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.',
     icon: 'Bot',
     sortOrder: 1,
     parentCategoryId: null,
@@ -38,7 +39,8 @@ const requiredCategories = [
     id: 'cat-selenium',
     slug: 'selenium',
     title: 'Selenium',
-    description: 'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
+    description:
+      'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
     icon: 'Globe',
     sortOrder: 2,
     parentCategoryId: null,
@@ -48,7 +50,8 @@ const requiredCategories = [
     id: 'cat-playwright',
     slug: 'playwright',
     title: 'Playwright',
-    description: 'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
+    description:
+      'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
     icon: 'Code2',
     sortOrder: 3,
     parentCategoryId: null,
@@ -58,7 +61,8 @@ const requiredCategories = [
     id: 'cat-api-testing',
     slug: 'api-testing',
     title: 'API Testing',
-    description: 'Contract testing with Pact, Postman/Newman automation, GraphQL validation, and performance tests.',
+    description:
+      'Contract testing with Pact, Postman/Newman automation, GraphQL validation, and performance tests.',
     icon: 'Layers',
     sortOrder: 4,
     parentCategoryId: null,
@@ -68,7 +72,8 @@ const requiredCategories = [
     id: 'cat-appium',
     slug: 'appium',
     title: 'Appium',
-    description: 'Cross-platform mobile automation for iOS and Android native, hybrid, and web applications.',
+    description:
+      'Cross-platform mobile automation for iOS and Android native, hybrid, and web applications.',
     icon: 'Smartphone',
     sortOrder: 5,
     parentCategoryId: null,
@@ -78,7 +83,8 @@ const requiredCategories = [
     id: 'cat-rest-assured',
     slug: 'rest-assured',
     title: 'Rest Assured',
-    description: 'REST Assured Java automation, JSON schema validation, OAuth2, and scalable API testing.',
+    description:
+      'REST Assured Java automation, JSON schema validation, OAuth2, and scalable API testing.',
     icon: 'Server',
     sortOrder: 6,
     parentCategoryId: null,
@@ -88,7 +94,8 @@ const requiredCategories = [
     id: 'cat-git-cicd',
     slug: 'git-cicd',
     title: 'Git & CI/CD',
-    description: 'Continuous Integration and Continuous Delivery pipelines, automated test runs, and Git workflows.',
+    description:
+      'Continuous Integration and Continuous Delivery pipelines, automated test runs, and Git workflows.',
     icon: 'GitBranch',
     sortOrder: 7,
     parentCategoryId: null,
@@ -98,7 +105,8 @@ const requiredCategories = [
     id: 'cat-github-actions',
     slug: 'github-actions',
     title: 'GitHub Actions',
-    description: 'Automated test execution, matrix runs, secrets management, and custom composite actions.',
+    description:
+      'Automated test execution, matrix runs, secrets management, and custom composite actions.',
     icon: 'Workflow',
     sortOrder: 8,
     parentCategoryId: 'cat-git-cicd',
@@ -108,7 +116,8 @@ const requiredCategories = [
     id: 'cat-apm-performance',
     slug: 'apm-performance',
     title: 'APM & Performance Testing',
-    description: 'Application Performance Monitoring, JMeter load testing, distributed tracing, and metrics.',
+    description:
+      'Application Performance Monitoring, JMeter load testing, distributed tracing, and metrics.',
     icon: 'Activity',
     sortOrder: 9,
     parentCategoryId: null,
@@ -116,8 +125,8 @@ const requiredCategories = [
   },
 ];
 
-requiredCategories.forEach(rc => {
-  const existing = store.academyCategories.find(c => c.id === rc.id || c.slug === rc.slug);
+requiredCategories.forEach((rc) => {
+  const existing = store.academyCategories.find((c) => c.id === rc.id || c.slug === rc.slug);
   if (existing) {
     existing.title = rc.title;
     existing.slug = rc.slug;
@@ -167,39 +176,70 @@ function createLesson(courseId, modId, modIdx, lsnIdx, title, customData = null)
           `When implementing ${title}, automation architects balance test execution velocity against system isolation depth to ensure resilient, reproducible outcomes across both local and CI/CD execution environments.`,
         ],
         terminology: [
-          { term: 'Deterministic Verification', definition: 'A test run that yields identical outcomes on every execution given identical inputs and preconditions.' },
-          { term: 'Boundary Condition', definition: 'An input value or state transition at the extreme edge of an equivalence partition.' },
-          { term: 'Shift-Left Verification', definition: 'Integrating automated quality gates early in the design and code phases to prevent defects.' },
+          {
+            term: 'Deterministic Verification',
+            definition:
+              'A test run that yields identical outcomes on every execution given identical inputs and preconditions.',
+          },
+          {
+            term: 'Boundary Condition',
+            definition:
+              'An input value or state transition at the extreme edge of an equivalence partition.',
+          },
+          {
+            term: 'Shift-Left Verification',
+            definition:
+              'Integrating automated quality gates early in the design and code phases to prevent defects.',
+          },
         ],
         practicalUnderstanding: `QA professionals utilize ${title} to transform complex customer journeys into atomic, repeatable verification steps without brittle manual dependencies.`,
       },
       howItWorks: {
         internalMechanism: `${title} coordinates protocol communication, state verification, and assertion engines to evaluate system correctness.`,
         steps: [
-          { stepNumber: 1, title: 'Initialize Test Fixture', description: 'Configure drivers, client sessions, and isolated test preconditions.' },
-          { stepNumber: 2, title: 'Execute Action & Dispatch Request', description: 'Trigger user interactions, HTTP dispatches, or state mutations.' },
-          { stepNumber: 3, title: 'Dynamic Synchronization', description: 'Await asynchronous state stabilization using zero-flake wait conditions.' },
-          { stepNumber: 4, title: 'Assert State & Teardown', description: 'Verify atomic assertions and cleanly release hardware resources.' },
+          {
+            stepNumber: 1,
+            title: 'Initialize Test Fixture',
+            description: 'Configure drivers, client sessions, and isolated test preconditions.',
+          },
+          {
+            stepNumber: 2,
+            title: 'Execute Action & Dispatch Request',
+            description: 'Trigger user interactions, HTTP dispatches, or state mutations.',
+          },
+          {
+            stepNumber: 3,
+            title: 'Dynamic Synchronization',
+            description: 'Await asynchronous state stabilization using zero-flake wait conditions.',
+          },
+          {
+            stepNumber: 4,
+            title: 'Assert State & Teardown',
+            description: 'Verify atomic assertions and cleanly release hardware resources.',
+          },
         ],
       },
       qaUseCases: [
         {
           title: 'Automated Regression Suite Quality Gate',
           scenario: `Validating critical paths and boundary transitions for ${title} on every Pull Request merge.`,
-          enterpriseApplication: 'Executing 500+ parallel tests in under 10 minutes within GitHub Actions or Jenkins pipelines.',
+          enterpriseApplication:
+            'Executing 500+ parallel tests in under 10 minutes within GitHub Actions or Jenkins pipelines.',
         },
       ],
       bestPractices: [
         {
           title: 'Fail-Fast Precondition Checks',
           category: 'Industry Standard',
-          recommendation: 'Verify environment connectivity and database seeding before launching heavy UI browser sessions.',
+          recommendation:
+            'Verify environment connectivity and database seeding before launching heavy UI browser sessions.',
           impact: 'Preserves CI worker compute time and eliminates cascading false positives.',
         },
         {
           title: 'Zero Hardcoded Sleep Intervals',
           category: 'Performance',
-          recommendation: 'Always utilize dynamic, event-driven polling waits instead of static thread sleep timers.',
+          recommendation:
+            'Always utilize dynamic, event-driven polling waits instead of static thread sleep timers.',
           impact: 'Reduces overall test execution duration by 40% - 60%.',
         },
       ],
@@ -209,7 +249,11 @@ function createLesson(courseId, modId, modIdx, lsnIdx, title, customData = null)
           `Deterministic assertions and dynamic waits are mandatory to prevent flakiness in continuous integration.`,
           `Abstract low-level framework APIs behind reusable service and page object layers.`,
         ],
-        keyTerminology: ['Deterministic Verification', 'Zero-Flake Synchronization', 'Idempotent Execution'],
+        keyTerminology: [
+          'Deterministic Verification',
+          'Zero-Flake Synchronization',
+          'Idempotent Execution',
+        ],
       },
     };
 

@@ -1,11 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  TrackTutorial,
-  TutorialStep,
-  MockScreenshot,
-} from '@/lib/track-tutorials';
+import { TrackTutorial, TutorialStep, MockScreenshot } from '@/lib/track-tutorials';
 import CourseVisualDiagram from '@/components/ui/course-visual-diagram';
 import {
   BookOpen,
@@ -76,7 +72,9 @@ export default function TrackTutorialView({ tutorial }: TrackTutorialViewProps) 
                   {layer.layer}
                 </span>
                 <div className="text-sm font-bold text-white">{layer.name}</div>
-                <div className="text-xs sm:text-sm text-slate-300 leading-snug">{layer.description}</div>
+                <div className="text-xs sm:text-sm text-slate-300 leading-snug">
+                  {layer.description}
+                </div>
               </div>
             ))}
           </div>
@@ -120,9 +118,7 @@ export default function TrackTutorialView({ tutorial }: TrackTutorialViewProps) 
                 >
                   <span
                     className={`shrink-0 w-6 h-6 rounded-lg font-mono text-[11px] font-bold flex items-center justify-center ${
-                      isSelected
-                        ? 'bg-emerald-500 text-slate-950'
-                        : 'bg-slate-800 text-slate-400'
+                      isSelected ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'
                     }`}
                   >
                     {stg.stepNumber}
@@ -278,7 +274,9 @@ export default function TrackTutorialView({ tutorial }: TrackTutorialViewProps) 
               <button
                 type="button"
                 disabled={activeStepIndex === tutorial.steps.length - 1}
-                onClick={() => setActiveStepIndex((prev) => Math.min(tutorial.steps.length - 1, prev + 1))}
+                onClick={() =>
+                  setActiveStepIndex((prev) => Math.min(tutorial.steps.length - 1, prev + 1))
+                }
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-30 disabled:pointer-events-none transition-colors shadow-xs"
               >
                 Next Step →

@@ -16,6 +16,7 @@ The IntelligentQA Learning Academy has been designed, implemented, secured, and 
 The platform combines a multi-tier learning curriculum with Microsoft Word (`.docx`) document processing, robust role-based access control (RBAC), and isolation of user learning progress. All 7 development phases plus custom left navigation refinements requested by stakeholders have been executed and tested.
 
 ### Key Milestones Delivered:
+
 1. **Curriculum Hierarchy**: 7 top-level categories, multi-track courses, structured modules, and 100+ lessons.
 2. **High-Fidelity Document Processing**: Python-based OpenXML parser preserving 12 mandatory sections, syntax-highlighted code blocks, tables, callout boxes, and deduplicated image extractions.
 3. **Dedicated Admin CMS Console**: Unified control center at `/admin` supporting course/module/lesson authoring, document uploads, dual-pane side-by-side preview, draft vs published workflows, and sequence ordering.
@@ -72,6 +73,7 @@ The platform combines a multi-tier learning curriculum with Microsoft Word (`.do
 ```
 
 ### Domain Model:
+
 - **`AcademyCategory`**: Top-level taxonomies (e.g., AI in Testing, UI Automation, API Testing, Git & CI/CD).
 - **`AcademyCourse`**: Learning tracks with title, slug, subtitle, description, difficulty level, and estimated hours.
 - **`AcademyModule`**: Thematic syllabus chapters (e.g., Introduction to AI, Multi-Stage YAML Pipelines).
@@ -84,6 +86,7 @@ The platform combines a multi-tier learning curriculum with Microsoft Word (`.do
 ## 3. Database Changes & Migrations
 
 ### Relational Schema (`scripts/schema.sql`):
+
 The relational database schema is appended and ready for deployment on PostgreSQL / Cloud SQL:
 
 ```sql
@@ -175,6 +178,7 @@ CREATE TABLE IF NOT EXISTS academy_bookmarks (
 ```
 
 ### JSON Data Store (`src/lib/curriculum-data-store.json`):
+
 - Cleaned of all ephemeral test courses and demo fidelity tracks.
 - Seeded with valid curriculum courses including newly established `course-git` (Git Version Control for QA Engineers).
 - Atomic disk synchronization with safe fallback.
@@ -183,22 +187,22 @@ CREATE TABLE IF NOT EXISTS academy_bookmarks (
 
 ## 4. APIs Created & Route Contracts
 
-| Method | Route | Description | Auth Required | Cache Control |
-|---|---|---|---|---|
-| `GET` | `/api/learning/categories` | Returns category taxonomy tree | Public | `s-maxage=300` |
-| `GET` | `/api/learning/courses` | Lists published courses | Public | `s-maxage=300` |
-| `GET` | `/api/learning/tree` | Full published curriculum tree | Public | `s-maxage=300, stale-while-revalidate=3600` |
-| `GET` | `/api/learning/lessons/[id]` | Fetches single lesson + context | Public (Drafts require Admin) | `s-maxage=300` |
-| `GET` | `/api/learning/search` | Global curriculum search | Public | Dynamic |
-| `GET` | `/api/learning/progress` | Fetches user progress stats | Logged-in User | Private |
-| `POST` | `/api/learning/progress` | Records visit or toggles complete | Logged-in User | Private |
-| `GET` | `/api/learning/bookmarks` | Lists user's bookmarks | Logged-in User | Private |
-| `POST` | `/api/learning/bookmarks` | Toggles lesson bookmark | Logged-in User | Private |
-| `POST` | `/api/learning/enroll` | Zero-cost course enrollment | Logged-in User | Private |
-| `POST` | `/api/admin/learning/courses` | Creates new course | Admin Role (401 if unauth) | No-Store |
-| `POST` | `/api/admin/learning/documents/upload` | Uploads & parses DOCX | Admin Role (401 if unauth) | No-Store |
-| `POST` | `/api/admin/learning/publish` | Publishes or drafts a lesson | Admin Role (401 if unauth) | No-Store |
-| `POST` | `/api/admin/learning/reorder` | Reorders curriculum items | Admin Role (401 if unauth) | No-Store |
+| Method | Route                                  | Description                       | Auth Required                 | Cache Control                               |
+| ------ | -------------------------------------- | --------------------------------- | ----------------------------- | ------------------------------------------- |
+| `GET`  | `/api/learning/categories`             | Returns category taxonomy tree    | Public                        | `s-maxage=300`                              |
+| `GET`  | `/api/learning/courses`                | Lists published courses           | Public                        | `s-maxage=300`                              |
+| `GET`  | `/api/learning/tree`                   | Full published curriculum tree    | Public                        | `s-maxage=300, stale-while-revalidate=3600` |
+| `GET`  | `/api/learning/lessons/[id]`           | Fetches single lesson + context   | Public (Drafts require Admin) | `s-maxage=300`                              |
+| `GET`  | `/api/learning/search`                 | Global curriculum search          | Public                        | Dynamic                                     |
+| `GET`  | `/api/learning/progress`               | Fetches user progress stats       | Logged-in User                | Private                                     |
+| `POST` | `/api/learning/progress`               | Records visit or toggles complete | Logged-in User                | Private                                     |
+| `GET`  | `/api/learning/bookmarks`              | Lists user's bookmarks            | Logged-in User                | Private                                     |
+| `POST` | `/api/learning/bookmarks`              | Toggles lesson bookmark           | Logged-in User                | Private                                     |
+| `POST` | `/api/learning/enroll`                 | Zero-cost course enrollment       | Logged-in User                | Private                                     |
+| `POST` | `/api/admin/learning/courses`          | Creates new course                | Admin Role (401 if unauth)    | No-Store                                    |
+| `POST` | `/api/admin/learning/documents/upload` | Uploads & parses DOCX             | Admin Role (401 if unauth)    | No-Store                                    |
+| `POST` | `/api/admin/learning/publish`          | Publishes or drafts a lesson      | Admin Role (401 if unauth)    | No-Store                                    |
+| `POST` | `/api/admin/learning/reorder`          | Reorders curriculum items         | Admin Role (401 if unauth)    | No-Store                                    |
 
 ---
 
@@ -255,27 +259,28 @@ CREATE TABLE IF NOT EXISTS academy_bookmarks (
 
 All security tests were executed using `node --test tests/phase7-security-and-readiness.test.cjs`:
 
-| Security Control | Test Scenario | Expected Result | Actual Result | Status |
-|---|---|---|---|---|
-| **RBAC Course Creation** | Guest / non-admin attempts POST `/api/admin/learning/courses` | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **PASS** |
-| **RBAC Document Upload** | Unauthorized user calls upload route | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **PASS** |
-| **RBAC Publishing** | Normal user attempts to change status to `published` | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **PASS** |
-| **Draft Protection** | Public API call to draft lesson ID | Returns `null` / 404 | Blocked; returns null | **PASS** |
-| **User Data Isolation** | User A completes lesson; inspect User B stats | User B stats remain 0 | User B has 0 completed, 0 visits | **PASS** |
-| **Bookmark Isolation** | User A bookmarks lesson; inspect User B bookmarks | User B bookmarks array empty | User B bookmarks length is 0 | **PASS** |
-| **Invalid Extension** | Upload `.exe`, `.sh`, `.php`, `.bat`, `.js` | Rejected with clear message | Rejected with 400 | **PASS** |
-| **Empty File** | Upload 0-byte file | Rejected as empty | Rejected with 400 | **PASS** |
-| **Oversized File** | Upload file > 25 MB | Rejected exceeding limit | Rejected with 400 | **PASS** |
-| **Corrupted Container** | Disguised text file with `.docx` extension | Magic byte check fails | PK zip signature error | **PASS** |
-| **Valid DOCX** | Authentic PK zip file | Passes signature check | Verified valid with SHA-256 | **PASS** |
-| **XSS Sanitization** | DOCX with embedded `<script>`, `onerror=`, `javascript:` | Stripped by sanitizer | All scripts & event handlers removed | **PASS** |
-| **Filename Collision** | Upload files with identical names | Generate distinct paths | Timestamps prevent overwriting | **PASS** |
+| Security Control         | Test Scenario                                                 | Expected Result              | Actual Result                        | Status   |
+| ------------------------ | ------------------------------------------------------------- | ---------------------------- | ------------------------------------ | -------- |
+| **RBAC Course Creation** | Guest / non-admin attempts POST `/api/admin/learning/courses` | HTTP 401 Unauthorized        | HTTP 401 Unauthorized                | **PASS** |
+| **RBAC Document Upload** | Unauthorized user calls upload route                          | HTTP 401 Unauthorized        | HTTP 401 Unauthorized                | **PASS** |
+| **RBAC Publishing**      | Normal user attempts to change status to `published`          | HTTP 401 Unauthorized        | HTTP 401 Unauthorized                | **PASS** |
+| **Draft Protection**     | Public API call to draft lesson ID                            | Returns `null` / 404         | Blocked; returns null                | **PASS** |
+| **User Data Isolation**  | User A completes lesson; inspect User B stats                 | User B stats remain 0        | User B has 0 completed, 0 visits     | **PASS** |
+| **Bookmark Isolation**   | User A bookmarks lesson; inspect User B bookmarks             | User B bookmarks array empty | User B bookmarks length is 0         | **PASS** |
+| **Invalid Extension**    | Upload `.exe`, `.sh`, `.php`, `.bat`, `.js`                   | Rejected with clear message  | Rejected with 400                    | **PASS** |
+| **Empty File**           | Upload 0-byte file                                            | Rejected as empty            | Rejected with 400                    | **PASS** |
+| **Oversized File**       | Upload file > 25 MB                                           | Rejected exceeding limit     | Rejected with 400                    | **PASS** |
+| **Corrupted Container**  | Disguised text file with `.docx` extension                    | Magic byte check fails       | PK zip signature error               | **PASS** |
+| **Valid DOCX**           | Authentic PK zip file                                         | Passes signature check       | Verified valid with SHA-256          | **PASS** |
+| **XSS Sanitization**     | DOCX with embedded `<script>`, `onerror=`, `javascript:`      | Stripped by sanitizer        | All scripts & event handlers removed | **PASS** |
+| **Filename Collision**   | Upload files with identical names                             | Generate distinct paths      | Timestamps prevent overwriting       | **PASS** |
 
 ---
 
 ## 8. Functional Regression Test Results
 
 ### Left Navigation Refinements Verified:
+
 1. **Tutorials & Articles**: Completely removed from normal user sidebar navigation; legacy tab removed from Admin CMS.
 2. **CI/CD Concepts Course**:
    - Main course displayed as `"CI/CD Concepts"`.
@@ -289,6 +294,7 @@ All security tests were executed using `node --test tests/phase7-security-and-re
 5. **Lesson Navigation**: Breadcrumb, Back to Course, Previous Lesson, and Next Lesson contiguous navigation operates across all modules.
 
 ### Full Test Suite Execution Summary:
+
 - **Total Test Suites**: 27
 - **Total Tests Executed**: 365
 - **Passed**: 365 (100%)
@@ -322,7 +328,9 @@ All security tests were executed using `node --test tests/phase7-security-and-re
 ## 11. Production Deployment Instructions
 
 ### A. Environment Configuration
+
 Ensure the following environment variables are set in `.env.local` or your production secrets manager:
+
 ```bash
 # Next.js Node Environment
 NODE_ENV=production
@@ -338,7 +346,9 @@ GEMINI_API_KEY=YOUR_PRODUCTION_AI_STUDIO_KEY
 ```
 
 ### B. Persistent Directory Verification
+
 Before starting the server, ensure upload directories exist with write permissions:
+
 ```bash
 mkdir -p public/uploads/learning/docs
 mkdir -p public/uploads/learning/media
@@ -347,12 +357,15 @@ chmod -R 755 public/uploads/learning
 ```
 
 ### C. Database Migration Execution
+
 If deploying against PostgreSQL, run the migration script:
+
 ```bash
 psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f scripts/schema.sql
 ```
 
 ### D. Build & Run
+
 ```bash
 # 1. Install production dependencies
 npm ci
@@ -365,6 +378,7 @@ npm run start
 ```
 
 ### E. Backup Strategy
+
 1. **Curriculum Store Backup**: Automated daily backup of `src/lib/curriculum-data-store.json` (or PostgreSQL database dumps).
 2. **Media Assets Backup**: Sync `public/uploads/learning/` to an external S3/Cloud Storage bucket:
    ```bash

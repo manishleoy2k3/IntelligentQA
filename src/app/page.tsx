@@ -3,14 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  Sparkles,
-  ArrowRight,
-  Code2,
-  Award,
-  ShieldCheck,
-  ChevronDown,
-} from 'lucide-react';
+import { Sparkles, ArrowRight, Code2, Award, ShieldCheck, ChevronDown } from 'lucide-react';
 import AscentAuthCard from '@/components/auth/ascent-auth-card';
 import HeroShowcaseCarousel from '@/components/home/hero-showcase-carousel';
 import GoogleSignInButton from '@/components/auth/google-sign-in-button';
@@ -33,7 +26,7 @@ const FAQ_LIST: FaqItem[] = [
       'Yes, 100%. Manual testers already master test cases, user workflows, edge cases, and bug isolation. Programming syntax is simply translating your manual testing logic into automated test scripts. Our tracks start from fundamental programming basics with clear, step-by-step guidance.',
   },
   {
-    question: 'How does IntelligentQA\'s pricing work?',
+    question: "How does IntelligentQA's pricing work?",
     answer:
       'IntelligentQA is 100% free forever. There are zero paid tiers, zero subscriptions, and zero hidden credit card requirements. All academy courses, learning tracks, and interview banks are fully accessible without cost.',
   },
@@ -61,8 +54,8 @@ export default function HomePage() {
   const [openFaqIndices, setOpenFaqIndices] = useState<number[]>([]);
 
   const toggleFaq = (index: number) => {
-    setOpenFaqIndices(prev =>
-      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    setOpenFaqIndices((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
 
@@ -128,8 +121,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* 2. WHAT MANUAL TESTERS WILL GET HERE (3 Authentic, Honest Pillars) */}
       <section id="what-you-get" className="max-w-6xl mx-auto px-4 sm:px-6 space-y-14 scroll-mt-24">
         <div className="text-center space-y-3.5">
@@ -140,7 +131,8 @@ export default function HomePage() {
             What You Will Get on IntelligentQA
           </h2>
           <p className="text-slate-600 dark:text-[#A1A1AA] text-lg max-w-xl mx-auto">
-            Everything designed to remove friction, build genuine coding confidence, and prepare you for SDET roles.
+            Everything designed to remove friction, build genuine coding confidence, and prepare you
+            for SDET roles.
           </p>
         </div>
 
@@ -156,7 +148,9 @@ export default function HomePage() {
                 1. Scratch-to-SDET Learning Roadmaps
               </h3>
               <p className="text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
-                Step-by-step tracks covering <strong>Playwright (TypeScript)</strong>, <strong>Selenium (Java)</strong>, and <strong>REST API Automation</strong>. Concepts are taught by relating them directly to familiar manual testing workflows.
+                Step-by-step tracks covering <strong>Playwright (TypeScript)</strong>,{' '}
+                <strong>Selenium (Java)</strong>, and <strong>REST API Automation</strong>. Concepts
+                are taught by relating them directly to familiar manual testing workflows.
               </p>
             </div>
             <div className="text-sm text-emerald-600 dark:text-[#81FF89] font-semibold flex items-center gap-1.5 pt-1">
@@ -174,7 +168,9 @@ export default function HomePage() {
                 2. 800+ Curated SDET Interview Scenarios
               </h3>
               <p className="text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
-                Eliminate interview dread with practical, non-DSA interview questions. Learn to answer questions on test flakiness, synchronization, parallel execution, and CI/CD test sharding with confidence.
+                Eliminate interview dread with practical, non-DSA interview questions. Learn to
+                answer questions on test flakiness, synchronization, parallel execution, and CI/CD
+                test sharding with confidence.
               </p>
             </div>
             <div className="text-sm text-purple-600 dark:text-purple-300 font-semibold flex items-center gap-1.5 pt-1">
@@ -192,7 +188,9 @@ export default function HomePage() {
                 3. Optional AI Features (Your Choice to Opt In or Out)
               </h3>
               <p className="text-base text-slate-700 dark:text-zinc-300 leading-relaxed">
-                Want to learn traditional automation first? You can opt out of AI and master pure coding. Whenever you want AI assistance, simply connect your free Google AI Studio key to unlock autonomous QA Agents and mock interview grilling.
+                Want to learn traditional automation first? You can opt out of AI and master pure
+                coding. Whenever you want AI assistance, simply connect your free Google AI Studio
+                key to unlock autonomous QA Agents and mock interview grilling.
               </p>
             </div>
             <div className="text-sm text-emerald-600 dark:text-[#81FF89] font-semibold flex items-center gap-1.5 pt-1">
@@ -201,8 +199,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-
 
       {/* 3. INSIDE USER LOGIN PREVIEW */}
       <section id="curriculum-preview" className="max-w-5xl mx-auto px-4 sm:px-6 scroll-mt-24">
@@ -216,30 +212,51 @@ export default function HomePage() {
               All Academy Courses, Practice Labs &amp; QA Agents Await Inside
             </h3>
             <p className="text-base text-slate-600 dark:text-[#A1A1AA] leading-relaxed">
-              We keep the home page uncluttered so you can focus. Once you log in with Google or Email, your complete SDET suite opens up:
+              We keep the home page uncluttered so you can focus. Once you log in with Google or
+              Email, your complete SDET suite opens up:
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2 text-sm">
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-emerald-500/40 transition-colors">
-              <span className="font-bold text-emerald-700 dark:text-[#81FF89] text-base block">🟢 Playwright TS Track</span>
-              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">12 interactive lessons &amp; code editor</span>
+              <span className="font-bold text-emerald-700 dark:text-[#81FF89] text-base block">
+                🟢 Playwright TS Track
+              </span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">
+                12 interactive lessons &amp; code editor
+              </span>
             </div>
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-amber-400/40 transition-colors">
-              <span className="font-bold text-amber-600 dark:text-amber-400 text-base block">🟠 Selenium Java Track</span>
-              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">OOPs, POM &amp; WebDriver synchronization</span>
+              <span className="font-bold text-amber-600 dark:text-amber-400 text-base block">
+                🟠 Selenium Java Track
+              </span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">
+                OOPs, POM &amp; WebDriver synchronization
+              </span>
             </div>
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-purple-400/40 transition-colors">
-              <span className="font-bold text-purple-600 dark:text-purple-400 text-base block">🟣 API Mock Lab</span>
-              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">REST Assured, JWT &amp; latency testing</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400 text-base block">
+                🟣 API Mock Lab
+              </span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">
+                REST Assured, JWT &amp; latency testing
+              </span>
             </div>
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-emerald-500/40 transition-colors">
-              <span className="font-bold text-emerald-700 dark:text-[#81FF89] text-base block">⚡ Autonomous QA Agents</span>
-              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">Requirements to POM test generation</span>
+              <span className="font-bold text-emerald-700 dark:text-[#81FF89] text-base block">
+                ⚡ Autonomous QA Agents
+              </span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">
+                Requirements to POM test generation
+              </span>
             </div>
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#141414] border border-slate-200 dark:border-[#262626] space-y-2 hover:border-rose-400/40 transition-colors">
-              <span className="font-bold text-rose-600 dark:text-rose-400 text-base block">🔴 Interview Griller</span>
-              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">Simulated lead SDET technical rounds</span>
+              <span className="font-bold text-rose-600 dark:text-rose-400 text-base block">
+                🔴 Interview Griller
+              </span>
+              <span className="text-slate-600 dark:text-[#D4D4D8] text-sm">
+                Simulated lead SDET technical rounds
+              </span>
             </div>
           </div>
 
@@ -265,8 +282,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* 4. FREQUENTLY ASKED QUESTIONS (FAQs - All Sections Collapsed by Default) */}
       <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 space-y-12 scroll-mt-24">
         {/* Header matching Emergent Reference Design */}
@@ -275,8 +290,11 @@ export default function HomePage() {
             FREQUENTLY ASKED QUESTIONS
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-            Curious about IntelligentQA?<br />
-            <span className="text-slate-500 dark:text-zinc-400 font-normal">We got you covered</span>
+            Curious about IntelligentQA?
+            <br />
+            <span className="text-slate-500 dark:text-zinc-400 font-normal">
+              We got you covered
+            </span>
           </h2>
         </div>
 

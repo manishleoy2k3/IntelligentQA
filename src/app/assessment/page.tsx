@@ -33,24 +33,30 @@ const ASSESSMENT_QUESTIONS: Question[] = [
     title: 'What is your current comfort level with coding?',
     options: [
       {
-        label: 'Pure Manual Tester: Zero coding experience, but eager to start from variables and loops.',
+        label:
+          'Pure Manual Tester: Zero coding experience, but eager to start from variables and loops.',
         recommendedTrack: 'playwright-ts',
-        reason: 'TypeScript + Playwright provides the gentlest, fastest modern syntax without enterprise boilerplate.',
+        reason:
+          'TypeScript + Playwright provides the gentlest, fastest modern syntax without enterprise boilerplate.',
       },
       {
         label: 'Know Core Java: Comfortable with classes, OOPs concepts, and TestNG basics.',
         recommendedTrack: 'selenium-java',
-        reason: 'Selenium + Java leverages your existing OOPs knowledge and targets enterprise banking stacks.',
+        reason:
+          'Selenium + Java leverages your existing OOPs knowledge and targets enterprise banking stacks.',
       },
       {
         label: 'Postman & API Enthusiast: Daily experience with JSON payloads and HTTP requests.',
         recommendedTrack: 'api-testing',
-        reason: 'API Testing builds directly on your HTTP and Postman knowledge with REST Assured & Playwright API.',
+        reason:
+          'API Testing builds directly on your HTTP and Postman knowledge with REST Assured & Playwright API.',
       },
       {
-        label: 'Automation Practitioner: Looking to lead AI testing and integrate autonomous agents.',
+        label:
+          'Automation Practitioner: Looking to lead AI testing and integrate autonomous agents.',
         recommendedTrack: 'ai-qa',
-        reason: 'AI Academy will teach you prompt engineering, self-healing locators, and LLM evaluation.',
+        reason:
+          'AI Academy will teach you prompt engineering, self-healing locators, and LLM evaluation.',
       },
     ],
   },
@@ -62,22 +68,27 @@ const ASSESSMENT_QUESTIONS: Question[] = [
       {
         label: 'High-growth Tech Startups & Modern Scaleups (Next.js, React, fast CI/CD pipelines)',
         recommendedTrack: 'playwright-ts',
-        reason: 'Modern tech companies have overwhelmingly standardized on Playwright with TypeScript.',
+        reason:
+          'Modern tech companies have overwhelmingly standardized on Playwright with TypeScript.',
       },
       {
-        label: 'Enterprise Banks, Healthcare & Fortune 500 corporations with established frameworks',
+        label:
+          'Enterprise Banks, Healthcare & Fortune 500 corporations with established frameworks',
         recommendedTrack: 'selenium-java',
-        reason: 'Large enterprise institutions maintain massive legacy Selenium Java codebases with high demand.',
+        reason:
+          'Large enterprise institutions maintain massive legacy Selenium Java codebases with high demand.',
       },
       {
         label: 'Backend & Microservices QA Engineer focused on data integrity and high throughput',
         recommendedTrack: 'api-testing',
-        reason: 'Microservice ecosystems demand high-velocity REST Assured and contract testing skills.',
+        reason:
+          'Microservice ecosystems demand high-velocity REST Assured and contract testing skills.',
       },
       {
         label: 'Lead SDET / Staff QA Architect pioneering Generative AI & Autonomous Test Agents',
         recommendedTrack: 'ai-qa',
-        reason: 'Forward-looking roles demand expertise in testing AI systems and self-healing frameworks.',
+        reason:
+          'Forward-looking roles demand expertise in testing AI systems and self-healing frameworks.',
       },
     ],
   },
@@ -87,24 +98,31 @@ const ASSESSMENT_QUESTIONS: Question[] = [
     title: 'What is your biggest pain point when attempting test automation?',
     options: [
       {
-        label: 'Setting up drivers, path variables, browser binaries, and fighting mysterious crashes',
+        label:
+          'Setting up drivers, path variables, browser binaries, and fighting mysterious crashes',
         recommendedTrack: 'playwright-ts',
-        reason: 'Playwright bundles zero-config browser binaries; "npx playwright test" just works out of the box.',
+        reason:
+          'Playwright bundles zero-config browser binaries; "npx playwright test" just works out of the box.',
       },
       {
-        label: 'Understanding complex Object-Oriented design patterns and building frameworks from scratch',
+        label:
+          'Understanding complex Object-Oriented design patterns and building frameworks from scratch',
         recommendedTrack: 'selenium-java',
-        reason: 'Our Java track breaks down OOPs (Inheritance, Polymorphism) step-by-step for test architects.',
+        reason:
+          'Our Java track breaks down OOPs (Inheritance, Polymorphism) step-by-step for test architects.',
       },
       {
         label: 'Flaky UI tests that take 45 minutes to run and fail because of random spinners',
         recommendedTrack: 'api-testing',
-        reason: 'Replacing 70% of UI test steps with lightning-fast API assertions eliminates UI flakiness.',
+        reason:
+          'Replacing 70% of UI test steps with lightning-fast API assertions eliminates UI flakiness.',
       },
       {
-        label: 'Spending hours manually rewriting brittle XPaths whenever the frontend team updates HTML',
+        label:
+          'Spending hours manually rewriting brittle XPaths whenever the frontend team updates HTML',
         recommendedTrack: 'ai-qa',
-        reason: 'Self-healing locators and accessible ARIA anchors permanently solve element churn.',
+        reason:
+          'Self-healing locators and accessible ARIA anchors permanently solve element churn.',
       },
     ],
   },
@@ -113,7 +131,11 @@ const ASSESSMENT_QUESTIONS: Question[] = [
 export default function DiagnosticAssessment() {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
-  const [resultTrack, setResultTrack] = useState<{ id: TrackId; title: string; reason: string } | null>(null);
+  const [resultTrack, setResultTrack] = useState<{
+    id: TrackId;
+    title: string;
+    reason: string;
+  } | null>(null);
 
   const handleSelectOption = (optionIndex: number) => {
     const updated = [...selectedAnswers];
@@ -121,7 +143,7 @@ export default function DiagnosticAssessment() {
     setSelectedAnswers(updated);
 
     if (currentStep < ASSESSMENT_QUESTIONS.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     } else {
       // Calculate recommended track based on selections
       const votes: Record<TrackId, number> = {
@@ -155,10 +177,14 @@ export default function DiagnosticAssessment() {
       };
 
       const reasons: Record<TrackId, string> = {
-        'playwright-ts': 'Based on your background and goals, Playwright + TypeScript offers the fastest learning curve, zero-config setup, native auto-waiting, and highest startup job demand in 2026.',
-        'selenium-java': 'Your background aligns with Enterprise QA engineering. Mastering Core Java OOPs, TestNG, and WebDriver 4 will position you for high-paying roles in banking and enterprise institutions.',
-        'api-testing': 'Focusing on API automation will yield immediate 10x speedups in your testing pipelines, mastering both REST Assured and Playwright API.',
-        'ai-qa': 'You are primed for the frontier of Quality Engineering. Harnessing Generative AI for test synthesis and testing LLM applications will set you apart as a Next-Gen SDET.',
+        'playwright-ts':
+          'Based on your background and goals, Playwright + TypeScript offers the fastest learning curve, zero-config setup, native auto-waiting, and highest startup job demand in 2026.',
+        'selenium-java':
+          'Your background aligns with Enterprise QA engineering. Mastering Core Java OOPs, TestNG, and WebDriver 4 will position you for high-paying roles in banking and enterprise institutions.',
+        'api-testing':
+          'Focusing on API automation will yield immediate 10x speedups in your testing pipelines, mastering both REST Assured and Playwright API.',
+        'ai-qa':
+          'You are primed for the frontier of Quality Engineering. Harnessing Generative AI for test synthesis and testing LLM applications will set you apart as a Next-Gen SDET.',
       };
 
       setResultTrack({
@@ -181,7 +207,8 @@ export default function DiagnosticAssessment() {
           Find Your Ideal SDET Learning Track
         </h1>
         <p className="text-slate-600 dark:text-slate-400 text-sm max-w-lg mx-auto">
-          Answer 3 quick questions about your current skills, background, and career aspirations to receive a tailored recommendation.
+          Answer 3 quick questions about your current skills, background, and career aspirations to
+          receive a tailored recommendation.
         </p>
       </div>
 
@@ -221,14 +248,10 @@ export default function DiagnosticAssessment() {
                 }`}
               >
                 <div className="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-[10px] font-bold">
-                    {String.fromCharCode(65 + idx)}
-                  </span>
+                  <span className="text-[10px] font-bold">{String.fromCharCode(65 + idx)}</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white">
-                    {opt.label}
-                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-white">{opt.label}</div>
                   <div className="text-[11px] text-slate-500 mt-1">{opt.reason}</div>
                 </div>
               </button>
@@ -238,7 +261,7 @@ export default function DiagnosticAssessment() {
           {currentStep > 0 && (
             <div className="pt-2">
               <button
-                onClick={() => setCurrentStep(prev => prev - 1)}
+                onClick={() => setCurrentStep((prev) => prev - 1)}
                 className="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
               >
                 ← Back to previous question

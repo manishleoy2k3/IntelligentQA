@@ -34,7 +34,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-ai-for-qa',
     slug: 'ai-for-qa',
     title: 'AI Academy',
-    description: 'AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.',
+    description:
+      'AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.',
     icon: 'Bot',
     sortOrder: 1,
     parentCategoryId: null,
@@ -46,7 +47,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-playwright',
     slug: 'playwright',
     title: 'Playwright',
-    description: 'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
+    description:
+      'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
     icon: 'Code2',
     sortOrder: 2,
     parentCategoryId: null,
@@ -58,7 +60,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-selenium',
     slug: 'selenium',
     title: 'Selenium',
-    description: 'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
+    description:
+      'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
     icon: 'Globe',
     sortOrder: 3,
     parentCategoryId: null,
@@ -70,7 +73,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-rest-assured',
     slug: 'rest-assured',
     title: 'Rest Assured',
-    description: 'Microservice API automation, RequestSpecBuilder, JSON schema validation, and POJO mapping in Java.',
+    description:
+      'Microservice API automation, RequestSpecBuilder, JSON schema validation, and POJO mapping in Java.',
     icon: 'Zap',
     sortOrder: 4,
     parentCategoryId: null,
@@ -82,7 +86,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-api-testing',
     slug: 'api-testing',
     title: 'API Testing',
-    description: 'Contract testing with Pact, Postman/Newman automation, GraphQL validation, and performance tests.',
+    description:
+      'Contract testing with Pact, Postman/Newman automation, GraphQL validation, and performance tests.',
     icon: 'Layers',
     sortOrder: 5,
     parentCategoryId: null,
@@ -94,7 +99,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-appium',
     slug: 'appium',
     title: 'Appium',
-    description: 'Cross-platform mobile automation for iOS and Android native, hybrid, and web applications.',
+    description:
+      'Cross-platform mobile automation for iOS and Android native, hybrid, and web applications.',
     icon: 'Smartphone',
     sortOrder: 6,
     parentCategoryId: null,
@@ -106,7 +112,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-git-cicd',
     slug: 'git-cicd',
     title: 'Git & CI/CD',
-    description: 'Continuous Integration and Continuous Delivery pipelines, automated test runs, and Git workflows.',
+    description:
+      'Continuous Integration and Continuous Delivery pipelines, automated test runs, and Git workflows.',
     icon: 'GitBranch',
     sortOrder: 7,
     parentCategoryId: null,
@@ -119,7 +126,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-github-actions',
     slug: 'github-actions',
     title: 'GitHub Actions',
-    description: 'Automated test execution, matrix runs, secrets management, and custom composite actions.',
+    description:
+      'Automated test execution, matrix runs, secrets management, and custom composite actions.',
     icon: 'GitMerge',
     sortOrder: 1,
     parentCategoryId: 'cat-git-cicd',
@@ -131,7 +139,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-azure-devops',
     slug: 'azure-devops',
     title: 'Azure DevOps',
-    description: 'Azure Pipelines, YAML multi-stage test jobs, Test Plans integration, and self-hosted agents.',
+    description:
+      'Azure Pipelines, YAML multi-stage test jobs, Test Plans integration, and self-hosted agents.',
     icon: 'Cloud',
     sortOrder: 2,
     parentCategoryId: 'cat-git-cicd',
@@ -143,7 +152,8 @@ export const DEFAULT_ACADEMY_CATEGORIES: AcademyCategory[] = [
     id: 'cat-jenkins',
     slug: 'jenkins',
     title: 'Jenkins',
-    description: 'Declarative Jenkinsfiles, distributed agent grids, parallel test suites, and Allure reporting.',
+    description:
+      'Declarative Jenkinsfiles, distributed agent grids, parallel test suites, and Allure reporting.',
     icon: 'Server',
     sortOrder: 3,
     parentCategoryId: 'cat-git-cicd',
@@ -161,7 +171,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     slug: 'ai-for-qa-mastery',
     title: 'AI Academy: Modern Quality Engineering with AI',
     subtitle: 'From LLM Prompt Evals to Autonomous Self-Healing Test Agents',
-    description: 'Master how artificial intelligence is transforming software quality engineering, test case synthesis, and test automation maintenance.',
+    description:
+      'Master how artificial intelligence is transforming software quality engineering, test case synthesis, and test automation maintenance.',
     level: 'All Levels',
     estimatedHours: 12,
     sortOrder: 1,
@@ -174,7 +185,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
         courseId: 'course-ai-qa-mastery',
         slug: 'foundations-of-ai-testing',
         title: 'Module 1: Foundations of AI in Software Testing',
-        description: 'Understand the landscape of generative AI, prompt engineering for test cases, and evaluation metrics.',
+        description:
+          'Understand the landscape of generative AI, prompt engineering for test cases, and evaluation metrics.',
         sortOrder: 1,
         status: 'published',
         createdAt: '2026-11-23T00:00:00.000Z',
@@ -186,7 +198,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
             courseId: 'course-ai-qa-mastery',
             slug: 'intro-to-ai-in-qa',
             title: '1.1 Introduction to AI-Driven Quality Assurance',
-            summary: 'Explore how generative models and computer vision are revolutionizing test automation and defect discovery.',
+            summary:
+              'Explore how generative models and computer vision are revolutionizing test automation and defect discovery.',
             contentHtml: `
               <h2>The Evolution of Quality Engineering with AI</h2>
               <p>Modern software development velocity demands automated testing that adapts to rapid UI changes without breaking. Traditional locator-based automation suffers from test flakiness, requiring substantial maintenance overhead.</p>
@@ -220,7 +233,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     slug: 'playwright-ts-mastery',
     title: 'Playwright Automation with TypeScript',
     subtitle: 'Modern End-to-End Testing for Web Applications',
-    description: 'Learn Playwright from scratch: auto-waiting, isolated browser contexts, parallel execution, API mocking, and Trace Viewer debugging.',
+    description:
+      'Learn Playwright from scratch: auto-waiting, isolated browser contexts, parallel execution, API mocking, and Trace Viewer debugging.',
     level: 'Beginner',
     estimatedHours: 20,
     sortOrder: 1,
@@ -245,7 +259,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
             courseId: 'course-playwright-mastery',
             slug: 'playwright-core-concepts',
             title: '1.1 Playwright Architecture & Actionability Matrix',
-            summary: 'Discover how Playwright performs automatic checks before every click, fill, or tap to guarantee flake-free tests.',
+            summary:
+              'Discover how Playwright performs automatic checks before every click, fill, or tap to guarantee flake-free tests.',
             contentHtml: `
               <h2>Why Playwright is Built for Modern Web Apps</h2>
               <p>Unlike legacy tools, Microsoft Playwright communicates with browser processes via a single bidirectional WebSocket connection. This architecture eliminates HTTP connection overhead and unlocks instant event-driven DOM observation.</p>
@@ -277,7 +292,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     slug: 'selenium-webdriver-enterprise',
     title: 'Selenium WebDriver 4 Enterprise Framework Architecture',
     subtitle: 'Production-Grade Java Test Automation Frameworks',
-    description: 'Deep dive into WebDriver 4 W3C protocol, dynamic wait strategies, ThreadLocal thread safety, and scalable Page Object Models.',
+    description:
+      'Deep dive into WebDriver 4 W3C protocol, dynamic wait strategies, ThreadLocal thread safety, and scalable Page Object Models.',
     level: 'Intermediate',
     estimatedHours: 24,
     sortOrder: 1,
@@ -302,7 +318,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
             courseId: 'course-selenium-mastery',
             slug: 'w3c-protocol-and-driver-architecture',
             title: '1.1 Selenium 4 Architecture & W3C Standardization',
-            summary: 'Learn how Selenium 4 communicates directly with browser drivers over W3C HTTP protocol without JSON Wire encoding.',
+            summary:
+              'Learn how Selenium 4 communicates directly with browser drivers over W3C HTTP protocol without JSON Wire encoding.',
             contentHtml: `
               <h2>Selenium 4 Under the Hood</h2>
               <p>In Selenium 4, the legacy JSON Wire Protocol has been completely deprecated in favor of the official W3C WebDriver Standard. This ensures direct, low-latency communication between your test client and browser engines (ChromeDriver, GeckoDriver, SafariDriver).</p>
@@ -331,7 +348,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     slug: 'rest-assured-api-automation',
     title: 'REST Assured: Enterprise API Automation with Java',
     subtitle: 'From RequestSpecBuilder to JSON Schema & Contract Validation',
-    description: 'Learn REST Assured for automating RESTful microservices: authentication, OAuth2, POJO serialization with Jackson, and JSON schema assertions.',
+    description:
+      'Learn REST Assured for automating RESTful microservices: authentication, OAuth2, POJO serialization with Jackson, and JSON schema assertions.',
     level: 'Intermediate',
     estimatedHours: 18,
     sortOrder: 1,
@@ -356,7 +374,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
             courseId: 'course-rest-assured',
             slug: 'bdd-dsl-and-specs',
             title: '1.1 Fluent BDD Syntax & RequestSpecBuilder',
-            summary: 'Build clean, reusable request specifications and assert JSON payloads efficiently.',
+            summary:
+              'Build clean, reusable request specifications and assert JSON payloads efficiently.',
             contentHtml: `
               <h2>Writing Clean REST Assured Tests</h2>
               <p>REST Assured utilizes a fluent BDD domain-specific language (DSL) inspired by Hamcrest and Cucumber. Tests follow the <strong>Given - When - Then</strong> structure:</p>
@@ -387,7 +406,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     slug: 'api-testing-and-contracts',
     title: 'Full-Stack API Testing & Consumer-Driven Contracts',
     subtitle: 'Postman, Newman, Pact, and OpenAPI Schema Verification',
-    description: 'Comprehensive guide to testing distributed microservices, REST APIs, GraphQL endpoints, and consumer-driven contracts.',
+    description:
+      'Comprehensive guide to testing distributed microservices, REST APIs, GraphQL endpoints, and consumer-driven contracts.',
     level: 'All Levels',
     estimatedHours: 16,
     sortOrder: 1,
@@ -400,7 +420,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
         courseId: 'course-api-testing',
         slug: 'api-testing-foundations',
         title: 'Module 1: API Protocols & Contract Testing',
-        description: 'Understand HTTP status codes, headers, payloads, and contract validation principles.',
+        description:
+          'Understand HTTP status codes, headers, payloads, and contract validation principles.',
         sortOrder: 1,
         status: 'published',
         createdAt: '2026-11-23T00:00:00.000Z',
@@ -412,7 +433,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
             courseId: 'course-api-testing',
             slug: 'consumer-driven-contracts-with-pact',
             title: '1.1 Consumer-Driven Contracts with Pact',
-            summary: 'Prevent breaking changes across frontend and backend services using automated contract testing.',
+            summary:
+              'Prevent breaking changes across frontend and backend services using automated contract testing.',
             contentHtml: `
               <h2>What is Contract Testing?</h2>
               <p>Contract testing ensures that two separate systems (such as a Next.js web application and a Go backend microservice) have a shared agreement on the messages they exchange. By verifying contracts in isolation, teams eliminate the need for brittle end-to-end integration environments.</p>
@@ -435,7 +457,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     slug: 'appium-mobile-automation',
     title: 'Appium 2.0 Mobile Automation Masterclass',
     subtitle: 'Cross-Platform Automation for Android and iOS',
-    description: 'Master Appium 2.0 modular driver architecture, UiAutomator2, XCUITest, mobile gestures, and device cloud integration.',
+    description:
+      'Master Appium 2.0 modular driver architecture, UiAutomator2, XCUITest, mobile gestures, and device cloud integration.',
     level: 'Intermediate',
     estimatedHours: 20,
     sortOrder: 1,
@@ -448,7 +471,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
         courseId: 'course-appium',
         slug: 'appium-2-architecture',
         title: 'Module 1: Appium 2.0 Modular Architecture & Setup',
-        description: 'Understand the decoupled driver model and install plugins for automated device interaction.',
+        description:
+          'Understand the decoupled driver model and install plugins for automated device interaction.',
         sortOrder: 1,
         status: 'published',
         createdAt: '2026-11-23T00:00:00.000Z',
@@ -460,7 +484,8 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
             courseId: 'course-appium',
             slug: 'appium-2-modular-ecosystem',
             title: '1.1 Appium 2.0 Modular Drivers & Plugins',
-            summary: 'Learn how Appium 2 separates core automation server from device drivers (uiautomator2, xcuitest).',
+            summary:
+              'Learn how Appium 2 separates core automation server from device drivers (uiautomator2, xcuitest).',
             contentHtml: `
               <h2>Appium 2.0 Architecture</h2>
               <p>In Appium 2.0, drivers and plugins are completely decoupled from the main server. You can install only the drivers your team needs, minimizing installation footprint and simplifying version management.</p>
@@ -478,95 +503,103 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     ],
   },
   {
-    id: "course-cicd-concepts",
-    categoryId: "cat-git-cicd",
-    slug: "cicd-concepts",
-    title: "CI/CD Concepts",
-    subtitle: "Git Version Control, GitHub Actions, Azure DevOps & Declarative Jenkins Pipelines",
-    description: "Master modern Continuous Integration, automated quality gating, and Continuous Delivery for QA automation: Git branching models, GitHub Actions matrix runners, Azure DevOps quality release gates, and distributed Jenkins container pipelines.",
+    id: 'course-cicd-concepts',
+    categoryId: 'cat-git-cicd',
+    slug: 'cicd-concepts',
+    title: 'CI/CD Concepts',
+    subtitle: 'Git Version Control, GitHub Actions, Azure DevOps & Declarative Jenkins Pipelines',
+    description:
+      'Master modern Continuous Integration, automated quality gating, and Continuous Delivery for QA automation: Git branching models, GitHub Actions matrix runners, Azure DevOps quality release gates, and distributed Jenkins container pipelines.',
     level: 'All Levels',
     estimatedHours: 46,
     sortOrder: 7,
-    status: "published",
-    createdAt: "2026-11-23T00:00:00.000Z",
-    updatedAt: "2026-11-23T00:00:00.000Z",
+    status: 'published',
+    createdAt: '2026-11-23T00:00:00.000Z',
+    updatedAt: '2026-11-23T00:00:00.000Z',
     modules: [
       {
-        id: "mod-cicd-1-git",
-        courseId: "course-cicd-concepts",
-        slug: "git-version-control",
-        title: "Module 1: Git & Version Control for QA",
-        description: "Git fundamentals, commit DAG architecture, branching models (Trunk-Based, GitFlow), conflict resolution, and PR review quality gates.",
+        id: 'mod-cicd-1-git',
+        courseId: 'course-cicd-concepts',
+        slug: 'git-version-control',
+        title: 'Module 1: Git & Version Control for QA',
+        description:
+          'Git fundamentals, commit DAG architecture, branching models (Trunk-Based, GitFlow), conflict resolution, and PR review quality gates.',
         sortOrder: 1,
-        status: "published",
-        createdAt: "2026-11-23T00:00:00.000Z",
-        updatedAt: "2026-11-23T00:00:00.000Z",
+        status: 'published',
+        createdAt: '2026-11-23T00:00:00.000Z',
+        updatedAt: '2026-11-23T00:00:00.000Z',
         lessons: [
           {
-            id: "les-git-1-1-what-is-git",
-            moduleId: "mod-cicd-1-git",
-            courseId: "course-cicd-concepts",
-            slug: "what-is-git",
-            title: "What is Git?",
-            summary: "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
-            contentHtml: "<h2>What is Git?</h2><p>Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.</p>",
+            id: 'les-git-1-1-what-is-git',
+            moduleId: 'mod-cicd-1-git',
+            courseId: 'course-cicd-concepts',
+            slug: 'what-is-git',
+            title: 'What is Git?',
+            summary:
+              'Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.',
+            contentHtml:
+              '<h2>What is Git?</h2><p>Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.</p>',
             wordCount: 300,
             estimatedReadTime: 4,
             sortOrder: 1,
-            status: "published",
-            publishedAt: "2026-11-23T00:00:00.000Z",
-            createdAt: "2026-11-23T00:00:00.000Z",
-            updatedAt: "2026-11-23T00:00:00.000Z",
-          }
-        ]
-      }
-    ]
+            status: 'published',
+            publishedAt: '2026-11-23T00:00:00.000Z',
+            createdAt: '2026-11-23T00:00:00.000Z',
+            updatedAt: '2026-11-23T00:00:00.000Z',
+          },
+        ],
+      },
+    ],
   },
   {
-    id: "course-apm-performance",
-    categoryId: "cat-apm-perf",
-    slug: "apm-and-performance-testing",
-    title: "APM & Enterprise Performance Testing",
-    subtitle: "Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM",
-    description: "Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.",
+    id: 'course-apm-performance',
+    categoryId: 'cat-apm-perf',
+    slug: 'apm-and-performance-testing',
+    title: 'APM & Enterprise Performance Testing',
+    subtitle: 'Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM',
+    description:
+      'Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.',
     level: 'All Levels',
     estimatedHours: 30,
     sortOrder: 8,
-    status: "published",
-    createdAt: "2026-11-23T00:00:00.000Z",
-    updatedAt: "2026-11-23T00:00:00.000Z",
+    status: 'published',
+    createdAt: '2026-11-23T00:00:00.000Z',
+    updatedAt: '2026-11-23T00:00:00.000Z',
     modules: [
       {
-        id: "mod-apm-performance-1",
-        courseId: "course-apm-performance",
-        slug: "performance-testing-fundamentals",
-        title: "Module 1: Performance Testing Fundamentals",
-        description: "Core metrics (latency, throughput, percentiles p95/p99), load test types, and capacity planning.",
+        id: 'mod-apm-performance-1',
+        courseId: 'course-apm-performance',
+        slug: 'performance-testing-fundamentals',
+        title: 'Module 1: Performance Testing Fundamentals',
+        description:
+          'Core metrics (latency, throughput, percentiles p95/p99), load test types, and capacity planning.',
         sortOrder: 1,
-        status: "published",
-        createdAt: "2026-11-23T00:00:00.000Z",
-        updatedAt: "2026-11-23T00:00:00.000Z",
+        status: 'published',
+        createdAt: '2026-11-23T00:00:00.000Z',
+        updatedAt: '2026-11-23T00:00:00.000Z',
         lessons: [
           {
-            id: "les-apm-perf-1-1-what-is-performance-testing",
-            moduleId: "mod-apm-performance-1",
-            courseId: "course-apm-performance",
-            slug: "what-is-performance-testing",
-            title: "What is Performance Testing?",
-            summary: "Comprehensive guide to software performance testing, metrics, and quality goals.",
-            contentHtml: "<h2>What is Performance Testing?</h2><p>Comprehensive guide to software performance testing, metrics, and quality goals.</p>",
+            id: 'les-apm-perf-1-1-what-is-performance-testing',
+            moduleId: 'mod-apm-performance-1',
+            courseId: 'course-apm-performance',
+            slug: 'what-is-performance-testing',
+            title: 'What is Performance Testing?',
+            summary:
+              'Comprehensive guide to software performance testing, metrics, and quality goals.',
+            contentHtml:
+              '<h2>What is Performance Testing?</h2><p>Comprehensive guide to software performance testing, metrics, and quality goals.</p>',
             wordCount: 300,
             estimatedReadTime: 4,
             sortOrder: 1,
-            status: "published",
-            publishedAt: "2026-11-23T00:00:00.000Z",
-            createdAt: "2026-11-23T00:00:00.000Z",
-            updatedAt: "2026-11-23T00:00:00.000Z",
-          }
-        ]
-      }
-    ]
-  }
+            status: 'published',
+            publishedAt: '2026-11-23T00:00:00.000Z',
+            createdAt: '2026-11-23T00:00:00.000Z',
+            updatedAt: '2026-11-23T00:00:00.000Z',
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export class AcademyStore {
@@ -633,7 +666,9 @@ export class AcademyStore {
         // Load Categories
         if (Array.isArray(data.academyCategories) && data.academyCategories.length > 0) {
           this.categories.clear();
-          data.academyCategories.forEach((cat: AcademyCategory) => this.categories.set(cat.id, cat));
+          data.academyCategories.forEach((cat: AcademyCategory) =>
+            this.categories.set(cat.id, cat)
+          );
         } else {
           // Initialize with default categories
           this.categories.clear();
@@ -662,8 +697,14 @@ export class AcademyStore {
                     if (lsn.contentHtml) {
                       lsn.contentHtml = lsn.contentHtml
                         .replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '')
-                        .replace(/\btext-(?:white|slate-100|slate-200|slate-300|slate-400|neutral-100|neutral-200|neutral-300|neutral-400|zinc-100|zinc-200|zinc-300|zinc-400)\b/g, '')
-                        .replace(/\bstyle="[^"]*color:\s*(?:#ffffff|#fff|#cbd5e1|#d4d4d8|#64748B|#94a3b8|#e2e8f0)[^"]*"/gi, '');
+                        .replace(
+                          /\btext-(?:white|slate-100|slate-200|slate-300|slate-400|neutral-100|neutral-200|neutral-300|neutral-400|zinc-100|zinc-200|zinc-300|zinc-400)\b/g,
+                          ''
+                        )
+                        .replace(
+                          /\bstyle="[^"]*color:\s*(?:#ffffff|#fff|#cbd5e1|#d4d4d8|#64748B|#94a3b8|#e2e8f0)[^"]*"/gi,
+                          ''
+                        );
                     }
                   }
                 }
@@ -680,19 +721,25 @@ export class AcademyStore {
         // Load Doc Sources
         if (Array.isArray(data.academyDocSources)) {
           this.docSources.clear();
-          data.academyDocSources.forEach((d: AcademyDocumentSource) => this.docSources.set(d.id, d));
+          data.academyDocSources.forEach((d: AcademyDocumentSource) =>
+            this.docSources.set(d.id, d)
+          );
         }
 
         // Load Media Attachments
         if (Array.isArray(data.academyMedia)) {
           this.mediaAttachments.clear();
-          data.academyMedia.forEach((m: AcademyMediaAttachment) => this.mediaAttachments.set(m.id, m));
+          data.academyMedia.forEach((m: AcademyMediaAttachment) =>
+            this.mediaAttachments.set(m.id, m)
+          );
         }
 
         // Load Lesson Assets
         if (Array.isArray(data.academyLessonAssets)) {
           this.lessonAssets.clear();
-          data.academyLessonAssets.forEach((a: AcademyLessonAsset) => this.lessonAssets.set(a.id, a));
+          data.academyLessonAssets.forEach((a: AcademyLessonAsset) =>
+            this.lessonAssets.set(a.id, a)
+          );
         }
 
         // Load User Lesson Progress
@@ -788,10 +835,12 @@ export class AcademyStore {
       existingData.academyLessonAssets = Array.from(this.lessonAssets.values());
       existingData.academyUserProgress = Array.from(this.userProgress.values());
       existingData.academyBookmarks = Array.from(this.userBookmarks.values());
-      existingData.academyEnrolledCourses = Array.from(this.enrolledCourses.entries()).map(([userId, courses]) => ({
-        userId,
-        courses: Array.from(courses),
-      }));
+      existingData.academyEnrolledCourses = Array.from(this.enrolledCourses.entries()).map(
+        ([userId, courses]) => ({
+          userId,
+          courses: Array.from(courses),
+        })
+      );
 
       const payloadStr = JSON.stringify(existingData, null, 2);
 
@@ -812,7 +861,11 @@ export class AcademyStore {
         }
       } catch (writeErr: any) {
         // Fall back to /tmp/curriculum-data-store.json for serverless environments (e.g. AWS Lambda / Vercel Serverless /var/task)
-        console.warn('[AcademyStore] Primary write to DATA_FILE failed (' + (writeErr?.code || writeErr?.message) + '). Persisting to /tmp fallback.');
+        console.warn(
+          '[AcademyStore] Primary write to DATA_FILE failed (' +
+            (writeErr?.code || writeErr?.message) +
+            '). Persisting to /tmp fallback.'
+        );
         try {
           fs.writeFileSync(TMP_DATA_FILE, payloadStr, 'utf-8');
         } catch (tmpErr) {
@@ -822,7 +875,10 @@ export class AcademyStore {
         return;
       }
     } catch (e: any) {
-      console.warn('[AcademyStore] Non-fatal error persisting Academy data to disk:', e?.message || e);
+      console.warn(
+        '[AcademyStore] Non-fatal error persisting Academy data to disk:',
+        e?.message || e
+      );
     }
   }
 
@@ -843,7 +899,9 @@ export class AcademyStore {
     );
   }
 
-  public createCategory(input: Omit<AcademyCategory, 'id' | 'createdAt' | 'updatedAt'>): AcademyCategory {
+  public createCategory(
+    input: Omit<AcademyCategory, 'id' | 'createdAt' | 'updatedAt'>
+  ): AcademyCategory {
     const id = `cat-${input.slug || Date.now()}`;
     const now = new Date().toISOString();
     const category: AcademyCategory = {
@@ -857,7 +915,10 @@ export class AcademyStore {
     return category;
   }
 
-  public updateCategory(id: string, updates: Partial<AcademyCategory>): AcademyCategory | undefined {
+  public updateCategory(
+    id: string,
+    updates: Partial<AcademyCategory>
+  ): AcademyCategory | undefined {
     const category = this.categories.get(id);
     if (!category) return undefined;
 
@@ -880,7 +941,9 @@ export class AcademyStore {
     // Check if courses exist under this category
     const hasCourses = Array.from(this.courses.values()).some((c) => c.categoryId === id);
     if (hasCourses && !cascade) {
-      throw new Error('Cannot delete category with associated courses. Delete courses first or use cascade=true.');
+      throw new Error(
+        'Cannot delete category with associated courses. Delete courses first or use cascade=true.'
+      );
     }
 
     if (cascade) {
@@ -912,7 +975,11 @@ export class AcademyStore {
     return true;
   }
 
-  public getCourses(filter?: { categoryId?: string; status?: string; includeDrafts?: boolean }): AcademyCourse[] {
+  public getCourses(filter?: {
+    categoryId?: string;
+    status?: string;
+    includeDrafts?: boolean;
+  }): AcademyCourse[] {
     let list = Array.from(this.courses.values());
     if (filter?.categoryId) {
       list = list.filter((c) => c.categoryId === filter.categoryId);
@@ -939,7 +1006,10 @@ export class AcademyStore {
     return list.sort((a, b) => a.sortOrder - b.sortOrder);
   }
 
-  public getCourse(idOrSlug: string, options?: { includeDrafts?: boolean }): AcademyCourse | undefined {
+  public getCourse(
+    idOrSlug: string,
+    options?: { includeDrafts?: boolean }
+  ): AcademyCourse | undefined {
     const aliasMap: Record<string, string> = {
       'course-git': 'course-cicd-concepts',
       'git-for-qa-engineers': 'course-cicd-concepts',
@@ -955,12 +1025,11 @@ export class AcademyStore {
     };
     const resolvedId = aliasMap[idOrSlug] || idOrSlug;
 
-    const raw = (
+    const raw =
       this.courses.get(resolvedId) ||
       Array.from(this.courses.values()).find((c) => c.slug === resolvedId) ||
       this.courses.get(idOrSlug) ||
-      Array.from(this.courses.values()).find((c) => c.slug === idOrSlug)
-    );
+      Array.from(this.courses.values()).find((c) => c.slug === idOrSlug);
     if (!raw) return undefined;
 
     if (!options?.includeDrafts) {
@@ -979,7 +1048,10 @@ export class AcademyStore {
     return raw;
   }
 
-  public getCourseBySlug(slug: string, options?: { includeDrafts?: boolean }): AcademyCourse | undefined {
+  public getCourseBySlug(
+    slug: string,
+    options?: { includeDrafts?: boolean }
+  ): AcademyCourse | undefined {
     return this.getCourse(slug, options);
   }
 
@@ -1048,7 +1120,10 @@ export class AcademyStore {
     return true;
   }
 
-  public getModules(courseIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyModule[] {
+  public getModules(
+    courseIdOrSlug: string,
+    options?: { includeDrafts?: boolean }
+  ): AcademyModule[] {
     const course = this.getCourse(courseIdOrSlug, options);
     if (!course || !course.modules) return [];
 
@@ -1064,7 +1139,11 @@ export class AcademyStore {
     return mods.sort((a, b) => a.sortOrder - b.sortOrder);
   }
 
-  public getModule(courseIdOrSlug: string, moduleIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyModule | undefined {
+  public getModule(
+    courseIdOrSlug: string,
+    moduleIdOrSlug: string,
+    options?: { includeDrafts?: boolean }
+  ): AcademyModule | undefined {
     const course = this.getCourse(courseIdOrSlug, options);
     if (!course || !course.modules) return undefined;
 
@@ -1082,7 +1161,10 @@ export class AcademyStore {
     return mod;
   }
 
-  public createModule(courseId: string, input: Omit<AcademyModule, 'id' | 'courseId' | 'createdAt' | 'updatedAt'>): AcademyModule {
+  public createModule(
+    courseId: string,
+    input: Omit<AcademyModule, 'id' | 'courseId' | 'createdAt' | 'updatedAt'>
+  ): AcademyModule {
     const course = this.courses.get(courseId);
     if (!course) throw new Error(`Course with id ${courseId} not found`);
 
@@ -1109,7 +1191,11 @@ export class AcademyStore {
     return newModule;
   }
 
-  public updateModule(courseId: string, moduleId: string, updates: Partial<AcademyModule>): AcademyModule | undefined {
+  public updateModule(
+    courseId: string,
+    moduleId: string,
+    updates: Partial<AcademyModule>
+  ): AcademyModule | undefined {
     const course = this.courses.get(courseId);
     if (!course || !course.modules) return undefined;
 
@@ -1118,7 +1204,9 @@ export class AcademyStore {
 
     if (updates.slug && updates.slug !== course.modules[modIndex].slug) {
       if (!this.isModuleSlugUnique(courseId, updates.slug, moduleId)) {
-        throw new Error(`Module slug "${updates.slug}" is already in use for course ${course.title}.`);
+        throw new Error(
+          `Module slug "${updates.slug}" is already in use for course ${course.title}.`
+        );
       }
     }
 
@@ -1169,7 +1257,11 @@ export class AcademyStore {
     return true;
   }
 
-  public getLessons(courseIdOrSlug: string, moduleIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyLesson[] {
+  public getLessons(
+    courseIdOrSlug: string,
+    moduleIdOrSlug: string,
+    options?: { includeDrafts?: boolean }
+  ): AcademyLesson[] {
     const course = this.getCourse(courseIdOrSlug, options);
     if (!course || !course.modules) return [];
     const mod = course.modules.find((m) => m.id === moduleIdOrSlug || m.slug === moduleIdOrSlug);
@@ -1182,7 +1274,10 @@ export class AcademyStore {
     return lessons.sort((a, b) => a.sortOrder - b.sortOrder);
   }
 
-  public getLessonsByModule(moduleIdOrSlug: string, options?: { includeDrafts?: boolean }): AcademyLesson[] {
+  public getLessonsByModule(
+    moduleIdOrSlug: string,
+    options?: { includeDrafts?: boolean }
+  ): AcademyLesson[] {
     for (const course of this.courses.values()) {
       if (!course.modules) continue;
       if (!options?.includeDrafts && course.status !== 'published') continue;
@@ -1199,7 +1294,10 @@ export class AcademyStore {
     return [];
   }
 
-  public getLesson(idOrSlug: string, options?: { includeDrafts?: boolean }): { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule } | undefined {
+  public getLesson(
+    idOrSlug: string,
+    options?: { includeDrafts?: boolean }
+  ): { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule } | undefined {
     for (const course of this.courses.values()) {
       if (!course.modules) continue;
       for (const mod of course.modules) {
@@ -1207,7 +1305,11 @@ export class AcademyStore {
         const lesson = mod.lessons.find((l) => l.id === idOrSlug || l.slug === idOrSlug);
         if (lesson) {
           if (!options?.includeDrafts) {
-            if (lesson.status !== 'published' || mod.status !== 'published' || course.status !== 'published') {
+            if (
+              lesson.status !== 'published' ||
+              mod.status !== 'published' ||
+              course.status !== 'published'
+            ) {
               continue;
             }
           }
@@ -1224,7 +1326,10 @@ export class AcademyStore {
     return undefined;
   }
 
-  public getLessonBySlug(slug: string, options?: { includeDrafts?: boolean }): { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule } | undefined {
+  public getLessonBySlug(
+    slug: string,
+    options?: { includeDrafts?: boolean }
+  ): { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule } | undefined {
     return this.getLesson(slug, options);
   }
 
@@ -1276,7 +1381,9 @@ export class AcademyStore {
           if (mod.lessons[idx].id === lessonId || mod.lessons[idx].slug === lessonId) {
             if (updates.slug && updates.slug !== mod.lessons[idx].slug) {
               if (!this.isLessonSlugUnique(mod.id, updates.slug, lessonId)) {
-                throw new Error(`Lesson slug "${updates.slug}" is already in use in module ${mod.title}.`);
+                throw new Error(
+                  `Lesson slug "${updates.slug}" is already in use in module ${mod.title}.`
+                );
               }
             }
 
@@ -1328,7 +1435,9 @@ export class AcademyStore {
   // NAVIGATION TREE & CONTEXT RESOLVER
   // ==========================================
 
-  public getNavigationTree(options: { includeDrafts?: boolean } = {}): AcademyNavigationTreeCategory[] {
+  public getNavigationTree(
+    options: { includeDrafts?: boolean } = {}
+  ): AcademyNavigationTreeCategory[] {
     const categories = this.getCategories({ includeInactive: options.includeDrafts });
     const allCourses = Array.from(this.courses.values());
 
@@ -1423,44 +1532,46 @@ export class AcademyStore {
     return topLevelCategories.map((cat) => buildCategoryTree(cat));
   }
 
-  public getLessonWithContext(idOrSlug: string): {
-    lesson: AcademyLesson;
-    course: AcademyCourse;
-    module: AcademyModule;
-    category: AcademyCategory;
-    breadcrumbs: BreadcrumbItem[];
-    previousLesson?: LessonNavPointer;
-    nextLesson?: LessonNavPointer;
-    relatedLessons?: {
-      id: string;
-      slug: string;
-      title: string;
-      moduleTitle: string;
-      estimatedReadTime?: number;
-    }[];
-    backToCourse?: {
-      courseId: string;
-      courseSlug: string;
-      courseTitle: string;
-      categorySlug: string;
-    };
-    courseOverview?: {
-      title: string;
-      subtitle?: string;
-      description?: string;
-      level: string;
-      estimatedHours?: number;
-      totalModules: number;
-      totalLessons: number;
-    };
-    moduleOverview?: {
-      id: string;
-      title: string;
-      slug: string;
-      description?: string;
-      totalLessons: number;
-    };
-  } | undefined {
+  public getLessonWithContext(idOrSlug: string):
+    | {
+        lesson: AcademyLesson;
+        course: AcademyCourse;
+        module: AcademyModule;
+        category: AcademyCategory;
+        breadcrumbs: BreadcrumbItem[];
+        previousLesson?: LessonNavPointer;
+        nextLesson?: LessonNavPointer;
+        relatedLessons?: {
+          id: string;
+          slug: string;
+          title: string;
+          moduleTitle: string;
+          estimatedReadTime?: number;
+        }[];
+        backToCourse?: {
+          courseId: string;
+          courseSlug: string;
+          courseTitle: string;
+          categorySlug: string;
+        };
+        courseOverview?: {
+          title: string;
+          subtitle?: string;
+          description?: string;
+          level: string;
+          estimatedHours?: number;
+          totalModules: number;
+          totalLessons: number;
+        };
+        moduleOverview?: {
+          id: string;
+          title: string;
+          slug: string;
+          description?: string;
+          totalLessons: number;
+        };
+      }
+    | undefined {
     const res = this.getLesson(idOrSlug);
     if (!res) return undefined;
 
@@ -1477,9 +1588,7 @@ export class AcademyStore {
     };
 
     // Breadcrumbs resolution
-    const breadcrumbs: BreadcrumbItem[] = [
-      { label: 'Academy', href: '/learning' },
-    ];
+    const breadcrumbs: BreadcrumbItem[] = [{ label: 'Academy', href: '/learning' }];
 
     if (category.parentCategoryId) {
       const parentCat = this.categories.get(category.parentCategoryId);
@@ -1560,7 +1669,8 @@ export class AcademyStore {
             slug: item.lesson.slug,
             title: item.lesson.title,
             moduleTitle: item.modTitle,
-            estimatedReadTime: item.lesson.estimatedReadingTime || item.lesson.estimatedReadTime || 5,
+            estimatedReadTime:
+              item.lesson.estimatedReadingTime || item.lesson.estimatedReadTime || 5,
           });
           if (relatedLessons.length >= 3) break;
         }
@@ -1595,7 +1705,10 @@ export class AcademyStore {
     const cleanContentHtml = lesson.contentHtml
       ? lesson.contentHtml
           .replace(/^\s*<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '')
-          .replace(/^\s*<p\b[^>]*>\s*(?:<span\b[^>]*>)?\s*<em\b[^>]*>[\s\S]*?<\/em>\s*(?:<\/span>)?\s*<\/p>\s*/i, '')
+          .replace(
+            /^\s*<p\b[^>]*>\s*(?:<span\b[^>]*>)?\s*<em\b[^>]*>[\s\S]*?<\/em>\s*(?:<\/span>)?\s*<\/p>\s*/i,
+            ''
+          )
       : lesson.contentHtml;
 
     return {
@@ -1710,7 +1823,9 @@ export class AcademyStore {
     return list.sort((a, b) => a.displayOrder - b.displayOrder);
   }
 
-  public saveLessonAsset(assetInput: Omit<AcademyLessonAsset, 'id'> & { id?: string }): AcademyLessonAsset {
+  public saveLessonAsset(
+    assetInput: Omit<AcademyLessonAsset, 'id'> & { id?: string }
+  ): AcademyLessonAsset {
     const id = assetInput.id || `asset-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const now = new Date().toISOString();
     const asset: AcademyLessonAsset = {
@@ -1761,7 +1876,7 @@ export class AcademyStore {
       lessonId: input.lessonId,
       completionStatus: input.completionStatus,
       lastAccessedAt: now,
-      completedAt: input.completionStatus === 'completed' ? (existing?.completedAt || now) : null,
+      completedAt: input.completionStatus === 'completed' ? existing?.completedAt || now : null,
     };
 
     this.userProgress.set(key, updated);
@@ -1774,13 +1889,20 @@ export class AcademyStore {
     const progMap = new Map<string, UserLessonProgress>();
     userProgs.forEach((p) => progMap.set(p.lessonId, p));
 
-    const publishedCourses = Array.from(this.courses.values()).filter((c) => c.status === 'published');
-    
+    const publishedCourses = Array.from(this.courses.values()).filter(
+      (c) => c.status === 'published'
+    );
+
     let totalLessonsCount = 0;
     let totalCompletedCount = 0;
     let totalVisitedCount = 0;
 
-    let lastAccessedRecord: { lesson: AcademyLesson; course: AcademyCourse; module: AcademyModule; lastAccessedAt: string } | null = null;
+    let lastAccessedRecord: {
+      lesson: AcademyLesson;
+      course: AcademyCourse;
+      module: AcademyModule;
+      lastAccessedAt: string;
+    } | null = null;
 
     const completedLessonsList: {
       lessonId: string;
@@ -1832,7 +1954,10 @@ export class AcademyStore {
             courseVisitedLessons++;
             totalVisitedCount++;
 
-            if (!lastAccessedRecord || new Date(p.lastAccessedAt) > new Date(lastAccessedRecord.lastAccessedAt)) {
+            if (
+              !lastAccessedRecord ||
+              new Date(p.lastAccessedAt) > new Date(lastAccessedRecord.lastAccessedAt)
+            ) {
               lastAccessedRecord = {
                 lesson: lsn,
                 course,
@@ -1869,7 +1994,10 @@ export class AcademyStore {
           }
         }
 
-        const modPercent = publishedLessons.length > 0 ? Math.round((modCompleted / publishedLessons.length) * 100) : 0;
+        const modPercent =
+          publishedLessons.length > 0
+            ? Math.round((modCompleted / publishedLessons.length) * 100)
+            : 0;
         moduleStats.push({
           moduleId: mod.id,
           moduleTitle: mod.title,
@@ -1881,7 +2009,10 @@ export class AcademyStore {
         });
       }
 
-      const coursePercent = courseTotalLessons > 0 ? Math.round((courseCompletedLessons / courseTotalLessons) * 100) : 0;
+      const coursePercent =
+        courseTotalLessons > 0
+          ? Math.round((courseCompletedLessons / courseTotalLessons) * 100)
+          : 0;
       courseProgressList.push({
         courseId: course.id,
         courseTitle: course.title,
@@ -1895,8 +2026,12 @@ export class AcademyStore {
       });
     }
 
-    recentlyViewedList.sort((a, b) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime());
-    completedLessonsList.sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+    recentlyViewedList.sort(
+      (a, b) => new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime()
+    );
+    completedLessonsList.sort(
+      (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+    );
 
     const enrolledSet = this.enrolledCourses.get(userId) || new Set<string>();
     courseProgressList.forEach((cp) => {
@@ -1910,7 +2045,8 @@ export class AcademyStore {
       totalLessons: totalLessonsCount,
       totalVisited: totalVisitedCount,
       totalCompleted: totalCompletedCount,
-      overallPercentCompleted: totalLessonsCount > 0 ? Math.round((totalCompletedCount / totalLessonsCount) * 100) : 0,
+      overallPercentCompleted:
+        totalLessonsCount > 0 ? Math.round((totalCompletedCount / totalLessonsCount) * 100) : 0,
       lastAccessedLesson: lastAccessedRecord
         ? {
             lessonId: lastAccessedRecord.lesson.id,
@@ -1947,7 +2083,10 @@ export class AcademyStore {
     return this.userBookmarks.has(`${userId}:${lessonId}`);
   }
 
-  public toggleBookmark(userId: string, lessonId: string): { bookmarked: boolean; bookmark?: AcademyLessonBookmark } {
+  public toggleBookmark(
+    userId: string,
+    lessonId: string
+  ): { bookmarked: boolean; bookmark?: AcademyLessonBookmark } {
     const key = `${userId}:${lessonId}`;
     if (this.userBookmarks.has(key)) {
       this.userBookmarks.delete(key);
@@ -2046,7 +2185,7 @@ export class AcademyStore {
 
     const scoredResults: Array<{ result: AcademySearchResult; score: number }> = [];
 
-    for (const item of (this.searchIndexCache || [])) {
+    for (const item of this.searchIndexCache || []) {
       if (!includeDrafts && item.status !== 'published') continue;
 
       const titleLower = item.lessonTitle.toLowerCase();
@@ -2058,17 +2197,32 @@ export class AcademyStore {
       const summaryMatches = summaryLower.includes(q);
       const courseMatches = courseLower.includes(q);
       const modMatches = modLower.includes(q);
-      const allTokensMatch = tokens.length > 1 && tokens.every((t) => item.searchMetaLower.includes(t));
+      const allTokensMatch =
+        tokens.length > 1 && tokens.every((t) => item.searchMetaLower.includes(t));
 
       let contentMatches = false;
-      if (!titleMatches && !summaryMatches && !courseMatches && !modMatches && !allTokensMatch && item.contentHtml) {
+      if (
+        !titleMatches &&
+        !summaryMatches &&
+        !courseMatches &&
+        !modMatches &&
+        !allTokensMatch &&
+        item.contentHtml
+      ) {
         if (!item.contentLower) {
           item.contentLower = item.contentHtml.toLowerCase();
         }
         contentMatches = item.contentLower.includes(q);
       }
 
-      if (titleMatches || summaryMatches || courseMatches || modMatches || allTokensMatch || contentMatches) {
+      if (
+        titleMatches ||
+        summaryMatches ||
+        courseMatches ||
+        modMatches ||
+        allTokensMatch ||
+        contentMatches
+      ) {
         let matchedField: 'title' | 'summary' | 'content' | 'module' | 'course' = 'title';
         let snippet = item.summary;
         let score = 0;

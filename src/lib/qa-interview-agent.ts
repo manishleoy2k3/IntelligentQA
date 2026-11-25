@@ -20,7 +20,16 @@ export interface CandidateProfile {
   experienceYears?: number;
   experienceLevel?: string;
   experienceTier?: string;
-  difficulty?: 'Easy' | 'Medium' | 'Hard' | 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert' | 'Architect' | string;
+  difficulty?:
+    | 'Easy'
+    | 'Medium'
+    | 'Hard'
+    | 'Beginner'
+    | 'Intermediate'
+    | 'Advanced'
+    | 'Expert'
+    | 'Architect'
+    | string;
   track?: string;
   category?: string;
   technology?: string;
@@ -82,7 +91,14 @@ export interface ComprehensiveReport {
   communicationScore: number;
   structureScore?: number;
   summary: string;
-  hiringRecommendation: 'Strong Hire' | 'Hire' | 'Leaning Hire' | 'Needs Practice' | 'Borderline' | 'Needs Improvement' | string;
+  hiringRecommendation:
+    | 'Strong Hire'
+    | 'Hire'
+    | 'Leaning Hire'
+    | 'Needs Practice'
+    | 'Borderline'
+    | 'Needs Improvement'
+    | string;
   seniorityCalibration: string;
   strengths: string[];
   areasForImprovement: string[];
@@ -168,7 +184,10 @@ export function isIgnoranceOrNonAnswer(answer: string, code: string): boolean {
   if (trimmedCode.length > 10 && /[{}();=><]/.test(trimmedCode)) return false;
 
   const combined = (trimmedAnswer + ' ' + trimmedCode).toLowerCase();
-  const normalized = combined.replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  const normalized = combined
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   const totalWords = normalized.split(/\s+/).filter(Boolean).length;
 
   const ignorancePhrases = [
@@ -241,8 +260,11 @@ export class QAInterviewAgent {
   }> {
     const count = typeof profile.count === 'number' && profile.count > 0 ? profile.count : 3;
     const diff = profile.difficulty || 'Medium';
-    const tier = (profile.experienceLevel as InterviewExperienceTier) ||
-      (typeof profile.experienceYears === 'number' ? mapYearsToExperienceTier(profile.experienceYears) : '3-5 Years');
+    const tier =
+      (profile.experienceLevel as InterviewExperienceTier) ||
+      (typeof profile.experienceYears === 'number'
+        ? mapYearsToExperienceTier(profile.experienceYears)
+        : '3-5 Years');
     const track = profile.track || 'Test Automation';
     const skills = profile.skills || [];
 
@@ -313,7 +335,8 @@ export class QAInterviewAgent {
         bestPractice: q.bestPractice || '',
         pitfallToAvoid: q.pitfallToAvoid || '',
         technology: q.technology || 'Quality Engineering',
-        source: (q.source || 'internal_knowledge_base') as 'internal_knowledge_base' | 'ai_generated' | 'external_research',
+        source: (q.source || 'internal_knowledge_base') as
+          'internal_knowledge_base' | 'ai_generated' | 'external_research',
         sourceCitation: q.sourceCitation || undefined,
       })),
     };
@@ -523,25 +546,45 @@ Respond strictly in valid JSON:
   }): Promise<ComprehensiveReport> {
     const turnScores: number[] = params.turns.map((t: any) => {
       const match = t.feedback?.match(/\((\d+)%\)/);
-      return match ? parseInt(match[1], 10) : (typeof t.score === 'number' ? t.score : 60);
+      return match ? parseInt(match[1], 10) : typeof t.score === 'number' ? t.score : 60;
     });
     turnScores.push(params.finalEvaluation.turnScore);
 
     const avgScore = Math.round(turnScores.reduce((a, b) => a + b, 0) / turnScores.length);
     const technicalScore = Math.min(100, Math.max(0, avgScore));
-    const architectureScore = Math.min(100, Math.max(0, Math.round(technicalScore * (params.finalEvaluation.verdict === 'Incorrect' ? 0.8 : 0.95))));
-    const communicationScore = params.finalEvaluation.turnScore === 0 ? 15 : Math.min(100, Math.max(15, Math.round(technicalScore * 0.98)));
+    const architectureScore = Math.min(
+      100,
+      Math.max(
+        0,
+        Math.round(technicalScore * (params.finalEvaluation.verdict === 'Incorrect' ? 0.8 : 0.95))
+      )
+    );
+    const communicationScore =
+      params.finalEvaluation.turnScore === 0
+        ? 15
+        : Math.min(100, Math.max(15, Math.round(technicalScore * 0.98)));
     const overallScore = Math.round((technicalScore + architectureScore + communicationScore) / 3);
 
     const hiringRecommendation: 'Strong Hire' | 'Hire' | 'Leaning Hire' | 'Needs Practice' =
-      overallScore >= 88 ? 'Strong Hire' : overallScore >= 75 ? 'Hire' : overallScore >= 55 ? 'Leaning Hire' : 'Needs Practice';
+      overallScore >= 88
+        ? 'Strong Hire'
+        : overallScore >= 75
+          ? 'Hire'
+          : overallScore >= 55
+            ? 'Leaning Hire'
+            : 'Needs Practice';
 
     const apiKey = sanitizeGeminiKey(params.apiKey || '');
     if (apiKey && validateGeminiKeySyntax(apiKey).valid) {
       try {
-        const transcriptSummary = params.turns.map((t, idx) =>
-          `Turn ${idx + 1}: Q: "${t.question}" | Ans: "${(t.answer || '').slice(0, 200)}" | Feedback: "${t.feedback}"`
-        ).join('\n') + `\nTurn ${params.turns.length + 1}: Ans: "${params.finalEvaluation.feedback}"`;
+        const transcriptSummary =
+          params.turns
+            .map(
+              (t, idx) =>
+                `Turn ${idx + 1}: Q: "${t.question}" | Ans: "${(t.answer || '').slice(0, 200)}" | Feedback: "${t.feedback}"`
+            )
+            .join('\n') +
+          `\nTurn ${params.turns.length + 1}: Ans: "${params.finalEvaluation.feedback}"`;
 
         const prompt = `You are the Principal Staff QA Architect conducting a final talent calibration for a candidate.
 Candidate Info:
@@ -597,18 +640,41 @@ Respond strictly in valid JSON:
               architectureScore,
               communicationScore,
               hiringRecommendation,
-              summary: parsed.summary || `Candidate completed the Technical Mock Interview with ${overallScore}% score.`,
-              seniorityCalibration: parsed.seniorityCalibration || `Calibrated at ${params.candidateProfile.experienceLevel || 'Mid-Level SDET'} level.`,
-              strengths: Array.isArray(parsed.strengths) && parsed.strengths.length > 0 ? parsed.strengths : ['Solid understanding of core testing methodology'],
-              areasForImprovement: Array.isArray(parsed.areasForImprovement) && parsed.areasForImprovement.length > 0 ? parsed.areasForImprovement : ['Deepen edge case validation'],
-              actionableDrills: Array.isArray(parsed.actionableDrills) && parsed.actionableDrills.length > 0 ? parsed.actionableDrills : ['Practice web-first assertions'],
-              learningRoadmap: Array.isArray(parsed.learningRoadmap) && parsed.learningRoadmap.length > 0 ? parsed.learningRoadmap : ['Distributed test sharding in CI/CD'],
-              questionBreakdown: this.buildQuestionBreakdown(params.turns, params.finalEvaluation, params.questionList),
+              summary:
+                parsed.summary ||
+                `Candidate completed the Technical Mock Interview with ${overallScore}% score.`,
+              seniorityCalibration:
+                parsed.seniorityCalibration ||
+                `Calibrated at ${params.candidateProfile.experienceLevel || 'Mid-Level SDET'} level.`,
+              strengths:
+                Array.isArray(parsed.strengths) && parsed.strengths.length > 0
+                  ? parsed.strengths
+                  : ['Solid understanding of core testing methodology'],
+              areasForImprovement:
+                Array.isArray(parsed.areasForImprovement) && parsed.areasForImprovement.length > 0
+                  ? parsed.areasForImprovement
+                  : ['Deepen edge case validation'],
+              actionableDrills:
+                Array.isArray(parsed.actionableDrills) && parsed.actionableDrills.length > 0
+                  ? parsed.actionableDrills
+                  : ['Practice web-first assertions'],
+              learningRoadmap:
+                Array.isArray(parsed.learningRoadmap) && parsed.learningRoadmap.length > 0
+                  ? parsed.learningRoadmap
+                  : ['Distributed test sharding in CI/CD'],
+              questionBreakdown: this.buildQuestionBreakdown(
+                params.turns,
+                params.finalEvaluation,
+                params.questionList
+              ),
             };
           }
         }
       } catch (err) {
-        console.warn('AI comprehensive report generation failed, using dynamic heuristic fallback:', err);
+        console.warn(
+          'AI comprehensive report generation failed, using dynamic heuristic fallback:',
+          err
+        );
       }
     }
 
@@ -621,8 +687,9 @@ Respond strictly in valid JSON:
         if (p) allGaps.push(p.trim());
       }
     });
-    if (params.finalEvaluation.mistakesAndGaps) allGaps.push(...params.finalEvaluation.mistakesAndGaps);
-    const uniqueGaps = Array.from(new Set(allGaps.filter(g => g && g.length > 8))).slice(0, 4);
+    if (params.finalEvaluation.mistakesAndGaps)
+      allGaps.push(...params.finalEvaluation.mistakesAndGaps);
+    const uniqueGaps = Array.from(new Set(allGaps.filter((g) => g && g.length > 8))).slice(0, 4);
 
     const dynamicStrengths = [
       technicalScore >= 70
@@ -633,53 +700,113 @@ Respond strictly in valid JSON:
         : 'Demonstrated clear understanding of modular automation patterns and separation of concerns',
     ];
 
-    const dynamicAreasForImprovement = uniqueGaps.length > 0 ? uniqueGaps : [
-      'Further optimize parallel CI sharding and ephemeral cloud browser container scaling',
-      'Deepen contract testing (Pact) and synthetic monitoring practices for distributed microservices',
-    ];
+    const dynamicAreasForImprovement =
+      uniqueGaps.length > 0
+        ? uniqueGaps
+        : [
+            'Further optimize parallel CI sharding and ephemeral cloud browser container scaling',
+            'Deepen contract testing (Pact) and synthetic monitoring practices for distributed microservices',
+          ];
 
-    const seniorityCalibration = overallScore >= 85
-      ? `Performing at Senior SDET / Lead level (${params.candidateProfile.experienceTier || '3-5 Years'})`
-      : overallScore >= 60
-      ? `Calibrated at ${params.candidateProfile.experienceTier || 'Mid-Level SDET'} with good technical foundations`
-      : `Performing at Junior / Associate level with critical architectural gaps`;
+    const seniorityCalibration =
+      overallScore >= 85
+        ? `Performing at Senior SDET / Lead level (${params.candidateProfile.experienceTier || '3-5 Years'})`
+        : overallScore >= 60
+          ? `Calibrated at ${params.candidateProfile.experienceTier || 'Mid-Level SDET'} with good technical foundations`
+          : `Performing at Junior / Associate level with critical architectural gaps`;
 
     // Compute Average 6D Rubric Scores across turns
     const allRubrics = [
-      ...params.turns.map((t: any) => t.rubricScores || {
-        technicalAccuracy: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
-        conceptualUnderstanding: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
-        practicalImplementation: Math.min(5, Math.max(1, Math.round(((t.score || 60) / 100) * 5))),
-        problemSolving: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
-        architectureKnowledge: Math.min(5, Math.max(1, Math.round(((t.score || 60) / 100) * 5))),
-        communicationClarity: 4,
-      }),
+      ...params.turns.map(
+        (t: any) =>
+          t.rubricScores || {
+            technicalAccuracy: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
+            conceptualUnderstanding: Math.min(
+              5,
+              Math.max(1, Math.round(((t.score || 65) / 100) * 5))
+            ),
+            practicalImplementation: Math.min(
+              5,
+              Math.max(1, Math.round(((t.score || 60) / 100) * 5))
+            ),
+            problemSolving: Math.min(5, Math.max(1, Math.round(((t.score || 65) / 100) * 5))),
+            architectureKnowledge: Math.min(
+              5,
+              Math.max(1, Math.round(((t.score || 60) / 100) * 5))
+            ),
+            communicationClarity: 4,
+          }
+      ),
       params.finalEvaluation.rubricScores || {
-        technicalAccuracy: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
-        conceptualUnderstanding: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
-        practicalImplementation: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
-        problemSolving: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
-        architectureKnowledge: Math.min(5, Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))),
+        technicalAccuracy: Math.min(
+          5,
+          Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))
+        ),
+        conceptualUnderstanding: Math.min(
+          5,
+          Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))
+        ),
+        practicalImplementation: Math.min(
+          5,
+          Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))
+        ),
+        problemSolving: Math.min(
+          5,
+          Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))
+        ),
+        architectureKnowledge: Math.min(
+          5,
+          Math.max(1, Math.round((params.finalEvaluation.turnScore / 100) * 5))
+        ),
         communicationClarity: params.finalEvaluation.turnScore === 0 ? 1 : 4,
       },
     ];
 
     const avgRubric = {
-      technicalAccuracy: Math.round((allRubrics.reduce((s, r) => s + r.technicalAccuracy, 0) / allRubrics.length) * 10) / 10,
-      conceptualUnderstanding: Math.round((allRubrics.reduce((s, r) => s + r.conceptualUnderstanding, 0) / allRubrics.length) * 10) / 10,
-      practicalImplementation: Math.round((allRubrics.reduce((s, r) => s + r.practicalImplementation, 0) / allRubrics.length) * 10) / 10,
-      problemSolving: Math.round((allRubrics.reduce((s, r) => s + r.problemSolving, 0) / allRubrics.length) * 10) / 10,
-      architectureKnowledge: Math.round((allRubrics.reduce((s, r) => s + r.architectureKnowledge, 0) / allRubrics.length) * 10) / 10,
-      communicationClarity: Math.round((allRubrics.reduce((s, r) => s + r.communicationClarity, 0) / allRubrics.length) * 10) / 10,
+      technicalAccuracy:
+        Math.round(
+          (allRubrics.reduce((s, r) => s + r.technicalAccuracy, 0) / allRubrics.length) * 10
+        ) / 10,
+      conceptualUnderstanding:
+        Math.round(
+          (allRubrics.reduce((s, r) => s + r.conceptualUnderstanding, 0) / allRubrics.length) * 10
+        ) / 10,
+      practicalImplementation:
+        Math.round(
+          (allRubrics.reduce((s, r) => s + r.practicalImplementation, 0) / allRubrics.length) * 10
+        ) / 10,
+      problemSolving:
+        Math.round(
+          (allRubrics.reduce((s, r) => s + r.problemSolving, 0) / allRubrics.length) * 10
+        ) / 10,
+      architectureKnowledge:
+        Math.round(
+          (allRubrics.reduce((s, r) => s + r.architectureKnowledge, 0) / allRubrics.length) * 10
+        ) / 10,
+      communicationClarity:
+        Math.round(
+          (allRubrics.reduce((s, r) => s + r.communicationClarity, 0) / allRubrics.length) * 10
+        ) / 10,
     };
 
     const overallRating: 'Strong Hire' | 'Hire' | 'Borderline' | 'Needs Improvement' =
-      overallScore >= 85 ? 'Strong Hire' : overallScore >= 70 ? 'Hire' : overallScore >= 50 ? 'Borderline' : 'Needs Improvement';
+      overallScore >= 85
+        ? 'Strong Hire'
+        : overallScore >= 70
+          ? 'Hire'
+          : overallScore >= 50
+            ? 'Borderline'
+            : 'Needs Improvement';
 
     const candidateOverview = {
       role: params.candidateProfile.role || 'SDET / Automation Engineer',
-      experienceLevel: params.candidateProfile.experienceLevel || `${params.candidateProfile.experienceYears || '3-5'} Years`,
-      selectedTechnologies: params.candidateProfile.skills && params.candidateProfile.skills.length > 0 ? params.candidateProfile.skills : [params.candidateProfile.track || 'Test Automation'],
+      experienceLevel:
+        params.candidateProfile.experienceLevel ||
+        `${params.candidateProfile.experienceYears || '3-5'} Years`,
+      selectedTechnologies:
+        params.candidateProfile.skills && params.candidateProfile.skills.length > 0
+          ? params.candidateProfile.skills
+          : [params.candidateProfile.track || 'Test Automation'],
       difficulty: params.candidateProfile.difficulty || 'Medium',
       interviewMode: 'Technical Interview Panel',
       totalQuestions: params.turns.length + 1,
@@ -690,14 +817,17 @@ Respond strictly in valid JSON:
         questionNumber: idx + 1,
         question: t.question || params.questionList[idx]?.question || `Question ${idx + 1}`,
         category: params.questionList[idx]?.category || 'Quality Engineering',
-        source: (params.questionList[idx]?.source || 'internal_knowledge_base') as 'internal_knowledge_base' | 'ai_generated' | 'external_research',
+        source: (params.questionList[idx]?.source || 'internal_knowledge_base') as
+          'internal_knowledge_base' | 'ai_generated' | 'external_research',
         sourceCitation: params.questionList[idx]?.sourceCitation,
       })),
       {
         questionNumber: params.turns.length + 1,
-        question: params.questionList[params.turns.length]?.question || 'Final Technical Assessment',
+        question:
+          params.questionList[params.turns.length]?.question || 'Final Technical Assessment',
         category: params.questionList[params.turns.length]?.category || 'Quality Engineering',
-        source: (params.questionList[params.turns.length]?.source || 'internal_knowledge_base') as 'internal_knowledge_base' | 'ai_generated' | 'external_research',
+        source: (params.questionList[params.turns.length]?.source || 'internal_knowledge_base') as
+          'internal_knowledge_base' | 'ai_generated' | 'external_research',
         sourceCitation: params.questionList[params.turns.length]?.sourceCitation,
       },
     ];
@@ -709,25 +839,41 @@ Respond strictly in valid JSON:
         candidateAnswer: t.answer || '[No Answer Provided]',
         rubricScores: t.rubricScores || allRubrics[idx],
         scorePercent: typeof t.score === 'number' ? t.score : 65,
-        verdict: (t.score >= 80 ? 'Correct' : t.score >= 50 ? 'Partially Correct' : 'Incorrect') as 'Correct' | 'Partially Correct' | 'Incorrect',
+        verdict: (t.score >= 80 ? 'Correct' : t.score >= 50 ? 'Partially Correct' : 'Incorrect') as
+          'Correct' | 'Partially Correct' | 'Incorrect',
         whatWasCorrect: t.whatWasCorrect || ['Covered core topic objectives'],
-        whatWasMissing: t.whatWasMissing || (t.mistakesAndGaps || []),
+        whatWasMissing: t.whatWasMissing || t.mistakesAndGaps || [],
         whatWasIncorrect: t.whatWasIncorrect || [],
-        excellentAnswerShouldInclude: params.questionList[idx]?.answerSummary || 'Clear architectural separation and robust assertions.',
+        excellentAnswerShouldInclude:
+          params.questionList[idx]?.answerSummary ||
+          'Clear architectural separation and robust assertions.',
         recommendedImprovement: 'Deepen edge case validation and concurrency safety.',
       })),
       {
         questionNumber: params.turns.length + 1,
-        question: params.questionList[params.turns.length]?.question || 'Final Technical Assessment',
-        candidateAnswer: params.finalEvaluation.whatUserMissed ? '[Evaluated Turn]' : 'Completed answer',
+        question:
+          params.questionList[params.turns.length]?.question || 'Final Technical Assessment',
+        candidateAnswer: params.finalEvaluation.whatUserMissed
+          ? '[Evaluated Turn]'
+          : 'Completed answer',
         rubricScores: params.finalEvaluation.rubricScores || allRubrics[params.turns.length],
         scorePercent: params.finalEvaluation.turnScore,
         verdict: params.finalEvaluation.verdict,
-        whatWasCorrect: params.finalEvaluation.whatWasCorrect || (params.finalEvaluation.turnScore >= 70 ? ['Demonstrated key architectural patterns'] : []),
-        whatWasMissing: params.finalEvaluation.whatWasMissing || params.finalEvaluation.mistakesAndGaps || [],
+        whatWasCorrect:
+          params.finalEvaluation.whatWasCorrect ||
+          (params.finalEvaluation.turnScore >= 70
+            ? ['Demonstrated key architectural patterns']
+            : []),
+        whatWasMissing:
+          params.finalEvaluation.whatWasMissing || params.finalEvaluation.mistakesAndGaps || [],
         whatWasIncorrect: params.finalEvaluation.whatWasIncorrect || [],
-        excellentAnswerShouldInclude: params.finalEvaluation.idealAnswer || params.questionList[params.turns.length]?.answerSummary || '',
-        recommendedImprovement: params.finalEvaluation.recommendedImprovement || 'Focus on concrete implementation details rather than abstract high-level statements.',
+        excellentAnswerShouldInclude:
+          params.finalEvaluation.idealAnswer ||
+          params.questionList[params.turns.length]?.answerSummary ||
+          '',
+        recommendedImprovement:
+          params.finalEvaluation.recommendedImprovement ||
+          'Focus on concrete implementation details rather than abstract high-level statements.',
       },
     ];
 
@@ -756,7 +902,11 @@ Respond strictly in valid JSON:
         'Dynamic CI Sharding & Ephemeral Testcontainers in GitHub Actions',
         'Consumer-Driven Contract Testing (Pact) for Distributed Microservices',
       ],
-      questionBreakdown: this.buildQuestionBreakdown(params.turns, params.finalEvaluation, params.questionList),
+      questionBreakdown: this.buildQuestionBreakdown(
+        params.turns,
+        params.finalEvaluation,
+        params.questionList
+      ),
 
       // Agent 06 Comprehensive A-J Structured Report Sections
       candidateOverview,
@@ -774,7 +924,11 @@ Respond strictly in valid JSON:
     };
   }
 
-  private static buildQuestionBreakdown(turns: any[], finalEvaluation: AgentEvaluation, questionList: any[]) {
+  private static buildQuestionBreakdown(
+    turns: any[],
+    finalEvaluation: AgentEvaluation,
+    questionList: any[]
+  ) {
     return [
       ...turns.map((t: any, idx: number) => {
         const qMeta = questionList[idx] || {};
@@ -797,7 +951,10 @@ Respond strictly in valid JSON:
         category: questionList[turns.length]?.category || 'QA Engineering',
         verdict: finalEvaluation.verdict,
         score: finalEvaluation.turnScore,
-        keyGap: finalEvaluation.mistakesAndGaps?.[0] || finalEvaluation.whatUserMissed || 'Addressed core technical criteria.',
+        keyGap:
+          finalEvaluation.mistakesAndGaps?.[0] ||
+          finalEvaluation.whatUserMissed ||
+          'Addressed core technical criteria.',
       },
     ];
   }

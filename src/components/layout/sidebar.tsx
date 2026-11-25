@@ -109,7 +109,12 @@ function getCourseMeta(course: any) {
       hours: `${course.estimatedHours || 16}h`,
     };
   }
-  if (slug.includes('appium') || title.includes('appium') || slug.includes('mobile') || title.includes('mobile')) {
+  if (
+    slug.includes('appium') ||
+    title.includes('appium') ||
+    slug.includes('mobile') ||
+    title.includes('mobile')
+  ) {
     return {
       displayTitle: 'Mobile Testing & Automation',
       tag: 'Mobile',
@@ -119,7 +124,11 @@ function getCourseMeta(course: any) {
       hours: `${course.estimatedHours || 26}h`,
     };
   }
-  if (id === 'course-cicd-concepts' || slug === 'cicd-concepts' || title.toLowerCase() === 'ci/cd concepts') {
+  if (
+    id === 'course-cicd-concepts' ||
+    slug === 'cicd-concepts' ||
+    title.toLowerCase() === 'ci/cd concepts'
+  ) {
     return {
       displayTitle: 'CI/CD Concepts',
       tag: 'CI/CD',
@@ -159,7 +168,12 @@ function getCourseMeta(course: any) {
       hours: `${course.estimatedHours || 16}h`,
     };
   }
-  if (slug.includes('apm') || slug.includes('performance') || title.includes('performance') || title.includes('apm')) {
+  if (
+    slug.includes('apm') ||
+    slug.includes('performance') ||
+    title.includes('performance') ||
+    title.includes('apm')
+  ) {
     return {
       displayTitle: 'APM & Enterprise Performance',
       tag: 'Perf',
@@ -182,7 +196,8 @@ function getCourseMeta(course: any) {
 
 function getSidebarModuleIcon(modTitle: string, trackId: string) {
   const t = (modTitle || '').toLowerCase();
-  if (t === 'git' || (t.includes('git') && !t.includes('github') && !t.includes('ci/cd'))) return GitBranch;
+  if (t === 'git' || (t.includes('git') && !t.includes('github') && !t.includes('ci/cd')))
+    return GitBranch;
   if (t.includes('github')) return GitMerge;
   if (t.includes('azure')) return Workflow;
   if (t.includes('jenkins')) return Cpu;
@@ -196,7 +211,6 @@ interface SidebarProps {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
 }
-
 
 export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
@@ -230,7 +244,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   };
 
   const toggleModule = (moduleId: string) => {
-    setOpenModules(prev => ({
+    setOpenModules((prev) => ({
       ...prev,
       [moduleId]: prev[moduleId] !== undefined ? !prev[moduleId] : false,
     }));
@@ -245,7 +259,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   });
 
   // Published Academy Courses state loaded from /api/learning/courses
-  const [academyCourses, setAcademyCourses] = useState<AcademyClientCourse[]>(INITIAL_PUBLISHED_COURSES);
+  const [academyCourses, setAcademyCourses] =
+    useState<AcademyClientCourse[]>(INITIAL_PUBLISHED_COURSES);
 
   useEffect(() => {
     const fetchPublishedCourses = async () => {
@@ -281,7 +296,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   const [showKeyModal, setShowKeyModal] = useState(false);
 
   // Active Portal Mode: 'sdet' | 'kids' (Strict separation between Kids Free Coding & SDET Pro)
-  
+
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [curriculumTracks, setCurriculumTracks] = useState<Track[]>(() => {
     if (typeof window !== 'undefined') {
@@ -355,9 +370,13 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         const u = QADatabase.getCurrentUser();
         if (u) {
           const prog = await QADatabase.getProgress(u.id);
-          const completed = new Set(prog.filter(p => p.status === 'completed').map(p => p.lessonId));
+          const completed = new Set(
+            prog.filter((p) => p.status === 'completed').map((p) => p.lessonId)
+          );
           try {
-            const academyRes = await fetch(`/api/learning/progress?userId=${encodeURIComponent(u.id)}`);
+            const academyRes = await fetch(
+              `/api/learning/progress?userId=${encodeURIComponent(u.id)}`
+            );
             if (academyRes.ok) {
               const academyJson = await academyRes.json();
               if (academyJson.success && Array.isArray(academyJson.data)) {
@@ -452,7 +471,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     pathname?.startsWith('/guides');
 
   const isPracticeActive = pathname?.startsWith('/sandbox') || pathname === '/prompt-lab';
-  const isAiToolsActive = pathname?.includes('/qa-agents') || pathname?.includes('/interview-griller');
+  const isAiToolsActive =
+    pathname?.includes('/qa-agents') || pathname?.includes('/interview-griller');
   const isInterviewActive = pathname?.includes('/interview-questions');
 
   // Progression sequence for Manual QA Transition:
@@ -467,9 +487,20 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       const title = (c.title || '').toLowerCase();
       const id = (c.id || '').toLowerCase();
       const slug = (c.slug || '').toLowerCase();
-      if (title.includes('test automated backend') || id.includes('test-backend-course') || slug.includes('test-backend-course')) return false;
-      if (title.includes('fidelity assessment') || id.includes('fidelity-course') || slug.includes('fidelity-course')) return false;
-      if (title.includes('(admin console demo)') || id.includes('demo-') || slug.includes('demo-')) return false;
+      if (
+        title.includes('test automated backend') ||
+        id.includes('test-backend-course') ||
+        slug.includes('test-backend-course')
+      )
+        return false;
+      if (
+        title.includes('fidelity assessment') ||
+        id.includes('fidelity-course') ||
+        slug.includes('fidelity-course')
+      )
+        return false;
+      if (title.includes('(admin console demo)') || id.includes('demo-') || slug.includes('demo-'))
+        return false;
       if (c.status === 'draft') return false;
       return true;
     });
@@ -517,7 +548,9 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     };
 
     // Sort courses strictly by sortOrder configured by Admin
-    const sortedCourses = [...validCourses].sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+    const sortedCourses = [...validCourses].sort(
+      (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999)
+    );
 
     const seenTrackIds = new Set<string>();
 
@@ -545,19 +578,21 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       manuallyClosedTracksRef.current.delete(trackId);
     }
 
-    setOpenTracks(prev => ({
+    setOpenTracks((prev) => ({
       ...prev,
       [trackId]: isNowOpen,
     }));
 
     // When opening a course section, focus the first child lesson & navigate to it
     if (isNowOpen) {
-      const track = courseTracks.find(t => t.id === trackId || t.slug === trackId || t.rawId === trackId);
+      const track = courseTracks.find(
+        (t) => t.id === trackId || t.slug === trackId || t.rawId === trackId
+      );
       const firstMod = track?.modules?.[0];
       const firstLesson = firstMod?.lessons?.[0];
       if (firstMod) {
         const modId = `${trackId}-${firstMod.id || firstMod.slug || 0}`;
-        setOpenModules(p => ({ ...p, [modId]: true }));
+        setOpenModules((p) => ({ ...p, [modId]: true }));
       }
       if (firstLesson) {
         const targetSlug = firstLesson.slug || firstLesson.id;
@@ -570,15 +605,22 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
   // For unauthenticated guests on the home page or general exploration, keep courses collapsed matching the overview state
   useEffect(() => {
     if (!pathname || !currentUser) return;
-    const currentSlug = pathname.startsWith('/learning/') ? pathname.replace('/learning/', '').split('/')[0] : '';
-    const matched = courseTracks.find(t =>
-      t.id === currentSlug ||
-      t.slug === currentSlug ||
-      t.lessons.some((l: any) => (l.slug || l.id) === currentSlug)
+    const currentSlug = pathname.startsWith('/learning/')
+      ? pathname.replace('/learning/', '').split('/')[0]
+      : '';
+    const matched = courseTracks.find(
+      (t) =>
+        t.id === currentSlug ||
+        t.slug === currentSlug ||
+        t.lessons.some((l: any) => (l.slug || l.id) === currentSlug)
     );
-    if (matched && lastAutoOpenedTrackRef.current !== matched.id && !manuallyClosedTracksRef.current.has(matched.id)) {
+    if (
+      matched &&
+      lastAutoOpenedTrackRef.current !== matched.id &&
+      !manuallyClosedTracksRef.current.has(matched.id)
+    ) {
       lastAutoOpenedTrackRef.current = matched.id;
-      setOpenTracks(p => ({ ...p, [matched.id]: true }));
+      setOpenTracks((p) => ({ ...p, [matched.id]: true }));
       setCoursesOpen(true);
     }
   }, [pathname, courseTracks, currentUser]);
@@ -588,7 +630,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     if (searchQuery.trim()) {
       setCoursesOpen(true);
       const allOpen: Record<string, boolean> = {};
-      courseTracks.forEach(t => {
+      courseTracks.forEach((t) => {
         allOpen[t.id] = true;
       });
       setOpenTracks(allOpen);
@@ -600,9 +642,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     if (!pathname) return;
     for (const track of courseTracks) {
       for (const mod of track.modules) {
-        const hasLesson = (mod.lessons || []).some((l: any) =>
-          pathname === `/learning/${l.slug || l.id}` ||
-          (pathname === '/learning' && (l.slug === 'what-is-artificial-intelligence' || l.id === 'what-is-artificial-intelligence'))
+        const hasLesson = (mod.lessons || []).some(
+          (l: any) =>
+            pathname === `/learning/${l.slug || l.id}` ||
+            (pathname === '/learning' &&
+              (l.slug === 'what-is-artificial-intelligence' ||
+                l.id === 'what-is-artificial-intelligence'))
         );
         if (hasLesson) {
           const modId = `${track.id}-${mod.id}`;
@@ -630,7 +675,9 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       const matchingModules = track.modules
         .map((mod: any) => {
           const modMatches = mod.title.toLowerCase().includes(q);
-          const matchingLessons = (mod.lessons || []).filter((l: Lesson) => l.title.toLowerCase().includes(q));
+          const matchingLessons = (mod.lessons || []).filter((l: Lesson) =>
+            l.title.toLowerCase().includes(q)
+          );
           return {
             ...mod,
             lessons: modMatches ? mod.lessons : matchingLessons,
@@ -663,7 +710,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         ? 'bg-slate-100 dark:bg-[#1E1E1E] text-emerald-700 dark:text-[#81FF89] font-bold'
         : 'text-slate-700 dark:text-[#A1A1AA] hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1A1A1A]'
     }`;
-
 
   const sidebarContent = (
     <div className="flex flex-col h-full justify-between bg-white dark:bg-[#141414] border-r border-slate-200 dark:border-[#262626] font-sans select-none text-slate-900 dark:text-white">
@@ -715,208 +761,236 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
       {/* 2. SCROLLABLE NAVIGATION MENUS */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+        {/* NAVIGATION */}
+        <div className="space-y-1">
+          {/* Dashboard */}
+          <Link
+            href="/dashboard"
+            onClick={onCloseMobile}
+            className={navItemClass(pathname === '/dashboard')}
+          >
+            <LayoutDashboard className="w-4 h-4 shrink-0 text-emerald-500" />
+            <span>Dashboard</span>
+          </Link>
+        </div>
 
-            {/* NAVIGATION */}
-            <div className="space-y-1">
-              {/* Dashboard */}
-              <Link
-                href="/dashboard"
-                onClick={onCloseMobile}
-                className={navItemClass(pathname === '/dashboard')}
-              >
-                <LayoutDashboard className="w-4 h-4 shrink-0 text-emerald-500" />
-                <span>Dashboard</span>
-              </Link>
+        {/* COURSES (Parent Menu with Child / Sub-Menu items) */}
+        <div className="space-y-1 pt-1">
+          <button
+            type="button"
+            onClick={() => setCoursesOpen(!coursesOpen)}
+            className={`w-full ${navItemClass(isCourseActive)} justify-between`}
+          >
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-4 h-4 shrink-0 text-amber-500" />
+              <span className="font-bold">Courses</span>
             </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-neutral-800 text-slate-800 dark:text-neutral-200 border border-slate-300 dark:border-neutral-700">
+                {filteredCourseTracks.length} Courses
+              </span>
+              {coursesOpen ? (
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform" />
+              )}
+            </div>
+          </button>
 
-              {/* COURSES (Parent Menu with Child / Sub-Menu items) */}
-          <div className="space-y-1 pt-1">
-            <button
-              type="button"
-              onClick={() => setCoursesOpen(!coursesOpen)}
-              className={`w-full ${navItemClass(isCourseActive)} justify-between`}
-            >
-              <div className="flex items-center gap-3">
-                <BookOpen className="w-4 h-4 shrink-0 text-amber-500" />
-                <span className="font-bold">Courses</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-neutral-800 text-slate-800 dark:text-neutral-200 border border-slate-300 dark:border-neutral-700">
-                  {filteredCourseTracks.length} Courses
-                </span>
-                {coursesOpen ? (
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform" />
-                ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform" />
-                )}
-              </div>
-            </button>
+          {/* Courses Child / Sub-Menu Items */}
+          {coursesOpen && (
+            <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
+              {filteredCourseTracks.length === 0 && searchQuery && (
+                <div className="px-2 py-3 text-xs text-slate-500 dark:text-neutral-400 text-center">
+                  No matching courses or lessons
+                </div>
+              )}
+              {filteredCourseTracks.map((track, trackIdx) => {
+                const isExpanded = openTracks[track.id];
+                const guideSlug =
+                  track.id === 'selenium-webdriver-enterprise' || track.slug.includes('selenium')
+                    ? 'selenium'
+                    : track.slug.includes('playwright')
+                      ? 'playwright'
+                      : track.slug;
+                const isTrackActive =
+                  pathname?.includes(track.slug) ||
+                  track.lessons.some((l: any) => pathname === `/learning/${l.slug || l.id}`);
+                const Icon = track.icon;
 
-            {/* Courses Child / Sub-Menu Items */}
-            {coursesOpen && (
-              <div className="pl-2 pr-1 py-1 space-y-1.5 border-l-2 border-slate-200 dark:border-neutral-800 ml-4 my-1">
-                {filteredCourseTracks.length === 0 && searchQuery && (
-                  <div className="px-2 py-3 text-xs text-slate-500 dark:text-neutral-400 text-center">
-                    No matching courses or lessons
-                  </div>
-                )}
-                {filteredCourseTracks.map((track, trackIdx) => {
-                  const isExpanded = openTracks[track.id];
-                  const guideSlug = track.id === 'selenium-webdriver-enterprise' || track.slug.includes('selenium') ? 'selenium' : track.slug.includes('playwright') ? 'playwright' : track.slug;
-                  const isTrackActive =
-                    pathname?.includes(track.slug) ||
-                    track.lessons.some((l: any) => pathname === `/learning/${l.slug || l.id}`);
-                  const Icon = track.icon;
-
-                  return (
-                    <div key={track.id} className="space-y-0.5">
-                      {/* Track Parent Row (Navigates to Course Overview and expands syllabus) */}
+                return (
+                  <div key={track.id} className="space-y-0.5">
+                    {/* Track Parent Row (Navigates to Course Overview and expands syllabus) */}
+                    <div
+                      className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all group cursor-pointer ${
+                        isTrackActive
+                          ? 'bg-emerald-50 dark:bg-emerald-950/40 font-bold text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shadow-xs'
+                          : 'hover:bg-slate-100 dark:hover:bg-neutral-800/60 text-slate-900 dark:text-white font-bold border border-transparent'
+                      }`}
+                      title={`${track.displayTitle}: Open Course Overview`}
+                    >
                       <div
-                        className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all group cursor-pointer ${
-                          isTrackActive
-                            ? 'bg-emerald-50 dark:bg-emerald-950/40 font-bold text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shadow-xs'
-                            : 'hover:bg-slate-100 dark:hover:bg-neutral-800/60 text-slate-900 dark:text-white font-bold border border-transparent'
-                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleTrack(track.id);
+                          onCloseMobile?.();
+                          if (
+                            track.id === 'ai-qa' ||
+                            track.displayTitle === 'AI Academy' ||
+                            (track.slug || '').includes('ai')
+                          ) {
+                            router.push('/learning');
+                          } else {
+                            router.push(
+                              `/learning?course=${encodeURIComponent(track.rawId || track.slug || track.id)}`
+                            );
+                          }
+                        }}
+                        className="flex items-center gap-2 truncate flex-1 min-w-0 cursor-pointer"
                         title={`${track.displayTitle}: Open Course Overview`}
                       >
+                        <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
+                        <span className="truncate font-bold text-slate-900 dark:text-neutral-100 text-xs">
+                          {track.displayTitle}
+                        </span>
+                      </div>
+
+                      {track.lessons.length > 0 && (
                         <div
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            toggleTrack(track.id);
-                            onCloseMobile?.();
-                            if (track.id === 'ai-qa' || track.displayTitle === 'AI Academy' || (track.slug || '').includes('ai')) {
-                              router.push('/learning');
-                            } else {
-                              router.push(`/learning?course=${encodeURIComponent(track.rawId || track.slug || track.id)}`);
-                            }
+                            toggleTrack(track.id); // onClick={() => toggleTrack(track.id)}
                           }}
-                          className="flex items-center gap-2 truncate flex-1 min-w-0 cursor-pointer"
-                          title={`${track.displayTitle}: Open Course Overview`}
+                          className="flex items-center gap-1 text-[10px] font-mono font-bold text-slate-700 dark:text-neutral-200 group-hover:text-slate-950 dark:group-hover:text-white px-2 py-0.5 rounded bg-slate-200/90 dark:bg-neutral-800 border border-slate-300/70 dark:border-neutral-700 transition-colors ml-1 shrink-0 cursor-pointer"
+                          title={
+                            isExpanded
+                              ? `Collapse ${track.displayTitle} lessons`
+                              : `Expand ${track.displayTitle} lessons`
+                          }
                         >
-                          <Icon className={`w-3.5 h-3.5 ${track.iconColor} shrink-0`} />
-                          <span className="truncate font-bold text-slate-900 dark:text-neutral-100 text-xs">
-                            {track.displayTitle}
+                          <span>
+                            {isAdmin
+                              ? track.lessons.length
+                              : track.lessons.filter(
+                                  (l: any) =>
+                                    !l.disabled && (l.status ? l.status === 'published' : true)
+                                ).length}{' '}
+                            Lessons
                           </span>
+                          <ChevronDown
+                            className={`w-3.5 h-3.5 text-slate-500 dark:text-neutral-400 transition-transform duration-200 ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                          />
                         </div>
+                      )}
+                    </div>
 
-                        {track.lessons.length > 0 && (
-                          <div
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleTrack(track.id); // onClick={() => toggleTrack(track.id)}
-                            }}
-                            className="flex items-center gap-1 text-[10px] font-mono font-bold text-slate-700 dark:text-neutral-200 group-hover:text-slate-950 dark:group-hover:text-white px-2 py-0.5 rounded bg-slate-200/90 dark:bg-neutral-800 border border-slate-300/70 dark:border-neutral-700 transition-colors ml-1 shrink-0 cursor-pointer"
-                            title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
-                          >
-                            <span>
-                              {isAdmin
-                                ? track.lessons.length
-                                : track.lessons.filter((l: any) => !l.disabled && (l.status ? l.status === 'published' : true)).length} Lessons
-                            </span>
-                            <ChevronDown
-                              className={`w-3.5 h-3.5 text-slate-500 dark:text-neutral-400 transition-transform duration-200 ${
-                                isExpanded ? 'rotate-180' : ''
-                              }`}
-                            />
-                          </div>
-                        )}
-                      </div>
+                    {/* All Individual Lessons with total hours of each individual lesson */}
+                    {isExpanded && track.lessons.length > 0 && (
+                      <div className="pl-2 pr-0.5 py-0.5 space-y-1 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
+                        {(() => {
+                          const trackModules =
+                            track.modules && track.modules.length > 0
+                              ? track.modules
+                              : [{ id: 'core', title: 'Lessons', lessons: track.lessons }];
 
-                      {/* All Individual Lessons with total hours of each individual lesson */}
-                      {isExpanded && track.lessons.length > 0 && (
-                        <div className="pl-2 pr-0.5 py-0.5 space-y-1 border-l border-slate-200/80 dark:border-neutral-800/80 ml-3.5 my-0.5">
-                          {(() => {
-                            const trackModules =
-                              track.modules && track.modules.length > 0
-                                ? track.modules
-                                : [{ id: 'core', title: 'Lessons', lessons: track.lessons }];
+                          return trackModules.map((mod: any, modIdx: number) => {
+                            const modId = `${track.id}-${mod.id || modIdx}`;
+                            const isModOpen = isModuleOpen(modId);
+                            const displayedLessons = isAdmin
+                              ? mod.lessons || []
+                              : (mod.lessons || []).filter(
+                                  (l: any) =>
+                                    !l.disabled && (l.status ? l.status === 'published' : true)
+                                );
 
-                            return trackModules.map((mod: any, modIdx: number) => {
-                              const modId = `${track.id}-${mod.id || modIdx}`;
-                              const isModOpen = isModuleOpen(modId);
-                              const displayedLessons = isAdmin
-                                ? mod.lessons || []
-                                : (mod.lessons || []).filter((l: any) => !l.disabled && (l.status ? l.status === 'published' : true));
+                            if (displayedLessons.length === 0) return null;
 
-                              if (displayedLessons.length === 0) return null;
+                            return (
+                              <div key={mod.id || modIdx} className="space-y-0.5">
+                                {/* Collapsible Module / Group Header */}
+                                <button
+                                  type="button"
+                                  onClick={() => toggleModule(modId)}
+                                  className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-[10px] font-semibold text-slate-600 dark:text-neutral-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/60 transition-colors group cursor-pointer text-left"
+                                  title={
+                                    isModOpen ? `Collapse ${mod.title}` : `Expand ${mod.title}`
+                                  }
+                                >
+                                  <div className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1">
+                                    {(() => {
+                                      const ModIcon = getSidebarModuleIcon(mod.title, track.id);
+                                      return (
+                                        <ModIcon className="w-3 h-3 text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 shrink-0" />
+                                      );
+                                    })()}
+                                    <span className="truncate uppercase tracking-wider font-mono text-[9px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-950 dark:group-hover:text-white">
+                                      {mod.title}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-1 shrink-0 text-slate-500 dark:text-slate-400">
+                                    <span className="text-[9px] font-mono font-bold text-slate-600 dark:text-neutral-400">
+                                      {displayedLessons.length}
+                                    </span>
+                                    <ChevronDown
+                                      className={`w-3 h-3 text-slate-500 dark:text-neutral-400 transition-transform duration-200 ${
+                                        isModOpen ? 'rotate-180' : ''
+                                      }`}
+                                    />
+                                  </div>
+                                </button>
 
-                              return (
-                                <div key={mod.id || modIdx} className="space-y-0.5">
-                                  {/* Collapsible Module / Group Header */}
-                                  <button
-                                    type="button"
-                                    onClick={() => toggleModule(modId)}
-                                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-[10px] font-semibold text-slate-600 dark:text-neutral-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/60 transition-colors group cursor-pointer text-left"
-                                    title={isModOpen ? `Collapse ${mod.title}` : `Expand ${mod.title}`}
-                                  >
-                                    <div className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1">
-                                      {(() => {
-                                        const ModIcon = getSidebarModuleIcon(mod.title, track.id);
-                                        return <ModIcon className="w-3 h-3 text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 shrink-0" />;
-                                      })()}
-                                      <span className="truncate uppercase tracking-wider font-mono text-[9px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-950 dark:group-hover:text-white">
-                                        {mod.title}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-1 shrink-0 text-slate-500 dark:text-slate-400">
-                                      <span className="text-[9px] font-mono font-bold text-slate-600 dark:text-neutral-400">
-                                        {displayedLessons.length}
-                                      </span>
-                                      <ChevronDown
-                                        className={`w-3 h-3 text-slate-500 dark:text-neutral-400 transition-transform duration-200 ${
-                                          isModOpen ? 'rotate-180' : ''
-                                        }`}
-                                      />
-                                    </div>
-                                  </button>
+                                {/* Collapsible Module Lessons */}
+                                {isModOpen && (
+                                  <div className="pl-2 space-y-0.5 border-l border-slate-200 dark:border-neutral-800 ml-2.5 my-0.5">
+                                    {displayedLessons.map((lesson: any, lessonIdx: number) => {
+                                      const lessonSlug = lesson.slug || lesson.id;
+                                      const isLessonActive =
+                                        pathname === `/learning/${lessonSlug}` ||
+                                        (pathname === '/learning' &&
+                                          (lessonSlug === 'what-is-artificial-intelligence' ||
+                                            lessonSlug === 'what-is-an-llm'));
 
-                                  {/* Collapsible Module Lessons */}
-                                  {isModOpen && (
-                                    <div className="pl-2 space-y-0.5 border-l border-slate-200 dark:border-neutral-800 ml-2.5 my-0.5">
-                                      {displayedLessons.map((lesson: any, lessonIdx: number) => {
-                                        const lessonSlug = lesson.slug || lesson.id;
-                                        const isLessonActive =
-                                          pathname === `/learning/${lessonSlug}` ||
-                                          (pathname === '/learning' && (lessonSlug === 'what-is-artificial-intelligence' || lessonSlug === 'what-is-an-llm'));
+                                      const lessonHref = `/learning/${lessonSlug}`;
 
-                                        const lessonHref = `/learning/${lessonSlug}`;
+                                      const hours = getLessonHours(lesson.durationMinutes);
+                                      const isFirst = lessonIdx === 0;
+                                      const isLast = lessonIdx === displayedLessons.length - 1;
 
-                                        const hours = getLessonHours(lesson.durationMinutes);
-                                        const isFirst = lessonIdx === 0;
-                                        const isLast = lessonIdx === displayedLessons.length - 1;
-
-                                        return (
-                                          <div
-                                            key={lesson.id}
-                                            className={`group flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
-                                              lesson.disabled ? 'opacity-65 bg-amber-500/5' : ''
-                                            } ${
-                                              isLessonActive
-                                                ? 'bg-emerald-100/80 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-400 font-bold shadow-2xs'
-                                                : 'text-slate-700 dark:text-neutral-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/40'
-                                            }`}
+                                      return (
+                                        <div
+                                          key={lesson.id}
+                                          className={`group flex items-center justify-between px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
+                                            lesson.disabled ? 'opacity-65 bg-amber-500/5' : ''
+                                          } ${
+                                            isLessonActive
+                                              ? 'bg-emerald-100/80 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-400 font-bold shadow-2xs'
+                                              : 'text-slate-700 dark:text-neutral-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/40'
+                                          }`}
+                                        >
+                                          <Link
+                                            href={lessonHref}
+                                            onClick={onCloseMobile}
+                                            className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1"
+                                            title={lesson.title}
                                           >
-                                            <Link
-                                              href={lessonHref}
-                                              onClick={onCloseMobile}
-                                              className="flex items-center gap-1.5 truncate flex-1 min-w-0 pr-1"
-                                              title={lesson.title}
-                                            >
-                                              {completedLessonIds.has(lesson.id) && (
-                                                <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                                              )}
-                                              <span className="truncate">{lesson.title}</span>
-                                              {lesson.disabled && (
-                                                <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 font-bold">
-                                                  Disabled
-                                                </span>
-                                              )}
-                                            </Link>
+                                            {completedLessonIds.has(lesson.id) && (
+                                              <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                                            )}
+                                            <span className="truncate">{lesson.title}</span>
+                                            {lesson.disabled && (
+                                              <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 font-bold">
+                                                Disabled
+                                              </span>
+                                            )}
+                                          </Link>
 
-                                            {/* Admin Controls: Reorder (Up/Down), Disable/Enable, Delete */}
-                                            {isAdmin && curriculumTracks.some(t => t.id === track.id) && (
+                                          {/* Admin Controls: Reorder (Up/Down), Disable/Enable, Delete */}
+                                          {isAdmin &&
+                                            curriculumTracks.some((t) => t.id === track.id) && (
                                               <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity bg-neutral-900/95 dark:bg-black/95 p-0.5 rounded border border-neutral-700/60 shadow-xs">
                                                 <button
                                                   type="button"
@@ -924,7 +998,11 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                                   onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    QADatabase.moveLesson(track.id, lesson.id, 'up');
+                                                    QADatabase.moveLesson(
+                                                      track.id,
+                                                      lesson.id,
+                                                      'up'
+                                                    );
                                                   }}
                                                   className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
                                                   title="Move Up in sequence"
@@ -937,7 +1015,11 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                                   onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    QADatabase.moveLesson(track.id, lesson.id, 'down');
+                                                    QADatabase.moveLesson(
+                                                      track.id,
+                                                      lesson.id,
+                                                      'down'
+                                                    );
                                                   }}
                                                   className="p-0.5 rounded hover:bg-neutral-700 text-neutral-300 hover:text-white disabled:opacity-20 cursor-pointer"
                                                   title="Move Down in sequence"
@@ -949,15 +1031,20 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                                   onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    QADatabase.toggleLessonDisabled(track.id, lesson.id);
+                                                    QADatabase.toggleLessonDisabled(
+                                                      track.id,
+                                                      lesson.id
+                                                    );
                                                   }}
                                                   className={`p-0.5 rounded hover:bg-neutral-700 transition cursor-pointer ${
-                                                    lesson.disabled ? 'text-amber-400' : 'text-neutral-400 hover:text-emerald-400'
+                                                    lesson.disabled
+                                                      ? 'text-amber-400'
+                                                      : 'text-neutral-400 hover:text-emerald-400'
                                                   }`}
                                                   title={
                                                     lesson.disabled
-                                                      ? "Enable lesson (visible to learners)"
-                                                      : "Disable lesson (hide while updating content)"
+                                                      ? 'Enable lesson (visible to learners)'
+                                                      : 'Disable lesson (hide while updating content)'
                                                   }
                                                 >
                                                   {lesson.disabled ? (
@@ -986,23 +1073,23 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                                                 </button>
                                               </div>
                                             )}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            });
-                          })()}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         {/* SECTION: PRACTICE LABS (Collapsible Parent Menu matching Courses) */}
         <div className="space-y-1 pt-1">
@@ -1040,8 +1127,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <div className="flex items-center gap-2 truncate">
                   <Laptop className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Online Compilers</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Java, Python, TS, JS, C#</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">
+                      Online Compilers
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">
+                      Java, Python, TS, JS, C#
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -1056,8 +1147,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <div className="flex items-center gap-2 truncate">
                   <BookOpen className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">Coding Library</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Problems by Topic &amp; Level</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">
+                      Coding Library
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">
+                      Problems by Topic &amp; Level
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -1072,8 +1167,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <div className="flex items-center gap-2 truncate">
                   <Server className="w-3.5 h-3.5 text-purple-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">API Testing Lab</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">REST Mock Server &amp; Auth</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">
+                      API Testing Lab
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">
+                      REST Mock Server &amp; Auth
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -1088,8 +1187,12 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                 <div className="flex items-center gap-2 truncate">
                   <Sparkles className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
                   <div className="flex flex-col truncate">
-                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">AI Prompt Lab for QA</span>
-                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">Curated QA Prompts</span>
+                    <span className="truncate font-semibold text-slate-800 dark:text-neutral-200">
+                      AI Prompt Lab for QA
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-neutral-400">
+                      Curated QA Prompts
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -1143,8 +1246,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               {/* 1. Requirement Generator */}
               <Link
                 href="/qa-agents?tab=requirements"
-                onClick={e => handleAgentClick(e, 'requirements')}
-                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'requirements')}
+                onClick={(e) => handleAgentClick(e, 'requirements')}
+                className={childItemClass(
+                  pathname === '/qa-agents' && activeAgentTab === 'requirements'
+                )}
               >
                 <div className="flex items-center gap-2 truncate">
                   <FileText className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
@@ -1158,8 +1263,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               {/* 2. Test Case Generator */}
               <Link
                 href="/qa-agents?tab=test_cases"
-                onClick={e => handleAgentClick(e, 'test_cases')}
-                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'test_cases')}
+                onClick={(e) => handleAgentClick(e, 'test_cases')}
+                className={childItemClass(
+                  pathname === '/qa-agents' && activeAgentTab === 'test_cases'
+                )}
               >
                 <div className="flex items-center gap-2 truncate">
                   <ListChecks className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -1173,8 +1280,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               {/* 3. Automation Code Generator */}
               <Link
                 href="/qa-agents?tab=automation_code"
-                onClick={e => handleAgentClick(e, 'automation_code')}
-                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'automation_code')}
+                onClick={(e) => handleAgentClick(e, 'automation_code')}
+                className={childItemClass(
+                  pathname === '/qa-agents' && activeAgentTab === 'automation_code'
+                )}
               >
                 <div className="flex items-center gap-2 truncate">
                   <Code2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
@@ -1188,8 +1297,10 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               {/* 4. Code Reviewer & Auditor */}
               <Link
                 href="/qa-agents?tab=code_review"
-                onClick={e => handleAgentClick(e, 'code_review')}
-                className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'code_review')}
+                onClick={(e) => handleAgentClick(e, 'code_review')}
+                className={childItemClass(
+                  pathname === '/qa-agents' && activeAgentTab === 'code_review'
+                )}
               >
                 <div className="flex items-center gap-2 truncate">
                   <ShieldCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />
@@ -1203,7 +1314,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               {/* 5. Senior SDET Mentor Chat */}
               <Link
                 href="/qa-agents?tab=chat"
-                onClick={e => handleAgentClick(e, 'chat')}
+                onClick={(e) => handleAgentClick(e, 'chat')}
                 className={childItemClass(pathname === '/qa-agents' && activeAgentTab === 'chat')}
               >
                 <div className="flex items-center gap-2 truncate">
@@ -1218,7 +1329,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
               {/* 6. AI Mock Interviewer */}
               <Link
                 href="/interview-griller"
-                onClick={e => {
+                onClick={(e) => {
                   const key = QADatabase.getUserGeminiKey(currentUser?.id);
                   if (!key) {
                     e.preventDefault();
@@ -1295,7 +1406,6 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
             <WhatsAppDailyModal />
           </div>
         </div>
-
       </div>
 
       {/* Embedded Modals */}
@@ -1321,9 +1431,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
         style={{ width: `${sidebarWidth}px` }}
         className="hidden md:flex min-h-screen shrink-0 sticky top-0 h-screen overflow-hidden z-20 relative select-none"
       >
-        <div className="w-full h-full overflow-hidden">
-          {sidebarContent}
-        </div>
+        <div className="w-full h-full overflow-hidden">{sidebarContent}</div>
 
         {/* Draggable resize handle on right border */}
         <div
@@ -1346,9 +1454,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           />
 
           {/* Drawer container */}
-          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10">
-            {sidebarContent}
-          </div>
+          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10">{sidebarContent}</div>
         </div>
       )}
     </>

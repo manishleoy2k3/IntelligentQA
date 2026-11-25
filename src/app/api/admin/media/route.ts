@@ -126,7 +126,10 @@ export async function DELETE(req: NextRequest) {
 
     const result = cmsStore.deleteMediaItem(id);
     if (!result.success) {
-      return NextResponse.json({ error: result.message, inUseCount: result.inUseCount }, { status: 400 });
+      return NextResponse.json(
+        { error: result.message, inUseCount: result.inUseCount },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({ success: true, message: 'Media item deleted' });

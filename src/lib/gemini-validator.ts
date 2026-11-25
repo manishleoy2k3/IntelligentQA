@@ -10,7 +10,13 @@
 export interface KeyValidationResult {
   valid: boolean;
   error?: string;
-  code?: 'EMPTY' | 'INVALID_PREFIX' | 'INVALID_LENGTH' | 'INVALID_CHARACTERS' | 'API_KEY_INVALID' | 'QUOTA_EXCEEDED';
+  code?:
+    | 'EMPTY'
+    | 'INVALID_PREFIX'
+    | 'INVALID_LENGTH'
+    | 'INVALID_CHARACTERS'
+    | 'API_KEY_INVALID'
+    | 'QUOTA_EXCEEDED';
   details?: string;
 }
 
@@ -68,7 +74,8 @@ export function validateGeminiKeySyntax(rawKey: unknown): KeyValidationResult {
     return {
       valid: false,
       code: 'INVALID_CHARACTERS',
-      error: 'Invalid characters: Google API keys contain only letters, numbers, hyphens, and underscores.',
+      error:
+        'Invalid characters: Google API keys contain only letters, numbers, hyphens, and underscores.',
       details: 'Remove any spaces, quotes, or accidental symbols from your key.',
     };
   }

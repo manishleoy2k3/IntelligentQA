@@ -113,7 +113,9 @@ export default function FormattedOverviewEditor({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Apply Markdown formatting to selection or cursor
-  const applyFormat = (type: 'bold' | 'italic' | 'heading' | 'bullet' | 'number' | 'code' | 'quote') => {
+  const applyFormat = (
+    type: 'bold' | 'italic' | 'heading' | 'bullet' | 'number' | 'code' | 'quote'
+  ) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -159,7 +161,9 @@ export default function FormattedOverviewEditor({
         if (selectedText) {
           replacement = selectedText
             .split('\n')
-            .map(line => (line.trim().startsWith('•') || line.trim().startsWith('-') ? line : `• ${line}`))
+            .map((line) =>
+              line.trim().startsWith('•') || line.trim().startsWith('-') ? line : `• ${line}`
+            )
             .join('\n');
         } else {
           replacement = `\n• `;
@@ -355,7 +359,7 @@ export default function FormattedOverviewEditor({
           id={id}
           rows={minRows}
           value={value}
-          onChange={e => onChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={placeholder}

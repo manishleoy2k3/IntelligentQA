@@ -37,10 +37,14 @@ function runMigration() {
       console.warn('Could not parse curriculum-data-store.json:', e.message);
     }
   } else {
-    console.log('No existing curriculum-data-store.json found; initial store will be created on start.');
+    console.log(
+      'No existing curriculum-data-store.json found; initial store will be created on start.'
+    );
   }
 
-  console.log('\nMigration verification complete: System is ready for local file or PostgreSQL deployment.');
+  console.log(
+    '\nMigration verification complete: System is ready for local file or PostgreSQL deployment.'
+  );
 }
 
 runMigration();

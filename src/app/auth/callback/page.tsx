@@ -21,7 +21,8 @@ function AuthCallbackContent() {
       // 1. Check for error parameters returned by OAuth provider
       const errorParam = searchParams.get('error') || searchParams.get('error_description');
       if (errorParam) {
-        const isCancelled = errorParam === 'access_denied' || errorParam.toLowerCase().includes('denied');
+        const isCancelled =
+          errorParam === 'access_denied' || errorParam.toLowerCase().includes('denied');
         const msg = isCancelled
           ? 'Google sign-in was cancelled or access was denied.'
           : `Google sign-in failed: ${errorParam}`;
@@ -39,7 +40,9 @@ function AuthCallbackContent() {
 
         // Verify authentic email returned from Google UserInfo
         if (!email) {
-          throw new Error('Google did not provide a verified email address. Please try signing in again.');
+          throw new Error(
+            'Google did not provide a verified email address. Please try signing in again.'
+          );
         }
 
         const targetEmail = email.trim().toLowerCase();
@@ -54,7 +57,9 @@ function AuthCallbackContent() {
         // Authenticate user in database
         const user = await QADatabase.loginWithGoogle(targetEmail, targetName);
         if (!user) {
-          throw new Error('Unable to confirm your Google account session. Please try signing in again.');
+          throw new Error(
+            'Unable to confirm your Google account session. Please try signing in again.'
+          );
         }
 
         if (!cancelled) {

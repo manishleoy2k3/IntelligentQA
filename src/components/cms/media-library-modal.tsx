@@ -358,7 +358,8 @@ export default function MediaLibraryModal({
             >
               <UploadCloud className="w-6 h-6 text-purple-400 shrink-0" />
               <div className="text-xs">
-                <span className="font-semibold text-white">Drag &amp; drop images here</span>, click to browse, or press{' '}
+                <span className="font-semibold text-white">Drag &amp; drop images here</span>, click
+                to browse, or press{' '}
                 <kbd className="px-1.5 py-0.5 rounded bg-[#27272A] text-purple-300 font-mono text-[10px]">
                   Ctrl+V / Cmd+V
                 </kbd>{' '}
@@ -407,7 +408,10 @@ export default function MediaLibraryModal({
                         />
                       </div>
                       <div className="p-2.5">
-                        <p className="text-xs font-semibold text-white truncate" title={item.filename}>
+                        <p
+                          className="text-xs font-semibold text-white truncate"
+                          title={item.filename}
+                        >
                           {item.alt || item.filename}
                         </p>
                         <p className="text-[10px] text-[#71717A] mt-0.5 flex items-center justify-between">
@@ -445,7 +449,9 @@ export default function MediaLibraryModal({
                     <label className="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider block mb-1">
                       Filename
                     </label>
-                    <p className="text-xs font-mono text-white break-all">{selectedItem.filename}</p>
+                    <p className="text-xs font-mono text-white break-all">
+                      {selectedItem.filename}
+                    </p>
                   </div>
 
                   <div>
@@ -488,11 +494,15 @@ export default function MediaLibraryModal({
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
                     <div className="p-2 rounded-lg bg-[#1E1E22] border border-[#27272A]">
                       <span className="text-[#71717A] block">Format</span>
-                      <span className="text-white font-mono uppercase">{selectedItem.mimeType.split('/')[1]}</span>
+                      <span className="text-white font-mono uppercase">
+                        {selectedItem.mimeType.split('/')[1]}
+                      </span>
                     </div>
                     <div className="p-2 rounded-lg bg-[#1E1E22] border border-[#27272A]">
                       <span className="text-[#71717A] block">Size</span>
-                      <span className="text-white font-mono">{(selectedItem.size / 1024).toFixed(1)} KB</span>
+                      <span className="text-white font-mono">
+                        {(selectedItem.size / 1024).toFixed(1)} KB
+                      </span>
                     </div>
                   </div>
 

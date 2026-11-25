@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { academyStore } from '@/lib/academy-store';
 import { verifyAdminAccess } from '@/lib/cms-security';
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = verifyAdminAccess(req);
     if (!auth.authorized) {
@@ -47,10 +44,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = verifyAdminAccess(req);
     if (!auth.authorized) {

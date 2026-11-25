@@ -28,13 +28,9 @@ export default function ArchitectureDiagram({ data }: ArchitectureDiagramProps) 
           {getIcon()}
         </div>
         <div>
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            {data.title}
-          </h4>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{data.title}</h4>
           {data.caption && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {data.caption}
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{data.caption}</p>
           )}
         </div>
       </div>
@@ -97,9 +93,7 @@ export default function ArchitectureDiagram({ data }: ArchitectureDiagramProps) 
                   {node.label}
                 </h5>
                 {node.subtitle && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    {node.subtitle}
-                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{node.subtitle}</p>
                 )}
               </div>
             ))}

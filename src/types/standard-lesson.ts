@@ -3,7 +3,11 @@
  * Supporting Phase 8 Learning Academy Standardization
  */
 
-import { ArchitectureNode, ArchitectureConnection, DiagramData } from '@/data/learning/academy-curriculum';
+import {
+  ArchitectureNode,
+  ArchitectureConnection,
+  DiagramData,
+} from '@/data/learning/academy-curriculum';
 
 export type SupportedLanguage =
   | 'java'
@@ -110,13 +114,16 @@ export interface StandardLessonTemplateData {
     overview?: string;
     description?: string;
     prerequisites?: string[];
-    steps: Array<{
-      stepNumber?: number;
-      action?: string;
-      title?: string;
-      details?: string;
-      snippet?: string;
-    } | string>;
+    steps: Array<
+      | {
+          stepNumber?: number;
+          action?: string;
+          title?: string;
+          details?: string;
+          snippet?: string;
+        }
+      | string
+    >;
   };
 
   // 7. Code Examples

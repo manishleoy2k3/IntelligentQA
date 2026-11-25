@@ -8,25 +8,43 @@ test('FormattedOverviewEditor: HTML-to-markdown converts pasted rich text retain
   const editorContent = fs.readFileSync(editorPath, 'utf8');
 
   // Verify component exports and features
-  assert.ok(editorContent.includes('export function htmlToMarkdown'), 'Exports htmlToMarkdown parser');
-  assert.ok(editorContent.includes('export default function FormattedOverviewEditor'), 'Exports FormattedOverviewEditor component');
+  assert.ok(
+    editorContent.includes('export function htmlToMarkdown'),
+    'Exports htmlToMarkdown parser'
+  );
+  assert.ok(
+    editorContent.includes('export default function FormattedOverviewEditor'),
+    'Exports FormattedOverviewEditor component'
+  );
 
   // Verify rich text formatting toolbar actions exist
   assert.ok(editorContent.includes("applyFormat('bold')"), 'Supports Bold formatting');
   assert.ok(editorContent.includes("applyFormat('italic')"), 'Supports Italic formatting');
-  assert.ok(editorContent.includes("applyFormat('heading')"), 'Supports Section Heading formatting');
+  assert.ok(
+    editorContent.includes("applyFormat('heading')"),
+    'Supports Section Heading formatting'
+  );
   assert.ok(editorContent.includes("applyFormat('bullet')"), 'Supports Bullet list formatting');
   assert.ok(editorContent.includes("applyFormat('number')"), 'Supports Numbered list formatting');
   assert.ok(editorContent.includes("applyFormat('code')"), 'Supports Code block formatting');
-  assert.ok(editorContent.includes("applyFormat('quote')"), 'Supports Quote / Architecture note formatting');
+  assert.ok(
+    editorContent.includes("applyFormat('quote')"),
+    'Supports Quote / Architecture note formatting'
+  );
 
   // Verify Tab Switcher (Write vs Preview)
   assert.ok(editorContent.includes("activeTab === 'write'"), 'Supports Write mode');
   assert.ok(editorContent.includes("activeTab === 'preview'"), 'Supports Preview mode');
-  assert.ok(editorContent.includes('<FormattedInterviewAnswer text={value} isDark />'), 'Renders rich preview via FormattedInterviewAnswer');
+  assert.ok(
+    editorContent.includes('<FormattedInterviewAnswer text={value} isDark />'),
+    'Renders rich preview via FormattedInterviewAnswer'
+  );
 
   // Verify HTML paste listener
-  assert.ok(editorContent.includes('onPaste={handlePaste}'), 'Textarea intercepts paste events to retain formatting');
+  assert.ok(
+    editorContent.includes('onPaste={handlePaste}'),
+    'Textarea intercepts paste events to retain formatting'
+  );
 });
 
 test('Share your Knowledge window: Full Overview & Explanation uses clean FormattedOverviewEditor without GFG buttons', () => {
@@ -34,7 +52,10 @@ test('Share your Knowledge window: Full Overview & Explanation uses clean Format
   const modalContent = fs.readFileSync(modalPath, 'utf8');
 
   // Verify editor is embedded in Share your Knowledge window
-  assert.ok(modalContent.includes('FormattedOverviewEditor'), 'AddGuideModal imports and uses FormattedOverviewEditor');
+  assert.ok(
+    modalContent.includes('FormattedOverviewEditor'),
+    'AddGuideModal imports and uses FormattedOverviewEditor'
+  );
   assert.ok(
     modalContent.includes('<FormattedOverviewEditor') && modalContent.includes('value={overview}'),
     'Full Overview & Explanation section uses FormattedOverviewEditor'

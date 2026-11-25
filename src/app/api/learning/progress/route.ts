@@ -52,7 +52,10 @@ export async function POST(req: NextRequest) {
     const validStatuses = ['not_started', 'in_progress', 'completed'];
     if (!validStatuses.includes(completionStatus)) {
       return NextResponse.json(
-        { success: false, error: `Invalid completionStatus. Must be one of: ${validStatuses.join(', ')}` },
+        {
+          success: false,
+          error: `Invalid completionStatus. Must be one of: ${validStatuses.join(', ')}`,
+        },
         { status: 400 }
       );
     }

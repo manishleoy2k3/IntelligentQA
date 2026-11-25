@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
           success: false,
           error: {
             code: 'RATE_LIMITED',
-            message: 'Too many requests. Please wait a moment before sending another AI enhancement request.',
+            message:
+              'Too many requests. Please wait a moment before sending another AI enhancement request.',
           },
         },
         { status: 429 }
@@ -95,11 +96,16 @@ export async function POST(req: NextRequest) {
     const result = await provider.generateEnhancement(requestPayload);
 
     if (!result.success) {
-      const statusCode = 
-        result.error?.code === 'API_KEY_MISSING' ? 403 :
-        result.error?.code === 'INVALID_API_KEY' ? 401 :
-        result.error?.code === 'RATE_LIMITED' ? 429 :
-        result.error?.code === 'QUOTA_EXCEEDED' ? 429 : 500;
+      const statusCode =
+        result.error?.code === 'API_KEY_MISSING'
+          ? 403
+          : result.error?.code === 'INVALID_API_KEY'
+            ? 401
+            : result.error?.code === 'RATE_LIMITED'
+              ? 429
+              : result.error?.code === 'QUOTA_EXCEEDED'
+                ? 429
+                : 500;
 
       return NextResponse.json(result, { status: statusCode });
     }

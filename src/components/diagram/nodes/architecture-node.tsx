@@ -28,9 +28,7 @@ function ArchitectureCustomNode({ data, selected }: NodeProps<any>) {
   return (
     <div
       className={`relative w-[240px] rounded-xl border bg-white dark:bg-neutral-900 transition-all select-none ${
-        selected
-          ? 'ring-2 ring-emerald-500 shadow-lg border-emerald-500'
-          : 'hover:shadow-md'
+        selected ? 'ring-2 ring-emerald-500 shadow-lg border-emerald-500' : 'hover:shadow-md'
       }`}
       style={{
         borderColor: selected ? '#10B981' : palette.accentBorder,

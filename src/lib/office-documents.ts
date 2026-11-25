@@ -19,7 +19,14 @@ function crc32(buf: Uint8Array): number {
 
 export function createZip(files: { name: string; data: Uint8Array | string }[]): Uint8Array {
   const encoder = new TextEncoder();
-  const entries: { nameBuf: Uint8Array; crc: number; size: number; offset: number; local: Uint8Array; dataBuf: Uint8Array }[] = [];
+  const entries: {
+    nameBuf: Uint8Array;
+    crc: number;
+    size: number;
+    offset: number;
+    local: Uint8Array;
+    dataBuf: Uint8Array;
+  }[] = [];
   let offset = 0;
   let totalLength = 0;
 
@@ -33,8 +40,8 @@ export function createZip(files: { name: string; data: Uint8Array | string }[]):
     const view = new DataView(local.buffer);
     view.setUint32(0, 0x04034b50, true);
     view.setUint16(4, 20, true); // version needed 2.0
-    view.setUint16(6, 0, true);  // flags
-    view.setUint16(8, 0, true);  // method 0 = STORED (uncompressed)
+    view.setUint16(6, 0, true); // flags
+    view.setUint16(8, 0, true); // method 0 = STORED (uncompressed)
     view.setUint16(10, 0, true); // time
     view.setUint16(12, 0, true); // date
     view.setUint32(14, crc, true);
@@ -57,22 +64,22 @@ export function createZip(files: { name: string; data: Uint8Array | string }[]):
     const cd = new Uint8Array(46 + e.nameBuf.length);
     const view = new DataView(cd.buffer);
     view.setUint32(0, 0x02014b50, true); // Central directory file header signature
-    view.setUint16(4, 20, true);         // Version made by (2.0)
-    view.setUint16(6, 20, true);         // Version needed to extract (2.0)
-    view.setUint16(8, 0, true);          // General purpose bit flag
-    view.setUint16(10, 0, true);         // Compression method (0 = STORED)
-    view.setUint16(12, 0, true);         // File last mod time
-    view.setUint16(14, 0, true);         // File last mod date (2 bytes)
-    view.setUint32(16, e.crc, true);     // CRC-32 (4 bytes at offset 16)
-    view.setUint32(20, e.size, true);    // Compressed size (4 bytes at offset 20)
-    view.setUint32(24, e.size, true);    // Uncompressed size (4 bytes at offset 24)
+    view.setUint16(4, 20, true); // Version made by (2.0)
+    view.setUint16(6, 20, true); // Version needed to extract (2.0)
+    view.setUint16(8, 0, true); // General purpose bit flag
+    view.setUint16(10, 0, true); // Compression method (0 = STORED)
+    view.setUint16(12, 0, true); // File last mod time
+    view.setUint16(14, 0, true); // File last mod date (2 bytes)
+    view.setUint32(16, e.crc, true); // CRC-32 (4 bytes at offset 16)
+    view.setUint32(20, e.size, true); // Compressed size (4 bytes at offset 20)
+    view.setUint32(24, e.size, true); // Uncompressed size (4 bytes at offset 24)
     view.setUint16(28, e.nameBuf.length, true); // File name length (2 bytes at offset 28)
-    view.setUint16(30, 0, true);         // Extra field length
-    view.setUint16(32, 0, true);         // File comment length
-    view.setUint16(34, 0, true);         // Disk number start
-    view.setUint16(36, 0, true);         // Internal file attributes
-    view.setUint32(38, 0, true);         // External file attributes
-    view.setUint32(42, e.offset, true);   // Relative offset of local file header (4 bytes at offset 42)
+    view.setUint16(30, 0, true); // Extra field length
+    view.setUint16(32, 0, true); // File comment length
+    view.setUint16(34, 0, true); // Disk number start
+    view.setUint16(36, 0, true); // Internal file attributes
+    view.setUint32(38, 0, true); // External file attributes
+    view.setUint32(42, e.offset, true); // Relative offset of local file header (4 bytes at offset 42)
     cd.set(e.nameBuf, 46);
 
     centralHeaders.push(cd);
@@ -212,18 +219,18 @@ export function generateOfficeExcel(trackName: string, sample: SampleGuideData):
 </styleSheet>`;
 
   const columns = [
-    { title: "Title [MANDATORY]", width: 32, mandatory: true },
-    { title: "Category [MANDATORY]", width: 26, mandatory: true },
-    { title: "Level [MANDATORY]", width: 18, mandatory: true },
-    { title: "Summary [MANDATORY]", width: 40, mandatory: true },
-    { title: "Overview [MANDATORY]", width: 55, mandatory: true },
-    { title: "ArchitectureOrMechanism [OPTIONAL]", width: 40, mandatory: false },
-    { title: "CodeLanguage [MANDATORY]", width: 18, mandatory: true },
-    { title: "CodeCaption [OPTIONAL]", width: 35, mandatory: false },
-    { title: "CodeSnippet [MANDATORY]", width: 60, mandatory: true },
-    { title: "BestPractices [OPTIONAL]", width: 45, mandatory: false },
-    { title: "AntiPatterns [OPTIONAL]", width: 45, mandatory: false },
-    { title: "InterviewTips [OPTIONAL]", width: 40, mandatory: false }
+    { title: 'Title [MANDATORY]', width: 32, mandatory: true },
+    { title: 'Category [MANDATORY]', width: 26, mandatory: true },
+    { title: 'Level [MANDATORY]', width: 18, mandatory: true },
+    { title: 'Summary [MANDATORY]', width: 40, mandatory: true },
+    { title: 'Overview [MANDATORY]', width: 55, mandatory: true },
+    { title: 'ArchitectureOrMechanism [OPTIONAL]', width: 40, mandatory: false },
+    { title: 'CodeLanguage [MANDATORY]', width: 18, mandatory: true },
+    { title: 'CodeCaption [OPTIONAL]', width: 35, mandatory: false },
+    { title: 'CodeSnippet [MANDATORY]', width: 60, mandatory: true },
+    { title: 'BestPractices [OPTIONAL]', width: 45, mandatory: false },
+    { title: 'AntiPatterns [OPTIONAL]', width: 45, mandatory: false },
+    { title: 'InterviewTips [OPTIONAL]', width: 40, mandatory: false },
   ];
 
   const colsXml = columns
@@ -250,7 +257,7 @@ export function generateOfficeExcel(trackName: string, sample: SampleGuideData):
     sample.code,
     sample.bestPractices.join('; '),
     sample.antiPatterns.join('; '),
-    sample.interviewTips
+    sample.interviewTips,
   ];
 
   const row2Cells = sampleValues
@@ -261,18 +268,18 @@ export function generateOfficeExcel(trackName: string, sample: SampleGuideData):
     .join('');
 
   const placeholderValues = [
-    "[Enter Guide Title - MANDATORY]",
-    "[Category / Domain - MANDATORY]",
-    "Beginner | Intermediate | Advanced",
-    "[Concise 1-2 sentence definition - MANDATORY]",
-    "[Multi-paragraph architectural explanation & tradeoffs - MANDATORY]",
-    "[Internal engine mechanics or diagram flow - OPTIONAL]",
+    '[Enter Guide Title - MANDATORY]',
+    '[Category / Domain - MANDATORY]',
+    'Beginner | Intermediate | Advanced',
+    '[Concise 1-2 sentence definition - MANDATORY]',
+    '[Multi-paragraph architectural explanation & tradeoffs - MANDATORY]',
+    '[Internal engine mechanics or diagram flow - OPTIONAL]',
     sample.language,
-    "[Caption for snippet - OPTIONAL]",
-    "// Paste runnable code implementation here - MANDATORY",
-    "[Best practice 1; Best practice 2 - OPTIONAL]",
-    "[Common pitfall 1; Anti-pattern 2 - OPTIONAL]",
-    "[Key SDET interview talking points & watchouts - OPTIONAL]"
+    '[Caption for snippet - OPTIONAL]',
+    '// Paste runnable code implementation here - MANDATORY',
+    '[Best practice 1; Best practice 2 - OPTIONAL]',
+    '[Common pitfall 1; Anti-pattern 2 - OPTIONAL]',
+    '[Key SDET interview talking points & watchouts - OPTIONAL]',
   ];
 
   const row3Cells = placeholderValues
@@ -302,12 +309,12 @@ export function generateOfficeExcel(trackName: string, sample: SampleGuideData):
 </worksheet>`;
 
   return createZip([
-    { name: "[Content_Types].xml", data: contentTypesXml },
-    { name: "_rels/.rels", data: relsXml },
-    { name: "xl/_rels/workbook.xml.rels", data: workbookRelsXml },
-    { name: "xl/workbook.xml", data: workbookXml },
-    { name: "xl/styles.xml", data: stylesXml },
-    { name: "xl/worksheets/sheet1.xml", data: sheet1Xml }
+    { name: '[Content_Types].xml', data: contentTypesXml },
+    { name: '_rels/.rels', data: relsXml },
+    { name: 'xl/_rels/workbook.xml.rels', data: workbookRelsXml },
+    { name: 'xl/workbook.xml', data: workbookXml },
+    { name: 'xl/styles.xml', data: stylesXml },
+    { name: 'xl/worksheets/sheet1.xml', data: sheet1Xml },
   ]);
 }
 
@@ -356,22 +363,27 @@ export function generateOfficeWord(trackName: string, sample: SampleGuideData): 
 
     // Break valueContent into paragraphs
     const paragraphs = valueContent.split('\n').filter(Boolean);
-    const pXml = paragraphs.length > 0
-      ? paragraphs.map(p => {
-          const isHeading = p.startsWith('#');
-          const cleanP = p.replace(/^#{1,4}\s*/, '');
-          // Split by bold **bold**
-          const parts = cleanP.split(/(\*\*[^*]+\*\*)/g);
-          const rXml = parts.map(part => {
-            if (part.startsWith('**') && part.endsWith('**')) {
-              return `<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">${escapeXml(part.slice(2, -2))}</w:t></w:r>`;
-            }
-            return `<w:r>${isHeading ? '<w:rPr><w:b/><w:color w:val="1E3A8A"/></w:rPr>' : ''}<w:t xml:space="preserve">${escapeXml(part)}</w:t></w:r>`;
-          }).join('');
+    const pXml =
+      paragraphs.length > 0
+        ? paragraphs
+            .map((p) => {
+              const isHeading = p.startsWith('#');
+              const cleanP = p.replace(/^#{1,4}\s*/, '');
+              // Split by bold **bold**
+              const parts = cleanP.split(/(\*\*[^*]+\*\*)/g);
+              const rXml = parts
+                .map((part) => {
+                  if (part.startsWith('**') && part.endsWith('**')) {
+                    return `<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">${escapeXml(part.slice(2, -2))}</w:t></w:r>`;
+                  }
+                  return `<w:r>${isHeading ? '<w:rPr><w:b/><w:color w:val="1E3A8A"/></w:rPr>' : ''}<w:t xml:space="preserve">${escapeXml(part)}</w:t></w:r>`;
+                })
+                .join('');
 
-          return `<w:p>${rXml}</w:p>`;
-        }).join('')
-      : `<w:p><w:r><w:t>${escapeXml(valueContent)}</w:t></w:r></w:p>`;
+              return `<w:p>${rXml}</w:p>`;
+            })
+            .join('')
+        : `<w:p><w:r><w:t>${escapeXml(valueContent)}</w:t></w:r></w:p>`;
 
     return `
     <w:tr>
@@ -419,8 +431,8 @@ export function generateOfficeWord(trackName: string, sample: SampleGuideData): 
     ${makeRow('Code Language', true, sample.language)}
     ${makeRow('Code Snippet Caption', false, sample.caption)}
     ${makeRow('Code Snippet', true, sample.code)}
-    ${makeRow('Best Practices', false, sample.bestPractices.map(b => `• ${b}`).join('\n'))}
-    ${makeRow('Anti-Patterns', false, sample.antiPatterns.map(a => `• ${a}`).join('\n'))}
+    ${makeRow('Best Practices', false, sample.bestPractices.map((b) => `• ${b}`).join('\n'))}
+    ${makeRow('Anti-Patterns', false, sample.antiPatterns.map((a) => `• ${a}`).join('\n'))}
     ${makeRow('Interview Tips', false, sample.interviewTips)}
   </w:tbl>`;
 
@@ -499,11 +511,11 @@ export function generateOfficeWord(trackName: string, sample: SampleGuideData): 
 </w:document>`;
 
   return createZip([
-    { name: "[Content_Types].xml", data: contentTypesXml },
-    { name: "_rels/.rels", data: relsXml },
-    { name: "word/_rels/document.xml.rels", data: wordRelsXml },
-    { name: "word/styles.xml", data: stylesXml },
-    { name: "word/document.xml", data: documentXml }
+    { name: '[Content_Types].xml', data: contentTypesXml },
+    { name: '_rels/.rels', data: relsXml },
+    { name: 'word/_rels/document.xml.rels', data: wordRelsXml },
+    { name: 'word/styles.xml', data: stylesXml },
+    { name: 'word/document.xml', data: documentXml },
   ]);
 }
 
@@ -513,24 +525,38 @@ export function downloadOfficeTemplate(
   trackId: string,
   sample: SampleGuideData
 ): void {
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
-  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI Academy';
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const trackName =
+    normTrack === 'selenium'
+      ? 'Selenium (Java)'
+      : normTrack === 'playwright'
+        ? 'Playwright (TS)'
+        : normTrack === 'api-testing'
+          ? 'Rest Assured (API)'
+          : 'AI Academy';
 
   let blob: Blob;
   let filename: string;
 
   if (format === 'xlsx') {
     const bytes = generateOfficeExcel(trackName, sample);
-    const arrayBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+    const arrayBuffer = bytes.buffer.slice(
+      bytes.byteOffset,
+      bytes.byteOffset + bytes.byteLength
+    ) as ArrayBuffer;
     blob = new Blob([arrayBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
     filename = `sdet_${normTrack}_guide_template.xlsx`;
   } else if (format === 'docx') {
     const bytes = generateOfficeWord(trackName, sample);
-    const arrayBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+    const arrayBuffer = bytes.buffer.slice(
+      bytes.byteOffset,
+      bytes.byteOffset + bytes.byteLength
+    ) as ArrayBuffer;
     blob = new Blob([arrayBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     });
     filename = `sdet_${normTrack}_guide_template.docx`;
   } else if (format === 'csv') {
@@ -565,15 +591,13 @@ function extractFormattedWordParagraph(pXml: string): string {
     for (const r of runs) {
       // Check for bold and italic properties in run
       const isBold =
-        /<w:rPr[\s\S]*?<w:b(\s|\/|>)/i.test(r) &&
-        !/<w:b\s+w:val="(0|false|none)"/i.test(r);
+        /<w:rPr[\s\S]*?<w:b(\s|\/|>)/i.test(r) && !/<w:b\s+w:val="(0|false|none)"/i.test(r);
       const isItalic =
-        /<w:rPr[\s\S]*?<w:i(\s|\/|>)/i.test(r) &&
-        !/<w:i\s+w:val="(0|false|none)"/i.test(r);
+        /<w:rPr[\s\S]*?<w:i(\s|\/|>)/i.test(r) && !/<w:i\s+w:val="(0|false|none)"/i.test(r);
 
       // Extract text content from w:t tags
       const tMatches = r.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
-      let runText = tMatches.map(m => m.replace(/<[^>]*>/g, '')).join('');
+      let runText = tMatches.map((m) => m.replace(/<[^>]*>/g, '')).join('');
 
       // Check for line breaks inside run
       const brCount = (r.match(/<w:br(\s|\/|>)/gi) || []).length;
@@ -607,7 +631,7 @@ function extractFormattedWordParagraph(pXml: string): string {
   } else {
     // If no runs detected, fallback to raw w:t tags
     const textMatches = pXml.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
-    pText = textMatches.map(m => m.replace(/<[^>]*>/g, '')).join('');
+    pText = textMatches.map((m) => m.replace(/<[^>]*>/g, '')).join('');
   }
 
   pText = pText.trim();
@@ -630,12 +654,13 @@ function extractFormattedWordCell(cellXml: string): string {
   const paragraphs = cellXml.match(/<w:p[\s\S]*?<\/w:p>/gi) || [];
   if (paragraphs.length === 0) {
     const textMatches = cellXml.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi) || [];
-    return textMatches.map(m => m.replace(/<[^>]*>/g, '')).join(' ').trim();
+    return textMatches
+      .map((m) => m.replace(/<[^>]*>/g, ''))
+      .join(' ')
+      .trim();
   }
 
-  const pTexts = paragraphs
-    .map(p => extractFormattedWordParagraph(p))
-    .filter(Boolean);
+  const pTexts = paragraphs.map((p) => extractFormattedWordParagraph(p)).filter(Boolean);
 
   // Join paragraphs with <br/> so cleanText in parseImportedGuides converts them to clean \n
   return pTexts.join('<br/>');
@@ -833,7 +858,7 @@ export async function extractTextFromOfficeZip(
     // Fallback: extract paragraphs with formatting
     const paragraphs = xml.match(/<w:p[\s\S]*?<\/w:p>/gi) || [];
     return paragraphs
-      .map(p => extractFormattedWordParagraph(p))
+      .map((p) => extractFormattedWordParagraph(p))
       .filter(Boolean)
       .join('\n\n');
   }
@@ -848,7 +873,7 @@ export async function extractTextFromOfficeZip(
       const siMatches = targetFiles['xl/sharedStrings.xml'].match(/<si[\s\S]*?<\/si>/gi) || [];
       for (const si of siMatches) {
         const tMatches = si.match(/<t[^>]*>([\s\S]*?)<\/t>/gi) || [];
-        sharedStrings.push(tMatches.map(m => m.replace(/<[^>]*>/g, '')).join(''));
+        sharedStrings.push(tMatches.map((m) => m.replace(/<[^>]*>/g, '')).join(''));
       }
     }
 
@@ -865,7 +890,7 @@ export async function extractTextFromOfficeZip(
 
         if (isInline) {
           const tMatches = cell.match(/<t[^>]*>([\s\S]*?)<\/t>/gi) || [];
-          rowValues.push(tMatches.map(m => m.replace(/<[^>]*>/g, '')).join(' '));
+          rowValues.push(tMatches.map((m) => m.replace(/<[^>]*>/g, '')).join(' '));
         } else if (isShared) {
           const vMatch = cell.match(/<v>(\d+)<\/v>/);
           if (vMatch) {

@@ -34,7 +34,8 @@ const requiredCategories = [
     id: 'cat-ai-for-qa',
     slug: 'ai-for-qa',
     title: 'AI Academy',
-    description: 'AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.',
+    description:
+      'AI-driven test automation, LLM evaluations, autonomous agents, and intelligent quality engineering.',
     icon: 'Bot',
     sortOrder: 1,
     parentCategoryId: null,
@@ -44,7 +45,8 @@ const requiredCategories = [
     id: 'cat-selenium',
     slug: 'selenium',
     title: 'Selenium',
-    description: 'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
+    description:
+      'Enterprise Selenium WebDriver 4, W3C protocol, dynamic waits, and Page Object Model frameworks.',
     icon: 'Globe',
     sortOrder: 2,
     parentCategoryId: null,
@@ -54,7 +56,8 @@ const requiredCategories = [
     id: 'cat-playwright',
     slug: 'playwright',
     title: 'Playwright',
-    description: 'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
+    description:
+      'Modern end-to-end automation with Microsoft Playwright, auto-waiting, trace viewer, and network mocking.',
     icon: 'Code2',
     sortOrder: 3,
     parentCategoryId: null,
@@ -64,7 +67,8 @@ const requiredCategories = [
     id: 'cat-api-testing',
     slug: 'api-testing',
     title: 'API Testing',
-    description: 'Contract testing with Pact, Postman/Newman automation, GraphQL validation, and performance tests.',
+    description:
+      'Contract testing with Pact, Postman/Newman automation, GraphQL validation, and performance tests.',
     icon: 'Layers',
     sortOrder: 4,
     parentCategoryId: null,
@@ -74,7 +78,8 @@ const requiredCategories = [
     id: 'cat-appium',
     slug: 'appium',
     title: 'Appium',
-    description: 'Cross-platform mobile automation for iOS and Android native, hybrid, and web applications.',
+    description:
+      'Cross-platform mobile automation for iOS and Android native, hybrid, and web applications.',
     icon: 'Smartphone',
     sortOrder: 5,
     parentCategoryId: null,
@@ -84,7 +89,8 @@ const requiredCategories = [
     id: 'cat-rest-assured',
     slug: 'rest-assured',
     title: 'Rest Assured',
-    description: 'REST Assured Java automation, JSON schema validation, OAuth2, and scalable API testing.',
+    description:
+      'REST Assured Java automation, JSON schema validation, OAuth2, and scalable API testing.',
     icon: 'Server',
     sortOrder: 6,
     parentCategoryId: null,
@@ -94,7 +100,8 @@ const requiredCategories = [
     id: 'cat-git-cicd',
     slug: 'git-cicd',
     title: 'Git & CI/CD',
-    description: 'Continuous Integration and Continuous Delivery pipelines, automated test runs, and Git workflows.',
+    description:
+      'Continuous Integration and Continuous Delivery pipelines, automated test runs, and Git workflows.',
     icon: 'GitBranch',
     sortOrder: 7,
     parentCategoryId: null,
@@ -104,7 +111,8 @@ const requiredCategories = [
     id: 'cat-github-actions',
     slug: 'github-actions',
     title: 'GitHub Actions',
-    description: 'Automated test execution, matrix runs, secrets management, and custom composite actions.',
+    description:
+      'Automated test execution, matrix runs, secrets management, and custom composite actions.',
     icon: 'Workflow',
     sortOrder: 8,
     parentCategoryId: 'cat-git-cicd',
@@ -114,7 +122,8 @@ const requiredCategories = [
     id: 'cat-apm-performance',
     slug: 'apm-performance',
     title: 'APM & Performance Testing',
-    description: 'Application Performance Monitoring, JMeter load testing, distributed tracing, and metrics.',
+    description:
+      'Application Performance Monitoring, JMeter load testing, distributed tracing, and metrics.',
     icon: 'Activity',
     sortOrder: 9,
     parentCategoryId: null,
@@ -134,7 +143,8 @@ const requiredCategories = [
     id: 'cat-jenkins',
     slug: 'jenkins',
     title: 'Jenkins',
-    description: 'Declarative Jenkins Pipelines, master-agent architecture, and Allure integration.',
+    description:
+      'Declarative Jenkins Pipelines, master-agent architecture, and Allure integration.',
     icon: 'Cpu',
     sortOrder: 11,
     parentCategoryId: 'cat-git-cicd',
@@ -142,8 +152,8 @@ const requiredCategories = [
   },
 ];
 
-requiredCategories.forEach(rc => {
-  const existing = store.academyCategories.find(c => c.id === rc.id || c.slug === rc.slug);
+requiredCategories.forEach((rc) => {
+  const existing = store.academyCategories.find((c) => c.id === rc.id || c.slug === rc.slug);
   if (existing) {
     existing.title = rc.title;
     existing.slug = rc.slug;
@@ -190,9 +200,21 @@ function createStandardLesson(courseId, modId, modIdx, lsnIdx, title, customData
           `When implementing ${title}, automation architects balance test execution velocity against system isolation depth to ensure resilient, reproducible outcomes across both local and CI/CD execution environments.`,
         ],
         terminology: [
-          { term: 'Deterministic Verification', definition: 'A test run that yields identical outcomes on every execution given identical inputs and preconditions.' },
-          { term: 'Boundary Condition', definition: 'An input value or state transition at the extreme edge of an equivalence partition.' },
-          { term: 'Shift-Left Verification', definition: 'Integrating automated quality gates early in the design and code phases to prevent defects.' },
+          {
+            term: 'Deterministic Verification',
+            definition:
+              'A test run that yields identical outcomes on every execution given identical inputs and preconditions.',
+          },
+          {
+            term: 'Boundary Condition',
+            definition:
+              'An input value or state transition at the extreme edge of an equivalence partition.',
+          },
+          {
+            term: 'Shift-Left Verification',
+            definition:
+              'Integrating automated quality gates early in the design and code phases to prevent defects.',
+          },
         ],
         practicalUnderstanding: `QA professionals utilize ${title} to transform complex customer journeys into atomic, repeatable verification steps without brittle manual dependencies.`,
       },
@@ -201,29 +223,82 @@ function createStandardLesson(courseId, modId, modIdx, lsnIdx, title, customData
         title: `${title} Execution Architecture`,
         caption: `Runtime lifecycle and component flow for ${title}`,
         nodes: [
-          { id: '1', label: '1. Test Fixture Initialization', subtitle: 'Driver / Client setup', badge: 'Precondition', highlight: false },
-          { id: '2', label: '2. Action Dispatch', subtitle: 'Execute command or payload', badge: 'Execution', highlight: true },
-          { id: '3', label: '3. State Synchronization', subtitle: 'Await dynamic DOM/network stabilization', badge: 'Wait Guard', highlight: false },
-          { id: '4', label: '4. Assertion Engine', subtitle: 'Assert expected invariants', badge: 'Verification', highlight: true },
+          {
+            id: '1',
+            label: '1. Test Fixture Initialization',
+            subtitle: 'Driver / Client setup',
+            badge: 'Precondition',
+            highlight: false,
+          },
+          {
+            id: '2',
+            label: '2. Action Dispatch',
+            subtitle: 'Execute command or payload',
+            badge: 'Execution',
+            highlight: true,
+          },
+          {
+            id: '3',
+            label: '3. State Synchronization',
+            subtitle: 'Await dynamic DOM/network stabilization',
+            badge: 'Wait Guard',
+            highlight: false,
+          },
+          {
+            id: '4',
+            label: '4. Assertion Engine',
+            subtitle: 'Assert expected invariants',
+            badge: 'Verification',
+            highlight: true,
+          },
         ],
         componentsExplanation: [
-          { name: 'Driver / Client', details: 'Directly coordinates protocol communication with the system under test.' },
-          { name: 'Synchronization Layer', details: 'Guarantees race-condition prevention before assertion execution.' },
-          { name: 'Assertion Engine', details: 'Evaluates state invariants and generates rich failure diagnostics.' },
+          {
+            name: 'Driver / Client',
+            details: 'Directly coordinates protocol communication with the system under test.',
+          },
+          {
+            name: 'Synchronization Layer',
+            details: 'Guarantees race-condition prevention before assertion execution.',
+          },
+          {
+            name: 'Assertion Engine',
+            details: 'Evaluates state invariants and generates rich failure diagnostics.',
+          },
         ],
       },
       howItWorks: {
         internalMechanism: `${title} coordinates protocol communication, state verification, and assertion engines to evaluate system correctness.`,
         steps: [
-          { stepNumber: 1, title: 'Initialize Test Fixture', description: 'Configure drivers, client sessions, and isolated test preconditions.' },
-          { stepNumber: 2, title: 'Execute Action & Dispatch Request', description: 'Trigger user interactions, HTTP dispatches, or state mutations.' },
-          { stepNumber: 3, title: 'Dynamic Synchronization', description: 'Await asynchronous state stabilization using zero-flake wait conditions.' },
-          { stepNumber: 4, title: 'Assert State & Teardown', description: 'Verify atomic assertions and cleanly release hardware resources.' },
+          {
+            stepNumber: 1,
+            title: 'Initialize Test Fixture',
+            description: 'Configure drivers, client sessions, and isolated test preconditions.',
+          },
+          {
+            stepNumber: 2,
+            title: 'Execute Action & Dispatch Request',
+            description: 'Trigger user interactions, HTTP dispatches, or state mutations.',
+          },
+          {
+            stepNumber: 3,
+            title: 'Dynamic Synchronization',
+            description: 'Await asynchronous state stabilization using zero-flake wait conditions.',
+          },
+          {
+            stepNumber: 4,
+            title: 'Assert State & Teardown',
+            description: 'Verify atomic assertions and cleanly release hardware resources.',
+          },
         ],
       },
       practicalImplementation: {
         description: `Implementing ${title} in enterprise test automation frameworks requires modular layering and explicit synchronization.`,
-        prerequisites: ['Configured test runner', 'Runtime dependencies installed', 'Isolated environment access'],
+        prerequisites: [
+          'Configured test runner',
+          'Runtime dependencies installed',
+          'Isolated environment access',
+        ],
         steps: [
           'Declare isolated preconditions and test data fixtures.',
           'Execute the primary interaction through domain-specific abstractions.',
@@ -243,13 +318,15 @@ function createStandardLesson(courseId, modId, modIdx, lsnIdx, title, customData
         {
           title: 'Automated Regression Suite Quality Gate',
           scenario: `Validating critical paths and boundary transitions for ${title} on every Pull Request merge.`,
-          enterpriseApplication: 'Executing 500+ parallel tests in under 10 minutes within GitHub Actions or Jenkins pipelines.',
+          enterpriseApplication:
+            'Executing 500+ parallel tests in under 10 minutes within GitHub Actions or Jenkins pipelines.',
         },
       ],
       commonProblems: [
         {
           error: 'ElementNotInteractableException / TimeoutError',
-          rootCause: 'Element is present in DOM but obscured by animation overlays or disabled pending network payload.',
+          rootCause:
+            'Element is present in DOM but obscured by animation overlays or disabled pending network payload.',
           troubleshootingSteps: [
             'Inspect network activity to ensure pending AJAX requests resolve.',
             'Replace static Thread.sleep with explicit state condition polling.',
@@ -262,13 +339,15 @@ function createStandardLesson(courseId, modId, modIdx, lsnIdx, title, customData
         {
           title: 'Fail-Fast Precondition Checks',
           category: 'Industry Standard',
-          recommendation: 'Verify environment connectivity and database seeding before launching heavy UI browser sessions.',
+          recommendation:
+            'Verify environment connectivity and database seeding before launching heavy UI browser sessions.',
           impact: 'Preserves CI worker compute time and eliminates cascading false positives.',
         },
         {
           title: 'Zero Hardcoded Sleep Intervals',
           category: 'Performance',
-          recommendation: 'Always utilize dynamic, event-driven polling waits instead of static thread sleep timers.',
+          recommendation:
+            'Always utilize dynamic, event-driven polling waits instead of static thread sleep timers.',
           impact: 'Reduces overall test execution duration by 40% - 60%.',
         },
       ],
@@ -303,8 +382,13 @@ function createStandardLesson(courseId, modId, modIdx, lsnIdx, title, customData
           `Deterministic assertions and dynamic waits are mandatory to prevent flakiness in continuous integration.`,
           `Abstract low-level framework APIs behind reusable service and page object layers.`,
         ],
-        keyTerminology: ['Deterministic Verification', 'Zero-Flake Synchronization', 'Idempotent Execution'],
-        nextSteps: 'Proceed to next module to integrate advanced assertions and framework abstractions.',
+        keyTerminology: [
+          'Deterministic Verification',
+          'Zero-Flake Synchronization',
+          'Idempotent Execution',
+        ],
+        nextSteps:
+          'Proceed to next module to integrate advanced assertions and framework abstractions.',
       },
     };
   }
@@ -343,9 +427,12 @@ const richFoundationalLessons = {
   // 1. Selenium
   'selenium-what-is-selenium': {
     overview: {
-      whatIsIt: 'Selenium is the industry-standard open-source automated testing suite for web applications across multiple browsers and platforms.',
-      whyImportant: 'It powers browser automation across enterprise regression suites, supporting W3C standard WebDriver protocols natively recognized by all major browser vendors.',
-      whereUsed: 'End-to-end regression testing, cross-browser validation (Chrome, Firefox, Safari, Edge), and large-scale parallel test execution grids.',
+      whatIsIt:
+        'Selenium is the industry-standard open-source automated testing suite for web applications across multiple browsers and platforms.',
+      whyImportant:
+        'It powers browser automation across enterprise regression suites, supporting W3C standard WebDriver protocols natively recognized by all major browser vendors.',
+      whereUsed:
+        'End-to-end regression testing, cross-browser validation (Chrome, Firefox, Safari, Edge), and large-scale parallel test execution grids.',
     },
     learningObjectives: [
       'Understand the history, evolution, and W3C standardization of Selenium WebDriver.',
@@ -359,40 +446,114 @@ const richFoundationalLessons = {
         'In Selenium 4, the architecture was fully standardized: client language bindings (Java, Python, C#, JS) communicate directly over HTTP/HTTPS with browser drivers (ChromeDriver, GeckoDriver, msedgedriver) without legacy JSON Wire Protocol encoding wrappers.',
       ],
       terminology: [
-        { term: 'W3C WebDriver Protocol', definition: 'The official W3C standard RESTful web service API exposed by browser drivers to control user agents.' },
-        { term: 'Browser Driver', definition: 'A standalone executable (e.g. chromedriver.exe) that translates W3C HTTP commands into browser internal commands.' },
-        { term: 'BiDi (Bidirectional) API', definition: 'Next-gen protocol enabling real-time WebSocket communication for console logs, DOM mutations, and network interception.' },
+        {
+          term: 'W3C WebDriver Protocol',
+          definition:
+            'The official W3C standard RESTful web service API exposed by browser drivers to control user agents.',
+        },
+        {
+          term: 'Browser Driver',
+          definition:
+            'A standalone executable (e.g. chromedriver.exe) that translates W3C HTTP commands into browser internal commands.',
+        },
+        {
+          term: 'BiDi (Bidirectional) API',
+          definition:
+            'Next-gen protocol enabling real-time WebSocket communication for console logs, DOM mutations, and network interception.',
+        },
       ],
-      practicalUnderstanding: 'SDETs write test scripts in Java or Python. The script dispatches HTTP commands to ChromeDriver, which uses Chrome DevTools Protocol / C++ APIs to drive real browser processes.',
+      practicalUnderstanding:
+        'SDETs write test scripts in Java or Python. The script dispatches HTTP commands to ChromeDriver, which uses Chrome DevTools Protocol / C++ APIs to drive real browser processes.',
     },
     architectureDiagram: {
       type: 'client-server',
       title: 'Selenium 4 W3C WebDriver Architecture',
       caption: 'Direct W3C HTTP/HTTPS communication between Client Bindings and Browser Drivers',
       nodes: [
-        { id: '1', label: 'Selenium Client Library', subtitle: 'Java / Python / C# Test Scripts', badge: 'Client', highlight: false },
-        { id: '2', label: 'W3C WebDriver Protocol', subtitle: 'RESTful HTTP / JSON over HTTPS', badge: 'Transport', highlight: true },
-        { id: '3', label: 'Browser Drivers', subtitle: 'ChromeDriver / GeckoDriver / EdgeDriver', badge: 'Driver', highlight: false },
-        { id: '4', label: 'Target Browsers', subtitle: 'Chrome / Firefox / Edge / Safari', badge: 'User Agent', highlight: true },
+        {
+          id: '1',
+          label: 'Selenium Client Library',
+          subtitle: 'Java / Python / C# Test Scripts',
+          badge: 'Client',
+          highlight: false,
+        },
+        {
+          id: '2',
+          label: 'W3C WebDriver Protocol',
+          subtitle: 'RESTful HTTP / JSON over HTTPS',
+          badge: 'Transport',
+          highlight: true,
+        },
+        {
+          id: '3',
+          label: 'Browser Drivers',
+          subtitle: 'ChromeDriver / GeckoDriver / EdgeDriver',
+          badge: 'Driver',
+          highlight: false,
+        },
+        {
+          id: '4',
+          label: 'Target Browsers',
+          subtitle: 'Chrome / Firefox / Edge / Safari',
+          badge: 'User Agent',
+          highlight: true,
+        },
       ],
       componentsExplanation: [
-        { name: 'Selenium Client Bindings', details: 'Language-specific SDKs providing WebDriver, WebElement, and WebDriverWait classes.' },
-        { name: 'W3C Standard Endpoint', details: 'Enforces uniform command structure across all browser implementations without dialect mismatch.' },
-        { name: 'Browser Driver Process', details: 'Lightweight HTTP server running locally on machine or container translating endpoints to native browser events.' },
-        { name: 'Browser Engine', details: 'Renders DOM, runs JavaScript V8, and generates graphical display.' },
+        {
+          name: 'Selenium Client Bindings',
+          details:
+            'Language-specific SDKs providing WebDriver, WebElement, and WebDriverWait classes.',
+        },
+        {
+          name: 'W3C Standard Endpoint',
+          details:
+            'Enforces uniform command structure across all browser implementations without dialect mismatch.',
+        },
+        {
+          name: 'Browser Driver Process',
+          details:
+            'Lightweight HTTP server running locally on machine or container translating endpoints to native browser events.',
+        },
+        {
+          name: 'Browser Engine',
+          details: 'Renders DOM, runs JavaScript V8, and generates graphical display.',
+        },
       ],
     },
     howItWorks: {
-      internalMechanism: 'Test methods invoke WebDriver commands which serialize into standard HTTP POST/GET requests dispatched to the driver port.',
+      internalMechanism:
+        'Test methods invoke WebDriver commands which serialize into standard HTTP POST/GET requests dispatched to the driver port.',
       steps: [
-        { stepNumber: 1, title: 'Session Creation', description: 'Client issues POST /session with Capabilities; browser driver boots browser binary.' },
-        { stepNumber: 2, title: 'Navigation', description: 'POST /session/{id}/url navigates browser to URL and blocks until document.readyState == complete.' },
-        { stepNumber: 3, title: 'Element Resolution', description: 'POST /session/{id}/element locates WebElement via CSS/XPath and returns unique element ID.' },
-        { stepNumber: 4, title: 'User Interaction', description: 'POST /session/{id}/element/{elementId}/click dispatches native mouse event.' },
+        {
+          stepNumber: 1,
+          title: 'Session Creation',
+          description:
+            'Client issues POST /session with Capabilities; browser driver boots browser binary.',
+        },
+        {
+          stepNumber: 2,
+          title: 'Navigation',
+          description:
+            'POST /session/{id}/url navigates browser to URL and blocks until document.readyState == complete.',
+        },
+        {
+          stepNumber: 3,
+          title: 'Element Resolution',
+          description:
+            'POST /session/{id}/element locates WebElement via CSS/XPath and returns unique element ID.',
+        },
+        {
+          stepNumber: 4,
+          title: 'User Interaction',
+          description:
+            'POST /session/{id}/element/{elementId}/click dispatches native mouse event.',
+        },
       ],
     },
     practicalImplementation: {
-      description: 'Building an enterprise-ready Selenium 4 framework requires driver encapsulation, explicit wait strategies, and clean teardown lifecycles.',
+      description:
+        'Building an enterprise-ready Selenium 4 framework requires driver encapsulation, explicit wait strategies, and clean teardown lifecycles.',
       prerequisites: ['JDK 17+', 'Maven or Gradle', 'Chrome / Firefox browser installed'],
       steps: [
         'Add Selenium Java and TestNG dependencies to pom.xml.',
@@ -408,27 +569,33 @@ const richFoundationalLessons = {
         language: 'java',
         filename: 'SeleniumEnterpriseTest.java',
         code: `package com.intelligentqa.selenium;\n\nimport org.openqa.selenium.By;\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.WebElement;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.openqa.selenium.chrome.ChromeOptions;\nimport org.openqa.selenium.support.ui.ExpectedConditions;\nimport org.openqa.selenium.support.ui.WebDriverWait;\nimport org.testng.Assert;\nimport org.testng.annotations.AfterMethod;\nimport org.testng.annotations.BeforeMethod;\nimport org.testng.annotations.Test;\nimport java.time.Duration;\n\npublic class SeleniumEnterpriseTest {\n    private WebDriver driver;\n    private WebDriverWait wait;\n\n    @BeforeMethod\n    public void setUp() {\n        ChromeOptions options = new ChromeOptions();\n        options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage");\n        driver = new ChromeDriver(options);\n        driver.manage().window().maximize();\n        wait = new WebDriverWait(driver, Duration.ofSeconds(10));\n    }\n\n    @Test\n    public void testSecureLoginFlow() {\n        driver.get("https://app.enterprise-qa.io/login");\n        WebElement userField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));\n        userField.sendKeys("sdet_lead@intelligentqa.io");\n        driver.findElement(By.id("password")).sendKeys("SecretToken!2026");\n        driver.findElement(By.cssSelector("button[type='submit']")).click();\n        WebElement welcomeBanner = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".dashboard-welcome")));\n        Assert.assertTrue(welcomeBanner.getText().contains("Welcome, SDET Lead"));\n    }\n\n    @AfterMethod\n    public void tearDown() {\n        if (driver != null) driver.quit();\n    }\n}`,
-        explanation: 'Uses Selenium 4 W3C capabilities, ChromeDriver manager, WebDriverWait with ExpectedConditions, and proper teardown.',
+        explanation:
+          'Uses Selenium 4 W3C capabilities, ChromeDriver manager, WebDriverWait with ExpectedConditions, and proper teardown.',
       },
       {
         title: 'Selenium Python PyTest Implementation',
         language: 'python',
         filename: 'test_selenium_login.py',
         code: `import pytest\nfrom selenium import webdriver\nfrom selenium.webdriver.common.by import By\nfrom selenium.webdriver.support.ui import WebDriverWait\nfrom selenium.webdriver.support import expected_conditions as EC\nfrom selenium.webdriver.chrome.options import Options\n\n@pytest.fixture\ndef driver():\n    options = Options()\n    options.add_argument("--headless=new")\n    driver = webdriver.Chrome(options=options)\n    yield driver\n    driver.quit()\n\ndef test_enterprise_login(driver):\n    driver.get("https://app.enterprise-qa.io/login")\n    wait = WebDriverWait(driver, 10)\n    user_input = wait.until(EC.element_to_be_clickable((By.ID, "username")))\n    user_input.send_keys("sdet_lead@intelligentqa.io")\n    driver.find_element(By.ID, "password").send_keys("SecretToken!2026")\n    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()\n    banner = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".dashboard-welcome")))\n    assert "Welcome" in banner.text`,
-        explanation: 'PyTest fixture handling browser lifecycle with headless Chrome and explicit waits.',
+        explanation:
+          'PyTest fixture handling browser lifecycle with headless Chrome and explicit waits.',
       },
     ],
     qaUseCases: [
       {
         title: 'Nightly Cross-Browser Regression Grid',
-        scenario: 'Validating 1,200 critical customer journeys across Chrome, Edge, and Firefox simultaneously.',
-        enterpriseApplication: 'Integrated with AWS Fargate Dockerized Selenium Grid running 50 concurrent browser sessions.',
+        scenario:
+          'Validating 1,200 critical customer journeys across Chrome, Edge, and Firefox simultaneously.',
+        enterpriseApplication:
+          'Integrated with AWS Fargate Dockerized Selenium Grid running 50 concurrent browser sessions.',
       },
     ],
     commonProblems: [
       {
-        error: 'SessionNotCreatedException: This version of ChromeDriver only supports Chrome version XX',
-        rootCause: 'Local installed Chrome browser auto-updated while ChromeDriver binary remained at older major version.',
+        error:
+          'SessionNotCreatedException: This version of ChromeDriver only supports Chrome version XX',
+        rootCause:
+          'Local installed Chrome browser auto-updated while ChromeDriver binary remained at older major version.',
         troubleshootingSteps: [
           'In Selenium 4.6+, use built-in Selenium Manager to automatically manage driver versions.',
           'Verify browser and driver versions match: google-chrome --version vs chromedriver --version.',
@@ -438,7 +605,8 @@ const richFoundationalLessons = {
       },
       {
         error: 'StaleElementReferenceException: element is not attached to the page document',
-        rootCause: 'DOM refreshed via JavaScript AJAX re-render after WebElement was found, invalidating internal reference.',
+        rootCause:
+          'DOM refreshed via JavaScript AJAX re-render after WebElement was found, invalidating internal reference.',
         troubleshootingSteps: [
           'Re-locate element immediately prior to interaction.',
           'Use Page Object Model with dynamic locator resolution instead of cached WebElement references.',
@@ -451,13 +619,16 @@ const richFoundationalLessons = {
       {
         title: 'Always driver.quit() in Finally Block',
         category: 'Industry Standard',
-        recommendation: 'Use driver.quit() rather than driver.close() to kill both browser window and chromedriver background process.',
-        impact: 'Prevents zombie driver processes consuming 100% memory and crashing CI worker nodes.',
+        recommendation:
+          'Use driver.quit() rather than driver.close() to kill both browser window and chromedriver background process.',
+        impact:
+          'Prevents zombie driver processes consuming 100% memory and crashing CI worker nodes.',
       },
       {
         title: 'Zero Thread.sleep() Rule',
         category: 'Performance',
-        recommendation: 'Replace all static Thread.sleep() calls with explicit WebDriverWait conditions.',
+        recommendation:
+          'Replace all static Thread.sleep() calls with explicit WebDriverWait conditions.',
         impact: 'Reduces suite duration by up to 60% and eliminates timing-dependent flakiness.',
       },
     ],
@@ -480,12 +651,14 @@ const richFoundationalLessons = {
       {
         level: 'Intermediate',
         question: 'What is the architectural difference between driver.close() and driver.quit()?',
-        answer: 'driver.close() closes the currently active browser window. If multiple tabs or windows are open, the session and chromedriver process remain alive. driver.quit() sends a DELETE /session command to the browser driver, closing all associated windows, tearing down the driver process, and releasing memory.',
+        answer:
+          'driver.close() closes the currently active browser window. If multiple tabs or windows are open, the session and chromedriver process remain alive. driver.quit() sends a DELETE /session command to the browser driver, closing all associated windows, tearing down the driver process, and releasing memory.',
       },
       {
         level: 'Architect-Level',
         question: 'Explain how Selenium 4 communicates with browsers without JSON Wire Protocol.',
-        answer: 'In Selenium 3, client commands were wrapped in JSON Wire Protocol and often decoded via proxy translation layers. In Selenium 4, all communication strictly implements the W3C WebDriver specification (RFC 7497) natively supported by browser drivers. Additionally, Selenium 4 introduces BiDi APIs operating over WebSockets for event-driven listening of DOM events and console logs.',
+        answer:
+          'In Selenium 3, client commands were wrapped in JSON Wire Protocol and often decoded via proxy translation layers. In Selenium 4, all communication strictly implements the W3C WebDriver specification (RFC 7497) natively supported by browser drivers. Additionally, Selenium 4 introduces BiDi APIs operating over WebSockets for event-driven listening of DOM events and console logs.',
       },
     ],
     summary: {
@@ -494,17 +667,27 @@ const richFoundationalLessons = {
         'Always clean up sessions with driver.quit() to avoid CI resource exhaustion.',
         'Use explicit WebDriverWait and ExpectedConditions to ensure deterministic execution.',
       ],
-      keyTerminology: ['W3C Protocol', 'ChromeDriver', 'Selenium Manager', 'BiDi API', 'StaleElementReferenceException'],
-      nextSteps: 'Proceed to Module 2 to master WebDriver Commands, Browser Options, and Window Management.',
+      keyTerminology: [
+        'W3C Protocol',
+        'ChromeDriver',
+        'Selenium Manager',
+        'BiDi API',
+        'StaleElementReferenceException',
+      ],
+      nextSteps:
+        'Proceed to Module 2 to master WebDriver Commands, Browser Options, and Window Management.',
     },
   },
 
   // 2. Playwright
   'playwright-playwright-architecture-browser-contexts': {
     overview: {
-      whatIsIt: 'Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.',
-      whyImportant: 'It eliminates test flakiness by design through built-in actionability checks, isolated browser contexts, and bidirectional WebSocket communication.',
-      whereUsed: 'Enterprise web automation, single-page application (React, Angular, Vue) validation, API testing, and visual regression suites.',
+      whatIsIt:
+        'Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.',
+      whyImportant:
+        'It eliminates test flakiness by design through built-in actionability checks, isolated browser contexts, and bidirectional WebSocket communication.',
+      whereUsed:
+        'Enterprise web automation, single-page application (React, Angular, Vue) validation, API testing, and visual regression suites.',
     },
     learningObjectives: [
       'Master the core architecture: Browser -> BrowserContext -> Page.',
@@ -518,37 +701,111 @@ const richFoundationalLessons = {
         'This direct communication enables instantaneous event listening (network requests, console logs, DOM mutations) and built-in auto-waiting: before clicking an element, Playwright automatically ensures it is attached, visible, stable, enabled, and receiving pointer events.',
       ],
       terminology: [
-        { term: 'BrowserContext', definition: 'An isolated incognito-like session with independent cookies, cache, and localStorage that boots in milliseconds.' },
-        { term: 'Actionability Checks', definition: 'Automatic verification that an element is visible, stable, enabled, and interactable before dispatching actions.' },
-        { term: 'Trace Viewer', definition: 'A deep GUI inspector capturing DOM snapshots, action timelines, network watermarks, and console logs per test.' },
+        {
+          term: 'BrowserContext',
+          definition:
+            'An isolated incognito-like session with independent cookies, cache, and localStorage that boots in milliseconds.',
+        },
+        {
+          term: 'Actionability Checks',
+          definition:
+            'Automatic verification that an element is visible, stable, enabled, and interactable before dispatching actions.',
+        },
+        {
+          term: 'Trace Viewer',
+          definition:
+            'A deep GUI inspector capturing DOM snapshots, action timelines, network watermarks, and console logs per test.',
+        },
       ],
-      practicalUnderstanding: 'SDETs test multi-user scenarios (e.g. buyer and seller interacting simultaneously) in a single test script by launching two lightweight BrowserContexts in parallel.',
+      practicalUnderstanding:
+        'SDETs test multi-user scenarios (e.g. buyer and seller interacting simultaneously) in a single test script by launching two lightweight BrowserContexts in parallel.',
     },
     architectureDiagram: {
       type: 'architecture',
       title: 'Playwright WebSocket Multi-Context Architecture',
       caption: 'Single Browser Process hosting multiple isolated Browser Contexts over WebSocket',
       nodes: [
-        { id: '1', label: 'Playwright Node / TS Script', subtitle: 'Test Runner & Fixtures', badge: 'Client', highlight: false },
-        { id: '2', label: 'Persistent WebSocket', subtitle: 'Bidirectional CDP / Juggler Protocol', badge: 'Protocol', highlight: true },
-        { id: '3', label: 'Single Browser Engine', subtitle: 'Chromium / WebKit / Firefox', badge: 'Process', highlight: false },
-        { id: '4', label: 'Context A (User 1)', subtitle: 'Clean Cookies & Cache', badge: 'Context', highlight: true },
-        { id: '5', label: 'Context B (Admin)', subtitle: 'Clean Cookies & Cache', badge: 'Context', highlight: true },
+        {
+          id: '1',
+          label: 'Playwright Node / TS Script',
+          subtitle: 'Test Runner & Fixtures',
+          badge: 'Client',
+          highlight: false,
+        },
+        {
+          id: '2',
+          label: 'Persistent WebSocket',
+          subtitle: 'Bidirectional CDP / Juggler Protocol',
+          badge: 'Protocol',
+          highlight: true,
+        },
+        {
+          id: '3',
+          label: 'Single Browser Engine',
+          subtitle: 'Chromium / WebKit / Firefox',
+          badge: 'Process',
+          highlight: false,
+        },
+        {
+          id: '4',
+          label: 'Context A (User 1)',
+          subtitle: 'Clean Cookies & Cache',
+          badge: 'Context',
+          highlight: true,
+        },
+        {
+          id: '5',
+          label: 'Context B (Admin)',
+          subtitle: 'Clean Cookies & Cache',
+          badge: 'Context',
+          highlight: true,
+        },
       ],
       componentsExplanation: [
-        { name: 'Browser Instance', details: 'The underlying OS process launched once per worker thread.' },
-        { name: 'Browser Context', details: 'Zero-overhead isolated session providing complete state isolation between tests in under 10ms.' },
+        {
+          name: 'Browser Instance',
+          details: 'The underlying OS process launched once per worker thread.',
+        },
+        {
+          name: 'Browser Context',
+          details:
+            'Zero-overhead isolated session providing complete state isolation between tests in under 10ms.',
+        },
         { name: 'Page', details: 'A single tab or window inside a context.' },
-        { name: 'Locator Engine', details: 'Lazy-evaluated query engine with built-in auto-waiting and strictness enforcement.' },
+        {
+          name: 'Locator Engine',
+          details:
+            'Lazy-evaluated query engine with built-in auto-waiting and strictness enforcement.',
+        },
       ],
     },
     howItWorks: {
-      internalMechanism: 'Commands send JSON-RPC messages over a persistent WebSocket; the browser engine returns instantaneous promises upon DOM actionability.',
+      internalMechanism:
+        'Commands send JSON-RPC messages over a persistent WebSocket; the browser engine returns instantaneous promises upon DOM actionability.',
       steps: [
-        { stepNumber: 1, title: 'Context Creation', description: 'Browser boots once; each test receives a brand new BrowserContext in <10ms.' },
-        { stepNumber: 2, title: 'Actionability Verification', description: 'Playwright verifies element is attached, visible, stable (no animation), enabled, and un-obscured.' },
-        { stepNumber: 3, title: 'Atomic Execution', description: 'Action dispatches natively into browser event loop.' },
-        { stepNumber: 4, title: 'Automatic Trace Recording', description: 'Snapshots captured before and after each action for instant post-mortem analysis.' },
+        {
+          stepNumber: 1,
+          title: 'Context Creation',
+          description:
+            'Browser boots once; each test receives a brand new BrowserContext in <10ms.',
+        },
+        {
+          stepNumber: 2,
+          title: 'Actionability Verification',
+          description:
+            'Playwright verifies element is attached, visible, stable (no animation), enabled, and un-obscured.',
+        },
+        {
+          stepNumber: 3,
+          title: 'Atomic Execution',
+          description: 'Action dispatches natively into browser event loop.',
+        },
+        {
+          stepNumber: 4,
+          title: 'Automatic Trace Recording',
+          description:
+            'Snapshots captured before and after each action for instant post-mortem analysis.',
+        },
       ],
     },
     codeExamples: [
@@ -557,20 +814,24 @@ const richFoundationalLessons = {
         language: 'typescript',
         filename: 'e2e-enterprise.spec.ts',
         code: `import { test, expect } from '@playwright/test';\n\ntest.describe('Enterprise Playwright Order Flow', () => {\n  test('completes checkout with network mocking and state verification', async ({ page }) => {\n    // 1. Mock external payment gateway\n    await page.route('**/api/v1/payments', async (route) => {\n      await route.fulfill({\n        status: 200,\n        contentType: 'application/json',\n        body: JSON.stringify({ status: 'APPROVED', transactionId: 'TXN-9988-OK' }),\n      });\n    });\n\n    // 2. Navigate and leverage locator-first queries\n    await page.goto('/catalog');\n    await page.getByRole('button', { name: 'Add to Cart' }).first().click();\n    \n    // 3. Auto-waiting handles modal opening without arbitrary sleeps\n    await page.getByRole('link', { name: 'Cart' }).click();\n    await page.getByRole('button', { name: 'Confirm Purchase' }).click();\n\n    // 4. Web-first assertion auto-retries until condition succeeds\n    await expect(page.getByTestId('confirmation-banner')).toHaveText(/Order #.*Placed Successfully/);\n  });\n});`,
-        explanation: 'Features network route interception, getByRole locators, auto-waiting actions, and web-first regex assertions.',
+        explanation:
+          'Features network route interception, getByRole locators, auto-waiting actions, and web-first regex assertions.',
       },
     ],
     qaUseCases: [
       {
         title: 'Parallel Matrix CI Pipeline',
-        scenario: 'Running 300 tests across Chromium, Firefox, and WebKit on 8 parallel workers in under 3 minutes.',
-        enterpriseApplication: 'GitHub Actions matrix workflow with sharding (--shard=1/4) and automated Allure + Trace Viewer artifact publishing.',
+        scenario:
+          'Running 300 tests across Chromium, Firefox, and WebKit on 8 parallel workers in under 3 minutes.',
+        enterpriseApplication:
+          'GitHub Actions matrix workflow with sharding (--shard=1/4) and automated Allure + Trace Viewer artifact publishing.',
       },
     ],
     commonProblems: [
       {
         error: 'Error: strict mode violation: locator("button") resolved to 3 elements',
-        rootCause: 'Locator query matched multiple elements on page; Playwright enforces strictness to prevent accidental interaction.',
+        rootCause:
+          'Locator query matched multiple elements on page; Playwright enforces strictness to prevent accidental interaction.',
         troubleshootingSteps: [
           'Narrow locator using role, accessible name, or text filter: page.getByRole("button", { name: "Submit" }).',
           'Use .first(), .last(), or .nth(i) if multiple identical elements are intended.',
@@ -583,14 +844,18 @@ const richFoundationalLessons = {
       {
         title: 'Use User-Facing Locators (Role & Label)',
         category: 'Industry Standard',
-        recommendation: 'Prioritize getByRole(), getByLabel(), and getByText() over brittle CSS selectors or deep XPaths.',
-        impact: 'Ensures test resilience against redesigns and implicitly verifies accessibility (a11y).',
+        recommendation:
+          'Prioritize getByRole(), getByLabel(), and getByText() over brittle CSS selectors or deep XPaths.',
+        impact:
+          'Ensures test resilience against redesigns and implicitly verifies accessibility (a11y).',
       },
       {
         title: 'Trace on First Retry in CI',
         category: 'Maintainability',
-        recommendation: 'Configure trace: "on-first-retry" in playwright.config.ts to keep passing CI runs fast while debugging failed tests.',
-        impact: 'Saves GBs of storage while providing video, network traces, and console logs for flaky tests.',
+        recommendation:
+          'Configure trace: "on-first-retry" in playwright.config.ts to keep passing CI runs fast while debugging failed tests.',
+        impact:
+          'Saves GBs of storage while providing video, network traces, and console logs for flaky tests.',
       },
     ],
     comparison: {
@@ -610,13 +875,17 @@ const richFoundationalLessons = {
     interviewQuestions: [
       {
         level: 'Intermediate',
-        question: 'What is the 5-point Actionability Check performed before Playwright clicks an element?',
-        answer: 'Before dispatching a click, Playwright ensures: 1) Attached to DOM, 2) Visible in viewport, 3) Stable (not animating or transitioning), 4) Enabled (not disabled), 5) Receives pointer events (not obscured by an overlay, modal, or toast).',
+        question:
+          'What is the 5-point Actionability Check performed before Playwright clicks an element?',
+        answer:
+          'Before dispatching a click, Playwright ensures: 1) Attached to DOM, 2) Visible in viewport, 3) Stable (not animating or transitioning), 4) Enabled (not disabled), 5) Receives pointer events (not obscured by an overlay, modal, or toast).',
       },
       {
         level: 'Architect-Level',
-        question: 'How does Playwright BrowserContext achieve 10x faster test isolation than Selenium new browser sessions?',
-        answer: 'Selenium launches a complete native OS browser process for every test (or requires extensive cookie-clearing logic). Playwright boots a single browser process and spawns lightweight BrowserContexts using isolated in-memory storage, cache, and cookie jars (equivalent to an incognito window), spinning up in under 10 milliseconds.',
+        question:
+          'How does Playwright BrowserContext achieve 10x faster test isolation than Selenium new browser sessions?',
+        answer:
+          'Selenium launches a complete native OS browser process for every test (or requires extensive cookie-clearing logic). Playwright boots a single browser process and spawns lightweight BrowserContexts using isolated in-memory storage, cache, and cookie jars (equivalent to an incognito window), spinning up in under 10 milliseconds.',
       },
     ],
     summary: {
@@ -625,15 +894,25 @@ const richFoundationalLessons = {
         'BrowserContexts enable fast, state-isolated tests in parallel.',
         'Auto-waiting and Web-First assertions eliminate static waits entirely.',
       ],
-      keyTerminology: ['BrowserContext', 'Actionability Check', 'Strict Mode', 'Trace Viewer', 'Network Interception'],
-      nextSteps: 'Proceed to Module 2 to set up your project structure and configure playwright.config.ts.',
+      keyTerminology: [
+        'BrowserContext',
+        'Actionability Check',
+        'Strict Mode',
+        'Trace Viewer',
+        'Network Interception',
+      ],
+      nextSteps:
+        'Proceed to Module 2 to set up your project structure and configure playwright.config.ts.',
     },
   },
   'playwright-what-is-playwright': {
     overview: {
-      whatIsIt: 'Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.',
-      whyImportant: 'It eliminates test flakiness by design through built-in actionability checks, isolated browser contexts, and bidirectional WebSocket communication.',
-      whereUsed: 'Enterprise web automation, single-page application (React, Angular, Vue) validation, API testing, and visual regression suites.',
+      whatIsIt:
+        'Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.',
+      whyImportant:
+        'It eliminates test flakiness by design through built-in actionability checks, isolated browser contexts, and bidirectional WebSocket communication.',
+      whereUsed:
+        'Enterprise web automation, single-page application (React, Angular, Vue) validation, API testing, and visual regression suites.',
     },
     learningObjectives: [
       'Master the core architecture: Browser -> BrowserContext -> Page.',
@@ -647,37 +926,111 @@ const richFoundationalLessons = {
         'This direct communication enables instantaneous event listening (network requests, console logs, DOM mutations) and built-in auto-waiting: before clicking an element, Playwright automatically ensures it is attached, visible, stable, enabled, and receiving pointer events.',
       ],
       terminology: [
-        { term: 'BrowserContext', definition: 'An isolated incognito-like session with independent cookies, cache, and localStorage that boots in milliseconds.' },
-        { term: 'Actionability Checks', definition: 'Automatic verification that an element is visible, stable, enabled, and interactable before dispatching actions.' },
-        { term: 'Trace Viewer', definition: 'A deep GUI inspector capturing DOM snapshots, action timelines, network watermarks, and console logs per test.' },
+        {
+          term: 'BrowserContext',
+          definition:
+            'An isolated incognito-like session with independent cookies, cache, and localStorage that boots in milliseconds.',
+        },
+        {
+          term: 'Actionability Checks',
+          definition:
+            'Automatic verification that an element is visible, stable, enabled, and interactable before dispatching actions.',
+        },
+        {
+          term: 'Trace Viewer',
+          definition:
+            'A deep GUI inspector capturing DOM snapshots, action timelines, network watermarks, and console logs per test.',
+        },
       ],
-      practicalUnderstanding: 'SDETs test multi-user scenarios (e.g. buyer and seller interacting simultaneously) in a single test script by launching two lightweight BrowserContexts in parallel.',
+      practicalUnderstanding:
+        'SDETs test multi-user scenarios (e.g. buyer and seller interacting simultaneously) in a single test script by launching two lightweight BrowserContexts in parallel.',
     },
     architectureDiagram: {
       type: 'architecture',
       title: 'Playwright WebSocket Multi-Context Architecture',
       caption: 'Single Browser Process hosting multiple isolated Browser Contexts over WebSocket',
       nodes: [
-        { id: '1', label: 'Playwright Node / TS Script', subtitle: 'Test Runner & Fixtures', badge: 'Client', highlight: false },
-        { id: '2', label: 'Persistent WebSocket', subtitle: 'Bidirectional CDP / Juggler Protocol', badge: 'Protocol', highlight: true },
-        { id: '3', label: 'Single Browser Engine', subtitle: 'Chromium / WebKit / Firefox', badge: 'Process', highlight: false },
-        { id: '4', label: 'Context A (User 1)', subtitle: 'Clean Cookies & Cache', badge: 'Context', highlight: true },
-        { id: '5', label: 'Context B (Admin)', subtitle: 'Clean Cookies & Cache', badge: 'Context', highlight: true },
+        {
+          id: '1',
+          label: 'Playwright Node / TS Script',
+          subtitle: 'Test Runner & Fixtures',
+          badge: 'Client',
+          highlight: false,
+        },
+        {
+          id: '2',
+          label: 'Persistent WebSocket',
+          subtitle: 'Bidirectional CDP / Juggler Protocol',
+          badge: 'Protocol',
+          highlight: true,
+        },
+        {
+          id: '3',
+          label: 'Single Browser Engine',
+          subtitle: 'Chromium / WebKit / Firefox',
+          badge: 'Process',
+          highlight: false,
+        },
+        {
+          id: '4',
+          label: 'Context A (User 1)',
+          subtitle: 'Clean Cookies & Cache',
+          badge: 'Context',
+          highlight: true,
+        },
+        {
+          id: '5',
+          label: 'Context B (Admin)',
+          subtitle: 'Clean Cookies & Cache',
+          badge: 'Context',
+          highlight: true,
+        },
       ],
       componentsExplanation: [
-        { name: 'Browser Instance', details: 'The underlying OS process launched once per worker thread.' },
-        { name: 'Browser Context', details: 'Zero-overhead isolated session providing complete state isolation between tests in under 10ms.' },
+        {
+          name: 'Browser Instance',
+          details: 'The underlying OS process launched once per worker thread.',
+        },
+        {
+          name: 'Browser Context',
+          details:
+            'Zero-overhead isolated session providing complete state isolation between tests in under 10ms.',
+        },
         { name: 'Page', details: 'A single tab or window inside a context.' },
-        { name: 'Locator Engine', details: 'Lazy-evaluated query engine with built-in auto-waiting and strictness enforcement.' },
+        {
+          name: 'Locator Engine',
+          details:
+            'Lazy-evaluated query engine with built-in auto-waiting and strictness enforcement.',
+        },
       ],
     },
     howItWorks: {
-      internalMechanism: 'Commands send JSON-RPC messages over a persistent WebSocket; the browser engine returns instantaneous promises upon DOM actionability.',
+      internalMechanism:
+        'Commands send JSON-RPC messages over a persistent WebSocket; the browser engine returns instantaneous promises upon DOM actionability.',
       steps: [
-        { stepNumber: 1, title: 'Context Creation', description: 'Browser boots once; each test receives a brand new BrowserContext in <10ms.' },
-        { stepNumber: 2, title: 'Actionability Verification', description: 'Playwright verifies element is attached, visible, stable (no animation), enabled, and un-obscured.' },
-        { stepNumber: 3, title: 'Atomic Execution', description: 'Action dispatches natively into browser event loop.' },
-        { stepNumber: 4, title: 'Automatic Trace Recording', description: 'Snapshots captured before and after each action for instant post-mortem analysis.' },
+        {
+          stepNumber: 1,
+          title: 'Context Creation',
+          description:
+            'Browser boots once; each test receives a brand new BrowserContext in <10ms.',
+        },
+        {
+          stepNumber: 2,
+          title: 'Actionability Verification',
+          description:
+            'Playwright verifies element is attached, visible, stable (no animation), enabled, and un-obscured.',
+        },
+        {
+          stepNumber: 3,
+          title: 'Atomic Execution',
+          description: 'Action dispatches natively into browser event loop.',
+        },
+        {
+          stepNumber: 4,
+          title: 'Automatic Trace Recording',
+          description:
+            'Snapshots captured before and after each action for instant post-mortem analysis.',
+        },
       ],
     },
     codeExamples: [
@@ -686,20 +1039,24 @@ const richFoundationalLessons = {
         language: 'typescript',
         filename: 'e2e-enterprise.spec.ts',
         code: `import { test, expect } from '@playwright/test';\n\ntest.describe('Enterprise Playwright Order Flow', () => {\n  test('completes checkout with network mocking and state verification', async ({ page }) => {\n    // 1. Mock external payment gateway\n    await page.route('**/api/v1/payments', async (route) => {\n      await route.fulfill({\n        status: 200,\n        contentType: 'application/json',\n        body: JSON.stringify({ status: 'APPROVED', transactionId: 'TXN-9988-OK' }),\n      });\n    });\n\n    // 2. Navigate and leverage locator-first queries\n    await page.goto('/catalog');\n    await page.getByRole('button', { name: 'Add to Cart' }).first().click();\n    \n    // 3. Auto-waiting handles modal opening without arbitrary sleeps\n    await page.getByRole('link', { name: 'Cart' }).click();\n    await page.getByRole('button', { name: 'Confirm Purchase' }).click();\n\n    // 4. Web-first assertion auto-retries until condition succeeds\n    await expect(page.getByTestId('confirmation-banner')).toHaveText(/Order #.*Placed Successfully/);\n  });\n});`,
-        explanation: 'Features network route interception, getByRole locators, auto-waiting actions, and web-first regex assertions.',
+        explanation:
+          'Features network route interception, getByRole locators, auto-waiting actions, and web-first regex assertions.',
       },
     ],
     qaUseCases: [
       {
         title: 'Parallel Matrix CI Pipeline',
-        scenario: 'Running 300 tests across Chromium, Firefox, and WebKit on 8 parallel workers in under 3 minutes.',
-        enterpriseApplication: 'GitHub Actions matrix workflow with sharding (--shard=1/4) and automated Allure + Trace Viewer artifact publishing.',
+        scenario:
+          'Running 300 tests across Chromium, Firefox, and WebKit on 8 parallel workers in under 3 minutes.',
+        enterpriseApplication:
+          'GitHub Actions matrix workflow with sharding (--shard=1/4) and automated Allure + Trace Viewer artifact publishing.',
       },
     ],
     commonProblems: [
       {
         error: 'Error: strict mode violation: locator("button") resolved to 3 elements',
-        rootCause: 'Locator query matched multiple elements on page; Playwright enforces strictness to prevent accidental interaction.',
+        rootCause:
+          'Locator query matched multiple elements on page; Playwright enforces strictness to prevent accidental interaction.',
         troubleshootingSteps: [
           'Narrow locator using role, accessible name, or text filter: page.getByRole("button", { name: "Submit" }).',
           'Use .first(), .last(), or .nth(i) if multiple identical elements are intended.',
@@ -712,14 +1069,18 @@ const richFoundationalLessons = {
       {
         title: 'Use User-Facing Locators (Role & Label)',
         category: 'Industry Standard',
-        recommendation: 'Prioritize getByRole(), getByLabel(), and getByText() over brittle CSS selectors or deep XPaths.',
-        impact: 'Ensures test resilience against redesigns and implicitly verifies accessibility (a11y).',
+        recommendation:
+          'Prioritize getByRole(), getByLabel(), and getByText() over brittle CSS selectors or deep XPaths.',
+        impact:
+          'Ensures test resilience against redesigns and implicitly verifies accessibility (a11y).',
       },
       {
         title: 'Trace on First Retry in CI',
         category: 'Maintainability',
-        recommendation: 'Configure trace: "on-first-retry" in playwright.config.ts to keep passing CI runs fast while debugging failed tests.',
-        impact: 'Saves GBs of storage while providing video, network traces, and console logs for flaky tests.',
+        recommendation:
+          'Configure trace: "on-first-retry" in playwright.config.ts to keep passing CI runs fast while debugging failed tests.',
+        impact:
+          'Saves GBs of storage while providing video, network traces, and console logs for flaky tests.',
       },
     ],
     comparison: {
@@ -739,13 +1100,17 @@ const richFoundationalLessons = {
     interviewQuestions: [
       {
         level: 'Intermediate',
-        question: 'What is the 5-point Actionability Check performed before Playwright clicks an element?',
-        answer: 'Before dispatching a click, Playwright ensures: 1) Attached to DOM, 2) Visible in viewport, 3) Stable (not animating or transitioning), 4) Enabled (not disabled), 5) Receives pointer events (not obscured by an overlay, modal, or toast).',
+        question:
+          'What is the 5-point Actionability Check performed before Playwright clicks an element?',
+        answer:
+          'Before dispatching a click, Playwright ensures: 1) Attached to DOM, 2) Visible in viewport, 3) Stable (not animating or transitioning), 4) Enabled (not disabled), 5) Receives pointer events (not obscured by an overlay, modal, or toast).',
       },
       {
         level: 'Architect-Level',
-        question: 'How does Playwright BrowserContext achieve 10x faster test isolation than Selenium new browser sessions?',
-        answer: 'Selenium launches a complete native OS browser process for every test (or requires extensive cookie-clearing logic). Playwright boots a single browser process and spawns lightweight BrowserContexts using isolated in-memory storage, cache, and cookie jars (equivalent to an incognito window), spinning up in under 10 milliseconds.',
+        question:
+          'How does Playwright BrowserContext achieve 10x faster test isolation than Selenium new browser sessions?',
+        answer:
+          'Selenium launches a complete native OS browser process for every test (or requires extensive cookie-clearing logic). Playwright boots a single browser process and spawns lightweight BrowserContexts using isolated in-memory storage, cache, and cookie jars (equivalent to an incognito window), spinning up in under 10 milliseconds.',
       },
     ],
     summary: {
@@ -754,8 +1119,15 @@ const richFoundationalLessons = {
         'BrowserContexts enable fast, state-isolated tests in parallel.',
         'Auto-waiting and Web-First assertions eliminate static waits entirely.',
       ],
-      keyTerminology: ['BrowserContext', 'Actionability Check', 'Strict Mode', 'Trace Viewer', 'Network Interception'],
-      nextSteps: 'Proceed to Module 2 to set up your project structure and configure playwright.config.ts.',
+      keyTerminology: [
+        'BrowserContext',
+        'Actionability Check',
+        'Strict Mode',
+        'Trace Viewer',
+        'Network Interception',
+      ],
+      nextSteps:
+        'Proceed to Module 2 to set up your project structure and configure playwright.config.ts.',
     },
   },
 };
@@ -772,7 +1144,8 @@ const phase8Courses = [
     slug: 'selenium-webdriver-enterprise-framework',
     title: 'Selenium WebDriver 4 Enterprise Framework Architecture',
     subtitle: 'W3C Protocol, Dynamic Waits, Page Object Design, and Dockerized Grid',
-    description: 'Master enterprise UI automation with Selenium WebDriver 4: W3C compliance, resilient element synchronization, Page Factory design, and distributed Selenium Grid execution.',
+    description:
+      'Master enterprise UI automation with Selenium WebDriver 4: W3C compliance, resilient element synchronization, Page Factory design, and distributed Selenium Grid execution.',
     level: 'Comprehensive',
     estimatedHours: 42,
     sortOrder: 2,
@@ -780,7 +1153,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: Introduction to Selenium',
-        description: 'Evolution of Selenium, W3C architecture, core components, and cross-tool comparisons.',
+        description:
+          'Evolution of Selenium, W3C architecture, core components, and cross-tool comparisons.',
         lessons: [
           'What is Selenium?',
           'Why Selenium is Used',
@@ -794,7 +1168,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: Selenium WebDriver Fundamentals',
-        description: 'Browser drivers, driver commands, navigation, options, and session management.',
+        description:
+          'Browser drivers, driver commands, navigation, options, and session management.',
         lessons: [
           'WebDriver Architecture',
           'Browser Drivers',
@@ -808,7 +1183,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: Locators and Web Elements',
-        description: 'Comprehensive locator strategies: ID, Name, CSS Selectors, Dynamic XPath, and SVG/Shadow DOM.',
+        description:
+          'Comprehensive locator strategies: ID, Name, CSS Selectors, Dynamic XPath, and SVG/Shadow DOM.',
         lessons: [
           'What are Locators?',
           'ID Locator',
@@ -827,7 +1203,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: Web Element Interactions',
-        description: 'Atomic interactions: clicks, text entry, dropdowns, alerts, iFrames, tabs, and mouse gestures.',
+        description:
+          'Atomic interactions: clicks, text entry, dropdowns, alerts, iFrames, tabs, and mouse gestures.',
         lessons: [
           'Click',
           'SendKeys',
@@ -852,7 +1229,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: Synchronization and Waits',
-        description: 'Zero-flakiness synchronization: Implicit, Explicit, Fluent Waits, and Expected Conditions.',
+        description:
+          'Zero-flakiness synchronization: Implicit, Explicit, Fluent Waits, and Expected Conditions.',
         lessons: [
           'Why Synchronization is Required',
           'Implicit Wait',
@@ -867,7 +1245,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: Selenium Advanced Concepts',
-        description: 'JavaScript execution, full-page screenshots, headless Chrome, CDP, and BiDi protocols.',
+        description:
+          'JavaScript execution, full-page screenshots, headless Chrome, CDP, and BiDi protocols.',
         lessons: [
           'JavaScript Executor',
           'Taking Screenshots',
@@ -882,7 +1261,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 7: Page Object Model',
-        description: 'Scalable design patterns: Page Object Model, BasePage abstractions, and maintainability.',
+        description:
+          'Scalable design patterns: Page Object Model, BasePage abstractions, and maintainability.',
         lessons: [
           'What is POM?',
           'Why POM is Needed',
@@ -895,7 +1275,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 8: Selenium Automation Framework Design',
-        description: 'Building an enterprise framework: TestNG/JUnit, data providers, logging, and Allure reporting.',
+        description:
+          'Building an enterprise framework: TestNG/JUnit, data providers, logging, and Allure reporting.',
         lessons: [
           'Framework Components',
           'TestNG / JUnit Integration',
@@ -908,7 +1289,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 9: Selenium Grid & Distributed Testing',
-        description: 'Distributed execution: Hub and Node architecture, Docker containers, and Cloud test grids.',
+        description:
+          'Distributed execution: Hub and Node architecture, Docker containers, and Cloud test grids.',
         lessons: [
           'Selenium Grid Architecture',
           'Grid Hub and Node',
@@ -919,7 +1301,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 10: Enterprise QA Scenarios & Best Practices',
-        description: 'Flakiness eradication, CI/CD gates, cross-browser strategy, and enterprise maintenance.',
+        description:
+          'Flakiness eradication, CI/CD gates, cross-browser strategy, and enterprise maintenance.',
         lessons: [
           'Handling Flaky Tests',
           'CI/CD Integration',
@@ -938,7 +1321,8 @@ const phase8Courses = [
     slug: 'playwright-ts-mastery',
     title: 'Playwright Automation with TypeScript',
     subtitle: 'Auto-waiting, Network Interception, Trace Viewer, and Enterprise Fixtures',
-    description: 'Learn modern end-to-end automation with Microsoft Playwright: WebSockets, auto-waiting actionability, network mocking, parallel worker architecture, and Page Object Models.',
+    description:
+      'Learn modern end-to-end automation with Microsoft Playwright: WebSockets, auto-waiting actionability, network mocking, parallel worker architecture, and Page Object Models.',
     level: 'Comprehensive',
     estimatedHours: 38,
     sortOrder: 3,
@@ -946,7 +1330,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: Introduction to Playwright',
-        description: 'Next-generation web automation, multi-engine support, and comparisons with Selenium and Cypress.',
+        description:
+          'Next-generation web automation, multi-engine support, and comparisons with Selenium and Cypress.',
         lessons: [
           'Playwright Architecture & Browser Contexts',
           'What is Playwright?',
@@ -959,7 +1344,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: Getting Started with Playwright',
-        description: 'Installation, configuration, directory layout, running first tests, and CLI flags.',
+        description:
+          'Installation, configuration, directory layout, running first tests, and CLI flags.',
         lessons: [
           'Installation and Setup',
           'Project Structure',
@@ -972,7 +1358,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: Core Concepts and Architecture',
-        description: 'Deep dive into Browser, BrowserContext, Page, parallel worker models, and auto-waiting.',
+        description:
+          'Deep dive into Browser, BrowserContext, Page, parallel worker models, and auto-waiting.',
         lessons: [
           'Browser',
           'Browser Context',
@@ -984,7 +1371,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: Locators and Selectors',
-        description: 'Locator-first queries: getByRole, getByLabel, CSS, XPath, locator filtering, and strict mode.',
+        description:
+          'Locator-first queries: getByRole, getByLabel, CSS, XPath, locator filtering, and strict mode.',
         lessons: [
           'Playwright Locators',
           'Text Selectors',
@@ -998,7 +1386,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: Web Interactions and Assertions',
-        description: 'Actionability checks: clicks, typing, checkboxes, file uploads, and web-first retrying assertions.',
+        description:
+          'Actionability checks: clicks, typing, checkboxes, file uploads, and web-first retrying assertions.',
         lessons: [
           'Click',
           'Fill and Type',
@@ -1014,7 +1403,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: Advanced Playwright Capabilities',
-        description: 'Network route mocking, API requests, storage state reuse, multi-tab popups, and downloads.',
+        description:
+          'Network route mocking, API requests, storage state reuse, multi-tab popups, and downloads.',
         lessons: [
           'Network Interception and Mocking',
           'API Testing with Playwright',
@@ -1027,7 +1417,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 7: Playwright Tooling & Debugging',
-        description: 'Inspector, Trace Viewer, Codegen test generator, UI Mode, and video recording.',
+        description:
+          'Inspector, Trace Viewer, Codegen test generator, UI Mode, and video recording.',
         lessons: [
           'Playwright Inspector',
           'Trace Viewer',
@@ -1040,7 +1431,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 8: Enterprise Framework Architecture',
-        description: 'Page Object Model with TypeScript, custom fixtures, environment variables, and Allure reports.',
+        description:
+          'Page Object Model with TypeScript, custom fixtures, environment variables, and Allure reports.',
         lessons: [
           'Page Object Model in Playwright',
           'Custom Fixtures',
@@ -1052,7 +1444,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 9: Real-World Scenarios and Best Practices',
-        description: 'End-to-end design, CI sharding, preventing flakiness, security patterns, and enterprise standards.',
+        description:
+          'End-to-end design, CI sharding, preventing flakiness, security patterns, and enterprise standards.',
         lessons: [
           'End-to-End Test Design',
           'Performance Optimization',
@@ -1071,7 +1464,8 @@ const phase8Courses = [
     slug: 'api-testing-and-contracts',
     title: 'Full-Stack API Testing & Consumer-Driven Contracts',
     subtitle: 'HTTP Protocol, REST Architecture, Postman Automation, Newman, and Pact Contracts',
-    description: 'Master end-to-end API testing across microservices: HTTP protocol internals, REST constraints, Postman/Newman collections, JSON Schema validation, and consumer-driven contracts with Pact.',
+    description:
+      'Master end-to-end API testing across microservices: HTTP protocol internals, REST constraints, Postman/Newman collections, JSON Schema validation, and consumer-driven contracts with Pact.',
     level: 'Comprehensive',
     estimatedHours: 35,
     sortOrder: 4,
@@ -1079,7 +1473,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: API Fundamentals',
-        description: 'API architectures (REST, SOAP, GraphQL, gRPC), HTTP methods, headers, status codes, and URI structures.',
+        description:
+          'API architectures (REST, SOAP, GraphQL, gRPC), HTTP methods, headers, status codes, and URI structures.',
         lessons: [
           'What is an API?',
           'Types of APIs (REST, SOAP, GraphQL, gRPC)',
@@ -1093,7 +1488,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: REST API Architecture',
-        description: 'REST constraints, resource orientation, statelessness, idempotency, and query vs path parameters.',
+        description:
+          'REST constraints, resource orientation, statelessness, idempotency, and query vs path parameters.',
         lessons: [
           'REST Principles and Constraints',
           'Resource-Oriented Architecture',
@@ -1106,7 +1502,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: API Testing Fundamentals',
-        description: 'Why API testing is critical, the Test Pyramid, functional vs security vs performance validation.',
+        description:
+          'Why API testing is critical, the Test Pyramid, functional vs security vs performance validation.',
         lessons: [
           'What is API Testing?',
           'Why API Testing is Critical',
@@ -1118,7 +1515,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: API Authentication and Authorization',
-        description: 'Basic auth, Bearer tokens, OAuth 2.0 flows, JWT validation, API keys, and SSO mechanisms.',
+        description:
+          'Basic auth, Bearer tokens, OAuth 2.0 flows, JWT validation, API keys, and SSO mechanisms.',
         lessons: [
           'Basic Auth',
           'Bearer Token',
@@ -1132,7 +1530,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: Postman for API Testing',
-        description: 'Collections, environment variables, pre-request scripts, test assertions, and Newman CLI integration.',
+        description:
+          'Collections, environment variables, pre-request scripts, test assertions, and Newman CLI integration.',
         lessons: [
           'Postman Workspace and Collections',
           'Environments and Variables',
@@ -1146,7 +1545,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: API Schema Validation and Contracts',
-        description: 'JSON Schema drafting, response validation, consumer-driven contracts with Pact, and breaking changes.',
+        description:
+          'JSON Schema drafting, response validation, consumer-driven contracts with Pact, and breaking changes.',
         lessons: [
           'JSON Schema Validation',
           'Schema Definition and Structure',
@@ -1158,7 +1558,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 7: API Automation Framework Design',
-        description: 'Framework components, test data generation, parallel execution, reporting, and CI integration.',
+        description:
+          'Framework components, test data generation, parallel execution, reporting, and CI integration.',
         lessons: [
           'Framework Components',
           'Choosing the Right Tools',
@@ -1171,7 +1572,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 8: Advanced API Testing Scenarios',
-        description: 'Microservices testing, Kafka/RabbitMQ event testing, GraphQL, rate limiting, and OWASP API Top 10.',
+        description:
+          'Microservices testing, Kafka/RabbitMQ event testing, GraphQL, rate limiting, and OWASP API Top 10.',
         lessons: [
           'Microservices API Testing',
           'Event-Driven APIs (Kafka, RabbitMQ)',
@@ -1192,7 +1594,8 @@ const phase8Courses = [
     slug: 'appium-mobile-automation',
     title: 'Appium 2.0 Mobile Automation Masterclass',
     subtitle: 'iOS & Android Native, Hybrid, UiAutomator2, XCUITest, and Device Farms',
-    description: 'Master cross-platform mobile automation with Appium 2.0: Android UiAutomator2, iOS XCUITest, W3C mobile actions, hybrid context switching, and cloud device farm execution.',
+    description:
+      'Master cross-platform mobile automation with Appium 2.0: Android UiAutomator2, iOS XCUITest, W3C mobile actions, hybrid context switching, and cloud device farm execution.',
     level: 'Comprehensive',
     estimatedHours: 32,
     sortOrder: 5,
@@ -1200,7 +1603,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: Mobile Testing Fundamentals',
-        description: 'Native, hybrid, and web app differences, Android vs iOS architecture, and real devices vs emulators.',
+        description:
+          'Native, hybrid, and web app differences, Android vs iOS architecture, and real devices vs emulators.',
         lessons: [
           'Mobile App Types (Native, Web, Hybrid)',
           'Mobile OS Ecosystem (Android, iOS)',
@@ -1211,7 +1615,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: Introduction to Appium',
-        description: 'Appium 2.0 modular architecture, client-server WebDriver model, and driver plugin ecosystem.',
+        description:
+          'Appium 2.0 modular architecture, client-server WebDriver model, and driver plugin ecosystem.',
         lessons: [
           'What is Appium?',
           'Appium Philosophy',
@@ -1224,7 +1629,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: Environment Setup and Configuration',
-        description: 'Android SDK, Xcode, Appium Inspector, W3C desired capabilities, and device connectivity.',
+        description:
+          'Android SDK, Xcode, Appium Inspector, W3C desired capabilities, and device connectivity.',
         lessons: [
           'Appium Installation',
           'Android SDK Setup',
@@ -1237,7 +1643,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: Mobile Locators and Inspection',
-        description: 'Accessibility ID, Android Resource ID, UiAutomator2 selectors, iOS predicate strings, and inspection.',
+        description:
+          'Accessibility ID, Android Resource ID, UiAutomator2 selectors, iOS predicate strings, and inspection.',
         lessons: [
           'Appium Inspector Usage',
           'Accessibility ID',
@@ -1251,7 +1658,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: Mobile Gestures and Interactions',
-        description: 'W3C pointer actions: taps, smooth scrolling, swipe, pinch to zoom, and permission dialog handling.',
+        description:
+          'W3C pointer actions: taps, smooth scrolling, swipe, pinch to zoom, and permission dialog handling.',
         lessons: [
           'Tap and Click',
           'SendKeys',
@@ -1265,7 +1673,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: Android and iOS Automation',
-        description: 'Platform specifics: UiAutomator2 vs XCUITest, hybrid WebViews, context switching, and deep linking.',
+        description:
+          'Platform specifics: UiAutomator2 vs XCUITest, hybrid WebViews, context switching, and deep linking.',
         lessons: [
           'Android Automation with UIAutomator2',
           'iOS Automation with XCUITest',
@@ -1277,7 +1686,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 7: Mobile Automation Framework Architecture',
-        description: 'Mobile Page Object Model, AppiumFieldDecorator, multi-device parallel execution, and cloud farms.',
+        description:
+          'Mobile Page Object Model, AppiumFieldDecorator, multi-device parallel execution, and cloud farms.',
         lessons: [
           'Page Object Model for Mobile',
           'Driver Factory Pattern',
@@ -1289,7 +1699,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 8: Advanced Mobile Testing Scenarios',
-        description: 'Network throttling, battery monitoring, biometric authentication, SMS OTPs, and mobile CI/CD.',
+        description:
+          'Network throttling, battery monitoring, biometric authentication, SMS OTPs, and mobile CI/CD.',
         lessons: [
           'Handling Network Fluctuation',
           'Battery and Performance Monitoring',
@@ -1309,7 +1720,8 @@ const phase8Courses = [
     slug: 'rest-assured-api-automation',
     title: 'REST Assured: Enterprise API Automation with Java',
     subtitle: 'BDD Given-When-Then, POJO Serialization, JSON Schema, and OAuth2',
-    description: 'Master Java REST Assured automation: Given-When-Then syntax, RequestSpecBuilder, Jackson POJO mapping, Hamcrest matchers, OAuth2, and scalable framework architecture.',
+    description:
+      'Master Java REST Assured automation: Given-When-Then syntax, RequestSpecBuilder, Jackson POJO mapping, Hamcrest matchers, OAuth2, and scalable framework architecture.',
     level: 'Comprehensive',
     estimatedHours: 28,
     sortOrder: 6,
@@ -1317,7 +1729,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: Introduction to Rest Assured',
-        description: 'Architecture, core benefits, comparisons with Postman and HTTPClient, and Maven/Gradle setup.',
+        description:
+          'Architecture, core benefits, comparisons with Postman and HTTPClient, and Maven/Gradle setup.',
         lessons: [
           'What is Rest Assured?',
           'Why Rest Assured?',
@@ -1328,7 +1741,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: Core Fundamentals',
-        description: 'Given-When-Then BDD pattern, RequestSpecification, ResponseSpecification, and extracting response data.',
+        description:
+          'Given-When-Then BDD pattern, RequestSpecification, ResponseSpecification, and extracting response data.',
         lessons: [
           'Given When Then Pattern',
           'RequestSpecification',
@@ -1340,7 +1754,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: Serialization and Deserialization',
-        description: 'Jackson and Gson POJO mapping, nested JSON serialization, collections, and generic types.',
+        description:
+          'Jackson and Gson POJO mapping, nested JSON serialization, collections, and generic types.',
         lessons: [
           'POJO Creation',
           'Jackson and Gson Integration',
@@ -1352,7 +1767,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: Assertions and Validations',
-        description: 'Hamcrest matchers, status code checks, header assertions, JSONPath evaluations, and JSON Schema.',
+        description:
+          'Hamcrest matchers, status code checks, header assertions, JSONPath evaluations, and JSON Schema.',
         lessons: [
           'Hamcrest Matchers',
           'Status Code Assertions',
@@ -1364,7 +1780,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: Authentication and Security',
-        description: 'Basic, Digest, OAuth 2.0 Bearer tokens, API keys, SSL certificates, and custom headers.',
+        description:
+          'Basic, Digest, OAuth 2.0 Bearer tokens, API keys, SSL certificates, and custom headers.',
         lessons: [
           'Basic Authentication',
           'Digest Authentication',
@@ -1376,7 +1793,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: Rest Assured Framework Design',
-        description: 'Enterprise framework design, reusable specifications, data-driven tests, and Allure integration.',
+        description:
+          'Enterprise framework design, reusable specifications, data-driven tests, and Allure integration.',
         lessons: [
           'Framework Architecture',
           'Request/Response Specs Reusability',
@@ -1388,7 +1806,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 7: Advanced Scenarios and Best Practices',
-        description: 'Request chaining, multipart file uploads, logging filters, WireMock service virtualization, and best practices.',
+        description:
+          'Request chaining, multipart file uploads, logging filters, WireMock service virtualization, and best practices.',
         lessons: [
           'Request Chaining',
           'File Upload and Download',
@@ -1406,8 +1825,10 @@ const phase8Courses = [
     categoryId: 'cat-git-cicd',
     slug: 'git-for-qa-engineers',
     title: 'Git & CI/CD Pipelines for QA Engineers',
-    subtitle: 'Version Control, Branching Strategies, Automated Quality Gates, and Release Pipelines',
-    description: 'Learn Git version control and continuous integration pipelines designed for QA automation engineers: GitFlow, conflict resolution, automated quality gates, and regression pipeline architecture.',
+    subtitle:
+      'Version Control, Branching Strategies, Automated Quality Gates, and Release Pipelines',
+    description:
+      'Learn Git version control and continuous integration pipelines designed for QA automation engineers: GitFlow, conflict resolution, automated quality gates, and regression pipeline architecture.',
     level: 'Comprehensive',
     estimatedHours: 25,
     sortOrder: 7,
@@ -1415,7 +1836,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: Git Fundamentals',
-        description: 'Distributed version control concepts, repository setup, .gitignore for test assets, and core commands.',
+        description:
+          'Distributed version control concepts, repository setup, .gitignore for test assets, and core commands.',
         lessons: [
           'What is Git?',
           'Version Control Concepts',
@@ -1427,7 +1849,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: Branching and Merging',
-        description: 'Branching models (GitFlow, Trunk-Based), interactive rebasing, merge conflict resolution, and stashing.',
+        description:
+          'Branching models (GitFlow, Trunk-Based), interactive rebasing, merge conflict resolution, and stashing.',
         lessons: [
           'Branching Strategies (GitFlow, Trunk-Based)',
           'Creating and Switching Branches',
@@ -1438,7 +1861,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: Remote Repositories and Collaboration',
-        description: 'Remote remotes, push/fetch/pull, Pull Request workflows, and code review quality standards for SDETs.',
+        description:
+          'Remote remotes, push/fetch/pull, Pull Request workflows, and code review quality standards for SDETs.',
         lessons: [
           'Remote Repositories',
           'Push Pull and Fetch',
@@ -1449,7 +1873,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: Introduction to CI/CD',
-        description: 'Continuous Integration vs Delivery vs Deployment, automated quality gates, and feedback loops.',
+        description:
+          'Continuous Integration vs Delivery vs Deployment, automated quality gates, and feedback loops.',
         lessons: [
           'What is CI/CD?',
           'Continuous Integration vs Continuous Delivery vs Continuous Deployment',
@@ -1460,7 +1885,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: CI/CD Pipelines',
-        description: 'Pipeline stages (build, smoke, test, deploy), triggers, artifact caching, and test reporting.',
+        description:
+          'Pipeline stages (build, smoke, test, deploy), triggers, artifact caching, and test reporting.',
         lessons: [
           'Pipeline Architecture',
           'Pipeline Stages (Build, Test, Deploy)',
@@ -1472,7 +1898,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: QA in CI/CD',
-        description: 'Designing smoke and regression pipelines, parallel worker execution, flakiness quarantine, and alerting.',
+        description:
+          'Designing smoke and regression pipelines, parallel worker execution, flakiness quarantine, and alerting.',
         lessons: [
           'Smoke Tests in CI/CD',
           'Regression Pipeline Design',
@@ -1484,7 +1911,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 7: Enterprise CI/CD Best Practices',
-        description: 'Branch protection rules, secrets management, runner cost optimization, and Shift-Left strategies.',
+        description:
+          'Branch protection rules, secrets management, runner cost optimization, and Shift-Left strategies.',
         lessons: [
           'Branch Protection Rules',
           'Pipeline Security and Secrets',
@@ -1503,7 +1931,8 @@ const phase8Courses = [
     slug: 'github-actions-qa-automation',
     title: 'GitHub Actions: CI/CD Pipelines for QA Automation',
     subtitle: 'Workflows, Matrix Builds, Headless Browsers, Artifacts, and Custom Actions',
-    description: 'Master automated test execution using GitHub Actions: workflow syntax, matrix testing across OS/browsers, secrets management, Allure report publishing, and custom composite actions.',
+    description:
+      'Master automated test execution using GitHub Actions: workflow syntax, matrix testing across OS/browsers, secrets management, Allure report publishing, and custom composite actions.',
     level: 'Comprehensive',
     estimatedHours: 24,
     sortOrder: 8,
@@ -1511,7 +1940,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: Introduction to GitHub Actions',
-        description: 'Workflows, events, jobs, steps, runners, GitHub Actions vs Jenkins, and YAML syntax.',
+        description:
+          'Workflows, events, jobs, steps, runners, GitHub Actions vs Jenkins, and YAML syntax.',
         lessons: [
           'What is GitHub Actions?',
           'Core Components (Workflows, Events, Jobs, Steps, Actions, Runners)',
@@ -1521,7 +1951,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: Workflows, Jobs and Steps',
-        description: 'Triggers (push, pull_request, schedule, workflow_dispatch), job dependencies (needs), and conditions.',
+        description:
+          'Triggers (push, pull_request, schedule, workflow_dispatch), job dependencies (needs), and conditions.',
         lessons: [
           'Workflow Triggers (push, pull_request, schedule, workflow_dispatch)',
           'Job Configuration',
@@ -1532,7 +1963,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: Runners and Environments',
-        description: 'GitHub-hosted vs self-hosted runners, matrix strategy for cross-browser testing, and secret caching.',
+        description:
+          'GitHub-hosted vs self-hosted runners, matrix strategy for cross-browser testing, and secret caching.',
         lessons: [
           'GitHub-Hosted Runners',
           'Self-Hosted Runners',
@@ -1543,7 +1975,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: Automated Test Execution with GitHub Actions',
-        description: 'Running Selenium, Playwright, and Newman in headless mode, and uploading HTML/Allure report artifacts.',
+        description:
+          'Running Selenium, Playwright, and Newman in headless mode, and uploading HTML/Allure report artifacts.',
         lessons: [
           'Running Selenium in GitHub Actions',
           'Running Playwright in GitHub Actions',
@@ -1554,7 +1987,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: Custom and Marketplace Actions',
-        description: 'Using community marketplace actions, creating composite actions, and Docker container actions.',
+        description:
+          'Using community marketplace actions, creating composite actions, and Docker container actions.',
         lessons: [
           'Using Marketplace Actions',
           'Creating Custom Composite Actions',
@@ -1565,7 +1999,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: Advanced GitHub Actions Patterns',
-        description: 'Environment protection rules, concurrency cancellation, reusable workflows, and Slack notifications.',
+        description:
+          'Environment protection rules, concurrency cancellation, reusable workflows, and Slack notifications.',
         lessons: [
           'Secrets and Environment Protection',
           'Concurrency and Cancellation',
@@ -1585,7 +2020,8 @@ const phase8Courses = [
     slug: 'apm-and-performance-testing',
     title: 'APM & Enterprise Performance Testing',
     subtitle: 'Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM',
-    description: 'Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.',
+    description:
+      'Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.',
     level: 'Comprehensive',
     estimatedHours: 30,
     sortOrder: 9,
@@ -1593,7 +2029,8 @@ const phase8Courses = [
     modules: [
       {
         title: 'Module 1: Performance Testing Fundamentals',
-        description: 'Load, stress, endurance, and spike testing, response time metrics, throughput, latency, and SLAs/SLOs.',
+        description:
+          'Load, stress, endurance, and spike testing, response time metrics, throughput, latency, and SLAs/SLOs.',
         lessons: [
           'What is Performance Testing?',
           'Types of Performance Testing (Load, Stress, Endurance, Spike, Volume)',
@@ -1604,7 +2041,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 2: Performance Testing with JMeter',
-        description: 'Apache JMeter architecture, Thread Groups, samplers, timers, listeners, parameterization, and distributed load.',
+        description:
+          'Apache JMeter architecture, Thread Groups, samplers, timers, listeners, parameterization, and distributed load.',
         lessons: [
           'Introduction to Apache JMeter',
           'JMeter Architecture',
@@ -1618,7 +2056,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 3: Modern Performance Testing (k6 / Gatling)',
-        description: 'Scripting performance in JavaScript with Grafana k6, virtual user ramp-ups, thresholds, and InfluxDB/Grafana.',
+        description:
+          'Scripting performance in JavaScript with Grafana k6, virtual user ramp-ups, thresholds, and InfluxDB/Grafana.',
         lessons: [
           'Introduction to k6',
           'Scripting Performance Tests in JavaScript',
@@ -1630,7 +2069,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 4: Application Performance Monitoring (APM) Concepts',
-        description: 'The three pillars of observability (metrics, logs, traces), distributed tracing, and APM platforms.',
+        description:
+          'The three pillars of observability (metrics, logs, traces), distributed tracing, and APM platforms.',
         lessons: [
           'What is APM?',
           'Key APM Pillars (Metrics, Logs, Traces)',
@@ -1641,7 +2081,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 5: Monitoring Metrics and Diagnostics',
-        description: 'Analyzing CPU, memory, garbage collection pauses, thread contention, and slow SQL query bottlenecks.',
+        description:
+          'Analyzing CPU, memory, garbage collection pauses, thread contention, and slow SQL query bottlenecks.',
         lessons: [
           'CPU and Memory Utilization',
           'Garbage Collection Analysis',
@@ -1652,7 +2093,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 6: Performance Engineering in CI/CD',
-        description: 'Shift-Left performance testing, automated threshold quality gates in CI/CD, and regression detection.',
+        description:
+          'Shift-Left performance testing, automated threshold quality gates in CI/CD, and regression detection.',
         lessons: [
           'Shift-Left Performance Testing',
           'Automated Performance Gates in Pipelines',
@@ -1663,7 +2105,8 @@ const phase8Courses = [
       },
       {
         title: 'Module 7: Enterprise Performance Best Practices',
-        description: 'Production-like test environments, bottleneck troubleshooting methodology, capacity planning, and scalability.',
+        description:
+          'Production-like test environments, bottleneck troubleshooting methodology, capacity planning, and scalability.',
         lessons: [
           'Performance Test Strategy Design',
           'Production-Like Environment Sizing',
@@ -1680,7 +2123,7 @@ const phase8Courses = [
 console.log('Generating Phase 8 Curriculum Catalogue...');
 
 // Preserve AI Academy intact
-const aiCourse = store.academyCourses.find(c => c.id === 'course-ai-qa-mastery');
+const aiCourse = store.academyCourses.find((c) => c.id === 'course-ai-qa-mastery');
 if (!aiCourse) {
   console.error('CRITICAL: AI Academy course-ai-qa-mastery not found in store!');
   process.exit(1);
@@ -1693,12 +2136,12 @@ const preservedCourseIds = new Set([
   'course-jenkins',
 ]);
 
-const existingPreservedCourses = store.academyCourses.filter(c => preservedCourseIds.has(c.id));
+const existingPreservedCourses = store.academyCourses.filter((c) => preservedCourseIds.has(c.id));
 
 // Build transformed courses
 const compiledCourses = [];
 
-phase8Courses.forEach(cDef => {
+phase8Courses.forEach((cDef) => {
   const modArray = [];
 
   cDef.modules.forEach((mDef, mIdx) => {
@@ -1745,14 +2188,11 @@ phase8Courses.forEach(cDef => {
 });
 
 // Combine AI Academy + Phase 8 Courses + Preserved CI/CD Sub-courses
-const finalCourses = [
-  aiCourse,
-  ...compiledCourses,
-];
+const finalCourses = [aiCourse, ...compiledCourses];
 
 // Add preserved courses that aren't in finalCourses yet
-existingPreservedCourses.forEach(pc => {
-  if (!finalCourses.find(c => c.id === pc.id)) {
+existingPreservedCourses.forEach((pc) => {
+  if (!finalCourses.find((c) => c.id === pc.id)) {
     finalCourses.push(pc);
   }
 });
@@ -1764,7 +2204,7 @@ fs.writeFileSync(DATA_FILE, JSON.stringify(store, null, 2), 'utf8');
 
 console.log(`Successfully updated ${DATA_FILE}!`);
 console.log(`Total Courses: ${store.academyCourses.length}`);
-store.academyCourses.forEach(c => {
+store.academyCourses.forEach((c) => {
   const modCount = (c.modules || []).length;
   const lsnCount = (c.modules || []).reduce((acc, m) => acc + (m.lessons || []).length, 0);
   console.log(`- ${c.id}: ${modCount} modules, ${lsnCount} lessons`);

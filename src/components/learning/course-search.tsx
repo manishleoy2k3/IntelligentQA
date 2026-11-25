@@ -37,7 +37,9 @@ export default function CourseSearch({ isOpen, onClose }: CourseSearchProps) {
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const res = await fetch(`/api/learning/search?q=${encodeURIComponent(query.trim())}&limit=12`);
+        const res = await fetch(
+          `/api/learning/search?q=${encodeURIComponent(query.trim())}&limit=12`
+        );
         if (res.ok) {
           const json = await res.json();
           if (json.success && Array.isArray(json.data)) {
@@ -69,7 +71,9 @@ export default function CourseSearch({ isOpen, onClose }: CourseSearchProps) {
           lessonSlug: l.slug,
           courseTitle: 'AI Academy',
           moduleTitle: l.moduleTitle,
-          matchedField: l.title.toLowerCase().includes(q) ? 'title' as const : 'summary' as const,
+          matchedField: l.title.toLowerCase().includes(q)
+            ? ('title' as const)
+            : ('summary' as const),
         }));
 
       setResults(matched.slice(0, 10));
@@ -173,7 +177,9 @@ export default function CourseSearch({ isOpen, onClose }: CourseSearchProps) {
                         <span>•</span>
                         <span className="truncate">{item.moduleTitle}</span>
                         {item.matchedField && (
-                          <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold uppercase ${getBadgeStyle(item.matchedField)}`}>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.2 rounded font-semibold uppercase ${getBadgeStyle(item.matchedField)}`}
+                          >
                             {item.matchedField}
                           </span>
                         )}
@@ -198,17 +204,24 @@ export default function CourseSearch({ isOpen, onClose }: CourseSearchProps) {
                 Popular Academy Topics:
               </span>
               <div className="flex flex-wrap gap-1.5">
-                {['What is an LLM?', 'What is MCP?', 'Prompt Engineering', 'Context Engineering', 'AI Agents', 'Selenium', 'Playwright', 'REST Assured'].map(
-                  (topic, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setQuery(topic)}
-                      className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 dark:hover:text-emerald-400 text-xs transition-colors cursor-pointer"
-                    >
-                      {topic}
-                    </button>
-                  )
-                )}
+                {[
+                  'What is an LLM?',
+                  'What is MCP?',
+                  'Prompt Engineering',
+                  'Context Engineering',
+                  'AI Agents',
+                  'Selenium',
+                  'Playwright',
+                  'REST Assured',
+                ].map((topic, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setQuery(topic)}
+                    className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 dark:hover:text-emerald-400 text-xs transition-colors cursor-pointer"
+                  >
+                    {topic}
+                  </button>
+                ))}
               </div>
             </div>
           )}

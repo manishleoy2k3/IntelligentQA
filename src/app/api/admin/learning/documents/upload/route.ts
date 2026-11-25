@@ -38,13 +38,11 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const lessonId = (formData.get('lessonId') as string) || '';
-    const assetType = ((formData.get('assetType') as string) || 'attachment') as 'image' | 'diagram' | 'code' | 'attachment' | 'pdf';
+    const assetType = ((formData.get('assetType') as string) || 'attachment') as
+      'image' | 'diagram' | 'code' | 'attachment' | 'pdf';
 
     if (!file) {
-      return NextResponse.json(
-        { success: false, error: 'No file uploaded' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
     }
 
     const originalFilename = file.name;
@@ -56,10 +54,7 @@ export async function POST(req: NextRequest) {
     if (ext === '.docx') {
       const validation = validateDocxFile(buffer, originalFilename);
       if (!validation.valid) {
-        return NextResponse.json(
-          { success: false, error: validation.error },
-          { status: 400 }
-        );
+        return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
       }
     }
 
@@ -97,21 +92,25 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      return NextResponse.json({
-        success: true,
-        data: {
-          id: docSourceId,
-          originalFilename,
-          filePath: publicUrl,
-          fileSizeBytes: buffer.length,
-          mimeType: file.type,
-          hash,
-          processing: processingResult,
+      return NextResponse.json(
+        {
+          success: true,
+          data: {
+            id: docSourceId,
+            originalFilename,
+            filePath: publicUrl,
+            fileSizeBytes: buffer.length,
+            mimeType: file.type,
+            hash,
+            processing: processingResult,
+          },
+          message:
+            ext === '.docx'
+              ? 'Word document uploaded and processed successfully with format preservation.'
+              : 'Document uploaded successfully.',
         },
-        message: ext === '.docx' 
-          ? 'Word document uploaded and processed successfully with format preservation.'
-          : 'Document uploaded successfully.',
-      }, { status: 201 });
+        { status: 201 }
+      );
     }
 
     // Otherwise save as lesson asset / media attachment
@@ -125,11 +124,14 @@ export async function POST(req: NextRequest) {
       displayOrder: 0,
     });
 
-    return NextResponse.json({
-      success: true,
-      data: savedAsset,
-      message: 'Asset uploaded successfully.',
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: savedAsset,
+        message: 'Asset uploaded successfully.',
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },

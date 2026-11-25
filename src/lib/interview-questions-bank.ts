@@ -92,7 +92,11 @@ export function normalizeDifficulty(diff?: string): string {
  * Normalizes granular experience tiers (0-2, 2-5, 5-8, 8-12, 12-15, 15+ years)
  * to numeric ranges and compatible legacy tiers.
  */
-export function normalizeExperienceRange(exp?: string | number): { minYears: number; maxYears: number; targetTiers: string[] } {
+export function normalizeExperienceRange(exp?: string | number): {
+  minYears: number;
+  maxYears: number;
+  targetTiers: string[];
+} {
   if (typeof exp === 'number') {
     if (exp <= 2) return { minYears: 0, maxYears: 2, targetTiers: ['0-2 Years'] };
     if (exp <= 5) return { minYears: 2, maxYears: 5, targetTiers: ['3-5 Years', '0-2 Years'] };
@@ -103,21 +107,31 @@ export function normalizeExperienceRange(exp?: string | number): { minYears: num
   }
 
   const str = (exp || '').toLowerCase().replace(/–/g, '-').trim();
-  if (str.includes('0-2') || str.includes('0–2')) return { minYears: 0, maxYears: 2, targetTiers: ['0-2 Years'] };
-  if (str.includes('2-5') || str.includes('2–5') || str.includes('3-5')) return { minYears: 2, maxYears: 5, targetTiers: ['3-5 Years', '0-2 Years'] };
-  if (str.includes('5-8') || str.includes('5–8')) return { minYears: 5, maxYears: 8, targetTiers: ['6-9 Years', '3-5 Years'] };
-  if (str.includes('6-9') || str.includes('6–9')) return { minYears: 6, maxYears: 9, targetTiers: ['6-9 Years'] };
-  if (str.includes('8-12') || str.includes('8–12')) return { minYears: 8, maxYears: 12, targetTiers: ['6-9 Years', '10+ Years'] };
-  if (str.includes('12-15') || str.includes('12–15')) return { minYears: 12, maxYears: 15, targetTiers: ['10+ Years'] };
-  if (str.includes('15+') || str.includes('10+')) return { minYears: 15, maxYears: 30, targetTiers: ['10+ Years'] };
+  if (str.includes('0-2') || str.includes('0–2'))
+    return { minYears: 0, maxYears: 2, targetTiers: ['0-2 Years'] };
+  if (str.includes('2-5') || str.includes('2–5') || str.includes('3-5'))
+    return { minYears: 2, maxYears: 5, targetTiers: ['3-5 Years', '0-2 Years'] };
+  if (str.includes('5-8') || str.includes('5–8'))
+    return { minYears: 5, maxYears: 8, targetTiers: ['6-9 Years', '3-5 Years'] };
+  if (str.includes('6-9') || str.includes('6–9'))
+    return { minYears: 6, maxYears: 9, targetTiers: ['6-9 Years'] };
+  if (str.includes('8-12') || str.includes('8–12'))
+    return { minYears: 8, maxYears: 12, targetTiers: ['6-9 Years', '10+ Years'] };
+  if (str.includes('12-15') || str.includes('12–15'))
+    return { minYears: 12, maxYears: 15, targetTiers: ['10+ Years'] };
+  if (str.includes('15+') || str.includes('10+'))
+    return { minYears: 15, maxYears: 30, targetTiers: ['10+ Years'] };
 
   return { minYears: 0, maxYears: 30, targetTiers: [] };
 }
 
-export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteria): InterviewQuestionItem[] {
-  const all = getAllInterviewQuestions().map(q => ({
+export function getQuestionsByLevelAndDifficulty(
+  criteria: SampleQuestionCriteria
+): InterviewQuestionItem[] {
+  const all = getAllInterviewQuestions().map((q) => ({
     ...q,
-    source: (q.source || 'internal_knowledge_base') as 'internal_knowledge_base' | 'ai_generated' | 'external_research',
+    source: (q.source || 'internal_knowledge_base') as
+      'internal_knowledge_base' | 'ai_generated' | 'external_research',
   }));
   const requestedCount = criteria.count || 3;
 
@@ -129,7 +143,7 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
   const targetDifficulty = normalizeDifficulty(criteria.difficulty);
 
   // Filter candidates by difficulty and experience
-  let candidates = all.filter(q => {
+  let candidates = all.filter((q) => {
     // Difficulty match
     if (targetDifficulty !== 'All' && targetDifficulty !== 'UNKNOWN_DIFFICULTY') {
       if (targetDifficulty === 'Architect') {
@@ -146,9 +160,10 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
     // Experience match
     if (expRange.targetTiers.length > 0) {
       const tierMatch = q.experienceLevel && expRange.targetTiers.includes(q.experienceLevel);
-      const yearsMatch = q.minYears !== undefined && q.maxYears !== undefined
-        ? (q.minYears <= expRange.maxYears && q.maxYears >= expRange.minYears)
-        : true;
+      const yearsMatch =
+        q.minYears !== undefined && q.maxYears !== undefined
+          ? q.minYears <= expRange.maxYears && q.maxYears >= expRange.minYears
+          : true;
 
       if (!tierMatch && !yearsMatch) {
         if (expRange.minYears >= 10 && (q.difficulty === 'Architect' || q.difficulty === 'Hard')) {
@@ -167,14 +182,18 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
     const roleLower = criteria.role.toLowerCase();
     if (roleLower.includes('architect')) {
       const archMatch = candidates.filter(
-        q =>
+        (q) =>
           q.difficulty === 'Architect' ||
           (q.topic && q.topic.toLowerCase().includes('architect')) ||
-          (q.category && (q.category.toLowerCase().includes('reporting') || q.category.toLowerCase().includes('ci/cd')))
+          (q.category &&
+            (q.category.toLowerCase().includes('reporting') ||
+              q.category.toLowerCase().includes('ci/cd')))
       );
       if (archMatch.length >= requestedCount) candidates = archMatch;
     } else if (roleLower.includes('manual') || roleLower === 'qa engineer') {
-      const manualMatch = candidates.filter(q => q.category === 'Manual QA Processes' || q.category === 'API Testing & Automation');
+      const manualMatch = candidates.filter(
+        (q) => q.category === 'Manual QA Processes' || q.category === 'API Testing & Automation'
+      );
       if (manualMatch.length >= requestedCount) candidates = manualMatch;
     }
   }
@@ -188,23 +207,37 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
     targetTerms.push(criteria.category.toLowerCase());
   }
   if (criteria.skills && criteria.skills.length > 0) {
-    criteria.skills.forEach(s => targetTerms.push(s.toLowerCase()));
+    criteria.skills.forEach((s) => targetTerms.push(s.toLowerCase()));
   }
 
   if (targetTerms.length > 0) {
     // 1. Direct tech match (e.g. q.technology matches term or q.question mentions term)
-    const directTech = candidates.filter(q => {
+    const directTech = candidates.filter((q) => {
       const techLower = (q.technology || '').toLowerCase();
       const qLower = (q.question || '').toLowerCase();
-      return targetTerms.some(term => {
+      return targetTerms.some((term) => {
         if (term === 'rest assured') {
-          return techLower.includes('rest') || techLower.includes('assured') || qLower.includes('rest assured');
+          return (
+            techLower.includes('rest') ||
+            techLower.includes('assured') ||
+            qLower.includes('rest assured')
+          );
         }
         if (term === 'manual testing' || term === 'manual qa') {
-          return techLower.includes('manual') || q.category === 'Manual QA Processes' || qLower.includes('boundary') || qLower.includes('triage') || qLower.includes('defect');
+          return (
+            techLower.includes('manual') ||
+            q.category === 'Manual QA Processes' ||
+            qLower.includes('boundary') ||
+            qLower.includes('triage') ||
+            qLower.includes('defect')
+          );
         }
         if (term === 'test architecture') {
-          return q.difficulty === 'Architect' || (q.topic && q.topic.toLowerCase().includes('architect')) || qLower.includes('architect');
+          return (
+            q.difficulty === 'Architect' ||
+            (q.topic && q.topic.toLowerCase().includes('architect')) ||
+            qLower.includes('architect')
+          );
         }
         return techLower.includes(term) || qLower.includes(term);
       });
@@ -213,23 +246,49 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
     if (directTech.length >= requestedCount) {
       candidates = directTech;
     } else {
-      const matched = candidates.filter(q => {
-        const combined = `${q.technology || ''} ${q.category || ''} ${q.topic || ''} ${q.question}`.toLowerCase();
-        return targetTerms.some(term => {
+      const matched = candidates.filter((q) => {
+        const combined =
+          `${q.technology || ''} ${q.category || ''} ${q.topic || ''} ${q.question}`.toLowerCase();
+        return targetTerms.some((term) => {
           if (term === 'rest assured') {
-            return combined.includes('rest') || combined.includes('assured') || combined.includes('api');
+            return (
+              combined.includes('rest') || combined.includes('assured') || combined.includes('api')
+            );
           }
           if (term === 'manual testing' || term === 'manual qa') {
-            return combined.includes('manual') || combined.includes('boundary') || combined.includes('triage') || combined.includes('defect') || combined.includes('test design');
+            return (
+              combined.includes('manual') ||
+              combined.includes('boundary') ||
+              combined.includes('triage') ||
+              combined.includes('defect') ||
+              combined.includes('test design')
+            );
           }
           if (term === 'ai for qa' || term === 'llm' || term === 'mcp' || term === 'rag') {
-            return combined.includes('ai') || combined.includes('llm') || combined.includes('agent') || combined.includes('mcp') || combined.includes('rag');
+            return (
+              combined.includes('ai') ||
+              combined.includes('llm') ||
+              combined.includes('agent') ||
+              combined.includes('mcp') ||
+              combined.includes('rag')
+            );
           }
           if (term === 'test architecture') {
-            return q.difficulty === 'Architect' || combined.includes('architect') || combined.includes('scalable') || combined.includes('distributed');
+            return (
+              q.difficulty === 'Architect' ||
+              combined.includes('architect') ||
+              combined.includes('scalable') ||
+              combined.includes('distributed')
+            );
           }
           if (term === 'qa leadership') {
-            return combined.includes('governance') || combined.includes('metrics') || combined.includes('leakage') || combined.includes('leadership') || combined.includes('triage');
+            return (
+              combined.includes('governance') ||
+              combined.includes('metrics') ||
+              combined.includes('leakage') ||
+              combined.includes('leadership') ||
+              combined.includes('triage')
+            );
           }
           return combined.includes(term);
         });
@@ -238,8 +297,8 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
       if (matched.length >= requestedCount) {
         candidates = matched;
       } else if (matched.length > 0) {
-        const matchedIds = new Set(matched.map(m => m.id));
-        const rest = candidates.filter(c => !matchedIds.has(c.id));
+        const matchedIds = new Set(matched.map((m) => m.id));
+        const rest = candidates.filter((c) => !matchedIds.has(c.id));
         candidates = [...matched, ...rest];
       }
     }
@@ -247,7 +306,7 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
 
   // Fallback if candidates too few
   if (candidates.length < requestedCount) {
-    const currentIds = new Set(candidates.map(c => c.id));
+    const currentIds = new Set(candidates.map((c) => c.id));
     for (const q of all) {
       if (!currentIds.has(q.id)) {
         candidates.push(q);
@@ -280,7 +339,7 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
   }
 
   if (selected.length < requestedCount) {
-    const selectedIds = new Set(selected.map(s => s.id));
+    const selectedIds = new Set(selected.map((s) => s.id));
     for (const q of candidates) {
       if (!selectedIds.has(q.id)) {
         selected.push(q);
@@ -319,7 +378,7 @@ export function saveInterviewQuestion(question: InterviewQuestionItem): Intervie
   const id = question.id || `iq-custom-${Date.now()}`;
   const itemToSave = { ...question, id };
 
-  const existingIdx = current.findIndex(q => q.id === id);
+  const existingIdx = current.findIndex((q) => q.id === id);
   let updated: InterviewQuestionItem[];
   if (existingIdx >= 0) {
     updated = [...current];
@@ -331,9 +390,13 @@ export function saveInterviewQuestion(question: InterviewQuestionItem): Intervie
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(CUSTOM_INTERVIEW_QUESTIONS_KEY, JSON.stringify(updated));
-      const deleted = getDeletedInterviewQuestionIds().filter(d => d !== id);
+      const deleted = getDeletedInterviewQuestionIds().filter((d) => d !== id);
       localStorage.setItem(DELETED_INTERVIEW_QUESTIONS_KEY, JSON.stringify(deleted));
-      window.dispatchEvent(new CustomEvent('intelligentqa_interview_questions_changed', { detail: { question: itemToSave } }));
+      window.dispatchEvent(
+        new CustomEvent('intelligentqa_interview_questions_changed', {
+          detail: { question: itemToSave },
+        })
+      );
     } catch (e) {
       console.error('Failed to save interview question', e);
     }
@@ -343,7 +406,7 @@ export function saveInterviewQuestion(question: InterviewQuestionItem): Intervie
 
 export function deleteInterviewQuestion(id: string): void {
   const current = getStoredCustomInterviewQuestions();
-  const updated = current.filter(q => q.id !== id);
+  const updated = current.filter((q) => q.id !== id);
 
   if (typeof window !== 'undefined') {
     try {
@@ -353,7 +416,9 @@ export function deleteInterviewQuestion(id: string): void {
         deleted.push(id);
         localStorage.setItem(DELETED_INTERVIEW_QUESTIONS_KEY, JSON.stringify(deleted));
       }
-      window.dispatchEvent(new CustomEvent('intelligentqa_interview_questions_changed', { detail: { id } }));
+      window.dispatchEvent(
+        new CustomEvent('intelligentqa_interview_questions_changed', { detail: { id } })
+      );
     } catch (e) {
       console.error('Failed to delete interview question', e);
     }
@@ -362,9 +427,11 @@ export function deleteInterviewQuestion(id: string): void {
 
 export function getAllInterviewQuestions(): InterviewQuestionItem[] {
   const deletedIds = new Set(getDeletedInterviewQuestionIds());
-  const custom = getStoredCustomInterviewQuestions().filter(q => !deletedIds.has(q.id));
-  const customIds = new Set(custom.map(q => q.id));
-  const base = INTERVIEW_KNOWLEDGE_BASE.filter(q => !deletedIds.has(q.id) && !customIds.has(q.id));
+  const custom = getStoredCustomInterviewQuestions().filter((q) => !deletedIds.has(q.id));
+  const customIds = new Set(custom.map((q) => q.id));
+  const base = INTERVIEW_KNOWLEDGE_BASE.filter(
+    (q) => !deletedIds.has(q.id) && !customIds.has(q.id)
+  );
   return [...custom, ...base];
 }
 
@@ -377,10 +444,11 @@ export function resetInterviewQuestions(): void {
     try {
       localStorage.removeItem(CUSTOM_INTERVIEW_QUESTIONS_KEY);
       localStorage.removeItem(DELETED_INTERVIEW_QUESTIONS_KEY);
-      window.dispatchEvent(new CustomEvent('intelligentqa_interview_questions_changed', { detail: { reset: true } }));
+      window.dispatchEvent(
+        new CustomEvent('intelligentqa_interview_questions_changed', { detail: { reset: true } })
+      );
     } catch (e) {
       console.error('Failed to reset interview questions', e);
     }
   }
 }
-

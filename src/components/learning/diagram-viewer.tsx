@@ -48,7 +48,9 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
   return (
     <div
       className={`my-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden transition-all ${
-        isZoomed ? 'fixed inset-4 z-50 flex flex-col p-6 overflow-y-auto bg-white/98 dark:bg-neutral-950/98 backdrop-blur-md ring-1 ring-emerald-500/30' : ''
+        isZoomed
+          ? 'fixed inset-4 z-50 flex flex-col p-6 overflow-y-auto bg-white/98 dark:bg-neutral-950/98 backdrop-blur-md ring-1 ring-emerald-500/30'
+          : ''
       } ${className}`}
     >
       {/* Header Bar */}
@@ -104,14 +106,20 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
             className="p-1.5 rounded-lg bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
             title={isZoomed ? 'Exit Fullscreen' : 'Expand Fullscreen'}
           >
-            {isZoomed ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            {isZoomed ? (
+              <Minimize2 className="w-3.5 h-3.5" />
+            ) : (
+              <Maximize2 className="w-3.5 h-3.5" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Main Canvas */}
       <div className="p-6">
-        {activeTab === 'components' && Array.isArray(config.componentsExplanation) && config.componentsExplanation.length > 0 ? (
+        {activeTab === 'components' &&
+        Array.isArray(config.componentsExplanation) &&
+        config.componentsExplanation.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             {config.componentsExplanation.map((comp, idx) => (
               <div
@@ -119,9 +127,7 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
                 className="p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/60 dark:bg-neutral-900/60 space-y-1.5"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <h5 className="text-sm font-bold text-slate-900 dark:text-white">
-                    {comp.name}
-                  </h5>
+                  <h5 className="text-sm font-bold text-slate-900 dark:text-white">{comp.name}</h5>
                   <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                     {comp.role}
                   </span>
@@ -133,7 +139,10 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
             ))}
           </div>
         ) : config.type === 'image' && config.imageUrl ? (
-          <div className="flex flex-col items-center group relative cursor-zoom-in" onClick={() => setIsZoomed(true)}>
+          <div
+            className="flex flex-col items-center group relative cursor-zoom-in"
+            onClick={() => setIsZoomed(true)}
+          >
             <div className="relative overflow-hidden rounded-xl">
               <img
                 src={config.imageUrl}
@@ -244,9 +253,7 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
                     {node.badge}
                   </span>
                 )}
-                <h5 className="text-sm font-bold text-slate-900 dark:text-white">
-                  {node.label}
-                </h5>
+                <h5 className="text-sm font-bold text-slate-900 dark:text-white">{node.label}</h5>
                 {node.subtitle && (
                   <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
                     {node.subtitle}
@@ -263,22 +270,27 @@ export default function DiagramViewer({ config, className = '' }: DiagramViewerP
       </div>
 
       {/* Component Explanation Sub-Footer if on diagram tab */}
-      {activeTab === 'diagram' && config.componentsExplanation && config.componentsExplanation.length > 0 && (
-        <div className="px-6 py-4 bg-slate-50 dark:bg-neutral-950/50 border-t border-slate-200 dark:border-neutral-800">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-neutral-300 mb-3">
-            <Info className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Key Architecture Components &amp; Responsibilities:</span>
+      {activeTab === 'diagram' &&
+        config.componentsExplanation &&
+        config.componentsExplanation.length > 0 && (
+          <div className="px-6 py-4 bg-slate-50 dark:bg-neutral-950/50 border-t border-slate-200 dark:border-neutral-800">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-neutral-300 mb-3">
+              <Info className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Key Architecture Components &amp; Responsibilities:</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+              {config.componentsExplanation.slice(0, 6).map((comp, i) => (
+                <div
+                  key={i}
+                  className="p-2.5 rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800"
+                >
+                  <span className="font-bold text-slate-900 dark:text-white">{comp.name}:</span>{' '}
+                  <span className="text-slate-600 dark:text-neutral-400">{comp.role}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
-            {config.componentsExplanation.slice(0, 6).map((comp, i) => (
-              <div key={i} className="p-2.5 rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800">
-                <span className="font-bold text-slate-900 dark:text-white">{comp.name}:</span>{' '}
-                <span className="text-slate-600 dark:text-neutral-400">{comp.role}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

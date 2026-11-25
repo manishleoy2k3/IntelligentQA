@@ -1,6 +1,6 @@
 /**
  * Phase 7: Comprehensive Security, Regression Testing & Production Readiness Suite
- * 
+ *
  * Tests:
  * 1. Authorization Testing (Admin-only creation/upload/publish, draft isolation, user isolation)
  * 2. Document Upload Security (Invalid extensions, corrupted signatures, oversized files, XSS sanitization, duplicate names)
@@ -29,7 +29,6 @@ const { verifyAdminAccess } = jiti('../src/lib/cms-security.ts');
 const { sanitizeHtml } = jiti('../src/lib/cms-engine.js');
 
 describe('Phase 7: Security, Regression & Production Readiness', () => {
-
   // =========================================================================
   // 1. AUTHORIZATION TESTING
   // =========================================================================
@@ -66,9 +65,7 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
     });
 
     it('authorizes requests with valid system admin emergency passcode', () => {
-      const headerMap = new Map([
-        ['x-admin-passcode', 'SDET_ADMIN_2026'],
-      ]);
+      const headerMap = new Map([['x-admin-passcode', 'SDET_ADMIN_2026']]);
       const mockPasscodeReq = {
         headers: {
           get: (k) => headerMap.get(k.toLowerCase()) || null,
@@ -147,10 +144,16 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
   // =========================================================================
   describe('2. Document Upload Security & Ingestion Safety', () => {
     it('rejects invalid file extensions (.exe, .sh, .bat, .php, .js)', () => {
-      const dangerousExtensions = ['exploit.exe', 'script.sh', 'backdoor.php', 'batch.bat', 'payload.js'];
+      const dangerousExtensions = [
+        'exploit.exe',
+        'script.sh',
+        'backdoor.php',
+        'batch.bat',
+        'payload.js',
+      ];
       const dummyBuffer = Buffer.from('console.log("danger");');
 
-      dangerousExtensions.forEach(filename => {
+      dangerousExtensions.forEach((filename) => {
         const result = validateDocxFile(dummyBuffer, filename);
         assert.strictEqual(result.valid, false);
         assert.ok(result.error.includes('Only Microsoft Word (.docx) files are supported'));
@@ -205,7 +208,11 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
       assert.strictEqual(cleaned.includes('<iframe'), false, 'Must strip <iframe> tag');
       assert.strictEqual(cleaned.includes('onerror='), false, 'Must strip inline onerror handler');
       assert.strictEqual(cleaned.includes('onload='), false, 'Must strip inline onload handler');
-      assert.strictEqual(cleaned.includes('javascript:'), false, 'Must strip javascript: pseudo-protocol');
+      assert.strictEqual(
+        cleaned.includes('javascript:'),
+        false,
+        'Must strip javascript: pseudo-protocol'
+      );
       assert.ok(cleaned.includes('<h2>Title</h2>'), 'Must preserve safe markup');
       assert.ok(cleaned.includes('Normal text'), 'Must preserve text content');
     });
@@ -259,10 +266,19 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
       const sidebarPath = path.join(process.cwd(), 'src/components/layout/sidebar.tsx');
       const content = fs.readFileSync(sidebarPath, 'utf8');
 
-      assert.ok(content.includes("displayTitle: 'CI/CD Concepts'"), 'Must have main course CI/CD Concepts');
+      assert.ok(
+        content.includes("displayTitle: 'CI/CD Concepts'"),
+        'Must have main course CI/CD Concepts'
+      );
       assert.ok(content.includes("title: 'Git'"), 'Must include Git child list item');
-      assert.ok(content.includes("title: 'Github Actions'"), 'Must include Github Actions child list item');
-      assert.ok(content.includes("title: 'Azure DevOps'"), 'Must include Azure DevOps child list item');
+      assert.ok(
+        content.includes("title: 'Github Actions'"),
+        'Must include Github Actions child list item'
+      );
+      assert.ok(
+        content.includes("title: 'Azure DevOps'"),
+        'Must include Azure DevOps child list item'
+      );
       assert.ok(content.includes("title: 'Jenkins'"), 'Must include Jenkins child list item');
     });
 
@@ -270,9 +286,18 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
       const sidebarPath = path.join(process.cwd(), 'src/components/layout/sidebar.tsx');
       const content = fs.readFileSync(sidebarPath, 'utf8');
 
-      assert.ok(content.includes("displayTitle: 'API Testing & Automation'"), 'Must have main course API Testing & Automation');
-      assert.ok(content.includes("title: 'FullStack API & Contracts'"), 'Must include FullStack API child list item');
-      assert.ok(content.includes("title: 'Rest Assured'"), 'Must include Rest Assured child list item');
+      assert.ok(
+        content.includes("displayTitle: 'API Testing & Automation'"),
+        'Must have main course API Testing & Automation'
+      );
+      assert.ok(
+        content.includes("title: 'FullStack API & Contracts'"),
+        'Must include FullStack API child list item'
+      );
+      assert.ok(
+        content.includes("title: 'Rest Assured'"),
+        'Must include Rest Assured child list item'
+      );
     });
 
     it('verifies "Test Automated Backend Course" is excluded from left navigation', () => {
@@ -280,7 +305,7 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
       const content = fs.readFileSync(sidebarPath, 'utf8');
 
       assert.ok(
-        content.includes("test automated backend"),
+        content.includes('test automated backend'),
         'Sidebar must explicitly filter out Test Automated Backend Course'
       );
     });
@@ -292,7 +317,10 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
       assert.ok(lessonWithContext.backToCourse.courseSlug, 'backToCourse must have courseSlug');
       assert.ok(lessonWithContext.courseOverview, 'Must provide courseOverview');
       assert.ok(lessonWithContext.moduleOverview, 'Must provide moduleOverview');
-      assert.ok(Array.isArray(lessonWithContext.relatedLessons), 'Must provide relatedLessons array');
+      assert.ok(
+        Array.isArray(lessonWithContext.relatedLessons),
+        'Must provide relatedLessons array'
+      );
     });
   });
 
@@ -309,7 +337,10 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
 
       assert.ok(duration < 50, `Search must execute in < 50ms, took ${duration.toFixed(2)}ms`);
       assert.ok(results.length > 0, 'Search should find Playwright lessons');
-      assert.ok(results[0].title || results[0].snippet, 'Search result must include title or snippet');
+      assert.ok(
+        results[0].title || results[0].snippet,
+        'Search result must include title or snippet'
+      );
     });
 
     it('handles concurrent progress updates for 10 users without data corruption or cross-talk', () => {
@@ -330,7 +361,11 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
         const stats = academyStore.getUserLearningStats(userId);
         assert.strictEqual(stats.totalVisited, 1, `User ${userId} visited count must be 1`);
         const expectedCompleted = index % 2 === 0 ? 1 : 0;
-        assert.strictEqual(stats.totalCompleted, expectedCompleted, `User ${userId} completed status mismatch`);
+        assert.strictEqual(
+          stats.totalCompleted,
+          expectedCompleted,
+          `User ${userId} completed status mismatch`
+        );
       });
     });
   });
@@ -352,7 +387,7 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
 
     it('safely handles search queries with special regex characters without throwing', () => {
       const specialQueries = ['[Playwright]', 'Java (Spring)', '.*', '\\d+', 'C++ / C#'];
-      specialQueries.forEach(q => {
+      specialQueries.forEach((q) => {
         assert.doesNotThrow(() => {
           const res = academyStore.searchCurriculum(q);
           assert.ok(Array.isArray(res));
@@ -383,12 +418,18 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
       assert.ok(schema.includes('academy_courses'), 'schema.sql must define academy_courses');
       assert.ok(schema.includes('academy_modules'), 'schema.sql must define academy_modules');
       assert.ok(schema.includes('academy_lessons'), 'schema.sql must define academy_lessons');
-      assert.ok(schema.includes('user_lesson_progress'), 'schema.sql must define user_lesson_progress');
+      assert.ok(
+        schema.includes('user_lesson_progress'),
+        'schema.sql must define user_lesson_progress'
+      );
       assert.ok(schema.includes('academy_bookmarks'), 'schema.sql must define academy_bookmarks');
     });
 
     it('verifies zero-cost free QA community guarantee is preserved (no payment or paywall code)', () => {
-      const dashboardPath = path.join(process.cwd(), 'src/components/learning/learning-dashboard.tsx');
+      const dashboardPath = path.join(
+        process.cwd(),
+        'src/components/learning/learning-dashboard.tsx'
+      );
       const content = fs.readFileSync(dashboardPath, 'utf8');
 
       assert.ok(
@@ -396,7 +437,9 @@ describe('Phase 7: Security, Regression & Production Readiness', () => {
         'Dashboard must state 100% Free QA Community Platform guarantee'
       );
       assert.strictEqual(
-        content.includes('@stripe/stripe-js') || content.includes('createSubscription') || content.includes('paywall_gate'),
+        content.includes('@stripe/stripe-js') ||
+          content.includes('createSubscription') ||
+          content.includes('paywall_gate'),
         false,
         'Must not introduce subscription or paywall dependencies'
       );

@@ -3,13 +3,10 @@ const assert = require('node:assert');
 const path = require('path');
 
 const jiti = require('jiti')(path.resolve(process.cwd(), 'tests/interview-griller.test.cjs'), {
-  alias: { '@': path.resolve(process.cwd(), 'src') }
+  alias: { '@': path.resolve(process.cwd(), 'src') },
 });
 
-const {
-  QAInterviewAgent,
-  isIgnoranceOrNonAnswer,
-} = jiti('../src/lib/qa-interview-agent.ts');
+const { QAInterviewAgent, isIgnoranceOrNonAnswer } = jiti('../src/lib/qa-interview-agent.ts');
 
 describe('Autonomous QA Interviewer AI Agent Suite', () => {
   it('should detect ignorance and non-answers accurately', () => {
@@ -23,7 +20,10 @@ describe('Autonomous QA Interviewer AI Agent Suite', () => {
 
     // Valid answers must NOT be flagged as ignorance
     assert.strictEqual(
-      isIgnoranceOrNonAnswer('We use Page Object Model with web-first assertions and retry logic in CI.', ''),
+      isIgnoranceOrNonAnswer(
+        'We use Page Object Model with web-first assertions and retry logic in CI.',
+        ''
+      ),
       false
     );
     assert.strictEqual(
@@ -65,7 +65,8 @@ describe('Autonomous QA Interviewer AI Agent Suite', () => {
       question: 'How do you test microservice contracts using Pact?',
       category: 'API Testing & Automation',
       expectedFocus: 'Consumer contracts, provider verification, can-i-deploy CLI',
-      answerSummary: 'Pact allows consumers to define contract JSON files for provider verification.',
+      answerSummary:
+        'Pact allows consumers to define contract JSON files for provider verification.',
       bestPractice: 'Run can-i-deploy in CI',
       pitfallToAvoid: 'Relying on end-to-end staging clusters',
     };
@@ -110,7 +111,8 @@ describe('Autonomous QA Interviewer AI Agent Suite', () => {
       turns: [
         {
           question: 'How do you prevent flaky tests in CI?',
-          answer: 'We quarantine flaky tests and avoid Thread.sleep with event-driven web-first assertions.',
+          answer:
+            'We quarantine flaky tests and avoid Thread.sleep with event-driven web-first assertions.',
           feedback: 'Correct (88%): Strong synchronization grasp.',
           mistakesAndGaps: [],
         },
@@ -147,7 +149,10 @@ describe('Autonomous QA Interviewer AI Agent Suite', () => {
     assert(typeof report.architectureScore === 'number');
     assert(typeof report.communicationScore === 'number');
 
-    assert(['Strong Hire', 'Hire'].includes(report.hiringRecommendation), `Expected Strong Hire or Hire, got ${report.hiringRecommendation}`);
+    assert(
+      ['Strong Hire', 'Hire'].includes(report.hiringRecommendation),
+      `Expected Strong Hire or Hire, got ${report.hiringRecommendation}`
+    );
     assert(report.seniorityCalibration && report.seniorityCalibration.length > 10);
     assert(Array.isArray(report.strengths) && report.strengths.length >= 2);
     assert(Array.isArray(report.areasForImprovement) && report.areasForImprovement.length >= 1);

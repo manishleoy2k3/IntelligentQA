@@ -16,33 +16,37 @@ export function buildLessonPromptContext(context: LessonContextPackage): string 
   if (context.module) {
     parts.push(`\nModule Name: ${context.module.name}`);
     if (context.module.description) parts.push(`Module Description: ${context.module.description}`);
-    if (context.module.position) parts.push(`Module Position in Course: ${context.module.position}`);
+    if (context.module.position)
+      parts.push(`Module Position in Course: ${context.module.position}`);
     if (context.module.relatedLessons && context.module.relatedLessons.length > 0) {
       parts.push(`Sibling Lessons in Module: ${context.module.relatedLessons.join(', ')}`);
     }
   }
 
   if (context.curriculum) {
-    if (context.curriculum.previousLessonTitle) parts.push(`Previous Lesson: ${context.curriculum.previousLessonTitle}`);
-    if (context.curriculum.nextLessonTitle) parts.push(`Next Lesson: ${context.curriculum.nextLessonTitle}`);
+    if (context.curriculum.previousLessonTitle)
+      parts.push(`Previous Lesson: ${context.curriculum.previousLessonTitle}`);
+    if (context.curriculum.nextLessonTitle)
+      parts.push(`Next Lesson: ${context.curriculum.nextLessonTitle}`);
     if (context.curriculum.moduleHierarchy && context.curriculum.moduleHierarchy.length > 0) {
       parts.push(`Module Hierarchy: ${context.curriculum.moduleHierarchy.join(' -> ')}`);
     }
   }
 
   parts.push('\n=== TARGET AUDIENCE ===');
-  const audience = context.audience && context.audience.length > 0
-    ? context.audience
-    : [
-        'Beginner QA Engineers',
-        'Manual Test Engineers transitioning to automation',
-        'SDETs',
-        'QA Automation Engineers',
-        'Senior Automation Engineers',
-        'Test Architects',
-        'QA Managers',
-        'Engineering Leaders',
-      ];
+  const audience =
+    context.audience && context.audience.length > 0
+      ? context.audience
+      : [
+          'Beginner QA Engineers',
+          'Manual Test Engineers transitioning to automation',
+          'SDETs',
+          'QA Automation Engineers',
+          'Senior Automation Engineers',
+          'Test Architects',
+          'QA Managers',
+          'Engineering Leaders',
+        ];
   parts.push(`Target Audience Profiles: ${audience.join(', ')}`);
 
   parts.push('\n=== CURRENT LESSON UNDER EDIT ===');
@@ -53,7 +57,9 @@ export function buildLessonPromptContext(context: LessonContextPackage): string 
   }
 
   if (context.selectedText && context.selectedText.trim()) {
-    parts.push(`\n--- SELECTED CONTENT IN EDITOR (User Highlighted Target) ---\n${context.selectedText.trim()}\n--- END SELECTED CONTENT ---`);
+    parts.push(
+      `\n--- SELECTED CONTENT IN EDITOR (User Highlighted Target) ---\n${context.selectedText.trim()}\n--- END SELECTED CONTENT ---`
+    );
   }
 
   // Sanitize content length and strip excessive HTML noise to keep request fast and lightweight (~15k chars)
@@ -64,11 +70,15 @@ export function buildLessonPromptContext(context: LessonContextPackage): string 
     .replace(/class="[^"]*"/gi, '')
     .trim();
 
-  const truncatedContent = sanitizedContent.length > 15000 
-    ? sanitizedContent.slice(0, 15000) + '\n\n[... Lesson content truncated for token conservation ...]'
-    : sanitizedContent;
+  const truncatedContent =
+    sanitizedContent.length > 15000
+      ? sanitizedContent.slice(0, 15000) +
+        '\n\n[... Lesson content truncated for token conservation ...]'
+      : sanitizedContent;
 
-  parts.push(`\n--- COMPLETE CURRENT LESSON CONTENT ---\n${truncatedContent}\n--- END CURRENT LESSON CONTENT ---`);
+  parts.push(
+    `\n--- COMPLETE CURRENT LESSON CONTENT ---\n${truncatedContent}\n--- END CURRENT LESSON CONTENT ---`
+  );
 
   return parts.join('\n');
 }

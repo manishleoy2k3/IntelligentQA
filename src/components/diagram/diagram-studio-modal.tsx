@@ -49,11 +49,18 @@ export default function DiagramStudioModal({
   initialPrompt = '',
 }: DiagramStudioModalProps) {
   // Auto-detect topic and mode from lesson context if not explicitly provided
-  const contextDetectionText = `${initialPrompt} ${lessonContext?.lessonTitle || ''} ${lessonContext?.moduleTitle || ''} ${lessonContext?.courseTitle || ''}`.toLowerCase();
-  const isInfographicDetected = /what is|how does|how it works|concept|infographic|tokenization|token|llm|transformer|self-attention|attention|pyramid|authentication|auth/i.test(contextDetectionText);
+  const contextDetectionText =
+    `${initialPrompt} ${lessonContext?.lessonTitle || ''} ${lessonContext?.moduleTitle || ''} ${lessonContext?.courseTitle || ''}`.toLowerCase();
+  const isInfographicDetected =
+    /what is|how does|how it works|concept|infographic|tokenization|token|llm|transformer|self-attention|attention|pyramid|authentication|auth/i.test(
+      contextDetectionText
+    );
 
-  const initialMode: DiagramEngineMode = isInfographicDetected ? 'MODE_B_INFOGRAPHIC' : 'MODE_A_ARCHITECTURE';
-  const defaultPromptValue = initialPrompt || lessonContext?.lessonTitle || lessonContext?.moduleTitle || '';
+  const initialMode: DiagramEngineMode = isInfographicDetected
+    ? 'MODE_B_INFOGRAPHIC'
+    : 'MODE_A_ARCHITECTURE';
+  const defaultPromptValue =
+    initialPrompt || lessonContext?.lessonTitle || lessonContext?.moduleTitle || '';
 
   const [selectedMode, setSelectedMode] = useState<DiagramEngineMode>(initialMode);
   const [prompt, setPrompt] = useState<string>(defaultPromptValue);
@@ -69,9 +76,10 @@ export default function DiagramStudioModal({
       }
     } else if (lessonContext?.lessonTitle) {
       setPrompt(lessonContext.lessonTitle);
-      const isInfo = /what is|how does|how it works|concept|infographic|tokenization|token|llm|transformer|self-attention|attention|pyramid|authentication|auth/i.test(
-        `${lessonContext.lessonTitle} ${lessonContext.moduleTitle || ''}`
-      );
+      const isInfo =
+        /what is|how does|how it works|concept|infographic|tokenization|token|llm|transformer|self-attention|attention|pyramid|authentication|auth/i.test(
+          `${lessonContext.lessonTitle} ${lessonContext.moduleTitle || ''}`
+        );
       setSelectedMode(isInfo ? 'MODE_B_INFOGRAPHIC' : 'MODE_A_ARCHITECTURE');
     }
   }, [initialPrompt, lessonContext?.lessonTitle, lessonContext?.moduleTitle]);
@@ -96,41 +104,50 @@ export default function DiagramStudioModal({
     MODE_A_ARCHITECTURE: [
       {
         label: 'Selenium WebDriver Architecture',
-        prompt: 'Generate professional Selenium WebDriver Architecture diagram with Test Script, Client Library, W3C Protocol, Browser Driver, and Browser.',
+        prompt:
+          'Generate professional Selenium WebDriver Architecture diagram with Test Script, Client Library, W3C Protocol, Browser Driver, and Browser.',
       },
       {
         label: 'Playwright Architecture',
-        prompt: 'Generate Playwright Architecture diagram showing Test Runner, Playwright API, WebSocket CDP, Browser, BrowserContext, and Page.',
+        prompt:
+          'Generate Playwright Architecture diagram showing Test Runner, Playwright API, WebSocket CDP, Browser, BrowserContext, and Page.',
       },
       {
         label: 'Appium Mobile Architecture',
-        prompt: 'Generate Appium 2.x Mobile Automation Architecture showing Test Client, Appium Server, WebDriver Protocol, Platform Driver, and Mobile Device.',
+        prompt:
+          'Generate Appium 2.x Mobile Automation Architecture showing Test Client, Appium Server, WebDriver Protocol, Platform Driver, and Mobile Device.',
       },
       {
         label: 'Model Context Protocol (MCP)',
-        prompt: 'Generate Model Context Protocol (MCP) Architecture diagram with MCP Host, MCP Client, MCP Server, Tools, Resources, and Prompts.',
+        prompt:
+          'Generate Model Context Protocol (MCP) Architecture diagram with MCP Host, MCP Client, MCP Server, Tools, Resources, and Prompts.',
       },
       {
         label: 'RAG Pipeline Architecture',
-        prompt: 'Generate Retrieval-Augmented Generation (RAG) Architecture with Vector Database, Embeddings, Context Retriever, and LLM Orchestrator.',
+        prompt:
+          'Generate Retrieval-Augmented Generation (RAG) Architecture with Vector Database, Embeddings, Context Retriever, and LLM Orchestrator.',
       },
     ],
     MODE_B_INFOGRAPHIC: [
       {
         label: 'What is an LLM?',
-        prompt: 'Educational technical infographic explaining Large Language Models: Training data, Tokenization, Embeddings, Transformer, and Next-Token Prediction.',
+        prompt:
+          'Educational technical infographic explaining Large Language Models: Training data, Tokenization, Embeddings, Transformer, and Next-Token Prediction.',
       },
       {
         label: 'What is Tokenization?',
-        prompt: 'Educational infographic explaining BPE and Subword Tokenization mechanics for QA engineers.',
+        prompt:
+          'Educational infographic explaining BPE and Subword Tokenization mechanics for QA engineers.',
       },
       {
         label: 'What is Self-Attention?',
-        prompt: 'Technical infographic explaining Scaled Dot-Product Self-Attention (Query, Key, Value vectors).',
+        prompt:
+          'Technical infographic explaining Scaled Dot-Product Self-Attention (Query, Key, Value vectors).',
       },
       {
         label: 'Test Automation Pyramid',
-        prompt: 'Educational infographic of the Enterprise Test Pyramid: Unit, Integration, Component, API, and E2E UI Tests.',
+        prompt:
+          'Educational infographic of the Enterprise Test Pyramid: Unit, Integration, Component, API, and E2E UI Tests.',
       },
     ],
   };
@@ -141,7 +158,9 @@ export default function DiagramStudioModal({
       prompt ||
       lessonContext?.lessonTitle ||
       lessonContext?.moduleTitle ||
-      (selectedMode === 'MODE_A_ARCHITECTURE' ? 'System Architecture' : 'Educational Technical Concept')
+      (selectedMode === 'MODE_A_ARCHITECTURE'
+        ? 'System Architecture'
+        : 'Educational Technical Concept')
     ).trim();
 
     if (!effectivePrompt || isGenerating) return;
@@ -189,11 +208,15 @@ export default function DiagramStudioModal({
           setInfographicMeta(data);
           setCurrentStep(2);
         } else {
-          setErrorMessage(data.error || 'Failed to generate educational infographic. Please try again later.');
+          setErrorMessage(
+            data.error || 'Failed to generate educational infographic. Please try again later.'
+          );
         }
       }
     } catch (err: any) {
-      setErrorMessage('Architecture / Infographic generation is temporarily unavailable. Please try again later.');
+      setErrorMessage(
+        'Architecture / Infographic generation is temporarily unavailable. Please try again later.'
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -356,11 +379,16 @@ export default function DiagramStudioModal({
                     Lesson Context Active
                   </span>
                   <span className="text-xs font-bold text-slate-900 dark:text-white">
-                    {lessonContext.courseTitle ? `${lessonContext.courseTitle} › ` : ''}{lessonContext.lessonTitle}
+                    {lessonContext.courseTitle ? `${lessonContext.courseTitle} › ` : ''}
+                    {lessonContext.lessonTitle}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-neutral-400">
-                  AI will analyze this lesson&apos;s curriculum context and content to generate the {selectedMode === 'MODE_A_ARCHITECTURE' ? 'architecture diagram' : 'educational infographic'}.
+                  AI will analyze this lesson&apos;s curriculum context and content to generate the{' '}
+                  {selectedMode === 'MODE_A_ARCHITECTURE'
+                    ? 'architecture diagram'
+                    : 'educational infographic'}
+                  .
                 </p>
               </div>
               <button
@@ -404,8 +432,8 @@ export default function DiagramStudioModal({
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={
                   selectedMode === 'MODE_A_ARCHITECTURE'
-                    ? (lessonContext?.lessonTitle || 'e.g. Selenium Architecture')
-                    : (lessonContext?.lessonTitle || 'e.g. What is an LLM?')
+                    ? lessonContext?.lessonTitle || 'e.g. Selenium Architecture'
+                    : lessonContext?.lessonTitle || 'e.g. What is an LLM?'
                 }
                 className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
                 onKeyDown={(e) => {

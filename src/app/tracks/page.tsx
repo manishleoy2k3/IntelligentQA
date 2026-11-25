@@ -43,7 +43,9 @@ export default function TracksDirectoryPage() {
   }, []);
 
   const getProgressPercentage = (trackId: string, totalLessons: number) => {
-    const completed = userProgress.filter(p => p.trackId === trackId && p.status === 'completed').length;
+    const completed = userProgress.filter(
+      (p) => p.trackId === trackId && p.status === 'completed'
+    ).length;
     if (totalLessons === 0) return 0;
     return Math.min(Math.round((completed / totalLessons) * 100), 100);
   };
@@ -54,14 +56,14 @@ export default function TracksDirectoryPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            4 Structured SDET Paths
+            <Sparkles className="w-3.5 h-3.5" />4 Structured SDET Paths
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Learning Tracks &amp; Curriculum
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-2xl">
-            Choose your starting path from scratch. Seamlessly switch between tracks at any time with independent progress tracking.
+            Choose your starting path from scratch. Seamlessly switch between tracks at any time
+            with independent progress tracking.
           </p>
         </div>
 
@@ -75,18 +77,28 @@ export default function TracksDirectoryPage() {
       </div>
 
       {/* Manual Tester Transition Roadmap Guide (Emergent Card) */}
-      <div id="manual-qa-roadmap" className="p-6 rounded-[24px] bg-[#161616] border border-[#262626] text-white shadow-xl space-y-4 scroll-mt-24">
+      <div
+        id="manual-qa-roadmap"
+        className="p-6 rounded-[24px] bg-[#161616] border border-[#262626] text-white shadow-xl space-y-4 scroll-mt-24"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-[#81FF89] text-black">
               Recommended Sequence
             </span>
-            <h2 className="text-base sm:text-lg font-bold text-white">Manual QA to Full-Stack SDET Progression Roadmap</h2>
+            <h2 className="text-base sm:text-lg font-bold text-white">
+              Manual QA to Full-Stack SDET Progression Roadmap
+            </h2>
           </div>
-          <span className="text-xs text-[#A1A1AA] font-mono">Total SDET Curriculum: 88 Hours · 38 Lessons</span>
+          <span className="text-xs text-[#A1A1AA] font-mono">
+            Total SDET Curriculum: 88 Hours · 38 Lessons
+          </span>
         </div>
         <p className="text-sm sm:text-base text-[#D4D4D8] leading-relaxed">
-          If you are transitioning from a manual testing background, sequence is everything. Start with Core Java &amp; Selenium to master DOM locators and OOPs architecture, level up to Playwright for modern auto-waiting, transition Postman tests to REST Assured code, and master AI agent workflows.
+          If you are transitioning from a manual testing background, sequence is everything. Start
+          with Core Java &amp; Selenium to master DOM locators and OOPs architecture, level up to
+          Playwright for modern auto-waiting, transition Postman tests to REST Assured code, and
+          master AI agent workflows.
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-1 text-sm">
           <div className="p-3.5 rounded-xl bg-[#141414] border border-amber-500/30">
@@ -114,10 +126,12 @@ export default function TracksDirectoryPage() {
 
       {/* Tracks Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {QA_TRACKS.map(track => {
+        {QA_TRACKS.map((track) => {
           const progressPercent = getProgressPercentage(track.id, track.totalLessons);
           const firstLesson = track.modules[0]?.lessons[0];
-          const firstLessonHref = firstLesson ? `/tracks/${track.id}/${firstLesson.id}` : `/tracks/${track.id}`;
+          const firstLessonHref = firstLesson
+            ? `/tracks/${track.id}/${firstLesson.id}`
+            : `/tracks/${track.id}`;
 
           return (
             <div
@@ -126,8 +140,14 @@ export default function TracksDirectoryPage() {
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${track.badgeColor}`}>
-                    {track.id === 'api-testing' ? 'Rest Assured (API)' : track.id === 'ai-qa' ? 'AI Academy' : track.title.split(' ')[0]}
+                  <span
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${track.badgeColor}`}
+                  >
+                    {track.id === 'api-testing'
+                      ? 'Rest Assured (API)'
+                      : track.id === 'ai-qa'
+                        ? 'AI Academy'
+                        : track.title.split(' ')[0]}
                   </span>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Clock className="w-3.5 h-3.5" />
@@ -140,12 +160,12 @@ export default function TracksDirectoryPage() {
                     {track.id === 'selenium-java'
                       ? 'Stage 1 · Core Foundation'
                       : track.id === 'playwright-ts'
-                      ? 'Stage 2 · Modern Web Testing'
-                      : track.id === 'api-testing'
-                      ? 'Stage 3 · API Automation'
-                      : track.id === 'ai-qa'
-                      ? 'Stage 4 · AI Augmentation'
-                      : 'Capstone · SDET Interview Simulation'}
+                        ? 'Stage 2 · Modern Web Testing'
+                        : track.id === 'api-testing'
+                          ? 'Stage 3 · API Automation'
+                          : track.id === 'ai-qa'
+                            ? 'Stage 4 · AI Augmentation'
+                            : 'Capstone · SDET Interview Simulation'}
                   </div>
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
                     {track.title}
@@ -176,10 +196,14 @@ export default function TracksDirectoryPage() {
 
                 {/* Modules Outline */}
                 <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-sm">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">Modules Covered:</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                    Modules Covered:
+                  </span>
                   <ul className="space-y-1.5 text-slate-500 dark:text-slate-400">
-                    {track.modules.map(m => (
-                      <li key={m.id} className="truncate">• {m.title}</li>
+                    {track.modules.map((m) => (
+                      <li key={m.id} className="truncate">
+                        • {m.title}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -193,7 +217,11 @@ export default function TracksDirectoryPage() {
                   href={track.id === 'ai-qa' ? '/learning' : firstLessonHref}
                   className="py-2.5 px-4.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-2 shadow-sm"
                 >
-                  {progressPercent === 0 ? 'Start Track' : progressPercent >= 100 ? 'Review Track' : 'Resume Track'}
+                  {progressPercent === 0
+                    ? 'Start Track'
+                    : progressPercent >= 100
+                      ? 'Review Track'
+                      : 'Resume Track'}
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>

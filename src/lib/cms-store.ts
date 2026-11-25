@@ -29,7 +29,8 @@ export const SEED_SELENIUM_ARTICLE: CMSArticle = {
   shortDescription:
     'Comprehensive guide on Selenium with Java. Master WebDriver architecture, Maven project configuration, XPath locators, explicit waits, and Page Object Model for scalable test automation.',
   featuredImage: '/images/selenium-architecture.svg',
-  featuredImageCaption: 'Figure 1: Selenium WebDriver 4 Architecture — W3C Protocol & Browser Drivers Flow',
+  featuredImageCaption:
+    'Figure 1: Selenium WebDriver 4 Architecture — W3C Protocol & Browser Drivers Flow',
   category: 'UI Automation',
   tags: ['Selenium', 'Java', 'WebDriver', 'TestNG', 'Automation', 'SDET'],
   status: 'published',
@@ -135,7 +136,8 @@ export const SEED_SELENIUM_ARTICLE: CMSArticle = {
               stepNumber: 4,
               title: 'Target Browser (Chromium, Firefox, Safari)',
               badge: 'Tier 4 • Browser',
-              summary: 'The live browser rendering DOM elements and executing application JavaScript.',
+              summary:
+                'The live browser rendering DOM elements and executing application JavaScript.',
               explanation:
                 'The browser performs the requested action (click, sendKeys, navigate) and returns the HTTP status code and response payload back up the chain to your Java assertions.',
             },
@@ -149,7 +151,8 @@ export const SEED_SELENIUM_ARTICLE: CMSArticle = {
           file: {
             url: '/images/selenium-architecture.svg',
           },
-          caption: 'Figure 1.1: 4-Tier Selenium WebDriver 4 Architecture & W3C Standard Protocol Flow',
+          caption:
+            'Figure 1.1: 4-Tier Selenium WebDriver 4 Architecture & W3C Standard Protocol Flow',
           alt: 'Selenium 4 Architecture Diagram',
           alignment: 'center',
           size: 'large',
@@ -169,27 +172,46 @@ export const SEED_SELENIUM_ARTICLE: CMSArticle = {
         type: 'comparisonTable',
         data: {
           title: 'Selenium 3 vs Selenium 4 Architectural Comparison',
-          columns: ['Feature / Capability', 'Selenium 3 (Legacy)', 'Selenium 4 (Modern W3C Standard)'],
+          columns: [
+            'Feature / Capability',
+            'Selenium 3 (Legacy)',
+            'Selenium 4 (Modern W3C Standard)',
+          ],
           rows: [
             {
               feature: 'Communication Protocol',
-              values: ['JSON Wire Protocol (requires translation encoding)', 'Native W3C Standard (direct protocol compliance)'],
+              values: [
+                'JSON Wire Protocol (requires translation encoding)',
+                'Native W3C Standard (direct protocol compliance)',
+              ],
             },
             {
               feature: 'Chrome DevTools Protocol (CDP)',
-              values: ['Not supported natively without 3rd party wrappers', 'Full native support for Network capture, Console logs, Geolocation spoofing'],
+              values: [
+                'Not supported natively without 3rd party wrappers',
+                'Full native support for Network capture, Console logs, Geolocation spoofing',
+              ],
             },
             {
               feature: 'Relative / Friendly Locators',
-              values: ['Not available; requires complex XPath axes', 'Built-in: withTagName().above(), below(), toLeftOf(), toRightOf(), near()'],
+              values: [
+                'Not available; requires complex XPath axes',
+                'Built-in: withTagName().above(), below(), toLeftOf(), toRightOf(), near()',
+              ],
             },
             {
               feature: 'Driver Binary Management',
-              values: ['Manual System.setProperty() with chromedriver.exe', 'Automated Selenium Manager (zero binary downloads required)'],
+              values: [
+                'Manual System.setProperty() with chromedriver.exe',
+                'Automated Selenium Manager (zero binary downloads required)',
+              ],
             },
             {
               feature: 'Window & Tab Management',
-              values: ['Requires driver.switchTo().window(handle) loops', 'Clean native API: driver.switchTo().newWindow(WindowType.TAB)'],
+              values: [
+                'Requires driver.switchTo().window(handle) loops',
+                'Clean native API: driver.switchTo().newWindow(WindowType.TAB)',
+              ],
             },
           ],
         },
@@ -367,11 +389,31 @@ public class FirstSeleniumTest {
           withHeadings: true,
           content: [
             ['Locator Strategy', 'Syntax Example', 'Stability Rating', 'SDET Recommendation'],
-            ['ID (Unique identifier)', 'By.id("login-submit")', '⭐⭐⭐⭐⭐ High', 'Best choice if IDs are static and immutable.'],
-            ['Data Test Attributes', 'By.cssSelector("[data-testid=\'user-email\']")'] ,
-            ['Accessibility Name', 'By.name("searchQuery")', '⭐⭐⭐⭐ Good', 'Preferred for standard form input fields.'],
-            ['Dynamic XPath with Axes', 'By.xpath("//tr[td[text()=\'Selenium\']]//button")', '⭐⭐⭐⭐ Strong', 'Essential for complex data tables.'],
-            ['Full / Absolute XPath', 'By.xpath("/html/body/div[2]/div/span[1]")', '❌ Unstable', 'Strictly anti-pattern. Breaks on any DOM layout change.'],
+            [
+              'ID (Unique identifier)',
+              'By.id("login-submit")',
+              '⭐⭐⭐⭐⭐ High',
+              'Best choice if IDs are static and immutable.',
+            ],
+            ['Data Test Attributes', 'By.cssSelector("[data-testid=\'user-email\']")'],
+            [
+              'Accessibility Name',
+              'By.name("searchQuery")',
+              '⭐⭐⭐⭐ Good',
+              'Preferred for standard form input fields.',
+            ],
+            [
+              'Dynamic XPath with Axes',
+              'By.xpath("//tr[td[text()=\'Selenium\']]//button")',
+              '⭐⭐⭐⭐ Strong',
+              'Essential for complex data tables.',
+            ],
+            [
+              'Full / Absolute XPath',
+              'By.xpath("/html/body/div[2]/div/span[1]")',
+              '❌ Unstable',
+              'Strictly anti-pattern. Breaks on any DOM layout change.',
+            ],
           ],
         },
       },
@@ -454,7 +496,8 @@ public class DynamicSynchronizationHelper {
           file: {
             url: '/images/test-execution-report.svg',
           },
-          caption: 'Figure 1.3: Real-Time TestNG & Allure Test Execution Dashboard with Parallel Thread Metrics',
+          caption:
+            'Figure 1.3: Real-Time TestNG & Allure Test Execution Dashboard with Parallel Thread Metrics',
           alt: 'Test Execution Metrics Dashboard Screenshot',
           alignment: 'center',
           size: 'large',
@@ -476,7 +519,8 @@ public class DynamicSynchronizationHelper {
           title: 'Selenium with Java Masterclass FAQs',
           items: [
             {
-              question: 'Is Selenium still relevant in 2026 with the rise of Playwright and Cypress?',
+              question:
+                'Is Selenium still relevant in 2026 with the rise of Playwright and Cypress?',
               answer:
                 'Absolutely. While Playwright is popular for modern greenfield web applications, Selenium remains the cornerstone of enterprise banking, healthcare, and insurance organizations that require multi-browser legacy support, extensive grid clustering (Selenium Grid / Moon / Selenoid), and deep integration with existing Java ecosystems.',
             },
@@ -503,11 +547,46 @@ public class DynamicSynchronizationHelper {
 };
 
 export const DEFAULT_CATEGORIES: CMSCategory[] = [
-  { id: 'cat-1', name: 'UI Automation', slug: 'ui-automation', description: 'Web automation frameworks including Selenium, Playwright, and Cypress', color: '#10B981', count: 12 },
-  { id: 'cat-2', name: 'API Testing', slug: 'api-testing', description: 'REST Assured, Postman, GraphQL, and microservice validation', color: '#0EA5E9', count: 8 },
-  { id: 'cat-3', name: 'SDET Architecture', slug: 'sdet-architecture', description: 'Framework design patterns, Page Object Model, and test infrastructure', color: '#8B5CF6', count: 9 },
-  { id: 'cat-4', name: 'CI/CD & DevOps', slug: 'cicd-devops', description: 'GitHub Actions, Jenkins, Docker, and Selenium Grid clustering', color: '#F59E0B', count: 6 },
-  { id: 'cat-5', name: 'Performance & Security', slug: 'performance-security', description: 'k6, JMeter, load testing, and OWASP testing fundamentals', color: '#EC4899', count: 4 },
+  {
+    id: 'cat-1',
+    name: 'UI Automation',
+    slug: 'ui-automation',
+    description: 'Web automation frameworks including Selenium, Playwright, and Cypress',
+    color: '#10B981',
+    count: 12,
+  },
+  {
+    id: 'cat-2',
+    name: 'API Testing',
+    slug: 'api-testing',
+    description: 'REST Assured, Postman, GraphQL, and microservice validation',
+    color: '#0EA5E9',
+    count: 8,
+  },
+  {
+    id: 'cat-3',
+    name: 'SDET Architecture',
+    slug: 'sdet-architecture',
+    description: 'Framework design patterns, Page Object Model, and test infrastructure',
+    color: '#8B5CF6',
+    count: 9,
+  },
+  {
+    id: 'cat-4',
+    name: 'CI/CD & DevOps',
+    slug: 'cicd-devops',
+    description: 'GitHub Actions, Jenkins, Docker, and Selenium Grid clustering',
+    color: '#F59E0B',
+    count: 6,
+  },
+  {
+    id: 'cat-5',
+    name: 'Performance & Security',
+    slug: 'performance-security',
+    description: 'k6, JMeter, load testing, and OWASP testing fundamentals',
+    color: '#EC4899',
+    count: 4,
+  },
 ];
 
 export const DEFAULT_TAGS: CMSTag[] = [
@@ -611,7 +690,11 @@ class CMSDataStore {
 
   private loadFromDisk() {
     try {
-      const targetFile = fs.existsSync(TMP_DATA_FILE) ? TMP_DATA_FILE : fs.existsSync(DATA_FILE) ? DATA_FILE : null;
+      const targetFile = fs.existsSync(TMP_DATA_FILE)
+        ? TMP_DATA_FILE
+        : fs.existsSync(DATA_FILE)
+          ? DATA_FILE
+          : null;
       if (targetFile) {
         const raw = fs.readFileSync(targetFile, 'utf-8');
         const data = JSON.parse(raw);
@@ -712,7 +795,9 @@ class CMSDataStore {
     }
 
     return list.sort(
-      (a, b) => new Date(b.updatedDate || b.publishedDate || 0).getTime() - new Date(a.updatedDate || a.publishedDate || 0).getTime()
+      (a, b) =>
+        new Date(b.updatedDate || b.publishedDate || 0).getTime() -
+        new Date(a.updatedDate || a.publishedDate || 0).getTime()
     );
   }
 
@@ -739,7 +824,9 @@ class CMSDataStore {
     const existing = this.articles.get(id);
 
     // Compute reading time
-    const readingTimeMinutes = article.content ? calculateReadingTime(article.content) : existing?.readingTimeMinutes || 5;
+    const readingTimeMinutes = article.content
+      ? calculateReadingTime(article.content)
+      : existing?.readingTimeMinutes || 5;
 
     // Create revision snapshot if updating existing
     const revisions: CMSRevision[] = existing?.revisions ? [...existing.revisions] : [];
@@ -761,18 +848,28 @@ class CMSDataStore {
       id,
       title: article.title || existing?.title || 'Untitled Tutorial',
       subtitle: article.subtitle ?? existing?.subtitle,
-      slug: (article.slug || existing?.slug || article.title?.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') || id).toLowerCase(),
+      slug: (
+        article.slug ||
+        existing?.slug ||
+        article.title
+          ?.toLowerCase()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '-') ||
+        id
+      ).toLowerCase(),
       shortDescription: article.shortDescription || existing?.shortDescription || '',
       featuredImage: article.featuredImage ?? existing?.featuredImage,
       featuredImageCaption: article.featuredImageCaption ?? existing?.featuredImageCaption,
       category: article.category || existing?.category || 'UI Automation',
       tags: Array.isArray(article.tags) ? article.tags : existing?.tags || ['Automation'],
-      content: article.content || existing?.content || { time: Date.now(), blocks: [], version: '2.28.0' },
+      content: article.content ||
+        existing?.content || { time: Date.now(), blocks: [], version: '2.28.0' },
       seoTitle: article.seoTitle ?? existing?.seoTitle,
       seoDescription: article.seoDescription ?? existing?.seoDescription,
       canonicalUrl: article.canonicalUrl ?? existing?.canonicalUrl,
       status: article.status || existing?.status || 'draft',
-      publishedDate: article.status === 'published' ? (existing?.publishedDate || now) : existing?.publishedDate,
+      publishedDate:
+        article.status === 'published' ? existing?.publishedDate || now : existing?.publishedDate,
       scheduledDate: article.scheduledDate ?? existing?.scheduledDate,
       updatedDate: now,
       readingTimeMinutes,
@@ -783,7 +880,9 @@ class CMSDataStore {
         avatarUrl: authorUser?.avatarUrl || '/images/avatar-admin.png',
         role: authorUser?.targetRole || 'Principal SDET',
       },
-      updatedBy: authorUser ? { id: authorUser.id, name: authorUser.displayName || authorUser.email } : undefined,
+      updatedBy: authorUser
+        ? { id: authorUser.id, name: authorUser.displayName || authorUser.email }
+        : undefined,
       courseId: article.courseId ?? existing?.courseId,
       moduleId: article.moduleId ?? existing?.moduleId,
       lessonId: article.lessonId ?? existing?.lessonId,
@@ -796,7 +895,11 @@ class CMSDataStore {
     this.logAudit({
       id: `log-${Date.now()}`,
       timestamp: now,
-      user: { id: authorUser?.id || 'admin', name: authorUser?.displayName || 'Admin', email: authorUser?.email || 'admin@intelligentqa.io' },
+      user: {
+        id: authorUser?.id || 'admin',
+        name: authorUser?.displayName || 'Admin',
+        email: authorUser?.email || 'admin@intelligentqa.io',
+      },
       action: existing ? 'update' : 'create',
       entityType: 'article',
       entityId: id,
@@ -818,7 +921,11 @@ class CMSDataStore {
     this.logAudit({
       id: `log-${Date.now()}`,
       timestamp: new Date().toISOString(),
-      user: { id: user?.id || 'admin', name: user?.displayName || 'Admin', email: user?.email || 'admin@intelligentqa.io' },
+      user: {
+        id: user?.id || 'admin',
+        name: user?.displayName || 'Admin',
+        email: user?.email || 'admin@intelligentqa.io',
+      },
       action: 'delete',
       entityType: 'article',
       entityId: id,
@@ -877,7 +984,9 @@ class CMSDataStore {
     let list = Array.from(this.media.values());
     if (search) {
       const q = search.toLowerCase();
-      list = list.filter((m) => m.filename.toLowerCase().includes(q) || m.alt.toLowerCase().includes(q));
+      list = list.filter(
+        (m) => m.filename.toLowerCase().includes(q) || m.alt.toLowerCase().includes(q)
+      );
     }
     if (category && category !== 'all') {
       list = list.filter((m) => m.category?.toLowerCase() === category.toLowerCase());
@@ -893,7 +1002,11 @@ class CMSDataStore {
     this.logAudit({
       id: `log-${Date.now()}`,
       timestamp: new Date().toISOString(),
-      user: { id: user?.id || 'admin', name: user?.displayName || 'Admin', email: user?.email || 'admin@intelligentqa.io' },
+      user: {
+        id: user?.id || 'admin',
+        name: user?.displayName || 'Admin',
+        email: user?.email || 'admin@intelligentqa.io',
+      },
       action: 'upload_media',
       entityType: 'media',
       entityId: item.id,
@@ -1018,7 +1131,10 @@ class CMSDataStore {
       .slice(0, 5);
 
     const recentlyPublished = [...published]
-      .sort((a, b) => new Date(b.publishedDate || 0).getTime() - new Date(a.publishedDate || 0).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.publishedDate || 0).getTime() - new Date(a.publishedDate || 0).getTime()
+      )
       .slice(0, 5);
 
     return {

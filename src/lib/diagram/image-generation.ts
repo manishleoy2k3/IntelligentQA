@@ -76,11 +76,19 @@ export function checkImageRateLimit(): { allowed: boolean; waitSeconds?: number 
  * Builds a rigorous, high-fidelity prompt for educational technical infographic generation.
  */
 export function buildInfographicPrompt(options: InfographicGenerationOptions): string {
-  const subject = options.subject || options.prompt || options.context?.lessonTitle || 'Technical Educational Concept';
+  const subject =
+    options.subject ||
+    options.prompt ||
+    options.context?.lessonTitle ||
+    'Technical Educational Concept';
   const targetLearner = options.targetLearner || 'QA Engineers and SDETs';
 
   const cleanLessonText = options.context?.currentContent
-    ? options.context.currentContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 1200)
+    ? options.context.currentContent
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .substring(0, 1200)
     : '';
 
   const defaultSections = [
@@ -91,17 +99,22 @@ export function buildInfographicPrompt(options: InfographicGenerationOptions): s
     '5. Structured output verification & QA evaluation',
   ];
 
-  const sections = options.technicalSections && options.technicalSections.length > 0
-    ? options.technicalSections
-    : defaultSections;
+  const sections =
+    options.technicalSections && options.technicalSections.length > 0
+      ? options.technicalSections
+      : defaultSections;
 
   return `Generate a professional educational technical infographic explaining ${subject} for ${targetLearner}.
-${options.context?.lessonTitle ? `Course Curriculum Context:
+${
+  options.context?.lessonTitle
+    ? `Course Curriculum Context:
 - Course: ${options.context.courseTitle || 'Technical Academy'}
 - Module: ${options.context.moduleTitle || 'Core Engineering'}
 - Lesson: ${options.context.lessonTitle}
 ${cleanLessonText ? `- Lesson Key Topics: ${cleanLessonText}` : ''}
-` : ''}
+`
+    : ''
+}
 Visual Breakdown:
 ${sections.map((s, idx) => `${idx + 1}. ${s}`).join('\n')}
 
@@ -213,7 +226,10 @@ export async function generateEducationalInfographic(
   try {
     pngBuffer = await sharp(Buffer.from(svgContent)).png({ quality: 95 }).toBuffer();
   } catch (rasterErr) {
-    console.warn('[image-generation] sharp rasterization warning, using fallback buffer:', rasterErr);
+    console.warn(
+      '[image-generation] sharp rasterization warning, using fallback buffer:',
+      rasterErr
+    );
     pngBuffer = createSdetTechnicalInfographicPng(width, height, options.prompt);
   }
 
@@ -261,7 +277,7 @@ function crc32(buf: Buffer): number {
   let table = new Uint32Array(256);
   for (let i = 0; i < 256; i++) {
     let c = i;
-    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
     table[i] = c;
   }
   let crc = 0 ^ -1;
@@ -298,12 +314,24 @@ function createSdetTechnicalInfographicPng(width: number, height: number, title:
   const raw = Buffer.alloc((stride + 1) * height);
 
   // Colors
-  const bgR = 248, bgG = 250, bgB = 252; // #F8FAFC
-  const cardR = 255, cardG = 255, cardB = 255; // #FFFFFF
-  const borderR = 226, borderG = 232, borderB = 240; // #E2E8F0
-  const accentR = 16, accentG = 185, accentB = 129; // #10B981 Emerald
-  const brandR = 79, brandG = 70, brandB = 229; // #4F46E5 Indigo
-  const headerBgR = 15, headerBgG = 23, headerBgB = 42; // #0F172A
+  const bgR = 248,
+    bgG = 250,
+    bgB = 252; // #F8FAFC
+  const cardR = 255,
+    cardG = 255,
+    cardB = 255; // #FFFFFF
+  const borderR = 226,
+    borderG = 232,
+    borderB = 240; // #E2E8F0
+  const accentR = 16,
+    accentG = 185,
+    accentB = 129; // #10B981 Emerald
+  const brandR = 79,
+    brandG = 70,
+    brandB = 229; // #4F46E5 Indigo
+  const headerBgR = 15,
+    headerBgG = 23,
+    headerBgB = 42; // #0F172A
 
   // Draw infographic layout
   for (let y = 0; y < height; y++) {

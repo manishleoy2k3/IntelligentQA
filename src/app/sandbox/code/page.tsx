@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Play,
   RotateCcw,
@@ -13,15 +13,15 @@ import {
   AlertCircle,
   ChevronDown,
   Sparkles,
-} from "lucide-react";
-import { QADatabase } from "@/lib/qa-db";
+} from 'lucide-react';
+import { QADatabase } from '@/lib/qa-db';
 import {
   getCompletions,
   getCaretCoordinates,
   handleSmartEditorKeys,
   CompletionItem,
-} from "@/lib/intellisense";
-import { IntelliSenseOverlay } from "@/components/sandbox/code-intellisense-overlay";
+} from '@/lib/intellisense';
+import { IntelliSenseOverlay } from '@/components/sandbox/code-intellisense-overlay';
 
 // Extract error line number from compiler diagnostic or exception traceback
 function extractErrorLineNumber(errorText: string): number | null {
@@ -39,12 +39,7 @@ function extractErrorLineNumber(errorText: string): number | null {
   return null;
 }
 
-export type SupportedLang =
-  | "java"
-  | "python"
-  | "typescript"
-  | "javascript"
-  | "csharp";
+export type SupportedLang = 'java' | 'python' | 'typescript' | 'javascript' | 'csharp';
 
 const STARTER_CODES: Record<SupportedLang, string> = {
   java: `/******************************************************************************
@@ -108,29 +103,29 @@ class Program
 };
 
 const FILE_NAMES: Record<SupportedLang, string> = {
-  java: "Main.java",
-  python: "main.py",
-  typescript: "index.ts",
-  javascript: "index.js",
-  csharp: "Program.cs",
+  java: 'Main.java',
+  python: 'main.py',
+  typescript: 'index.ts',
+  javascript: 'index.js',
+  csharp: 'Program.cs',
 };
 
 const LANG_LABELS: Record<SupportedLang, string> = {
-  java: "Java (OpenJDK)",
-  python: "Python 3",
-  typescript: "TypeScript",
-  javascript: "JavaScript",
-  csharp: "C# (.NET)",
+  java: 'Java (OpenJDK)',
+  python: 'Python 3',
+  typescript: 'TypeScript',
+  javascript: 'JavaScript',
+  csharp: 'C# (.NET)',
 };
 
 export default function OnlineCompilerPage() {
-  const [language, setLanguage] = useState<SupportedLang>("java");
+  const [language, setLanguage] = useState<SupportedLang>('java');
   const [code, setCode] = useState<string>(STARTER_CODES.java);
-  const [stdinInput, setStdinInput] = useState<string>("");
+  const [stdinInput, setStdinInput] = useState<string>('');
   const [showStdin, setShowStdin] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [terminalOutput, setTerminalOutput] = useState<string>("");
-  const [terminalError, setTerminalError] = useState<string>("");
+  const [terminalOutput, setTerminalOutput] = useState<string>('');
+  const [terminalError, setTerminalError] = useState<string>('');
   const [executionStats, setExecutionStats] = useState<{
     durationMs?: number;
     status?: string;
@@ -153,9 +148,15 @@ export default function OnlineCompilerPage() {
   const [suggestions, setSuggestions] = useState<CompletionItem[]>([]);
   const [selectedSuggestionIdx, setSelectedSuggestionIdx] = useState<number>(0);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState<boolean>(false);
-  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number; left: number }>({
+    top: 0,
+    left: 0,
+  });
   const [matchedPrefix, setMatchedPrefix] = useState<string>('');
-  const [replaceRange, setReplaceRange] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const [replaceRange, setReplaceRange] = useState<{ start: number; end: number }>({
+    start: 0,
+    end: 0,
+  });
 
   const updateIntelliSense = (newCode: string, cursorPos: number) => {
     if (!intellisenseEnabled || !textareaRef.current) {
@@ -236,15 +237,15 @@ export default function OnlineCompilerPage() {
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
     checkDesktop();
-    window.addEventListener("resize", checkDesktop);
-    return () => window.removeEventListener("resize", checkDesktop);
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
   const startResizing = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsResizing(true);
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       if (!containerRef.current) return;
@@ -257,22 +258,22 @@ export default function OnlineCompilerPage() {
 
     const handleMouseUp = () => {
       setIsResizing(false);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
   };
 
   // Switch Language
   const handleLanguageChange = (newLang: SupportedLang) => {
     setLanguage(newLang);
     setCode(STARTER_CODES[newLang]);
-    setTerminalOutput("");
-    setTerminalError("");
+    setTerminalOutput('');
+    setTerminalError('');
     setExecutionStats(null);
     setIsSuggestionsOpen(false);
   };
@@ -280,10 +281,10 @@ export default function OnlineCompilerPage() {
   // Explicit Reset Handler: restores default starter code for current language
   const handleReset = () => {
     setCode(STARTER_CODES[language]);
-    setTerminalOutput("");
-    setTerminalError("");
+    setTerminalOutput('');
+    setTerminalError('');
     setExecutionStats(null);
-    setStdinInput("");
+    setStdinInput('');
     setIsSuggestionsOpen(false);
     setResetFeedback(true);
     setTimeout(() => setResetFeedback(false), 2000);
@@ -302,8 +303,8 @@ export default function OnlineCompilerPage() {
 
   // Clear Terminal Output
   const handleClearTerminal = () => {
-    setTerminalOutput("");
-    setTerminalError("");
+    setTerminalOutput('');
+    setTerminalError('');
     setExecutionStats(null);
   };
 
@@ -311,22 +312,22 @@ export default function OnlineCompilerPage() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // If suggestions are open, handle navigation & selection
     if (isSuggestionsOpen && suggestions.length > 0) {
-      if (e.key === "ArrowDown") {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         setSelectedSuggestionIdx((prev) => (prev + 1) % suggestions.length);
         return;
       }
-      if (e.key === "ArrowUp") {
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedSuggestionIdx((prev) => (prev - 1 + suggestions.length) % suggestions.length);
         return;
       }
-      if (e.key === "Enter" || e.key === "Tab") {
+      if (e.key === 'Enter' || e.key === 'Tab') {
         e.preventDefault();
         applyCompletion(suggestions[selectedSuggestionIdx]);
         return;
       }
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         e.preventDefault();
         setIsSuggestionsOpen(false);
         return;
@@ -335,8 +336,8 @@ export default function OnlineCompilerPage() {
 
     // Manual trigger with Ctrl+Space or Alt+/
     if (
-      ((e.ctrlKey || e.metaKey) && (e.key === " " || e.key === "Spacebar")) ||
-      (e.altKey && e.key === "/")
+      ((e.ctrlKey || e.metaKey) && (e.key === ' ' || e.key === 'Spacebar')) ||
+      (e.altKey && e.key === '/')
     ) {
       e.preventDefault();
       const textarea = textareaRef.current;
@@ -355,7 +356,8 @@ export default function OnlineCompilerPage() {
       if (smartResult.newCursorPos !== undefined) {
         setTimeout(() => {
           if (textareaRef.current) {
-            textareaRef.current.selectionStart = textareaRef.current.selectionEnd = smartResult.newCursorPos!;
+            textareaRef.current.selectionStart = textareaRef.current.selectionEnd =
+              smartResult.newCursorPos!;
           }
         }, 0);
       }
@@ -363,14 +365,14 @@ export default function OnlineCompilerPage() {
     }
 
     // Indentation support: 4 spaces on Tab key
-    if (e.key === "Tab") {
+    if (e.key === 'Tab') {
       e.preventDefault();
       const textarea = textareaRef.current;
       if (!textarea) return;
 
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const spaces = "    ";
+      const spaces = '    ';
 
       setCode(code.substring(0, start) + spaces + code.substring(end));
       setTimeout(() => {
@@ -379,7 +381,7 @@ export default function OnlineCompilerPage() {
       return;
     }
 
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       handleRunCode();
     }
@@ -389,16 +391,16 @@ export default function OnlineCompilerPage() {
   const handleRunCode = async () => {
     if (isRunning) return;
     setIsRunning(true);
-    setTerminalOutput("Compiling and executing...");
-    setTerminalError("");
+    setTerminalOutput('Compiling and executing...');
+    setTerminalError('');
 
     try {
       const geminiKey = QADatabase.getUserGeminiKey() || '';
       const res = await fetch('/api/sandbox/compiler', {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          ...(geminiKey ? { "x-gemini-api-key": geminiKey } : {}),
+          'Content-Type': 'application/json',
+          ...(geminiKey ? { 'x-gemini-api-key': geminiKey } : {}),
         },
         body: JSON.stringify({
           language,
@@ -411,32 +413,27 @@ export default function OnlineCompilerPage() {
 
       if (res.ok) {
         setTerminalOutput(
-          data.stdout ||
-            (data.success
-              ? "Program executed successfully with no output."
-              : ""),
+          data.stdout || (data.success ? 'Program executed successfully with no output.' : '')
         );
-        setTerminalError(data.stderr || "");
+        setTerminalError(data.stderr || '');
         setExecutionStats({
           durationMs: data.executionTimeMs,
           status: data.status,
           exitCode: data.exitCode,
         });
       } else {
-        setTerminalOutput("");
-        setTerminalError(data.error || "Failed to compile and execute code.");
+        setTerminalOutput('');
+        setTerminalError(data.error || 'Failed to compile and execute code.');
         setExecutionStats({
-          status: "error",
+          status: 'error',
           exitCode: 1,
         });
       }
     } catch (err: any) {
-      setTerminalOutput("");
-      setTerminalError(
-        err.message || "Execution error: Could not reach compiler service.",
-      );
+      setTerminalOutput('');
+      setTerminalError(err.message || 'Execution error: Could not reach compiler service.');
       setExecutionStats({
-        status: "network_error",
+        status: 'network_error',
         exitCode: 1,
       });
     } finally {
@@ -444,7 +441,7 @@ export default function OnlineCompilerPage() {
     }
   };
 
-  const lineCount = code.split("\n").length;
+  const lineCount = code.split('\n').length;
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1);
   const detectedErrorLine = extractErrorLineNumber(terminalError);
 
@@ -465,8 +462,8 @@ export default function OnlineCompilerPage() {
                 </span>
               </h1>
               <p className="text-[11px] text-slate-400">
-                Write, compile, and execute Java, Python, TypeScript,
-                JavaScript, and C# programs online.
+                Write, compile, and execute Java, Python, TypeScript, JavaScript, and C# programs
+                online.
               </p>
             </div>
           </div>
@@ -478,19 +475,14 @@ export default function OnlineCompilerPage() {
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Language Selector Dropdown */}
           <div className="flex items-center gap-2.5">
-            <label
-              htmlFor="language-select"
-              className="text-xs font-semibold text-slate-300"
-            >
+            <label htmlFor="language-select" className="text-xs font-semibold text-slate-300">
               Language:
             </label>
             <div className="relative">
               <select
                 id="language-select"
                 value={language}
-                onChange={(e) =>
-                  handleLanguageChange(e.target.value as SupportedLang)
-                }
+                onChange={(e) => handleLanguageChange(e.target.value as SupportedLang)}
                 className="bg-slate-950 border border-slate-700 hover:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs pr-8 transition-colors appearance-none"
               >
                 <option value="java">Java (OpenJDK)</option>
@@ -512,8 +504,8 @@ export default function OnlineCompilerPage() {
               disabled={isRunning}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md transition cursor-pointer ${
                 isRunning
-                  ? "bg-emerald-700/50 text-emerald-200 cursor-not-allowed"
-                  : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20 hover:shadow-lg"
+                  ? 'bg-emerald-700/50 text-emerald-200 cursor-not-allowed'
+                  : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20 hover:shadow-lg'
               }`}
               title="Run and compile code (Ctrl + Enter)"
             >
@@ -553,7 +545,7 @@ export default function OnlineCompilerPage() {
               ) : (
                 <Copy className="w-3.5 h-3.5" />
               )}
-              <span>{copied ? "Copied" : "Copy"}</span>
+              <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
 
             {/* Stdin Toggle */}
@@ -562,12 +554,12 @@ export default function OnlineCompilerPage() {
               onClick={() => setShowStdin(!showStdin)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${
                 showStdin
-                  ? "bg-blue-600/20 border-blue-500/40 text-blue-300"
-                  : "bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-400 hover:text-white"
+                  ? 'bg-blue-600/20 border-blue-500/40 text-blue-300'
+                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-400 hover:text-white'
               }`}
               title="Toggle standard input"
             >
-              Stdin {showStdin ? "▲" : "▼"}
+              Stdin {showStdin ? '▲' : '▼'}
             </button>
 
             {/* IntelliSense Toggle Button */}
@@ -576,20 +568,22 @@ export default function OnlineCompilerPage() {
               onClick={() => setIntellisenseEnabled(!intellisenseEnabled)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer flex items-center gap-1.5 ${
                 intellisenseEnabled
-                  ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25"
-                  : "bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-400 hover:text-slate-200"
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25'
+                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-400 hover:text-slate-200'
               }`}
               title={
                 intellisenseEnabled
-                  ? "IntelliSense Active (Ctrl+Space for suggestions). Click to disable."
-                  : "IntelliSense Disabled. Click to enable."
+                  ? 'IntelliSense Active (Ctrl+Space for suggestions). Click to disable.'
+                  : 'IntelliSense Disabled. Click to enable.'
               }
             >
-              <Sparkles className={`w-3.5 h-3.5 ${intellisenseEnabled ? "text-emerald-400" : "text-slate-400"}`} />
+              <Sparkles
+                className={`w-3.5 h-3.5 ${intellisenseEnabled ? 'text-emerald-400' : 'text-slate-400'}`}
+              />
               <span>IntelliSense</span>
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  intellisenseEnabled ? "bg-emerald-400 shadow-[0_0_6px_#34d399]" : "bg-slate-500"
+                  intellisenseEnabled ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]' : 'bg-slate-500'
                 }`}
               />
             </button>
@@ -600,9 +594,7 @@ export default function OnlineCompilerPage() {
         {resetFeedback && (
           <div className="max-w-7xl mx-auto mt-2 py-1 px-3 bg-emerald-950/80 border border-emerald-700/60 rounded-lg text-xs text-emerald-300 flex items-center gap-2 animate-in fade-in duration-150">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>
-              Code reset to default {LANG_LABELS[language]} starter program.
-            </span>
+            <span>Code reset to default {LANG_LABELS[language]} starter program.</span>
           </div>
         )}
       </div>
@@ -670,8 +662,8 @@ export default function OnlineCompilerPage() {
                     key={num}
                     className={`leading-6 pr-1 font-mono transition-colors ${
                       isError
-                        ? "text-rose-400 font-extrabold bg-rose-500/25 rounded-xs"
-                        : "text-slate-600 hover:text-slate-400"
+                        ? 'text-rose-400 font-extrabold bg-rose-500/25 rounded-xs'
+                        : 'text-slate-600 hover:text-slate-400'
                     }`}
                     title={isError ? `Error detected on line ${num}` : `Line ${num}`}
                   >
@@ -712,17 +704,18 @@ export default function OnlineCompilerPage() {
             <span className="flex items-center gap-2">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                Runtime:{" "}
-                <strong className="text-slate-300">
-                  {LANG_LABELS[language]}
-                </strong>
+                Runtime: <strong className="text-slate-300">{LANG_LABELS[language]}</strong>
               </span>
               <span className="text-slate-600">|</span>
               <span className="flex items-center gap-1 text-slate-300">
                 <Sparkles className="w-3 h-3 text-emerald-400" />
-                IntelliSense:{" "}
-                <span className={intellisenseEnabled ? "text-emerald-400 font-semibold" : "text-slate-500"}>
-                  {intellisenseEnabled ? "Active" : "Off"}
+                IntelliSense:{' '}
+                <span
+                  className={
+                    intellisenseEnabled ? 'text-emerald-400 font-semibold' : 'text-slate-500'
+                  }
+                >
+                  {intellisenseEnabled ? 'Active' : 'Off'}
                 </span>
               </span>
               <span className="text-slate-600">|</span>
@@ -734,14 +727,14 @@ export default function OnlineCompilerPage() {
               )}
             </span>
             <span>
-              Shortcut:{" "}
+              Shortcut:{' '}
               <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
                 Ctrl
-              </kbd>{" "}
-              +{" "}
+              </kbd>{' '}
+              +{' '}
               <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
                 Enter
-              </kbd>{" "}
+              </kbd>{' '}
               to Run
             </span>
           </div>
@@ -754,42 +747,33 @@ export default function OnlineCompilerPage() {
           title="Drag left/right to resize Compiler and Output"
         >
           <div
-            className={`w-1 h-20 rounded-full transition-colors ${isResizing ? "bg-emerald-500" : "bg-slate-700 group-hover:bg-emerald-400"}`}
+            className={`w-1 h-20 rounded-full transition-colors ${isResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`}
           />
         </div>
 
         {/* RIGHT: Output Terminal */}
         <div
-          style={
-            isDesktop
-              ? { width: `calc(${100 - editorWidthPct}% - 0.625rem)` }
-              : undefined
-          }
+          style={isDesktop ? { width: `calc(${100 - editorWidthPct}% - 0.625rem)` } : undefined}
           className="flex-1 md:flex-none flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-w-[260px] h-full"
         >
           {/* Terminal Header */}
           <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <Terminal className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-bold text-white tracking-wide">
-                Output / Result
-              </span>
+              <span className="text-xs font-bold text-white tracking-wide">Output / Result</span>
             </div>
 
             <div className="flex items-center gap-2">
               {executionStats && (
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    executionStats.status === "success"
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                      : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                    executionStats.status === 'success'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                   }`}
                 >
-                  {executionStats.status === "success"
-                    ? "✔ Finished"
-                    : "✖ Error"}
-                  {executionStats.durationMs !== undefined &&
-                    ` (${executionStats.durationMs}ms)`}
+                  {executionStats.status === 'success' ? '✔ Finished' : '✖ Error'}
+                  {executionStats.durationMs !== undefined && ` (${executionStats.durationMs}ms)`}
                 </span>
               )}
             </div>
@@ -807,9 +791,7 @@ export default function OnlineCompilerPage() {
             {!isRunning && !terminalOutput && !terminalError && (
               <div className="text-slate-500 italic py-6 text-center flex flex-col items-center gap-1.5">
                 <Terminal className="w-6 h-6 opacity-40" />
-                <p>
-                  Click &quot;Run&quot; to compile and execute your program.
-                </p>
+                <p>Click &quot;Run&quot; to compile and execute your program.</p>
                 <p className="text-[11px] text-slate-600">
                   Standard output and compiler diagnostics will appear here.
                 </p>
@@ -839,11 +821,11 @@ export default function OnlineCompilerPage() {
           <div className="px-3 py-1.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between shrink-0">
             <span className="text-slate-500">Compiler / Runtime:</span>
             <span className="text-slate-300 font-mono text-[11px]">
-              {language === "java" && "OpenJDK 17 / JVM"}
-              {language === "python" && "Python 3.13"}
-              {language === "typescript" && "TypeScript 5.x / Node.js"}
-              {language === "javascript" && "Node.js v20 (V8)"}
-              {language === "csharp" && ".NET 8 / C# Compiler"}
+              {language === 'java' && 'OpenJDK 17 / JVM'}
+              {language === 'python' && 'Python 3.13'}
+              {language === 'typescript' && 'TypeScript 5.x / Node.js'}
+              {language === 'javascript' && 'Node.js v20 (V8)'}
+              {language === 'csharp' && '.NET 8 / C# Compiler'}
             </span>
           </div>
         </div>

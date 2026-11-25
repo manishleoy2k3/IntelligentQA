@@ -104,7 +104,9 @@ function AdminDashboardContent() {
   const [labsSubTab, setLabsSubTab] = useState<'coding' | 'web' | 'api'>('coding');
 
   // Banner Toast
-  const [bannerMsg, setBannerMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [bannerMsg, setBannerMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(
+    null
+  );
   const triggerBanner = (text: string, type: 'success' | 'error' = 'success') => {
     setBannerMsg({ text, type });
     setTimeout(() => setBannerMsg(null), 4000);
@@ -159,8 +161,18 @@ function AdminDashboardContent() {
   const [showInterviewModal, setShowInterviewModal] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<InterviewQuestionItem | null>(null);
   const [iqQuestion, setIqQuestion] = useState('');
-  const [iqTech, setIqTech] = useState<'Playwright' | 'Selenium' | 'Java' | 'TypeScript' | 'API Testing' | 'AI & LLM' | 'Framework Design'>('Playwright');
-  const [iqDifficulty, setIqDifficulty] = useState<'Junior' | 'Mid' | 'Senior' | 'Architect'>('Senior');
+  const [iqTech, setIqTech] = useState<
+    | 'Playwright'
+    | 'Selenium'
+    | 'Java'
+    | 'TypeScript'
+    | 'API Testing'
+    | 'AI & LLM'
+    | 'Framework Design'
+  >('Playwright');
+  const [iqDifficulty, setIqDifficulty] = useState<'Junior' | 'Mid' | 'Senior' | 'Architect'>(
+    'Senior'
+  );
   const [iqTopic, setIqTopic] = useState('Enterprise Architecture');
   const [iqAnswer, setIqAnswer] = useState('');
   const [iqCode, setIqCode] = useState('');
@@ -197,7 +209,9 @@ function AdminDashboardContent() {
           if (json.success && Array.isArray(json.data)) {
             const total = json.data.reduce(
               (acc: number, c: any) =>
-                acc + (c.modules?.reduce((mAcc: number, m: any) => mAcc + (m.lessons?.length || 0), 0) || 0),
+                acc +
+                (c.modules?.reduce((mAcc: number, m: any) => mAcc + (m.lessons?.length || 0), 0) ||
+                  0),
               0
             );
             setAcademyLessonCount(total);
@@ -210,7 +224,14 @@ function AdminDashboardContent() {
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem('intelligentqa_moderation_queue');
-        const legacyTracks = ['selenium', 'playwright', 'api-testing', 'ai-qa', 'selenium-java', 'playwright-ts'];
+        const legacyTracks = [
+          'selenium',
+          'playwright',
+          'api-testing',
+          'ai-qa',
+          'selenium-java',
+          'playwright-ts',
+        ];
         legacyTracks.forEach((t) => localStorage.removeItem(`intelligentqa_staged_guides_${t}`));
       } catch {
         // ignore
@@ -294,11 +315,17 @@ function AdminDashboardContent() {
     setLessonOverview('');
     setLessonStarterCode('// Production starter automation code template');
     setLessonSolutionCode('// Production solution code');
-    setLessonBestPractices('Always use resilient web-first assertions.\nAvoid hardcoded Thread.sleep() or static delays.');
+    setLessonBestPractices(
+      'Always use resilient web-first assertions.\nAvoid hardcoded Thread.sleep() or static delays.'
+    );
     setLessonWhyItMatters('Accelerates test execution and eliminates flakiness.');
     setLessonArchFlow('Test Script <== WebSocket/CDP Protocol ==> Browser Runtime');
-    setLessonInterviewQ('How do you design a maintainable test automation suite for this scenario?');
-    setLessonInterviewA('Abstract locators into Page Objects and decouple test data from test actions.');
+    setLessonInterviewQ(
+      'How do you design a maintainable test automation suite for this scenario?'
+    );
+    setLessonInterviewA(
+      'Abstract locators into Page Objects and decouple test data from test actions.'
+    );
     setShowLessonModal(true);
   };
 
@@ -316,24 +343,28 @@ function AdminDashboardContent() {
     setLessonOverview(doc.overview || (lesson as any).overview || '');
     setLessonStarterCode(
       lesson.challenge?.starterCode?.typescript ||
-      lesson.challenge?.starterCode?.java ||
-      doc.productionCodeExample?.code ||
-      lesson.automationContext?.playwrightTs ||
-      lesson.automationContext?.seleniumJava ||
-      '// Production starter code'
+        lesson.challenge?.starterCode?.java ||
+        doc.productionCodeExample?.code ||
+        lesson.automationContext?.playwrightTs ||
+        lesson.automationContext?.seleniumJava ||
+        '// Production starter code'
     );
     setLessonSolutionCode(
-      lesson.challenge?.solutionCode?.typescript ||
-      lesson.challenge?.solutionCode?.java ||
-      ''
+      lesson.challenge?.solutionCode?.typescript || lesson.challenge?.solutionCode?.java || ''
     );
-    setLessonBestPractices(
-      Array.isArray(doc.bestPractices) ? doc.bestPractices.join('\n') : ''
+    setLessonBestPractices(Array.isArray(doc.bestPractices) ? doc.bestPractices.join('\n') : '');
+    setLessonWhyItMatters(
+      doc.whyItMattersForManualQA || 'Automates manual test steps into fast automated checks.'
     );
-    setLessonWhyItMatters(doc.whyItMattersForManualQA || 'Automates manual test steps into fast automated checks.');
-    setLessonArchFlow(doc.architectureUnderTheHood?.flowOrMechanism || 'Test Script <==> Target System');
-    setLessonInterviewQ(doc.interviewQnA?.question || 'How is this pattern implemented in production?');
-    setLessonInterviewA(doc.interviewQnA?.answer || 'By applying industry standard locator strategies.');
+    setLessonArchFlow(
+      doc.architectureUnderTheHood?.flowOrMechanism || 'Test Script <==> Target System'
+    );
+    setLessonInterviewQ(
+      doc.interviewQnA?.question || 'How is this pattern implemented in production?'
+    );
+    setLessonInterviewA(
+      doc.interviewQnA?.answer || 'By applying industry standard locator strategies.'
+    );
     setShowLessonModal(true);
   };
 
@@ -363,7 +394,10 @@ function AdminDashboardContent() {
         playwrightTs: lessonStarterCode.trim(),
         seleniumJava: lessonStarterCode.trim(),
         explanation: lessonOverview.trim(),
-        bestPractices: lessonBestPractices.split('\n').map(s => s.trim()).filter(Boolean),
+        bestPractices: lessonBestPractices
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean),
         antiPatterns: ['Hardcoded Thread.sleep()'],
       },
       aiAugmentation: {
@@ -396,7 +430,10 @@ function AdminDashboardContent() {
         flowOrMechanism: lessonArchFlow.trim(),
         keyTakeaway: 'Resilient test automation with zero arbitrary sleeps.',
       },
-      bestPractices: lessonBestPractices.split('\n').map(s => s.trim()).filter(Boolean),
+      bestPractices: lessonBestPractices
+        .split('\n')
+        .map((s) => s.trim())
+        .filter(Boolean),
       interviewQnA: {
         question: lessonInterviewQ.trim(),
         answer: lessonInterviewA.trim(),
@@ -405,7 +442,11 @@ function AdminDashboardContent() {
         title: `${lessonObj.title} - Implementation`,
         description: lessonSummary.trim() || lessonObj.title,
         code: lessonStarterCode.trim() || lessonSolutionCode.trim(),
-        language: trackId.includes('java') ? 'java' : (trackId.includes('python') ? 'python' : 'typescript'),
+        language: trackId.includes('java')
+          ? 'java'
+          : trackId.includes('python')
+            ? 'python'
+            : 'typescript',
         annotations: [],
       },
     };
@@ -468,7 +509,9 @@ function AdminDashboardContent() {
     setProblemInput('s = "hello"');
     setProblemOutput('"olleh"');
     setProblemConstraints('1 <= s.length <= 10^5');
-    setProblemJava('public class Solution {\n    public static void main(String[] args) {\n        // Enter solution\n    }\n}');
+    setProblemJava(
+      'public class Solution {\n    public static void main(String[] args) {\n        // Enter solution\n    }\n}'
+    );
     setProblemPython('def solve():\n    pass\n\nif __name__ == "__main__":\n    solve()');
     setProblemTs('function solve(): void {\n    // Enter solution\n}\nsolve();');
     setShowProblemModal(true);
@@ -494,13 +537,19 @@ function AdminDashboardContent() {
     if (!problemTitle.trim()) return;
 
     const probId = editingProblem?.id || `prob-${Date.now()}`;
-    const newProb: Partial<CodingProblem> & { title: string; difficulty: 'Easy' | 'Medium' | 'Hard' } = {
+    const newProb: Partial<CodingProblem> & {
+      title: string;
+      difficulty: 'Easy' | 'Medium' | 'Hard';
+    } = {
       id: probId,
       title: problemTitle.trim(),
       difficulty: problemDifficulty,
       category: problemCategory.trim() || 'General',
       description: problemDesc.trim(),
-      constraints: problemConstraints.split('\n').map(s => s.trim()).filter(Boolean),
+      constraints: problemConstraints
+        .split('\n')
+        .map((s) => s.trim())
+        .filter(Boolean),
       examples: [
         {
           input: problemInput.trim() || 'sample input',
@@ -734,7 +783,8 @@ function AdminDashboardContent() {
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-white tracking-tight">Admin Gateway</h2>
             <p className="text-xs text-[#A1A1AA] leading-relaxed">
-              This area is restricted to authorized platform administrators. Please enter the master security passcode or sign in with an administrator account.
+              This area is restricted to authorized platform administrators. Please enter the master
+              security passcode or sign in with an administrator account.
             </p>
           </div>
 
@@ -742,7 +792,7 @@ function AdminDashboardContent() {
             <input
               type="password"
               value={gatePasscode}
-              onChange={e => setGatePasscode(e.target.value)}
+              onChange={(e) => setGatePasscode(e.target.value)}
               placeholder="Enter master admin passcode..."
               className="w-full px-4 py-3 rounded-xl border border-[#2B2B2B] bg-[#0F0F0F] text-white text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
@@ -779,7 +829,7 @@ function AdminDashboardContent() {
   }
 
   // Active track object
-  const currentTrack = tracks.find(t => t.id === selectedTrackId) || tracks[0];
+  const currentTrack = tracks.find((t) => t.id === selectedTrackId) || tracks[0];
 
   return (
     <div className="flex-1 bg-[#111111] text-white font-sans p-4 sm:p-8 min-h-screen">
@@ -792,7 +842,11 @@ function AdminDashboardContent() {
               : 'bg-emerald-950/90 text-emerald-200 border-emerald-800'
           }`}
         >
-          {bannerMsg.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+          {bannerMsg.type === 'error' ? (
+            <AlertCircle className="w-4 h-4" />
+          ) : (
+            <CheckCircle2 className="w-4 h-4" />
+          )}
           <span>{bannerMsg.text}</span>
         </div>
       )}
@@ -816,10 +870,20 @@ function AdminDashboardContent() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#222222]">
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: Layers },
-            { id: 'academy', label: 'Content Management Studio', icon: GraduationCap, count: academyLessonCount },
+            {
+              id: 'academy',
+              label: 'Content Management Studio',
+              icon: GraduationCap,
+              count: academyLessonCount,
+            },
             { id: 'labs', label: 'Practice Labs', icon: Terminal, count: codingProblems.length },
             { id: 'agents', label: 'AI Tools and Agents', icon: Bot, count: agentConfigs.length },
-            { id: 'interviews', label: 'Interview Banks', icon: HelpCircle, count: interviewQuestions.length },
+            {
+              id: 'interviews',
+              label: 'Interview Banks',
+              icon: HelpCircle,
+              count: interviewQuestions.length,
+            },
             { id: 'team', label: 'Admin Team & RBAC', icon: Users, count: adminEmails.length },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -840,7 +904,9 @@ function AdminDashboardContent() {
                 {tab.count !== undefined && (
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
-                      isTabActive ? 'bg-purple-500/30 text-purple-200' : 'bg-[#222222] text-[#888888]'
+                      isTabActive
+                        ? 'bg-purple-500/30 text-purple-200'
+                        : 'bg-[#222222] text-[#888888]'
                     }`}
                   >
                     {tab.count}
@@ -859,27 +925,40 @@ function AdminDashboardContent() {
             {/* Quick Metrics Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-5 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Course Tracks</span>
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                  Course Tracks
+                </span>
                 <p className="text-2xl font-black text-white">{tracks.length}</p>
                 <p className="text-[11px] text-zinc-400">
-                  {tracks.reduce((acc, t) => acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0), 0)} Total Lessons
+                  {tracks.reduce(
+                    (acc, t) =>
+                      acc + (t.modules?.reduce((mAcc, m) => mAcc + m.lessons.length, 0) || 0),
+                    0
+                  )}{' '}
+                  Total Lessons
                 </p>
               </div>
 
               <div className="p-5 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-                <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">Practice Labs</span>
+                <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">
+                  Practice Labs
+                </span>
                 <p className="text-2xl font-black text-white">{codingProblems.length}</p>
                 <p className="text-[11px] text-zinc-400">Coding Problems &amp; Sandboxes</p>
               </div>
 
               <div className="p-5 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-                <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">AI Tools &amp; Agents</span>
+                <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
+                  AI Tools &amp; Agents
+                </span>
                 <p className="text-2xl font-black text-white">{agentConfigs.length}</p>
                 <p className="text-[11px] text-zinc-400">Autonomous SDET Agents</p>
               </div>
 
               <div className="p-5 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Interview Banks</span>
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                  Interview Banks
+                </span>
                 <p className="text-2xl font-black text-white">{interviewQuestions.length}</p>
                 <p className="text-[11px] text-zinc-400">Curated &amp; Architect Scenarios</p>
               </div>
@@ -889,9 +968,12 @@ function AdminDashboardContent() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">Platform Content Sections</h2>
+                  <h2 className="text-lg font-bold text-white tracking-tight">
+                    Platform Content Sections
+                  </h2>
                   <p className="text-xs text-zinc-400">
-                    Click any section below to open its dedicated view with complete Edit and Delete rights.
+                    Click any section below to open its dedicated view with complete Edit and Delete
+                    rights.
                   </p>
                 </div>
               </div>
@@ -922,16 +1004,29 @@ function AdminDashboardContent() {
                   </div>
 
                   <p className="text-xs text-zinc-300 max-w-3xl leading-relaxed">
-                    Authoritative curriculum &amp; CMS console. Manage all courses, tracks, modules, and lessons (AI Academy, Playwright, Selenium, REST Assured, CI/CD). Upload Microsoft Word (.docx) technical guides, preview rendered HTML, and publish lessons with 1-click.
+                    Authoritative curriculum &amp; CMS console. Manage all courses, tracks, modules,
+                    and lessons (AI Academy, Playwright, Selenium, REST Assured, CI/CD). Upload
+                    Microsoft Word (.docx) technical guides, preview rendered HTML, and publish
+                    lessons with 1-click.
                   </p>
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-[#262626]">
                     <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
-                      <span className="px-2 py-0.5 rounded bg-[#222] text-emerald-300 font-semibold">AI Academy (46 Lessons)</span>
-                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">Playwright TypeScript</span>
-                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">Selenium WebDriver 4</span>
-                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">REST Assured</span>
-                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">CI/CD &amp; DevOps</span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-emerald-300 font-semibold">
+                        AI Academy (46 Lessons)
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">
+                        Playwright TypeScript
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">
+                        Selenium WebDriver 4
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">
+                        REST Assured
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-[#222] text-zinc-300">
+                        CI/CD &amp; DevOps
+                      </span>
                     </div>
                     <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
                       <span>Open Content Management Studio</span>
@@ -962,9 +1057,15 @@ function AdminDashboardContent() {
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Algorithmic</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Web Sandbox</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">API Testing</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        Algorithmic
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        Web Sandbox
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        API Testing
+                      </span>
                     </div>
                     <span className="text-xs font-bold text-sky-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                       <span>Edit &amp; Delete Details</span>
@@ -995,9 +1096,15 @@ function AdminDashboardContent() {
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Gherkin BDD</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">POM Gen</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Flakiness Auditor</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        Gherkin BDD
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        POM Gen
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        Flakiness Auditor
+                      </span>
                     </div>
                     <span className="text-xs font-bold text-purple-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                       <span>Edit &amp; Delete Details</span>
@@ -1028,9 +1135,15 @@ function AdminDashboardContent() {
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Architect Scenarios</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">CI/CD Sharding</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">Shadow DOM</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        Architect Scenarios
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        CI/CD Sharding
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#222222] text-zinc-300">
+                        Shadow DOM
+                      </span>
                     </div>
                     <span className="text-xs font-bold text-amber-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                       <span>Edit &amp; Delete Details</span>
@@ -1076,7 +1189,9 @@ function AdminDashboardContent() {
                   <span>Back to Dashboard</span>
                 </button>
                 <h2 className="text-xl font-bold text-white">Practice Labs Management</h2>
-                <p className="text-xs text-zinc-400">Edit and delete coding problems, lab environments, and starter test cases.</p>
+                <p className="text-xs text-zinc-400">
+                  Edit and delete coding problems, lab environments, and starter test cases.
+                </p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -1098,7 +1213,7 @@ function AdminDashboardContent() {
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search challenges by title, category, language..."
                   className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#0F0F0F] border border-[#2A2A2A] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                 />
@@ -1125,11 +1240,14 @@ function AdminDashboardContent() {
             {/* Coding Problems Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {codingProblems
-                .filter(p => {
+                .filter((p) => {
                   if (difficultyFilter !== 'All' && p.difficulty !== difficultyFilter) return false;
                   if (searchQuery.trim()) {
                     const q = searchQuery.toLowerCase();
-                    return p.title.toLowerCase().includes(q) || (p.category && p.category.toLowerCase().includes(q));
+                    return (
+                      p.title.toLowerCase().includes(q) ||
+                      (p.category && p.category.toLowerCase().includes(q))
+                    );
                   }
                   return true;
                 })
@@ -1145,24 +1263,34 @@ function AdminDashboardContent() {
                             prob.difficulty === 'Easy'
                               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                               : prob.difficulty === 'Medium'
-                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                              : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                                : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
                           }`}
                         >
                           {prob.difficulty}
                         </span>
-                        <span className="text-[11px] font-medium text-zinc-400">{prob.category}</span>
+                        <span className="text-[11px] font-medium text-zinc-400">
+                          {prob.category}
+                        </span>
                       </div>
 
                       <h3 className="font-bold text-white text-sm">{prob.title}</h3>
-                      <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">{prob.description}</p>
+                      <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                        {prob.description}
+                      </p>
                     </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-[#222222]">
                       <div className="flex items-center gap-1.5 text-[10px] text-zinc-400">
-                        {prob.starterTemplates?.java && <span className="px-1.5 py-0.5 rounded bg-[#222222]">Java</span>}
-                        {prob.starterTemplates?.python && <span className="px-1.5 py-0.5 rounded bg-[#222222]">Python</span>}
-                        {prob.starterTemplates?.typescript && <span className="px-1.5 py-0.5 rounded bg-[#222222]">TS</span>}
+                        {prob.starterTemplates?.java && (
+                          <span className="px-1.5 py-0.5 rounded bg-[#222222]">Java</span>
+                        )}
+                        {prob.starterTemplates?.python && (
+                          <span className="px-1.5 py-0.5 rounded bg-[#222222]">Python</span>
+                        )}
+                        {prob.starterTemplates?.typescript && (
+                          <span className="px-1.5 py-0.5 rounded bg-[#222222]">TS</span>
+                        )}
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -1247,7 +1375,9 @@ function AdminDashboardContent() {
 
                     <div>
                       <h3 className="font-bold text-base text-white">{agent.title}</h3>
-                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">{agent.description}</p>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        {agent.description}
+                      </p>
                     </div>
 
                     {/* Prompts Preview */}
@@ -1309,7 +1439,8 @@ function AdminDashboardContent() {
                 </button>
                 <h2 className="text-xl font-bold text-white">Interview Banks Management</h2>
                 <p className="text-xs text-zinc-400">
-                  Add, edit, and delete real-world SDET scenarios, system design questions, and answers.
+                  Add, edit, and delete real-world SDET scenarios, system design questions, and
+                  answers.
                 </p>
               </div>
 
@@ -1332,7 +1463,7 @@ function AdminDashboardContent() {
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search questions by keyword, topic, or technology..."
                   className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#0F0F0F] border border-[#2A2A2A] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
                 />
@@ -1359,11 +1490,19 @@ function AdminDashboardContent() {
             {/* Questions Table / List */}
             <div className="space-y-3">
               {interviewQuestions
-                .filter(q => {
-                  if (techFilter !== 'All' && !(q.technology || '').toLowerCase().includes(techFilter.toLowerCase()) && q.difficulty !== techFilter) return false;
+                .filter((q) => {
+                  if (
+                    techFilter !== 'All' &&
+                    !(q.technology || '').toLowerCase().includes(techFilter.toLowerCase()) &&
+                    q.difficulty !== techFilter
+                  )
+                    return false;
                   if (searchQuery.trim()) {
                     const query = searchQuery.toLowerCase();
-                    return q.question.toLowerCase().includes(query) || (q.topic && q.topic.toLowerCase().includes(query));
+                    return (
+                      q.question.toLowerCase().includes(query) ||
+                      (q.topic && q.topic.toLowerCase().includes(query))
+                    );
                   }
                   return true;
                 })
@@ -1384,7 +1523,9 @@ function AdminDashboardContent() {
                           </span>
                           <span className="text-xs text-zinc-400 font-medium">{item.topic}</span>
                         </div>
-                        <h3 className="font-bold text-sm text-white leading-relaxed">{item.question}</h3>
+                        <h3 className="font-bold text-sm text-white leading-relaxed">
+                          {item.question}
+                        </h3>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
@@ -1436,7 +1577,9 @@ function AdminDashboardContent() {
                   <span>Back to Dashboard</span>
                 </button>
                 <h2 className="text-xl font-bold text-white">Admin Team &amp; RBAC</h2>
-                <p className="text-xs text-zinc-400">Manage authorized administrator accounts and master passcodes.</p>
+                <p className="text-xs text-zinc-400">
+                  Manage authorized administrator accounts and master passcodes.
+                </p>
               </div>
             </div>
 
@@ -1448,7 +1591,7 @@ function AdminDashboardContent() {
                   type="email"
                   required
                   value={newAdminEmail}
-                  onChange={e => setNewAdminEmail(e.target.value)}
+                  onChange={(e) => setNewAdminEmail(e.target.value)}
                   placeholder="Enter colleague's email address..."
                   className="flex-1 px-4 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2A2A2A] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
                 />
@@ -1497,7 +1640,8 @@ function AdminDashboardContent() {
             <div className="p-6 rounded-3xl bg-[#161616] border border-[#262626] space-y-4">
               <h3 className="font-bold text-white text-sm">Master Admin Security Passcode</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                This passcode allows authorized administrators to unlock the Admin Portal without prior email pre-registration.
+                This passcode allows authorized administrators to unlock the Admin Portal without
+                prior email pre-registration.
               </p>
 
               {isEditingPasscode ? (
@@ -1506,7 +1650,7 @@ function AdminDashboardContent() {
                     type="text"
                     required
                     value={newPasscodeInput}
-                    onChange={e => setNewPasscodeInput(e.target.value)}
+                    onChange={(e) => setNewPasscodeInput(e.target.value)}
                     className="flex-1 px-4 py-2 rounded-xl bg-[#0F0F0F] border border-[#2A2A2A] text-xs text-white"
                   />
                   <button
@@ -1574,7 +1718,7 @@ function AdminDashboardContent() {
                     type="text"
                     required
                     value={problemTitle}
-                    onChange={e => setProblemTitle(e.target.value)}
+                    onChange={(e) => setProblemTitle(e.target.value)}
                     placeholder="e.g. Valid Parentheses for Test Assertions"
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   />
@@ -1584,7 +1728,7 @@ function AdminDashboardContent() {
                   <label className="text-xs font-bold text-zinc-300">Difficulty</label>
                   <select
                     value={problemDifficulty}
-                    onChange={e => setProblemDifficulty(e.target.value as any)}
+                    onChange={(e) => setProblemDifficulty(e.target.value as any)}
                     className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   >
                     <option value="Easy">Easy</option>
@@ -1599,7 +1743,7 @@ function AdminDashboardContent() {
                 <input
                   type="text"
                   value={problemCategory}
-                  onChange={e => setProblemCategory(e.target.value)}
+                  onChange={(e) => setProblemCategory(e.target.value)}
                   placeholder="e.g. Locators & DOM Traversal"
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                 />
@@ -1610,7 +1754,7 @@ function AdminDashboardContent() {
                 <textarea
                   rows={3}
                   value={problemDesc}
-                  onChange={e => setProblemDesc(e.target.value)}
+                  onChange={(e) => setProblemDesc(e.target.value)}
                   placeholder="Explain the problem scenario and expected outcome..."
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                 />
@@ -1621,7 +1765,7 @@ function AdminDashboardContent() {
                 <textarea
                   rows={3}
                   value={problemJava}
-                  onChange={e => setProblemJava(e.target.value)}
+                  onChange={(e) => setProblemJava(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-mono text-zinc-300"
                 />
               </div>
@@ -1631,7 +1775,7 @@ function AdminDashboardContent() {
                 <textarea
                   rows={3}
                   value={problemPython}
-                  onChange={e => setProblemPython(e.target.value)}
+                  onChange={(e) => setProblemPython(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-mono text-zinc-300"
                 />
               </div>
@@ -1683,7 +1827,7 @@ function AdminDashboardContent() {
                     type="text"
                     required
                     value={agentTitle}
-                    onChange={e => setAgentTitle(e.target.value)}
+                    onChange={(e) => setAgentTitle(e.target.value)}
                     placeholder="e.g. Performance Load Analyzer"
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   />
@@ -1694,7 +1838,7 @@ function AdminDashboardContent() {
                   <input
                     type="text"
                     value={agentBadge}
-                    onChange={e => setAgentBadge(e.target.value)}
+                    onChange={(e) => setAgentBadge(e.target.value)}
                     placeholder="e.g. Autonomous SDET Suite • Agent 6"
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   />
@@ -1706,29 +1850,33 @@ function AdminDashboardContent() {
                 <textarea
                   rows={2}
                   value={agentDescription}
-                  onChange={e => setAgentDescription(e.target.value)}
+                  onChange={(e) => setAgentDescription(e.target.value)}
                   placeholder="Explain what this autonomous agent achieves..."
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Default Starter User Prompt</label>
+                <label className="text-xs font-bold text-zinc-300">
+                  Default Starter User Prompt
+                </label>
                 <textarea
                   rows={3}
                   value={agentDefaultPrompt}
-                  onChange={e => setAgentDefaultPrompt(e.target.value)}
+                  onChange={(e) => setAgentDefaultPrompt(e.target.value)}
                   placeholder="Default prompt pre-filled for users..."
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-mono text-zinc-300"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">System Prompt &amp; Behavioral Guidelines</label>
+                <label className="text-xs font-bold text-zinc-300">
+                  System Prompt &amp; Behavioral Guidelines
+                </label>
                 <textarea
                   rows={4}
                   value={agentSystemPrompt}
-                  onChange={e => setAgentSystemPrompt(e.target.value)}
+                  onChange={(e) => setAgentSystemPrompt(e.target.value)}
                   placeholder="Instructions guiding Gemini model behavior for this agent..."
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-mono text-zinc-300"
                 />
@@ -1779,7 +1927,7 @@ function AdminDashboardContent() {
                   <label className="text-xs font-bold text-zinc-300">Technology</label>
                   <select
                     value={iqTech}
-                    onChange={e => setIqTech(e.target.value as any)}
+                    onChange={(e) => setIqTech(e.target.value as any)}
                     className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   >
                     <option value="Playwright">Playwright</option>
@@ -1796,7 +1944,7 @@ function AdminDashboardContent() {
                   <label className="text-xs font-bold text-zinc-300">Difficulty</label>
                   <select
                     value={iqDifficulty}
-                    onChange={e => setIqDifficulty(e.target.value as any)}
+                    onChange={(e) => setIqDifficulty(e.target.value as any)}
                     className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   >
                     <option value="Junior">Junior</option>
@@ -1811,7 +1959,7 @@ function AdminDashboardContent() {
                   <input
                     type="text"
                     value={iqTopic}
-                    onChange={e => setIqTopic(e.target.value)}
+                    onChange={(e) => setIqTopic(e.target.value)}
                     placeholder="e.g. Concurrency &amp; CI/CD"
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   />
@@ -1824,7 +1972,7 @@ function AdminDashboardContent() {
                   rows={3}
                   required
                   value={iqQuestion}
-                  onChange={e => setIqQuestion(e.target.value)}
+                  onChange={(e) => setIqQuestion(e.target.value)}
                   placeholder="Enter the technical scenario or interview question..."
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                 />
@@ -1833,12 +1981,14 @@ function AdminDashboardContent() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-zinc-300">Answer Summary</label>
-                  <span className="text-[10px] text-zinc-500 font-mono">Keeps exact paragraphs, bullets &amp; code formatting</span>
+                  <span className="text-[10px] text-zinc-500 font-mono">
+                    Keeps exact paragraphs, bullets &amp; code formatting
+                  </span>
                 </div>
                 <textarea
                   rows={14}
                   value={iqAnswer}
-                  onChange={e => setIqAnswer(e.target.value)}
+                  onChange={(e) => setIqAnswer(e.target.value)}
                   placeholder="Paste or write detailed technical explanation... Exact formatting, line breaks, bullet points, and code blocks from your source will be preserved."
                   className="w-full min-h-[300px] px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-sans text-white leading-relaxed whitespace-pre-wrap resize-y"
                 />
@@ -1859,7 +2009,7 @@ function AdminDashboardContent() {
                 <textarea
                   rows={3}
                   value={iqCode}
-                  onChange={e => setIqCode(e.target.value)}
+                  onChange={(e) => setIqCode(e.target.value)}
                   placeholder="// Code example illustrating the pattern..."
                   className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs font-mono text-zinc-300"
                 />
@@ -1871,7 +2021,7 @@ function AdminDashboardContent() {
                   <input
                     type="text"
                     value={iqBest}
-                    onChange={e => setIqBest(e.target.value)}
+                    onChange={(e) => setIqBest(e.target.value)}
                     placeholder="Recommended approach"
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   />
@@ -1881,7 +2031,7 @@ function AdminDashboardContent() {
                   <input
                     type="text"
                     value={iqPitfall}
-                    onChange={e => setIqPitfall(e.target.value)}
+                    onChange={(e) => setIqPitfall(e.target.value)}
                     placeholder="Common rookie mistake"
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white"
                   />
@@ -1921,7 +2071,9 @@ function AdminDashboardContent() {
             <div className="space-y-1">
               <h3 className="font-bold text-white text-base">Confirm Deletion</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Are you sure you want to delete <span className="font-bold text-white">"{deleteConfirm.title}"</span>? This action will remove it from the platform.
+                Are you sure you want to delete{' '}
+                <span className="font-bold text-white">"{deleteConfirm.title}"</span>? This action
+                will remove it from the platform.
               </p>
             </div>
 

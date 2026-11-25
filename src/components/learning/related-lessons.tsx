@@ -19,7 +19,10 @@ export default function RelatedLessons({ lessons, onSelectLesson }: RelatedLesso
   if (!lessons || lessons.length === 0) return null;
 
   return (
-    <section aria-label="Related Lessons" className="my-8 pt-6 border-t border-slate-200 dark:border-neutral-800 no-print">
+    <section
+      aria-label="Related Lessons"
+      className="my-8 pt-6 border-t border-slate-200 dark:border-neutral-800 no-print"
+    >
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="w-4 h-4 text-emerald-500" />
         <h3 className="text-sm font-bold text-slate-900 dark:text-neutral-100 uppercase tracking-wider">

@@ -248,8 +248,8 @@ export default function CodeEditorWorkspace({
   const [activeLesson, setActiveLesson] = useState<Lesson>(() => {
     if (typeof window !== 'undefined') {
       const storedTracks = QADatabase.getTracks();
-      const trk = storedTracks.find(t => t.id === track.id);
-      const found = trk?.modules.flatMap(m => m.lessons).find(l => l.id === lesson.id);
+      const trk = storedTracks.find((t) => t.id === track.id);
+      const found = trk?.modules.flatMap((m) => m.lessons).find((l) => l.id === lesson.id);
       if (found) return found;
     }
     return lesson;
@@ -263,8 +263,8 @@ export default function CodeEditorWorkspace({
     if (typeof window !== 'undefined') {
       const syncActiveLesson = () => {
         const storedTracks = QADatabase.getTracks();
-        const trk = storedTracks.find(t => t.id === track.id);
-        const found = trk?.modules.flatMap(m => m.lessons).find(l => l.id === lesson.id);
+        const trk = storedTracks.find((t) => t.id === track.id);
+        const found = trk?.modules.flatMap((m) => m.lessons).find((l) => l.id === lesson.id);
         if (found) {
           setActiveLesson({ ...found });
           setCode(getCodeForLanguage(selectedLang, found, track.id));
@@ -280,11 +280,7 @@ export default function CodeEditorWorkspace({
   }, [track.id, lesson.id, selectedLang]);
 
   const [code, setCode] = useState<string>(() =>
-    getCodeForLanguage(
-      isPlaywright || isAi ? 'typescript' : 'java',
-      activeLesson,
-      track.id
-    )
+    getCodeForLanguage(isPlaywright || isAi ? 'typescript' : 'java', activeLesson, track.id)
   );
 
   // Switch code immediately when user selects a language tab
@@ -343,14 +339,17 @@ export default function CodeEditorWorkspace({
         userKey = QADatabase.getUserGeminiKey(currentUser?.id);
       }
 
-      const techStackKey =
-        isSelenium
-          ? (aiSnippetLang === 'python' ? 'selenium-python' : 'selenium-java')
-          : aiSnippetLang === 'java'
-          ? (track.id === 'api-testing' ? 'rest-assured' : 'selenium-java')
+      const techStackKey = isSelenium
+        ? aiSnippetLang === 'python'
+          ? 'selenium-python'
+          : 'selenium-java'
+        : aiSnippetLang === 'java'
+          ? track.id === 'api-testing'
+            ? 'rest-assured'
+            : 'selenium-java'
           : aiSnippetLang === 'python'
-          ? 'playwright-python'
-          : 'playwright-ts';
+            ? 'playwright-python'
+            : 'playwright-ts';
 
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (userKey) {
@@ -373,7 +372,9 @@ export default function CodeEditorWorkspace({
         setAiSnippet(data.output);
         setAiSnippetError(null);
       } else {
-        setAiSnippetError(data?.message || data?.error || 'Unable to generate snippet. Please try again.');
+        setAiSnippetError(
+          data?.message || data?.error || 'Unable to generate snippet. Please try again.'
+        );
       }
     } catch (err: any) {
       setAiSnippetError(err.message || 'Error communicating with AI service');
@@ -435,11 +436,19 @@ export default function CodeEditorWorkspace({
   }, [syncAuth]);
 
   const isLocked = QADatabase.isLessonLocked(track.id, lesson.id, !!currentUser);
-  const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
+  const guideSlug =
+    track.id === 'selenium-java'
+      ? 'selenium'
+      : track.id === 'playwright-ts'
+        ? 'playwright'
+        : track.id;
 
-  const allTrackLessons = track.modules.flatMap(m => m.lessons);
-  const currentLessonIdx = allTrackLessons.findIndex(l => l.id === lesson.id);
-  const nextLesson = currentLessonIdx >= 0 && currentLessonIdx < allTrackLessons.length - 1 ? allTrackLessons[currentLessonIdx + 1] : null;
+  const allTrackLessons = track.modules.flatMap((m) => m.lessons);
+  const currentLessonIdx = allTrackLessons.findIndex((l) => l.id === lesson.id);
+  const nextLesson =
+    currentLessonIdx >= 0 && currentLessonIdx < allTrackLessons.length - 1
+      ? allTrackLessons[currentLessonIdx + 1]
+      : null;
 
   // Automatically record progress / mark completed upon visiting the section
   useEffect(() => {
@@ -448,7 +457,7 @@ export default function CodeEditorWorkspace({
 
     if (!isLocked) {
       QADatabase.getProgress(user.id, track.id as any).then(async (progList) => {
-        const existing = progList.find(p => p.lessonId === lesson.id && p.status === 'completed');
+        const existing = progList.find((p) => p.lessonId === lesson.id && p.status === 'completed');
         if (existing) {
           setIsCompleted(true);
         } else {
@@ -476,7 +485,7 @@ export default function CodeEditorWorkspace({
     setValidationResult(null);
 
     // Simulate execution against live sandbox
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 600));
 
     const rules = lesson.challenge.validationRules;
     const errors: string[] = [];
@@ -499,7 +508,8 @@ export default function CodeEditorWorkspace({
     if (errors.length === 0) {
       setValidationResult({
         passed: true,
-        message: '✔ Test Passed! Your automation code meets all robust SDET criteria and executed successfully in the sandbox.',
+        message:
+          '✔ Test Passed! Your automation code meets all robust SDET criteria and executed successfully in the sandbox.',
       });
       setIsCompleted(true);
       // Persist progress to database
@@ -539,9 +549,7 @@ export default function CodeEditorWorkspace({
       className="w-full flex-1 flex flex-col lg:flex-row overflow-hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 relative"
     >
       {/* Full-width Interactive Guide & Concepts */}
-      <div
-        className="w-full flex flex-col border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto h-auto lg:h-[calc(100vh-65px)]"
-      >
+      <div className="w-full flex flex-col border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto h-auto lg:h-[calc(100vh-65px)]">
         {/* Navigation & Header */}
         <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-800 space-y-3">
           <div className="flex items-center justify-between text-xs flex-wrap gap-2">
@@ -572,7 +580,13 @@ export default function CodeEditorWorkspace({
                   onClick={async () => {
                     const user = currentUser || QADatabase.getCurrentUser() || DEMO_USER;
                     const newStatus = isCompleted ? 'in-progress' : 'completed';
-                    await QADatabase.toggleLessonStatus(user.id, track.id as any, lesson.moduleId, lesson.id, newStatus);
+                    await QADatabase.toggleLessonStatus(
+                      user.id,
+                      track.id as any,
+                      lesson.moduleId,
+                      lesson.id,
+                      newStatus
+                    );
                     setIsCompleted(newStatus === 'completed');
                   }}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
@@ -580,9 +594,13 @@ export default function CodeEditorWorkspace({
                       ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:text-emerald-500'
                   }`}
-                  title={isCompleted ? 'Completed! Click to mark incomplete' : 'Click to mark complete'}
+                  title={
+                    isCompleted ? 'Completed! Click to mark incomplete' : 'Click to mark complete'
+                  }
                 >
-                  <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-500 fill-emerald-500/20' : 'text-slate-400'}`} />
+                  <CheckCircle2
+                    className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-500 fill-emerald-500/20' : 'text-slate-400'}`}
+                  />
                   <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
                 </button>
               )}
@@ -654,7 +672,8 @@ export default function CodeEditorWorkspace({
                     Lesson 2+ Unlocks With Free Account
                   </h3>
                   <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Lesson 1 of every track is a free guest preview. To access all subsequent lessons and interactive labs, create your free account.
+                    Lesson 1 of every track is a free guest preview. To access all subsequent
+                    lessons and interactive labs, create your free account.
                   </p>
                 </div>
               </div>
@@ -680,443 +699,526 @@ export default function CodeEditorWorkspace({
 
         {/* Tab Content */}
         <div className="p-4 md:p-6 space-y-6 flex-1 text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-          {activeTab === 'guide' && (() => {
-            const doc = getLessonDoc(
-              lsn.id,
-              track.id,
-              lsn.title,
-              lsn.description,
-              guideLang
-            );
+          {activeTab === 'guide' &&
+            (() => {
+              const doc = getLessonDoc(lsn.id, track.id, lsn.title, lsn.description, guideLang);
 
-            // In-line language toggle matching user uploaded design (media_1794676396352_462a4599.png)
-            const renderLanguageToggle = () => (
-              <div className="inline-flex items-center gap-1 bg-slate-900/95 dark:bg-[#111928] p-1 rounded-2xl border border-slate-700/90 text-xs shadow-xs shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setGuideLang(primaryLang)}
-                  className={`px-3.5 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                    guideLang === primaryLang
-                      ? 'bg-amber-500 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white font-medium'
-                  }`}
-                  title={`Switch code example to ${primaryLabel}`}
-                >
-                  {primaryLabel}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setGuideLang('python')}
-                  className={`px-3.5 py-1 rounded-xl font-bold transition-all cursor-pointer ${
-                    guideLang === 'python'
-                      ? 'bg-amber-500 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white font-medium'
-                  }`}
-                  title="Switch code example to Python"
-                >
-                  Python
-                </button>
-              </div>
-            );
-
-            return (
-              <div className="space-y-6">
-                {/* 1. Header Overview & Playwright-Docs Style Introduction */}
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/40 dark:from-slate-900 dark:to-indigo-950/20 border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-xs">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-xs border border-emerald-500/20">
-                      {doc.category}
-                    </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                      Documentation &amp; Core Architecture
-                    </span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-                    {doc.tagline}
-                  </h3>
-                  <p className="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {doc.overview}
-                  </p>
-                  <div className="p-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-xs md:text-sm text-sky-900 dark:text-sky-200 flex items-start gap-2.5">
-                    <Flame className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="font-semibold block mb-0.5">Why This Matters for Manual Testers:</strong>
-                      <span>{doc.whyItMattersForManualQA}</span>
-                    </div>
-                  </div>
+              // In-line language toggle matching user uploaded design (media_1794676396352_462a4599.png)
+              const renderLanguageToggle = () => (
+                <div className="inline-flex items-center gap-1 bg-slate-900/95 dark:bg-[#111928] p-1 rounded-2xl border border-slate-700/90 text-xs shadow-xs shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setGuideLang(primaryLang)}
+                    className={`px-3.5 py-1 rounded-xl font-bold transition-all cursor-pointer ${
+                      guideLang === primaryLang
+                        ? 'bg-amber-500 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-white font-medium'
+                    }`}
+                    title={`Switch code example to ${primaryLabel}`}
+                  >
+                    {primaryLabel}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGuideLang('python')}
+                    className={`px-3.5 py-1 rounded-xl font-bold transition-all cursor-pointer ${
+                      guideLang === 'python'
+                        ? 'bg-amber-500 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-white font-medium'
+                    }`}
+                    title="Switch code example to Python"
+                  >
+                    Python
+                  </button>
                 </div>
+              );
 
-                {/* 2. Architecture & Underlying Mechanism with Visual Infographic Diagram */}
-                <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-5 shadow-lg">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
-                        <Cpu className="w-5 h-5" />
-                      </div>
+              return (
+                <div className="space-y-6">
+                  {/* 1. Header Overview & Playwright-Docs Style Introduction */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/40 dark:from-slate-900 dark:to-indigo-950/20 border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-xs">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-xs border border-emerald-500/20">
+                        {doc.category}
+                      </span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        Documentation &amp; Core Architecture
+                      </span>
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                      {doc.tagline}
+                    </h3>
+                    <p className="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+                      {doc.overview}
+                    </p>
+                    <div className="p-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-xs md:text-sm text-sky-900 dark:text-sky-200 flex items-start gap-2.5">
+                      <Flame className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-extrabold text-lg md:text-xl text-white">
-                          {doc.architectureUnderTheHood.title}
-                        </h4>
-                        <span className="text-xs text-indigo-300 font-medium">Under-the-Hood Visual Architecture &amp; Protocol Lifecycle</span>
+                        <strong className="font-semibold block mb-0.5">
+                          Why This Matters for Manual Testers:
+                        </strong>
+                        <span>{doc.whyItMattersForManualQA}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Architecture & Underlying Mechanism with Visual Infographic Diagram */}
+                  <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-5 shadow-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
+                          <Cpu className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-lg md:text-xl text-white">
+                            {doc.architectureUnderTheHood.title}
+                          </h4>
+                          <span className="text-xs text-indigo-300 font-medium">
+                            Under-the-Hood Visual Architecture &amp; Protocol Lifecycle
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowVisualDiagram(!showVisualDiagram)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all cursor-pointer self-start sm:self-auto"
+                      >
+                        <Workflow className="w-3.5 h-3.5" />
+                        <span>
+                          {showVisualDiagram
+                            ? 'Minimize Diagram'
+                            : 'Show Visual Architecture Diagram'}
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Visual Architecture Diagram Graphic (Infographic Mode) */}
+                    {showVisualDiagram && (
+                      <div className="pt-2">
+                        <CourseVisualDiagram trackId={track.id} showTitle={false} />
+                      </div>
+                    )}
+
+                    {/* Visual Protocol Execution Stream */}
+                    <div className="space-y-2">
+                      <div className="text-xs font-mono text-indigo-300 uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                        <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                        <span>Protocol &amp; Execution Pipeline:</span>
+                      </div>
+                      <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 font-mono text-xs sm:text-sm text-indigo-300 overflow-x-auto leading-relaxed shadow-inner">
+                        {doc.architectureUnderTheHood.flowOrMechanism}
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setShowVisualDiagram(!showVisualDiagram)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all cursor-pointer self-start sm:self-auto"
-                    >
-                      <Workflow className="w-3.5 h-3.5" />
-                      <span>{showVisualDiagram ? 'Minimize Diagram' : 'Show Visual Architecture Diagram'}</span>
-                    </button>
+                    <div className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200 pt-1 border-t border-slate-800/80">
+                      <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Key Architectural Takeaway:</strong>{' '}
+                        {doc.architectureUnderTheHood.keyTakeaway}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Visual Architecture Diagram Graphic (Infographic Mode) */}
-                  {showVisualDiagram && (
-                    <div className="pt-2">
-                      <CourseVisualDiagram trackId={track.id} showTitle={false} />
+                  {/* 3. If java-oops-framework, retain in-depth OOPs 4 Pillars breakdown */}
+                  {lesson.id === 'java-oops-framework' && (
+                    <div className="space-y-4">
+                      <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/80 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                            Why Manual Testers Need OOPs for Automation
+                          </h3>
+                        </div>
+                        <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                          In manual testing, every test case in your spreadsheet is an isolated row
+                          with steps like &quot;Launch Chrome, type user, click submit&quot;. If you
+                          automate like a manual tester by copy-pasting code into 100 script files,
+                          you end up with 100 browser instances running in memory, memory leaks, and
+                          when a single button ID changes, you have to manually edit 100 files!
+                        </p>
+                        <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                          <strong>Object-Oriented Programming (OOPs)</strong> solves this
+                          completely. A <em>Class</em> is your page blueprint, an <em>Object</em> is
+                          a live browser session, and the 4 pillars ensure you write code once and
+                          reuse it across thousands of test executions.
+                        </p>
+                      </div>
+
+                      <h4 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-emerald-500" />
+                        The 4 Pillars of OOPs Mapped Directly to Automation:
+                      </h4>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                          <div className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                            1. Encapsulation (Data Hiding in POM)
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <strong>Concept:</strong> Keep element locators{' '}
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              private By username
+                            </code>{' '}
+                            inside the Page Class. Never expose raw locators to test classes!
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            <strong>Why it matters:</strong> If the web UI changes, you update the
+                            locator in ONE line inside the Page class, and all 50 tests pass without
+                            touching test files.
+                          </p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                          <div className="font-bold text-sky-600 dark:text-sky-400 text-sm">
+                            2. Inheritance (BaseTest Code Reuse)
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <strong>Concept:</strong>{' '}
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              public class LoginTest extends BaseTest
+                            </code>
+                            . Child test classes inherit driver lifecycle automatically.
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            <strong>Why it matters:</strong> Write browser initialization, window
+                            maximize, and driver.quit() ONCE in BaseTest. 100 test classes inherit
+                            it for free.
+                          </p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                          <div className="font-bold text-purple-600 dark:text-purple-400 text-sm">
+                            {'3. Polymorphism (Multi-Browser & Overloading)'}
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <strong>Concept:</strong> Method Overloading (
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              click(By)
+                            </code>{' '}
+                            vs{' '}
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              click(By, timeout)
+                            </code>
+                            ) + Dynamic Dispatch (
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              WebDriver driver = new ChromeDriver()
+                            </code>
+                            ).
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            <strong>Why it matters:</strong> The exact same test suite switches
+                            between Chrome, Firefox, and Edge via a single configuration parameter
+                            at runtime!
+                          </p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                          <div className="font-bold text-amber-600 dark:text-amber-400 text-sm">
+                            4. Abstraction (Hiding Browser Complexity)
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <strong>Concept:</strong>{' '}
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              WebDriver
+                            </code>{' '}
+                            is a Java Interface.{' '}
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              BasePage
+                            </code>{' '}
+                            is an Abstract Class.
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            <strong>Why it matters:</strong> You call{' '}
+                            <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">
+                              driver.get()
+                            </code>{' '}
+                            and Selenium handles millions of lines of browser C++ socket code under
+                            the hood.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  {/* Visual Protocol Execution Stream */}
-                  <div className="space-y-2">
-                    <div className="text-xs font-mono text-indigo-300 uppercase tracking-wider flex items-center gap-1.5 font-bold">
-                      <Layers className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>Protocol &amp; Execution Pipeline:</span>
-                    </div>
-                    <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 font-mono text-xs sm:text-sm text-indigo-300 overflow-x-auto leading-relaxed shadow-inner">
-                      {doc.architectureUnderTheHood.flowOrMechanism}
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200 pt-1 border-t border-slate-800/80">
-                    <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                    <span><strong>Key Architectural Takeaway:</strong> {doc.architectureUnderTheHood.keyTakeaway}</span>
-                  </div>
-                </div>
-
-                {/* 3. If java-oops-framework, retain in-depth OOPs 4 Pillars breakdown */}
-                {lesson.id === 'java-oops-framework' && (
+                  {/* 4. Step-by-Step Implementation Guide (Playwright-Docs Style) */}
                   <div className="space-y-4">
-                    <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/80 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                          Why Manual Testers Need OOPs for Automation
-                        </h3>
-                      </div>
-                      <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                        In manual testing, every test case in your spreadsheet is an isolated row with steps like &quot;Launch Chrome, type user, click submit&quot;. If you automate like a manual tester by copy-pasting code into 100 script files, you end up with 100 browser instances running in memory, memory leaks, and when a single button ID changes, you have to manually edit 100 files!
-                      </p>
-                      <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                        <strong>Object-Oriented Programming (OOPs)</strong> solves this completely. A <em>Class</em> is your page blueprint, an <em>Object</em> is a live browser session, and the 4 pillars ensure you write code once and reuse it across thousands of test executions.
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
+                        <Target className="w-5 h-5 text-emerald-500" />
+                        Step-by-Step Practical Implementation Guide
+                      </h4>
+                      <span className="text-xs text-slate-400 font-mono">
+                        {doc.stepByStepGuide.length} Sequenced Steps
+                      </span>
                     </div>
 
-                    <h4 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-emerald-500" />
-                      The 4 Pillars of OOPs Mapped Directly to Automation:
-                    </h4>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                        <div className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
-                          1. Encapsulation (Data Hiding in POM)
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                          <strong>Concept:</strong> Keep element locators <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">private By username</code> inside the Page Class. Never expose raw locators to test classes!
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          <strong>Why it matters:</strong> If the web UI changes, you update the locator in ONE line inside the Page class, and all 50 tests pass without touching test files.
-                        </p>
-                      </div>
-
-                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                        <div className="font-bold text-sky-600 dark:text-sky-400 text-sm">
-                          2. Inheritance (BaseTest Code Reuse)
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                          <strong>Concept:</strong> <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">public class LoginTest extends BaseTest</code>. Child test classes inherit driver lifecycle automatically.
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          <strong>Why it matters:</strong> Write browser initialization, window maximize, and driver.quit() ONCE in BaseTest. 100 test classes inherit it for free.
-                        </p>
-                      </div>
-
-                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                        <div className="font-bold text-purple-600 dark:text-purple-400 text-sm">
-                          {'3. Polymorphism (Multi-Browser & Overloading)'}
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                          <strong>Concept:</strong> Method Overloading (<code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">click(By)</code> vs <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">click(By, timeout)</code>) + Dynamic Dispatch (<code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">WebDriver driver = new ChromeDriver()</code>).
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          <strong>Why it matters:</strong> The exact same test suite switches between Chrome, Firefox, and Edge via a single configuration parameter at runtime!
-                        </p>
-                      </div>
-
-                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                        <div className="font-bold text-amber-600 dark:text-amber-400 text-sm">
-                          4. Abstraction (Hiding Browser Complexity)
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                          <strong>Concept:</strong> <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">WebDriver</code> is a Java Interface. <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">BasePage</code> is an Abstract Class.
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          <strong>Why it matters:</strong> You call <code className="text-xs bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">driver.get()</code> and Selenium handles millions of lines of browser C++ socket code under the hood.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 4. Step-by-Step Implementation Guide (Playwright-Docs Style) */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
-                      <Target className="w-5 h-5 text-emerald-500" />
-                      Step-by-Step Practical Implementation Guide
-                    </h4>
-                    <span className="text-xs text-slate-400 font-mono">
-                      {doc.stepByStepGuide.length} Sequenced Steps
-                    </span>
-                  </div>
-
-                  <div className="space-y-4">
-                    {doc.stepByStepGuide.map((step, idx) => (
-                      <div
-                        key={idx}
-                        className="p-4 md:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs"
-                      >
-                        <div className="flex items-center justify-between flex-wrap gap-2">
-                          <div className="flex items-center gap-2.5">
-                            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                              {step.stepNumber}
-                            </span>
-                            <h5 className="font-bold text-slate-900 dark:text-white text-sm md:text-base">
-                              {step.title}
-                            </h5>
+                    <div className="space-y-4">
+                      {doc.stepByStepGuide.map((step, idx) => (
+                        <div
+                          key={idx}
+                          className="p-4 md:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs"
+                        >
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-2.5">
+                              <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                                {step.stepNumber}
+                              </span>
+                              <h5 className="font-bold text-slate-900 dark:text-white text-sm md:text-base">
+                                {step.title}
+                              </h5>
+                            </div>
+                            {step.badge && (
+                              <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                {step.badge}
+                              </span>
+                            )}
                           </div>
-                          {step.badge && (
-                            <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                              {step.badge}
-                            </span>
+
+                          <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                            {step.explanation}
+                          </p>
+
+                          {step.codeSnippet && (
+                            <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 text-xs font-mono shadow-xs">
+                              <div className="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 text-[11px] text-slate-400 flex items-center justify-between gap-2 flex-wrap">
+                                <span className="font-semibold text-slate-300 truncate">
+                                  {step.codeSnippet.caption || 'Implementation Snippet'}
+                                </span>
+                                {renderLanguageToggle()}
+                              </div>
+                              <pre className="p-3.5 overflow-x-auto leading-relaxed text-emerald-300">
+                                <code>{step.codeSnippet.code}</code>
+                              </pre>
+                            </div>
+                          )}
+
+                          {step.proTip && (
+                            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
+                              <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                              <span>
+                                <strong>ProTip:</strong> {step.proTip}
+                              </span>
+                            </div>
                           )}
                         </div>
-
-                        <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
-                          {step.explanation}
-                        </p>
-
-                        {step.codeSnippet && (
-                          <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 text-xs font-mono shadow-xs">
-                            <div className="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 text-[11px] text-slate-400 flex items-center justify-between gap-2 flex-wrap">
-                              <span className="font-semibold text-slate-300 truncate">
-                                {step.codeSnippet.caption || 'Implementation Snippet'}
-                              </span>
-                              {renderLanguageToggle()}
-                            </div>
-                            <pre className="p-3.5 overflow-x-auto leading-relaxed text-emerald-300">
-                              <code>{step.codeSnippet.code}</code>
-                            </pre>
-                          </div>
-                        )}
-
-                        {step.proTip && (
-                          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
-                            <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                            <span><strong>ProTip:</strong> {step.proTip}</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* 5. Manual QA to SDET Transition Bridge (Comparative Table & Merged Manual Context) */}
-                {(doc.manualToAutomatedBridge.length > 0 || (lesson.manualContext && (lesson.manualContext.steps?.length > 0 || lesson.manualContext.painPoints?.length > 0))) && (
-                  <div className="space-y-3">
-                    <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
-                      <ArrowRightCircle className="w-5 h-5 text-sky-500" />
-                      Manual QA to Modern SDET Transition Bridge
-                    </h4>
-                    {doc.manualToAutomatedBridge.length > 0 && (
-                      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                        <table className="w-full text-left border-collapse text-xs md:text-sm">
-                          <thead>
-                            <tr className="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
-                              <th className="p-3 font-bold">Manual Testing Action</th>
-                              <th className="p-3 font-bold">Modern Automated SDET Code</th>
-                              <th className="p-3 font-bold">Why This Eliminates Flakiness</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
-                            {doc.manualToAutomatedBridge.map((row, i) => (
-                              <tr key={i} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                                <td className="p-3 text-slate-600 dark:text-slate-400 font-medium">
-                                  {row.manualAction}
-                                </td>
-                                <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                                  {row.automatedApproach}
-                                </td>
-                                <td className="p-3 text-slate-500 dark:text-slate-400">
-                                  {row.whyItMatters}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-
-                    {/* Merged Manual Verification Flow & Friction Points where they add value */}
-                    {lesson.manualContext && (
-                      (lesson.manualContext.steps && lesson.manualContext.steps.length > 0 && !lesson.manualContext.steps.every(s => s.toLowerCase().includes('execute verification steps') || s.toLowerCase().includes('execute manual test steps'))) ||
-                      (lesson.manualContext.painPoints && lesson.manualContext.painPoints.length > 0 && !lesson.manualContext.painPoints.every(p => p.toLowerCase().includes('repetitive and slow') || p.toLowerCase().includes('slow and error-prone')))
-                    ) && (
-                      <div className="p-4 md:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
-                        <div className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
-                          Manual Verification Context: {lesson.manualContext.title}
-                        </div>
-                        {lesson.manualContext.steps && lesson.manualContext.steps.length > 0 && !lesson.manualContext.steps.every(s => s.toLowerCase().includes('execute verification steps') || s.toLowerCase().includes('execute manual test steps')) && (
-                          <div className="space-y-1">
-                            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                              Manual Verification Flow:
-                            </span>
-                            <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-                              {lesson.manualContext.steps.map((st, i) => (
-                                <li key={i}>{st}</li>
-                              ))}
-                            </ol>
-                          </div>
-                        )}
-                        {lesson.manualContext.painPoints && lesson.manualContext.painPoints.length > 0 && !lesson.manualContext.painPoints.every(p => p.toLowerCase().includes('repetitive and slow') || p.toLowerCase().includes('slow and error-prone')) && (
-                          <div className="pt-2 border-t border-slate-200 dark:border-slate-700/60">
-                            <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
-                              Manual QA Friction Points:
-                            </span>
-                            <ul className="list-disc pl-5 mt-1 space-y-0.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                              {lesson.manualContext.painPoints.map((pp, i) => (
-                                <li key={i}>{pp}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* 6. Production Code Example & Line-by-Line Breakdown */}
-                {doc.productionCodeExample && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
+                  {/* 5. Manual QA to SDET Transition Bridge (Comparative Table & Merged Manual Context) */}
+                  {(doc.manualToAutomatedBridge.length > 0 ||
+                    (lesson.manualContext &&
+                      (lesson.manualContext.steps?.length > 0 ||
+                        lesson.manualContext.painPoints?.length > 0))) && (
+                    <div className="space-y-3">
                       <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
-                        <Code className="w-5 h-5 text-indigo-500" />
-                        {doc.productionCodeExample.title}
+                        <ArrowRightCircle className="w-5 h-5 text-sky-500" />
+                        Manual QA to Modern SDET Transition Bridge
                       </h4>
+                      {doc.manualToAutomatedBridge.length > 0 && (
+                        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                          <table className="w-full text-left border-collapse text-xs md:text-sm">
+                            <thead>
+                              <tr className="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
+                                <th className="p-3 font-bold">Manual Testing Action</th>
+                                <th className="p-3 font-bold">Modern Automated SDET Code</th>
+                                <th className="p-3 font-bold">Why This Eliminates Flakiness</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
+                              {doc.manualToAutomatedBridge.map((row, i) => (
+                                <tr
+                                  key={i}
+                                  className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors"
+                                >
+                                  <td className="p-3 text-slate-600 dark:text-slate-400 font-medium">
+                                    {row.manualAction}
+                                  </td>
+                                  <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                                    {row.automatedApproach}
+                                  </td>
+                                  <td className="p-3 text-slate-500 dark:text-slate-400">
+                                    {row.whyItMatters}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+
+                      {/* Merged Manual Verification Flow & Friction Points where they add value */}
+                      {lesson.manualContext &&
+                        ((lesson.manualContext.steps &&
+                          lesson.manualContext.steps.length > 0 &&
+                          !lesson.manualContext.steps.every(
+                            (s) =>
+                              s.toLowerCase().includes('execute verification steps') ||
+                              s.toLowerCase().includes('execute manual test steps')
+                          )) ||
+                          (lesson.manualContext.painPoints &&
+                            lesson.manualContext.painPoints.length > 0 &&
+                            !lesson.manualContext.painPoints.every(
+                              (p) =>
+                                p.toLowerCase().includes('repetitive and slow') ||
+                                p.toLowerCase().includes('slow and error-prone')
+                            ))) && (
+                          <div className="p-4 md:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                            <div className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
+                              Manual Verification Context: {lesson.manualContext.title}
+                            </div>
+                            {lesson.manualContext.steps &&
+                              lesson.manualContext.steps.length > 0 &&
+                              !lesson.manualContext.steps.every(
+                                (s) =>
+                                  s.toLowerCase().includes('execute verification steps') ||
+                                  s.toLowerCase().includes('execute manual test steps')
+                              ) && (
+                                <div className="space-y-1">
+                                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                    Manual Verification Flow:
+                                  </span>
+                                  <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                                    {lesson.manualContext.steps.map((st, i) => (
+                                      <li key={i}>{st}</li>
+                                    ))}
+                                  </ol>
+                                </div>
+                              )}
+                            {lesson.manualContext.painPoints &&
+                              lesson.manualContext.painPoints.length > 0 &&
+                              !lesson.manualContext.painPoints.every(
+                                (p) =>
+                                  p.toLowerCase().includes('repetitive and slow') ||
+                                  p.toLowerCase().includes('slow and error-prone')
+                              ) && (
+                                <div className="pt-2 border-t border-slate-200 dark:border-slate-700/60">
+                                  <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
+                                    Manual QA Friction Points:
+                                  </span>
+                                  <ul className="list-disc pl-5 mt-1 space-y-0.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                                    {lesson.manualContext.painPoints.map((pp, i) => (
+                                      <li key={i}>{pp}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                          </div>
+                        )}
                     </div>
-                    <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
-                      {doc.productionCodeExample.description}
-                    </p>
-                    <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 font-mono text-xs shadow-xs">
-                      <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400 flex-wrap gap-2">
-                        <span className="flex items-center gap-2">
-                          <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                          Production Blueprint
-                        </span>
-                        {renderLanguageToggle()}
+                  )}
+
+                  {/* 6. Production Code Example & Line-by-Line Breakdown */}
+                  {doc.productionCodeExample && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <h4 className="font-extrabold text-slate-900 dark:text-white text-base md:text-lg flex items-center gap-2">
+                          <Code className="w-5 h-5 text-indigo-500" />
+                          {doc.productionCodeExample.title}
+                        </h4>
                       </div>
-                      <pre className="p-4 overflow-x-auto leading-relaxed text-emerald-300">
-                        <code>{doc.productionCodeExample.code}</code>
-                      </pre>
+                      <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                        {doc.productionCodeExample.description}
+                      </p>
+                      <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 text-slate-100 font-mono text-xs shadow-xs">
+                        <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400 flex-wrap gap-2">
+                          <span className="flex items-center gap-2">
+                            <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                            Production Blueprint
+                          </span>
+                          {renderLanguageToggle()}
+                        </div>
+                        <pre className="p-4 overflow-x-auto leading-relaxed text-emerald-300">
+                          <code>{doc.productionCodeExample.code}</code>
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 7. Best Practices & Flaky Anti-patterns */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2.5">
+                      <div className="font-bold text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4" />
+                        SDET Best Practices (Do This)
+                      </div>
+                      <ul className="space-y-2 text-xs md:text-sm text-emerald-900 dark:text-emerald-200">
+                        {doc.bestPractices.map((bp, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-emerald-500 font-bold">✔</span>
+                            <span>{bp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 space-y-2.5">
+                      <div className="font-bold text-rose-800 dark:text-rose-300 text-sm flex items-center gap-1.5">
+                        <AlertCircle className="w-4 h-4" />
+                        Flaky Anti-Patterns (Avoid This)
+                      </div>
+                      <ul className="space-y-2 text-xs md:text-sm text-rose-900 dark:text-rose-200">
+                        {doc.antiPatterns.map((ap, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-rose-500 font-bold">✖</span>
+                            <span>{ap}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
-                )}
 
-                {/* 7. Best Practices & Flaky Anti-patterns */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2.5">
-                    <div className="font-bold text-emerald-800 dark:text-emerald-300 text-sm flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4" />
-                      SDET Best Practices (Do This)
-                    </div>
-                    <ul className="space-y-2 text-xs md:text-sm text-emerald-900 dark:text-emerald-200">
-                      {doc.bestPractices.map((bp, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <span className="text-emerald-500 font-bold">✔</span>
-                          <span>{bp}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 space-y-2.5">
-                    <div className="font-bold text-rose-800 dark:text-rose-300 text-sm flex items-center gap-1.5">
-                      <AlertCircle className="w-4 h-4" />
-                      Flaky Anti-Patterns (Avoid This)
-                    </div>
-                    <ul className="space-y-2 text-xs md:text-sm text-rose-900 dark:text-rose-200">
-                      {doc.antiPatterns.map((ap, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <span className="text-rose-500 font-bold">✖</span>
-                          <span>{ap}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* 8. Technical Interview Question & Architectural Model Answer */}
-                {doc.interviewQnA && (
-                  <div className="p-5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 space-y-2.5">
-                    <div className="font-bold text-indigo-900 dark:text-indigo-300 text-sm md:text-base flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                      Technical Interview Question: &ldquo;{doc.interviewQnA.question}&rdquo;
-                    </div>
-                    <p className="text-xs md:text-sm text-indigo-950 dark:text-indigo-200 leading-relaxed pl-6 border-l-2 border-indigo-400 dark:border-indigo-600">
-                      <strong>Model Architectural Answer:</strong> {doc.interviewQnA.answer}
-                    </p>
-                  </div>
-                )}
-
-                {/* 9. Section Completed & Next Lesson Navigation */}
-                <div className="mt-8 p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white">Section Completed</h4>
-                      <p className="text-xs text-slate-400">
-                        {isCompleted
-                          ? 'This lesson is completed and recorded in your overall progress.'
-                          : 'Visiting this section tracks your course completion.'}
+                  {/* 8. Technical Interview Question & Architectural Model Answer */}
+                  {doc.interviewQnA && (
+                    <div className="p-5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 space-y-2.5">
+                      <div className="font-bold text-indigo-900 dark:text-indigo-300 text-sm md:text-base flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        Technical Interview Question: &ldquo;{doc.interviewQnA.question}&rdquo;
+                      </div>
+                      <p className="text-xs md:text-sm text-indigo-950 dark:text-indigo-200 leading-relaxed pl-6 border-l-2 border-indigo-400 dark:border-indigo-600">
+                        <strong>Model Architectural Answer:</strong> {doc.interviewQnA.answer}
                       </p>
                     </div>
-                  </div>
-                  {nextLesson ? (
-                    <Link
-                      href={`/tracks/${track.id}/${nextLesson.id}`}
-                      className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-2 transition-all shrink-0 self-start sm:self-auto shadow-md"
-                    >
-                      <span>Next Lesson: {nextLesson.title}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  ) : (
-                    <Link
-                      href={`/tracks/${track.id}`}
-                      className="py-2.5 px-5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-2 transition-all shrink-0 self-start sm:self-auto"
-                    >
-                      <span>Track Complete! Back to Overview</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
                   )}
+
+                  {/* 9. Section Completed & Next Lesson Navigation */}
+                  <div className="mt-8 p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white">Section Completed</h4>
+                        <p className="text-xs text-slate-400">
+                          {isCompleted
+                            ? 'This lesson is completed and recorded in your overall progress.'
+                            : 'Visiting this section tracks your course completion.'}
+                        </p>
+                      </div>
+                    </div>
+                    {nextLesson ? (
+                      <Link
+                        href={`/tracks/${track.id}/${nextLesson.id}`}
+                        className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-2 transition-all shrink-0 self-start sm:self-auto shadow-md"
+                      >
+                        <span>Next Lesson: {nextLesson.title}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/tracks/${track.id}`}
+                        className="py-2.5 px-5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-2 transition-all shrink-0 self-start sm:self-auto"
+                      >
+                        <span>Track Complete! Back to Overview</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
 
           {activeTab === 'ai-action' && (
             <div className="space-y-5">
@@ -1128,7 +1230,10 @@ export default function CodeEditorWorkspace({
                     Autonomous Prompt for this Scenario
                   </div>
                   <div className="flex items-center gap-1 bg-white/80 dark:bg-slate-900/80 p-1 rounded-lg border border-amber-200 dark:border-amber-900 text-xs">
-                    {(isSelenium ? (['java', 'python'] as SupportedLang[]) : (['java', 'typescript', 'python'] as SupportedLang[])).map((l) => (
+                    {(isSelenium
+                      ? (['java', 'python'] as SupportedLang[])
+                      : (['java', 'typescript', 'python'] as SupportedLang[])
+                    ).map((l) => (
                       <button
                         key={l}
                         type="button"
@@ -1156,7 +1261,8 @@ export default function CodeEditorWorkspace({
 
                 <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
                   <p className="text-[11px] text-amber-700/80 dark:text-amber-400/80">
-                    ⚡ Ephemeral live test: AI generates code in the background without storing or cluttering your history.
+                    ⚡ Ephemeral live test: AI generates code in the background without storing or
+                    cluttering your history.
                   </p>
                   <button
                     type="button"
@@ -1201,7 +1307,11 @@ export default function CodeEditorWorkspace({
                         }}
                         className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
                       >
-                        {copyFeedback ? <Check className="w-3 h-3 text-emerald-400" /> : <Code className="w-3 h-3" />}
+                        {copyFeedback ? (
+                          <Check className="w-3 h-3 text-emerald-400" />
+                        ) : (
+                          <Code className="w-3 h-3" />
+                        )}
                         <span>{copyFeedback ? 'Copied!' : 'Copy Code'}</span>
                       </button>
 
@@ -1216,7 +1326,11 @@ export default function CodeEditorWorkspace({
                         className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1 cursor-pointer"
                         title="Load this AI snippet directly into the code editor on the right"
                       >
-                        {appliedFeedback ? <Check className="w-3 h-3" /> : <Play className="w-3 h-3 fill-current" />}
+                        {appliedFeedback ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <Play className="w-3 h-3 fill-current" />
+                        )}
                         <span>{appliedFeedback ? 'Applied to Editor!' : 'Apply to Editor'}</span>
                       </button>
                     </div>
@@ -1257,8 +1371,8 @@ export default function CodeEditorWorkspace({
             track.id === 'api-testing'
               ? '/sandbox/api'
               : track.id === 'ai-qa'
-              ? '/qa-agents'
-              : '/sandbox/code';
+                ? '/qa-agents'
+                : '/sandbox/code';
 
           return (
             <div className="p-3.5 md:p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 flex-wrap">
@@ -1267,7 +1381,10 @@ export default function CodeEditorWorkspace({
                   Lesson {lessonIndex} of {totalLessons}
                 </span>
                 <span className="hidden sm:inline text-slate-500">•</span>
-                <span className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline" title={lsn.title}>
+                <span
+                  className="text-slate-300 font-medium truncate max-w-[200px] md:max-w-xs hidden sm:inline"
+                  title={lsn.title}
+                >
                   {lsn.title}
                 </span>
               </div>

@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { academyStore } from '@/lib/academy-store';
 import { verifyAdminAccess } from '@/lib/cms-security';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const auth = verifyAdminAccess(req);
@@ -23,7 +20,9 @@ export async function GET(
             .filter((l) => auth.authorized || l.status === 'published')
             .sort((a, b) => a.sortOrder - b.sortOrder);
           if (sortedLessons.length > 0) {
-            lessonWithContext = academyStore.getLessonWithContext(sortedLessons[0].slug || sortedLessons[0].id);
+            lessonWithContext = academyStore.getLessonWithContext(
+              sortedLessons[0].slug || sortedLessons[0].id
+            );
             break;
           }
         }
@@ -50,14 +49,17 @@ export async function GET(
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      data: lessonWithContext,
-    }, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600',
+    return NextResponse.json(
+      {
+        success: true,
+        data: lessonWithContext,
       },
-    });
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600',
+        },
+      }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },
@@ -66,10 +68,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = verifyAdminAccess(req);
     if (!auth.authorized) {
@@ -97,10 +96,7 @@ export async function PUT(
         message: 'Lesson updated successfully.',
       });
     } catch (valErr: any) {
-      return NextResponse.json(
-        { success: false, error: valErr.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: valErr.message }, { status: 400 });
     }
   } catch (error: any) {
     return NextResponse.json(
@@ -110,10 +106,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = verifyAdminAccess(req);
     if (!auth.authorized) {

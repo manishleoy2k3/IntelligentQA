@@ -133,7 +133,9 @@ export const AGENT_CONFIGS: Record<
 
 export default function QAAgentsWorkspace() {
   const [activeTab, setActiveTab] = useState<AgentTab>('requirements');
-  const [techStack, setTechStack] = useState<'playwright-ts' | 'selenium-java' | 'restassured'>('playwright-ts');
+  const [techStack, setTechStack] = useState<'playwright-ts' | 'selenium-java' | 'restassured'>(
+    'playwright-ts'
+  );
   const [inputPrompt, setInputPrompt] = useState<string>(tabDefaultPrompts.requirements);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [outputResult, setOutputResult] = useState<string>('');
@@ -204,12 +206,10 @@ export default function QAAgentsWorkspace() {
       setAllProjectFiles(loadedFiles);
 
       // Merge all folders: default folders + loaded folders + folders found on any files
-      const fileFolders = loadedFiles.map(f => f.folder).filter(Boolean);
-      const mergedFolders = Array.from(new Set([
-        ...DEFAULT_PROJECT_FOLDERS,
-        ...loadedFolders,
-        ...fileFolders,
-      ])).filter(Boolean);
+      const fileFolders = loadedFiles.map((f) => f.folder).filter(Boolean);
+      const mergedFolders = Array.from(
+        new Set([...DEFAULT_PROJECT_FOLDERS, ...loadedFolders, ...fileFolders])
+      ).filter(Boolean);
       setAllProjectFolders(mergedFolders);
 
       // Check if user came from Project Files page with preselected files
@@ -218,7 +218,7 @@ export default function QAAgentsWorkspace() {
         if (preselectedRaw) {
           try {
             const preselectedIds: string[] = JSON.parse(preselectedRaw);
-            const matches = loadedFiles.filter(f => preselectedIds.includes(f.id));
+            const matches = loadedFiles.filter((f) => preselectedIds.includes(f.id));
             if (matches.length > 0) {
               setAttachedProjectFiles(matches);
             }
@@ -234,7 +234,7 @@ export default function QAAgentsWorkspace() {
   const handleOpenAttachModal = useCallback(async () => {
     const user = QADatabase.getCurrentUser();
     await loadProjectFilesData(user?.id);
-    setSelectedModalFileIds(attachedProjectFiles.map(f => f.id));
+    setSelectedModalFileIds(attachedProjectFiles.map((f) => f.id));
     setShowAttachFilesModal(true);
   }, [attachedProjectFiles, loadProjectFilesData]);
 
@@ -268,12 +268,20 @@ export default function QAAgentsWorkspace() {
     // Support query parameter tab and sidebar custom events
     const params = new URLSearchParams(window.location.search);
     const tabParam = params.get('tab') as AgentTab;
-    if (tabParam && ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(tabParam)) {
+    if (
+      tabParam &&
+      ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(tabParam)
+    ) {
       handleTabSwitch(tabParam);
     }
 
     const handleSwitch = (e: any) => {
-      if (e.detail?.tab && ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(e.detail.tab)) {
+      if (
+        e.detail?.tab &&
+        ['requirements', 'test_cases', 'automation_code', 'code_review', 'chat'].includes(
+          e.detail.tab
+        )
+      ) {
         handleTabSwitch(e.detail.tab);
       }
     };
@@ -294,7 +302,7 @@ export default function QAAgentsWorkspace() {
     setSavedSuccess(false);
 
     // If prompt is empty or one of defaults, switch to the new tab default
-    const isDefault = Object.values(tabDefaultPrompts).some(p => p === inputPrompt);
+    const isDefault = Object.values(tabDefaultPrompts).some((p) => p === inputPrompt);
     if (!inputPrompt.trim() || isDefault) {
       setInputPrompt(tabDefaultPrompts[newTab] || '');
     }
@@ -314,7 +322,9 @@ export default function QAAgentsWorkspace() {
       if (parsed.extractedText) {
         setInputPrompt(parsed.extractedText);
       } else {
-        setFileParseError('Could not extract readable text from this file. Please paste requirements directly.');
+        setFileParseError(
+          'Could not extract readable text from this file. Please paste requirements directly.'
+        );
       }
     } catch (err: any) {
       console.error('File parsing error:', err);
@@ -408,7 +418,7 @@ export default function QAAgentsWorkspace() {
   const handleSendChat = async () => {
     if (!chatInput.trim()) return;
     const userMsg = chatInput.trim();
-    setChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setChatMessages((prev) => [...prev, { role: 'user', text: userMsg }]);
     setChatInput('');
     setIsGenerating(true);
 
@@ -432,12 +442,12 @@ export default function QAAgentsWorkspace() {
         }),
       });
       const data = await res.json();
-      setChatMessages(prev => [
+      setChatMessages((prev) => [
         ...prev,
         { role: 'assistant', text: data.reply || 'Advisory response received.' },
       ]);
     } catch (err) {
-      setChatMessages(prev => [
+      setChatMessages((prev) => [
         ...prev,
         { role: 'assistant', text: 'Sorry, unable to contact the SDET AI service right now.' },
       ]);
@@ -470,9 +480,12 @@ export default function QAAgentsWorkspace() {
   const getFileIcon = (type: string) => {
     const t = type.toLowerCase();
     if (t === 'pdf') return <FileText className="w-3.5 h-3.5 text-rose-500 shrink-0" />;
-    if (t === 'xlsx' || t === 'xls' || t === 'csv') return <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500 shrink-0" />;
-    if (t === 'pptx' || t === 'ppt') return <Presentation className="w-3.5 h-3.5 text-amber-500 shrink-0" />;
-    if (t === 'md' || t === 'txt' || t === 'json') return <FileCode className="w-3.5 h-3.5 text-cyan-500 shrink-0" />;
+    if (t === 'xlsx' || t === 'xls' || t === 'csv')
+      return <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500 shrink-0" />;
+    if (t === 'pptx' || t === 'ppt')
+      return <Presentation className="w-3.5 h-3.5 text-amber-500 shrink-0" />;
+    if (t === 'md' || t === 'txt' || t === 'json')
+      return <FileCode className="w-3.5 h-3.5 text-cyan-500 shrink-0" />;
     return <FileCheck className="w-3.5 h-3.5 text-blue-500 shrink-0" />;
   };
 
@@ -582,7 +595,8 @@ export default function QAAgentsWorkspace() {
           <div className="flex items-center gap-2 text-sky-900 dark:text-sky-200">
             <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0" />
             <span>
-              <strong>Guest Preview Mode:</strong> Test any QA Agent below. Create a free account to persist generated test plans, code, and test matrices permanently.
+              <strong>Guest Preview Mode:</strong> Test any QA Agent below. Create a free account to
+              persist generated test plans, code, and test matrices permanently.
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -605,7 +619,9 @@ export default function QAAgentsWorkspace() {
           <div className="flex items-center gap-2 text-indigo-900 dark:text-indigo-200">
             <BookOpen className="w-4 h-4 text-indigo-600 shrink-0" />
             <span>
-              <strong>Core Automation Mode Active:</strong> You chose to learn core automation first. Whenever you want to activate Autonomous AI Agents, connect your personal free Google AI Studio key at $0.00 cost.
+              <strong>Core Automation Mode Active:</strong> You chose to learn core automation
+              first. Whenever you want to activate Autonomous AI Agents, connect your personal free
+              Google AI Studio key at $0.00 cost.
             </span>
           </div>
           <button
@@ -621,7 +637,10 @@ export default function QAAgentsWorkspace() {
           <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200">
             <Lock className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
-              <strong>AI Agents Disabled:</strong> All automated test generation and quality audits are disabled until you configure your personal free Gemini key under <strong>AI Tools and Agents</strong> in the left navigation to prevent shared server token burn.
+              <strong>AI Agents Disabled:</strong> All automated test generation and quality audits
+              are disabled until you configure your personal free Gemini key under{' '}
+              <strong>AI Tools and Agents</strong> in the left navigation to prevent shared server
+              token burn.
             </span>
           </div>
           <button
@@ -672,15 +691,22 @@ export default function QAAgentsWorkspace() {
                   {/* Target is STRICTLY HIDDEN on Requirement Generator and Test Case Generator */}
                   {activeTab === 'automation_code' || activeTab === 'code_review' ? (
                     <span className="text-[11px] text-slate-400">
-                      Target: <strong className="text-emerald-600 font-semibold">{techStack}</strong>
+                      Target:{' '}
+                      <strong className="text-emerald-600 font-semibold">{techStack}</strong>
                     </span>
                   ) : activeTab === 'requirements' ? (
                     <span className="text-[11px] text-slate-400">
-                      Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD &amp; Criteria</strong>
+                      Output:{' '}
+                      <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">
+                        Gherkin BDD &amp; Criteria
+                      </strong>
                     </span>
                   ) : (
                     <span className="text-[11px] text-slate-400">
-                      Output: <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">QA Test Matrix</strong>
+                      Output:{' '}
+                      <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                        QA Test Matrix
+                      </strong>
                     </span>
                   )}
 
@@ -742,7 +768,10 @@ export default function QAAgentsWorkspace() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-blue-900 dark:text-blue-200">
                       <FolderKanban className="w-4 h-4 text-blue-500" />
-                      <span>Attached Project Context ({attachedProjectFiles.length} file{attachedProjectFiles.length > 1 ? 's' : ''})</span>
+                      <span>
+                        Attached Project Context ({attachedProjectFiles.length} file
+                        {attachedProjectFiles.length > 1 ? 's' : ''})
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -763,7 +792,7 @@ export default function QAAgentsWorkspace() {
                   </div>
 
                   <div className="flex flex-wrap gap-1.5">
-                    {attachedProjectFiles.map(file => (
+                    {attachedProjectFiles.map((file) => (
                       <div
                         key={file.id}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 text-xs shadow-2xs"
@@ -777,7 +806,9 @@ export default function QAAgentsWorkspace() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => setAttachedProjectFiles(prev => prev.filter(f => f.id !== file.id))}
+                          onClick={() =>
+                            setAttachedProjectFiles((prev) => prev.filter((f) => f.id !== file.id))
+                          }
                           className="p-0.5 text-slate-400 hover:text-rose-500 rounded cursor-pointer"
                           title="Remove from context"
                         >
@@ -788,7 +819,8 @@ export default function QAAgentsWorkspace() {
                   </div>
 
                   <p className="text-[11px] text-blue-700 dark:text-blue-300">
-                    ✓ Grounding Active: The agent will ingest the extracted requirements from these {attachedProjectFiles.length} file(s) into its prompt context.
+                    ✓ Grounding Active: The agent will ingest the extracted requirements from these{' '}
+                    {attachedProjectFiles.length} file(s) into its prompt context.
                   </p>
                 </div>
               )}
@@ -816,7 +848,9 @@ export default function QAAgentsWorkspace() {
                           Import Requirements Document
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center max-w-sm">
-                          Upload your requirements file (<strong>Excel .xlsx / .csv</strong>, <strong>Word .docx</strong>, <strong>PDF .pdf</strong>, or text) to generate test cases automatically.
+                          Upload your requirements file (<strong>Excel .xlsx / .csv</strong>,{' '}
+                          <strong>Word .docx</strong>, <strong>PDF .pdf</strong>, or text) to
+                          generate test cases automatically.
                         </p>
                       </label>
 
@@ -864,17 +898,17 @@ export default function QAAgentsWorkspace() {
               {/* Textarea Input */}
               <textarea
                 value={inputPrompt}
-                onChange={e => setInputPrompt(e.target.value)}
+                onChange={(e) => setInputPrompt(e.target.value)}
                 rows={activeTab === 'test_cases' ? 8 : 11}
                 className="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none leading-relaxed"
                 placeholder={
                   activeTab === 'requirements'
                     ? 'Paste your user story, PRD feature draft, or high-level business requirement here (e.g., "As a customer, I want to transfer money between my accounts with 2FA verification...")'
                     : activeTab === 'test_cases'
-                    ? 'Paste requirement text or import an Excel/Word/PDF document above to synthesize positive, negative, and boundary test cases...'
-                    : activeTab === 'code_review'
-                    ? 'Paste your test automation code to inspect for flakiness, hardcoded waits (Thread.sleep/waitForTimeout), and brittle XPaths...'
-                    : 'Describe the feature or workflow to generate Page Object Model code for...'
+                      ? 'Paste requirement text or import an Excel/Word/PDF document above to synthesize positive, negative, and boundary test cases...'
+                      : activeTab === 'code_review'
+                        ? 'Paste your test automation code to inspect for flakiness, hardcoded waits (Thread.sleep/waitForTimeout), and brittle XPaths...'
+                        : 'Describe the feature or workflow to generate Page Object Model code for...'
                 }
               />
 
@@ -884,10 +918,10 @@ export default function QAAgentsWorkspace() {
                   {activeTab === 'requirements'
                     ? 'Sample Feature Specs:'
                     : activeTab === 'test_cases'
-                    ? 'Sample Test Case Requirements:'
-                    : activeTab === 'code_review'
-                    ? 'Sample Flaky Scripts:'
-                    : 'Sample Automation Workflows:'}
+                      ? 'Sample Test Case Requirements:'
+                      : activeTab === 'code_review'
+                        ? 'Sample Flaky Scripts:'
+                        : 'Sample Automation Workflows:'}
                 </span>
                 <div className="flex flex-wrap gap-1.5 text-[11px]">
                   {activeTab === 'requirements' && (
@@ -1109,10 +1143,10 @@ export default function QAAgentsWorkspace() {
                     {activeTab === 'requirements'
                       ? 'Generating Requirements...'
                       : activeTab === 'test_cases'
-                      ? 'Generating Test Cases...'
-                      : activeTab === 'automation_code'
-                      ? 'Generating Code...'
-                      : 'Auditing Code...'}
+                        ? 'Generating Test Cases...'
+                        : activeTab === 'automation_code'
+                          ? 'Generating Code...'
+                          : 'Auditing Code...'}
                   </>
                 ) : (
                   <>
@@ -1121,10 +1155,10 @@ export default function QAAgentsWorkspace() {
                     {activeTab === 'requirements'
                       ? 'Generate Requirements'
                       : activeTab === 'test_cases'
-                      ? 'Generate Test Cases'
-                      : activeTab === 'automation_code'
-                      ? 'Generate Automation Code'
-                      : 'Audit & Refactor Code'}
+                        ? 'Generate Test Cases'
+                        : activeTab === 'automation_code'
+                          ? 'Generate Automation Code'
+                          : 'Audit & Refactor Code'}
                   </>
                 )}
               </button>
@@ -1140,10 +1174,10 @@ export default function QAAgentsWorkspace() {
                     {activeTab === 'requirements'
                       ? 'Generated Requirements & Criteria'
                       : activeTab === 'test_cases'
-                      ? 'Synthesized QA Test Matrix'
-                      : activeTab === 'automation_code'
-                      ? 'Scaffolded Automation Code'
-                      : 'Quality Audit & Refactoring Report'}
+                        ? 'Synthesized QA Test Matrix'
+                        : activeTab === 'automation_code'
+                          ? 'Scaffolded Automation Code'
+                          : 'Quality Audit & Refactoring Report'}
                   </span>
                   {usedEngine && (
                     <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
@@ -1160,7 +1194,11 @@ export default function QAAgentsWorkspace() {
                       className="p-1.5 px-2.5 text-slate-600 dark:text-slate-300 hover:text-emerald-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
                       title="Copy to clipboard"
                     >
-                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copied ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
                       <span className="text-[11px] font-medium">{copied ? 'Copied' : 'Copy'}</span>
                     </button>
 
@@ -1211,10 +1249,10 @@ export default function QAAgentsWorkspace() {
                       {activeTab === 'requirements'
                         ? 'Generated Gherkin Acceptance Criteria and requirements matrix will appear here.'
                         : activeTab === 'test_cases'
-                        ? 'Synthesized QA Test Matrix will appear here after clicking Generate Test Cases.'
-                        : activeTab === 'automation_code'
-                        ? 'Scaffolded Page Object Model code will appear here.'
-                        : 'Code quality score and refactored script will appear here.'}
+                          ? 'Synthesized QA Test Matrix will appear here after clicking Generate Test Cases.'
+                          : activeTab === 'automation_code'
+                            ? 'Scaffolded Page Object Model code will appear here.'
+                            : 'Code quality score and refactored script will appear here.'}
                     </p>
                   </div>
                 )}
@@ -1229,7 +1267,9 @@ export default function QAAgentsWorkspace() {
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     <span>Agent Handoffs (from code_reviewer_debugger_agent.md)</span>
                   </div>
-                  <span className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">Multi-Agent Chain</span>
+                  <span className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">
+                    Multi-Agent Chain
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -1256,7 +1296,9 @@ export default function QAAgentsWorkspace() {
               <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl text-emerald-700 dark:text-emerald-300 text-xs flex items-center justify-between gap-2 shadow-sm">
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 shrink-0 text-emerald-600" />
-                  <span className="font-semibold">Artifact saved to your personal dashboard and history.</span>
+                  <span className="font-semibold">
+                    Artifact saved to your personal dashboard and history.
+                  </span>
                 </div>
                 <Link
                   href="/dashboard"
@@ -1329,7 +1371,7 @@ export default function QAAgentsWorkspace() {
 
               {attachedProjectFiles.length > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  {attachedProjectFiles.map(file => (
+                  {attachedProjectFiles.map((file) => (
                     <div
                       key={file.id}
                       className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-100/70 dark:bg-blue-950/80 border border-blue-300 dark:border-blue-800 text-[11px] font-semibold text-blue-900 dark:text-blue-200"
@@ -1338,7 +1380,9 @@ export default function QAAgentsWorkspace() {
                       <span className="truncate max-w-[120px]">{file.name}</span>
                       <button
                         type="button"
-                        onClick={() => setAttachedProjectFiles(prev => prev.filter(f => f.id !== file.id))}
+                        onClick={() =>
+                          setAttachedProjectFiles((prev) => prev.filter((f) => f.id !== file.id))
+                        }
                         className="text-slate-400 hover:text-rose-500 cursor-pointer ml-0.5"
                       >
                         <X className="w-3 h-3" />
@@ -1361,8 +1405,8 @@ export default function QAAgentsWorkspace() {
                 type="text"
                 disabled={!geminiKey}
                 value={chatInput}
-                onChange={e => setChatInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSendChat()}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
                 placeholder={
                   !geminiKey
                     ? 'Gemini API Key required in Left Navigation under AI Tools & Agents to chat...'
@@ -1397,7 +1441,8 @@ export default function QAAgentsWorkspace() {
                     Attach Project Files to AI QA Agent Context
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-zinc-400">
-                    Select multiple files using the checkboxes below to ground this agent with real project documentation.
+                    Select multiple files using the checkboxes below to ground this agent with real
+                    project documentation.
                   </p>
                 </div>
               </div>
@@ -1416,12 +1461,12 @@ export default function QAAgentsWorkspace() {
                 <span className="font-semibold text-slate-600 dark:text-zinc-300">Folder:</span>
                 <select
                   value={modalFolderFilter}
-                  onChange={e => setModalFolderFilter(e.target.value)}
+                  onChange={(e) => setModalFolderFilter(e.target.value)}
                   className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-[#0F0F0F] border border-slate-300 dark:border-[#333] text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                 >
                   <option value="All">All Folders ({allProjectFiles.length})</option>
-                  {allProjectFolders.map(folder => {
-                    const count = allProjectFiles.filter(f => f.folder === folder).length;
+                  {allProjectFolders.map((folder) => {
+                    const count = allProjectFiles.filter((f) => f.folder === folder).length;
                     return (
                       <option key={folder} value={folder}>
                         {folder} ({count})
@@ -1436,24 +1481,32 @@ export default function QAAgentsWorkspace() {
                   type="button"
                   onClick={() => {
                     const visibleFiles = allProjectFiles.filter(
-                      f => modalFolderFilter === 'All' || f.folder === modalFolderFilter
+                      (f) => modalFolderFilter === 'All' || f.folder === modalFolderFilter
                     );
-                    const visibleIds = visibleFiles.map(f => f.id);
-                    const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedModalFileIds.includes(id));
+                    const visibleIds = visibleFiles.map((f) => f.id);
+                    const allVisibleSelected =
+                      visibleIds.length > 0 &&
+                      visibleIds.every((id) => selectedModalFileIds.includes(id));
                     if (allVisibleSelected) {
-                      setSelectedModalFileIds(prev => prev.filter(id => !visibleIds.includes(id)));
+                      setSelectedModalFileIds((prev) =>
+                        prev.filter((id) => !visibleIds.includes(id))
+                      );
                     } else {
-                      setSelectedModalFileIds(prev => Array.from(new Set([...prev, ...visibleIds])));
+                      setSelectedModalFileIds((prev) =>
+                        Array.from(new Set([...prev, ...visibleIds]))
+                      );
                     }
                   }}
                   className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 >
                   {(() => {
                     const visibleFiles = allProjectFiles.filter(
-                      f => modalFolderFilter === 'All' || f.folder === modalFolderFilter
+                      (f) => modalFolderFilter === 'All' || f.folder === modalFolderFilter
                     );
-                    const visibleIds = visibleFiles.map(f => f.id);
-                    const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedModalFileIds.includes(id));
+                    const visibleIds = visibleFiles.map((f) => f.id);
+                    const allVisibleSelected =
+                      visibleIds.length > 0 &&
+                      visibleIds.every((id) => selectedModalFileIds.includes(id));
                     return allVisibleSelected ? 'Clear Folder' : 'Select All';
                   })()}
                 </button>
@@ -1466,27 +1519,35 @@ export default function QAAgentsWorkspace() {
 
             {/* Modal Files List */}
             <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-[#242424] border border-slate-200 dark:border-[#262626] rounded-2xl">
-              {allProjectFiles.filter(f => modalFolderFilter === 'All' || f.folder === modalFolderFilter).length === 0 ? (
+              {allProjectFiles.filter(
+                (f) => modalFolderFilter === 'All' || f.folder === modalFolderFilter
+              ).length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400 space-y-2">
                   <p>
-                    No project files found in {modalFolderFilter === 'All' ? 'the vault' : `folder "${modalFolderFilter}"`}.
+                    No project files found in{' '}
+                    {modalFolderFilter === 'All' ? 'the vault' : `folder "${modalFolderFilter}"`}.
                   </p>
-                  <Link href="/project-files" className="text-blue-500 font-bold hover:underline inline-block">
+                  <Link
+                    href="/project-files"
+                    className="text-blue-500 font-bold hover:underline inline-block"
+                  >
                     Go to Project Files to upload documents →
                   </Link>
                 </div>
               ) : (
                 allProjectFiles
-                  .filter(f => modalFolderFilter === 'All' || f.folder === modalFolderFilter)
-                  .map(file => {
+                  .filter((f) => modalFolderFilter === 'All' || f.folder === modalFolderFilter)
+                  .map((file) => {
                     const isChecked = selectedModalFileIds.includes(file.id);
 
                     return (
                       <div
                         key={file.id}
                         onClick={() => {
-                          setSelectedModalFileIds(prev =>
-                            prev.includes(file.id) ? prev.filter(id => id !== file.id) : [...prev, file.id]
+                          setSelectedModalFileIds((prev) =>
+                            prev.includes(file.id)
+                              ? prev.filter((id) => id !== file.id)
+                              : [...prev, file.id]
                           );
                         }}
                         className={`p-3 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-[#1C1C1C] cursor-pointer transition ${
@@ -1548,7 +1609,9 @@ export default function QAAgentsWorkspace() {
                 <button
                   type="button"
                   onClick={() => {
-                    const matched = allProjectFiles.filter(f => selectedModalFileIds.includes(f.id));
+                    const matched = allProjectFiles.filter((f) =>
+                      selectedModalFileIds.includes(f.id)
+                    );
                     setAttachedProjectFiles(matched);
                     setShowAttachFilesModal(false);
                   }}
@@ -1583,7 +1646,8 @@ export default function QAAgentsWorkspace() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-                    How Autonomous SDET Agents are architected with YAML frontmatter, tools, handoffs, and execution modes.
+                    How Autonomous SDET Agents are architected with YAML frontmatter, tools,
+                    handoffs, and execution modes.
                   </p>
                 </div>
               </div>
@@ -1632,7 +1696,11 @@ export default function QAAgentsWorkspace() {
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#222] hover:bg-slate-200 dark:hover:bg-[#2A2A2A] text-slate-700 dark:text-zinc-300 transition cursor-pointer border border-slate-300 dark:border-[#333]"
               >
-                {copiedAgentMd ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedAgentMd ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
                 <span>{copiedAgentMd ? 'Copied .md!' : 'Copy Agent .md'}</span>
               </button>
             </div>
@@ -1647,29 +1715,40 @@ export default function QAAgentsWorkspace() {
                       <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
                         1. YAML Frontmatter Schema (Agent Metadata)
                       </span>
-                      <span className="font-mono text-[10px] text-amber-500">name: CodeReviewerAndDebugger</span>
+                      <span className="font-mono text-[10px] text-amber-500">
+                        name: CodeReviewerAndDebugger
+                      </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                       <div>
                         <strong className="text-slate-900 dark:text-white">Description:</strong>
                         <p className="text-slate-500 dark:text-zinc-400 mt-0.5">
-                          Expert SDET Code Reviewer and Root-Cause Debugger for Selenium, Playwright, Rest Assured and Appium. Analyzes stack traces, fixes flaky tests, optimizes locators, and enforces clean code standards.
+                          Expert SDET Code Reviewer and Root-Cause Debugger for Selenium,
+                          Playwright, Rest Assured and Appium. Analyzes stack traces, fixes flaky
+                          tests, optimizes locators, and enforces clean code standards.
                         </p>
                       </div>
                       <div>
                         <strong className="text-slate-900 dark:text-white">Active Tools:</strong>
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {['read', 'edit', 'search', 'file_upload/parse_context', 'execute'].map(tool => (
-                            <span key={tool} className="px-2 py-0.5 rounded-md font-mono text-[10px] bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                              {tool}
-                            </span>
-                          ))}
+                          {['read', 'edit', 'search', 'file_upload/parse_context', 'execute'].map(
+                            (tool) => (
+                              <span
+                                key={tool}
+                                className="px-2 py-0.5 rounded-md font-mono text-[10px] bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                              >
+                                {tool}
+                              </span>
+                            )
+                          )}
                         </div>
                       </div>
                     </div>
 
                     <div className="pt-2 border-t border-slate-200 dark:border-[#2A2A2A]">
-                      <strong className="text-slate-900 dark:text-white">Multi-Agent Handoffs:</strong>
+                      <strong className="text-slate-900 dark:text-white">
+                        Multi-Agent Handoffs:
+                      </strong>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1.5">
                         <div className="p-2.5 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#333]">
                           <div className="font-bold text-indigo-600 dark:text-indigo-400 text-[11px]">
@@ -1697,10 +1776,23 @@ export default function QAAgentsWorkspace() {
                       2. Core Responsibilities &amp; Guardrails
                     </span>
                     <ul className="list-disc pl-4 space-y-1 text-slate-600 dark:text-zinc-300">
-                      <li><strong>Root-Cause Stack Trace Analysis:</strong> Diagnose common automation exceptions (StaleElementReferenceException, TimeoutError, ElementClickInterceptedException, NullPointerException).</li>
-                      <li><strong>Flakiness Elimination:</strong> Detect race conditions, improper waits, shared mutable state across threads, and brittle XPaths.</li>
-                      <li><strong>SDET Code Review:</strong> Page Object Model separation, SOLID principles, exception handling, and assertion quality.</li>
-                      <li><strong>Strict Scope Guardrail:</strong> Declines non-QA/engineering inquiries to stay laser-focused.</li>
+                      <li>
+                        <strong>Root-Cause Stack Trace Analysis:</strong> Diagnose common automation
+                        exceptions (StaleElementReferenceException, TimeoutError,
+                        ElementClickInterceptedException, NullPointerException).
+                      </li>
+                      <li>
+                        <strong>Flakiness Elimination:</strong> Detect race conditions, improper
+                        waits, shared mutable state across threads, and brittle XPaths.
+                      </li>
+                      <li>
+                        <strong>SDET Code Review:</strong> Page Object Model separation, SOLID
+                        principles, exception handling, and assertion quality.
+                      </li>
+                      <li>
+                        <strong>Strict Scope Guardrail:</strong> Declines non-QA/engineering
+                        inquiries to stay laser-focused.
+                      </li>
                     </ul>
                   </div>
 
@@ -1711,12 +1803,22 @@ export default function QAAgentsWorkspace() {
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                       <div className="p-3 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#333] space-y-1">
-                        <div className="font-bold text-amber-600 dark:text-amber-400">Mode A: Debugging &amp; Error Resolution</div>
-                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">For error logs and failing stack traces: 1. Root Cause Explanation → 2. Exact Fix with inline comments → 3. Prevention Checklist.</p>
+                        <div className="font-bold text-amber-600 dark:text-amber-400">
+                          Mode A: Debugging &amp; Error Resolution
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                          For error logs and failing stack traces: 1. Root Cause Explanation → 2.
+                          Exact Fix with inline comments → 3. Prevention Checklist.
+                        </p>
                       </div>
                       <div className="p-3 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#333] space-y-1">
-                        <div className="font-bold text-indigo-600 dark:text-indigo-400">Mode B: Code Quality Review</div>
-                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">For pull requests and script audits: 1. Strengths → 2. Critical Issues (Must Fix) → 3. Refactoring Recommendations.</p>
+                        <div className="font-bold text-indigo-600 dark:text-indigo-400">
+                          Mode B: Code Quality Review
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                          For pull requests and script audits: 1. Strengths → 2. Critical Issues
+                          (Must Fix) → 3. Refactoring Recommendations.
+                        </p>
                       </div>
                     </div>
                   </div>

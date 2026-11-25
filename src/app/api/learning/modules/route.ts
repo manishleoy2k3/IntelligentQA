@@ -32,16 +32,16 @@ export async function POST(req: NextRequest) {
         lessons: [],
       });
 
-      return NextResponse.json({
-        success: true,
-        data: created,
-        message: 'Module created successfully.',
-      }, { status: 201 });
-    } catch (valErr: any) {
       return NextResponse.json(
-        { success: false, error: valErr.message },
-        { status: 400 }
+        {
+          success: true,
+          data: created,
+          message: 'Module created successfully.',
+        },
+        { status: 201 }
       );
+    } catch (valErr: any) {
+      return NextResponse.json({ success: false, error: valErr.message }, { status: 400 });
     }
   } catch (error: any) {
     return NextResponse.json(

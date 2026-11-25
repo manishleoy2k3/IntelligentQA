@@ -3,13 +3,14 @@
 > **Document Version:** 1.0.0  
 > **Author:** Senior Full Stack Architect & Technical Lead  
 > **Status:** Proposal / Review  
-> **Target Audience:** Database Engineers, Backend Developers, Technical Leadership  
+> **Target Audience:** Database Engineers, Backend Developers, Technical Leadership
 
 ---
 
 ## 1. Design Overview & Storage Strategy
 
 The IntelligentQA platform currently supports a dual-persistence strategy:
+
 1. **Lightweight JSON Store (`src/lib/curriculum-data-store.json`)**: An atomic, zero-configuration local persistence layer used for quick development, staging, or simple single-instance hosting.
 2. **Relational Database (`scripts/schema.sql` -> PostgreSQL / SQLite)**: An enterprise-grade schema used for production workloads, strict referential integrity, complex queries, and ACID guarantees.
 
@@ -417,6 +418,7 @@ To preserve zero-setup portability, `src/lib/curriculum-data-store.json` is augm
 ## 5. Proposed REST API Endpoints Specification
 
 All endpoints follow the project's standard response envelope:
+
 ```json
 {
   "success": true,
@@ -427,43 +429,46 @@ All endpoints follow the project's standard response envelope:
 
 ### 5.1 Public Learner Endpoints
 
-| Method | Endpoint | Description | Cache / Performance |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/learning/tree` | Returns complete navigation tree (Categories -> Courses -> Modules -> Lessons) | Public cached (SWR / 60s ISR) |
-| `GET` | `/api/learning/categories` | List all top-level learning categories | Public cached |
-| `GET` | `/api/learning/categories/[slug]` | Get category detail and its child courses | Public cached |
-| `GET` | `/api/learning/courses/[slug]` | Get course overview, syllabus, and module list | Public cached |
-| `GET` | `/api/learning/lessons/[id]` | Fetch single lesson content, breadcrumbs, previous & next pointers | Public cached / On-Demand Revalidate |
-| `GET` | `/api/learning/search?q={query}` | Full-text fuzzy search across all published lessons | In-memory index / < 20ms |
+| Method | Endpoint                          | Description                                                                    | Cache / Performance                  |
+| :----- | :-------------------------------- | :----------------------------------------------------------------------------- | :----------------------------------- |
+| `GET`  | `/api/learning/tree`              | Returns complete navigation tree (Categories -> Courses -> Modules -> Lessons) | Public cached (SWR / 60s ISR)        |
+| `GET`  | `/api/learning/categories`        | List all top-level learning categories                                         | Public cached                        |
+| `GET`  | `/api/learning/categories/[slug]` | Get category detail and its child courses                                      | Public cached                        |
+| `GET`  | `/api/learning/courses/[slug]`    | Get course overview, syllabus, and module list                                 | Public cached                        |
+| `GET`  | `/api/learning/lessons/[id]`      | Fetch single lesson content, breadcrumbs, previous & next pointers             | Public cached / On-Demand Revalidate |
+| `GET`  | `/api/learning/search?q={query}`  | Full-text fuzzy search across all published lessons                            | In-memory index / < 20ms             |
 
 ### 5.2 Admin Endpoints (Guarded by Passcode & Admin RBAC)
 
-| Method | Endpoint | Description | Payload / Action |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/learning/categories` | Create new category | `{ title, slug, description, parentId, icon }` |
-| `PUT` | `/api/learning/categories/[id]` | Update category details | Partial `{ title, description, ... }` |
-| `DELETE`| `/api/learning/categories/[id]` | Delete category (cascades or prevents if non-empty) | `{ force: boolean }` |
-| `POST` | `/api/learning/courses` | Create new course in category | `{ categoryId, title, slug, level, ... }` |
-| `PUT` | `/api/learning/courses/[id]` | Update course metadata | Partial `{ title, status, ... }` |
-| `POST` | `/api/learning/modules` | Create module in course | `{ courseId, title, slug, ... }` |
-| `PUT` | `/api/learning/modules/[id]` | Update module details | Partial `{ title, ... }` |
-| `POST` | `/api/learning/lessons` | Create manual lesson | `{ moduleId, title, contentHtml, ... }` |
-| `PUT` | `/api/learning/lessons/[id]` | Update lesson content / status | `{ contentHtml, status, title }` |
-| `POST` | `/api/learning/docx/import` | Upload & convert `.docx` document | `multipart/form-data` (file, moduleId, courseId) |
-| `POST` | `/api/learning/curriculum/reorder`| Bulk reorder tree items | `{ type: 'course'\|'module'\|'lesson', orderedIds: [] }` |
-| `POST` | `/api/learning/media/upload` | Direct media upload for lessons | `multipart/form-data` (image/diagram) |
+| Method   | Endpoint                           | Description                                         | Payload / Action                                         |
+| :------- | :--------------------------------- | :-------------------------------------------------- | :------------------------------------------------------- |
+| `POST`   | `/api/learning/categories`         | Create new category                                 | `{ title, slug, description, parentId, icon }`           |
+| `PUT`    | `/api/learning/categories/[id]`    | Update category details                             | Partial `{ title, description, ... }`                    |
+| `DELETE` | `/api/learning/categories/[id]`    | Delete category (cascades or prevents if non-empty) | `{ force: boolean }`                                     |
+| `POST`   | `/api/learning/courses`            | Create new course in category                       | `{ categoryId, title, slug, level, ... }`                |
+| `PUT`    | `/api/learning/courses/[id]`       | Update course metadata                              | Partial `{ title, status, ... }`                         |
+| `POST`   | `/api/learning/modules`            | Create module in course                             | `{ courseId, title, slug, ... }`                         |
+| `PUT`    | `/api/learning/modules/[id]`       | Update module details                               | Partial `{ title, ... }`                                 |
+| `POST`   | `/api/learning/lessons`            | Create manual lesson                                | `{ moduleId, title, contentHtml, ... }`                  |
+| `PUT`    | `/api/learning/lessons/[id]`       | Update lesson content / status                      | `{ contentHtml, status, title }`                         |
+| `POST`   | `/api/learning/docx/import`        | Upload & convert `.docx` document                   | `multipart/form-data` (file, moduleId, courseId)         |
+| `POST`   | `/api/learning/curriculum/reorder` | Bulk reorder tree items                             | `{ type: 'course'\|'module'\|'lesson', orderedIds: [] }` |
+| `POST`   | `/api/learning/media/upload`       | Direct media upload for lessons                     | `multipart/form-data` (image/diagram)                    |
 
 ---
 
 ## 6. Data Integrity & Migration Strategy
 
 ### 6.1 Foreign Key Cascade Rules
+
 - **Deleting a Category**: Restricted if child courses exist, unless `cascade=true` is explicitly requested by super admin.
 - **Deleting a Course**: Cascades to modules and lessons, moving associated uploaded `.docx` files to a `.trash` archive folder for 30 days before hard deletion.
 - **Deleting a Lesson**: Deletes revision history and detaches media references.
 
 ### 6.2 Atomic Write Locking for JSON Store
+
 When operating in local JSON mode (`curriculum-data-store.json`), simultaneous admin operations are serialized using the existing atomic temporary write technique:
+
 1. Read current state.
 2. Apply mutation in memory.
 3. Write to temporary file (`curriculum-data-store.json.tmp`).
@@ -472,4 +477,4 @@ When operating in local JSON mode (`curriculum-data-store.json`), simultaneous a
 
 ---
 
-*End of Database Design Document. Approved for Phase 0 review.*
+_End of Database Design Document. Approved for Phase 0 review._

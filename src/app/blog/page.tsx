@@ -44,7 +44,8 @@ export default function BlogListingPage() {
             Technical Tutorials &amp; Architecture Guides
           </h1>
           <p className="text-sm sm:text-base text-[#A1A1AA] max-w-2xl mx-auto leading-relaxed">
-            In-depth guides crafted by veteran SDETs and Test Architects. Learn Selenium, Playwright, API test automation, and scalable test design.
+            In-depth guides crafted by veteran SDETs and Test Architects. Learn Selenium,
+            Playwright, API test automation, and scalable test design.
           </p>
         </div>
       </section>

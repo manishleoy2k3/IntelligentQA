@@ -1,12 +1,14 @@
 const path = require('path');
 const jiti = require('jiti')(__filename, {
-  alias: { '@': path.join(process.cwd(), 'src') }
+  alias: { '@': path.join(process.cwd(), 'src') },
 });
 const { INITIAL_PUBLISHED_COURSES } = jiti('../src/data/learning/initial-courses.ts');
 const { academyStore } = jiti('../src/lib/academy-store.ts');
 
 console.log('=== VERIFYING CI/CD CONCEPTS IN INITIAL_PUBLISHED_COURSES ===');
-const cicdClient = INITIAL_PUBLISHED_COURSES.find(c => c.id === 'course-cicd-concepts' || c.slug === 'cicd-concepts');
+const cicdClient = INITIAL_PUBLISHED_COURSES.find(
+  (c) => c.id === 'course-cicd-concepts' || c.slug === 'cicd-concepts'
+);
 if (!cicdClient) {
   console.error('❌ FAILED: course-cicd-concepts not found in INITIAL_PUBLISHED_COURSES!');
 } else {
@@ -34,7 +36,7 @@ if (!cicdStore) {
 
 console.log('\n=== VERIFYING RESOLUTION SIMULATION ===');
 const queries = ['course-cicd-concepts', 'cicd-concepts', 'ci-cd', 'cicd'];
-queries.forEach(query => {
+queries.forEach((query) => {
   const match = INITIAL_PUBLISHED_COURSES.find(
     (c) =>
       c.id.toLowerCase() === query ||
@@ -42,7 +44,11 @@ queries.forEach(query => {
       c.title.toLowerCase().includes(query) ||
       query.includes(c.id.toLowerCase()) ||
       query.includes(c.slug.toLowerCase()) ||
-      ((query.includes('cicd') || query.includes('ci-cd')) && (c.id.includes('cicd') || c.id.includes('ci-cd') || c.slug.includes('cicd') || c.title.toLowerCase().includes('ci/cd')))
+      ((query.includes('cicd') || query.includes('ci-cd')) &&
+        (c.id.includes('cicd') ||
+          c.id.includes('ci-cd') ||
+          c.slug.includes('cicd') ||
+          c.title.toLowerCase().includes('ci/cd')))
   );
   console.log(`Query "${query}" resolves to: ${match?.title} (${match?.id})`);
 });

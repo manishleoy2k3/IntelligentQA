@@ -244,7 +244,8 @@ export function CodingTestcasePanel({
                 <div className="flex items-center justify-between text-slate-400 text-[11px] font-sans font-semibold mb-1">
                   <span>Input Arguments:</span>
                   <span className="text-[10px] text-slate-500 font-normal">
-                    Format: <code className="text-slate-400">nums = [2, 7, 11, 15], target = 9</code>
+                    Format:{' '}
+                    <code className="text-slate-400">nums = [2, 7, 11, 15], target = 9</code>
                   </span>
                 </div>
                 <textarea
@@ -287,7 +288,9 @@ export function CodingTestcasePanel({
           {!isRunning && !testResults && !terminalError && (
             <div className="flex-1 flex flex-col items-center justify-center gap-2 py-8 text-slate-500">
               <Code2 className="w-8 h-8 opacity-40" />
-              <p className="text-xs italic">Click &quot;Run&quot; above to execute your solution on all test cases.</p>
+              <p className="text-xs italic">
+                Click &quot;Run&quot; above to execute your solution on all test cases.
+              </p>
             </div>
           )}
 
@@ -353,7 +356,9 @@ export function CodingTestcasePanel({
                     >
                       <span
                         className={`w-2 h-2 rounded-full ${
-                          tr.passed ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]' : 'bg-rose-500 shadow-[0_0_6px_#f43f5e]'
+                          tr.passed
+                            ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]'
+                            : 'bg-rose-500 shadow-[0_0_6px_#f43f5e]'
                         }`}
                       />
                       <span>{tr.name}</span>
@@ -374,7 +379,11 @@ export function CodingTestcasePanel({
                         onClick={() => handleCopy(currentResult.input, true)}
                         className="text-slate-500 hover:text-slate-300 transition flex items-center gap-1 text-[10px] cursor-pointer"
                       >
-                        {copiedInput ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        {copiedInput ? (
+                          <Check className="w-3 h-3 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
                         <span>{copiedInput ? 'Copied' : 'Copy'}</span>
                       </button>
                     </div>
@@ -400,7 +409,11 @@ export function CodingTestcasePanel({
                         onClick={() => handleCopy(currentResult.output, false)}
                         className="text-slate-500 hover:text-slate-300 transition flex items-center gap-1 text-[10px] cursor-pointer"
                       >
-                        {copiedOutput ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        {copiedOutput ? (
+                          <Check className="w-3 h-3 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
                         <span>{copiedOutput ? 'Copied' : 'Copy'}</span>
                       </button>
                     </div>
@@ -428,7 +441,9 @@ export function CodingTestcasePanel({
                   {/* Error Diagnostic inside case */}
                   {currentResult.error && (
                     <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-800/40 text-rose-300">
-                      <div className="text-[11px] font-sans font-bold text-rose-400 mb-1">Error Message:</div>
+                      <div className="text-[11px] font-sans font-bold text-rose-400 mb-1">
+                        Error Message:
+                      </div>
                       <pre className="whitespace-pre-wrap text-[11px]">{currentResult.error}</pre>
                     </div>
                   )}

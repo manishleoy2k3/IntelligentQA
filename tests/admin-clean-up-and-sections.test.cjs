@@ -47,9 +47,9 @@ test('Admin Shell Separation: Admin does not share standard user screens', () =>
   const adminSidebarContent = fs.readFileSync(adminSidebarPath, 'utf-8');
   assert.strictEqual(
     adminSidebarContent.includes('Course') &&
-    adminSidebarContent.includes('Practice Labs') &&
-    adminSidebarContent.includes('AI Tools and Agents') &&
-    adminSidebarContent.includes('Interview Banks'),
+      adminSidebarContent.includes('Practice Labs') &&
+      adminSidebarContent.includes('AI Tools and Agents') &&
+      adminSidebarContent.includes('Interview Banks'),
     true,
     'AdminSidebar must contain links to Course, Practice Labs, AI Tools and Agents, and Interview Banks'
   );
@@ -62,10 +62,26 @@ test('Admin Dashboard (/admin): Displays all 4 core sections and opens details o
   const content = fs.readFileSync(adminPagePath, 'utf-8');
 
   // Verify the 4 sections are displayed on the dashboard
-  assert.strictEqual(content.includes('Course'), true, 'Admin dashboard must include Course section');
-  assert.strictEqual(content.includes('Practice Labs'), true, 'Admin dashboard must include Practice Labs section');
-  assert.strictEqual(content.includes('AI Tools and Agents'), true, 'Admin dashboard must include AI Tools and Agents section');
-  assert.strictEqual(content.includes('Interview Banks'), true, 'Admin dashboard must include Interview Banks section');
+  assert.strictEqual(
+    content.includes('Course'),
+    true,
+    'Admin dashboard must include Course section'
+  );
+  assert.strictEqual(
+    content.includes('Practice Labs'),
+    true,
+    'Admin dashboard must include Practice Labs section'
+  );
+  assert.strictEqual(
+    content.includes('AI Tools and Agents'),
+    true,
+    'Admin dashboard must include AI Tools and Agents section'
+  );
+  assert.strictEqual(
+    content.includes('Interview Banks'),
+    true,
+    'Admin dashboard must include Interview Banks section'
+  );
 });
 
 test('Admin Dashboard: Full Edit and Delete rights implemented for all 4 sections', () => {

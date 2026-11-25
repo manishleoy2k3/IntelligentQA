@@ -21,12 +21,12 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
     typeof size === 'number'
       ? size
       : size === 'sm'
-      ? 28
-      : size === 'md'
-      ? 36
-      : size === 'lg'
-      ? 48
-      : 64;
+        ? 28
+        : size === 'md'
+          ? 36
+          : size === 'lg'
+            ? 48
+            : 64;
 
   return (
     <div className={`inline-flex items-center gap-2.5 font-sans select-none ${className}`}>
@@ -87,8 +87,24 @@ export const QABrandLogo: React.FC<QABrandLogoProps> = ({
         />
 
         {/* Subtle grid pattern / matrix lines */}
-        <line x1="8" y1="24" x2="40" y2="24" stroke="#222222" strokeWidth="0.75" strokeDasharray="2 2" />
-        <line x1="24" y1="8" x2="24" y2="40" stroke="#222222" strokeWidth="0.75" strokeDasharray="2 2" />
+        <line
+          x1="8"
+          y1="24"
+          x2="40"
+          y2="24"
+          stroke="#222222"
+          strokeWidth="0.75"
+          strokeDasharray="2 2"
+        />
+        <line
+          x1="24"
+          y1="8"
+          x2="24"
+          y2="40"
+          stroke="#222222"
+          strokeWidth="0.75"
+          strokeDasharray="2 2"
+        />
 
         {/* 1. Left Code Syntax Bracket: < / { */}
         <path

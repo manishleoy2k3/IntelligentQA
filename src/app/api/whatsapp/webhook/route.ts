@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchQAKnowledge } from '@/lib/qa-knowledge-base';
 
-const WHATSAPP_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'intelligentqa_whatsapp_token_2026';
+const WHATSAPP_VERIFY_TOKEN =
+  process.env.WHATSAPP_VERIFY_TOKEN || 'intelligentqa_whatsapp_token_2026';
 
 // GET: Meta Webhook Verification challenge
 export async function GET(req: NextRequest) {
@@ -35,9 +36,10 @@ export async function POST(req: NextRequest) {
 
       // Search knowledge base for SDET query or response
       const results = searchQAKnowledge(text);
-      const answer = results.length > 0
-        ? `*IntelligentQA Daily SDET Coach*\n\n${results[0].shortAnswer}\n\n💡 _Pro Tip:_ ${results[0].interviewTips}`
-        : `*IntelligentQA Daily SDET Coach*\n\nGreat question! Practice this scenario in our interactive coding sandbox at https://intelligentqa.io/sandbox/code\nReply "Explain" for detailed framework architecture breakdown.`;
+      const answer =
+        results.length > 0
+          ? `*IntelligentQA Daily SDET Coach*\n\n${results[0].shortAnswer}\n\n💡 _Pro Tip:_ ${results[0].interviewTips}`
+          : `*IntelligentQA Daily SDET Coach*\n\nGreat question! Practice this scenario in our interactive coding sandbox at https://intelligentqa.io/sandbox/code\nReply "Explain" for detailed framework architecture breakdown.`;
 
       // Log zero-cost dispatch
       return NextResponse.json({

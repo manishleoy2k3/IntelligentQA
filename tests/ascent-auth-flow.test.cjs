@@ -4,7 +4,10 @@ const fs = require('fs');
 const path = require('path');
 
 test('AscentWealth Auth Flow Component: Email -> OTP -> Set Password -> Fast Login', () => {
-  const ascentCardFile = fs.readFileSync(path.join(__dirname, '../src/components/auth/ascent-auth-card.tsx'), 'utf8');
+  const ascentCardFile = fs.readFileSync(
+    path.join(__dirname, '../src/components/auth/ascent-auth-card.tsx'),
+    'utf8'
+  );
 
   // Step 1: Email entry
   assert.ok(ascentCardFile.includes('Email Address'), 'Has email input step');
@@ -13,7 +16,10 @@ test('AscentWealth Auth Flow Component: Email -> OTP -> Set Password -> Fast Log
   // Step 2A: Password verification for returning users
   assert.ok(ascentCardFile.includes('Enter Your Password'), 'Has password step for existing users');
   assert.ok(ascentCardFile.includes('verifyPassword'), 'Validates user password');
-  assert.ok(ascentCardFile.includes('Sign in with 6-digit OTP instead'), 'Provides OTP sign-in fallback');
+  assert.ok(
+    ascentCardFile.includes('Sign in with 6-digit OTP instead'),
+    'Provides OTP sign-in fallback'
+  );
 
   // Step 2B: OTP Verification
   assert.ok(ascentCardFile.includes('Verify Your Email'), 'Has OTP verification step');
@@ -28,20 +34,41 @@ test('AscentWealth Auth Flow Component: Email -> OTP -> Set Password -> Fast Log
 });
 
 test('Google 1-Click Sign-In eliminates multi-screen friction', () => {
-  const googleBtnFile = fs.readFileSync(path.join(__dirname, '../src/components/auth/google-sign-in-button.tsx'), 'utf8');
+  const googleBtnFile = fs.readFileSync(
+    path.join(__dirname, '../src/components/auth/google-sign-in-button.tsx'),
+    'utf8'
+  );
 
   // 1-Click fast login for recognized Google users
-  assert.ok(googleBtnFile.includes('getPrimaryGoogleAccount'), 'Checks for remembered Google accounts');
+  assert.ok(
+    googleBtnFile.includes('getPrimaryGoogleAccount'),
+    'Checks for remembered Google accounts'
+  );
   assert.ok(googleBtnFile.includes('loginWithGoogle'), 'Logs in immediately if account remembered');
   assert.ok(googleBtnFile.includes('Use another Google account'), 'Allows switching accounts');
 
   // Check Google OAuth page has removed consent hurdle and has zero fake emails
-  const googleOAuthFile = fs.readFileSync(path.join(__dirname, '../src/app/auth/google/page.tsx'), 'utf8');
-  assert.ok(!googleOAuthFile.includes("step === 'consent'"), 'Completely removed redundant consent screen');
+  const googleOAuthFile = fs.readFileSync(
+    path.join(__dirname, '../src/app/auth/google/page.tsx'),
+    'utf8'
+  );
+  assert.ok(
+    !googleOAuthFile.includes("step === 'consent'"),
+    'Completely removed redundant consent screen'
+  );
   assert.ok(googleOAuthFile.includes('handleSelectExisting'), 'Has 1-click account selection');
-  assert.ok(googleOAuthFile.includes('Connecting to IntelligentQA'), 'Shows smooth quick authorization');
-  assert.ok(!googleOAuthFile.includes('qa.student@gmail.com'), 'Does not include hardcoded mock emails like qa.student@gmail.com');
-  assert.ok(!googleOAuthFile.includes('interviewer@interviewvector.com'), 'Does not include dummy interviewer account');
+  assert.ok(
+    googleOAuthFile.includes('Connecting to IntelligentQA'),
+    'Shows smooth quick authorization'
+  );
+  assert.ok(
+    !googleOAuthFile.includes('qa.student@gmail.com'),
+    'Does not include hardcoded mock emails like qa.student@gmail.com'
+  );
+  assert.ok(
+    !googleOAuthFile.includes('interviewer@interviewvector.com'),
+    'Does not include dummy interviewer account'
+  );
 });
 
 test('QA Database provides AscentWealth OTP and Credential helpers', () => {
@@ -52,21 +79,45 @@ test('QA Database provides AscentWealth OTP and Credential helpers', () => {
   assert.ok(qaDbFile.includes('hasPassword'), 'Checks if password exists for email');
   assert.ok(qaDbFile.includes('setPassword'), 'Sets persistent password for email');
   assert.ok(qaDbFile.includes('verifyPassword'), 'Validates password for email');
-  assert.ok(qaDbFile.includes('getPrimaryGoogleAccount'), 'Retrieves primary remembered Google user');
-  assert.ok(qaDbFile.includes('clearSession'), 'Provides clearSession method matching AscentWealth');
+  assert.ok(
+    qaDbFile.includes('getPrimaryGoogleAccount'),
+    'Retrieves primary remembered Google user'
+  );
+  assert.ok(
+    qaDbFile.includes('clearSession'),
+    'Provides clearSession method matching AscentWealth'
+  );
 });
 
 test('AscentWealth Google OAuth Callback & Multi-User Isolation', () => {
-  const callbackFile = fs.readFileSync(path.join(__dirname, '../src/app/auth/callback/page.tsx'), 'utf8');
+  const callbackFile = fs.readFileSync(
+    path.join(__dirname, '../src/app/auth/callback/page.tsx'),
+    'utf8'
+  );
 
   // Error handling matching AscentWealth
-  assert.ok(callbackFile.includes('Sign-in with Google was not completed'), 'Displays AscentWealth error header');
-  assert.ok(callbackFile.includes('Try Again with Google'), 'Provides Try Again with Google action');
-  assert.ok(callbackFile.includes('Google sign-in was cancelled or access was denied'), 'Detects cancellation');
+  assert.ok(
+    callbackFile.includes('Sign-in with Google was not completed'),
+    'Displays AscentWealth error header'
+  );
+  assert.ok(
+    callbackFile.includes('Try Again with Google'),
+    'Provides Try Again with Google action'
+  );
+  assert.ok(
+    callbackFile.includes('Google sign-in was cancelled or access was denied'),
+    'Detects cancellation'
+  );
 
   // Connecting state
-  assert.ok(callbackFile.includes('Connecting your Google account'), 'Displays connecting state banner');
+  assert.ok(
+    callbackFile.includes('Connecting your Google account'),
+    'Displays connecting state banner'
+  );
 
   // Multi-user isolation
-  assert.ok(callbackFile.includes('clearSession'), 'Purges previous session if user switched to prevent data leakage');
+  assert.ok(
+    callbackFile.includes('clearSession'),
+    'Purges previous session if user switched to prevent data leakage'
+  );
 });

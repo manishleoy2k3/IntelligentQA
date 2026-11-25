@@ -19,9 +19,7 @@ export default function WarningCallout({
           <AlertTriangle className="w-4 h-4" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-300 mb-1">
-            {title}
-          </h4>
+          <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-300 mb-1">{title}</h4>
           <p className="text-sm leading-relaxed text-slate-800 dark:text-amber-200/90 font-normal">
             {message}
           </p>

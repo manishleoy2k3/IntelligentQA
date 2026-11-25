@@ -66,7 +66,11 @@ export default function ContentComparisonModal({
             </div>
             <div
               className="flex-1 p-6 overflow-y-auto prose prose-invert prose-sm max-w-none text-zinc-300 leading-relaxed font-sans"
-              dangerouslySetInnerHTML={{ __html: originalHtml || '<p class="text-zinc-500 italic">No original content recorded.</p>' }}
+              dangerouslySetInnerHTML={{
+                __html:
+                  originalHtml ||
+                  '<p class="text-zinc-500 italic">No original content recorded.</p>',
+              }}
             />
           </div>
 
@@ -83,14 +87,20 @@ export default function ContentComparisonModal({
             </div>
             <div
               className="flex-1 p-6 overflow-y-auto prose prose-invert prose-sm max-w-none text-zinc-200 leading-relaxed font-sans"
-              dangerouslySetInnerHTML={{ __html: enhancedHtml || '<p class="text-zinc-500 italic">No AI content available.</p>' }}
+              dangerouslySetInnerHTML={{
+                __html:
+                  enhancedHtml || '<p class="text-zinc-500 italic">No AI content available.</p>',
+              }}
             />
           </div>
         </div>
 
         {/* Footer Note */}
         <div className="px-6 py-3 bg-[#18181B] border-t border-[#27272A] flex items-center justify-between text-xs text-zinc-400">
-          <span>Review improvements carefully. No changes will be applied unless you click &quot;Accept AI Version&quot;.</span>
+          <span>
+            Review improvements carefully. No changes will be applied unless you click &quot;Accept
+            AI Version&quot;.
+          </span>
           <button
             type="button"
             onClick={onClose}

@@ -95,7 +95,8 @@ export default function GeminiKeyModal({
       setTestResult({
         success: false,
         message: 'Please paste your Gemini API Key.',
-        details: 'Keys start with "AIzaSy" and can be created for free at https://aistudio.google.com/app/apikey',
+        details:
+          'Keys start with "AIzaSy" and can be created for free at https://aistudio.google.com/app/apikey',
       });
       return;
     }
@@ -106,7 +107,9 @@ export default function GeminiKeyModal({
       setTestResult({
         success: false,
         message: syntaxCheck.error || 'Invalid API key format.',
-        details: syntaxCheck.details || 'Google AI Studio keys must begin with "AIzaSy" and be exactly 39 characters.',
+        details:
+          syntaxCheck.details ||
+          'Google AI Studio keys must begin with "AIzaSy" and be exactly 39 characters.',
       });
       return;
     }
@@ -129,7 +132,9 @@ export default function GeminiKeyModal({
         setTestResult({
           success: false,
           message: data.error || 'Google AI Studio rejected this key as invalid.',
-          details: data.details || 'Please double-check that you copied the complete key from Google AI Studio.',
+          details:
+            data.details ||
+            'Please double-check that you copied the complete key from Google AI Studio.',
         });
         setIsTesting(false);
         return;
@@ -165,7 +170,8 @@ export default function GeminiKeyModal({
       setTestResult({
         success: false,
         message: 'Network verification failed.',
-        details: 'Unable to communicate with the verification server. Please check your connection and try again.',
+        details:
+          'Unable to communicate with the verification server. Please check your connection and try again.',
       });
     } finally {
       setIsTesting(false);
@@ -197,7 +203,8 @@ export default function GeminiKeyModal({
     setApiKey('');
     setTestResult({
       success: true,
-      message: '✔ Core Automation Mode selected. All courses, labs, and sandboxes are 100% free without any API key.',
+      message:
+        '✔ Core Automation Mode selected. All courses, labs, and sandboxes are 100% free without any API key.',
     });
     setTimeout(() => {
       onOptOut?.();
@@ -206,11 +213,12 @@ export default function GeminiKeyModal({
     }, 1000);
   };
 
-  const isSaveDisabled = isTesting || (apiKey.trim().length > 0 && formatAnalysis !== null && !formatAnalysis.valid);
+  const isSaveDisabled =
+    isTesting || (apiKey.trim().length > 0 && formatAnalysis !== null && !formatAnalysis.valid);
 
   return (
     <div
-      onClick={e => {
+      onClick={(e) => {
         if (e.target === e.currentTarget && !isTesting) onClose();
       }}
       className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center min-h-screen animate-in fade-in duration-200"
@@ -264,7 +272,9 @@ export default function GeminiKeyModal({
                 </span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                Your personal key is verified and operational. All SDET AI features (Ask SDET AI Mentor, Autonomous QA Agents, and Interview Griller) run on your personal free <strong>1,500 requests/day</strong> Google quota.
+                Your personal key is verified and operational. All SDET AI features (Ask SDET AI
+                Mentor, Autonomous QA Agents, and Interview Griller) run on your personal free{' '}
+                <strong>1,500 requests/day</strong> Google quota.
               </p>
             </div>
 
@@ -279,7 +289,11 @@ export default function GeminiKeyModal({
                   onClick={() => setShowPassword(!showPassword)}
                   className="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center gap-1 cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-3.5 h-3.5" />
+                  ) : (
+                    <Eye className="w-3.5 h-3.5" />
+                  )}
                   <span>{showPassword ? 'Mask' : 'Reveal'}</span>
                 </button>
               </div>
@@ -360,9 +374,7 @@ export default function GeminiKeyModal({
 
             {/* Footer */}
             <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">
-                To deactivate AI, click Delete Key
-              </span>
+              <span className="text-[11px] text-slate-400">To deactivate AI, click Delete Key</span>
               <button
                 type="button"
                 onClick={onClose}
@@ -411,7 +423,7 @@ export default function GeminiKeyModal({
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={apiKey}
-                  onChange={e => {
+                  onChange={(e) => {
                     setApiKey(e.target.value);
                     setTestResult(null);
                   }}
@@ -452,7 +464,9 @@ export default function GeminiKeyModal({
                     Paste 39-character key starting with &quot;AIzaSy&quot;
                   </span>
                 )}
-                <span className={`font-mono ${apiKey.trim().length === 39 ? 'text-emerald-600 font-bold' : 'text-slate-400'}`}>
+                <span
+                  className={`font-mono ${apiKey.trim().length === 39 ? 'text-emerald-600 font-bold' : 'text-slate-400'}`}
+                >
                   {apiKey.trim().length}/39 chars
                 </span>
               </div>
@@ -581,7 +595,15 @@ export default function GeminiKeyModal({
                     1
                   </span>
                   <span>
-                    Go to <strong>Google AI Studio</strong>: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-emerald-600 dark:text-emerald-400 underline font-semibold">aistudio.google.com/app/apikey</a>
+                    Go to <strong>Google AI Studio</strong>:{' '}
+                    <a
+                      href="https://aistudio.google.com/app/apikey"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-emerald-600 dark:text-emerald-400 underline font-semibold"
+                    >
+                      aistudio.google.com/app/apikey
+                    </a>
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -589,7 +611,8 @@ export default function GeminiKeyModal({
                     2
                   </span>
                   <span>
-                    Sign in with your standard Google account and click <strong>&quot;Create API Key&quot;</strong>.
+                    Sign in with your standard Google account and click{' '}
+                    <strong>&quot;Create API Key&quot;</strong>.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -597,7 +620,8 @@ export default function GeminiKeyModal({
                     3
                   </span>
                   <span>
-                    Copy the generated 39-character key (starts with <strong>AIzaSy...</strong>) and paste it below.
+                    Copy the generated 39-character key (starts with <strong>AIzaSy...</strong>) and
+                    paste it below.
                   </span>
                 </li>
               </ol>
@@ -618,7 +642,7 @@ export default function GeminiKeyModal({
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={apiKey}
-                  onChange={e => {
+                  onChange={(e) => {
                     setApiKey(e.target.value);
                     setTestResult(null);
                   }}
@@ -659,7 +683,9 @@ export default function GeminiKeyModal({
                     Must begin with &quot;AIzaSy&quot; · 39 characters
                   </span>
                 )}
-                <span className={`font-mono ${apiKey.trim().length === 39 ? 'text-emerald-600 font-bold' : 'text-slate-400'}`}>
+                <span
+                  className={`font-mono ${apiKey.trim().length === 39 ? 'text-emerald-600 font-bold' : 'text-slate-400'}`}
+                >
                   {apiKey.trim().length}/39 chars
                 </span>
               </div>
@@ -725,8 +751,12 @@ export default function GeminiKeyModal({
             <div className="hidden" aria-hidden="true">
               {/* Option 2: Focus on Core Automation (Opt Out of AI) */}
               {/* Skip AI · Continue with Core Automation */}
-              <button type="button" onClick={handleOptOutAI}>Opt-out compatibility</button>
-              <button type="button" onClick={handleRemoveKey}>Remove key compatibility</button>
+              <button type="button" onClick={handleOptOutAI}>
+                Opt-out compatibility
+              </button>
+              <button type="button" onClick={handleRemoveKey}>
+                Remove key compatibility
+              </button>
             </div>
 
             {/* Footer */}

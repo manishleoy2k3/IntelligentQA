@@ -117,7 +117,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().setParagraph().run()}
           className={`p-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-            editor.isActive('paragraph') ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300 font-bold' : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
+            editor.isActive('paragraph')
+              ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300 font-bold'
+              : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
           }`}
           title="Normal Paragraph"
         >
@@ -127,7 +129,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           className={`p-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-            editor.isActive('heading', { level: 1 }) ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300' : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
+            editor.isActive('heading', { level: 1 })
+              ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300'
+              : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
           }`}
           title="Heading 1"
         >
@@ -137,7 +141,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           className={`p-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-            editor.isActive('heading', { level: 2 }) ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300' : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
+            editor.isActive('heading', { level: 2 })
+              ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300'
+              : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
           }`}
           title="Heading 2"
         >
@@ -147,7 +153,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           className={`p-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-            editor.isActive('heading', { level: 3 }) ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300' : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
+            editor.isActive('heading', { level: 3 })
+              ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300'
+              : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
           }`}
           title="Heading 3"
         >
@@ -157,7 +165,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
           className={`p-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-            editor.isActive('heading', { level: 4 }) ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300' : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
+            editor.isActive('heading', { level: 4 })
+              ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300'
+              : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
           }`}
           title="Heading 4"
         >
@@ -171,7 +181,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('bold') ? 'bg-purple-600/30 text-purple-300 font-bold' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('bold')
+              ? 'bg-purple-600/30 text-purple-300 font-bold'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Bold (Ctrl+B)"
         >
@@ -181,7 +193,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('italic') ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('italic')
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Italic (Ctrl+I)"
         >
@@ -191,7 +205,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('underline') ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('underline')
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Underline (Ctrl+U)"
         >
@@ -201,7 +217,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleStrike().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('strike') ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('strike')
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Strikethrough"
         >
@@ -211,7 +229,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleHighlight().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('highlight') ? 'bg-yellow-500/30 text-yellow-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('highlight')
+              ? 'bg-yellow-500/30 text-yellow-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Highlight Text"
         >
@@ -225,7 +245,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive({ textAlign: 'left' }) ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive({ textAlign: 'left' })
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Align Left"
         >
@@ -235,7 +257,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive({ textAlign: 'center' }) ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive({ textAlign: 'center' })
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Align Center"
         >
@@ -245,7 +269,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive({ textAlign: 'right' }) ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive({ textAlign: 'right' })
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Align Right"
         >
@@ -255,7 +281,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive({ textAlign: 'justify' }) ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive({ textAlign: 'justify' })
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Justify"
         >
@@ -269,7 +297,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('bulletList') ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('bulletList')
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Bullet List"
         >
@@ -279,7 +309,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('orderedList') ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('orderedList')
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Numbered List"
         >
@@ -289,7 +321,9 @@ export default function EditorToolbar({
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('blockquote') ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('blockquote')
+              ? 'bg-purple-600/30 text-purple-300'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Blockquote"
         >
@@ -312,7 +346,9 @@ export default function EditorToolbar({
           type="button"
           onClick={setLink}
           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-            editor.isActive('link') ? 'bg-purple-600/30 text-purple-300 font-bold' : 'hover:bg-[#27272A] hover:text-white'
+            editor.isActive('link')
+              ? 'bg-purple-600/30 text-purple-300 font-bold'
+              : 'hover:bg-[#27272A] hover:text-white'
           }`}
           title="Insert / Edit Hyperlink"
         >
@@ -349,7 +385,9 @@ export default function EditorToolbar({
             type="button"
             onClick={() => setShowCodeLangMenu(!showCodeLangMenu)}
             className={`p-1.5 rounded-lg flex items-center gap-1 transition-colors cursor-pointer ${
-              editor.isActive('codeBlock') ? 'bg-purple-600/30 text-purple-300' : 'hover:bg-[#27272A] hover:text-white'
+              editor.isActive('codeBlock')
+                ? 'bg-purple-600/30 text-purple-300'
+                : 'hover:bg-[#27272A] hover:text-white'
             }`}
             title="Insert Code Block with Syntax Highlighting"
           >
@@ -381,7 +419,9 @@ export default function EditorToolbar({
             type="button"
             onClick={() => setShowTableMenu(!showTableMenu)}
             className={`p-1.5 rounded-lg flex items-center gap-1 transition-colors cursor-pointer ${
-              editor.isActive('table') ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300' : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
+              editor.isActive('table')
+                ? 'bg-purple-600/20 text-purple-700 dark:text-purple-300'
+                : 'hover:bg-slate-100 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-white'
             }`}
             title="Table Management"
           >
@@ -393,7 +433,11 @@ export default function EditorToolbar({
               <button
                 type="button"
                 onClick={() => {
-                  editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+                  editor
+                    .chain()
+                    .focus()
+                    .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                    .run();
                   setShowTableMenu(false);
                 }}
                 className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-[#2A2A2E] flex items-center gap-1.5"

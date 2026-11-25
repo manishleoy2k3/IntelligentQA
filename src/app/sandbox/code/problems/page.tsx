@@ -64,7 +64,9 @@ function CodingProblemsCatalogContent() {
 
   // Import Form
   const [importText, setImportText] = useState<string>('');
-  const [importStatus, setImportStatus] = useState<{ error?: string; success?: string } | null>(null);
+  const [importStatus, setImportStatus] = useState<{ error?: string; success?: string } | null>(
+    null
+  );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -113,10 +115,10 @@ function CodingProblemsCatalogContent() {
   // Available groups/categories
   const availableGroups = useMemo(() => {
     const groups = new Set<string>();
-    problems.forEach(p => {
+    problems.forEach((p) => {
       // Split compound categories like "Arrays & HashMaps"
       if (p.category.includes('&')) {
-        p.category.split('&').forEach(c => groups.add(c.trim()));
+        p.category.split('&').forEach((c) => groups.add(c.trim()));
       } else {
         groups.add(p.category.trim());
       }
@@ -126,7 +128,7 @@ function CodingProblemsCatalogContent() {
 
   // Filtered problems
   const filteredProblems = useMemo(() => {
-    return problems.filter(p => {
+    return problems.filter((p) => {
       // Search query filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -154,7 +156,7 @@ function CodingProblemsCatalogContent() {
   // Grouped by Category for display
   const problemsByGroup = useMemo(() => {
     const map = new Map<string, CodingProblem[]>();
-    filteredProblems.forEach(p => {
+    filteredProblems.forEach((p) => {
       const groupKey = p.category || 'General Algorithms';
       if (!map.has(groupKey)) {
         map.set(groupKey, []);
@@ -195,7 +197,7 @@ function CodingProblemsCatalogContent() {
 
     const constraints = newConstraints
       .split('\n')
-      .map(s => s.trim())
+      .map((s) => s.trim())
       .filter(Boolean);
 
     if (!isAdmin) {
@@ -279,7 +281,7 @@ function CodingProblemsCatalogContent() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = event => {
+    reader.onload = (event) => {
       const text = event.target?.result as string;
       if (text) {
         processImport(text);
@@ -313,7 +315,9 @@ function CodingProblemsCatalogContent() {
           contentPayload: p,
         });
       });
-      setImportStatus({ success: `🎉 ${res.problems.length} problem(s) submitted for Admin review and approval!` });
+      setImportStatus({
+        success: `🎉 ${res.problems.length} problem(s) submitted for Admin review and approval!`,
+      });
       setTimeout(() => {
         setShowImportModal(false);
         setImportStatus(null);
@@ -335,10 +339,14 @@ function CodingProblemsCatalogContent() {
   };
 
   const handleExportJSON = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(problems, null, 2));
+    const dataStr =
+      'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(problems, null, 2));
     const dlAnchorElem = document.createElement('a');
     dlAnchorElem.setAttribute('href', dataStr);
-    dlAnchorElem.setAttribute('download', `sdet_coding_problems_${new Date().toISOString().slice(0, 10)}.json`);
+    dlAnchorElem.setAttribute(
+      'download',
+      `sdet_coding_problems_${new Date().toISOString().slice(0, 10)}.json`
+    );
     dlAnchorElem.click();
     showBanner('Coding problems exported to JSON.');
   };
@@ -346,19 +354,20 @@ function CodingProblemsCatalogContent() {
   const loadSampleJson = () => {
     const sample = [
       {
-        title: "Count Vowels in a String",
-        difficulty: "Easy",
-        category: "Strings",
-        description: "Given a string text, return the total count of vowels (a, e, i, o, u) case-insensitively.",
-        constraints: ["1 <= text.length <= 10^5"],
+        title: 'Count Vowels in a String',
+        difficulty: 'Easy',
+        category: 'Strings',
+        description:
+          'Given a string text, return the total count of vowels (a, e, i, o, u) case-insensitively.',
+        constraints: ['1 <= text.length <= 10^5'],
         examples: [
           {
             input: "text = 'Quality Assurance'",
-            output: "7",
-            explanation: "Vowels: u, a, i, y (not counted), A, u, a, e = 7"
-          }
-        ]
-      }
+            output: '7',
+            explanation: 'Vowels: u, a, i, y (not counted), A, u, a, e = 7',
+          },
+        ],
+      },
     ];
     setImportText(JSON.stringify(sample, null, 2));
   };
@@ -374,9 +383,13 @@ function CodingProblemsCatalogContent() {
             </div>
             <div>
               <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
-                <Link href="/dashboard" className="hover:text-white transition">Dashboard</Link>
+                <Link href="/dashboard" className="hover:text-white transition">
+                  Dashboard
+                </Link>
                 <span>/</span>
-                <Link href="/sandbox/code" className="hover:text-white transition">Online Compilers</Link>
+                <Link href="/sandbox/code" className="hover:text-white transition">
+                  Online Compilers
+                </Link>
                 <span>/</span>
                 <span className="text-emerald-400 font-semibold">Coding Library</span>
               </div>
@@ -488,7 +501,7 @@ function CodingProblemsCatalogContent() {
                 <Filter className="w-3.5 h-3.5" />
                 Level:
               </span>
-              {(['All', 'Easy', 'Medium', 'Hard'] as const).map(lvl => (
+              {(['All', 'Easy', 'Medium', 'Hard'] as const).map((lvl) => (
                 <button
                   key={lvl}
                   type="button"
@@ -498,14 +511,20 @@ function CodingProblemsCatalogContent() {
                       ? lvl === 'Easy'
                         ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-xs'
                         : lvl === 'Medium'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs'
-                        : lvl === 'Hard'
-                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-xs'
-                        : 'bg-white/10 text-white border border-white/20 shadow-xs'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs'
+                          : lvl === 'Hard'
+                            ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-xs'
+                            : 'bg-white/10 text-white border border-white/20 shadow-xs'
                       : 'text-slate-400 hover:text-slate-200 bg-slate-950 border border-slate-800'
                   }`}
                 >
-                  {lvl === 'Easy' ? '🟢 Easy' : lvl === 'Medium' ? '🟡 Medium' : lvl === 'Hard' ? '🔴 Hard' : 'All Levels'}
+                  {lvl === 'Easy'
+                    ? '🟢 Easy'
+                    : lvl === 'Medium'
+                      ? '🟡 Medium'
+                      : lvl === 'Hard'
+                        ? '🔴 Hard'
+                        : 'All Levels'}
                 </button>
               ))}
             </div>
@@ -517,7 +536,7 @@ function CodingProblemsCatalogContent() {
               <Tag className="w-3.5 h-3.5" />
               Groups:
             </span>
-            {availableGroups.map(grp => (
+            {availableGroups.map((grp) => (
               <button
                 key={grp}
                 type="button"
@@ -537,7 +556,8 @@ function CodingProblemsCatalogContent() {
         {/* Results Counter */}
         <div className="flex items-center justify-between text-xs text-slate-400 px-1">
           <span>
-            Showing <strong className="text-slate-200">{filteredProblems.length}</strong> problem{filteredProblems.length === 1 ? '' : 's'}
+            Showing <strong className="text-slate-200">{filteredProblems.length}</strong> problem
+            {filteredProblems.length === 1 ? '' : 's'}
             {selectedGroup !== 'All' && <span> in group &quot;{selectedGroup}&quot;</span>}
             {selectedLevel !== 'All' && <span> ({selectedLevel})</span>}
           </span>
@@ -555,7 +575,9 @@ function CodingProblemsCatalogContent() {
         {filteredProblems.length === 0 ? (
           <div className="p-12 text-center bg-slate-900/40 border border-slate-800 rounded-2xl space-y-3">
             <BookOpen className="w-10 h-10 text-slate-600 mx-auto" />
-            <h3 className="text-base font-bold text-slate-300">No matching coding problems found</h3>
+            <h3 className="text-base font-bold text-slate-300">
+              No matching coding problems found
+            </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
               Try adjusting your search query, or clear group and difficulty filters.
             </p>
@@ -588,7 +610,7 @@ function CodingProblemsCatalogContent() {
 
                 {/* Problem Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                  {groupProblems.map(prob => (
+                  {groupProblems.map((prob) => (
                     <Link
                       key={prob.id}
                       href={`/sandbox/code/problems/${prob.id}`}
@@ -605,8 +627,8 @@ function CodingProblemsCatalogContent() {
                               prob.difficulty === 'Easy'
                                 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                                 : prob.difficulty === 'Medium'
-                                ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                                : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                                  ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                                  : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                             }`}
                           >
                             {prob.difficulty}
@@ -675,7 +697,9 @@ function CodingProblemsCatalogContent() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Add Coding Problem to Library</h3>
-                  <p className="text-[11px] text-slate-400">Create a new problem visible under Groups and Difficulty.</p>
+                  <p className="text-[11px] text-slate-400">
+                    Create a new problem visible under Groups and Difficulty.
+                  </p>
                 </div>
               </div>
               <button
@@ -688,7 +712,10 @@ function CodingProblemsCatalogContent() {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSaveNewProblem} className="p-4 overflow-y-auto space-y-3.5 text-xs">
+            <form
+              onSubmit={handleSaveNewProblem}
+              className="p-4 overflow-y-auto space-y-3.5 text-xs"
+            >
               <div>
                 <label className="block text-slate-300 font-semibold mb-1">
                   Problem Title <span className="text-rose-400">*</span>
@@ -705,7 +732,9 @@ function CodingProblemsCatalogContent() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Difficulty Level</label>
+                  <label className="block text-slate-300 font-semibold mb-1">
+                    Difficulty Level
+                  </label>
                   <select
                     value={newDifficulty}
                     onChange={(e) => setNewDifficulty(e.target.value as any)}
@@ -718,7 +747,9 @@ function CodingProblemsCatalogContent() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Group / Category</label>
+                  <label className="block text-slate-300 font-semibold mb-1">
+                    Group / Category
+                  </label>
                   <input
                     type="text"
                     value={newCategory}
@@ -767,7 +798,9 @@ function CodingProblemsCatalogContent() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Constraints (Optional, one per line)</label>
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Constraints (Optional, one per line)
+                </label>
                 <textarea
                   rows={2}
                   value={newConstraints}
@@ -810,7 +843,9 @@ function CodingProblemsCatalogContent() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Import or Upload Coding Problems</h3>
-                  <p className="text-[11px] text-slate-400">Upload a JSON or CSV file, or paste your question list.</p>
+                  <p className="text-[11px] text-slate-400">
+                    Upload a JSON or CSV file, or paste your question list.
+                  </p>
                 </div>
               </div>
               <button
@@ -835,7 +870,10 @@ function CodingProblemsCatalogContent() {
                     <span>Need the standard template?</span>
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    Mandatory fields: <code className="text-emerald-400">title</code>, <code className="text-emerald-400">category</code>, <code className="text-emerald-400">difficulty</code>, <code className="text-emerald-400">description</code>.
+                    Mandatory fields: <code className="text-emerald-400">title</code>,{' '}
+                    <code className="text-emerald-400">category</code>,{' '}
+                    <code className="text-emerald-400">difficulty</code>,{' '}
+                    <code className="text-emerald-400">description</code>.
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -865,7 +903,9 @@ function CodingProblemsCatalogContent() {
               >
                 <Upload className="w-8 h-8 text-blue-400 mx-auto mb-2 opacity-80" />
                 <p className="font-semibold text-slate-200">Click to upload a .json or .csv file</p>
-                <p className="text-[11px] text-slate-500 mt-1">Supports JSON array of questions or CSV format</p>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Supports JSON array of questions or CSV format
+                </p>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -877,7 +917,9 @@ function CodingProblemsCatalogContent() {
 
               {/* Quick Template Helpers */}
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-slate-400">Or Paste Raw Content:</span>
+                <span className="text-[11px] font-semibold text-slate-400">
+                  Or Paste Raw Content:
+                </span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -963,7 +1005,9 @@ function CodingProblemsCatalogContent() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Coding Problem Import Template</h3>
-                  <p className="text-[11px] text-slate-400">Standardized template schema with all mandatory fields</p>
+                  <p className="text-[11px] text-slate-400">
+                    Standardized template schema with all mandatory fields
+                  </p>
                 </div>
               </div>
               <button
@@ -982,15 +1026,31 @@ function CodingProblemsCatalogContent() {
             <div className="p-4 overflow-y-auto space-y-3.5 text-xs">
               {/* Mandatory Fields Guide */}
               <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
-                <span className="text-[11px] font-bold text-slate-200">Required Schema Fields:</span>
+                <span className="text-[11px] font-bold text-slate-200">
+                  Required Schema Fields:
+                </span>
                 <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">title (Required)</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">category (Required)</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">difficulty: Easy|Medium|Hard (Required)</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">description (Required)</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400">examples: [input, output] (Optional)</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400">constraints (Optional)</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400">starterTemplates (Optional)</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    title (Required)
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    category (Required)
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    difficulty: Easy|Medium|Hard (Required)
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    description (Required)
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                    examples: [input, output] (Optional)
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                    constraints (Optional)
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                    starterTemplates (Optional)
+                  </span>
                 </div>
               </div>
 
@@ -1030,7 +1090,11 @@ function CodingProblemsCatalogContent() {
                   }}
                   className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition"
                 >
-                  {templateCopied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Download className="w-3.5 h-3.5" />}
+                  {templateCopied ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Download className="w-3.5 h-3.5" />
+                  )}
                   <span>{templateCopied ? 'Copied!' : 'Copy Template Code'}</span>
                 </button>
               </div>

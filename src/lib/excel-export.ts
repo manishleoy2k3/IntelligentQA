@@ -46,7 +46,11 @@ export function parseRequirementsToRows(markdown: string): RequirementRow[] {
   for (const line of lines) {
     const trimmed = line.trim();
 
-    if (trimmed.toLowerCase().includes('ambiguity') || trimmed.toLowerCase().includes('edge-case') || trimmed.toLowerCase().includes('edge case')) {
+    if (
+      trimmed.toLowerCase().includes('ambiguity') ||
+      trimmed.toLowerCase().includes('edge-case') ||
+      trimmed.toLowerCase().includes('edge case')
+    ) {
       inAmbiguitySection = true;
       continue;
     }
@@ -69,7 +73,8 @@ export function parseRequirementsToRows(markdown: string): RequirementRow[] {
           given: given || 'User is authenticated and navigates to the feature',
           when: when || 'User executes the required workflow',
           then: then || 'System executes successfully with confirmation',
-          notes: notes || (ambiguityLines.length > 0 ? ambiguityLines[0] : 'Standard verification rule'),
+          notes:
+            notes || (ambiguityLines.length > 0 ? ambiguityLines[0] : 'Standard verification rule'),
         });
         given = '';
         when = '';
@@ -79,11 +84,23 @@ export function parseRequirementsToRows(markdown: string): RequirementRow[] {
 
       const rawTitle = scenarioMatch[1].trim();
       currentScenario = rawTitle;
-      if (rawTitle.toLowerCase().includes('negative') || rawTitle.toLowerCase().includes('error') || rawTitle.toLowerCase().includes('invalid')) {
+      if (
+        rawTitle.toLowerCase().includes('negative') ||
+        rawTitle.toLowerCase().includes('error') ||
+        rawTitle.toLowerCase().includes('invalid')
+      ) {
         currentCategory = 'Negative Path';
-      } else if (rawTitle.toLowerCase().includes('edge') || rawTitle.toLowerCase().includes('special') || rawTitle.toLowerCase().includes('boundary')) {
+      } else if (
+        rawTitle.toLowerCase().includes('edge') ||
+        rawTitle.toLowerCase().includes('special') ||
+        rawTitle.toLowerCase().includes('boundary')
+      ) {
         currentCategory = 'Edge Case';
-      } else if (rawTitle.toLowerCase().includes('security') || rawTitle.toLowerCase().includes('auth') || rawTitle.toLowerCase().includes('2fa')) {
+      } else if (
+        rawTitle.toLowerCase().includes('security') ||
+        rawTitle.toLowerCase().includes('auth') ||
+        rawTitle.toLowerCase().includes('2fa')
+      ) {
         currentCategory = 'Security & Auth';
       } else {
         currentCategory = 'Happy Path';
@@ -110,7 +127,8 @@ export function parseRequirementsToRows(markdown: string): RequirementRow[] {
       given: given || 'User is authenticated and navigates to the feature',
       when: when || 'User executes the required workflow',
       then: then || 'System executes successfully with confirmation',
-      notes: notes || (ambiguityLines.length > 0 ? ambiguityLines[0] : 'Standard verification rule'),
+      notes:
+        notes || (ambiguityLines.length > 0 ? ambiguityLines[0] : 'Standard verification rule'),
     });
   }
 
@@ -119,7 +137,10 @@ export function parseRequirementsToRows(markdown: string): RequirementRow[] {
     let fallbackCount = 1;
     for (const line of lines) {
       const trimmed = line.trim();
-      if ((trimmed.startsWith('- [ ]') || trimmed.startsWith('- ') || trimmed.startsWith('* ')) && trimmed.length > 5) {
+      if (
+        (trimmed.startsWith('- [ ]') || trimmed.startsWith('- ') || trimmed.startsWith('* ')) &&
+        trimmed.length > 5
+      ) {
         const text = trimmed.replace(/^[-*]\s*(\[[ x]\])?\s*/i, '').replace(/\*\*/g, '');
         rows.push({
           id: `REQ-${String(fallbackCount++).padStart(3, '0')}`,
@@ -154,7 +175,11 @@ export function parseRequirementsToRows(markdown: string): RequirementRow[] {
  * Generates an Excel-compatible XML SpreadsheetML workbook (.xls)
  * Compatible with Microsoft Excel 2003+, Microsoft Excel 365, Google Sheets, LibreOffice.
  */
-export function generateExcelWorkbookXml(sheetName: string, headers: string[], rows: (string | number)[][]): string {
+export function generateExcelWorkbookXml(
+  sheetName: string,
+  headers: string[],
+  rows: (string | number)[][]
+): string {
   const sanitizeXml = (str: any) => {
     if (str === null || str === undefined) return '';
     return String(str)
@@ -166,13 +191,18 @@ export function generateExcelWorkbookXml(sheetName: string, headers: string[], r
   };
 
   const headerCells = headers
-    .map(h => `<Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">${sanitizeXml(h)}</Data></Cell>`)
+    .map(
+      (h) => `<Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">${sanitizeXml(h)}</Data></Cell>`
+    )
     .join('');
 
   const rowNodes = rows
-    .map(row => {
+    .map((row) => {
       const cells = row
-        .map(cell => `<Cell ss:StyleID="RowStyle"><Data ss:Type="String">${sanitizeXml(cell)}</Data></Cell>`)
+        .map(
+          (cell) =>
+            `<Cell ss:StyleID="RowStyle"><Data ss:Type="String">${sanitizeXml(cell)}</Data></Cell>`
+        )
         .join('');
       return `<Row ss:AutoFitHeight="1">${cells}</Row>`;
     })
@@ -251,7 +281,10 @@ export function generateExcelWorkbookXml(sheetName: string, headers: string[], r
 /**
  * Downloads generated requirements as an Excel (.xls) file
  */
-export function exportRequirementsToExcel(markdown: string, filenamePrefix = 'intelligentqa-requirements'): void {
+export function exportRequirementsToExcel(
+  markdown: string,
+  filenamePrefix = 'intelligentqa-requirements'
+): void {
   const rows = parseRequirementsToRows(markdown);
   const headers = [
     'Requirement ID',
@@ -263,15 +296,7 @@ export function exportRequirementsToExcel(markdown: string, filenamePrefix = 'in
     'Notes / Edge Cases',
   ];
 
-  const dataRows = rows.map(r => [
-    r.id,
-    r.category,
-    r.title,
-    r.given,
-    r.when,
-    r.then,
-    r.notes,
-  ]);
+  const dataRows = rows.map((r) => [r.id, r.category, r.title, r.given, r.when, r.then, r.notes]);
 
   const xmlContent = generateExcelWorkbookXml('QA Requirements', headers, dataRows);
   const blob = new Blob([xmlContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
@@ -288,9 +313,20 @@ export function exportRequirementsToExcel(markdown: string, filenamePrefix = 'in
 /**
  * Downloads generated test matrix as an Excel (.xls) file
  */
-export function exportTestMatrixToExcel(markdown: string, filenamePrefix = 'intelligentqa-test-matrix'): void {
+export function exportTestMatrixToExcel(
+  markdown: string,
+  filenamePrefix = 'intelligentqa-test-matrix'
+): void {
   const lines = markdown.split('\n');
-  const headers = ['Test Case ID', 'Category', 'Scenario Description', 'Preconditions', 'Test Steps', 'Expected Result', 'Priority'];
+  const headers = [
+    'Test Case ID',
+    'Category',
+    'Scenario Description',
+    'Preconditions',
+    'Test Steps',
+    'Expected Result',
+    'Priority',
+  ];
   const dataRows: string[][] = [];
 
   let inTable = false;
@@ -305,7 +341,7 @@ export function exportTestMatrixToExcel(markdown: string, filenamePrefix = 'inte
         const parts = trimmed
           .split('|')
           .slice(1, -1)
-          .map(p => p.trim().replace(/\*\*/g, '').replace(/<br>/g, '\n'));
+          .map((p) => p.trim().replace(/\*\*/g, '').replace(/<br>/g, '\n'));
         if (parts.length >= 5) {
           dataRows.push([
             parts[0] || `TC-${dataRows.length + 1}`,
@@ -323,7 +359,15 @@ export function exportTestMatrixToExcel(markdown: string, filenamePrefix = 'inte
 
   // Fallback if no table found
   if (dataRows.length === 0) {
-    dataRows.push(['TC-001', 'Positive', 'Verify happy path workflow', 'App running', '1. Execute flow', 'Success toast displayed', 'P0 (Critical)']);
+    dataRows.push([
+      'TC-001',
+      'Positive',
+      'Verify happy path workflow',
+      'App running',
+      '1. Execute flow',
+      'Success toast displayed',
+      'P0 (Critical)',
+    ]);
   }
 
   const xmlContent = generateExcelWorkbookXml('Test Cases Matrix', headers, dataRows);

@@ -326,7 +326,8 @@ export interface CMSAuditLog {
   id: string;
   timestamp: string;
   user: { id: string; name: string; email: string };
-  action: 'create' | 'update' | 'delete' | 'publish' | 'unpublish' | 'restore_revision' | 'upload_media';
+  action:
+    'create' | 'update' | 'delete' | 'publish' | 'unpublish' | 'restore_revision' | 'upload_media';
   entityType: 'article' | 'course' | 'module' | 'lesson' | 'media' | 'category' | 'tag';
   entityId: string;
   entityTitle?: string;

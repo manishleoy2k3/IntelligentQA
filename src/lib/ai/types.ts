@@ -49,7 +49,7 @@ export interface LessonContextPackage {
   selectedText?: string;
 }
 
-export type EnhancementResponseType = 
+export type EnhancementResponseType =
   | 'full_lesson'
   | 'selected_section'
   | 'additional_content'
@@ -69,7 +69,14 @@ export interface TechnicalReviewMetric {
 
 export interface TechnicalRecommendation {
   type: 'Good' | 'Missing' | 'Improve' | 'Warning';
-  category: 'Concepts' | 'Architecture' | 'Code Examples' | 'Failures' | 'Objectives' | 'Best Practices' | 'Other';
+  category:
+    | 'Concepts'
+    | 'Architecture'
+    | 'Code Examples'
+    | 'Failures'
+    | 'Objectives'
+    | 'Best Practices'
+    | 'Other';
   title: string;
   detail: string;
   actionableStep?: string;
@@ -79,7 +86,7 @@ export interface TechnicalReviewData {
   overallScore: number; // 0-100
   status: 'Strong' | 'Needs Improvement' | 'Critical Issues';
   metrics: {
-    completeness: TechnicalReviewMetric;   // e.g. 88/100 Technical completeness
+    completeness: TechnicalReviewMetric; // e.g. 88/100 Technical completeness
     practicalDepth: TechnicalReviewMetric; // e.g. 72/100 Practical depth
     codeExamples?: TechnicalReviewMetric;
     diagrams?: TechnicalReviewMetric;
@@ -113,7 +120,7 @@ export interface AIStructuredResponse {
 }
 
 export interface AIEnhancementRequest {
-  action?: 
+  action?:
     | 'improve_content'
     | 'expand_explanation'
     | 'add_examples'
@@ -145,7 +152,16 @@ export interface AIEnhancementResponse {
     totalTokens?: number;
   };
   error?: {
-    code: 'API_KEY_MISSING' | 'INVALID_API_KEY' | 'QUOTA_EXCEEDED' | 'RATE_LIMITED' | 'NETWORK_ERROR' | 'INVALID_MODEL' | 'RESPONSE_TOO_LARGE' | 'PROVIDER_UNAVAILABLE' | 'BAD_REQUEST';
+    code:
+      | 'API_KEY_MISSING'
+      | 'INVALID_API_KEY'
+      | 'QUOTA_EXCEEDED'
+      | 'RATE_LIMITED'
+      | 'NETWORK_ERROR'
+      | 'INVALID_MODEL'
+      | 'RESPONSE_TOO_LARGE'
+      | 'PROVIDER_UNAVAILABLE'
+      | 'BAD_REQUEST';
     message: string;
     details?: string;
   };

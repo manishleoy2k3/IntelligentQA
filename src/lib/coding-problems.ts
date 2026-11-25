@@ -168,10 +168,7 @@ class Program {
     description: `A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.
 
 SDETs frequently use string sanitization when verifying dynamic web table text, normalized search inputs, and localized UI labels.`,
-    constraints: [
-      '1 <= s.length <= 2 * 10^5',
-      's consists only of printable ASCII characters.',
-    ],
+    constraints: ['1 <= s.length <= 2 * 10^5', 's consists only of printable ASCII characters.'],
     examples: [
       {
         input: 's = "A man, a plan, a canal: Panama"',
@@ -268,10 +265,7 @@ class Program {
     description: `Given an integer array nums, return all elements that appear more than once in the array.
 
 In API and database testing, checking for unexpected duplicates is a critical validation step for user registrations, order tracking numbers, and product SKUs.`,
-    constraints: [
-      '1 <= nums.length <= 10^5',
-      '-10^9 <= nums[i] <= 10^9',
-    ],
+    constraints: ['1 <= nums.length <= 10^5', '-10^9 <= nums[i] <= 10^9'],
     examples: [
       {
         input: 'nums = [4, 3, 2, 7, 8, 2, 3, 1]',
@@ -388,10 +382,7 @@ An input string is valid if:
 3. Every close bracket has a corresponding open bracket of the same type.
 
 In QA automation, this algorithm is widely used to validate JSON syntax, HTML/XML tag nesting, and mathematical formula inputs.`,
-    constraints: [
-      '1 <= s.length <= 10^4',
-      's consists of parentheses only "()[]{}".',
-    ],
+    constraints: ['1 <= s.length <= 10^4', 's consists of parentheses only "()[]{}".'],
     examples: [
       {
         input: 's = "()[]{}"',
@@ -513,10 +504,7 @@ class Program {
     description: `Given a string s, find the first non-repeating character in it and return its index. If it does not exist, return -1.
 
 This problem evaluates character frequency counting and order preservation (e.g. testing unique OTP codes, token generation, or stream logs).`,
-    constraints: [
-      '1 <= s.length <= 10^5',
-      's consists of only lowercase English letters.',
-    ],
+    constraints: ['1 <= s.length <= 10^5', 's consists of only lowercase English letters.'],
     examples: [
       {
         input: 's = "leetcode"',
@@ -971,9 +959,7 @@ class Program {
     description: `Given a dirty string containing mixed text, currency symbols, and numbers (e.g. "Total: $12.50 discount: $2.50 and fee: $5.00"), extract all floating-point numbers and return their sum.
 
 In automated web and e-commerce checkout testing, extracting and calculating monetary values from cart tables and billing summaries is an everyday requirement.`,
-    constraints: [
-      'String contains zero or more positive numeric values (integers or decimals).',
-    ],
+    constraints: ['String contains zero or more positive numeric values (integers or decimals).'],
     examples: [
       {
         input: 'text = "Cart: $10.50, Shipping: $20.25, Tax: $1.25"',
@@ -1181,10 +1167,7 @@ class Program {
 Write a program to reverse the word so the astronauts on Mars can read it clearly.
 
 For example, if the rover receives "olleh", your program should output "hello".`,
-    constraints: [
-      '1 <= word.length <= 100',
-      'Words consist of English letters',
-    ],
+    constraints: ['1 <= word.length <= 100', 'Words consist of English letters'],
     examples: [
       {
         input: 'word = "olleh"',
@@ -1263,10 +1246,7 @@ class Program {
     category: 'Coding Tutorial',
     description: `Help the friendly picnic robot count fruits in the basket!
 Given a list of fruit names and a target fruit you are looking for, return the total count of how many times that fruit appears.`,
-    constraints: [
-      '1 <= fruits.length <= 100',
-      'All fruit names are lowercase strings',
-    ],
+    constraints: ['1 <= fruits.length <= 100', 'All fruit names are lowercase strings'],
     examples: [
       {
         input: 'fruits = ["apple", "banana", "apple", "mango", "apple"], target = "apple"',
@@ -1365,10 +1345,7 @@ class Program {
     category: 'Coding Tutorial',
     description: `The Superhero Academy needs to find their strongest champion for the cosmic tournament!
 Given an array of superhero power levels (positive numbers), find and return the maximum power on the team.`,
-    constraints: [
-      '1 <= powers.length <= 100',
-      '1 <= powers[i] <= 1000',
-    ],
+    constraints: ['1 <= powers.length <= 100', '1 <= powers[i] <= 1000'],
     examples: [
       {
         input: 'powers = [45, 88, 99, 72, 105, 60]',
@@ -1464,9 +1441,7 @@ For every number from 1 to N:
 - If divisible by 5, output "Boom"
 - If divisible by both 3 and 5, output "BuzzBoom"
 - Otherwise output the number as a string.`,
-    constraints: [
-      '1 <= n <= 50',
-    ],
+    constraints: ['1 <= n <= 50'],
     examples: [
       {
         input: 'n = 5',
@@ -1586,10 +1561,7 @@ class Program {
     description: `A Magic Mirror word reads exactly the same forwards and backwards!
 Words like "radar", "racecar", "level", and "mom" are Magic Mirror words.
 Write a function that returns true if the word is a magic mirror word, else false.`,
-    constraints: [
-      '1 <= word.length <= 50',
-      'Only lowercase letters',
-    ],
+    constraints: ['1 <= word.length <= 50', 'Only lowercase letters'],
     examples: [
       {
         input: 'word = "racecar"',
@@ -1669,10 +1641,7 @@ Along the path:
 - Positive numbers represent gold coins collected.
 - Negative numbers represent trap fees.
 Write a function to sum up only the positive gold coins collected along the trail!`,
-    constraints: [
-      '1 <= coins.length <= 50',
-      '-100 <= coins[i] <= 100',
-    ],
+    constraints: ['1 <= coins.length <= 50', '-100 <= coins[i] <= 100'],
     examples: [
       {
         input: 'coins = [10, -5, 20, -2, 5]',
@@ -1758,12 +1727,9 @@ class Program {
     title: '19. Trapping Rain Water (Two Pointers)',
     difficulty: 'Hard',
     category: 'Arrays & Two Pointers',
-    description: 'Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.\n\nIn SDET performance and telemetry systems, this two-pointer / histogram accumulation algorithm is used to measure queue bottleneck backpressure, data packet buffer pooling, and peak memory consumption under surge loads.',
-    constraints: [
-      'n == height.length',
-      '1 <= n <= 2 * 10^4',
-      '0 <= height[i] <= 10^5',
-    ],
+    description:
+      'Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.\n\nIn SDET performance and telemetry systems, this two-pointer / histogram accumulation algorithm is used to measure queue bottleneck backpressure, data packet buffer pooling, and peak memory consumption under surge loads.',
+    constraints: ['n == height.length', '1 <= n <= 2 * 10^4', '0 <= height[i] <= 10^5'],
     examples: [
       {
         input: 'height = [0,1,0,2,1,0,1,3,2,1,2,1]',
@@ -1938,7 +1904,8 @@ class Program {
     title: '20. Minimum Window Substring (Sliding Window)',
     difficulty: 'Hard',
     category: 'Strings & Sliding Window',
-    description: 'Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string \"\".\n\nIn automation testing, sliding window string parsing is frequently required when isolating minimum log trace windows containing all requisite error codes, correlation tokens, and session identifiers.',
+    description:
+      'Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string \"\".\n\nIn automation testing, sliding window string parsing is frequently required when isolating minimum log trace windows containing all requisite error codes, correlation tokens, and session identifiers.',
     constraints: [
       'm == s.length',
       'n == t.length',
@@ -1949,7 +1916,8 @@ class Program {
       {
         input: 's = "ADOBECODEBANC", t = "ABC"',
         output: '"BANC"',
-        explanation: 'The minimum window substring "BANC" includes \'A\', \'B\', and \'C\' from string t.',
+        explanation:
+          "The minimum window substring \"BANC\" includes 'A', 'B', and 'C' from string t.",
       },
       {
         input: 's = "a", t = "a"',
@@ -2120,17 +2088,15 @@ class Program {
     title: '21. Sliding Window Maximum (Monotonic Queue)',
     difficulty: 'Hard',
     category: 'Arrays & Monotonic Queue',
-    description: 'You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position, return the max sliding window.\n\nIn high-frequency automated performance testing, monotonic deques process real-time p99 latency spikes and streaming metric maximums over fixed rolling time windows in optimal O(n) linear time.',
-    constraints: [
-      '1 <= nums.length <= 10^5',
-      '-10^4 <= nums[i] <= 10^4',
-      '1 <= k <= nums.length',
-    ],
+    description:
+      'You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position, return the max sliding window.\n\nIn high-frequency automated performance testing, monotonic deques process real-time p99 latency spikes and streaming metric maximums over fixed rolling time windows in optimal O(n) linear time.',
+    constraints: ['1 <= nums.length <= 10^5', '-10^4 <= nums[i] <= 10^4', '1 <= k <= nums.length'],
     examples: [
       {
         input: 'nums = [1,3,-1,-3,5,3,6,7], k = 3',
         output: '[3,3,5,5,6,7]',
-        explanation: 'Window [1, 3, -1] -> 3; [3, -1, -3] -> 3; [-1, -3, 5] -> 5; [-3, 5, 3] -> 5; [5, 3, 6] -> 6; [3, 6, 7] -> 7',
+        explanation:
+          'Window [1, 3, -1] -> 3; [3, -1, -3] -> 3; [-1, -3, 5] -> 5; [-3, 5, 3] -> 5; [5, 3, 6] -> 6; [3, 6, 7] -> 7',
       },
       {
         input: 'nums = [1], k = 1',
@@ -2270,16 +2236,15 @@ class Program {
     title: '22. Largest Rectangle in Histogram (Monotonic Stack)',
     difficulty: 'Hard',
     category: 'Stacks & Monotonic Stack',
-    description: 'Given an array of integers heights representing the histogram\'s bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.\n\nMonotonic stack algorithms are an indispensable SDET pattern for max-throughput bandwidth analysis, resource provisioning boundaries, and optimal continuous container sizing.',
-    constraints: [
-      '1 <= heights.length <= 10^5',
-      '0 <= heights[i] <= 10^4',
-    ],
+    description:
+      "Given an array of integers heights representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.\n\nMonotonic stack algorithms are an indispensable SDET pattern for max-throughput bandwidth analysis, resource provisioning boundaries, and optimal continuous container sizing.",
+    constraints: ['1 <= heights.length <= 10^5', '0 <= heights[i] <= 10^4'],
     examples: [
       {
         input: 'heights = [2,1,5,6,2,3]',
         output: '10',
-        explanation: 'The largest rectangle is formed by bars at indices 2 and 3 with area = 10 units.',
+        explanation:
+          'The largest rectangle is formed by bars at indices 2 and 3 with area = 10 units.',
       },
       {
         input: 'heights = [2,4]',
@@ -2408,10 +2373,7 @@ class Program {
     difficulty: 'Easy',
     category: 'Arrays & Dynamic Programming',
     description: `You are given an array prices where prices[i] is the price of a given stock on the ith day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock. Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.`,
-    constraints: [
-      '1 <= prices.length <= 10^5',
-      '0 <= prices[i] <= 10^4',
-    ],
+    constraints: ['1 <= prices.length <= 10^5', '0 <= prices[i] <= 10^4'],
     examples: [
       {
         input: 'prices = [7, 1, 5, 3, 6, 4]',
@@ -2626,10 +2588,7 @@ class Program {
     difficulty: 'Medium',
     category: 'Arrays & Dynamic Programming',
     description: `Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum. An optimal solution runs in O(n) linear time using Kadane's algorithm.`,
-    constraints: [
-      '1 <= nums.length <= 10^5',
-      '-10^4 <= nums[i] <= 10^4',
-    ],
+    constraints: ['1 <= nums.length <= 10^5', '-10^4 <= nums[i] <= 10^4'],
     examples: [
       {
         input: 'nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]',
@@ -2733,7 +2692,8 @@ class Program {
       {
         input: 'nums = [1, 2, 3, 4]',
         output: '[24, 12, 8, 6]',
-        explanation: 'Each element is the product of all others: 2*3*4=24, 1*3*4=12, 1*2*4=8, 1*2*3=6.',
+        explanation:
+          'Each element is the product of all others: 2*3*4=24, 1*3*4=12, 1*2*4=8, 1*2*3=6.',
       },
       {
         input: 'nums = [-1, 1, 0, -3, 3]',
@@ -2967,10 +2927,7 @@ class Program {
     difficulty: 'Medium',
     category: 'Arrays & Two Pointers',
     description: `Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0. Notice that the solution set must not contain duplicate triplets.`,
-    constraints: [
-      '3 <= nums.length <= 3000',
-      '-10^5 <= nums[i] <= 10^5',
-    ],
+    constraints: ['3 <= nums.length <= 3000', '-10^5 <= nums[i] <= 10^5'],
     examples: [
       {
         input: 'nums = [-1, 0, 1, 2, -1, -4]',
@@ -3134,16 +3091,13 @@ class Program {
     difficulty: 'Medium',
     category: 'Arrays & Two Pointers',
     description: `You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]). Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.`,
-    constraints: [
-      'n == height.length',
-      '2 <= n <= 10^5',
-      '0 <= height[i] <= 10^4',
-    ],
+    constraints: ['n == height.length', '2 <= n <= 10^5', '0 <= height[i] <= 10^4'],
     examples: [
       {
         input: 'height = [1, 8, 6, 2, 5, 4, 8, 3, 7]',
         output: '49',
-        explanation: 'The max area is between index 1 and index 8: min(8, 7) * (8 - 1) = 7 * 7 = 49.',
+        explanation:
+          'The max area is between index 1 and index 8: min(8, 7) * (8 - 1) = 7 * 7 = 49.',
       },
       {
         input: 'height = [1, 1]',
@@ -3741,10 +3695,12 @@ export function getDeletedProblemIds(): string[] {
   }
 }
 
-export function saveCustomProblem(problem: Partial<CodingProblem> & { title: string; difficulty: 'Easy' | 'Medium' | 'Hard' }): CodingProblem {
+export function saveCustomProblem(
+  problem: Partial<CodingProblem> & { title: string; difficulty: 'Easy' | 'Medium' | 'Hard' }
+): CodingProblem {
   const existing = getStoredCustomProblems();
   const id = problem.id || `custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-  const idx = existing.findIndex(p => p.id === id);
+  const idx = existing.findIndex((p) => p.id === id);
 
   const newProblem: CodingProblem = {
     category: 'General',
@@ -3765,10 +3721,12 @@ export function saveCustomProblem(problem: Partial<CodingProblem> & { title: str
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
     // If it was in deleted list, remove it from deleted list
-    const deleted = getDeletedProblemIds().filter(d => d !== id);
+    const deleted = getDeletedProblemIds().filter((d) => d !== id);
     localStorage.setItem(DELETED_PROBLEMS_KEY, JSON.stringify(deleted));
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('intelligentqa_problems_changed', { detail: { problem: newProblem } }));
+      window.dispatchEvent(
+        new CustomEvent('intelligentqa_problems_changed', { detail: { problem: newProblem } })
+      );
     }
   } catch (e) {
     console.error('Failed to save problem to localStorage', e);
@@ -3778,7 +3736,7 @@ export function saveCustomProblem(problem: Partial<CodingProblem> & { title: str
 
 export function deleteCustomProblem(id: string): void {
   const existing = getStoredCustomProblems();
-  const updated = existing.filter(p => p.id !== id);
+  const updated = existing.filter((p) => p.id !== id);
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
     // Also track in deleted IDs so default problems get removed as well
@@ -3797,13 +3755,18 @@ export function deleteCustomProblem(id: string): void {
 
 export function getAllProblems(): CodingProblem[] {
   const deletedIds = new Set(getDeletedProblemIds());
-  const custom = getStoredCustomProblems().filter(p => !deletedIds.has(p.id));
-  const customIds = new Set(custom.map(p => p.id));
-  const defaults = DEFAULT_CODING_PROBLEMS.filter(p => !deletedIds.has(p.id) && !customIds.has(p.id));
+  const custom = getStoredCustomProblems().filter((p) => !deletedIds.has(p.id));
+  const customIds = new Set(custom.map((p) => p.id));
+  const defaults = DEFAULT_CODING_PROBLEMS.filter(
+    (p) => !deletedIds.has(p.id) && !customIds.has(p.id)
+  );
   return [...custom, ...defaults];
 }
 
-export function parseImportedProblems(content: string): { problems: CodingProblem[]; error?: string } {
+export function parseImportedProblems(content: string): {
+  problems: CodingProblem[];
+  error?: string;
+} {
   const trimmed = content.trim();
   if (!trimmed) {
     return { problems: [], error: 'Input is empty.' };
@@ -3822,7 +3785,9 @@ export function parseImportedProblems(content: string): { problems: CodingProble
         valid.push({
           id: `imported-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 6)}`,
           title: String(item.title),
-          difficulty: (['Easy', 'Medium', 'Hard'].includes(item.difficulty) ? item.difficulty : 'Medium') as any,
+          difficulty: (['Easy', 'Medium', 'Hard'].includes(item.difficulty)
+            ? item.difficulty
+            : 'Medium') as any,
           category: item.category || 'General Coding',
           description: item.description || 'Problem statement not specified.',
           constraints: Array.isArray(item.constraints) ? item.constraints : [],
@@ -3839,7 +3804,11 @@ export function parseImportedProblems(content: string): { problems: CodingProble
       }
 
       if (valid.length === 0) {
-        return { problems: [], error: 'No valid questions found in JSON. Expected objects with "title" and "description".' };
+        return {
+          problems: [],
+          error:
+            'No valid questions found in JSON. Expected objects with "title" and "description".',
+        };
       }
 
       // Save to localStorage
@@ -3855,7 +3824,10 @@ export function parseImportedProblems(content: string): { problems: CodingProble
 
   // 2. Try CSV (Header: Title, Difficulty, Category, Description)
   try {
-    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+    const lines = trimmed
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
     if (lines.length === 0) return { problems: [], error: 'CSV file is empty.' };
 
     const valid: CodingProblem[] = [];
@@ -3864,10 +3836,12 @@ export function parseImportedProblems(content: string): { problems: CodingProble
     for (let i = startIndex; i < lines.length; i++) {
       const line = lines[i];
       // Simple CSV split (handling commas within quotes or plain commas)
-      const parts = line.split(',').map(s => s.replace(/^["']|["']$/g, '').trim());
+      const parts = line.split(',').map((s) => s.replace(/^["']|["']$/g, '').trim());
       if (parts.length >= 1 && parts[0]) {
         const title = parts[0];
-        const difficulty = (parts[1] && ['Easy', 'Medium', 'Hard'].includes(parts[1]) ? parts[1] : 'Easy') as any;
+        const difficulty = (
+          parts[1] && ['Easy', 'Medium', 'Hard'].includes(parts[1]) ? parts[1] : 'Easy'
+        ) as any;
         const category = parts[2] || 'Imported';
         const description = parts[3] || title;
 
@@ -3914,29 +3888,31 @@ export function getCodingProblemImportTemplate(format: 'json' | 'csv'): string {
 
   const sampleTemplate = [
     {
-      title: "Count Frequency of Log Words (Mandatory)",
-      difficulty: "Easy",
-      category: "Strings & HashMaps (Mandatory)",
-      description: "Given a string of test log statements, return the occurrence count of each word. Commonly used in parsing execution failure logs.",
-      constraints: [
-        "1 <= text.length <= 10^5",
-        "Words are space-separated alphanumeric tokens"
-      ],
+      title: 'Count Frequency of Log Words (Mandatory)',
+      difficulty: 'Easy',
+      category: 'Strings & HashMaps (Mandatory)',
+      description:
+        'Given a string of test log statements, return the occurrence count of each word. Commonly used in parsing execution failure logs.',
+      constraints: ['1 <= text.length <= 10^5', 'Words are space-separated alphanumeric tokens'],
       examples: [
         {
           input: "text = 'Pass Fail Pass Skip Pass'",
           output: "{'Pass': 3, 'Fail': 1, 'Skip': 1}",
-          explanation: "'Pass' occurs 3 times, 'Fail' occurs 1 time, 'Skip' occurs 1 time."
-        }
+          explanation: "'Pass' occurs 3 times, 'Fail' occurs 1 time, 'Skip' occurs 1 time.",
+        },
       ],
       starterTemplates: {
-        java: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Implement your solution here\n        System.out.println(\"Solution Output\");\n    }\n}",
-        python: "# Python 3 Solution\ndef count_words(text: str):\n    pass\n\nif __name__ == '__main__':\n    print('Solution Output')",
-        typescript: "// TypeScript Solution\nfunction countWords(text: string) {\n    // Implement solution\n}\nconsole.log('Solution Output');",
-        javascript: "// JavaScript Solution\nfunction countWords(text) {\n    // Implement solution\n}\nconsole.log('Solution Output');",
-        csharp: "using System;\n\npublic class Program {\n    public static void Main() {\n        Console.WriteLine(\"Solution Output\");\n    }\n}"
-      }
-    }
+        java: 'import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Implement your solution here\n        System.out.println("Solution Output");\n    }\n}',
+        python:
+          "# Python 3 Solution\ndef count_words(text: str):\n    pass\n\nif __name__ == '__main__':\n    print('Solution Output')",
+        typescript:
+          "// TypeScript Solution\nfunction countWords(text: string) {\n    // Implement solution\n}\nconsole.log('Solution Output');",
+        javascript:
+          "// JavaScript Solution\nfunction countWords(text) {\n    // Implement solution\n}\nconsole.log('Solution Output');",
+        csharp:
+          'using System;\n\npublic class Program {\n    public static void Main() {\n        Console.WriteLine("Solution Output");\n    }\n}',
+      },
+    },
   ];
 
   return JSON.stringify(sampleTemplate, null, 2);

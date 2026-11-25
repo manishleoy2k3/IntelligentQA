@@ -5,6 +5,9 @@ dist
 build
 coverage
 *.tmp.*
+*.tsbuildinfo
+*.pyc
+__pycache__
 public
 package-lock.json
 src/lib/curriculum-data-store.json

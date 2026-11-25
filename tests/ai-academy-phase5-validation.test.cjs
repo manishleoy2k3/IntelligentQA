@@ -52,7 +52,10 @@ test('Phase 5 Modules: All 6 required AI Academy modules exist in database and c
   for (let i = 0; i < expectedModuleTitles.length; i++) {
     const expected = expectedModuleTitles[i];
     const found = modules.some((m) => m.title.includes(expected));
-    assert.ok(found, `Module ${i + 1} must match: "${expected}". Available: ${modules.map((m) => m.title).join(', ')}`);
+    assert.ok(
+      found,
+      `Module ${i + 1} must match: "${expected}". Available: ${modules.map((m) => m.title).join(', ')}`
+    );
   }
 
   // Also verify typed curriculum reflects 6 modules
@@ -100,7 +103,10 @@ test('Phase 5 12-Section Fidelity: Every lesson contains all 12 required section
   for (const mod of dbCourse.modules || []) {
     for (const lesson of mod.lessons || []) {
       // 1. Content HTML must be populated (not empty, not hardcoded stub)
-      assert.ok(lesson.contentHtml && lesson.contentHtml.length > 500, `Lesson ${lesson.slug} must have rich HTML content`);
+      assert.ok(
+        lesson.contentHtml && lesson.contentHtml.length > 500,
+        `Lesson ${lesson.slug} must have rich HTML content`
+      );
 
       // 2. HTML must contain all 12 sections
       for (const marker of requiredSectionMarkers) {
@@ -175,7 +181,11 @@ test('Phase 5 Document Replacement Workflow: Admin can reprocess a lesson docume
   const existing = academyStore.getLessonBySlug(targetSlug);
   assert.ok(existing, 'Target lesson must exist');
 
-  const originalDocxPath = path.join(process.cwd(), 'public', existing.lesson.originalDocxPath.replace(/^\//, ''));
+  const originalDocxPath = path.join(
+    process.cwd(),
+    'public',
+    existing.lesson.originalDocxPath.replace(/^\//, '')
+  );
   assert.ok(fs.existsSync(originalDocxPath), 'Original document must exist');
 
   // Reprocess using processDocxDocument

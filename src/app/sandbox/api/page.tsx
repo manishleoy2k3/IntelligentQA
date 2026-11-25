@@ -66,7 +66,9 @@ export default function ApiSandboxPage() {
     if (type === 'login') {
       setMethod('POST');
       setUrl('/api/sandbox/v1/auth/login');
-      setRequestBody(JSON.stringify({ email: 'sdet@intelligentqa.io', password: 'ValidPassword123!' }, null, 2));
+      setRequestBody(
+        JSON.stringify({ email: 'sdet@intelligentqa.io', password: 'ValidPassword123!' }, null, 2)
+      );
     } else if (type === 'get-users') {
       setMethod('GET');
       setUrl('/api/sandbox/v1/users?page=1&limit=5');
@@ -74,7 +76,9 @@ export default function ApiSandboxPage() {
     } else if (type === 'create-user') {
       setMethod('POST');
       setUrl('/api/sandbox/v1/users');
-      setRequestBody(JSON.stringify({ name: 'Alex SDET', role: 'Staff Automation Architect' }, null, 2));
+      setRequestBody(
+        JSON.stringify({ name: 'Alex SDET', role: 'Staff Automation Architect' }, null, 2)
+      );
     } else if (type === 'delay') {
       setMethod('GET');
       setUrl('/api/sandbox/v1/delay/3');
@@ -163,7 +167,8 @@ export default function ApiSandboxPage() {
             API Testing Lab
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-2xl">
-            A functional mock backend for API automation practice. Test JWT authentication, CRUD operations, pagination headers, delay injection, and status code verification.
+            A functional mock backend for API automation practice. Test JWT authentication, CRUD
+            operations, pagination headers, delay injection, and status code verification.
           </p>
         </div>
 
@@ -182,7 +187,11 @@ export default function ApiSandboxPage() {
               className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white"
               title="Copy Token"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
             </button>
           )}
         </div>
@@ -194,7 +203,8 @@ export default function ApiSandboxPage() {
           <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-200">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
-              <strong>Free Preview:</strong> Try JWT Login and GET /users without signing in. Create a 100% free account to unlock custom payloads, latency injection, and chaos testing!
+              <strong>Free Preview:</strong> Try JWT Login and GET /users without signing in. Create
+              a 100% free account to unlock custom payloads, latency injection, and chaos testing!
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -279,7 +289,8 @@ export default function ApiSandboxPage() {
           </div>
           <h3 className="text-lg font-bold">Unlock Advanced Mock Endpoints</h3>
           <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
-            POST payload testing, latency injection (/delay), and HTTP 500 error chaos testing unlock with a free IntelligentQA account.
+            POST payload testing, latency injection (/delay), and HTTP 500 error chaos testing
+            unlock with a free IntelligentQA account.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <Link
@@ -306,7 +317,7 @@ export default function ApiSandboxPage() {
           <div className="flex items-center gap-2">
             <select
               value={method}
-              onChange={e => setMethod(e.target.value as any)}
+              onChange={(e) => setMethod(e.target.value as any)}
               className="px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-900 dark:text-white"
             >
               <option value="GET">GET</option>
@@ -318,7 +329,7 @@ export default function ApiSandboxPage() {
             <input
               type="text"
               value={url}
-              onChange={e => setUrl(e.target.value)}
+              onChange={(e) => setUrl(e.target.value)}
               className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-900 dark:text-white focus:outline-none"
             />
 
@@ -327,7 +338,11 @@ export default function ApiSandboxPage() {
               disabled={loading}
               className="py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-sm"
             >
-              {loading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+              {loading ? (
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Play className="w-3.5 h-3.5 fill-current" />
+              )}
               Send
             </button>
           </div>
@@ -339,7 +354,7 @@ export default function ApiSandboxPage() {
             <input
               type="text"
               value={token}
-              onChange={e => setToken(e.target.value)}
+              onChange={(e) => setToken(e.target.value)}
               placeholder="Paste Bearer JWT token or authenticate via /auth/login..."
               className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs text-slate-900 dark:text-white"
             />
@@ -352,7 +367,7 @@ export default function ApiSandboxPage() {
               </label>
               <textarea
                 value={requestBody}
-                onChange={e => setRequestBody(e.target.value)}
+                onChange={(e) => setRequestBody(e.target.value)}
                 rows={8}
                 className="w-full p-3 font-mono text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-emerald-600 dark:text-emerald-400 focus:outline-none"
               />
@@ -373,8 +388,8 @@ export default function ApiSandboxPage() {
                   responseStatus >= 200 && responseStatus < 300
                     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400'
                     : responseStatus === 401
-                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400'
-                    : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-400'
+                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400'
+                      : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-400'
                 }`}
               >
                 HTTP {responseStatus}

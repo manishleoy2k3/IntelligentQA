@@ -15,7 +15,12 @@ interface ChatMessage {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { message, history, context, apiKey: clientApiKey } = body as {
+    const {
+      message,
+      history,
+      context,
+      apiKey: clientApiKey,
+    } = body as {
       message: string;
       history?: ChatMessage[];
       context?: string;
@@ -29,18 +34,13 @@ export async function POST(req: NextRequest) {
     const query = message.trim();
 
     // Determine Gemini API Key: Header > Body (Strictly user-provided to protect server tokens)
-    const rawApiKey =
-      req.headers.get('x-gemini-api-key') ||
-      clientApiKey ||
-      '';
+    const rawApiKey = req.headers.get('x-gemini-api-key') || clientApiKey || '';
     const activeApiKey = sanitizeGeminiKey(rawApiKey);
 
     // 1. If Gemini API Key is available and structurally valid, execute multi-model Gemini call
     const keyValidation = activeApiKey ? validateGeminiKeySyntax(activeApiKey) : { valid: false };
     if (activeApiKey && keyValidation.valid) {
-      const modelsToTry = [
-        'gemini-3.8-flash',
-      ];
+      const modelsToTry = ['gemini-3.8-flash'];
 
       const systemPrompt = `You are the Principal SDET, Test Automation Architect, and Quality Engineering Leader for IntelligentQA, with 15+ years of practical enterprise mentoring experience.
 You mentor QA Engineers, SDETs, Automation Engineers, Test Leads, QA Managers, and Test Architects.
@@ -105,7 +105,10 @@ Never fabricate statistics, benchmark numbers, tool capabilities, framework APIs
           if (!item || typeof item.content !== 'string' || !item.content.trim()) continue;
           const mappedRole: 'user' | 'model' = item.role === 'assistant' ? 'model' : 'user';
           // Merge consecutive same-role messages to satisfy Gemini strict alternating role format
-          if (sanitizedHistory.length > 0 && sanitizedHistory[sanitizedHistory.length - 1].role === mappedRole) {
+          if (
+            sanitizedHistory.length > 0 &&
+            sanitizedHistory[sanitizedHistory.length - 1].role === mappedRole
+          ) {
             sanitizedHistory[sanitizedHistory.length - 1].text += `\n\n${item.content.trim()}`;
           } else {
             sanitizedHistory.push({ role: mappedRole, text: item.content.trim() });
@@ -118,7 +121,11 @@ Never fabricate statistics, benchmark numbers, tool capabilities, framework APIs
         if (sanitizedHistory[0].role === 'user') {
           contents.push({
             role: 'user',
-            parts: [{ text: `${systemPrompt}\n\nContext: ${context || 'General SDET Advisory'}\n\nUser Question: ${sanitizedHistory[0].text}` }],
+            parts: [
+              {
+                text: `${systemPrompt}\n\nContext: ${context || 'General SDET Advisory'}\n\nUser Question: ${sanitizedHistory[0].text}`,
+              },
+            ],
           });
         } else {
           contents.push({
@@ -223,7 +230,9 @@ Never fabricate statistics, benchmark numbers, tool capabilities, framework APIs
 
     // Contextual continuation for follow-up questions in local engine
     if (!bestMatch && Array.isArray(history) && history.length > 0) {
-      const lastUserTurn = [...history].reverse().find((h) => h.role === 'user' && h.content?.trim());
+      const lastUserTurn = [...history]
+        .reverse()
+        .find((h) => h.role === 'user' && h.content?.trim());
       if (lastUserTurn) {
         const contextualQuery = `${lastUserTurn.content.trim()} ${query}`;
         const contextualMatches = searchQAKnowledge(contextualQuery);

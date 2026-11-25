@@ -1,6 +1,6 @@
 /**
  * High-Fidelity Educational Technical Infographic Templates
- * 
+ *
  * Generates rich, professional 16:9 technical infographic illustrations
  * with enterprise typography, detailed conceptual breakdowns, visual process flows,
  * architectural diagrams, and QA/SDET takeaways.
@@ -29,8 +29,15 @@ function escapeXml(unsafe: string): string {
 }
 
 export function generateHighFidelityInfographicSvg(options: InfographicTemplateOptions): string {
-  const rawPrompt = options.prompt || options.subject || options.context?.lessonTitle || 'Technical Architecture';
-  const p = (rawPrompt + ' ' + (options.context?.lessonTitle || '') + ' ' + (options.context?.courseTitle || '')).toLowerCase();
+  const rawPrompt =
+    options.prompt || options.subject || options.context?.lessonTitle || 'Technical Architecture';
+  const p = (
+    rawPrompt +
+    ' ' +
+    (options.context?.lessonTitle || '') +
+    ' ' +
+    (options.context?.courseTitle || '')
+  ).toLowerCase();
 
   const courseName = options.context?.courseTitle || 'QA Technical Learning Academy';
   const lessonName = options.context?.lessonTitle || options.subject || rawPrompt;
@@ -47,7 +54,13 @@ export function generateHighFidelityInfographicSvg(options: InfographicTemplateO
   }
 
   // Topic 3: What is Self-Attention?
-  if (p.includes('attention') || p.includes('transformer') || p.includes('query') || p.includes('key') || p.includes('value')) {
+  if (
+    p.includes('attention') ||
+    p.includes('transformer') ||
+    p.includes('query') ||
+    p.includes('key') ||
+    p.includes('value')
+  ) {
     return renderSelfAttentionInfographic(courseName, lessonName, targetLearner);
   }
 
@@ -62,7 +75,12 @@ export function generateHighFidelityInfographicSvg(options: InfographicTemplateO
   }
 
   // Topic 6: RAG (Retrieval-Augmented Generation)
-  if (p.includes('rag') || p.includes('retrieval') || p.includes('vector db') || p.includes('embeddings')) {
+  if (
+    p.includes('rag') ||
+    p.includes('retrieval') ||
+    p.includes('vector db') ||
+    p.includes('embeddings')
+  ) {
     return renderRagInfographic(courseName, lessonName, targetLearner);
   }
 
@@ -72,7 +90,13 @@ export function generateHighFidelityInfographicSvg(options: InfographicTemplateO
   }
 
   // Generic Dynamic Technical Infographic
-  return renderDynamicTechnicalInfographic(rawPrompt, courseName, lessonName, targetLearner, options.technicalSections);
+  return renderDynamicTechnicalInfographic(
+    rawPrompt,
+    courseName,
+    lessonName,
+    targetLearner,
+    options.technicalSections
+  );
 }
 
 // =========================================================================
@@ -668,13 +692,23 @@ function renderRagInfographic(course: string, lesson: string, audience: string):
 // =========================================================================
 // 7. CONTEXT ENGINEERING INFOGRAPHIC
 // =========================================================================
-function renderContextEngineeringInfographic(course: string, lesson: string, audience: string): string {
-  return renderDynamicTechnicalInfographic('Context Engineering & System Prompt Architecture', course, lesson, audience, [
-    'System Role & Behavioral Boundaries',
-    'Dynamic Memory & Tool Ingestion',
-    'Few-Shot Demonstrations & Format Guidance',
-    'Constrained Schema & Output Enforcers',
-  ]);
+function renderContextEngineeringInfographic(
+  course: string,
+  lesson: string,
+  audience: string
+): string {
+  return renderDynamicTechnicalInfographic(
+    'Context Engineering & System Prompt Architecture',
+    course,
+    lesson,
+    audience,
+    [
+      'System Role & Behavioral Boundaries',
+      'Dynamic Memory & Tool Ingestion',
+      'Few-Shot Demonstrations & Format Guidance',
+      'Constrained Schema & Output Enforcers',
+    ]
+  );
 }
 
 // =========================================================================
@@ -687,12 +721,15 @@ function renderDynamicTechnicalInfographic(
   audience: string,
   customSections?: string[]
 ): string {
-  const sections = customSections && customSections.length >= 3 ? customSections : [
-    'Concept Overview & Architectural Role',
-    'Core Execution Mechanics & Protocols',
-    'Component Dependencies & Data Flow',
-    'Verification Strategy & QA Assertions',
-  ];
+  const sections =
+    customSections && customSections.length >= 3
+      ? customSections
+      : [
+          'Concept Overview & Architectural Role',
+          'Core Execution Mechanics & Protocols',
+          'Component Dependencies & Data Flow',
+          'Verification Strategy & QA Assertions',
+        ];
 
   const colors = ['#2563eb', '#7c3aed', '#0d9488', '#059669'];
 
@@ -711,10 +748,12 @@ function renderDynamicTechnicalInfographic(
   <text x="50" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#94a3b8">Comprehensive Architectural Guide for ${escapeXml(audience)} • ${escapeXml(course)}</text>
 
   <!-- 4 Step Boxes -->
-  ${sections.slice(0, 4).map((sec, idx) => {
-    const x = 60 + idx * 310;
-    const color = colors[idx % colors.length];
-    return `
+  ${sections
+    .slice(0, 4)
+    .map((sec, idx) => {
+      const x = 60 + idx * 310;
+      const color = colors[idx % colors.length];
+      return `
   <g transform="translate(${x}, 150)">
     <rect width="280" height="470" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
     <rect width="280" height="42" rx="12" fill="${color}" />
@@ -727,7 +766,8 @@ function renderDynamicTechnicalInfographic(
     <text x="25" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Automated Regression Guardrails</text>
     <text x="25" y="245" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Real-time Observability &amp; Metrics</text>
   </g>`;
-  }).join('')}
+    })
+    .join('')}
 
   <rect x="50" y="650" width="1260" height="65" rx="10" fill="#1e293b" />
   <text x="75" y="688" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#cbd5e1">

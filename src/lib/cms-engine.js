@@ -8,17 +8,24 @@ function calculateReadingTime(data) {
   for (const block of data.blocks) {
     if (block.type === 'paragraph' || block.type === 'header' || block.type === 'quote') {
       const text = block.data.text || '';
-      wordCount += text.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+      wordCount += text
+        .replace(/<[^>]*>/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean).length;
     } else if (block.type === 'list' && Array.isArray(block.data.items)) {
       for (const item of block.data.items) {
-        wordCount += item.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+        wordCount += item
+          .replace(/<[^>]*>/g, ' ')
+          .split(/\s+/)
+          .filter(Boolean).length;
       }
     } else if (block.type === 'callout') {
       const text = (block.data.title || '') + ' ' + (block.data.message || '');
       wordCount += text.split(/\s+/).filter(Boolean).length;
     } else if (block.type === 'stepByStep' && Array.isArray(block.data.steps)) {
       for (const step of block.data.steps) {
-        const text = (step.title || '') + ' ' + (step.summary || '') + ' ' + (step.explanation || '');
+        const text =
+          (step.title || '') + ' ' + (step.summary || '') + ' ' + (step.explanation || '');
         wordCount += text.split(/\s+/).filter(Boolean).length;
       }
     } else if (block.type === 'faq' && Array.isArray(block.data.items)) {
@@ -98,7 +105,12 @@ function validateImageUpload(fileBuffer, mimeType, filename) {
   }
 
   if (mimeType === 'image/png') {
-    if (fileBuffer[0] !== 0x89 || fileBuffer[1] !== 0x50 || fileBuffer[2] !== 0x4e || fileBuffer[3] !== 0x47) {
+    if (
+      fileBuffer[0] !== 0x89 ||
+      fileBuffer[1] !== 0x50 ||
+      fileBuffer[2] !== 0x4e ||
+      fileBuffer[3] !== 0x47
+    ) {
       return { valid: false, error: 'File content does not match PNG signature' };
     }
   } else if (mimeType === 'image/jpeg') {
@@ -124,7 +136,7 @@ function sanitizeHtml(html) {
 // Convert a structured LessonDoc into Editor.js blocks
 function lessonDocToBlocks(doc) {
   if (!doc) return { time: Date.now(), version: '2.28.0', blocks: [] };
-  
+
   // If the lesson already has custom-saved rich CMS blocks, preserve them directly
   if (Array.isArray(doc.customBlocks) && doc.customBlocks.length > 0) {
     return {
@@ -252,7 +264,11 @@ function lessonDocToBlocks(doc) {
       {
         id: `blk-p-${Date.now()}-init-2`,
         type: 'paragraph',
-        data: { text: doc.overview || 'Welcome to this interactive course lesson. Use the CMS rich block editor to build diagrams, code, and guides.' },
+        data: {
+          text:
+            doc.overview ||
+            'Welcome to this interactive course lesson. Use the CMS rich block editor to build diagrams, code, and guides.',
+        },
       }
     );
   }
@@ -300,8 +316,7 @@ function blocksToLessonDoc(editorData, existingDoc) {
           title: block.data.title || 'Architecture & Mechanism',
           flowOrMechanism: block.data.message || '',
           keyTakeaway:
-            doc.architectureUnderTheHood?.keyTakeaway ||
-            'Mastered via CMS Course Editor',
+            doc.architectureUnderTheHood?.keyTakeaway || 'Mastered via CMS Course Editor',
         };
       } else {
         doc.whyItMattersForManualQA = block.data.message || block.data.title || '';
@@ -330,7 +345,11 @@ function blocksToLessonDoc(editorData, existingDoc) {
       }));
     }
     // Table block -> Manual to Automated Bridge
-    else if (block.type === 'table' && Array.isArray(block.data.content) && block.data.content.length > 1) {
+    else if (
+      block.type === 'table' &&
+      Array.isArray(block.data.content) &&
+      block.data.content.length > 1
+    ) {
       const rows = block.data.content.slice(1);
       doc.manualToAutomatedBridge = rows.map((r) => ({
         manualAction: r[0] || '',
@@ -339,7 +358,11 @@ function blocksToLessonDoc(editorData, existingDoc) {
       }));
     }
     // FAQ block
-    else if (block.type === 'faq' && Array.isArray(block.data.items) && block.data.items.length > 0) {
+    else if (
+      block.type === 'faq' &&
+      Array.isArray(block.data.items) &&
+      block.data.items.length > 0
+    ) {
       doc.interviewQnA = {
         question: block.data.items[0].question || '',
         answer: block.data.items[0].answer || '',

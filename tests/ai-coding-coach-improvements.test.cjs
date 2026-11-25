@@ -46,12 +46,14 @@ describe('AI Coding Coach & Chat Improvements', () => {
     );
     // Verifies minimize button in modal header
     assert.ok(
-      askAiContent.includes('onClick={() => setIsMinimized(true)}') && askAiContent.includes('Minus'),
+      askAiContent.includes('onClick={() => setIsMinimized(true)}') &&
+        askAiContent.includes('Minus'),
       'Modal header has a minimize button with Minus icon'
     );
     // Verifies minimized floating pill / docked bar
     assert.ok(
-      askAiContent.includes('isOpen && isMinimized') && askAiContent.includes('fixed bottom-6 right-6'),
+      askAiContent.includes('isOpen && isMinimized') &&
+        askAiContent.includes('fixed bottom-6 right-6'),
       'Renders floating docked bar in bottom-right corner when minimized'
     );
     // Verifies restore button
@@ -87,7 +89,8 @@ describe('AI Coding Coach & Chat Improvements', () => {
       'Maps assistant roles to Gemini model role'
     );
     assert.ok(
-      chatRouteContent.includes('Follow-up Question') || chatRouteContent.includes('parts: [{ text: query }]'),
+      chatRouteContent.includes('Follow-up Question') ||
+        chatRouteContent.includes('parts: [{ text: query }]'),
       'Anchors current query in the conversation sequence'
     );
 
@@ -101,7 +104,8 @@ describe('AI Coding Coach & Chat Improvements', () => {
   it('Requirement 4: Rename "Ask AI" to "AI Coding Coach" while preserving test compatibility', () => {
     // Verifies visible text in TopNav
     assert.ok(
-      topNavContent.includes('>AI Coding Coach<') || topNavContent.includes('AI Coding Coach</span>'),
+      topNavContent.includes('>AI Coding Coach<') ||
+        topNavContent.includes('AI Coding Coach</span>'),
       'TopNav visibly displays "AI Coding Coach"'
     );
     // Verifies sr-only labels for test backward compatibility
@@ -129,12 +133,12 @@ describe('AI Coding Coach & Chat Improvements', () => {
     // Verifies custom event dispatching
     assert.ok(
       topNavContent.includes('intelligentqa_open_ai_coding_coach') &&
-      topNavContent.includes('intelligentqa_open_ask_ai'),
+        topNavContent.includes('intelligentqa_open_ask_ai'),
       'TopNav dispatches both intelligentqa_open_ai_coding_coach and intelligentqa_open_ask_ai'
     );
     assert.ok(
       askAiContent.includes('intelligentqa_open_ai_coding_coach') &&
-      askAiContent.includes('intelligentqa_open_ask_ai'),
+        askAiContent.includes('intelligentqa_open_ask_ai'),
       'AskAIWidget listens for both events'
     );
   });

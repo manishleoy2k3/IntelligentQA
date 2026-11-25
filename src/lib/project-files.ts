@@ -98,7 +98,7 @@ function openDatabase(): Promise<IDBDatabase> {
 
     const request = window.indexedDB.open(DB_NAME, DB_VERSION);
 
-    request.onupgradeneeded = event => {
+    request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains(FILES_STORE)) {
         const fileStore = db.createObjectStore(FILES_STORE, { keyPath: 'id' });
@@ -142,12 +142,14 @@ export async function getProjectFiles(userId: string = 'default'): Promise<Proje
         let results: ProjectFile[] = request.result || [];
         // Filter by user if populated, or fallback to default/unassigned files
         if (currentUserId && currentUserId !== 'default') {
-          results = results.filter(f => !f.userId || f.userId === currentUserId || f.userId === 'default');
+          results = results.filter(
+            (f) => !f.userId || f.userId === currentUserId || f.userId === 'default'
+          );
         }
 
         // Merge with local fallback files if any exist
         const local = getLocalFilesFallback(currentUserId);
-        const existingIds = new Set(results.map(r => r.id));
+        const existingIds = new Set(results.map((r) => r.id));
         for (const loc of local) {
           if (!existingIds.has(loc.id)) {
             results.push(loc);
@@ -156,7 +158,9 @@ export async function getProjectFiles(userId: string = 'default'): Promise<Proje
 
         // If brand-new user with 0 files, initialize sample files
         if (results.length === 0) {
-          saveInitialSampleFiles(currentUserId).then(saved => resolve(saved)).catch(() => resolve([]));
+          saveInitialSampleFiles(currentUserId)
+            .then((saved) => resolve(saved))
+            .catch(() => resolve([]));
           return;
         }
 
@@ -174,7 +178,7 @@ export async function getProjectFiles(userId: string = 'default'): Promise<Proje
 }
 
 async function saveInitialSampleFiles(userId: string): Promise<ProjectFile[]> {
-  const initial = DEFAULT_SAMPLE_FILES.map(f => ({ ...f, userId }));
+  const initial = DEFAULT_SAMPLE_FILES.map((f) => ({ ...f, userId }));
   for (const f of initial) {
     await saveProjectFile(f);
   }
@@ -243,7 +247,11 @@ export async function deleteProjectFiles(ids: string[], userId: string = 'defaul
   }
 }
 
-export async function moveFilesToFolder(fileIds: string[], targetFolder: string, userId: string = 'default'): Promise<void> {
+export async function moveFilesToFolder(
+  fileIds: string[],
+  targetFolder: string,
+  userId: string = 'default'
+): Promise<void> {
   const allFiles = await getProjectFiles(userId);
   for (const file of allFiles) {
     if (fileIds.includes(file.id)) {
@@ -272,7 +280,7 @@ export async function getProjectFolders(userId: string = 'default'): Promise<str
 
       request.onsuccess = () => {
         const folders: ProjectFolder[] = request.result || [];
-        resolve(folders.map(f => f.name));
+        resolve(folders.map((f) => f.name));
       };
 
       request.onerror = () => resolve([]);
@@ -296,12 +304,14 @@ export async function getProjectFolders(userId: string = 'default'): Promise<str
   // Also inspect any folder currently assigned to files
   try {
     const allFiles = await getProjectFiles(currentUserId);
-    const fileFolders = allFiles.map(f => f.folder).filter(Boolean);
+    const fileFolders = allFiles.map((f) => f.folder).filter(Boolean);
     storedFolders = Array.from(new Set([...storedFolders, ...fileFolders]));
   } catch {}
 
   // Merge default folders with user and custom folders uniquely
-  const merged = Array.from(new Set([...DEFAULT_PROJECT_FOLDERS, ...storedFolders])).filter(Boolean);
+  const merged = Array.from(new Set([...DEFAULT_PROJECT_FOLDERS, ...storedFolders])).filter(
+    Boolean
+  );
   return merged;
 }
 
@@ -342,7 +352,10 @@ export async function createProjectFolder(name: string, userId: string = 'defaul
   }
 }
 
-export async function deleteProjectFolder(folderName: string, userId: string = 'default'): Promise<void> {
+export async function deleteProjectFolder(
+  folderName: string,
+  userId: string = 'default'
+): Promise<void> {
   if (!isBrowser()) return;
 
   const currentUserId = userId || 'default';
@@ -350,7 +363,7 @@ export async function deleteProjectFolder(folderName: string, userId: string = '
 
   // Move files currently in this folder back to 'Root'
   const allFiles = await getProjectFiles(currentUserId);
-  const filesInFolder = allFiles.filter(f => f.folder === folderName);
+  const filesInFolder = allFiles.filter((f) => f.folder === folderName);
   for (const f of filesInFolder) {
     await saveProjectFile({ ...f, folder: 'Root' });
   }
@@ -364,7 +377,7 @@ export async function deleteProjectFolder(folderName: string, userId: string = '
 
       request.onsuccess = () => {
         const records: ProjectFolder[] = request.result || [];
-        const match = records.find(r => r.name === folderName);
+        const match = records.find((r) => r.name === folderName);
         if (match) {
           store.delete(match.id);
         }
@@ -389,11 +402,12 @@ export async function deleteProjectFolder(folderName: string, userId: string = '
 export function formatContextForAgents(files: ProjectFile[]): string {
   if (!files || files.length === 0) return '';
 
-  const chunks = files.map(file => {
+  const chunks = files.map((file) => {
     // Truncate individual file if extremely large to maintain prompt safety
     const textSnippet =
       file.extractedText.length > 25000
-        ? file.extractedText.slice(0, 25000) + '\n\n[... Remaining content truncated for token limits ...]'
+        ? file.extractedText.slice(0, 25000) +
+          '\n\n[... Remaining content truncated for token limits ...]'
         : file.extractedText;
 
     return `=== PROJECT FILE: "${file.name}" [Folder: ${file.folder} | Type: ${file.type.toUpperCase()}] ===\n${textSnippet}\n=== END OF FILE "${file.name}" ===`;
@@ -421,7 +435,7 @@ function saveLocalFileFallback(file: ProjectFile): void {
   if (typeof window === 'undefined') return;
   try {
     const current = getLocalFilesFallback(file.userId);
-    const updated = [file, ...current.filter(f => f.id !== file.id)];
+    const updated = [file, ...current.filter((f) => f.id !== file.id)];
     window.localStorage.setItem(`${FALLBACK_KEY}${file.userId}`, JSON.stringify(updated));
   } catch {
     // Storage quota might be reached
@@ -431,12 +445,12 @@ function saveLocalFileFallback(file: ProjectFile): void {
 function deleteLocalFileFallback(id: string): void {
   if (typeof window === 'undefined') return;
   try {
-    const keys = Object.keys(window.localStorage).filter(k => k.startsWith(FALLBACK_KEY));
+    const keys = Object.keys(window.localStorage).filter((k) => k.startsWith(FALLBACK_KEY));
     for (const key of keys) {
       const raw = window.localStorage.getItem(key);
       if (raw) {
         const files: ProjectFile[] = JSON.parse(raw);
-        const filtered = files.filter(f => f.id !== id);
+        const filtered = files.filter((f) => f.id !== id);
         window.localStorage.setItem(key, JSON.stringify(filtered));
       }
     }
@@ -466,7 +480,7 @@ function deleteLocalFolderFallback(folderName: string, userId: string): void {
       const raw = window.localStorage.getItem(key);
       if (raw) {
         const current: string[] = JSON.parse(raw);
-        const filtered = current.filter(f => f !== folderName);
+        const filtered = current.filter((f) => f !== folderName);
         window.localStorage.setItem(key, JSON.stringify(filtered));
       }
     }

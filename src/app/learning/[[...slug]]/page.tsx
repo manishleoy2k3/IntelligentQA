@@ -33,7 +33,13 @@ export async function generateMetadata({
   const slug = resolvedParams?.slug;
   const targetSlug = slug && slug.length > 0 ? slug[slug.length - 1] : undefined;
 
-  if (targetSlug && (targetSlug === 'cicd-concepts' || targetSlug === 'course-cicd-concepts' || targetSlug.includes('cicd') || targetSlug.includes('ci-cd'))) {
+  if (
+    targetSlug &&
+    (targetSlug === 'cicd-concepts' ||
+      targetSlug === 'course-cicd-concepts' ||
+      targetSlug.includes('cicd') ||
+      targetSlug.includes('ci-cd'))
+  ) {
     return {
       title: 'CI/CD Concepts — Git, GitHub Actions, Azure DevOps & Jenkins | IntelligentQA',
       description:
@@ -42,7 +48,9 @@ export async function generateMetadata({
   }
 
   if (targetSlug && KNOWN_COURSE_SLUGS.has(targetSlug)) {
-    const course = INITIAL_PUBLISHED_COURSES.find(c => c.slug === targetSlug || c.id === targetSlug);
+    const course = INITIAL_PUBLISHED_COURSES.find(
+      (c) => c.slug === targetSlug || c.id === targetSlug
+    );
     if (course) {
       return {
         title: `${course.title} — Technical Documentation & Quality Engineering | IntelligentQA`,
@@ -86,8 +94,13 @@ export default async function LearningAcademyPage({
   const slug = resolvedParams?.slug;
   const targetSlug = slug && slug.length > 0 ? slug[slug.length - 1] : undefined;
 
-  const isCourseOverview = !targetSlug || KNOWN_COURSE_SLUGS.has(targetSlug) || !!resolvedQuery.course;
-  const courseId = resolvedQuery.course || (targetSlug && KNOWN_COURSE_SLUGS.has(targetSlug) && targetSlug !== 'overview' ? targetSlug : undefined);
+  const isCourseOverview =
+    !targetSlug || KNOWN_COURSE_SLUGS.has(targetSlug) || !!resolvedQuery.course;
+  const courseId =
+    resolvedQuery.course ||
+    (targetSlug && KNOWN_COURSE_SLUGS.has(targetSlug) && targetSlug !== 'overview'
+      ? targetSlug
+      : undefined);
 
   return (
     <AcademyShell

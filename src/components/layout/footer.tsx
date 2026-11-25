@@ -1,6 +1,6 @@
-import React from "react";
-import Link from "next/link";
-import QABrandLogo from "@/components/ui/qa-brand-logo";
+import React from 'react';
+import Link from 'next/link';
+import QABrandLogo from '@/components/ui/qa-brand-logo';
 
 export default function Footer() {
   return (
@@ -17,28 +17,20 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-neutral-500 text-sm leading-relaxed max-w-sm">
-              Transform from Manual QA to high-demand SDET &amp; AI Test
-              Automation Architect. Master modern Playwright, Selenium, API
-              frameworks, and AI-powered test agents.
+              Transform from Manual QA to high-demand SDET &amp; AI Test Automation Architect.
+              Master modern Playwright, Selenium, API frameworks, and AI-powered test agents.
             </p>
-            <div className="pt-1 text-xs text-neutral-400 font-mono">
-              Empowering QA Engineers
-            </div>
+            <div className="pt-1 text-xs text-neutral-400 font-mono">Empowering QA Engineers</div>
           </div>
 
           {/* Right Columns: Product, Solutions, Resources, Company (Span 8) */}
           <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-8">
             {/* Column 1: Product */}
             <div className="space-y-3.5">
-              <h4 className="font-bold text-neutral-900 text-sm tracking-tight">
-                Product
-              </h4>
+              <h4 className="font-bold text-neutral-900 text-sm tracking-tight">Product</h4>
               <ul className="space-y-2.5 text-sm text-neutral-500">
                 <li>
-                  <Link
-                    href="/tracks"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/tracks" className="hover:text-neutral-900 transition-colors">
                     Courses &amp; Tracks
                   </Link>
                 </li>
@@ -51,18 +43,12 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/prompt-lab"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/prompt-lab" className="hover:text-neutral-900 transition-colors">
                     AI Prompt Lab
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/sandbox/code"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/sandbox/code" className="hover:text-neutral-900 transition-colors">
                     Online Code Compilers
                   </Link>
                 </li>
@@ -87,9 +73,7 @@ export default function Footer() {
 
             {/* Column 2: Solutions */}
             <div className="space-y-3.5">
-              <h4 className="font-bold text-neutral-900 text-sm tracking-tight">
-                Solutions
-              </h4>
+              <h4 className="font-bold text-neutral-900 text-sm tracking-tight">Solutions</h4>
               <ul className="space-y-2.5 text-sm text-neutral-500">
                 <li>
                   <Link
@@ -124,18 +108,12 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/qa-agents"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/qa-agents" className="hover:text-neutral-900 transition-colors">
                     Autonomous QA AI Agents
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/assessment"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/assessment" className="hover:text-neutral-900 transition-colors">
                     1-Click SDET Skill Assessment
                   </Link>
                 </li>
@@ -144,31 +122,20 @@ export default function Footer() {
 
             {/* Column 3: Company */}
             <div className="space-y-3.5">
-              <h4 className="font-bold text-neutral-900 text-sm tracking-tight">
-                Company
-              </h4>
+              <h4 className="font-bold text-neutral-900 text-sm tracking-tight">Company</h4>
               <ul className="space-y-2.5 text-sm text-neutral-500">
                 <li>
-                  <Link
-                    href="/#what-you-get"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/#what-you-get" className="hover:text-neutral-900 transition-colors">
                     About IntelligentQA
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/tracks"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/tracks" className="hover:text-neutral-900 transition-colors">
                     Curriculum &amp; Syllabus
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/assessment"
-                    className="hover:text-neutral-900 transition-colors"
-                  >
+                  <Link href="/assessment" className="hover:text-neutral-900 transition-colors">
                     Skills Benchmark
                   </Link>
                 </li>
@@ -192,8 +159,7 @@ export default function Footer() {
 
           {/* Designed and Built Center */}
           <div className="flex items-center gap-1.5 font-medium">
-            DESIGNED AND BUILT FOR THE AWESOME QA COMMUNITY{" "}
-            <span className="text-sky-500">💙</span>
+            DESIGNED AND BUILT FOR THE AWESOME QA COMMUNITY <span className="text-sky-500">💙</span>
           </div>
 
           {/* Social Icons Right */}

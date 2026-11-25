@@ -190,4 +190,7 @@ You MUST format your output using the following exact 10-section structure:
 \`\`\`
 `;
 
-export const TEST_CASE_GENERATOR_SYSTEM_PROMPT = TEST_CASE_GENERATOR_AGENT_MD.replace(/^---[\s\S]*?---\n/, '').trim();
+export const TEST_CASE_GENERATOR_SYSTEM_PROMPT = TEST_CASE_GENERATOR_AGENT_MD.replace(
+  /^---[\s\S]*?---\n/,
+  ''
+).trim();

@@ -592,8 +592,16 @@ const gitBranchingSvg = `<svg
 
 // Write the SVGs
 fs.writeFileSync(path.join(outputDir, 'git-workflow-architecture.svg'), gitWorkflowSvg, 'utf8');
-fs.writeFileSync(path.join(outputDir, 'azure-devops-pipeline-architecture.svg'), azureDevOpsSvg, 'utf8');
-fs.writeFileSync(path.join(outputDir, 'jenkins-pipeline-architecture.svg'), jenkinsPipelineSvg, 'utf8');
+fs.writeFileSync(
+  path.join(outputDir, 'azure-devops-pipeline-architecture.svg'),
+  azureDevOpsSvg,
+  'utf8'
+);
+fs.writeFileSync(
+  path.join(outputDir, 'jenkins-pipeline-architecture.svg'),
+  jenkinsPipelineSvg,
+  'utf8'
+);
 fs.writeFileSync(path.join(outputDir, 'git-branching-architecture.svg'), gitBranchingSvg, 'utf8');
 
 console.log('✅ Generated 4 High-Fidelity SVG Architecture Infographics in:', outputDir);

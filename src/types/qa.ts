@@ -1,17 +1,7 @@
-export type TrackId =
-  | 'playwright-ts'
-  | 'selenium-java'
-  | 'api-testing'
-  | 'ai-qa';
+export type TrackId = 'playwright-ts' | 'selenium-java' | 'api-testing' | 'ai-qa';
 
 export type TechnologyBadge =
-  | 'playwright'
-  | 'typescript'
-  | 'selenium'
-  | 'java'
-  | 'api-testing'
-  | 'ai-qa'
-  | 'interview';
+  'playwright' | 'typescript' | 'selenium' | 'java' | 'api-testing' | 'ai-qa' | 'interview';
 
 export interface Lesson {
   id: string;
@@ -344,5 +334,3 @@ export interface UserCodingProjectRecord {
   code: string;
   updatedAt: string;
 }
-
-

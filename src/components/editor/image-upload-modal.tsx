@@ -150,7 +150,9 @@ export default function ImageUploadModal({
             type="button"
             onClick={() => setTab('upload')}
             className={`py-2.5 px-3 border-b-2 transition-colors cursor-pointer ${
-              tab === 'upload' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-400 hover:text-white'
+              tab === 'upload'
+                ? 'border-emerald-500 text-emerald-400'
+                : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
             Upload File
@@ -159,7 +161,9 @@ export default function ImageUploadModal({
             type="button"
             onClick={() => setTab('url')}
             className={`py-2.5 px-3 border-b-2 transition-colors cursor-pointer ${
-              tab === 'url' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-400 hover:text-white'
+              tab === 'url'
+                ? 'border-emerald-500 text-emerald-400'
+                : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
             Direct URL
@@ -194,12 +198,16 @@ export default function ImageUploadModal({
                       alt="Preview"
                       className="max-h-40 mx-auto rounded-lg object-contain shadow"
                     />
-                    <p className="text-[11px] text-emerald-400 font-semibold">Click to choose another image</p>
+                    <p className="text-[11px] text-emerald-400 font-semibold">
+                      Click to choose another image
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-1.5">
                     <Upload className="w-8 h-8 text-zinc-400 mx-auto" />
-                    <p className="text-zinc-200 font-semibold">Click to select or drag &amp; drop</p>
+                    <p className="text-zinc-200 font-semibold">
+                      Click to select or drag &amp; drop
+                    </p>
                     <p className="text-zinc-500 text-[10px]">PNG, JPG, WebP, SVG up to 10MB</p>
                   </div>
                 )}
@@ -224,7 +232,9 @@ export default function ImageUploadModal({
           {/* METADATA: ALT & CAPTION */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-zinc-300 font-semibold">Alt Description (SEO &amp; A11y)</label>
+              <label className="text-zinc-300 font-semibold">
+                Alt Description (SEO &amp; A11y)
+              </label>
               <input
                 type="text"
                 value={altText}

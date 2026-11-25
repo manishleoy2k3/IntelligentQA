@@ -19,7 +19,9 @@ export default function ModuleOverviewCard({
   className = '',
 }: ModuleOverviewCardProps) {
   return (
-    <div className={`p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/40 mb-6 no-print ${className}`}>
+    <div
+      className={`p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/40 mb-6 no-print ${className}`}
+    >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -29,9 +31,7 @@ export default function ModuleOverviewCard({
             <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
               Module Overview
             </span>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-neutral-100">
-              {title}
-            </h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-neutral-100">{title}</h3>
           </div>
         </div>
 

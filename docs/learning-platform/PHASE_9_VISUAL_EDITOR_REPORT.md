@@ -2,12 +2,13 @@
 
 **Status:** Completed  
 **Technology:** Tiptap Open-Source Editor (MIT License)  
-**Date:** November 24, 2026  
+**Date:** November 24, 2026
 
 ---
 
 ## 1. Executive Summary
-The Learning Academy and Content Management Studio previously relied on a raw HTML textarea for content modifications. This created a high barrier to entry and increased the risk of malformed markup. 
+
+The Learning Academy and Content Management Studio previously relied on a raw HTML textarea for content modifications. This created a high barrier to entry and increased the risk of malformed markup.
 
 In Phase 9, we replaced this interface with a visual, Word-like / Google Docs-like WYSIWYG editor built on **Tiptap**. Administrators can now edit technical lessons with full visual formatting—including multi-level headings, bold/italic/underline, syntax-highlighted code blocks, tables, callouts, and resizable media—without writing or understanding HTML.
 
@@ -17,24 +18,24 @@ In Phase 9, we replaced this interface with a visual, Word-like / Google Docs-li
 
 All installed packages were verified for permissive, **MIT open-source licensing**. No paid extensions, SaaS services, or cloud dependencies were used.
 
-| Package | Version | License | Purpose |
-| :--- | :--- | :--- | :--- |
-| `@tiptap/react` | `^2.x` | MIT | Core React bindings for Tiptap |
-| `@tiptap/pm` | `^2.x` | MIT | ProseMirror foundation modules |
-| `@tiptap/starter-kit` | `^2.x` | MIT | Headings, lists, bold, italic, history, blockquote |
-| `@tiptap/extension-underline` | `^2.x` | MIT | Underline formatting |
-| `@tiptap/extension-highlight` | `^2.x` | MIT | Background text highlighting |
-| `@tiptap/extension-text-align`| `^2.x` | MIT | Left, center, right, and justify alignment |
-| `@tiptap/extension-table` | `^2.x` | MIT | Dynamic tabular grid management |
-| `@tiptap/extension-table-row` | `^2.x` | MIT | Table rows |
-| `@tiptap/extension-table-cell`| `^2.x` | MIT | Table cells |
-| `@tiptap/extension-table-header`| `^2.x` | MIT | Table header cells |
-| `@tiptap/extension-image` | `^2.x` | MIT | Image insertion foundation |
-| `@tiptap/extension-link` | `^2.x` | MIT | Safe hyperlinks |
-| `@tiptap/extension-placeholder`| `^2.x` | MIT | Clean empty state guidance |
-| `@tiptap/extension-character-count`| `^2.x` | MIT | Live word and character counting |
-| `@tiptap/extension-code-block-lowlight`| `^2.x` | MIT | Multi-language syntax highlighting |
-| `lowlight` & `highlight.js`| `^3.x` / `^11.x` | MIT / BSD-3 | Fast AST syntax parsing for Java, TypeScript, Python, etc. |
+| Package                                 | Version          | License     | Purpose                                                    |
+| :-------------------------------------- | :--------------- | :---------- | :--------------------------------------------------------- |
+| `@tiptap/react`                         | `^2.x`           | MIT         | Core React bindings for Tiptap                             |
+| `@tiptap/pm`                            | `^2.x`           | MIT         | ProseMirror foundation modules                             |
+| `@tiptap/starter-kit`                   | `^2.x`           | MIT         | Headings, lists, bold, italic, history, blockquote         |
+| `@tiptap/extension-underline`           | `^2.x`           | MIT         | Underline formatting                                       |
+| `@tiptap/extension-highlight`           | `^2.x`           | MIT         | Background text highlighting                               |
+| `@tiptap/extension-text-align`          | `^2.x`           | MIT         | Left, center, right, and justify alignment                 |
+| `@tiptap/extension-table`               | `^2.x`           | MIT         | Dynamic tabular grid management                            |
+| `@tiptap/extension-table-row`           | `^2.x`           | MIT         | Table rows                                                 |
+| `@tiptap/extension-table-cell`          | `^2.x`           | MIT         | Table cells                                                |
+| `@tiptap/extension-table-header`        | `^2.x`           | MIT         | Table header cells                                         |
+| `@tiptap/extension-image`               | `^2.x`           | MIT         | Image insertion foundation                                 |
+| `@tiptap/extension-link`                | `^2.x`           | MIT         | Safe hyperlinks                                            |
+| `@tiptap/extension-placeholder`         | `^2.x`           | MIT         | Clean empty state guidance                                 |
+| `@tiptap/extension-character-count`     | `^2.x`           | MIT         | Live word and character counting                           |
+| `@tiptap/extension-code-block-lowlight` | `^2.x`           | MIT         | Multi-language syntax highlighting                         |
+| `lowlight` & `highlight.js`             | `^3.x` / `^11.x` | MIT / BSD-3 | Fast AST syntax parsing for Java, TypeScript, Python, etc. |
 
 ---
 
@@ -54,7 +55,7 @@ All installed packages were verified for permissive, **MIT open-source licensing
    - **Insert**: Hyperlinks, images, syntax-highlighted code blocks, tables (row/column controls), and callout banners.
 
 3. **Custom Tiptap Extensions**:
-   - `Callout` (`src/components/editor/extensions/callout-extension.ts`): Reusable callouts for *Information*, *Tip*, *Important*, *Warning*, and *Best Practice*.
+   - `Callout` (`src/components/editor/extensions/callout-extension.ts`): Reusable callouts for _Information_, _Tip_, _Important_, _Warning_, and _Best Practice_.
    - `ResizableImage` (`src/components/editor/extensions/resizable-image-extension.ts`): Configurable display width (100%, 75%, 50%, 35%), captions, and alignment (left, center, right).
    - `LowlightConfig` (`src/components/editor/extensions/lowlight-config.ts`): Registered highlighters for Java, TypeScript, JavaScript, Python, JSON, XML/HTML, YAML, Bash, SQL, and CSS.
 
@@ -81,21 +82,21 @@ All installed packages were verified for permissive, **MIT open-source licensing
 
 ## 5. Test Verification Results
 
-| Test Scenario | Status | Result |
-| :--- | :--- | :--- |
-| **Open Test Lesson (`What is an LLM?`)** | ✅ Passed | Rendered immediately in visual canvas with all formatting intact. |
-| **Text Styling (Bold, Italic, Underline, Highlight)** | ✅ Passed | Applied inline marks without breaking surrounding text. |
-| **Headings (H1, H2, H3, H4)** | ✅ Passed | Converted correctly and preserved hierarchy. |
-| **Bullet & Numbered Lists** | ✅ Passed | Indentation and nesting rendered smoothly. |
-| **Image Insertion & Alignment** | ✅ Passed | Uploaded through `/api/admin/media`, stored persistently, and aligned. |
-| **Table Creation & Grid Edits** | ✅ Passed | Successfully inserted 3x3 table, added/deleted rows and columns. |
-| **Code Blocks (Java & TypeScript)** | ✅ Passed | Highlighted keywords, keywords and variables using lowlight. |
-| **Callout Boxes (Important, Warning, Tip)** | ✅ Passed | Rendered themed alert boxes with clean contrast. |
-| **Undo / Redo** | ✅ Passed | Restored state changes accurately. |
-| **Auto-save & Manual Draft Save** | ✅ Passed | Debounced auto-save persisted draft state and updated timestamp. |
-| **Publishing & Student View** | ✅ Passed | Published content rendered identically in `AcademyShell`. |
-| **Existing Course Compatibility** | ✅ Passed | Verified with existing Selenium, Playwright, and REST Assured lessons. |
-| **TypeScript & Next.js Build** | ✅ Passed | `npx tsc --noEmit` and `npm run build` completed with 0 errors. |
+| Test Scenario                                         | Status    | Result                                                                 |
+| :---------------------------------------------------- | :-------- | :--------------------------------------------------------------------- |
+| **Open Test Lesson (`What is an LLM?`)**              | ✅ Passed | Rendered immediately in visual canvas with all formatting intact.      |
+| **Text Styling (Bold, Italic, Underline, Highlight)** | ✅ Passed | Applied inline marks without breaking surrounding text.                |
+| **Headings (H1, H2, H3, H4)**                         | ✅ Passed | Converted correctly and preserved hierarchy.                           |
+| **Bullet & Numbered Lists**                           | ✅ Passed | Indentation and nesting rendered smoothly.                             |
+| **Image Insertion & Alignment**                       | ✅ Passed | Uploaded through `/api/admin/media`, stored persistently, and aligned. |
+| **Table Creation & Grid Edits**                       | ✅ Passed | Successfully inserted 3x3 table, added/deleted rows and columns.       |
+| **Code Blocks (Java & TypeScript)**                   | ✅ Passed | Highlighted keywords, keywords and variables using lowlight.           |
+| **Callout Boxes (Important, Warning, Tip)**           | ✅ Passed | Rendered themed alert boxes with clean contrast.                       |
+| **Undo / Redo**                                       | ✅ Passed | Restored state changes accurately.                                     |
+| **Auto-save & Manual Draft Save**                     | ✅ Passed | Debounced auto-save persisted draft state and updated timestamp.       |
+| **Publishing & Student View**                         | ✅ Passed | Published content rendered identically in `AcademyShell`.              |
+| **Existing Course Compatibility**                     | ✅ Passed | Verified with existing Selenium, Playwright, and REST Assured lessons. |
+| **TypeScript & Next.js Build**                        | ✅ Passed | `npx tsc --noEmit` and `npm run build` completed with 0 errors.        |
 
 ---
 

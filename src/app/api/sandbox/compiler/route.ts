@@ -65,9 +65,13 @@ function runSubprocess(
 
       child.on('close', (code, signal) => {
         if (isTruncated) {
-          stderr = (stderr ? stderr + '\n' : '') + 'Execution terminated: Output exceeded maximum allowed limit (512KB).';
+          stderr =
+            (stderr ? stderr + '\n' : '') +
+            'Execution terminated: Output exceeded maximum allowed limit (512KB).';
         } else if (child.killed || signal === 'SIGTERM' || signal === 'SIGKILL') {
-          stderr = (stderr ? stderr + '\n' : '') + `Execution timed out (process exceeded ${timeoutMs}ms limit). Possible infinite loop or excessive computation.`;
+          stderr =
+            (stderr ? stderr + '\n' : '') +
+            `Execution timed out (process exceeded ${timeoutMs}ms limit). Possible infinite loop or excessive computation.`;
         }
         resolve({ stdout, stderr, code: code === null ? 1 : code });
       });
@@ -101,7 +105,11 @@ function getJavaBinaries(): { javac: string; java: string; available: boolean } 
       if (dir === '/usr/bin' && process.platform === 'darwin') {
         try {
           const testProc = spawnSync(javacPath, ['-version'], { timeout: 1000 });
-          if (testProc.status !== 0 || (testProc.stderr && testProc.stderr.toString().includes('Unable to locate a Java Runtime'))) {
+          if (
+            testProc.status !== 0 ||
+            (testProc.stderr &&
+              testProc.stderr.toString().includes('Unable to locate a Java Runtime'))
+          ) {
             continue;
           }
         } catch {
@@ -136,18 +144,20 @@ function getPythonBinary(): { python: string; available: boolean } {
 
 function extractJavaClassName(code: string): string {
   // Strip block comments and single-line comments so comments do not falsely match
-  const cleanCode = code
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\/\/.*/g, '');
+  const cleanCode = code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '');
 
   // 1. If there is a public class, JLS mandates the file name must match the public class
-  const publicMatch = cleanCode.match(/public\s+(?:final\s+|sealed\s+|non-sealed\s+)?(?:class|record)\s+([A-Za-z0-9_]+)/);
+  const publicMatch = cleanCode.match(
+    /public\s+(?:final\s+|sealed\s+|non-sealed\s+)?(?:class|record)\s+([A-Za-z0-9_]+)/
+  );
   if (publicMatch && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(publicMatch[1])) {
     return publicMatch[1];
   }
 
   // 2. Otherwise find the class that declares main method
-  const mainMatch = cleanCode.match(/(?:class|record)\s+([A-Za-z0-9_]+)[^{]*\{[\s\S]*?public\s+static\s+void\s+main/);
+  const mainMatch = cleanCode.match(
+    /(?:class|record)\s+([A-Za-z0-9_]+)[^{]*\{[\s\S]*?public\s+static\s+void\s+main/
+  );
   if (mainMatch && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(mainMatch[1])) {
     return mainMatch[1];
   }
@@ -307,7 +317,8 @@ async function executeWithJudge0(
         return null;
       }
 
-      const isAccepted = data.status && (data.status.id === 3 || data.status.description === 'Accepted');
+      const isAccepted =
+        data.status && (data.status.id === 3 || data.status.description === 'Accepted');
 
       return {
         stdout,
@@ -554,7 +565,10 @@ function simulateJavaInProcess(
     js = js.replace(/\.toCharArray\s*\(\)/g, '.split("")');
 
     // Convert new String(chars) where chars is an array
-    js = js.replace(/new\s+String\s*\(([^)]+)\)/g, '(Array.isArray($1) ? ($1).join("") : String($1))');
+    js = js.replace(
+      /new\s+String\s*\(([^)]+)\)/g,
+      '(Array.isArray($1) ? ($1).join("") : String($1))'
+    );
 
     // Convert Java lambda -> into JS arrow =>
     js = js.replace(/(\b[a-zA-Z0-9_]+\s*|\([^)]*\)\s*)->/g, '$1=>');
@@ -610,18 +624,31 @@ function simulateJavaInProcess(
     );
 
     // 7. Strip class wrapper opening and trailing closing brace while preserving function braces
-    js = js.replace(/(?:public\s+|final\s+|sealed\s+)*class\s+[A-Za-z0-9_]+[^{]*\{/, '// [class wrapper]');
+    js = js.replace(
+      /(?:public\s+|final\s+|sealed\s+)*class\s+[A-Za-z0-9_]+[^{]*\{/,
+      '// [class wrapper]'
+    );
     js = js.replace(/\}\s*$/, '// [class end]');
 
     // 8. Convert main method: public static void main(...) throws ... { -> function main(args) {
-    js = js.replace(/(?:public\s+)?static\s+void\s+main\s*\([^)]*\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?[^{]*\{/, 'function main(args) {');
+    js = js.replace(
+      /(?:public\s+)?static\s+void\s+main\s*\([^)]*\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?[^{]*\{/,
+      'function main(args) {'
+    );
 
     // 9. Convert helper methods: public static int add(int a, int b) -> function add(a, b) {
-    js = js.replace(/(?:^|[;\n}])\s*(?:(?:public|private|protected|static|final)\s+)+[A-Za-z0-9_<>[\]]+\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?\s*\{/g, (_m, name, args) => {
-      if (['if', 'for', 'while', 'switch', 'catch'].includes(name)) return _m;
-      const cleanArgs = args.split(',').map((a: string) => a.trim().split(/\s+/).pop()).filter(Boolean).join(', ');
-      return `\nfunction ${name}(${cleanArgs}) {`;
-    });
+    js = js.replace(
+      /(?:^|[;\n}])\s*(?:(?:public|private|protected|static|final)\s+)+[A-Za-z0-9_<>[\]]+\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*throws\s+[A-Za-z0-9_,\s]+)?\s*\{/g,
+      (_m, name, args) => {
+        if (['if', 'for', 'while', 'switch', 'catch'].includes(name)) return _m;
+        const cleanArgs = args
+          .split(',')
+          .map((a: string) => a.trim().split(/\s+/).pop())
+          .filter(Boolean)
+          .join(', ');
+        return `\nfunction ${name}(${cleanArgs}) {`;
+      }
+    );
 
     js += '\nif (typeof main === "function") { main([]); }\n';
 
@@ -658,7 +685,10 @@ function simulateJavaInProcess(
 
     class ArrayList extends Array {
       constructor(...args: any[]) {
-        if (args.length === 1 && (Array.isArray(args[0]) || args[0] instanceof Set || args[0] instanceof Map)) {
+        if (
+          args.length === 1 &&
+          (Array.isArray(args[0]) || args[0] instanceof Set || args[0] instanceof Map)
+        ) {
           const items = Array.from(args[0]);
           super(...items);
         } else if (args.length === 1 && typeof args[0] === 'number') {
@@ -883,7 +913,10 @@ function simulateJavaInProcess(
     const sandbox: Record<string, any> = {
       console: {
         log: (...args: any[]) => {
-          output += args.map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a))).join(' ') + '\n';
+          output +=
+            args
+              .map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a)))
+              .join(' ') + '\n';
         },
         error: (...args: any[]) => {
           output += args.join(' ') + '\n';
@@ -1063,7 +1096,9 @@ function simulatePythonInProcess(
         const popped = indentStack.pop();
         jsLines.push('}'.padStart(indentStack[indentStack.length - 1] + 1, ' '));
         if (currentClass && popped === classIndent + 4) {
-          jsLines.push(`${currentClass} = new Proxy(${currentClass}, { apply(t, th, args) { return new t(...args); } });`);
+          jsLines.push(
+            `${currentClass} = new Proxy(${currentClass}, { apply(t, th, args) { return new t(...args); } });`
+          );
           currentClass = null;
         }
       }
@@ -1077,35 +1112,47 @@ function simulatePythonInProcess(
         const baseClass = classMatch?.[2]?.trim();
         classIndent = indent;
         indentStack.push(indent + 4);
-        jsLines.push(' '.repeat(indent) + (baseClass ? `class ${currentClass} extends ${baseClass} {` : `class ${currentClass} {`));
+        jsLines.push(
+          ' '.repeat(indent) +
+            (baseClass ? `class ${currentClass} extends ${baseClass} {` : `class ${currentClass} {`)
+        );
         continue;
       }
 
       // Convert f-strings: f"Average score: {average:.1f}"
       line = line.replace(/f"([^"]*)"/g, (_m, content) => {
-        const converted = content.replace(/\{([^}:]+)(?::\.([0-9]+)f)?\}/g, (_fm: string, expr: string, precision?: string) => {
-          if (precision) {
-            return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+        const converted = content.replace(
+          /\{([^}:]+)(?::\.([0-9]+)f)?\}/g,
+          (_fm: string, expr: string, precision?: string) => {
+            if (precision) {
+              return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+            }
+            return `\${${expr.trim()}}`;
           }
-          return `\${${expr.trim()}}`;
-        });
+        );
         return `\`${converted}\``;
       });
 
       line = line.replace(/f'([^']*)'/g, (_m, content) => {
-        const converted = content.replace(/\{([^}:]+)(?::\.([0-9]+)f)?\}/g, (_fm: string, expr: string, precision?: string) => {
-          if (precision) {
-            return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+        const converted = content.replace(
+          /\{([^}:]+)(?::\.([0-9]+)f)?\}/g,
+          (_fm: string, expr: string, precision?: string) => {
+            if (precision) {
+              return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+            }
+            return `\${${expr.trim()}}`;
           }
-          return `\${${expr.trim()}}`;
-        });
+        );
         return `\`${converted}\``;
       });
 
       // Python slices: s[:2] -> s.slice(0, 2), s[1:] -> s.slice(1), s[1:3] -> s.slice(1, 3)
       line = line.replace(/([a-zA-Z0-9_]+)\[\s*:\s*([^\]]+)\]/g, '$1.slice(0, $2)');
       line = line.replace(/([a-zA-Z0-9_]+)\[\s*([0-9a-zA-Z_]+)\s*:\s*\]/g, '$1.slice($2)');
-      line = line.replace(/([a-zA-Z0-9_]+)\[\s*([0-9a-zA-Z_]+)\s*:\s*([^\]]+)\]/g, '$1.slice($2, $3)');
+      line = line.replace(
+        /([a-zA-Z0-9_]+)\[\s*([0-9a-zA-Z_]+)\s*:\s*([^\]]+)\]/g,
+        '$1.slice($2, $3)'
+      );
 
       // List comprehensions
       line = line.replace(
@@ -1118,7 +1165,10 @@ function simulatePythonInProcess(
       );
 
       // Python integer division: (a + b) // 2 -> Math.floor((a + b) / 2)
-      line = line.replace(/(\([^)]+\)|[a-zA-Z0-9_.]+)\s*\/\/\s*([a-zA-Z0-9_.]+|\([^)]+\))/g, 'Math.floor($1 / $2)');
+      line = line.replace(
+        /(\([^)]+\)|[a-zA-Z0-9_.]+)\s*\/\/\s*([a-zA-Z0-9_.]+|\([^)]+\))/g,
+        'Math.floor($1 / $2)'
+      );
 
       // Replace boolean and None
       line = line.replace(/\bTrue\b/g, 'true');
@@ -1134,12 +1184,17 @@ function simulatePythonInProcess(
       const defMatch = line.match(/^def\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*:/);
       if (defMatch) {
         const name = defMatch[1];
-        let params = defMatch[2].split(',').map((p) => p.trim()).filter(Boolean);
+        let params = defMatch[2]
+          .split(',')
+          .map((p) => p.trim())
+          .filter(Boolean);
         indentStack.push(indent + 4);
         if (currentClass) {
           if (params[0] === 'self') params.shift();
           if (name === '__init__') {
-            jsLines.push(' '.repeat(indent) + `constructor(${params.join(', ')}) { const self = this;`);
+            jsLines.push(
+              ' '.repeat(indent) + `constructor(${params.join(', ')}) { const self = this;`
+            );
           } else {
             jsLines.push(' '.repeat(indent) + `${name}(${params.join(', ')}) { const self = this;`);
           }
@@ -1151,7 +1206,10 @@ function simulatePythonInProcess(
 
       // Convert for in range / collection
       if (line.match(/^for\s+([A-Za-z0-9_]+)\s+in\s+([\s\S]+):\s*(?:#.*)?$/)) {
-        line = line.replace(/^for\s+([A-Za-z0-9_]+)\s+in\s+([\s\S]+):\s*(?:#.*)?$/, 'for (var $1 of $2) {');
+        line = line.replace(
+          /^for\s+([A-Za-z0-9_]+)\s+in\s+([\s\S]+):\s*(?:#.*)?$/,
+          'for (var $1 of $2) {'
+        );
         indentStack.push(indent + 4);
         jsLines.push(' '.repeat(indent) + line);
         continue;
@@ -1187,8 +1245,14 @@ function simulatePythonInProcess(
       line = line.replace(/print\s*\((.*),\s*end\s*=\s*(?:""|'')\s*\)/g, 'sys.stdout.write($1)');
 
       // Convert membership checks: val in coll -> pyIn(val, coll), val not in coll -> !pyIn(val, coll)
-      line = line.replace(/([a-zA-Z0-9_."']+(?:\([^)]*\))?)\s+not\s+in\s+([a-zA-Z0-9_."']+(?:\([^)]*\))?)/g, '!pyIn($1, $2)');
-      line = line.replace(/([a-zA-Z0-9_."']+(?:\([^)]*\))?)\s+in\s+([a-zA-Z0-9_."']+(?:\([^)]*\))?)/g, 'pyIn($1, $2)');
+      line = line.replace(
+        /([a-zA-Z0-9_."']+(?:\([^)]*\))?)\s+not\s+in\s+([a-zA-Z0-9_."']+(?:\([^)]*\))?)/g,
+        '!pyIn($1, $2)'
+      );
+      line = line.replace(
+        /([a-zA-Z0-9_."']+(?:\([^)]*\))?)\s+in\s+([a-zA-Z0-9_."']+(?:\([^)]*\))?)/g,
+        'pyIn($1, $2)'
+      );
 
       // Convert variable declarations using var to allow multi-reassignments in the same scope
       if (line.match(/^[a-zA-Z_][a-zA-Z0-9_]*\s*=[^=]/)) {
@@ -1202,7 +1266,9 @@ function simulatePythonInProcess(
       const popped = indentStack.pop();
       jsLines.push('}');
       if (currentClass && popped === classIndent + 4) {
-        jsLines.push(`${currentClass} = new Proxy(${currentClass}, { apply(t, th, args) { return new t(...args); } });`);
+        jsLines.push(
+          `${currentClass} = new Proxy(${currentClass}, { apply(t, th, args) { return new t(...args); } });`
+        );
         currentClass = null;
       }
     }
@@ -1234,7 +1300,10 @@ function simulatePythonInProcess(
 
     const sandbox: Record<string, any> = {
       print: (...args: any[]) => {
-        output += args.map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a))).join(' ') + '\n';
+        output +=
+          args
+            .map((a) => (typeof a === 'object' && a !== null ? JSON.stringify(a) : String(a)))
+            .join(' ') + '\n';
       },
       input: (prompt?: string) => {
         if (prompt) output += String(prompt);
@@ -1245,8 +1314,8 @@ function simulatePythonInProcess(
         obj && obj.length !== undefined
           ? obj.length
           : obj && typeof obj === 'object'
-          ? Object.keys(obj).length
-          : 0,
+            ? Object.keys(obj).length
+            : 0,
       range: (start: number, end?: number, step = 1) => {
         if (end === undefined) {
           end = start;
@@ -1310,7 +1379,8 @@ function simulatePythonInProcess(
       },
       pyIn: (val: any, container: any) => {
         if (container == null) return false;
-        if (Array.isArray(container) || typeof container === 'string') return container.includes(val);
+        if (Array.isArray(container) || typeof container === 'string')
+          return container.includes(val);
         if (container instanceof Set || container instanceof Map) return container.has(val);
         return val in container;
       },
@@ -1363,7 +1433,10 @@ function simulatePythonInProcess(
       },
       random: {
         randint: (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min,
-        choice: (arr: any[]) => (Array.isArray(arr) && arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined),
+        choice: (arr: any[]) =>
+          Array.isArray(arr) && arr.length > 0
+            ? arr[Math.floor(Math.random() * arr.length)]
+            : undefined,
         random: () => Math.random(),
         shuffle: (arr: any[]) => {
           if (Array.isArray(arr)) {
@@ -1494,10 +1567,7 @@ export async function POST(req: NextRequest) {
     }
 
     const clientApiKey =
-      req.headers.get('x-gemini-api-key') ||
-      body.apiKey ||
-      process.env.GEMINI_API_KEY ||
-      '';
+      req.headers.get('x-gemini-api-key') || body.apiKey || process.env.GEMINI_API_KEY || '';
 
     const startTime = Date.now();
     const normalizedLang = (language || 'java').toLowerCase();
@@ -1695,7 +1765,8 @@ export async function POST(req: NextRequest) {
             '// package declaration removed for standalone compilation\n'
           );
           if (!sanitizedCode.includes('import java.util')) {
-            sanitizedCode = 'import java.util.*;\nimport java.io.*;\nimport java.math.*;\n' + sanitizedCode;
+            sanitizedCode =
+              'import java.util.*;\nimport java.io.*;\nimport java.math.*;\n' + sanitizedCode;
           }
           fs.writeFileSync(javaFilePath, sanitizedCode, 'utf8');
 
@@ -1822,9 +1893,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: `Unsupported language: ${language}` }, { status: 400 });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || 'Internal compiler error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: err.message || 'Internal compiler error' }, { status: 500 });
   }
 }

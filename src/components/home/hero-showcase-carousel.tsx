@@ -37,11 +37,13 @@ const SHOWCASE_SLIDES: ShowcaseSlide[] = [
     id: 'manual-to-sdet',
     badge: '100% Free Forever',
     title: 'Built for Manual QA',
-    subtitle: 'Transition seamlessly from manual test cases into robust, production-grade Playwright & Selenium code.',
+    subtitle:
+      'Transition seamlessly from manual test cases into robust, production-grade Playwright & Selenium code.',
     mockup: {
       browserUrl: 'intelligentqa.io/tracks/playwright-ts',
       headline: 'Step into automation with zero coding anxiety',
-      subheadline: 'Turn your spreadsheet test cases into resilient auto-waiting locators and web-first assertions.',
+      subheadline:
+        'Turn your spreadsheet test cases into resilient auto-waiting locators and web-first assertions.',
       codePreview: `import { test, expect } from '@playwright/test';\n\ntest('checkout verification', async ({ page }) => {\n  await page.goto('/sandbox/web');\n  await page.getByRole('button', { name: 'Submit Order' }).click();\n  await expect(page.getByRole('alert')).toHaveText('Order Confirmed');\n});`,
       statusBadge: '✓ Automated Test Passed · 0 Flakiness',
       tags: ['Playwright', 'TypeScript', 'POM Architecture'],
@@ -51,11 +53,13 @@ const SHOWCASE_SLIDES: ShowcaseSlide[] = [
     id: 'in-browser-sandbox',
     badge: 'Code Compilers',
     title: 'Interactive Code Compilers',
-    subtitle: 'Practice and evaluate core Java, TypeScript & Python programming logic, OOP structures, and syntax directly in your browser.',
+    subtitle:
+      'Practice and evaluate core Java, TypeScript & Python programming logic, OOP structures, and syntax directly in your browser.',
     mockup: {
       browserUrl: 'intelligentqa.io/sandbox/code',
       headline: 'In-Browser Compilers for Core Programming Logic',
-      subheadline: 'Practice algorithms, OOP design patterns, and test automation programming syntax with zero machine setup.',
+      subheadline:
+        'Practice algorithms, OOP design patterns, and test automation programming syntax with zero machine setup.',
       codePreview: `// Java Online Compiler (OOP & Test Logic)\npublic class Solution {\n    public static void main(String[] args) {\n        String expectedStatus = "CONFIRMED";\n        boolean isReady = validatePayload(expectedStatus);\n        System.out.println("Execution result: " + isReady);\n    }\n    static boolean validatePayload(String status) {\n        return "CONFIRMED".equalsIgnoreCase(status);\n    }\n}`,
       statusBadge: '⚡ Compiled & Evaluated Successfully (0ms)',
       tags: ['Java Compiler', 'TypeScript Compiler', 'Python Compiler'],
@@ -65,11 +69,13 @@ const SHOWCASE_SLIDES: ShowcaseSlide[] = [
     id: 'ai-agents',
     badge: 'Powered by Gemini AI',
     title: 'Autonomous QA Agents',
-    subtitle: 'Generate comprehensive test matrices, Page Object classes, and self-healing locators in seconds.',
+    subtitle:
+      'Generate comprehensive test matrices, Page Object classes, and self-healing locators in seconds.',
     mockup: {
       browserUrl: 'intelligentqa.io/agents/pom-generator',
       headline: '5 Dedicated SDET AI Assistants',
-      subheadline: 'Requirements Analyzer, Matrix Generator, POM Builder, Flakiness Auditor, and Senior SDET Mentor.',
+      subheadline:
+        'Requirements Analyzer, Matrix Generator, POM Builder, Flakiness Auditor, and Senior SDET Mentor.',
       codePreview: `// AI Autonomous POM Agent Output:\nexport class CartPage {\n  readonly page: Page;\n  readonly checkoutBtn = this.page.getByRole('button', { name: 'Checkout' });\n  readonly orderSummary = this.page.getByTestId('order-summary');\n\n  constructor(page: Page) { this.page = page; }\n  async completePurchase() { await this.checkoutBtn.click(); }\n}`,
       statusBadge: '🤖 Auto-generated Page Object Model (Clean Architecture)',
       tags: ['Requirements Analyzer', 'POM Builder', 'Audit Flakiness'],
@@ -79,11 +85,13 @@ const SHOWCASE_SLIDES: ShowcaseSlide[] = [
     id: 'interview-bank',
     badge: '800+ Real Scenarios',
     title: 'Curated Interview Bank',
-    subtitle: 'Master high-frequency SDET and Test Architect interview scenarios with production answers and diagrams.',
+    subtitle:
+      'Master high-frequency SDET and Test Architect interview scenarios with production answers and diagrams.',
     mockup: {
       browserUrl: 'intelligentqa.io/interview-questions',
       headline: 'Lead & Test Architect Scenarios',
-      subheadline: 'Solve real-world challenges on test concurrency, CI/CD sharding, flaky locators, and memory leak prevention.',
+      subheadline:
+        'Solve real-world challenges on test concurrency, CI/CD sharding, flaky locators, and memory leak prevention.',
       codePreview: `Q: How do you design an enterprise automation framework that scales to 1,000+ daily builds without flakiness?\n\nKey Pillars:\n1. Strict decoupling of Page Objects from test action logic\n2. Dynamic sharding across CI GitHub Actions workers\n3. Web-first auto-waiting assertions (Zero Thread.sleep())`,
       statusBadge: '🎯 Architect Verified · 800+ Scenarios',
       tags: ['Test Architecture', 'CI/CD Sharding', 'System Design'],
@@ -99,7 +107,7 @@ export default function HeroShowcaseCarousel() {
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
-      setCurrentIdx(prev => (prev + 1) % SHOWCASE_SLIDES.length);
+      setCurrentIdx((prev) => (prev + 1) % SHOWCASE_SLIDES.length);
     }, 6000);
     return () => clearInterval(interval);
   }, [isPaused]);
@@ -107,11 +115,11 @@ export default function HeroShowcaseCarousel() {
   const activeSlide = SHOWCASE_SLIDES[currentIdx];
 
   const handlePrev = () => {
-    setCurrentIdx(prev => (prev - 1 + SHOWCASE_SLIDES.length) % SHOWCASE_SLIDES.length);
+    setCurrentIdx((prev) => (prev - 1 + SHOWCASE_SLIDES.length) % SHOWCASE_SLIDES.length);
   };
 
   const handleNext = () => {
-    setCurrentIdx(prev => (prev + 1) % SHOWCASE_SLIDES.length);
+    setCurrentIdx((prev) => (prev + 1) % SHOWCASE_SLIDES.length);
   };
 
   return (
@@ -180,9 +188,7 @@ export default function HeroShowcaseCarousel() {
               https://{activeSlide.mockup.browserUrl}
             </div>
 
-            <div className="w-12 text-right text-[10px] text-zinc-500 font-mono">
-              Live Preview
-            </div>
+            <div className="w-12 text-right text-[10px] text-zinc-500 font-mono">Live Preview</div>
           </div>
 
           {/* Window Body */}

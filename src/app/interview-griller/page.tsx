@@ -3,7 +3,8 @@ import AuthGuard from '@/components/auth/auth-guard';
 
 export const metadata = {
   title: 'AI SDET Interview Griller | IntelligentQA',
-  description: 'Simulated Lead SDET technical round with probing follow-ups and comprehensive rubric scorecard.',
+  description:
+    'Simulated Lead SDET technical round with probing follow-ups and comprehensive rubric scorecard.',
 };
 
 export default function InterviewGrillerPage() {

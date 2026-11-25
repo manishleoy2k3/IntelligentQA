@@ -47,7 +47,10 @@ describe('LeetCode Testcase & Test Result Execution Engine', () => {
 
     // Merge Sorted Arrays pattern
     const args3 = extractArgsFromInput('nums1 = [1, 2, 4], nums2 = [1, 3, 4]');
-    assert.deepStrictEqual(args3, [[1, 2, 4], [1, 3, 4]]);
+    assert.deepStrictEqual(args3, [
+      [1, 2, 4],
+      [1, 3, 4],
+    ]);
 
     // Bare email string pattern
     const args4 = extractArgsFromInput('valid.sdet_pro@intelligentqa.io');
@@ -55,7 +58,13 @@ describe('LeetCode Testcase & Test Result Execution Engine', () => {
 
     // Matrix 2D array pattern
     const args5 = extractArgsFromInput('matrix = [[1, 3, 5], [10, 11, 16]], target = 3');
-    assert.deepStrictEqual(args5, [[[1, 3, 5], [10, 11, 16]], 3]);
+    assert.deepStrictEqual(args5, [
+      [
+        [1, 3, 5],
+        [10, 11, 16],
+      ],
+      3,
+    ]);
   });
 
   // -------------------------------------------------------------------------
@@ -91,11 +100,23 @@ describe('LeetCode Testcase & Test Result Execution Engine', () => {
   }
 
   it('2. Evaluates expected vs actual output correctly with whitespace, JSON, and boolean normalization', () => {
-    assert.strictEqual(areOutputsEqual('[0, 1]', '[0,1]'), true, 'Arrays with different spacing match');
+    assert.strictEqual(
+      areOutputsEqual('[0, 1]', '[0,1]'),
+      true,
+      'Arrays with different spacing match'
+    );
     assert.strictEqual(areOutputsEqual('True', 'true'), true, 'Python and JS boolean casing match');
     assert.strictEqual(areOutputsEqual('[1, 0]', '[0, 1]'), true, 'Unordered indices match');
-    assert.strictEqual(areOutputsEqual('[0, 2]', '[0, 1]'), false, 'Wrong indices correctly rejected');
-    assert.strictEqual(areOutputsEqual('false', 'true'), false, 'Mismatched boolean correctly rejected');
+    assert.strictEqual(
+      areOutputsEqual('[0, 2]', '[0, 1]'),
+      false,
+      'Wrong indices correctly rejected'
+    );
+    assert.strictEqual(
+      areOutputsEqual('false', 'true'),
+      false,
+      'Mismatched boolean correctly rejected'
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -122,7 +143,7 @@ if __name__ == '__main__':
     const testCases = [
       { id: 0, args: [[2, 7, 11, 15], 9] },
       { id: 1, args: [[3, 2, 4], 6] }, // User custom input
-      { id: 2, args: [[3, 3], 6] },    // Extra case
+      { id: 2, args: [[3, 3], 6] }, // Extra case
     ];
 
     const harness = `
@@ -145,8 +166,14 @@ if __name__ == '__main__':
 
     assert.strictEqual(pyRun.status, 0, 'Python test runner must exit 0');
     assert.ok(pyRun.stdout.includes('__TESTCASE_OUTPUT_0__[0, 1]'), 'Case 1 must return [0, 1]');
-    assert.ok(pyRun.stdout.includes('__TESTCASE_OUTPUT_1__[1, 2]'), 'Case 2 with user input [3, 2, 4] must return [1, 2] NOT old hardcoded value');
-    assert.ok(pyRun.stdout.includes('__TESTCASE_OUTPUT_2__[0, 1]'), 'Case 3 with [3, 3] must return [0, 1]');
+    assert.ok(
+      pyRun.stdout.includes('__TESTCASE_OUTPUT_1__[1, 2]'),
+      'Case 2 with user input [3, 2, 4] must return [1, 2] NOT old hardcoded value'
+    );
+    assert.ok(
+      pyRun.stdout.includes('__TESTCASE_OUTPUT_2__[0, 1]'),
+      'Case 3 with [3, 3] must return [0, 1]'
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -193,9 +220,13 @@ console.log("Result:", twoSum([2, 7, 11, 15], 9));
 `;
 
     const sandbox = {
-      console: { log: (...args) => { output += args.join(' ') + '\n'; } },
+      console: {
+        log: (...args) => {
+          output += args.join(' ') + '\n';
+        },
+      },
       Map,
-      JSON
+      JSON,
     };
     vm.runInContext(cleanCode + '\n' + harness, vm.createContext(sandbox));
 
@@ -289,8 +320,14 @@ __TESTCASE_END_1__
     assert.strictEqual(results[0].expected, '[0, 1]');
     assert.strictEqual(results[1].passed, true);
     assert.strictEqual(results[1].output, '[1, 2]');
-    assert.ok(rawStdout.includes('User debug: checking hash table'), 'User debug stdout must be preserved');
-    assert.ok(!rawStdout.includes('__TESTCASE_BEGIN_'), 'Markers must be stripped from clean user stdout');
+    assert.ok(
+      rawStdout.includes('User debug: checking hash table'),
+      'User debug stdout must be preserved'
+    );
+    assert.ok(
+      !rawStdout.includes('__TESTCASE_BEGIN_'),
+      'Markers must be stripped from clean user stdout'
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -300,7 +337,10 @@ __TESTCASE_END_1__
     const panelFile = path.join(__dirname, '../src/components/sandbox/coding-testcase-panel.tsx');
     const panelContent = fs.readFileSync(panelFile, 'utf8');
 
-    assert.ok(panelContent.includes('export function CodingTestcasePanel'), 'CodingTestcasePanel must be exported');
+    assert.ok(
+      panelContent.includes('export function CodingTestcasePanel'),
+      'CodingTestcasePanel must be exported'
+    );
     assert.ok(panelContent.includes('Testcase'), 'Must render Testcase tab');
     assert.ok(panelContent.includes('Test Result'), 'Must render Test Result tab');
     assert.ok(panelContent.includes('Add Case'), 'Must render + Add Case control');
@@ -318,11 +358,17 @@ __TESTCASE_END_1__
     );
     const clientContent = fs.readFileSync(clientFile, 'utf8');
 
-    assert.ok(clientContent.includes('CodingTestcasePanel'), 'ProblemSolverClient must integrate CodingTestcasePanel');
+    assert.ok(
+      clientContent.includes('CodingTestcasePanel'),
+      'ProblemSolverClient must integrate CodingTestcasePanel'
+    );
     assert.ok(clientContent.includes('buildTestHarness'), 'Must use buildTestHarness on run');
     assert.ok(clientContent.includes('parseTestResults'), 'Must use parseTestResults on run');
     assert.ok(clientContent.includes('lineNumbersRef'), 'Must preserve lineNumbersRef');
     assert.ok(clientContent.includes('handleEditorScroll'), 'Must preserve handleEditorScroll');
-    assert.ok(clientContent.includes('extractErrorLineNumber'), 'Must preserve extractErrorLineNumber');
+    assert.ok(
+      clientContent.includes('extractErrorLineNumber'),
+      'Must preserve extractErrorLineNumber'
+    );
   });
 });

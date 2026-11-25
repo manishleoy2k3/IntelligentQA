@@ -1,12 +1,7 @@
 'use client';
 
 import React, { memo } from 'react';
-import {
-  BaseEdge,
-  EdgeLabelRenderer,
-  getBezierPath,
-  EdgeProps,
-} from '@xyflow/react';
+import { BaseEdge, EdgeLabelRenderer, getBezierPath, EdgeProps } from '@xyflow/react';
 import { ArchitectureConnectionType, ArchitectureDiagramTheme } from '@/types/architecture-diagram';
 import { PROTOCOL_STYLES, THEME_CONFIGS } from '@/lib/diagram/themes';
 
@@ -47,16 +42,14 @@ function ArchitectureCustomEdge({
     ? PROTOCOL_STYLES[edgeData.communicationType]
     : PROTOCOL_STYLES['api'];
 
-  const strokeColor = selected
-    ? '#10B981'
-    : protoStyle?.color || theme.colors.edgeStroke;
+  const strokeColor = selected ? '#10B981' : protoStyle?.color || theme.colors.edgeStroke;
 
   const strokeDasharray =
     edgeData.style === 'dashed'
       ? '6 4'
       : edgeData.style === 'dotted'
-      ? '3 3'
-      : protoStyle?.strokeDasharray;
+        ? '3 3'
+        : protoStyle?.strokeDasharray;
 
   const label = edgeData.label;
   const protocol = edgeData.protocol;

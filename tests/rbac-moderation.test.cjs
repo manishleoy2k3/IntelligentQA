@@ -32,26 +32,74 @@ test('RBAC & Moderation in QADatabase: Admin allowlist and content approval queu
   const content = fs.readFileSync(dbPath, 'utf-8');
 
   // Verify Admin allowlist methods
-  assert.strictEqual(content.includes('getAdminEmails'), true, 'QADatabase must implement getAdminEmails');
-  assert.strictEqual(content.includes('addAdminEmail'), true, 'QADatabase must implement addAdminEmail');
-  assert.strictEqual(content.includes('removeAdminEmail'), true, 'QADatabase must implement removeAdminEmail');
-  assert.strictEqual(content.includes('verifyAndElevateAdmin'), true, 'QADatabase must implement verifyAndElevateAdmin');
+  assert.strictEqual(
+    content.includes('getAdminEmails'),
+    true,
+    'QADatabase must implement getAdminEmails'
+  );
+  assert.strictEqual(
+    content.includes('addAdminEmail'),
+    true,
+    'QADatabase must implement addAdminEmail'
+  );
+  assert.strictEqual(
+    content.includes('removeAdminEmail'),
+    true,
+    'QADatabase must implement removeAdminEmail'
+  );
+  assert.strictEqual(
+    content.includes('verifyAndElevateAdmin'),
+    true,
+    'QADatabase must implement verifyAndElevateAdmin'
+  );
 
   // Verify Moderation Queue methods
-  assert.strictEqual(content.includes('submitContentForReview'), true, 'QADatabase must implement submitContentForReview');
-  assert.strictEqual(content.includes('getPendingSubmissions'), true, 'QADatabase must implement getPendingSubmissions');
-  assert.strictEqual(content.includes('approveSubmission'), true, 'QADatabase must implement approveSubmission');
-  assert.strictEqual(content.includes('rejectSubmission'), true, 'QADatabase must implement rejectSubmission');
+  assert.strictEqual(
+    content.includes('submitContentForReview'),
+    true,
+    'QADatabase must implement submitContentForReview'
+  );
+  assert.strictEqual(
+    content.includes('getPendingSubmissions'),
+    true,
+    'QADatabase must implement getPendingSubmissions'
+  );
+  assert.strictEqual(
+    content.includes('approveSubmission'),
+    true,
+    'QADatabase must implement approveSubmission'
+  );
+  assert.strictEqual(
+    content.includes('rejectSubmission'),
+    true,
+    'QADatabase must implement rejectSubmission'
+  );
 });
 
 test('Course CMS Portal: Admin Team & RBAC management are implemented and legacy approvals queue is purged', () => {
   const cmsPath = path.join(process.cwd(), 'src/app/admin/cms/page.tsx');
   const content = fs.readFileSync(cmsPath, 'utf-8');
 
-  assert.strictEqual(content.includes('intelligentqa_moderation_queue'), true, 'CMS must purge legacy moderation queue');
-  assert.strictEqual(content.includes('Admin Team &amp; RBAC') || content.includes('Admin Team'), true, 'CMS must have Admin Team & RBAC tab');
-  assert.strictEqual(content.includes('Authorized Administrator Accounts'), true, 'CMS must display Authorized Administrators');
-  assert.strictEqual(content.includes('Master Admin Security Passcode'), true, 'CMS must support Master Admin Passcode');
+  assert.strictEqual(
+    content.includes('intelligentqa_moderation_queue'),
+    true,
+    'CMS must purge legacy moderation queue'
+  );
+  assert.strictEqual(
+    content.includes('Admin Team &amp; RBAC') || content.includes('Admin Team'),
+    true,
+    'CMS must have Admin Team & RBAC tab'
+  );
+  assert.strictEqual(
+    content.includes('Authorized Administrator Accounts'),
+    true,
+    'CMS must display Authorized Administrators'
+  );
+  assert.strictEqual(
+    content.includes('Master Admin Security Passcode'),
+    true,
+    'CMS must support Master Admin Passcode'
+  );
 });
 
 test('Normal users submit guides and coding problems for Admin review instead of direct publish', () => {

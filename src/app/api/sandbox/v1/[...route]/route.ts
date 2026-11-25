@@ -10,11 +10,46 @@ interface MockUser {
 }
 
 let mockUsers: MockUser[] = [
-  { id: 'usr-101', name: 'Priya Sharma', email: 'priya.qa@techcorp.io', role: 'Staff SDET', status: 'active', createdAt: '2026-01-10T09:00:00Z' },
-  { id: 'usr-102', name: 'Marcus Chen', email: 'marcus.chen@fincloud.dev', role: 'Lead QA', status: 'active', createdAt: '2026-02-14T11:30:00Z' },
-  { id: 'usr-103', name: 'Elena Rostova', email: 'elena.rostova@cloudscale.net', role: 'Senior Automation Engineer', status: 'active', createdAt: '2026-03-01T14:15:00Z' },
-  { id: 'usr-104', name: 'Devon Patel', email: 'devon.p@microtest.ai', role: 'SDET', status: 'inactive', createdAt: '2026-04-12T16:45:00Z' },
-  { id: 'usr-105', name: 'Sarah Jenkins', email: 'sarah.j@qualityfirst.org', role: 'Principal SDET', status: 'active', createdAt: '2026-05-20T10:00:00Z' },
+  {
+    id: 'usr-101',
+    name: 'Priya Sharma',
+    email: 'priya.qa@techcorp.io',
+    role: 'Staff SDET',
+    status: 'active',
+    createdAt: '2026-01-10T09:00:00Z',
+  },
+  {
+    id: 'usr-102',
+    name: 'Marcus Chen',
+    email: 'marcus.chen@fincloud.dev',
+    role: 'Lead QA',
+    status: 'active',
+    createdAt: '2026-02-14T11:30:00Z',
+  },
+  {
+    id: 'usr-103',
+    name: 'Elena Rostova',
+    email: 'elena.rostova@cloudscale.net',
+    role: 'Senior Automation Engineer',
+    status: 'active',
+    createdAt: '2026-03-01T14:15:00Z',
+  },
+  {
+    id: 'usr-104',
+    name: 'Devon Patel',
+    email: 'devon.p@microtest.ai',
+    role: 'SDET',
+    status: 'inactive',
+    createdAt: '2026-04-12T16:45:00Z',
+  },
+  {
+    id: 'usr-105',
+    name: 'Sarah Jenkins',
+    email: 'sarah.j@qualityfirst.org',
+    role: 'Principal SDET',
+    status: 'active',
+    createdAt: '2026-05-20T10:00:00Z',
+  },
 ];
 
 const MOCK_JWT_SECRET = 'intelligentqa-secret-token-2026-sdet-mastery';
@@ -27,10 +62,7 @@ function verifyBearer(req: NextRequest): boolean {
   return parts[1].length > 10;
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ route: string[] }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ route: string[] }> }) {
   const { route } = await params;
   const path = route.join('/');
 
@@ -38,7 +70,7 @@ export async function GET(
   if (route[0] === 'delay' && route[1]) {
     const rawSeconds = parseInt(route[1], 10);
     const seconds = Math.min(Math.max(isNaN(rawSeconds) ? 1 : rawSeconds, 1), 10);
-    await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+    await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
     return NextResponse.json({
       message: `Delayed response delivered successfully after ${seconds} second(s).`,
       delaySeconds: seconds,
@@ -81,12 +113,12 @@ export async function GET(
 
     let filtered = [...mockUsers];
     if (roleFilter) {
-      filtered = filtered.filter(u => u.role.toLowerCase().includes(roleFilter.toLowerCase()));
+      filtered = filtered.filter((u) => u.role.toLowerCase().includes(roleFilter.toLowerCase()));
     }
 
     // Specific user ID
     if (route[1]) {
-      const user = filtered.find(u => u.id === route[1]);
+      const user = filtered.find((u) => u.id === route[1]);
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
@@ -129,10 +161,7 @@ export async function GET(
   });
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ route: string[] }> }
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ route: string[] }> }) {
   const { route } = await params;
 
   // 1. /api/sandbox/v1/auth/login
@@ -186,7 +215,10 @@ export async function POST(
 
       if (!name || typeof name !== 'string' || name.trim().length === 0) {
         return NextResponse.json(
-          { error: 'Validation Error', message: 'Field "name" is required and must be a non-empty string.' },
+          {
+            error: 'Validation Error',
+            message: 'Field "name" is required and must be a non-empty string.',
+          },
           { status: 400 }
         );
       }
@@ -210,10 +242,7 @@ export async function POST(
   return NextResponse.json({ error: 'Endpoint not found' }, { status: 404 });
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ route: string[] }> }
-) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ route: string[] }> }) {
   const { route } = await params;
   if (route[0] === 'users' && route[1]) {
     if (!verifyBearer(req)) {
@@ -221,7 +250,7 @@ export async function PUT(
     }
 
     const userId = route[1];
-    const userIndex = mockUsers.findIndex(u => u.id === userId);
+    const userIndex = mockUsers.findIndex((u) => u.id === userId);
     if (userIndex === -1) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -251,7 +280,7 @@ export async function DELETE(
 
     const userId = route[1];
     const initialLen = mockUsers.length;
-    mockUsers = mockUsers.filter(u => u.id !== userId);
+    mockUsers = mockUsers.filter((u) => u.id !== userId);
 
     if (mockUsers.length === initialLen) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });

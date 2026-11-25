@@ -39,17 +39,34 @@ async function simulateAgent3(input, techStack = 'playwright-ts') {
 }
 
 async function runAllTests() {
-  console.log('🧪 Starting Enterprise Verification Suite for Agent 3: Automation Code Generator...\n');
+  console.log(
+    '🧪 Starting Enterprise Verification Suite for Agent 3: Automation Code Generator...\n'
+  );
 
   // Test 0: System Prompt Integrity & 10 Mandatory Sections
   console.log('Testing: Specification & System Prompt Integrity...');
   assert(AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Playwright'), 'Must define Playwright');
-  assert(AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Selenium WebDriver 4'), 'Must define Selenium');
-  assert(AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('REST Assured'), 'Must define REST Assured');
+  assert(
+    AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Selenium WebDriver 4'),
+    'Must define Selenium'
+  );
+  assert(
+    AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('REST Assured'),
+    'Must define REST Assured'
+  );
   assert(AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Appium 2.x'), 'Must define Appium');
-  assert(AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Proposed File Structure'), 'Must require File Structure');
-  assert(AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Common Failures & Debugging Guide'), 'Must require Debugging Guide');
-  assert(AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Zero Thread.sleep()'), 'Must forbid arbitrary sleeps');
+  assert(
+    AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Proposed File Structure'),
+    'Must require File Structure'
+  );
+  assert(
+    AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Common Failures & Debugging Guide'),
+    'Must require Debugging Guide'
+  );
+  assert(
+    AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT.includes('Zero Thread.sleep()'),
+    'Must forbid arbitrary sleeps'
+  );
   console.log('Testing: Specification & System Prompt Integrity... ✅ PASSED');
 
   // TEST 1: Playwright TypeScript Code from Login Test Cases
@@ -64,7 +81,11 @@ async function runAllTests() {
   assert(output1.includes('## 1. Framework and Language Assumptions'), 'Must contain Section 1');
   assert(output1.includes('## 2. Proposed File Structure'), 'Must contain Section 2');
   assert(output1.includes('## 3. Required Dependencies'), 'Must contain Section 3');
-  assert(output1.includes('## 4. Configuration & Playwright Setup') || output1.includes('## 4. Configuration'), 'Must contain Section 4');
+  assert(
+    output1.includes('## 4. Configuration & Playwright Setup') ||
+      output1.includes('## 4. Configuration'),
+    'Must contain Section 4'
+  );
   assert(output1.includes('## 5. Complete Source Code'), 'Must contain Section 5');
   assert(output1.includes('## 6. Test Data Strategy & Fixtures'), 'Must contain Section 6');
   assert(output1.includes('## 7. Execution Instructions'), 'Must contain Section 7');
@@ -74,7 +95,10 @@ async function runAllTests() {
 
   // Validate Specific Code Quality Rules
   assert(output1.includes('export class LoginPage'), 'Must implement Page Object Model');
-  assert(output1.includes('getByRole') || output1.includes('getByLabel'), 'Must use resilient user-facing locators');
+  assert(
+    output1.includes('getByRole') || output1.includes('getByLabel'),
+    'Must use resilient user-facing locators'
+  );
   assert(output1.includes('await expect('), 'Must use web-first auto-retrying assertions');
   assert(!output1.includes('waitForTimeout('), 'Must not use arbitrary sleep');
   console.log('Testing: TEST 1 - Playwright TypeScript Login Automation... ✅ PASSED');
@@ -90,7 +114,10 @@ async function runAllTests() {
 
   assert(output2.includes('driver.switchTo().frame('), 'Must switch to frame');
   assert(output2.includes('driver.switchTo().defaultContent()'), 'Must return to defaultContent');
-  assert(output2.includes('finally'), 'Must use finally block to guarantee returning to default content');
+  assert(
+    output2.includes('finally'),
+    'Must use finally block to guarantee returning to default content'
+  );
   assert(output2.includes('WebDriverWait'), 'Must use explicit WebDriverWait');
   // Confirm Java source code section does not invoke Thread.sleep
   const javaCodeMatches = output2.match(/```java([\s\S]*?)```/g) || [];
@@ -110,7 +137,10 @@ Scenarios:
 - Negative: Missing amount returns HTTP 400`;
   const output3 = await simulateAgent3(test3Input, 'restassured');
 
-  assert(output3.includes('RequestSpecification') || output3.includes('RequestSpecBuilder'), 'Must use RequestSpecification');
+  assert(
+    output3.includes('RequestSpecification') || output3.includes('RequestSpecBuilder'),
+    'Must use RequestSpecification'
+  );
   assert(output3.includes('statusCode(201)'), 'Must assert HTTP 201');
   assert(output3.includes('statusCode(401)'), 'Must assert HTTP 401');
   assert(output3.includes('statusCode(400)'), 'Must assert HTTP 400');
@@ -128,9 +158,15 @@ Scenarios:
 
   assert(output4.includes('AndroidDriver'), 'Must configure AndroidDriver');
   assert(output4.includes('UiAutomator2Options'), 'Must use modern UiAutomator2Options');
-  assert(output4.includes('AppiumBy.accessibilityId') || output4.includes('AppiumBy.id'), 'Must use AppiumBy locators');
+  assert(
+    output4.includes('AppiumBy.accessibilityId') || output4.includes('AppiumBy.id'),
+    'Must use AppiumBy locators'
+  );
   assert(output4.includes('MobileLoginPage'), 'Must implement Mobile Page Object Model');
-  assert(output4.includes('@AfterMethod') && output4.includes('driver.remove()'), 'Must enforce test isolation and thread cleanup');
+  assert(
+    output4.includes('@AfterMethod') && output4.includes('driver.remove()'),
+    'Must enforce test isolation and thread cleanup'
+  );
   console.log('Testing: TEST 4 - Appium Java Mobile Automation... ✅ PASSED');
 
   // TEST 5: Uploaded Framework Project Context Ingestion
@@ -146,7 +182,10 @@ Implement test automation for User Profile Update in this existing framework.`;
   const output5 = await simulateAgent3(test5Input, 'selenium-java');
 
   assert(output5.includes('com.fintech.core'), 'Must reuse existing package name com.fintech.core');
-  assert(output5.includes('extends CustomFintechBaseTest'), 'Must extend existing CustomFintechBaseTest');
+  assert(
+    output5.includes('extends CustomFintechBaseTest'),
+    'Must extend existing CustomFintechBaseTest'
+  );
   assert(output5.includes('UserProfilePage'), 'Must create appropriate Page Object');
   console.log('Testing: TEST 5 - Project Context Ingestion... ✅ PASSED');
 

@@ -12,14 +12,29 @@ describe('Compiler Multi-Tier Architecture & Vercel Resiliency', () => {
     assert.ok(compilerContent.includes('executeWithJudge0'), 'Judge0 CE engine should be defined');
     assert.ok(compilerContent.includes('executeWithGlot'), 'Glot.io engine should be defined');
     assert.ok(compilerContent.includes('executeWithPiston'), 'Piston engine should be defined');
-    assert.ok(compilerContent.includes('executeWithGemini'), 'Gemini AI simulation engine should be defined');
-    assert.ok(compilerContent.includes('simulateJavaInProcess'), 'In-process Java VM simulation should be defined');
-    assert.ok(compilerContent.includes('simulatePythonInProcess'), 'In-process Python VM simulation should be defined');
+    assert.ok(
+      compilerContent.includes('executeWithGemini'),
+      'Gemini AI simulation engine should be defined'
+    );
+    assert.ok(
+      compilerContent.includes('simulateJavaInProcess'),
+      'In-process Java VM simulation should be defined'
+    );
+    assert.ok(
+      compilerContent.includes('simulatePythonInProcess'),
+      'In-process Python VM simulation should be defined'
+    );
   });
 
   it('Safe Python binary check prevents spawn python3 ENOENT on Vercel', () => {
-    assert.ok(compilerContent.includes('getPythonBinary'), 'Should safely detect if python binary is present before spawning');
-    assert.ok(compilerContent.includes('pyBin.available'), 'Must gate subprocess behind available flag');
+    assert.ok(
+      compilerContent.includes('getPythonBinary'),
+      'Should safely detect if python binary is present before spawning'
+    );
+    assert.ok(
+      compilerContent.includes('pyBin.available'),
+      'Must gate subprocess behind available flag'
+    );
   });
 
   it('Wandbox includes active cpython-head compiler for Python execution', () => {
@@ -27,8 +42,14 @@ describe('Compiler Multi-Tier Architecture & Vercel Resiliency', () => {
   });
 
   it('Dynamic Java class name extraction is implemented to avoid hardcoded Main.java errors', () => {
-    assert.ok(compilerContent.includes('extractJavaClassName'), 'Should dynamically extract class name from code');
-    assert.ok(compilerContent.includes('${javaClass}.java'), 'Payload must use dynamic java class name');
+    assert.ok(
+      compilerContent.includes('extractJavaClassName'),
+      'Should dynamically extract class name from code'
+    );
+    assert.ok(
+      compilerContent.includes('${javaClass}.java'),
+      'Payload must use dynamic java class name'
+    );
   });
 
   it('In-process Java VM transpiler correctly runs basic Java 21 programs with zero external dependencies', () => {
@@ -52,7 +73,11 @@ describe('Compiler Multi-Tier Architecture & Vercel Resiliency', () => {
 
     let output = '';
     const sandbox = {
-      console: { log: (...args) => { output += args.join(' ') + '\n'; } },
+      console: {
+        log: (...args) => {
+          output += args.join(' ') + '\n';
+        },
+      },
       Math,
     };
     const context = vm.createContext(sandbox);
@@ -71,12 +96,15 @@ print(f"Average score: {average:.1f}")
 
     // Transpile f-strings and basic Python constructs
     let js = pyStarter.replace(/f"([^"]*)"/g, (_m, content) => {
-      const converted = content.replace(/\{([^}:]+)(?::\.([0-9]+)f)?\}/g, (_fm, expr, precision) => {
-        if (precision) {
-          return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+      const converted = content.replace(
+        /\{([^}:]+)(?::\.([0-9]+)f)?\}/g,
+        (_fm, expr, precision) => {
+          if (precision) {
+            return `\${Number(${expr.trim()}).toFixed(${precision})}`;
+          }
+          return `\${${expr.trim()}}`;
         }
-        return `\${${expr.trim()}}`;
-      });
+      );
       return `\`${converted}\``;
     });
 
@@ -85,7 +113,9 @@ print(f"Average score: {average:.1f}")
 
     let output = '';
     const sandbox = {
-      print: (...args) => { output += args.join(' ') + '\n'; },
+      print: (...args) => {
+        output += args.join(' ') + '\n';
+      },
       sum: (arr) => arr.reduce((a, b) => a + b, 0),
       len: (arr) => arr.length,
       Number,
@@ -98,38 +128,73 @@ print(f"Average score: {average:.1f}")
   });
 
   it('Frontend pages pass user Gemini key in x-gemini-api-key header', () => {
-    const sandboxCodePage = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/page.tsx'), 'utf8');
+    const sandboxCodePage = fs.readFileSync(
+      path.join(__dirname, '../src/app/sandbox/code/page.tsx'),
+      'utf8'
+    );
     const problemSolver = fs.readFileSync(
-      path.join(__dirname, '../src/app/sandbox/code/problems/[problemId]/problem-solver-client.tsx'),
+      path.join(
+        __dirname,
+        '../src/app/sandbox/code/problems/[problemId]/problem-solver-client.tsx'
+      ),
       'utf8'
     );
 
-    assert.ok(sandboxCodePage.includes('x-gemini-api-key'), 'Sandbox code page must pass x-gemini-api-key');
-    assert.ok(problemSolver.includes('x-gemini-api-key'), 'Problem solver must pass x-gemini-api-key');
+    assert.ok(
+      sandboxCodePage.includes('x-gemini-api-key'),
+      'Sandbox code page must pass x-gemini-api-key'
+    );
+    assert.ok(
+      problemSolver.includes('x-gemini-api-key'),
+      'Problem solver must pass x-gemini-api-key'
+    );
   });
 
   it('Line numbers, synchronized scrolling, and error line extraction are implemented in all compiler IDEs', () => {
-    const sandboxCodePage = fs.readFileSync(path.join(__dirname, '../src/app/sandbox/code/page.tsx'), 'utf8');
+    const sandboxCodePage = fs.readFileSync(
+      path.join(__dirname, '../src/app/sandbox/code/page.tsx'),
+      'utf8'
+    );
     const problemSolver = fs.readFileSync(
-      path.join(__dirname, '../src/app/sandbox/code/problems/[problemId]/problem-solver-client.tsx'),
+      path.join(
+        __dirname,
+        '../src/app/sandbox/code/problems/[problemId]/problem-solver-client.tsx'
+      ),
       'utf8'
     );
 
-
     // Check Sandbox Code IDE
-    assert.ok(sandboxCodePage.includes('lineNumbersRef'), 'Sandbox code page must have line numbers ref');
+    assert.ok(
+      sandboxCodePage.includes('lineNumbersRef'),
+      'Sandbox code page must have line numbers ref'
+    );
     assert.ok(sandboxCodePage.includes('handleEditorScroll'), 'Sandbox code page must sync scroll');
-    assert.ok(sandboxCodePage.includes('extractErrorLineNumber'), 'Sandbox code page must extract error line number');
+    assert.ok(
+      sandboxCodePage.includes('extractErrorLineNumber'),
+      'Sandbox code page must extract error line number'
+    );
 
     // Check Problem Solver IDE
-    assert.ok(problemSolver.includes('lineNumbersRef'), 'Problem solver must have line numbers ref');
+    assert.ok(
+      problemSolver.includes('lineNumbersRef'),
+      'Problem solver must have line numbers ref'
+    );
     assert.ok(problemSolver.includes('handleEditorScroll'), 'Problem solver must sync scroll');
-    assert.ok(problemSolver.includes('extractErrorLineNumber'), 'Problem solver must extract error line number');
+    assert.ok(
+      problemSolver.includes('extractErrorLineNumber'),
+      'Problem solver must extract error line number'
+    );
   });
 
   it('Container daemon and infrastructure failures (e.g. catatonit, failed to exec pid1) are detected and filtered', () => {
-    assert.ok(compilerContent.includes('isInfrastructureError'), 'isInfrastructureError filter must be defined');
+    assert.ok(
+      compilerContent.includes('isInfrastructureError'),
+      'isInfrastructureError filter must be defined'
+    );
     assert.ok(compilerContent.includes('catatonit'), 'catatonit pattern must be filtered');
-    assert.ok(compilerContent.includes('failed to exec pid1'), 'failed to exec pid1 pattern must be filtered');
+    assert.ok(
+      compilerContent.includes('failed to exec pid1'),
+      'failed to exec pid1 pattern must be filtered'
+    );
   });
 });

@@ -1,5 +1,10 @@
 import ELK, { ElkNode, ElkExtendedEdge } from 'elkjs/lib/elk.bundled.js';
-import { ArchitectureDiagramData, ArchitectureNode, ArchitectureEdge, ArchitectureLayer } from '@/types/architecture-diagram';
+import {
+  ArchitectureDiagramData,
+  ArchitectureNode,
+  ArchitectureEdge,
+  ArchitectureLayer,
+} from '@/types/architecture-diagram';
 
 const elk = new ELK();
 
@@ -95,7 +100,10 @@ export async function calculateElkLayout(
   const layout = await elk.layout(elkGraph);
 
   const positionedNodes: PositionedNode[] = [];
-  const nodePositionMap = new Map<string, { x: number; y: number; width: number; height: number }>();
+  const nodePositionMap = new Map<
+    string,
+    { x: number; y: number; width: number; height: number }
+  >();
 
   // Process positioned children
   (layout.children || []).forEach((child) => {
@@ -188,8 +196,10 @@ export async function calculateElkLayout(
 }
 
 function formatLayerTitle(id: string): string {
-  return id
-    .split(/[-_]/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ') + (id.toLowerCase().includes('layer') ? '' : ' Layer');
+  return (
+    id
+      .split(/[-_]/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ') + (id.toLowerCase().includes('layer') ? '' : ' Layer')
+  );
 }

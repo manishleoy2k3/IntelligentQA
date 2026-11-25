@@ -2,16 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import {
-  Search,
-  Sun,
-  Moon,
-  Menu,
-  X,
-  Sparkles,
-  User,
-  GraduationCap,
-} from 'lucide-react';
+import { Search, Sun, Moon, Menu, X, Sparkles, User, GraduationCap } from 'lucide-react';
 import { QADatabase } from '@/lib/qa-db';
 
 interface AcademyHeaderProps {
@@ -116,9 +107,7 @@ export default function AcademyHeader({
           {currentUser ? (
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-neutral-700">
               <div className="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-                {(currentUser.displayName || currentUser.email || 'QA')
-                  .slice(0, 2)
-                  .toUpperCase()}
+                {(currentUser.displayName || currentUser.email || 'QA').slice(0, 2).toUpperCase()}
               </div>
               <span className="hidden xl:block text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[120px] truncate">
                 {currentUser.displayName || currentUser.email || 'Learner'}

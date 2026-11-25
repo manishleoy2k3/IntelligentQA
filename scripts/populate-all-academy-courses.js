@@ -24,60 +24,90 @@ function generateHtmlFromLegacyLesson(lesson, courseTitle) {
         <p class="text-sm text-slate-600 dark:text-neutral-400">${lesson.description || ''}</p>
       </div>
 
-      ${manual.title ? `
+      ${
+        manual.title
+          ? `
         <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
           <h3 class="text-sm font-bold text-amber-500 mb-2">Manual Testing Context: ${manual.title}</h3>
           <ul class="list-disc list-inside space-y-1 text-xs text-slate-700 dark:text-neutral-300">
-            ${(manual.steps || []).map(s => `<li>${s}</li>`).join('')}
+            ${(manual.steps || []).map((s) => `<li>${s}</li>`).join('')}
           </ul>
-          ${manual.painPoints && manual.painPoints.length > 0 ? `
+          ${
+            manual.painPoints && manual.painPoints.length > 0
+              ? `
             <div class="mt-2 pt-2 border-t border-amber-500/20 text-xs text-amber-600 dark:text-amber-400">
               <strong>Pain Points:</strong> ${manual.painPoints.join(' ')}
             </div>
-          ` : ''}
+          `
+              : ''
+          }
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${auto.explanation ? `
+      ${
+        auto.explanation
+          ? `
         <div class="space-y-3">
           <h3 class="text-base font-bold text-slate-900 dark:text-white">Automation Architecture</h3>
           <p class="text-sm text-slate-700 dark:text-neutral-300 leading-relaxed">${auto.explanation}</p>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${auto.seleniumJava ? `
+      ${
+        auto.seleniumJava
+          ? `
         <div class="space-y-2">
           <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-amber-500">Java Production Implementation</h4>
           <pre class="p-4 rounded-xl bg-[#161616] text-[#81FF89] text-xs font-mono overflow-x-auto border border-[#2D2D2D]"><code>${escapeHtml(auto.seleniumJava)}</code></pre>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${auto.playwrightTs ? `
+      ${
+        auto.playwrightTs
+          ? `
         <div class="space-y-2">
           <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">TypeScript / Playwright Implementation</h4>
           <pre class="p-4 rounded-xl bg-[#161616] text-[#80FFF9] text-xs font-mono overflow-x-auto border border-[#2D2D2D]"><code>${escapeHtml(auto.playwrightTs)}</code></pre>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${auto.bestPractices && auto.bestPractices.length > 0 ? `
+      ${
+        auto.bestPractices && auto.bestPractices.length > 0
+          ? `
         <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
           <h4 class="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wider">Enterprise Best Practices</h4>
           <ul class="list-disc list-inside space-y-1 text-xs text-slate-700 dark:text-neutral-300">
-            ${auto.bestPractices.map(bp => `<li>${bp}</li>`).join('')}
+            ${auto.bestPractices.map((bp) => `<li>${bp}</li>`).join('')}
           </ul>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${auto.antiPatterns && auto.antiPatterns.length > 0 ? `
+      ${
+        auto.antiPatterns && auto.antiPatterns.length > 0
+          ? `
         <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
           <h4 class="text-xs font-bold text-red-400 mb-2 uppercase tracking-wider">Anti-Patterns to Avoid</h4>
           <ul class="list-disc list-inside space-y-1 text-xs text-slate-700 dark:text-neutral-300">
-            ${auto.antiPatterns.map(ap => `<li>${ap}</li>`).join('')}
+            ${auto.antiPatterns.map((ap) => `<li>${ap}</li>`).join('')}
           </ul>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${ai.promptExample ? `
+      ${
+        ai.promptExample
+          ? `
         <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-2">
           <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider">AI SDET Co-Pilot Prompts</h4>
           <p class="text-xs text-slate-700 dark:text-neutral-300 font-mono bg-[#181818] p-2.5 rounded-lg border border-purple-500/30">
@@ -85,26 +115,40 @@ function generateHtmlFromLegacyLesson(lesson, courseTitle) {
           </p>
           ${ai.agenticWorkflow ? `<p class="text-[11px] text-zinc-400">${ai.agenticWorkflow}</p>` : ''}
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${challenge.instruction ? `
+      ${
+        challenge.instruction
+          ? `
         <div class="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20 space-y-2">
           <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">Hands-On Practice Challenge</h4>
           <p class="text-xs text-slate-700 dark:text-neutral-300">${challenge.instruction}</p>
-          ${challenge.solutionCode && challenge.solutionCode.java ? `
+          ${
+            challenge.solutionCode && challenge.solutionCode.java
+              ? `
             <details class="text-xs mt-2">
               <summary class="cursor-pointer text-sky-400 font-semibold hover:underline">View Verified Solution</summary>
               <pre class="p-3 mt-2 rounded-lg bg-[#181818] text-[#81FF89] font-mono overflow-x-auto"><code>${escapeHtml(challenge.solutionCode.java)}</code></pre>
             </details>
-          ` : ''}
-          ${challenge.solutionCode && challenge.solutionCode.typescript ? `
+          `
+              : ''
+          }
+          ${
+            challenge.solutionCode && challenge.solutionCode.typescript
+              ? `
             <details class="text-xs mt-2">
               <summary class="cursor-pointer text-emerald-400 font-semibold hover:underline">View TypeScript Solution</summary>
               <pre class="p-3 mt-2 rounded-lg bg-[#181818] text-[#80FFF9] font-mono overflow-x-auto"><code>${escapeHtml(challenge.solutionCode.typescript)}</code></pre>
             </details>
-          ` : ''}
+          `
+              : ''
+          }
         </div>
-      ` : ''}
+      `
+          : ''
+      }
     </div>
   `;
 }
@@ -129,18 +173,22 @@ function makeSlug(text) {
 }
 
 // 1. Process Selenium (Java) Course
-const selTrack = QA_TRACKS.find(t => t.id === 'selenium-java');
+const selTrack = QA_TRACKS.find((t) => t.id === 'selenium-java');
 if (selTrack) {
-  const selCourse = data.academyCourses.find(c => c.id === 'course-selenium-mastery');
+  const selCourse = data.academyCourses.find((c) => c.id === 'course-selenium-mastery');
   if (selCourse) {
     selCourse.title = 'Selenium WebDriver 4 Enterprise Framework Architecture';
     selCourse.status = 'published';
-    const lessons = selTrack.modules.flatMap(m => m.lessons);
+    const lessons = selTrack.modules.flatMap((m) => m.lessons);
 
     const moduleDefs = [
       { id: 'mod-sel-1', title: 'Module 1: Core Java OOPs for Automation', slice: [0, 3] },
       { id: 'mod-sel-2', title: 'Module 2: Selenium 4 WebDriver Setup & Locators', slice: [3, 6] },
-      { id: 'mod-sel-3', title: 'Module 3: Dynamic Waits, Synchronization & Frames', slice: [6, 9] },
+      {
+        id: 'mod-sel-3',
+        title: 'Module 3: Dynamic Waits, Synchronization & Frames',
+        slice: [6, 9],
+      },
       { id: 'mod-sel-4', title: 'Module 4: Enterprise Page Object Model & Grids', slice: [9, 13] },
     ];
 
@@ -180,24 +228,38 @@ if (selTrack) {
         })),
       };
     });
-    console.log(`Populated Selenium Course with ${selCourse.modules.length} modules, ${lessons.length} lessons.`);
+    console.log(
+      `Populated Selenium Course with ${selCourse.modules.length} modules, ${lessons.length} lessons.`
+    );
   }
 }
 
 // 2. Process Playwright (TypeScript) Course
-const pwTrack = QA_TRACKS.find(t => t.id === 'playwright-ts');
+const pwTrack = QA_TRACKS.find((t) => t.id === 'playwright-ts');
 if (pwTrack) {
-  const pwCourse = data.academyCourses.find(c => c.id === 'course-playwright-mastery');
+  const pwCourse = data.academyCourses.find((c) => c.id === 'course-playwright-mastery');
   if (pwCourse) {
     pwCourse.title = 'Playwright Automation with TypeScript';
     pwCourse.status = 'published';
-    const lessons = pwTrack.modules.flatMap(m => m.lessons);
+    const lessons = pwTrack.modules.flatMap((m) => m.lessons);
 
     const moduleDefs = [
       { id: 'mod-pw-1', title: 'Module 1: Modern Web Automation Fundamentals', slice: [0, 4] },
-      { id: 'mod-pw-2', title: 'Module 2: Auto-Waiting, Network Interception & Mocking', slice: [4, 8] },
-      { id: 'mod-pw-3', title: 'Module 3: Advanced Contexts, Multi-Tab & Storage State', slice: [8, 12] },
-      { id: 'mod-pw-4', title: 'Module 4: Scalable Page Object Model & CI Sharding', slice: [12, 16] },
+      {
+        id: 'mod-pw-2',
+        title: 'Module 2: Auto-Waiting, Network Interception & Mocking',
+        slice: [4, 8],
+      },
+      {
+        id: 'mod-pw-3',
+        title: 'Module 3: Advanced Contexts, Multi-Tab & Storage State',
+        slice: [8, 12],
+      },
+      {
+        id: 'mod-pw-4',
+        title: 'Module 4: Scalable Page Object Model & CI Sharding',
+        slice: [12, 16],
+      },
     ];
 
     pwCourse.modules = moduleDefs.map((mDef, mIdx) => {
@@ -236,23 +298,33 @@ if (pwTrack) {
         })),
       };
     });
-    console.log(`Populated Playwright Course with ${pwCourse.modules.length} modules, ${lessons.length} lessons.`);
+    console.log(
+      `Populated Playwright Course with ${pwCourse.modules.length} modules, ${lessons.length} lessons.`
+    );
   }
 }
 
 // 3. Process REST Assured Course
-const apiTrack = QA_TRACKS.find(t => t.id === 'api-testing');
+const apiTrack = QA_TRACKS.find((t) => t.id === 'api-testing');
 if (apiTrack) {
-  const raCourse = data.academyCourses.find(c => c.id === 'course-rest-assured');
+  const raCourse = data.academyCourses.find((c) => c.id === 'course-rest-assured');
   if (raCourse) {
     raCourse.title = 'REST Assured: Enterprise API Automation with Java';
     raCourse.status = 'published';
-    const lessons = apiTrack.modules.flatMap(m => m.lessons);
+    const lessons = apiTrack.modules.flatMap((m) => m.lessons);
 
     const moduleDefs = [
-      { id: 'mod-ra-1', title: 'Module 1: HTTP Protocols & REST Assured Fundamentals', slice: [0, 3] },
+      {
+        id: 'mod-ra-1',
+        title: 'Module 1: HTTP Protocols & REST Assured Fundamentals',
+        slice: [0, 3],
+      },
       { id: 'mod-ra-2', title: 'Module 2: Authentication, OAuth2 & Specifications', slice: [3, 6] },
-      { id: 'mod-ra-3', title: 'Module 3: JSON Schema, POJO Serialization & Framework Design', slice: [6, 11] },
+      {
+        id: 'mod-ra-3',
+        title: 'Module 3: JSON Schema, POJO Serialization & Framework Design',
+        slice: [6, 11],
+      },
     ];
 
     raCourse.modules = moduleDefs.map((mDef, mIdx) => {
@@ -291,12 +363,23 @@ if (apiTrack) {
         })),
       };
     });
-    console.log(`Populated REST Assured Course with ${raCourse.modules.length} modules, ${lessons.length} lessons.`);
+    console.log(
+      `Populated REST Assured Course with ${raCourse.modules.length} modules, ${lessons.length} lessons.`
+    );
   }
 }
 
 // 4. Helper to generate standard rich lessons for new tracks
-function makeRichTechnicalLesson(courseId, modId, slug, title, summary, topic, codeLang, codeSnippet) {
+function makeRichTechnicalLesson(
+  courseId,
+  modId,
+  slug,
+  title,
+  summary,
+  topic,
+  codeLang,
+  codeSnippet
+) {
   const contentHtml = `
     <div class="space-y-6 text-slate-800 dark:text-neutral-200">
       <div class="p-5 rounded-2xl bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 space-y-2">
@@ -361,7 +444,7 @@ function makeRichTechnicalLesson(courseId, modId, slug, title, summary, topic, c
 }
 
 // 5. Populate Appium 2.0 Course
-const appiumCourse = data.academyCourses.find(c => c.id === 'course-appium');
+const appiumCourse = data.academyCourses.find((c) => c.id === 'course-appium');
 if (appiumCourse) {
   appiumCourse.status = 'published';
   appiumCourse.modules = [
@@ -395,15 +478,16 @@ if (appiumCourse) {
           'Device Management',
           'java',
           'UiAutomator2Options options = new UiAutomator2Options()\n    .setDeviceName("Pixel_7_API_33")\n    .setApp("/apps/production-release.apk")\n    .setAutoGrantPermissions(true);\nAndroidDriver driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), options);'
-        )
-      ]
+        ),
+      ],
     },
     {
       id: 'mod-app-2',
       courseId: appiumCourse.id,
       slug: 'mobile-gestures-and-pom',
       title: 'Module 2: W3C Mobile Gestures & Framework Design',
-      description: 'Master pointer action swipes, pinch-to-zoom, and Page Object Models for native apps.',
+      description:
+        'Master pointer action swipes, pinch-to-zoom, and Page Object Models for native apps.',
       sortOrder: 2,
       status: 'published',
       createdAt: '2026-11-23T00:00:00.000Z',
@@ -428,15 +512,15 @@ if (appiumCourse) {
           'Framework Design',
           'java',
           'public class LoginScreen extends BaseMobileScreen {\n    @AndroidFindBy(accessibility = "username_input")\n    @iOSXCUITFindBy(accessibility = "username_field")\n    private WebElement usernameInput;\n\n    public HomeScreen login(String user, String pwd) {\n        usernameInput.sendKeys(user);\n        return new HomeScreen(driver);\n    }\n}'
-        )
-      ]
-    }
+        ),
+      ],
+    },
   ];
   console.log(`Populated Appium Course with ${appiumCourse.modules.length} modules, 4 lessons.`);
 }
 
 // 6. Populate GitHub Actions Course
-const ghaCourse = data.academyCourses.find(c => c.id === 'course-github-actions');
+const ghaCourse = data.academyCourses.find((c) => c.id === 'course-github-actions');
 if (ghaCourse) {
   ghaCourse.status = 'published';
   ghaCourse.modules = [
@@ -470,15 +554,16 @@ if (ghaCourse) {
           'Parallel Execution',
           'yaml',
           'strategy:\n  fail-fast: false\n  matrix:\n    shardIndex: [1, 2, 3, 4]\n    shardTotal: [4]\nsteps:\n  - run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}'
-        )
-      ]
+        ),
+      ],
     },
     {
       id: 'mod-gha-2',
       courseId: ghaCourse.id,
       slug: 'secrets-artifacts-reporting',
       title: 'Module 2: Secrets, Artifacts & Test Reporting',
-      description: 'Secure credentials, publish JUnit reports, and deploy interactive Allure test dashboards.',
+      description:
+        'Secure credentials, publish JUnit reports, and deploy interactive Allure test dashboards.',
       sortOrder: 2,
       status: 'published',
       createdAt: '2026-11-23T00:00:00.000Z',
@@ -503,15 +588,17 @@ if (ghaCourse) {
           'Test Reporting',
           'yaml',
           '- uses: actions/upload-artifact@v4\n  if: always()\n  with:\n    name: playwright-report\n    path: playwright-report/\n    retention-days: 14'
-        )
-      ]
-    }
+        ),
+      ],
+    },
   ];
-  console.log(`Populated GitHub Actions Course with ${ghaCourse.modules.length} modules, 4 lessons.`);
+  console.log(
+    `Populated GitHub Actions Course with ${ghaCourse.modules.length} modules, 4 lessons.`
+  );
 }
 
 // 7. Populate Jenkins Course
-const jenkinsCourse = data.academyCourses.find(c => c.id === 'course-jenkins');
+const jenkinsCourse = data.academyCourses.find((c) => c.id === 'course-jenkins');
 if (jenkinsCourse) {
   jenkinsCourse.status = 'published';
   jenkinsCourse.modules = [
@@ -545,15 +632,16 @@ if (jenkinsCourse) {
           'Branch CI',
           'groovy',
           'stage("Git Checkout") {\n    steps {\n        checkout scmGit(branches: [[name: "*/${BRANCH_NAME}"]], userRemoteConfigs: [[url: "git@github.com:org/repo.git"]])\n    }\n}'
-        )
-      ]
+        ),
+      ],
     },
     {
       id: 'mod-jen-2',
       courseId: jenkinsCourse.id,
       slug: 'parallel-stages-and-reporting',
       title: 'Module 2: Parallel Stages & Slack Notifications',
-      description: 'Scale tests across multiple Docker nodes and broadcast test summaries to Slack.',
+      description:
+        'Scale tests across multiple Docker nodes and broadcast test summaries to Slack.',
       sortOrder: 2,
       status: 'published',
       createdAt: '2026-11-23T00:00:00.000Z',
@@ -578,15 +666,15 @@ if (jenkinsCourse) {
           'Observability',
           'groovy',
           'post {\n    always {\n        publishHTML(target: [reportDir: "target/surefire-reports", reportFiles: "index.html", reportName: "QA Report"])\n        slackSend(channel: "#qa-alerts", color: currentBuild.currentResult == "SUCCESS" ? "good" : "danger", message: "Build ${env.BUILD_NUMBER} Finished: ${currentBuild.currentResult}")\n    }\n}'
-        )
-      ]
-    }
+        ),
+      ],
+    },
   ];
   console.log(`Populated Jenkins Course with ${jenkinsCourse.modules.length} modules, 4 lessons.`);
 }
 
 // 8. Populate Azure DevOps Course
-const adoCourse = data.academyCourses.find(c => c.id === 'course-azure-devops');
+const adoCourse = data.academyCourses.find((c) => c.id === 'course-azure-devops');
 if (adoCourse) {
   adoCourse.status = 'published';
   adoCourse.modules = [
@@ -620,15 +708,16 @@ if (adoCourse) {
           'Agent Pools',
           'yaml',
           'pool:\n  name: Enterprise-QA-Pool\n  demands:\n    - Agent.OS -equals Linux\n    - Docker'
-        )
-      ]
+        ),
+      ],
     },
     {
       id: 'mod-ado-2',
       courseId: adoCourse.id,
       slug: 'ado-test-plans-and-gates',
       title: 'Module 2: Azure Test Plans & Quality Release Gates',
-      description: 'Link automated tests to Azure Test Cases and enforce pre-deployment quality gates.',
+      description:
+        'Link automated tests to Azure Test Cases and enforce pre-deployment quality gates.',
       sortOrder: 2,
       status: 'published',
       createdAt: '2026-11-23T00:00:00.000Z',
@@ -653,15 +742,15 @@ if (adoCourse) {
           'Release Gates',
           'yaml',
           'stages:\n  - stage: DeployProd\n    condition: and(succeeded(), eq(dependencies.QA.result, "Succeeded"))\n    jobs:\n      - deployment: ProdGate'
-        )
-      ]
-    }
+        ),
+      ],
+    },
   ];
   console.log(`Populated Azure DevOps Course with ${adoCourse.modules.length} modules, 4 lessons.`);
 }
 
 // 9. Populate Full-Stack API Testing Course
-const apiFullCourse = data.academyCourses.find(c => c.id === 'course-api-testing');
+const apiFullCourse = data.academyCourses.find((c) => c.id === 'course-api-testing');
 if (apiFullCourse) {
   apiFullCourse.status = 'published';
   apiFullCourse.modules = [
@@ -670,7 +759,8 @@ if (apiFullCourse) {
       courseId: apiFullCourse.id,
       slug: 'contract-testing-principles',
       title: 'Module 1: Consumer-Driven Contracts with Pact',
-      description: 'Prevent microservice integration breaking changes using Pact contract definitions.',
+      description:
+        'Prevent microservice integration breaking changes using Pact contract definitions.',
       sortOrder: 1,
       status: 'published',
       createdAt: '2026-11-23T00:00:00.000Z',
@@ -695,15 +785,16 @@ if (apiFullCourse) {
           'Provider Verification',
           'java',
           '@Provider("PaymentService")\n@PactFolder("target/pacts")\npublic class PaymentProviderTest {\n    @TestTemplate\n    @ExtendWith(PactVerificationInvocationContextProvider.class)\n    void testTemplate(PactVerificationContext context) { context.verifyInteraction(); }\n}'
-        )
-      ]
+        ),
+      ],
     },
     {
       id: 'mod-apifull-2',
       courseId: apiFullCourse.id,
       slug: 'wiremock-and-k6-performance',
       title: 'Module 2: WireMock Stubs & k6 Performance Benchmarking',
-      description: 'Isolate upstream dependencies with WireMock stubs and enforce SLOs with k6 scripts.',
+      description:
+        'Isolate upstream dependencies with WireMock stubs and enforce SLOs with k6 scripts.',
       sortOrder: 2,
       status: 'published',
       createdAt: '2026-11-23T00:00:00.000Z',
@@ -728,15 +819,17 @@ if (apiFullCourse) {
           'Performance Testing',
           'javascript',
           'import http from "k6/http";\nimport { check } from "k6";\nexport const options = { vus: 50, duration: "30s" };\nexport default function() {\n    const res = http.get("https://api.staging.io/health");\n    check(res, { "status is 200": (r) => r.status === 200 });\n}'
-        )
-      ]
-    }
+        ),
+      ],
+    },
   ];
-  console.log(`Populated Full-Stack API Testing Course with ${apiFullCourse.modules.length} modules, 4 lessons.`);
+  console.log(
+    `Populated Full-Stack API Testing Course with ${apiFullCourse.modules.length} modules, 4 lessons.`
+  );
 }
 
 // Clean up temporary fidelity test courses if any
-data.academyCourses = data.academyCourses.filter(c => !c.id.includes('fidelity-course'));
+data.academyCourses = data.academyCourses.filter((c) => !c.id.includes('fidelity-course'));
 
 fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
 console.log('Successfully saved all populated courses to curriculum-data-store.json!');

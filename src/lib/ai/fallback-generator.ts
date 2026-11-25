@@ -14,24 +14,38 @@ export function generateFallbackEnhancement(request: AIEnhancementRequest): AISt
   const primaryMatch: QAKnowledgeEntry | undefined = matchedKnowledge[0];
 
   // Check existing content properties
-  const hasArchitecture = existingHtml.includes('architecture') || existingHtml.includes('<svg') || existingHtml.includes('data-diagram-type');
+  const hasArchitecture =
+    existingHtml.includes('architecture') ||
+    existingHtml.includes('<svg') ||
+    existingHtml.includes('data-diagram-type');
   const hasCode = existingHtml.includes('<pre') || existingHtml.includes('<code>');
-  const hasFailures = /exception|error|troubleshoot|failure|staleelement|timeout/i.test(existingHtml);
-  const wordCount = existingHtml.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).length;
+  const hasFailures = /exception|error|troubleshoot|failure|staleelement|timeout/i.test(
+    existingHtml
+  );
+  const wordCount = existingHtml
+    .replace(/<[^>]+>/g, ' ')
+    .trim()
+    .split(/\s+/).length;
 
   if (action === 'technical_review') {
-    const completeness = Math.min(94, Math.max(70, Math.round(75 + (wordCount > 300 ? 13 : wordCount / 30))));
-    const practicalDepth = Math.min(90, Math.max(65, Math.round(68 + (hasCode ? 12 : 0) + (hasFailures ? 10 : 0))));
+    const completeness = Math.min(
+      94,
+      Math.max(70, Math.round(75 + (wordCount > 300 ? 13 : wordCount / 30)))
+    );
+    const practicalDepth = Math.min(
+      90,
+      Math.max(65, Math.round(68 + (hasCode ? 12 : 0) + (hasFailures ? 10 : 0)))
+    );
     const codeScore = hasCode ? 80 : 55;
     const diagScore = hasArchitecture ? 90 : 45;
     const failScore = hasFailures ? 82 : 50;
 
     const overall = Math.round(
       completeness * 0.3 +
-      practicalDepth * 0.25 +
-      codeScore * 0.2 +
-      diagScore * 0.15 +
-      failScore * 0.1
+        practicalDepth * 0.25 +
+        codeScore * 0.2 +
+        diagScore * 0.15 +
+        failScore * 0.1
     );
 
     const review: TechnicalReviewData = {
@@ -83,16 +97,21 @@ export function generateFallbackEnhancement(request: AIEnhancementRequest): AISt
           detail: hasArchitecture
             ? 'Architecture visualization presents component relationships and execution tiers.'
             : 'Visual representation of component flow and architecture is absent.',
-          actionableStep: hasArchitecture ? undefined : 'Use the Diagram Studio to generate and insert an Architecture Diagram.',
+          actionableStep: hasArchitecture
+            ? undefined
+            : 'Use the Diagram Studio to generate and insert an Architecture Diagram.',
         },
         {
           type: hasCode ? 'Improve' : 'Missing',
           category: 'Code Examples',
-          title: hasCode ? 'Add Java and TypeScript examples.' : 'Missing executable test automation code.',
+          title: hasCode
+            ? 'Add Java and TypeScript examples.'
+            : 'Missing executable test automation code.',
           detail: hasCode
             ? 'Ensure enterprise production patterns with proper imports, thread isolation, and clean assertions.'
             : 'Add runnable test automation scripts for both Java and TypeScript.',
-          actionableStep: 'Provide side-by-side Java and TypeScript examples with assertion validations.',
+          actionableStep:
+            'Provide side-by-side Java and TypeScript examples with assertion validations.',
         },
         {
           type: hasFailures ? 'Good' : 'Missing',
@@ -101,7 +120,9 @@ export function generateFallbackEnhancement(request: AIEnhancementRequest): AISt
           detail: hasFailures
             ? 'Identifies realistic framework exceptions and diagnosis steps.'
             : 'Missing real-world framework exceptions, flakiness causes, and troubleshooting tactics.',
-          actionableStep: hasFailures ? undefined : 'Include common failure scenarios with root cause and resolution tactics.',
+          actionableStep: hasFailures
+            ? undefined
+            : 'Include common failure scenarios with root cause and resolution tactics.',
         },
         {
           type: 'Good',
@@ -124,7 +145,9 @@ export function generateFallbackEnhancement(request: AIEnhancementRequest): AISt
     };
   }
 
-  const tsCode = primaryMatch?.codeSnippet?.playwright || `import { test, expect } from '@playwright/test';
+  const tsCode =
+    primaryMatch?.codeSnippet?.playwright ||
+    `import { test, expect } from '@playwright/test';
 
 test.describe('${lessonTitle} - Enterprise Test Suite', () => {
   test('should execute successfully with robust auto-waiting and assertions', async ({ page }) => {
@@ -143,7 +166,10 @@ test.describe('${lessonTitle} - Enterprise Test Suite', () => {
   });
 });`;
 
-  const javaCode = primaryMatch?.codeSnippet?.restassured || primaryMatch?.codeSnippet?.selenium || `package com.intelligentqa.automation;
+  const javaCode =
+    primaryMatch?.codeSnippet?.restassured ||
+    primaryMatch?.codeSnippet?.selenium ||
+    `package com.intelligentqa.automation;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -171,9 +197,10 @@ public class ${lessonTitle.replace(/[^a-zA-Z0-9]/g, '')}Test {
 
 In enterprise test automation, understanding this concept ensures high reliability, test isolation, and maintainable framework design across large-scale CI/CD execution.`;
 
-  const bestPracticesList = primaryMatch?.bestPractices && primaryMatch.bestPractices.length > 0
-    ? primaryMatch.bestPractices.map((bp, i) => `${i + 1}. **${bp}**`).join('\n')
-    : `1. **Thread Isolation**: Never share mutable state or browser context instances between test threads.\n2. **Explicit Assertions**: Always assert explicit states (\`toBeVisible\`, \`toHaveCount\`) rather than relying solely on page navigations.\n3. **Artifact Retention**: Automatically capture trace viewer files, videos, and network logs upon failure.`;
+  const bestPracticesList =
+    primaryMatch?.bestPractices && primaryMatch.bestPractices.length > 0
+      ? primaryMatch.bestPractices.map((bp, i) => `${i + 1}. **${bp}**`).join('\n')
+      : `1. **Thread Isolation**: Never share mutable state or browser context instances between test threads.\n2. **Explicit Assertions**: Always assert explicit states (\`toBeVisible\`, \`toHaveCount\`) rather than relying solely on page navigations.\n3. **Artifact Retention**: Automatically capture trace viewer files, videos, and network logs upon failure.`;
 
   // Generate Enhanced Content for Lesson Editor
   const generatedMarkdown = `## 1. Lesson Overview & Motivation

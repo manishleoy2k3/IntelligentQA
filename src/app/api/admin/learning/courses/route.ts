@@ -13,7 +13,20 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { categoryId, title, slug, subtitle, description, icon, thumbnail, level, estimatedHours, displayOrder, sortOrder, status } = body;
+    const {
+      categoryId,
+      title,
+      slug,
+      subtitle,
+      description,
+      icon,
+      thumbnail,
+      level,
+      estimatedHours,
+      displayOrder,
+      sortOrder,
+      status,
+    } = body;
 
     if (!categoryId || !title || !slug) {
       return NextResponse.json(
@@ -39,17 +52,25 @@ export async function POST(req: NextRequest) {
       thumbnail: thumbnail || '',
       level: level || 'All Levels',
       estimatedHours: typeof estimatedHours === 'number' ? estimatedHours : 0,
-      displayOrder: typeof displayOrder === 'number' ? displayOrder : (typeof sortOrder === 'number' ? sortOrder : 0),
+      displayOrder:
+        typeof displayOrder === 'number'
+          ? displayOrder
+          : typeof sortOrder === 'number'
+            ? sortOrder
+            : 0,
       sortOrder: typeof sortOrder === 'number' ? sortOrder : 0,
       status: status || 'published',
       modules: [],
     });
 
-    return NextResponse.json({
-      success: true,
-      data: created,
-      message: 'Course created successfully.',
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: created,
+        message: 'Course created successfully.',
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },

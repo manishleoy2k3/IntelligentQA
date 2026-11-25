@@ -27,7 +27,9 @@ export default function CourseOverviewCard({
   className = '',
 }: CourseOverviewCardProps) {
   return (
-    <div className={`p-5 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-gradient-to-br from-slate-50 to-white dark:from-neutral-900/60 dark:to-neutral-900/20 shadow-xs mb-8 no-print ${className}`}>
+    <div
+      className={`p-5 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-gradient-to-br from-slate-50 to-white dark:from-neutral-900/60 dark:to-neutral-900/20 shadow-xs mb-8 no-print ${className}`}
+    >
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
@@ -77,7 +79,9 @@ export default function CourseOverviewCard({
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-500 shrink-0" />
             <div>
-              <span className="font-bold text-slate-800 dark:text-neutral-200">~{estimatedHours}h</span>
+              <span className="font-bold text-slate-800 dark:text-neutral-200">
+                ~{estimatedHours}h
+              </span>
               <span className="text-slate-500 dark:text-neutral-400 ml-1">Total</span>
             </div>
           </div>
@@ -85,7 +89,9 @@ export default function CourseOverviewCard({
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
             <div>
-              <span className="font-bold text-slate-800 dark:text-neutral-200">{percentCompleted}%</span>
+              <span className="font-bold text-slate-800 dark:text-neutral-200">
+                {percentCompleted}%
+              </span>
               <span className="text-slate-500 dark:text-neutral-400 ml-1">Done</span>
             </div>
           </div>

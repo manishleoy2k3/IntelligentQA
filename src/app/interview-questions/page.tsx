@@ -56,8 +56,8 @@ export default function InterviewQuestionsPage() {
     loadQuestions();
 
     const user = QADatabase.getCurrentUser() || DEMO_USER;
-    QADatabase.getBookmarks(user.id).then(bms => {
-      setBookmarkedIds(bms.map(b => b.questionId));
+    QADatabase.getBookmarks(user.id).then((bms) => {
+      setBookmarkedIds(bms.map((b) => b.questionId));
     });
 
     if (typeof window !== 'undefined') {
@@ -77,9 +77,9 @@ export default function InterviewQuestionsPage() {
     const user = QADatabase.getCurrentUser() || DEMO_USER;
     const isNowBookmarked = await QADatabase.toggleBookmark(user.id, qId);
     if (isNowBookmarked) {
-      setBookmarkedIds(prev => [...prev, qId]);
+      setBookmarkedIds((prev) => [...prev, qId]);
     } else {
-      setBookmarkedIds(prev => prev.filter(id => id !== qId));
+      setBookmarkedIds((prev) => prev.filter((id) => id !== qId));
     }
   };
 
@@ -91,7 +91,16 @@ export default function InterviewQuestionsPage() {
 
   // Download sample Excel template for users to provide custom questions
   const handleDownloadTemplate = () => {
-    const headers = ['Question', 'Technology', 'Difficulty', 'Topic', 'Answer Summary', 'Code Snippet', 'Best Practice', 'Pitfall to Avoid'];
+    const headers = [
+      'Question',
+      'Technology',
+      'Difficulty',
+      'Topic',
+      'Answer Summary',
+      'Code Snippet',
+      'Best Practice',
+      'Pitfall to Avoid',
+    ];
     const sampleRows = [
       [
         'How do you architect distributed test execution for enterprise microservices?',
@@ -101,7 +110,7 @@ export default function InterviewQuestionsPage() {
         'Isolate tests in ephemeral containers, shard across CI matrix jobs, and use consumer contract tests before E2E runs.',
         '// playwright.config.ts\nworkers: process.env.CI ? 4 : undefined,',
         'Shard tests with --shard=1/4 across CI runners to achieve sub-10 minute feedback.',
-        'Sharing global database state across parallel test threads.'
+        'Sharing global database state across parallel test threads.',
       ],
       [
         'How do you handle multi-threaded WebDriver sessions in parallel TestNG execution?',
@@ -111,7 +120,7 @@ export default function InterviewQuestionsPage() {
         'Use ThreadLocal<WebDriver> with strict tlDriver.remove() in teardown to prevent thread pool memory leaks.',
         'private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();',
         'Always clean up with tlDriver.remove() inside an @AfterMethod listener.',
-        'Using static WebDriver references shared across all test worker threads.'
+        'Using static WebDriver references shared across all test worker threads.',
       ],
       [
         'How do you test asynchronous Kafka message streams in integration tests?',
@@ -121,8 +130,8 @@ export default function InterviewQuestionsPage() {
         'Use Awaitility with embedded or Testcontainers Kafka consumers to poll message offsets and assert payload schemas.',
         'Awaitility.await().atMost(5, SECONDS).untilAsserted(() -> Assert.assertTrue(records.count() > 0));',
         'Use Testcontainers for reproducible isolated Kafka broker testing.',
-        'Using Thread.sleep(5000) waiting blindly for background events to publish.'
-      ]
+        'Using Thread.sleep(5000) waiting blindly for background events to publish.',
+      ],
     ];
 
     const xml = generateExcelWorkbookXml('Interview Questions Template', headers, sampleRows);
@@ -149,7 +158,7 @@ export default function InterviewQuestionsPage() {
     try {
       const parsed = await parseRequirementsFile(file);
       const text = parsed.extractedText;
-      const lines = text.split('\n').filter(l => l.trim().length > 0);
+      const lines = text.split('\n').filter((l) => l.trim().length > 0);
 
       const newItems: InterviewQuestionItem[] = [];
       let currentItem: Partial<InterviewQuestionItem> | null = null;
@@ -159,9 +168,17 @@ export default function InterviewQuestionsPage() {
       for (const line of lines) {
         const trimmed = line.trim();
         // Check if line looks like a question or CSV row
-        if (trimmed.includes(',') && (trimmed.includes('Playwright') || trimmed.includes('Selenium') || trimmed.includes('Java') || trimmed.includes('API') || trimmed.includes('Architect') || trimmed.includes('Senior'))) {
+        if (
+          trimmed.includes(',') &&
+          (trimmed.includes('Playwright') ||
+            trimmed.includes('Selenium') ||
+            trimmed.includes('Java') ||
+            trimmed.includes('API') ||
+            trimmed.includes('Architect') ||
+            trimmed.includes('Senior'))
+        ) {
           // CSV-style split
-          const parts = trimmed.split(',').map(p => p.trim().replace(/^"|"$/g, ''));
+          const parts = trimmed.split(',').map((p) => p.trim().replace(/^"|"$/g, ''));
           if (parts.length >= 3 && parts[0].length > 10) {
             newItems.push({
               id: `imported-${Date.now()}-${count++}`,
@@ -179,7 +196,12 @@ export default function InterviewQuestionsPage() {
         }
 
         // Question block parser
-        if (trimmed.endsWith('?') || trimmed.startsWith('Q:') || trimmed.startsWith('Question:') || trimmed.match(/^[0-9]+\.\s+/)) {
+        if (
+          trimmed.endsWith('?') ||
+          trimmed.startsWith('Q:') ||
+          trimmed.startsWith('Question:') ||
+          trimmed.match(/^[0-9]+\.\s+/)
+        ) {
           if (currentItem && currentItem.question) {
             newItems.push({
               id: `imported-${Date.now()}-${count++}`,
@@ -190,27 +212,31 @@ export default function InterviewQuestionsPage() {
               answerSummary: currentItem.answerSummary || 'Verified technical answer.',
               codeSnippet: currentItem.codeSnippet,
               bestPractice: currentItem.bestPractice || 'Apply resilient test automation patterns.',
-              pitfallToAvoid: currentItem.pitfallToAvoid || 'Omitting synchronization and assertions.',
+              pitfallToAvoid:
+                currentItem.pitfallToAvoid || 'Omitting synchronization and assertions.',
             });
           }
           const cleanQ = trimmed.replace(/^(Q:|Question:|[0-9]+\.)\s*/i, '');
           const guessedTech = cleanQ.toLowerCase().includes('playwright')
             ? 'Playwright'
             : cleanQ.toLowerCase().includes('selenium')
-            ? 'Selenium'
-            : cleanQ.toLowerCase().includes('api') || cleanQ.toLowerCase().includes('rest')
-            ? 'API Testing'
-            : cleanQ.toLowerCase().includes('ai') || cleanQ.toLowerCase().includes('llm')
-            ? 'AI & LLM'
-            : cleanQ.toLowerCase().includes('java')
-            ? 'Java'
-            : 'Framework Design';
+              ? 'Selenium'
+              : cleanQ.toLowerCase().includes('api') || cleanQ.toLowerCase().includes('rest')
+                ? 'API Testing'
+                : cleanQ.toLowerCase().includes('ai') || cleanQ.toLowerCase().includes('llm')
+                  ? 'AI & LLM'
+                  : cleanQ.toLowerCase().includes('java')
+                    ? 'Java'
+                    : 'Framework Design';
 
-          const guessedDiff = cleanQ.toLowerCase().includes('architect') || cleanQ.toLowerCase().includes('enterprise') || cleanQ.toLowerCase().includes('scale')
-            ? 'Architect'
-            : cleanQ.toLowerCase().includes('senior') || cleanQ.toLowerCase().includes('ci/cd')
-            ? 'Senior'
-            : 'Mid';
+          const guessedDiff =
+            cleanQ.toLowerCase().includes('architect') ||
+            cleanQ.toLowerCase().includes('enterprise') ||
+            cleanQ.toLowerCase().includes('scale')
+              ? 'Architect'
+              : cleanQ.toLowerCase().includes('senior') || cleanQ.toLowerCase().includes('ci/cd')
+                ? 'Senior'
+                : 'Mid';
 
           currentItem = {
             question: cleanQ,
@@ -244,23 +270,32 @@ export default function InterviewQuestionsPage() {
       }
 
       if (newItems.length > 0) {
-        setQuestions(prev => {
+        setQuestions((prev) => {
           const updated = [...newItems, ...prev];
           try {
-            const existingCustom = JSON.parse(localStorage.getItem('intelligentqa_custom_interview_questions') || '[]');
-            localStorage.setItem('intelligentqa_custom_interview_questions', JSON.stringify([...newItems, ...existingCustom]));
+            const existingCustom = JSON.parse(
+              localStorage.getItem('intelligentqa_custom_interview_questions') || '[]'
+            );
+            localStorage.setItem(
+              'intelligentqa_custom_interview_questions',
+              JSON.stringify([...newItems, ...existingCustom])
+            );
           } catch (e) {
             console.warn('Failed to save to localStorage:', e);
           }
           return updated;
         });
-        setImportSuccessMsg(`Successfully imported ${newItems.length} questions from ${file.name}!`);
+        setImportSuccessMsg(
+          `Successfully imported ${newItems.length} questions from ${file.name}!`
+        );
         setTimeout(() => {
           setShowImportModal(false);
           setImportSuccessMsg('');
         }, 1800);
       } else {
-        setImportError('No structured questions could be extracted. Please use the Excel template format or ensure lines contain questions with question marks.');
+        setImportError(
+          'No structured questions could be extracted. Please use the Excel template format or ensure lines contain questions with question marks.'
+        );
       }
     } catch (err: any) {
       console.error('Import failed:', err);
@@ -283,7 +318,7 @@ export default function InterviewQuestionsPage() {
   };
 
   // Pre-calculate questions matching search + tech + experience level (to derive per-difficulty counts)
-  const levelMatchedQuestions = questions.filter(q => {
+  const levelMatchedQuestions = questions.filter((q) => {
     const matchesSearch =
       q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -292,38 +327,76 @@ export default function InterviewQuestionsPage() {
     const matchesTech =
       selectedTech === 'All' ||
       q.technology === selectedTech ||
-      (selectedTech === 'Java' && (q.technology === 'Java' || q.technology === 'Java Concurrency')) ||
-      (selectedTech === 'API Testing' && (q.technology === 'API Testing' || q.technology === 'REST API' || q.technology === 'REST Assured' || q.technology === 'Pact Contract Testing')) ||
+      (selectedTech === 'Java' &&
+        (q.technology === 'Java' || q.technology === 'Java Concurrency')) ||
+      (selectedTech === 'API Testing' &&
+        (q.technology === 'API Testing' ||
+          q.technology === 'REST API' ||
+          q.technology === 'REST Assured' ||
+          q.technology === 'Pact Contract Testing')) ||
       (selectedTech === 'AI & LLM' && q.technology === 'AI & LLM') ||
-      (selectedTech === 'Manual QA' && (q.technology === 'Manual QA' || q.technology === 'Test Design' || q.technology === 'Defect Management')) ||
+      (selectedTech === 'Manual QA' &&
+        (q.technology === 'Manual QA' ||
+          q.technology === 'Test Design' ||
+          q.technology === 'Defect Management')) ||
       (selectedTech === 'Appium' && (q.technology === 'Appium' || q.technology === 'Mobile QA')) ||
-      (selectedTech === 'CI/CD' && (q.technology === 'CI/CD' || q.technology === 'GitHub Actions' || q.technology === 'Testcontainers')) ||
-      (selectedTech === 'Reporting' && (q.technology === 'Reporting' || q.technology === 'Allure Report' || q.technology === 'Slack / Teams Webhooks')) ||
-      (selectedTech === 'DSA for SDET' && (q.technology === 'DSA for SDET' || q.technology === 'Coding & DSA' || q.technology === 'Algorithms'));
+      (selectedTech === 'CI/CD' &&
+        (q.technology === 'CI/CD' ||
+          q.technology === 'GitHub Actions' ||
+          q.technology === 'Testcontainers')) ||
+      (selectedTech === 'Reporting' &&
+        (q.technology === 'Reporting' ||
+          q.technology === 'Allure Report' ||
+          q.technology === 'Slack / Teams Webhooks')) ||
+      (selectedTech === 'DSA for SDET' &&
+        (q.technology === 'DSA for SDET' ||
+          q.technology === 'Coding & DSA' ||
+          q.technology === 'Algorithms'));
 
     const matchesExpLevel =
       selectedExpLevel === 'All' ||
-      (selectedExpLevel === 'Junior' && (q.experienceLevel === '0-2 Years' || (q.minYears !== undefined && q.minYears <= 2) || q.difficulty === 'Junior')) ||
-      (selectedExpLevel === 'Mid' && (q.experienceLevel === '3-5 Years' || (q.minYears !== undefined && q.minYears >= 3 && q.minYears <= 5) || q.difficulty === 'Mid')) ||
-      (selectedExpLevel === 'Senior' && (q.experienceLevel === '6-9 Years' || (q.minYears !== undefined && q.minYears >= 6 && q.minYears <= 9) || q.difficulty === 'Senior')) ||
-      (selectedExpLevel === 'Architect' && (q.experienceLevel === '10+ Years' || (q.minYears !== undefined && q.minYears >= 10) || q.difficulty === 'Architect'));
+      (selectedExpLevel === 'Junior' &&
+        (q.experienceLevel === '0-2 Years' ||
+          (q.minYears !== undefined && q.minYears <= 2) ||
+          q.difficulty === 'Junior')) ||
+      (selectedExpLevel === 'Mid' &&
+        (q.experienceLevel === '3-5 Years' ||
+          (q.minYears !== undefined && q.minYears >= 3 && q.minYears <= 5) ||
+          q.difficulty === 'Mid')) ||
+      (selectedExpLevel === 'Senior' &&
+        (q.experienceLevel === '6-9 Years' ||
+          (q.minYears !== undefined && q.minYears >= 6 && q.minYears <= 9) ||
+          q.difficulty === 'Senior')) ||
+      (selectedExpLevel === 'Architect' &&
+        (q.experienceLevel === '10+ Years' ||
+          (q.minYears !== undefined && q.minYears >= 10) ||
+          q.difficulty === 'Architect'));
 
     const matchesBookmark = !showOnlyBookmarks || bookmarkedIds.includes(q.id);
 
     return matchesSearch && matchesTech && matchesExpLevel && matchesBookmark;
   });
 
-  const countEasy = levelMatchedQuestions.filter(q => q.difficulty === 'Easy' || q.difficulty === 'Junior').length;
-  const countMedium = levelMatchedQuestions.filter(q => q.difficulty === 'Medium' || q.difficulty === 'Mid').length;
-  const countHard = levelMatchedQuestions.filter(q => q.difficulty === 'Hard' || q.difficulty === 'Senior').length;
-  const countArchitect = levelMatchedQuestions.filter(q => q.difficulty === 'Architect').length;
+  const countEasy = levelMatchedQuestions.filter(
+    (q) => q.difficulty === 'Easy' || q.difficulty === 'Junior'
+  ).length;
+  const countMedium = levelMatchedQuestions.filter(
+    (q) => q.difficulty === 'Medium' || q.difficulty === 'Mid'
+  ).length;
+  const countHard = levelMatchedQuestions.filter(
+    (q) => q.difficulty === 'Hard' || q.difficulty === 'Senior'
+  ).length;
+  const countArchitect = levelMatchedQuestions.filter((q) => q.difficulty === 'Architect').length;
 
   const filteredQuestions = levelMatchedQuestions
-    .filter(q => {
+    .filter((q) => {
       if (selectedDifficulty === 'All') return true;
-      if (selectedDifficulty === 'Easy') return q.difficulty === 'Easy' || q.difficulty === 'Junior';
-      if (selectedDifficulty === 'Medium') return q.difficulty === 'Medium' || q.difficulty === 'Mid';
-      if (selectedDifficulty === 'Hard') return q.difficulty === 'Hard' || q.difficulty === 'Senior';
+      if (selectedDifficulty === 'Easy')
+        return q.difficulty === 'Easy' || q.difficulty === 'Junior';
+      if (selectedDifficulty === 'Medium')
+        return q.difficulty === 'Medium' || q.difficulty === 'Mid';
+      if (selectedDifficulty === 'Hard')
+        return q.difficulty === 'Hard' || q.difficulty === 'Senior';
       if (selectedDifficulty === 'Architect') return q.difficulty === 'Architect';
       return q.difficulty === selectedDifficulty;
     })
@@ -354,14 +427,17 @@ export default function InterviewQuestionsPage() {
               Curated 800+ SDET Interview Question Bank
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 max-w-2xl">
-              Search real-world technical scenarios across Playwright, Selenium, Java OOPs, API Testing, and Framework Architecture spanning Junior to Test Architect.
+              Search real-world technical scenarios across Playwright, Selenium, Java OOPs, API
+              Testing, and Framework Architecture spanning Junior to Test Architect.
             </p>
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
             {/* Semantic anchor for test suite compatibility */}
             <span className="hidden sr-only">
-              <button onClick={() => setShowImportModal(true)}>Import Questions (.xlsx / .csv)</button>
+              <button onClick={() => setShowImportModal(true)}>
+                Import Questions (.xlsx / .csv)
+              </button>
             </span>
 
             {/* Bookmark Filter */}
@@ -387,7 +463,7 @@ export default function InterviewQuestionsPage() {
               <input
                 type="text"
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search 800+ questions by keyword, topic, or error name (e.g. StaleElement, Flakiness, Sharding, Architect)..."
                 className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm sm:text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
@@ -396,7 +472,7 @@ export default function InterviewQuestionsPage() {
             {/* Tech Selector */}
             <select
               value={selectedTech}
-              onChange={e => setSelectedTech(e.target.value)}
+              onChange={(e) => setSelectedTech(e.target.value)}
               className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               <option value="All">All Tech Stacks (800+ Questions)</option>
@@ -415,7 +491,7 @@ export default function InterviewQuestionsPage() {
             {/* Experience Level Selector */}
             <select
               value={selectedExpLevel}
-              onChange={e => setSelectedExpLevel(e.target.value)}
+              onChange={(e) => setSelectedExpLevel(e.target.value)}
               className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               <option value="All">All Experience Levels</option>
@@ -428,7 +504,7 @@ export default function InterviewQuestionsPage() {
             {/* Difficulty Selector */}
             <select
               value={selectedDifficulty}
-              onChange={e => setSelectedDifficulty(e.target.value)}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
               className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               <option value="All">All Modes (Easy → Med → Hard)</option>
@@ -508,9 +584,15 @@ export default function InterviewQuestionsPage() {
         <div className="flex items-center justify-between text-xs text-slate-500 px-1 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <span>
-              Showing <strong>{displayedQuestions.length}</strong> of <strong>{filteredQuestions.length}</strong> matching questions (Total Bank: <strong>{questions.length}</strong>)
+              Showing <strong>{displayedQuestions.length}</strong> of{' '}
+              <strong>{filteredQuestions.length}</strong> matching questions (Total Bank:{' '}
+              <strong>{questions.length}</strong>)
             </span>
-            {(selectedTech !== 'All' || selectedExpLevel !== 'All' || selectedDifficulty !== 'All' || searchTerm || showOnlyBookmarks) && (
+            {(selectedTech !== 'All' ||
+              selectedExpLevel !== 'All' ||
+              selectedDifficulty !== 'All' ||
+              searchTerm ||
+              showOnlyBookmarks) && (
               <button
                 onClick={() => {
                   setSelectedTech('All');
@@ -534,7 +616,7 @@ export default function InterviewQuestionsPage() {
 
         {/* Questions Grid */}
         <div className="flex flex-col space-y-6">
-          {displayedQuestions.map(item => {
+          {displayedQuestions.map((item) => {
             const isBookmarked = bookmarkedIds.includes(item.id);
             return (
               <div
@@ -549,7 +631,13 @@ export default function InterviewQuestionsPage() {
                       </span>
                       {item.experienceLevel && (
                         <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                          {item.experienceLevel === '0-2 Years' ? 'Junior (0-2 Yrs)' : item.experienceLevel === '3-5 Years' ? 'Mid SDET (2-5 Yrs)' : item.experienceLevel === '6-9 Years' ? 'Senior SDET (5-8 Yrs)' : 'Architect (8+ Yrs)'}
+                          {item.experienceLevel === '0-2 Years'
+                            ? 'Junior (0-2 Yrs)'
+                            : item.experienceLevel === '3-5 Years'
+                              ? 'Mid SDET (2-5 Yrs)'
+                              : item.experienceLevel === '6-9 Years'
+                                ? 'Senior SDET (5-8 Yrs)'
+                                : 'Architect (8+ Yrs)'}
                         </span>
                       )}
                       <span
@@ -557,13 +645,15 @@ export default function InterviewQuestionsPage() {
                           item.difficulty === 'Architect'
                             ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800 font-bold'
                             : item.difficulty === 'Hard' || item.difficulty === 'Senior'
-                            ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-medium'
-                            : item.difficulty === 'Medium' || item.difficulty === 'Mid'
-                            ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-medium'
-                            : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-medium'
+                              ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-medium'
+                              : item.difficulty === 'Medium' || item.difficulty === 'Mid'
+                                ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-medium'
+                                : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-medium'
                         }`}
                       >
-                        {item.difficulty === 'Architect' ? 'Test Architect' : `${item.difficulty} Mode`}
+                        {item.difficulty === 'Architect'
+                          ? 'Test Architect'
+                          : `${item.difficulty} Mode`}
                       </span>
                       {item.topic && (
                         <span className="text-[11px] text-slate-400 truncate max-w-[150px] hidden sm:inline">
@@ -600,7 +690,11 @@ export default function InterviewQuestionsPage() {
                         className="absolute right-2.5 top-2.5 p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg transition-colors cursor-pointer"
                         title="Copy Snippet"
                       >
-                        {copiedId === item.id ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                        {copiedId === item.id ? (
+                          <Check className="w-4 h-4 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
                       </button>
                       <pre className="whitespace-pre-wrap leading-relaxed">{item.codeSnippet}</pre>
                     </div>
@@ -611,11 +705,15 @@ export default function InterviewQuestionsPage() {
                 <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800 space-y-2 text-sm">
                   <div className="flex items-start gap-2 text-emerald-700 dark:text-emerald-400">
                     <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span><strong>Best Practice:</strong> {item.bestPractice}</span>
+                    <span>
+                      <strong>Best Practice:</strong> {item.bestPractice}
+                    </span>
                   </div>
                   <div className="flex items-start gap-2 text-rose-700 dark:text-rose-400">
                     <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span><strong>Pitfall to Avoid:</strong> {item.pitfallToAvoid}</span>
+                    <span>
+                      <strong>Pitfall to Avoid:</strong> {item.pitfallToAvoid}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -627,7 +725,7 @@ export default function InterviewQuestionsPage() {
         {filteredQuestions.length > displayLimit && (
           <div className="text-center pt-4 pb-8">
             <button
-              onClick={() => setDisplayLimit(prev => prev + 24)}
+              onClick={() => setDisplayLimit((prev) => prev + 24)}
               className="py-3 px-8 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-indigo-500 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow cursor-pointer"
             >
               Load More Questions ({filteredQuestions.length - displayLimit} remaining)
@@ -642,7 +740,8 @@ export default function InterviewQuestionsPage() {
               No questions matched your filter combination.
             </p>
             <p className="text-xs text-slate-400 max-w-md mx-auto">
-              Try selecting &quot;All Tech Stacks&quot; or clearing the search keyword. You can also import custom questions directly from your own Excel spreadsheet below.
+              Try selecting &quot;All Tech Stacks&quot; or clearing the search keyword. You can also
+              import custom questions directly from your own Excel spreadsheet below.
             </p>
             <button
               onClick={() => {
@@ -686,7 +785,10 @@ export default function InterviewQuestionsPage() {
 
               <div className="space-y-4">
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  You can import your own Excel question bank. We support standard columns: <strong>Question</strong>, <strong>Technology</strong>, <strong>Difficulty</strong> (Junior, Mid, Senior, Architect), <strong>Topic</strong>, and <strong>Answer Summary</strong>.
+                  You can import your own Excel question bank. We support standard columns:{' '}
+                  <strong>Question</strong>, <strong>Technology</strong>,{' '}
+                  <strong>Difficulty</strong> (Junior, Mid, Senior, Architect),{' '}
+                  <strong>Topic</strong>, and <strong>Answer Summary</strong>.
                 </p>
 
                 {/* Upload Zone */}
@@ -725,9 +827,7 @@ export default function InterviewQuestionsPage() {
                     </div>
                   )}
                   {importError && (
-                    <div className="text-xs text-rose-500 font-medium py-2">
-                      ✕ {importError}
-                    </div>
+                    <div className="text-xs text-rose-500 font-medium py-2">✕ {importError}</div>
                   )}
                 </div>
 

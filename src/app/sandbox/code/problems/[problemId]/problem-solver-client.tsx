@@ -22,11 +22,7 @@ import {
   Tag,
   Sparkles,
 } from 'lucide-react';
-import {
-  CodingProblem,
-  DEFAULT_CODING_PROBLEMS,
-  getAllProblems,
-} from '@/lib/coding-problems';
+import { CodingProblem, DEFAULT_CODING_PROBLEMS, getAllProblems } from '@/lib/coding-problems';
 import { QADatabase } from '@/lib/qa-db';
 import {
   getCompletions,
@@ -131,9 +127,7 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
   const [activeBottomTab, setActiveBottomTab] = useState<'testcase' | 'result'>('testcase');
 
   const handleUpdateCaseInput = (id: string, newInput: string) => {
-    setTestCases((prev) =>
-      prev.map((tc) => (tc.id === id ? { ...tc, input: newInput } : tc))
-    );
+    setTestCases((prev) => prev.map((tc) => (tc.id === id ? { ...tc, input: newInput } : tc)));
   };
 
   const handleUpdateCaseExpected = (id: string, newExpected: string) => {
@@ -186,9 +180,15 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
   const [suggestions, setSuggestions] = useState<CompletionItem[]>([]);
   const [selectedSuggestionIdx, setSelectedSuggestionIdx] = useState<number>(0);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState<boolean>(false);
-  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number; left: number }>({
+    top: 0,
+    left: 0,
+  });
   const [matchedPrefix, setMatchedPrefix] = useState<string>('');
-  const [replaceRange, setReplaceRange] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const [replaceRange, setReplaceRange] = useState<{ start: number; end: number }>({
+    start: 0,
+    end: 0,
+  });
 
   const updateIntelliSense = (newCode: string, cursorPos: number) => {
     if (!intellisenseEnabled || !textareaRef.current) {
@@ -356,8 +356,11 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
     setActiveBottomTab('testcase');
   }, [problemId, language]);
 
-  const currentProblem = allProblems.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS.find(p => p.id === problemId) || DEFAULT_CODING_PROBLEMS[0];
-  const currentIndex = allProblems.findIndex(p => p.id === problemId);
+  const currentProblem =
+    allProblems.find((p) => p.id === problemId) ||
+    DEFAULT_CODING_PROBLEMS.find((p) => p.id === problemId) ||
+    DEFAULT_CODING_PROBLEMS[0];
+  const currentIndex = allProblems.findIndex((p) => p.id === problemId);
 
   // Language change: switch to normal compiler starter template for that language
   const handleLanguageChange = (newLang: SupportedLang) => {
@@ -376,7 +379,9 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
       const solutionCode = currentProblem.starterTemplates[language] || '';
       setCode(solutionCode);
       setIsSuggestionsOpen(false);
-      setFeedback(`✨ Solution code pasted into compiler (${LANG_LABELS[language]})! Click 'Run' to test.`);
+      setFeedback(
+        `✨ Solution code pasted into compiler (${LANG_LABELS[language]})! Click 'Run' to test.`
+      );
       setTimeout(() => setFeedback(null), 3500);
 
       if (textareaRef.current) {
@@ -488,7 +493,8 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
       if (smartResult.newCursorPos !== undefined) {
         setTimeout(() => {
           if (textareaRef.current) {
-            textareaRef.current.selectionStart = textareaRef.current.selectionEnd = smartResult.newCursorPos!;
+            textareaRef.current.selectionStart = textareaRef.current.selectionEnd =
+              smartResult.newCursorPos!;
           }
         }, 0);
       }
@@ -615,11 +621,17 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
             </Link>
             <div>
               <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
-                <Link href="/sandbox/code" className="hover:text-white transition">Hands-On Coding Lab</Link>
+                <Link href="/sandbox/code" className="hover:text-white transition">
+                  Hands-On Coding Lab
+                </Link>
                 <span>/</span>
-                <Link href="/sandbox/code/problems" className="hover:text-white transition">Coding Library</Link>
+                <Link href="/sandbox/code/problems" className="hover:text-white transition">
+                  Coding Library
+                </Link>
                 <span>/</span>
-                <span className="text-emerald-400 font-semibold truncate max-w-[200px]">{currentProblem.title}</span>
+                <span className="text-emerald-400 font-semibold truncate max-w-[200px]">
+                  {currentProblem.title}
+                </span>
               </div>
               <h1 className="text-sm md:text-base font-bold text-white flex items-center gap-2">
                 {currentProblem.title}
@@ -628,8 +640,8 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                     currentProblem.difficulty === 'Easy'
                       ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                       : currentProblem.difficulty === 'Medium'
-                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                      : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                        ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                        : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                   }`}
                 >
                   {currentProblem.difficulty}
@@ -714,8 +726,8 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                     currentProblem.difficulty === 'Easy'
                       ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                       : currentProblem.difficulty === 'Medium'
-                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                      : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                        ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                        : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                   }`}
                 >
                   {currentProblem.difficulty}
@@ -786,13 +798,17 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
           className="hidden lg:flex w-2.5 items-center justify-center cursor-col-resize group shrink-0 select-none py-4"
           title="Drag left/right to resize Description and Compiler"
         >
-          <div className={`w-1 h-20 rounded-full transition-colors ${isHResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`} />
+          <div
+            className={`w-1 h-20 rounded-full transition-colors ${isHResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`}
+          />
         </div>
 
         {/* RIGHT COLUMN: Compiler Section (Top) + Output / Result Section (Directly Below Compiler) */}
         <div
           ref={rightColumnRef}
-          style={isDesktop ? { width: `calc(${100 - descriptionWidthPct}% - 0.625rem)` } : undefined}
+          style={
+            isDesktop ? { width: `calc(${100 - descriptionWidthPct}% - 0.625rem)` } : undefined
+          }
           className="flex-1 flex flex-col gap-2 min-w-0 h-full overflow-hidden"
         >
           {/* COMPILER SECTION */}
@@ -868,7 +884,11 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                   className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition cursor-pointer"
                   title="Copy code to clipboard"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
                   <span>{copied ? 'Copied' : 'Copy'}</span>
                 </button>
 
@@ -901,11 +921,15 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                       : 'IntelliSense Disabled. Click to enable.'
                   }
                 >
-                  <Sparkles className={`w-3.5 h-3.5 ${intellisenseEnabled ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  <Sparkles
+                    className={`w-3.5 h-3.5 ${intellisenseEnabled ? 'text-emerald-400' : 'text-slate-400'}`}
+                  />
                   <span className="hidden sm:inline">IntelliSense</span>
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      intellisenseEnabled ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]' : 'bg-slate-500'
+                      intellisenseEnabled
+                        ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]'
+                        : 'bg-slate-500'
                     }`}
                   />
                 </button>
@@ -1001,7 +1025,11 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                 <span className="flex items-center gap-1 text-slate-300">
                   <Sparkles className="w-3 h-3 text-emerald-400" />
                   IntelliSense:{' '}
-                  <span className={intellisenseEnabled ? 'text-emerald-400 font-semibold' : 'text-slate-500'}>
+                  <span
+                    className={
+                      intellisenseEnabled ? 'text-emerald-400 font-semibold' : 'text-slate-500'
+                    }
+                  >
                     {intellisenseEnabled ? 'Active' : 'Off'}
                   </span>
                 </span>
@@ -1013,7 +1041,17 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
                   </span>
                 )}
               </span>
-              <span>Shortcut: <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Ctrl</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Enter</kbd> to Run</span>
+              <span>
+                Shortcut:{' '}
+                <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
+                  Ctrl
+                </kbd>{' '}
+                +{' '}
+                <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
+                  Enter
+                </kbd>{' '}
+                to Run
+              </span>
             </div>
           </div>
 
@@ -1023,12 +1061,16 @@ export default function ProblemSolverClient({ problemId }: { problemId: string }
             className="h-2.5 flex items-center justify-center cursor-row-resize group shrink-0 select-none px-4"
             title="Drag up/down to resize Compiler and Output"
           >
-            <div className={`h-1 w-20 rounded-full transition-colors ${isVResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`} />
+            <div
+              className={`h-1 w-20 rounded-full transition-colors ${isVResizing ? 'bg-emerald-500' : 'bg-slate-700 group-hover:bg-emerald-400'}`}
+            />
           </div>
 
           {/* LEETCODE TESTCASE & TEST RESULT SECTION (DIRECTLY BELOW COMPILER) */}
           <div
-            style={isDesktop ? { height: `calc(${100 - compilerHeightPct}% - 0.625rem)` } : undefined}
+            style={
+              isDesktop ? { height: `calc(${100 - compilerHeightPct}% - 0.625rem)` } : undefined
+            }
             className="flex flex-col bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl min-h-[160px] shrink-0"
           >
             <CodingTestcasePanel

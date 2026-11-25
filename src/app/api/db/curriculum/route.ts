@@ -16,7 +16,11 @@ let serverCodingProblems: CodingProblem[] = JSON.parse(JSON.stringify(DEFAULT_CO
 
 function loadFromDisk() {
   try {
-    const targetFile = fs.existsSync(TMP_DATA_FILE) ? TMP_DATA_FILE : fs.existsSync(DATA_FILE) ? DATA_FILE : null;
+    const targetFile = fs.existsSync(TMP_DATA_FILE)
+      ? TMP_DATA_FILE
+      : fs.existsSync(DATA_FILE)
+        ? DATA_FILE
+        : null;
     if (targetFile) {
       const raw = fs.readFileSync(targetFile, 'utf-8');
       const data = JSON.parse(raw);
@@ -116,10 +120,7 @@ export async function GET(req: NextRequest) {
       codingProblems: serverCodingProblems,
     });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || 'Internal Server Error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -251,10 +252,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid action or payload' }, { status: 400 });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || 'Internal Server Error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -294,9 +292,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ error: 'Missing parameters for delete' }, { status: 400 });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || 'Internal Server Error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }

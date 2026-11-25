@@ -3,14 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  ShieldCheck,
-  Lock,
-  ArrowLeft,
-  BookOpen,
-  GraduationCap,
-  ExternalLink,
-} from 'lucide-react';
+import { ShieldCheck, Lock, ArrowLeft, BookOpen, GraduationCap, ExternalLink } from 'lucide-react';
 import { QADatabase } from '@/lib/qa-db';
 import { UserProfile } from '@/types/qa';
 import AcademyAdminConsole from '@/components/admin/academy/academy-admin-console';
@@ -71,7 +64,8 @@ export default function AdminAcademyPage() {
               Learning Academy Administrator Gate
             </h1>
             <p className="text-xs text-zinc-400">
-              Only authorized SDET instructors and system administrators can manage curriculum, upload documents, and publish lessons.
+              Only authorized SDET instructors and system administrators can manage curriculum,
+              upload documents, and publish lessons.
             </p>
           </div>
 

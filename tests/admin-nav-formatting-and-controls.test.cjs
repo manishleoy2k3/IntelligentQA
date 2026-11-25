@@ -18,7 +18,7 @@ test('1. Interview Question Answer: Formatting preserved with FormattedInterview
   const studentPageContent = fs.readFileSync(studentPagePath, 'utf-8');
   assert.strictEqual(
     studentPageContent.includes('FormattedInterviewAnswer') &&
-    studentPageContent.includes('<FormattedInterviewAnswer text={item.answerSummary} />'),
+      studentPageContent.includes('<FormattedInterviewAnswer text={item.answerSummary} />'),
     true,
     'Student interview questions page must render answers via FormattedInterviewAnswer'
   );
@@ -27,7 +27,7 @@ test('1. Interview Question Answer: Formatting preserved with FormattedInterview
   const adminPageContent = fs.readFileSync(adminPagePath, 'utf-8');
   assert.strictEqual(
     adminPageContent.includes('FormattedInterviewAnswer') &&
-    adminPageContent.includes('whitespace-pre-wrap'),
+      adminPageContent.includes('whitespace-pre-wrap'),
     true,
     'Admin page must use FormattedInterviewAnswer and whitespace-pre-wrap for interview answers'
   );
@@ -60,8 +60,8 @@ test('2. Preview Student Portal and Profile details moved from left nav bottom t
   );
   assert.strictEqual(
     topNavContent.includes('admin-profile-menu-container') &&
-    topNavContent.includes('ProfileModal') &&
-    topNavContent.includes('profileMenuOpen'),
+      topNavContent.includes('ProfileModal') &&
+      topNavContent.includes('profileMenuOpen'),
     true,
     'AdminTopNav must contain profile details dropdown matching normal user implementation'
   );

@@ -12,14 +12,26 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
   // 1. Process Spawning & Buffer Bomb Protection
   // -------------------------------------------------------------------------
   it('1. Output buffer bomb (512KB cap) terminates process with distinct error rather than generic timeout', () => {
-    assert.ok(compilerContent.includes('Output exceeded maximum allowed limit (512KB)'), 'Must report 512KB buffer limit exceeded');
+    assert.ok(
+      compilerContent.includes('Output exceeded maximum allowed limit (512KB)'),
+      'Must report 512KB buffer limit exceeded'
+    );
     assert.ok(compilerContent.includes('isTruncated'), 'Must track buffer truncation flag');
-    assert.ok(compilerContent.includes('child.stdin.on(\'error\''), 'Must handle child.stdin EPIPE gracefully');
+    assert.ok(
+      compilerContent.includes("child.stdin.on('error'"),
+      'Must handle child.stdin EPIPE gracefully'
+    );
   });
 
   it('2. Infinite loop timeout handling is distinctly categorized', () => {
-    assert.ok(compilerContent.includes('Execution timed out (process exceeded'), 'Must report explicit timeout description');
-    assert.ok(compilerContent.includes('Possible infinite loop or excessive computation'), 'Must identify infinite loops');
+    assert.ok(
+      compilerContent.includes('Execution timed out (process exceeded'),
+      'Must report explicit timeout description'
+    );
+    assert.ok(
+      compilerContent.includes('Possible infinite loop or excessive computation'),
+      'Must identify infinite loops'
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -27,16 +39,18 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
   // -------------------------------------------------------------------------
   it('3. Java class name extractor strips fake classes in block & line comments and finds true class', () => {
     function extractJavaClassName(code) {
-      const cleanCode = code
-        .replace(/\/\*[\s\S]*?\*\//g, '')
-        .replace(/\/\/.*/g, '');
+      const cleanCode = code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '');
 
-      const publicMatch = cleanCode.match(/public\s+(?:final\s+|sealed\s+|non-sealed\s+)?(?:class|record)\s+([A-Za-z0-9_]+)/);
+      const publicMatch = cleanCode.match(
+        /public\s+(?:final\s+|sealed\s+|non-sealed\s+)?(?:class|record)\s+([A-Za-z0-9_]+)/
+      );
       if (publicMatch && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(publicMatch[1])) {
         return publicMatch[1];
       }
 
-      const mainMatch = cleanCode.match(/(?:class|record)\s+([A-Za-z0-9_]+)[^{]*\{[\s\S]*?public\s+static\s+void\s+main/);
+      const mainMatch = cleanCode.match(
+        /(?:class|record)\s+([A-Za-z0-9_]+)[^{]*\{[\s\S]*?public\s+static\s+void\s+main/
+      );
       if (mainMatch && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(mainMatch[1])) {
         return mainMatch[1];
       }
@@ -94,32 +108,67 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
   it('4. Java VM handles instantiated Solution classes, 2D arrays, HashMap, and Character', () => {
     // Test HashMap implementation
     class HashMap {
-      constructor() { this.map = new Map(); }
-      put(k, v) { this.map.set(k, v); return v; }
-      get(k) { return this.map.get(k); }
-      containsKey(k) { return this.map.has(k); }
-      containsValue(v) { return Array.from(this.map.values()).includes(v); }
-      remove(k) { const old = this.map.get(k); this.map.delete(k); return old; }
-      size() { return this.map.size; }
-      isEmpty() { return this.map.size === 0; }
-      keySet() { return Array.from(this.map.keys()); }
-      values() { return Array.from(this.map.values()); }
-      getOrDefault(k, def) { return this.map.has(k) ? this.map.get(k) : def; }
+      constructor() {
+        this.map = new Map();
+      }
+      put(k, v) {
+        this.map.set(k, v);
+        return v;
+      }
+      get(k) {
+        return this.map.get(k);
+      }
+      containsKey(k) {
+        return this.map.has(k);
+      }
+      containsValue(v) {
+        return Array.from(this.map.values()).includes(v);
+      }
+      remove(k) {
+        const old = this.map.get(k);
+        this.map.delete(k);
+        return old;
+      }
+      size() {
+        return this.map.size;
+      }
+      isEmpty() {
+        return this.map.size === 0;
+      }
+      keySet() {
+        return Array.from(this.map.keys());
+      }
+      values() {
+        return Array.from(this.map.values());
+      }
+      getOrDefault(k, def) {
+        return this.map.has(k) ? this.map.get(k) : def;
+      }
     }
 
     class Character {
-      static isDigit(c) { return /^[0-9]$/.test(String(c)); }
-      static isLetter(c) { return /^[a-zA-Z]$/.test(String(c)); }
-      static toLowerCase(c) { return String(c).toLowerCase(); }
+      static isDigit(c) {
+        return /^[0-9]$/.test(String(c));
+      }
+      static isLetter(c) {
+        return /^[a-zA-Z]$/.test(String(c));
+      }
+      static toLowerCase(c) {
+        return String(c).toLowerCase();
+      }
     }
 
     let output = '';
     const sandbox = {
-      console: { log: (...args) => { output += args.join(' ') + '\n'; } },
+      console: {
+        log: (...args) => {
+          output += args.join(' ') + '\n';
+        },
+      },
       HashMap,
       Character,
       JSON,
-      Array
+      Array,
     };
 
     const context = vm.createContext(sandbox);
@@ -167,9 +216,14 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
   it('5. Python VM handles multiple variable re-assignments, slices, list comprehensions, and integer division', () => {
     let output = '';
     const sandbox = {
-      print: (...args) => { output += args.join(' ') + '\n'; },
+      print: (...args) => {
+        output += args.join(' ') + '\n';
+      },
       range: (start, end, step = 1) => {
-        if (end === undefined) { end = start; start = 0; }
+        if (end === undefined) {
+          end = start;
+          start = 0;
+        }
         const res = [];
         for (let i = start; i < end; i += step) res.push(i);
         return res;
@@ -177,11 +231,12 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
       sorted: (iterable) => Array.from(iterable).sort((a, b) => (a > b ? 1 : a < b ? -1 : 0)),
       pyIn: (val, container) => {
         if (container == null) return false;
-        if (Array.isArray(container) || typeof container === 'string') return container.includes(val);
+        if (Array.isArray(container) || typeof container === 'string')
+          return container.includes(val);
         if (container instanceof Set || container instanceof Map) return container.has(val);
         return val in container;
       },
-      Math
+      Math,
     };
 
     const context = vm.createContext(sandbox);
@@ -207,7 +262,10 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
     assert.ok(output.includes('x: 20'), 'Variable re-assignment must evaluate to latest value');
     assert.ok(output.includes('mid: 6'), 'Integer division (13 // 2) must equal 6');
     assert.ok(output.includes('sub: Intelligent'), 'Slice must extract sub-string');
-    assert.ok(output.includes('evens: [0,4,8,12,16]'), 'Filtered list comprehension must calculate evens');
+    assert.ok(
+      output.includes('evens: [0,4,8,12,16]'),
+      'Filtered list comprehension must calculate evens'
+    );
     assert.ok(output.includes('hasSeven: true'), 'pyIn membership check must return true');
   });
 
@@ -223,13 +281,15 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
     const ProxiedCalculator = new Proxy(Calculator, {
       apply(target, thisArg, args) {
         return new target(...args);
-      }
+      },
     });
 
     let output = '';
     const sandbox = {
       Calculator: ProxiedCalculator,
-      print: (...args) => { output += args.join(' ') + '\n'; }
+      print: (...args) => {
+        output += args.join(' ') + '\n';
+      },
     };
 
     const context = vm.createContext(sandbox);
@@ -240,7 +300,10 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
     `;
 
     vm.runInContext(testCode, context);
-    assert.ok(output.includes('Result: 20'), 'Python-style class instantiation without new must compute 20');
+    assert.ok(
+      output.includes('Result: 20'),
+      'Python-style class instantiation without new must compute 20'
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -274,22 +337,30 @@ describe('Compiler Adversarial Breaking & Edge-Case Hardening', () => {
     }
 
     assert.strictEqual(
-      extractErrorLineNumber('Program.cs(24,12): error CS0103: The name "foo" does not exist in the current context'),
+      extractErrorLineNumber(
+        'Program.cs(24,12): error CS0103: The name "foo" does not exist in the current context'
+      ),
       24,
       'C# error line 24 must be extracted'
     );
     assert.strictEqual(
-      extractErrorLineNumber('Exception in thread "main" java.lang.NullPointerException\n\tat Solution.solve(Solution.java:31)'),
+      extractErrorLineNumber(
+        'Exception in thread "main" java.lang.NullPointerException\n\tat Solution.solve(Solution.java:31)'
+      ),
       31,
       'Java runtime stack trace line 31 must be extracted'
     );
     assert.strictEqual(
-      extractErrorLineNumber('Solution.java:17: error: cannot find symbol\n  int x = unknownVariable;'),
+      extractErrorLineNumber(
+        'Solution.java:17: error: cannot find symbol\n  int x = unknownVariable;'
+      ),
       17,
       'Java javac error line 17 must be extracted'
     );
     assert.strictEqual(
-      extractErrorLineNumber('Traceback (most recent call last):\n  File "main.py", line 42, in <module>\nZeroDivisionError: division by zero'),
+      extractErrorLineNumber(
+        'Traceback (most recent call last):\n  File "main.py", line 42, in <module>\nZeroDivisionError: division by zero'
+      ),
       42,
       'Python traceback line 42 must be extracted'
     );

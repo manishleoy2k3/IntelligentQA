@@ -21,10 +21,7 @@ interface AdminSidebarProps {
   onPreviewStudent?: () => void;
 }
 
-export default function AdminSidebar({
-  mobileOpen = false,
-  onCloseMobile,
-}: AdminSidebarProps) {
+export default function AdminSidebar({ mobileOpen = false, onCloseMobile }: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentSection = searchParams.get('section') || 'overview';
@@ -84,7 +81,9 @@ export default function AdminSidebar({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-sm tracking-tight text-white">IntelligentQA</span>
+              <span className="font-extrabold text-sm tracking-tight text-white">
+                IntelligentQA
+              </span>
               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">
                 ADMIN
               </span>
@@ -112,11 +111,14 @@ export default function AdminSidebar({
           const Icon = item.icon;
           const isActive =
             item.id === 'academy'
-              ? pathname === '/admin/academy' || pathname === '/admin/cms' || currentSection === 'academy'
+              ? pathname === '/admin/academy' ||
+                pathname === '/admin/cms' ||
+                currentSection === 'academy'
               : pathname === '/admin'
-              ? (item.id === 'overview' && (!searchParams.get('section') || currentSection === 'overview')) ||
-                currentSection === item.id
-              : false;
+                ? (item.id === 'overview' &&
+                    (!searchParams.get('section') || currentSection === 'overview')) ||
+                  currentSection === item.id
+                : false;
 
           return (
             <Link
@@ -152,9 +154,7 @@ export default function AdminSidebar({
             className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
             onClick={onCloseMobile}
           />
-          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10">
-            {sidebarContent}
-          </div>
+          <div className="relative w-72 max-w-[85vw] h-full shadow-2xl z-10">{sidebarContent}</div>
         </div>
       )}
     </>

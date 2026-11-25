@@ -139,12 +139,10 @@ export default function Header({
         <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
           {currentUser ? (
             /* Logged-in top bar is clean & uncluttered: top-level menus are in Side Left Navigation */
-            <span className="sr-only">
-              {memberNavLinks.map(l => l.label).join(' ')}
-            </span>
+            <span className="sr-only">{memberNavLinks.map((l) => l.label).join(' ')}</span>
           ) : (
             /* Clean Minimal Public Guest Navigation */
-            guestNavLinks.map(link => (
+            guestNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -170,8 +168,8 @@ export default function Header({
                   geminiKey
                     ? 'bg-[#161616] border-[#262626] text-[#81FF89] hover:border-[#81FF89]/50 shadow-[0_0_15px_rgba(129,255,137,0.15)]'
                     : aiPref === 'opted_out'
-                    ? 'bg-[#161616] border-[#262626] text-[#80FFF9] hover:border-[#80FFF9]/50'
-                    : 'bg-[#161616] border-amber-500/40 text-amber-300 hover:border-amber-400'
+                      ? 'bg-[#161616] border-[#262626] text-[#80FFF9] hover:border-[#80FFF9]/50'
+                      : 'bg-[#161616] border-amber-500/40 text-amber-300 hover:border-amber-400'
                 }`}
                 title="Manage your Google AI Studio key or toggle Core Automation mode"
               >
@@ -180,8 +178,8 @@ export default function Header({
                   {geminiKey
                     ? 'Gemini Key Active'
                     : aiPref === 'opted_out'
-                    ? 'Core Mode (No AI)'
-                    : 'Add Gemini Key'}
+                      ? 'Core Mode (No AI)'
+                      : 'Add Gemini Key'}
                 </span>
               </button>
 
@@ -189,7 +187,10 @@ export default function Header({
               <ThemeToggle showLabel={false} />
 
               {/* User Profile Menu with Clubbed Log Out & QA Details */}
-              <div id="user-profile-menu-container" className="relative pl-1 border-l border-slate-200 dark:border-[#262626]">
+              <div
+                id="user-profile-menu-container"
+                className="relative pl-1 border-l border-slate-200 dark:border-[#262626]"
+              >
                 <button
                   type="button"
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
@@ -200,8 +201,12 @@ export default function Header({
                   <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-400 to-cyan-400 text-black font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
                     {getInitials(currentUser.displayName)}
                   </div>
-                  <span className="max-w-[130px] truncate">{currentUser.displayName?.split(' ')[0] || 'Profile'}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-500 dark:text-[#A1A1AA] transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
+                  <span className="max-w-[130px] truncate">
+                    {currentUser.displayName?.split(' ')[0] || 'Profile'}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-slate-500 dark:text-[#A1A1AA] transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`}
+                  />
                 </button>
 
                 {/* Profile Dropdown Menu */}
@@ -229,11 +234,13 @@ export default function Header({
                       <div className="text-xs text-slate-600 dark:text-[#D4D4D8] flex items-center gap-1.5 font-medium">
                         <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-[#81FF89] shrink-0" />
                         <span>
-                          {currentUser.profileCompleted && typeof currentUser.experienceYears === 'number' && currentUser.experienceYears > 0
+                          {currentUser.profileCompleted &&
+                          typeof currentUser.experienceYears === 'number' &&
+                          currentUser.experienceYears > 0
                             ? `${currentUser.experienceYears} Years QA Experience`
                             : currentUser.profileCompleted && currentUser.experienceYears === 0
-                            ? 'Fresher / Beginner QA'
-                            : 'Experience Not Set'}
+                              ? 'Fresher / Beginner QA'
+                              : 'Experience Not Set'}
                         </span>
                       </div>
                     </div>
@@ -336,7 +343,7 @@ export default function Header({
             /* Logged in Mobile Menu */
             <>
               <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
-                {memberNavLinks.map(link => (
+                {memberNavLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -362,8 +369,8 @@ export default function Header({
                   {geminiKey
                     ? 'Gemini Key Configured'
                     : aiPref === 'opted_out'
-                    ? 'Core Mode (No AI)'
-                    : 'Connect Free Gemini Key'}
+                      ? 'Core Mode (No AI)'
+                      : 'Connect Free Gemini Key'}
                 </button>
 
                 <div className="p-4 bg-[#161616] rounded-[20px] border border-[#262626] space-y-3">
@@ -407,7 +414,7 @@ export default function Header({
             /* Minimal Guest Mobile Menu */
             <div className="space-y-3">
               <div className="flex flex-col gap-1 text-sm font-medium">
-                {guestNavLinks.map(link => (
+                {guestNavLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}

@@ -19,7 +19,10 @@ export default function GoogleSignInButton({
 }: GoogleSignInButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [rememberedAccount, setRememberedAccount] = useState<{ email: string; name: string } | null>(null);
+  const [rememberedAccount, setRememberedAccount] = useState<{
+    email: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

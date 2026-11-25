@@ -25,7 +25,11 @@ test('Phase 6 Requirement 1: User with NO progress has 0 visited, 0 completed, a
   assert.strictEqual(stats.overallPercentCompleted, 0, 'Overall progress should be 0%');
   assert.strictEqual(stats.lastAccessedLesson, null, 'No last accessed lesson for new user');
   assert.strictEqual(stats.completedLessons.length, 0, 'No completed lessons list for new user');
-  assert.strictEqual(stats.recentlyViewedLessons.length, 0, 'No recently viewed lessons for new user');
+  assert.strictEqual(
+    stats.recentlyViewedLessons.length,
+    0,
+    'No recently viewed lessons for new user'
+  );
 
   // Verify all courses reflect 0% completed
   for (const cp of stats.courseProgress) {
@@ -131,7 +135,11 @@ test('Phase 6 Requirement 1: User with COMPLETED course achieves 100% completion
   const modProgress = aiCourseProgress.modules.find((m) => m.moduleId === firstMod.id);
   assert.ok(modProgress);
   assert.strictEqual(modProgress.completedLessons, modLessons.length);
-  assert.strictEqual(modProgress.percentCompleted, 100, 'Module with all completed lessons must be 100%');
+  assert.strictEqual(
+    modProgress.percentCompleted,
+    100,
+    'Module with all completed lessons must be 100%'
+  );
 });
 
 test('Phase 6 Requirement 2: Bookmarks — Add, retrieve, check, and remove lesson bookmarks', () => {
@@ -187,7 +195,9 @@ test('Phase 6 Requirement 3: Global Course Search across course, module, lesson 
   // 4. Search by Published Content keyword
   const contentResults = academyStore.searchCurriculum('Self-Healing');
   assert.ok(contentResults.length > 0, 'Should find content matching Self-Healing');
-  assert.ok(contentResults.some((r) => r.snippet && r.snippet.toLowerCase().includes('self-healing')));
+  assert.ok(
+    contentResults.some((r) => r.snippet && r.snippet.toLowerCase().includes('self-healing'))
+  );
 
   // 5. Verify direct link and structure
   for (const item of contentResults) {
@@ -223,9 +233,15 @@ test('Phase 6 Requirement 4: Lesson Navigation — Previous, Next, Back to Cours
 
   // Verify Breadcrumbs
   assert.ok(Array.isArray(ctx.breadcrumbs), 'Breadcrumbs must be array');
-  assert.ok(ctx.breadcrumbs.length >= 4, 'Breadcrumbs must trace Academy -> Category -> Course -> Module -> Lesson');
+  assert.ok(
+    ctx.breadcrumbs.length >= 4,
+    'Breadcrumbs must trace Academy -> Category -> Course -> Module -> Lesson'
+  );
   assert.strictEqual(ctx.breadcrumbs[0].label, 'Academy');
-  assert.ok(ctx.breadcrumbs[ctx.breadcrumbs.length - 1].active, 'Last breadcrumb must be active current lesson');
+  assert.ok(
+    ctx.breadcrumbs[ctx.breadcrumbs.length - 1].active,
+    'Last breadcrumb must be active current lesson'
+  );
 });
 
 test('Phase 6 Requirement 5: Learning Experience — Reading time, updated date, overviews, related lessons, and print', () => {
@@ -235,7 +251,10 @@ test('Phase 6 Requirement 5: Learning Experience — Reading time, updated date,
 
   // Estimated reading time
   const readTime = ctx.lesson.estimatedReadingTime || ctx.lesson.estimatedReadTime;
-  assert.ok(typeof readTime === 'number' && readTime > 0, 'Estimated reading time must be a positive number');
+  assert.ok(
+    typeof readTime === 'number' && readTime > 0,
+    'Estimated reading time must be a positive number'
+  );
 
   // Last updated date
   assert.ok(ctx.lesson.updatedAt || ctx.lesson.createdAt, 'Updated or created date must exist');
@@ -271,16 +290,25 @@ test('Phase 6 Requirement 6: User Dashboard — Dedicated Learning Dashboard com
   assert.ok(fs.existsSync(dashboardPath), 'LearningDashboard component file must exist');
 
   const content = fs.readFileSync(dashboardPath, 'utf-8');
-  assert.ok(content.includes('Enrolled Courses & Progress'), 'Must include Enrolled Courses & Progress section');
+  assert.ok(
+    content.includes('Enrolled Courses & Progress'),
+    'Must include Enrolled Courses & Progress section'
+  );
   assert.ok(content.includes('Recently Viewed'), 'Must include Recently Viewed lessons section');
   assert.ok(content.includes('Completed Lessons'), 'Must include Completed Lessons section');
   assert.ok(content.includes('My Bookmarks'), 'Must include My Bookmarks section');
-  assert.ok(content.includes('100% Free QA Community Platform'), 'Must confirm free community platform without paywalls');
+  assert.ok(
+    content.includes('100% Free QA Community Platform'),
+    'Must confirm free community platform without paywalls'
+  );
 
   // Verify User Dashboard page integrates LearningDashboard
   const userDashPath = path.join(process.cwd(), 'src/app/dashboard/page.tsx');
   const userDashContent = fs.readFileSync(userDashPath, 'utf-8');
-  assert.ok(userDashContent.includes('<LearningDashboard'), 'User Dashboard page must render LearningDashboard');
+  assert.ok(
+    userDashContent.includes('<LearningDashboard'),
+    'User Dashboard page must render LearningDashboard'
+  );
 });
 
 test('Phase 6 Requirement 7: Performance — Lazy loading images, lightweight tree, and caching headers', () => {
@@ -291,8 +319,16 @@ test('Phase 6 Requirement 7: Performance — Lazy loading images, lightweight tr
     for (const course of cat.courses) {
       for (const mod of course.modules) {
         for (const lsn of mod.lessons) {
-          assert.strictEqual(lsn.contentHtml, undefined, 'Navigation tree must not download lesson contentHtml unnecessarily');
-          assert.strictEqual(lsn.blockData, undefined, 'Navigation tree must not download blockData');
+          assert.strictEqual(
+            lsn.contentHtml,
+            undefined,
+            'Navigation tree must not download lesson contentHtml unnecessarily'
+          );
+          assert.strictEqual(
+            lsn.blockData,
+            undefined,
+            'Navigation tree must not download blockData'
+          );
         }
       }
     }
@@ -301,11 +337,20 @@ test('Phase 6 Requirement 7: Performance — Lazy loading images, lightweight tr
   // 2. Verify cache-control headers on lesson API route
   const lessonRoutePath = path.join(process.cwd(), 'src/app/api/learning/lessons/[id]/route.ts');
   const lessonRouteContent = fs.readFileSync(lessonRoutePath, 'utf-8');
-  assert.ok(lessonRouteContent.includes('Cache-Control'), 'Lesson API must declare Cache-Control header');
+  assert.ok(
+    lessonRouteContent.includes('Cache-Control'),
+    'Lesson API must declare Cache-Control header'
+  );
 
   // 3. Verify client caching mechanism in academy-shell.tsx
   const shellPath = path.join(process.cwd(), 'src/components/learning/academy-shell.tsx');
   const shellContent = fs.readFileSync(shellPath, 'utf-8');
-  assert.ok(shellContent.includes('lessonClientCache'), 'academy-shell must implement client-side lesson caching');
-  assert.ok(shellContent.includes('loading="lazy"'), 'academy-shell must optimize images with lazy loading');
+  assert.ok(
+    shellContent.includes('lessonClientCache'),
+    'academy-shell must implement client-side lesson caching'
+  );
+  assert.ok(
+    shellContent.includes('loading="lazy"'),
+    'academy-shell must optimize images with lazy loading'
+  );
 });

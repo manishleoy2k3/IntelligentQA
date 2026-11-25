@@ -50,13 +50,17 @@ export default function CourseSidebar({
 
   const expandAll = () => {
     const all: Record<string, boolean> = {};
-    filteredModules.forEach((m: any) => { all[m.id] = true; });
+    filteredModules.forEach((m: any) => {
+      all[m.id] = true;
+    });
     setExpandedModules(all);
   };
 
   const collapseAll = () => {
     const none: Record<string, boolean> = {};
-    filteredModules.forEach((m: any) => { none[m.id] = false; });
+    filteredModules.forEach((m: any) => {
+      none[m.id] = false;
+    });
     setExpandedModules(none);
   };
 
@@ -80,18 +84,20 @@ export default function CourseSidebar({
     if (!filterQuery.trim()) return normalized;
 
     const q = filterQuery.toLowerCase();
-    return normalized.map((mod: any) => {
-      const matchingLessons = mod.lessons.filter(
-        (l: any) =>
-          l.title.toLowerCase().includes(q) ||
-          (l.tags && l.tags.some((t: string) => t.toLowerCase().includes(q)))
-      );
-      const modMatches = mod.title.toLowerCase().includes(q);
-      return {
-        ...mod,
-        lessons: modMatches ? mod.lessons : matchingLessons,
-      };
-    }).filter((mod: any) => mod.lessons.length > 0);
+    return normalized
+      .map((mod: any) => {
+        const matchingLessons = mod.lessons.filter(
+          (l: any) =>
+            l.title.toLowerCase().includes(q) ||
+            (l.tags && l.tags.some((t: string) => t.toLowerCase().includes(q)))
+        );
+        const modMatches = mod.title.toLowerCase().includes(q);
+        return {
+          ...mod,
+          lessons: modMatches ? mod.lessons : matchingLessons,
+        };
+      })
+      .filter((mod: any) => mod.lessons.length > 0);
   }, [filterQuery, modules]);
 
   return (
@@ -146,7 +152,9 @@ export default function CourseSidebar({
           const isExpanded = expandedModules[mod.id] ?? true;
           const containsActiveLesson = mod.lessons.some((l: any) => l.slug === activeLessonSlug);
           const totalInMod = mod.lessons.length;
-          const completedInMod = mod.lessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
+          const completedInMod = mod.lessons.filter(
+            (l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)
+          ).length;
           const modPercent = totalInMod > 0 ? Math.round((completedInMod / totalInMod) * 100) : 0;
 
           return (
@@ -183,7 +191,8 @@ export default function CourseSidebar({
                 <div className="pl-3.5 ml-2 border-l border-slate-200 dark:border-neutral-800 space-y-0.5 mt-1">
                   {mod.lessons.map((lesson: any) => {
                     const isActive = lesson.slug === activeLessonSlug;
-                    const isLessonDone = completedLessonIds.has(lesson.id) || completedLessonIds.has(lesson.slug);
+                    const isLessonDone =
+                      completedLessonIds.has(lesson.id) || completedLessonIds.has(lesson.slug);
 
                     return (
                       <Link

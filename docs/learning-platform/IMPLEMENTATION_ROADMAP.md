@@ -3,7 +3,7 @@
 > **Document Version:** 1.0.0  
 > **Author:** Senior Full Stack Architect & Technical Lead  
 > **Status:** Proposal / Review  
-> **Target Audience:** Engineering Team, QA Engineers, DevOps, Leadership  
+> **Target Audience:** Engineering Team, QA Engineers, DevOps, Leadership
 
 ---
 
@@ -25,6 +25,7 @@ flowchart LR
 ## 2. Detailed Phase Breakdown
 
 ### Phase 1: Core Data Models & Store Extensions
+
 **Objective:** Establish the persistent data layer, models, and CRUD services for the 4-tier hierarchy without touching frontend UI.
 
 - **Key Deliverables:**
@@ -52,6 +53,7 @@ flowchart LR
 ---
 
 ### Phase 2: Word Document (.docx) Ingestion & Conversion Engine
+
 **Objective:** Implement server-side document parsing, asset extraction, HTML cleanup, and storage pipelines using free open-source tooling.
 
 - **Key Deliverables:**
@@ -74,6 +76,7 @@ flowchart LR
 ---
 
 ### Phase 3: Learner Experience & Responsive Navigation
+
 **Objective:** Build the public-facing Learning Academy reader with persistent left navigation, breadcrumbs, smooth lesson switching, and mobile drawer.
 
 - **Key Deliverables:**
@@ -100,6 +103,7 @@ flowchart LR
 ---
 
 ### Phase 4: Admin Academy Console & Management UI
+
 **Objective:** Provide an intuitive admin dashboard to manage courses, upload documents, reorder items, and publish content without code deployments.
 
 - **Key Deliverables:**
@@ -121,6 +125,7 @@ flowchart LR
 ---
 
 ### Phase 5: Testing, Hardening, Performance & Launch
+
 **Objective:** Comprehensive end-to-end testing, accessibility audit, performance optimization, and production deployment preparation.
 
 - **Key Deliverables:**
@@ -140,53 +145,53 @@ flowchart LR
 
 ### 3.1 Files to CREATE
 
-| File Path | Purpose |
-| :--- | :--- |
-| `src/types/learning-platform.ts` | Complete TypeScript type definitions for categories, courses, modules, lessons, and documents |
-| `src/lib/academy-store.ts` | Data access layer for reading/writing academy entities to JSON and PostgreSQL |
-| `src/lib/docx-converter.ts` | Server-side conversion engine wrapping `mammoth.js` and asset extractors |
-| `src/app/api/learning/tree/route.ts` | Public API endpoint returning the full navigation tree |
-| `src/app/api/learning/categories/route.ts` | Category CRUD Route Handler |
-| `src/app/api/learning/courses/route.ts` | Course CRUD Route Handler |
-| `src/app/api/learning/modules/route.ts` | Module CRUD Route Handler |
-| `src/app/api/learning/lessons/route.ts` | Lesson CRUD Route Handler |
-| `src/app/api/learning/docx/import/route.ts` | Document upload and conversion Route Handler |
-| `src/app/api/learning/curriculum/reorder/route.ts` | Hierarchy reordering Route Handler |
-| `src/app/learning/layout.tsx` | Academy persistent layout shell with sidebar context |
-| `src/app/learning/page.tsx` | Academy dashboard and category catalog |
-| `src/app/learning/[categorySlug]/[courseSlug]/[lessonSlug]/page.tsx` | Dynamic lesson reader |
-| `src/components/learning/learning-sidebar.tsx` | Persistent left navigation sidebar |
-| `src/components/learning/lesson-content-panel.tsx` | Right-side dynamic lesson content reader |
-| `src/components/learning/lesson-breadcrumb.tsx` | Hierarchical breadcrumbs |
-| `src/components/learning/lesson-navigation-footer.tsx` | Previous/Next navigation footer |
-| `src/components/learning/docx-fidelity-viewer.tsx` | Client-side `docx-preview` high-fidelity renderer |
-| `src/app/admin/academy/page.tsx` | Admin Academy management console |
-| `src/components/admin/docx-upload-modal.tsx` | Admin Word document uploader with live preview |
-| `src/components/admin/tree-reorder-manager.tsx` | Visual drag-and-drop hierarchy reorderer |
-| `tests/academy-store.test.js` | Unit test suite for academy data store |
-| `tests/docx-converter.test.js` | Ingestion engine test suite with fixture Word documents |
+| File Path                                                            | Purpose                                                                                       |
+| :------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| `src/types/learning-platform.ts`                                     | Complete TypeScript type definitions for categories, courses, modules, lessons, and documents |
+| `src/lib/academy-store.ts`                                           | Data access layer for reading/writing academy entities to JSON and PostgreSQL                 |
+| `src/lib/docx-converter.ts`                                          | Server-side conversion engine wrapping `mammoth.js` and asset extractors                      |
+| `src/app/api/learning/tree/route.ts`                                 | Public API endpoint returning the full navigation tree                                        |
+| `src/app/api/learning/categories/route.ts`                           | Category CRUD Route Handler                                                                   |
+| `src/app/api/learning/courses/route.ts`                              | Course CRUD Route Handler                                                                     |
+| `src/app/api/learning/modules/route.ts`                              | Module CRUD Route Handler                                                                     |
+| `src/app/api/learning/lessons/route.ts`                              | Lesson CRUD Route Handler                                                                     |
+| `src/app/api/learning/docx/import/route.ts`                          | Document upload and conversion Route Handler                                                  |
+| `src/app/api/learning/curriculum/reorder/route.ts`                   | Hierarchy reordering Route Handler                                                            |
+| `src/app/learning/layout.tsx`                                        | Academy persistent layout shell with sidebar context                                          |
+| `src/app/learning/page.tsx`                                          | Academy dashboard and category catalog                                                        |
+| `src/app/learning/[categorySlug]/[courseSlug]/[lessonSlug]/page.tsx` | Dynamic lesson reader                                                                         |
+| `src/components/learning/learning-sidebar.tsx`                       | Persistent left navigation sidebar                                                            |
+| `src/components/learning/lesson-content-panel.tsx`                   | Right-side dynamic lesson content reader                                                      |
+| `src/components/learning/lesson-breadcrumb.tsx`                      | Hierarchical breadcrumbs                                                                      |
+| `src/components/learning/lesson-navigation-footer.tsx`               | Previous/Next navigation footer                                                               |
+| `src/components/learning/docx-fidelity-viewer.tsx`                   | Client-side `docx-preview` high-fidelity renderer                                             |
+| `src/app/admin/academy/page.tsx`                                     | Admin Academy management console                                                              |
+| `src/components/admin/docx-upload-modal.tsx`                         | Admin Word document uploader with live preview                                                |
+| `src/components/admin/tree-reorder-manager.tsx`                      | Visual drag-and-drop hierarchy reorderer                                                      |
+| `tests/academy-store.test.js`                                        | Unit test suite for academy data store                                                        |
+| `tests/docx-converter.test.js`                                       | Ingestion engine test suite with fixture Word documents                                       |
 
 ### 3.2 Files to MODIFY (Minimal & Non-Breaking)
 
-| File Path | Changes Required | Risk Level |
-| :--- | :--- | :--- |
-| `src/lib/curriculum-data-store.json` | Add `categories` array and initial academy categories (zero changes to existing courses) | Low |
-| `scripts/schema.sql` | Append `academy_*` tables to existing SQL schema | Low |
-| `src/components/navigation/site-header.tsx` | Add "Academy" navigation link to top header | Low |
-| `src/app/admin/page.tsx` | Add "Academy Manager" quick-access card to the admin dashboard | Low |
-| `package.json` | Add `mammoth` (server-side) and `docx-preview` (client-side) open-source libraries | Low |
+| File Path                                   | Changes Required                                                                         | Risk Level |
+| :------------------------------------------ | :--------------------------------------------------------------------------------------- | :--------- |
+| `src/lib/curriculum-data-store.json`        | Add `categories` array and initial academy categories (zero changes to existing courses) | Low        |
+| `scripts/schema.sql`                        | Append `academy_*` tables to existing SQL schema                                         | Low        |
+| `src/components/navigation/site-header.tsx` | Add "Academy" navigation link to top header                                              | Low        |
+| `src/app/admin/page.tsx`                    | Add "Academy Manager" quick-access card to the admin dashboard                           | Low        |
+| `package.json`                              | Add `mammoth` (server-side) and `docx-preview` (client-side) open-source libraries       | Low        |
 
 ---
 
 ## 4. Risk Assessment & Mitigation Matrix
 
-| Risk ID | Identified Risk | Severity | Probability | Mitigation Strategy |
-| :--- | :--- | :--- | :--- | :--- |
-| **R-01** | Complex Word document tables or shapes lose styling in web HTML | Medium | High | **Hybrid Viewer:** Default to semantic HTML for responsive reading, but provide a 1-click "Original Layout" view using `docx-preview` for exact pagination. |
-| **R-02** | Large Word files with many uncompressed images cause upload latency | Medium | Medium | Client-side file size warnings (>50MB), server-side async stream processing, and image deduplication. |
-| **R-03** | Concurrent admin edits causing JSON store write conflicts | Low | Low | Implement atomic temporary write + file rename (`fs.promises.rename`) pattern with file locking. |
-| **R-04** | Breaking existing `/courses` or `/admin/cms` workflows | High | Low | Complete isolation: Academy operates on dedicated `/app/learning/` routes and distinct store keys without altering existing routes. |
-| **R-05** | Malicious file upload or XSS payload hidden inside `.docx` | High | Low | Validate file magic numbers (ZIP signature), sanitize extracted HTML with DOMPurify, and disallow executable extensions. |
+| Risk ID  | Identified Risk                                                     | Severity | Probability | Mitigation Strategy                                                                                                                                         |
+| :------- | :------------------------------------------------------------------ | :------- | :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **R-01** | Complex Word document tables or shapes lose styling in web HTML     | Medium   | High        | **Hybrid Viewer:** Default to semantic HTML for responsive reading, but provide a 1-click "Original Layout" view using `docx-preview` for exact pagination. |
+| **R-02** | Large Word files with many uncompressed images cause upload latency | Medium   | Medium      | Client-side file size warnings (>50MB), server-side async stream processing, and image deduplication.                                                       |
+| **R-03** | Concurrent admin edits causing JSON store write conflicts           | Low      | Low         | Implement atomic temporary write + file rename (`fs.promises.rename`) pattern with file locking.                                                            |
+| **R-04** | Breaking existing `/courses` or `/admin/cms` workflows              | High     | Low         | Complete isolation: Academy operates on dedicated `/app/learning/` routes and distinct store keys without altering existing routes.                         |
+| **R-05** | Malicious file upload or XSS payload hidden inside `.docx`          | High     | Low         | Validate file magic numbers (ZIP signature), sanitize extracted HTML with DOMPurify, and disallow executable extensions.                                    |
 
 ---
 
@@ -205,4 +210,4 @@ flowchart LR
 
 ---
 
-*End of Implementation Roadmap. Approved for Phase 0 review.*
+_End of Implementation Roadmap. Approved for Phase 0 review._

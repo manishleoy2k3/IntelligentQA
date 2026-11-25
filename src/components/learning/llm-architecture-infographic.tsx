@@ -21,7 +21,9 @@ import {
 } from 'lucide-react';
 
 export default function LlmArchitectureInfographic() {
-  const [activeTab, setActiveTab] = useState<'training' | 'inference' | 'components' | 'comparison' | 'scaling'>('training');
+  const [activeTab, setActiveTab] = useState<
+    'training' | 'inference' | 'components' | 'comparison' | 'scaling'
+  >('training');
   const [selectedComponent, setSelectedComponent] = useState<string>('self-attention');
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -35,8 +37,10 @@ export default function LlmArchitectureInfographic() {
       bgColor: 'bg-blue-500/10',
       borderColor: 'border-blue-500/30',
       summary: 'Breaks raw text strings into discrete sub-word numerical tokens.',
-      technicalDetails: 'Modern tokenizers (like Byte-Pair Encoding / Tiktoken) convert words into integers using a fixed vocabulary (typically 32,000 to 128,000 tokens). Common words map to a single token, while uncommon or complex words decompose into multiple sub-word units.',
-      qaImpact: 'Token boundaries directly dictate test assertions, regex matching, and character count limits in automated evaluation suites.',
+      technicalDetails:
+        'Modern tokenizers (like Byte-Pair Encoding / Tiktoken) convert words into integers using a fixed vocabulary (typically 32,000 to 128,000 tokens). Common words map to a single token, while uncommon or complex words decompose into multiple sub-word units.',
+      qaImpact:
+        'Token boundaries directly dictate test assertions, regex matching, and character count limits in automated evaluation suites.',
     },
     {
       id: 'embeddings',
@@ -46,8 +50,10 @@ export default function LlmArchitectureInfographic() {
       bgColor: 'bg-indigo-500/10',
       borderColor: 'border-indigo-500/30',
       summary: 'Projects discrete integer tokens into high-dimensional geometric vector space.',
-      technicalDetails: 'Each token ID indexes a learned embedding matrix to extract a dense vector (e.g., 4,096 to 12,288 dimensions). Semantically related words (e.g. "click" and "tap") naturally cluster closely in this multi-dimensional coordinate space.',
-      qaImpact: 'Understanding embedding cosine similarity is foundational for self-healing locators and semantic similarity verification.',
+      technicalDetails:
+        'Each token ID indexes a learned embedding matrix to extract a dense vector (e.g., 4,096 to 12,288 dimensions). Semantically related words (e.g. "click" and "tap") naturally cluster closely in this multi-dimensional coordinate space.',
+      qaImpact:
+        'Understanding embedding cosine similarity is foundational for self-healing locators and semantic similarity verification.',
     },
     {
       id: 'positional-info',
@@ -57,8 +63,10 @@ export default function LlmArchitectureInfographic() {
       bgColor: 'bg-cyan-500/10',
       borderColor: 'border-cyan-500/30',
       summary: 'Injects sequence order coordinates so the model knows word positioning.',
-      technicalDetails: 'Unlike recurrent neural networks (RNNs) that process text sequentially, transformers process all tokens simultaneously in parallel. Rotary Position Embeddings (RoPE) or sinusoidal vectors add positional coordinates so the model distinguishes "dog bites man" from "man bites dog".',
-      qaImpact: 'Ensures sequential step order in generated BDD Cucumber scenarios is strictly preserved without chronological reversal.',
+      technicalDetails:
+        'Unlike recurrent neural networks (RNNs) that process text sequentially, transformers process all tokens simultaneously in parallel. Rotary Position Embeddings (RoPE) or sinusoidal vectors add positional coordinates so the model distinguishes "dog bites man" from "man bites dog".',
+      qaImpact:
+        'Ensures sequential step order in generated BDD Cucumber scenarios is strictly preserved without chronological reversal.',
     },
     {
       id: 'self-attention',
@@ -67,9 +75,12 @@ export default function LlmArchitectureInfographic() {
       color: 'text-emerald-500',
       bgColor: 'bg-emerald-500/10',
       borderColor: 'border-emerald-500/30',
-      summary: 'The core transformer engine: computes dynamic contextual attention weights across all tokens.',
-      technicalDetails: 'For every token, the attention mechanism calculates Query (Q), Key (K), and Value (V) matrices. The dot-product Softmax((Q*K^T)/sqrt(d_k))*V allows each token to dynamically weight its relationship with every other token in the prompt, regardless of distance.',
-      qaImpact: 'Enables an AI agent to resolve pronoun references in requirements, such as linking "it" back to "the checkout submit button" across multiple paragraphs.',
+      summary:
+        'The core transformer engine: computes dynamic contextual attention weights across all tokens.',
+      technicalDetails:
+        'For every token, the attention mechanism calculates Query (Q), Key (K), and Value (V) matrices. The dot-product Softmax((Q*K^T)/sqrt(d_k))*V allows each token to dynamically weight its relationship with every other token in the prompt, regardless of distance.',
+      qaImpact:
+        'Enables an AI agent to resolve pronoun references in requirements, such as linking "it" back to "the checkout submit button" across multiple paragraphs.',
     },
     {
       id: 'feed-forward',
@@ -79,8 +90,10 @@ export default function LlmArchitectureInfographic() {
       bgColor: 'bg-amber-500/10',
       borderColor: 'border-amber-500/30',
       summary: 'Applies non-linear transformations to store and retrieve factual patterns.',
-      technicalDetails: 'After self-attention mixes token information across the sequence, dense two-layer feed-forward networks process each position independently with non-linear activation functions (SwiGLU / GeLU), acting as associative key-value memory for world knowledge.',
-      qaImpact: 'Contains the learned knowledge base of Playwright APIs, Selenium syntax, and Java language conventions.',
+      technicalDetails:
+        'After self-attention mixes token information across the sequence, dense two-layer feed-forward networks process each position independently with non-linear activation functions (SwiGLU / GeLU), acting as associative key-value memory for world knowledge.',
+      qaImpact:
+        'Contains the learned knowledge base of Playwright APIs, Selenium syntax, and Java language conventions.',
     },
     {
       id: 'transformer-layers',
@@ -89,9 +102,12 @@ export default function LlmArchitectureInfographic() {
       color: 'text-violet-500',
       bgColor: 'bg-violet-500/10',
       borderColor: 'border-violet-500/30',
-      summary: 'Repeated stacked blocks of Attention + FFN that build progressively abstract reasoning.',
-      technicalDetails: 'Frontier LLMs stack between 32 and 128 identical transformer blocks. Early layers learn low-level grammar and syntax; middle layers learn semantic logic and entity relations; deep layers perform multi-step deduction and algorithmic problem solving.',
-      qaImpact: 'Determines the model depth required to synthesize complete end-to-end framework architectures versus simple one-line locators.',
+      summary:
+        'Repeated stacked blocks of Attention + FFN that build progressively abstract reasoning.',
+      technicalDetails:
+        'Frontier LLMs stack between 32 and 128 identical transformer blocks. Early layers learn low-level grammar and syntax; middle layers learn semantic logic and entity relations; deep layers perform multi-step deduction and algorithmic problem solving.',
+      qaImpact:
+        'Determines the model depth required to synthesize complete end-to-end framework architectures versus simple one-line locators.',
     },
     {
       id: 'context-window',
@@ -100,9 +116,12 @@ export default function LlmArchitectureInfographic() {
       color: 'text-sky-500',
       bgColor: 'bg-sky-500/10',
       borderColor: 'border-sky-500/30',
-      summary: 'The maximum token buffer the model can observe and attend to in a single forward pass.',
-      technicalDetails: 'Context windows have expanded from 2,048 tokens in GPT-3 to 128k, 1M, and 2M+ tokens in Gemini 2.5 and Claude 3.7. The attention mechanism requires memory proportional to the active context length, traditionally scaling quadratically O(N^2) or quasi-linearly with FlashAttention.',
-      qaImpact: 'Directly bounds how much of your codebase, Swagger schema, or HTML DOM tree can be ingested during an automated test generation run.',
+      summary:
+        'The maximum token buffer the model can observe and attend to in a single forward pass.',
+      technicalDetails:
+        'Context windows have expanded from 2,048 tokens in GPT-3 to 128k, 1M, and 2M+ tokens in Gemini 2.5 and Claude 3.7. The attention mechanism requires memory proportional to the active context length, traditionally scaling quadratically O(N^2) or quasi-linearly with FlashAttention.',
+      qaImpact:
+        'Directly bounds how much of your codebase, Swagger schema, or HTML DOM tree can be ingested during an automated test generation run.',
     },
     {
       id: 'model-parameters',
@@ -112,8 +131,10 @@ export default function LlmArchitectureInfographic() {
       bgColor: 'bg-rose-500/10',
       borderColor: 'border-rose-500/30',
       summary: 'The learned numerical weights stored in memory that define the model behavior.',
-      technicalDetails: 'Parameter counts vary widely: 1B-3B for mobile edge devices, 7B-14B for local developer laptops, 70B for private enterprise servers, and 500B-1T+ (often Sparse Mixture-of-Experts) for frontier models. 175B is NOT a universal constant.',
-      qaImpact: 'Dictates hardware hosting requirements, inference cost per test suite run, and local vs cloud deployment feasibility.',
+      technicalDetails:
+        'Parameter counts vary widely: 1B-3B for mobile edge devices, 7B-14B for local developer laptops, 70B for private enterprise servers, and 500B-1T+ (often Sparse Mixture-of-Experts) for frontier models. 175B is NOT a universal constant.',
+      qaImpact:
+        'Dictates hardware hosting requirements, inference cost per test suite run, and local vs cloud deployment feasibility.',
     },
     {
       id: 'gpu-hardware',
@@ -122,9 +143,12 @@ export default function LlmArchitectureInfographic() {
       color: 'text-orange-500',
       bgColor: 'bg-orange-500/10',
       borderColor: 'border-orange-500/30',
-      summary: 'High-bandwidth parallel compute chips (NVIDIA H100, B200, Google TPU v5p) executing matrix math.',
-      technicalDetails: 'Both training and inference are fundamentally tensor matrix multiplication operations (GEMM). Tensor Core accelerators with High Bandwidth Memory (HBM3e) provide terabytes-per-second memory bandwidth to stream billions of parameters into compute cores.',
-      qaImpact: 'Explains latency characteristics, queue timeouts, and throughput limits when scaling autonomous agents across hundreds of CI/CD threads.',
+      summary:
+        'High-bandwidth parallel compute chips (NVIDIA H100, B200, Google TPU v5p) executing matrix math.',
+      technicalDetails:
+        'Both training and inference are fundamentally tensor matrix multiplication operations (GEMM). Tensor Core accelerators with High Bandwidth Memory (HBM3e) provide terabytes-per-second memory bandwidth to stream billions of parameters into compute cores.',
+      qaImpact:
+        'Explains latency characteristics, queue timeouts, and throughput limits when scaling autonomous agents across hundreds of CI/CD threads.',
     },
     {
       id: 'next-token',
@@ -134,8 +158,10 @@ export default function LlmArchitectureInfographic() {
       bgColor: 'bg-emerald-500/10',
       borderColor: 'border-emerald-500/30',
       summary: 'Softmax probability calculation and autoregressive token-by-token generation.',
-      technicalDetails: 'The final transformer layer passes hidden states to a Linear Head and Softmax function, yielding a probability distribution across the entire vocabulary. A decoding algorithm (Temperature, Top-P, Top-K) samples the next token, appends it to the sequence, and repeats the forward pass.',
-      qaImpact: 'Highlights why temperature must be set to 0.0 or 0.1 in QA test generation to eliminate random syntax permutations and flakiness.',
+      technicalDetails:
+        'The final transformer layer passes hidden states to a Linear Head and Softmax function, yielding a probability distribution across the entire vocabulary. A decoding algorithm (Temperature, Top-P, Top-K) samples the next token, appends it to the sequence, and repeats the forward pass.',
+      qaImpact:
+        'Highlights why temperature must be set to 0.0 or 0.1 in QA test generation to eliminate random syntax permutations and flakiness.',
     },
   ];
 
@@ -143,42 +169,76 @@ export default function LlmArchitectureInfographic() {
   const comparisonRows = [
     {
       dimension: 'Primary Objective',
-      training: 'Learn universal patterns, syntax, facts, and reasoning from vast web-scale text corpora.',
-      inference: 'Generate output responses to specific user prompts using fixed frozen parameters.',
+      training:
+        'Learn universal patterns, syntax, facts, and reasoning from vast web-scale text corpora.',
+      inference:
+        'Generate output responses to specific user prompts using fixed frozen parameters.',
     },
     {
       dimension: 'Mathematical Operation',
-      training: 'Two-way flow: Forward pass (calculate loss) followed by Backward pass (backpropagation gradient descent).',
-      inference: 'One-way flow: Forward pass only (autoregressive token generation). Zero backpropagation.',
+      training:
+        'Two-way flow: Forward pass (calculate loss) followed by Backward pass (backpropagation gradient descent).',
+      inference:
+        'One-way flow: Forward pass only (autoregressive token generation). Zero backpropagation.',
     },
     {
       dimension: 'Parameter State',
-      training: 'Continuously mutated and updated across millions of training steps via optimizers (AdamW).',
-      inference: 'Completely static and frozen in read-only memory. No weights are altered during inference.',
+      training:
+        'Continuously mutated and updated across millions of training steps via optimizers (AdamW).',
+      inference:
+        'Completely static and frozen in read-only memory. No weights are altered during inference.',
     },
     {
       dimension: 'Hardware Scale',
-      training: 'Massive compute clusters: thousands of interconnected GPUs/TPUs running continuously for months.',
+      training:
+        'Massive compute clusters: thousands of interconnected GPUs/TPUs running continuously for months.',
       inference: 'Single GPU, small node, or local developer laptop (for quantized 7B/14B models).',
     },
     {
       dimension: 'Execution Latency',
       training: 'Batch-oriented throughput measured in hours, days, or months of compute time.',
-      inference: 'Real-time interactive generation measured in milliseconds (20 - 150 tokens per second).',
+      inference:
+        'Real-time interactive generation measured in milliseconds (20 - 150 tokens per second).',
     },
     {
       dimension: 'Financial Cost',
-      training: 'Huge capital expenditure: $10M - $100M+ per training run for frontier foundation models.',
-      inference: 'Operational cost: fractions of a cent per prompt (e.g., $0.0005 per 1,000 tokens).',
+      training:
+        'Huge capital expenditure: $10M - $100M+ per training run for frontier foundation models.',
+      inference:
+        'Operational cost: fractions of a cent per prompt (e.g., $0.0005 per 1,000 tokens).',
     },
   ];
 
   // Parameter Spectrum Data
   const parameterSpectrum = [
-    { tier: 'Edge & Mobile SLMs', range: '1B - 3B', example: 'Gemma 2B, SmolLM', useCase: 'On-device auto-complete, lightweight mobile agents', vram: '2 - 4 GB' },
-    { tier: 'Local Developer SDET', range: '7B - 14B', example: 'Qwen 2.5 Coder 7B, Mistral 7B', useCase: 'Private offline test script generation, IDE code review', vram: '8 - 16 GB' },
-    { tier: 'Enterprise Self-Hosted', range: '32B - 70B', example: 'Llama 3.3 70B, DeepSeek R1 Distill', useCase: 'Enterprise test framework architecture, complex RAG', vram: '40 - 80 GB' },
-    { tier: 'Frontier Foundation Models', range: '200B - 1T+ (Dense / MoE)', example: 'Gemini 2.5, GPT-4o, Claude 3.7', useCase: 'Autonomous test agents, multimodal vision regression', vram: 'Multi-Node H100 Cluster' },
+    {
+      tier: 'Edge & Mobile SLMs',
+      range: '1B - 3B',
+      example: 'Gemma 2B, SmolLM',
+      useCase: 'On-device auto-complete, lightweight mobile agents',
+      vram: '2 - 4 GB',
+    },
+    {
+      tier: 'Local Developer SDET',
+      range: '7B - 14B',
+      example: 'Qwen 2.5 Coder 7B, Mistral 7B',
+      useCase: 'Private offline test script generation, IDE code review',
+      vram: '8 - 16 GB',
+    },
+    {
+      tier: 'Enterprise Self-Hosted',
+      range: '32B - 70B',
+      example: 'Llama 3.3 70B, DeepSeek R1 Distill',
+      useCase: 'Enterprise test framework architecture, complex RAG',
+      vram: '40 - 80 GB',
+    },
+    {
+      tier: 'Frontier Foundation Models',
+      range: '200B - 1T+ (Dense / MoE)',
+      example: 'Gemini 2.5, GPT-4o, Claude 3.7',
+      useCase: 'Autonomous test agents, multimodal vision regression',
+      vram: 'Multi-Node H100 Cluster',
+    },
   ];
 
   const currentComp = componentsList.find((c) => c.id === selectedComponent) || componentsList[3];
@@ -186,7 +246,9 @@ export default function LlmArchitectureInfographic() {
   return (
     <div
       className={`my-8 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden transition-all ${
-        isExpanded ? 'fixed inset-4 z-50 overflow-y-auto bg-white/98 dark:bg-neutral-950/98 backdrop-blur-md ring-1 ring-emerald-500/30 p-6' : ''
+        isExpanded
+          ? 'fixed inset-4 z-50 overflow-y-auto bg-white/98 dark:bg-neutral-950/98 backdrop-blur-md ring-1 ring-emerald-500/30 p-6'
+          : ''
       }`}
     >
       {/* Header Infographic Banner */}
@@ -205,7 +267,9 @@ export default function LlmArchitectureInfographic() {
               End-to-End LLM Architecture: Training vs Inference Deep-Dive
             </h3>
             <p className="text-xs sm:text-sm text-indigo-200/90 leading-relaxed">
-              Explore how raw internet text is transformed into numerical weights during pre-training, and how frozen transformer layers generate next-token test code at runtime.
+              Explore how raw internet text is transformed into numerical weights during
+              pre-training, and how frozen transformer layers generate next-token test code at
+              runtime.
             </p>
           </div>
 
@@ -261,20 +325,62 @@ export default function LlmArchitectureInfographic() {
             <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-900 dark:text-blue-300 text-xs leading-relaxed flex items-start gap-3">
               <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
               <div>
-                <strong className="font-bold">Training Phase: Learning Deep Representations:</strong> Raw text corpora (books, code repositories, documentation) are cleaned, tokenized, and passed forward through transformer blocks to compute prediction loss. Backpropagation gradient descent iteratively optimizes billions of model parameters across thousands of GPU hours.
+                <strong className="font-bold">
+                  Training Phase: Learning Deep Representations:
+                </strong>{' '}
+                Raw text corpora (books, code repositories, documentation) are cleaned, tokenized,
+                and passed forward through transformer blocks to compute prediction loss.
+                Backpropagation gradient descent iteratively optimizes billions of model parameters
+                across thousands of GPU hours.
               </div>
             </div>
 
             {/* Step-by-Step Training Pipeline Flow */}
             <div className="grid grid-cols-1 md:grid-cols-7 gap-2.5 relative">
               {[
-                { step: '1', title: 'Training Data', sub: 'Terabytes of web text, GitHub code, documentation', badge: 'Source' },
-                { step: '2', title: 'Text Processing', sub: 'Deduplication, filtering, HTML/boilerplate cleaning', badge: 'ETL' },
-                { step: '3', title: 'Tokenization', sub: 'Byte-pair encoding into vocabulary token IDs', badge: 'Tokens' },
-                { step: '4', title: 'Token Embeddings', sub: 'High-dimensional vector projection with position', badge: 'Vectors' },
-                { step: '5', title: 'Transformer Core', sub: 'Self-attention and feed-forward forward pass', badge: 'Architecture', highlight: true },
-                { step: '6', title: 'Pattern Learning', sub: 'Loss calculation (cross-entropy) & backprop', badge: 'Gradients' },
-                { step: '7', title: 'Model Parameters', sub: 'Optimized weights saved into checkpoint file', badge: 'Trained Weights' },
+                {
+                  step: '1',
+                  title: 'Training Data',
+                  sub: 'Terabytes of web text, GitHub code, documentation',
+                  badge: 'Source',
+                },
+                {
+                  step: '2',
+                  title: 'Text Processing',
+                  sub: 'Deduplication, filtering, HTML/boilerplate cleaning',
+                  badge: 'ETL',
+                },
+                {
+                  step: '3',
+                  title: 'Tokenization',
+                  sub: 'Byte-pair encoding into vocabulary token IDs',
+                  badge: 'Tokens',
+                },
+                {
+                  step: '4',
+                  title: 'Token Embeddings',
+                  sub: 'High-dimensional vector projection with position',
+                  badge: 'Vectors',
+                },
+                {
+                  step: '5',
+                  title: 'Transformer Core',
+                  sub: 'Self-attention and feed-forward forward pass',
+                  badge: 'Architecture',
+                  highlight: true,
+                },
+                {
+                  step: '6',
+                  title: 'Pattern Learning',
+                  sub: 'Loss calculation (cross-entropy) & backprop',
+                  badge: 'Gradients',
+                },
+                {
+                  step: '7',
+                  title: 'Model Parameters',
+                  sub: 'Optimized weights saved into checkpoint file',
+                  badge: 'Trained Weights',
+                },
               ].map((item, idx) => (
                 <div
                   key={idx}
@@ -307,9 +413,14 @@ export default function LlmArchitectureInfographic() {
             <div className="p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/60 dark:bg-neutral-900/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-neutral-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Result: Billions of parameters encode language syntax, reasoning, and test framework conventions.</span>
+                <span>
+                  Result: Billions of parameters encode language syntax, reasoning, and test
+                  framework conventions.
+                </span>
               </div>
-              <span className="font-mono text-[11px] text-slate-500">Resource: 10,000+ GPU-hours (NVIDIA H100)</span>
+              <span className="font-mono text-[11px] text-slate-500">
+                Resource: 10,000+ GPU-hours (NVIDIA H100)
+              </span>
             </div>
           </div>
         )}
@@ -322,19 +433,54 @@ export default function LlmArchitectureInfographic() {
             <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 dark:text-emerald-300 text-xs leading-relaxed flex items-start gap-3">
               <Zap className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
               <div>
-                <strong className="font-bold">Inference Phase: Real-Time Token Generation:</strong> When an SDET asks an agent to generate test scripts, the model weights remain 100% frozen. The prompt is converted into embeddings, processed through the transformer layers in a single forward pass, and the next token is sampled from the vocabulary probability curve until the final token is emitted.
+                <strong className="font-bold">Inference Phase: Real-Time Token Generation:</strong>{' '}
+                When an SDET asks an agent to generate test scripts, the model weights remain 100%
+                frozen. The prompt is converted into embeddings, processed through the transformer
+                layers in a single forward pass, and the next token is sampled from the vocabulary
+                probability curve until the final token is emitted.
               </div>
             </div>
 
             {/* Inference Steps */}
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
               {[
-                { step: '1', title: 'User Input (Prompt)', desc: '"Write Playwright POM for Login with semantic locators"', badge: 'Input Text' },
-                { step: '2', title: 'Tokenization', desc: 'Mapped to integers: [1542, 8914, 284, ...]', badge: 'Tokenizer' },
-                { step: '3', title: 'Vector Embeddings', desc: 'Projected into 4096-dimensional geometric space', badge: 'Embedding Matrix' },
-                { step: '4', title: 'Transformer Layers', desc: 'Multi-head self-attention computes context across tokens', badge: 'Frozen Weights', highlight: true },
-                { step: '5', title: 'Next Token Prediction', desc: 'Softmax probability curve sampled with Temperature', badge: 'Probabilities' },
-                { step: '6', title: 'Final Response Stream', desc: 'Generated TypeScript code emitted back to user/IDE', badge: 'Complete Output' },
+                {
+                  step: '1',
+                  title: 'User Input (Prompt)',
+                  desc: '"Write Playwright POM for Login with semantic locators"',
+                  badge: 'Input Text',
+                },
+                {
+                  step: '2',
+                  title: 'Tokenization',
+                  desc: 'Mapped to integers: [1542, 8914, 284, ...]',
+                  badge: 'Tokenizer',
+                },
+                {
+                  step: '3',
+                  title: 'Vector Embeddings',
+                  desc: 'Projected into 4096-dimensional geometric space',
+                  badge: 'Embedding Matrix',
+                },
+                {
+                  step: '4',
+                  title: 'Transformer Layers',
+                  desc: 'Multi-head self-attention computes context across tokens',
+                  badge: 'Frozen Weights',
+                  highlight: true,
+                },
+                {
+                  step: '5',
+                  title: 'Next Token Prediction',
+                  desc: 'Softmax probability curve sampled with Temperature',
+                  badge: 'Probabilities',
+                },
+                {
+                  step: '6',
+                  title: 'Final Response Stream',
+                  desc: 'Generated TypeScript code emitted back to user/IDE',
+                  badge: 'Complete Output',
+                },
               ].map((item, idx) => (
                 <div
                   key={idx}
@@ -367,9 +513,13 @@ export default function LlmArchitectureInfographic() {
             <div className="p-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/60 dark:bg-neutral-900/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-neutral-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>Zero backpropagation during inference. Weights remain completely unchanged.</span>
+                <span>
+                  Zero backpropagation during inference. Weights remain completely unchanged.
+                </span>
               </div>
-              <span className="font-mono text-[11px] text-slate-500">Latency: 20-100 ms per token</span>
+              <span className="font-mono text-[11px] text-slate-500">
+                Latency: 20-100 ms per token
+              </span>
             </div>
           </div>
         )}
@@ -380,7 +530,8 @@ export default function LlmArchitectureInfographic() {
         {activeTab === 'components' && (
           <div className="space-y-6">
             <p className="text-xs text-slate-600 dark:text-neutral-400">
-              Click on any of the 10 fundamental components to inspect its internal mechanics, architectural purpose, and direct practical impact on automated QA engineering:
+              Click on any of the 10 fundamental components to inspect its internal mechanics,
+              architectural purpose, and direct practical impact on automated QA engineering:
             </p>
 
             {/* Component Chips */}
@@ -417,7 +568,9 @@ export default function LlmArchitectureInfographic() {
             <div className="p-6 rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-50/70 dark:bg-neutral-900/80 space-y-4">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-neutral-800 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className={`p-2 rounded-xl ${currentComp.bgColor} border ${currentComp.borderColor}`}>
+                  <div
+                    className={`p-2 rounded-xl ${currentComp.bgColor} border ${currentComp.borderColor}`}
+                  >
                     <currentComp.icon className={`w-5 h-5 ${currentComp.color}`} />
                   </div>
                   <div>
@@ -467,14 +620,23 @@ export default function LlmArchitectureInfographic() {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-800/80">
-                  <th className="py-3 px-4 font-bold text-slate-900 dark:text-white w-1/5">Architectural Dimension</th>
-                  <th className="py-3 px-4 font-bold text-blue-600 dark:text-blue-400 w-2/5">Training Phase (Pre-Training / Fine-Tuning)</th>
-                  <th className="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400 w-2/5">Inference Phase (Runtime Generation)</th>
+                  <th className="py-3 px-4 font-bold text-slate-900 dark:text-white w-1/5">
+                    Architectural Dimension
+                  </th>
+                  <th className="py-3 px-4 font-bold text-blue-600 dark:text-blue-400 w-2/5">
+                    Training Phase (Pre-Training / Fine-Tuning)
+                  </th>
+                  <th className="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400 w-2/5">
+                    Inference Phase (Runtime Generation)
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-neutral-800/60">
                 {comparisonRows.map((row, i) => (
-                  <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-neutral-800/30 transition">
+                  <tr
+                    key={i}
+                    className="hover:bg-slate-50/50 dark:hover:bg-neutral-800/30 transition"
+                  >
                     <td className="py-3 px-4 font-bold text-slate-900 dark:text-white align-top">
                       {row.dimension}
                     </td>
@@ -499,7 +661,11 @@ export default function LlmArchitectureInfographic() {
             <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-900 dark:text-purple-300 text-xs leading-relaxed flex items-start gap-3">
               <Info className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
               <div>
-                <strong className="font-bold">Important Architecture Principle:</strong> 175 Billion parameters is NOT a universal requirement for Large Language Models. Model sizes span a spectrum from lightweight 1B-3B Small Language Models (SLMs) on mobile devices to 7B-14B local developer models, 70B enterprise models, and trillion-parameter Mixture-of-Experts (MoE) frontier models.
+                <strong className="font-bold">Important Architecture Principle:</strong> 175 Billion
+                parameters is NOT a universal requirement for Large Language Models. Model sizes
+                span a spectrum from lightweight 1B-3B Small Language Models (SLMs) on mobile
+                devices to 7B-14B local developer models, 70B enterprise models, and
+                trillion-parameter Mixture-of-Experts (MoE) frontier models.
               </div>
             </div>
 
@@ -512,9 +678,7 @@ export default function LlmArchitectureInfographic() {
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                     {item.range}
                   </span>
-                  <h5 className="text-sm font-bold text-slate-900 dark:text-white">
-                    {item.tier}
-                  </h5>
+                  <h5 className="text-sm font-bold text-slate-900 dark:text-white">{item.tier}</h5>
                   <p className="text-xs text-slate-500 dark:text-neutral-400">
                     <strong>Examples:</strong> {item.example}
                   </p>

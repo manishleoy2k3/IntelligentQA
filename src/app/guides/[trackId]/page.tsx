@@ -15,11 +15,7 @@ export function generateStaticParams() {
   ];
 }
 
-export default async function TrackGuidePage({
-  params,
-}: {
-  params: Promise<{ trackId: string }>;
-}) {
+export default async function TrackGuidePage({ params }: { params: Promise<{ trackId: string }> }) {
   const { trackId } = await params;
 
   if (trackId === 'ai-qa') {

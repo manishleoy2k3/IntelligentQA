@@ -89,11 +89,14 @@ export async function POST(req: NextRequest) {
       const { diagramData } = body;
       const validation = validateArchitectureDiagram(diagramData);
       if (!validation.success) {
-        return NextResponse.json({
-          success: false,
-          error: validation.error,
-          details: validation.details,
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: validation.error,
+            details: validation.details,
+          },
+          { status: 400 }
+        );
       }
 
       const review = reviewArchitectureDiagram(validation.data as any);
@@ -105,7 +108,10 @@ export async function POST(req: NextRequest) {
       const { prompt, subject, targetLearner, technicalSections, aspectRatio, context } = body;
       const effectiveSubject = subject || prompt || context?.lessonTitle;
       if (!effectiveSubject) {
-        return NextResponse.json({ success: false, error: 'Prompt or lesson context is required' }, { status: 400 });
+        return NextResponse.json(
+          { success: false, error: 'Prompt or lesson context is required' },
+          { status: 400 }
+        );
       }
 
       const result = await generateEducationalInfographic({
@@ -127,11 +133,14 @@ export async function POST(req: NextRequest) {
       const { diagramData } = body;
       const validation = validateArchitectureDiagram(diagramData);
       if (!validation.success) {
-        return NextResponse.json({
-          success: false,
-          error: validation.error,
-          details: validation.details,
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: validation.error,
+            details: validation.details,
+          },
+          { status: 400 }
+        );
       }
 
       const layout = await calculateElkLayout(validation.data as any);
@@ -147,7 +156,16 @@ export async function POST(req: NextRequest) {
 
     // ACTION 5: Save Diagram Record & Persistent Storage
     if (action === 'save_diagram') {
-      const { title, description, mode, architectureData, svgContent, imageUrl, courseId, lessonId } = body;
+      const {
+        title,
+        description,
+        mode,
+        architectureData,
+        svgContent,
+        imageUrl,
+        courseId,
+        lessonId,
+      } = body;
 
       const recordId = `diag-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
       let finalImageUrl = imageUrl;

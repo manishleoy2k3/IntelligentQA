@@ -39,7 +39,8 @@ export const sharedTiptapExtensions = [
   Link.configure({
     openOnClick: false,
     HTMLAttributes: {
-      class: 'text-emerald-600 dark:text-emerald-400 underline font-semibold hover:text-emerald-500',
+      class:
+        'text-emerald-600 dark:text-emerald-400 underline font-semibold hover:text-emerald-500',
       rel: 'noopener noreferrer',
       target: '_blank',
     },
@@ -48,7 +49,8 @@ export const sharedTiptapExtensions = [
     lowlight,
     defaultLanguage: 'typescript',
     HTMLAttributes: {
-      class: 'tiptap-code-block rounded-2xl bg-[#0F0F12] border border-[#27272A] p-4 text-emerald-300 font-mono text-xs my-4 overflow-x-auto shadow-inner',
+      class:
+        'tiptap-code-block rounded-2xl bg-[#0F0F12] border border-[#27272A] p-4 text-emerald-300 font-mono text-xs my-4 overflow-x-auto shadow-inner',
     },
   }),
   Callout,

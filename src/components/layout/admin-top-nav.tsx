@@ -33,10 +33,7 @@ const SECTION_TITLES: Record<string, string> = {
   team: 'Access Control & Administrator Team',
 };
 
-export default function AdminTopNav({
-  onToggleMobileSidebar,
-  onPreviewStudent,
-}: AdminTopNavProps) {
+export default function AdminTopNav({ onToggleMobileSidebar, onPreviewStudent }: AdminTopNavProps) {
   const searchParams = useSearchParams();
   const currentSection = searchParams?.get('section') || 'overview';
   const sectionTitle = SECTION_TITLES[currentSection] || 'Administration Dashboard';

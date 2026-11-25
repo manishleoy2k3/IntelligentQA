@@ -80,9 +80,7 @@ export default function LessonSection({ section }: LessonSectionProps) {
       )}
 
       {/* Troubleshooting Section */}
-      {section.troubleshooting && (
-        <TroubleshootingSection items={section.troubleshooting} />
-      )}
+      {section.troubleshooting && <TroubleshootingSection items={section.troubleshooting} />}
     </section>
   );
 }

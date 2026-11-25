@@ -52,16 +52,16 @@ export async function POST(req: NextRequest) {
         publishedAt: status === 'published' ? new Date().toISOString() : null,
       });
 
-      return NextResponse.json({
-        success: true,
-        data: created,
-        message: 'Lesson created successfully.',
-      }, { status: 201 });
-    } catch (valErr: any) {
       return NextResponse.json(
-        { success: false, error: valErr.message },
-        { status: 400 }
+        {
+          success: true,
+          data: created,
+          message: 'Lesson created successfully.',
+        },
+        { status: 201 }
       );
+    } catch (valErr: any) {
+      return NextResponse.json({ success: false, error: valErr.message }, { status: 400 });
     }
   } catch (error: any) {
     return NextResponse.json(

@@ -89,13 +89,18 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   const [courseCategory, setCourseCategory] = useState<string>('cat-ai-for-qa');
   const [courseDesc, setCourseDesc] = useState<string>('');
   const [courseIcon, setCourseIcon] = useState<string>('BookOpen');
-  const [courseLevel, setCourseLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels'>('All Levels');
+  const [courseLevel, setCourseLevel] = useState<
+    'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels'
+  >('All Levels');
   const [courseHours, setCourseHours] = useState<number>(10);
   const [courseStatus, setCourseStatus] = useState<AcademyPublishStatus>('published');
 
   // 2. Module Modal
   const [showModuleModal, setShowModuleModal] = useState<boolean>(false);
-  const [editingModule, setEditingModule] = useState<{ courseId: string; module: AcademyModule | null } | null>(null);
+  const [editingModule, setEditingModule] = useState<{
+    courseId: string;
+    module: AcademyModule | null;
+  } | null>(null);
   const [moduleTitle, setModuleTitle] = useState<string>('');
   const [moduleSlug, setModuleSlug] = useState<string>('');
   const [moduleDesc, setModuleDesc] = useState<string>('');
@@ -132,7 +137,11 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     moduleDesc?: string;
   } | null>(null);
 
-  const handleOpenReviewLesson = (course: AcademyCourse, module: AcademyModule, lesson: AcademyLesson) => {
+  const handleOpenReviewLesson = (
+    course: AcademyCourse,
+    module: AcademyModule,
+    lesson: AcademyLesson
+  ) => {
     setReviewLessonTarget({
       lesson,
       courseTitle: course.title,
@@ -146,8 +155,12 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   const [lessonEditorTab, setLessonEditorTab] = useState<'content' | 'diagram' | 'docx'>('content');
   const [diagramType, setDiagramType] = useState<string>('pipeline');
   const [diagramTitle, setDiagramTitle] = useState<string>('System Architecture Flow');
-  const [diagramCaption, setDiagramCaption] = useState<string>('Component relationship and execution flow');
-  const [diagramMermaid, setDiagramMermaid] = useState<string>('graph TD\n  Client[Test Client] -->|W3C HTTP| Driver[Browser Driver]\n  Driver --> Browser[Browser Process]');
+  const [diagramCaption, setDiagramCaption] = useState<string>(
+    'Component relationship and execution flow'
+  );
+  const [diagramMermaid, setDiagramMermaid] = useState<string>(
+    'graph TD\n  Client[Test Client] -->|W3C HTTP| Driver[Browser Driver]\n  Driver --> Browser[Browser Process]'
+  );
   const [diagramImageUrl, setDiagramImageUrl] = useState<string>('');
   const [diagramAltText, setDiagramAltText] = useState<string>('');
   const [diagramSourceAttr, setDiagramSourceAttr] = useState<string>('');
@@ -248,7 +261,10 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
 
   // Recently updated lessons (sorted by updatedAt)
   const recentlyUpdatedLessons = [...allLessonsWithCourse]
-    .sort((a, b) => new Date(b.lesson.updatedAt || 0).getTime() - new Date(a.lesson.updatedAt || 0).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.lesson.updatedAt || 0).getTime() - new Date(a.lesson.updatedAt || 0).getTime()
+    )
     .slice(0, 8);
 
   // Selected course object
@@ -420,7 +436,11 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   };
 
   const handleDeleteCourse = async (courseId: string, title: string) => {
-    if (!confirm(`Are you sure you want to permanently delete course "${title}" and all its modules and lessons? This action cannot be undone.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to permanently delete course "${title}" and all its modules and lessons? This action cannot be undone.`
+      )
+    ) {
       return;
     }
     try {
@@ -543,7 +563,11 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
   };
 
   const handleDeleteModule = async (courseId: string, modId: string) => {
-    if (!confirm('Are you sure you want to delete this module? Lessons inside it will also be deleted.')) {
+    if (
+      !confirm(
+        'Are you sure you want to delete this module? Lessons inside it will also be deleted.'
+      )
+    ) {
       return;
     }
     try {
@@ -625,7 +649,10 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     }
   };
 
-  const handleVisualEditorSaveDraft = async (contentHtml: string, blockData?: any): Promise<boolean> => {
+  const handleVisualEditorSaveDraft = async (
+    contentHtml: string,
+    blockData?: any
+  ): Promise<boolean> => {
     if (!activeVisualLesson) return false;
     try {
       const res = await fetch(`/api/admin/learning/lessons/${activeVisualLesson.lesson.id}`, {
@@ -651,7 +678,10 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     }
   };
 
-  const handleVisualEditorPublish = async (contentHtml: string, blockData?: any): Promise<boolean> => {
+  const handleVisualEditorPublish = async (
+    contentHtml: string,
+    blockData?: any
+  ): Promise<boolean> => {
     if (!activeVisualLesson) return false;
     try {
       const res = await fetch(`/api/admin/learning/lessons/${activeVisualLesson.lesson.id}`, {
@@ -970,7 +1000,11 @@ test('deterministic enterprise verification', async ({ page }) => {
     }
   };
 
-  const handleOpenPreviewModal = (lesson: Partial<AcademyLesson>, cTitle: string, mTitle: string) => {
+  const handleOpenPreviewModal = (
+    lesson: Partial<AcademyLesson>,
+    cTitle: string,
+    mTitle: string
+  ) => {
     setPreviewingLesson({
       lesson,
       courseTitle: cTitle,
@@ -1058,32 +1092,44 @@ test('deterministic enterprise verification', async ({ page }) => {
           {/* 6 Key Metrics Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             <div className="p-4 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Courses</span>
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                Courses
+              </span>
               <p className="text-2xl font-black text-white">{totalCourses}</p>
               <p className="text-[10px] text-zinc-400">Total Tracks</p>
             </div>
             <div className="p-4 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-              <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Modules</span>
+              <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider">
+                Modules
+              </span>
               <p className="text-2xl font-black text-white">{totalModules}</p>
               <p className="text-[10px] text-zinc-400">Chapters</p>
             </div>
             <div className="p-4 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-              <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Total Lessons</span>
+              <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">
+                Total Lessons
+              </span>
               <p className="text-2xl font-black text-white">{totalLessons}</p>
               <p className="text-[10px] text-zinc-400">All Curriculum</p>
             </div>
             <div className="p-4 rounded-2xl bg-[#161616] border border-emerald-500/20 space-y-1">
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Published</span>
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                Published
+              </span>
               <p className="text-2xl font-black text-emerald-300">{publishedLessonsCount}</p>
               <p className="text-[10px] text-zinc-400">Live to Learners</p>
             </div>
             <div className="p-4 rounded-2xl bg-[#161616] border border-amber-500/20 space-y-1">
-              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Drafts</span>
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                Drafts
+              </span>
               <p className="text-2xl font-black text-amber-300">{draftLessonsCount}</p>
               <p className="text-[10px] text-zinc-400">Private / Staged</p>
             </div>
             <div className="p-4 rounded-2xl bg-[#161616] border border-[#262626] space-y-1">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Categories</span>
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                Categories
+              </span>
               <p className="text-2xl font-black text-white">{categories.length}</p>
               <p className="text-[10px] text-zinc-400">Taxonomies</p>
             </div>
@@ -1122,15 +1168,17 @@ test('deterministic enterprise verification', async ({ page }) => {
           <div className="p-5 rounded-2xl bg-[#161616] border border-[#262626] space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-white tracking-tight">Recently Updated Lessons</h3>
-                <p className="text-[11px] text-zinc-400">Latest technical documentation entries across all courses</p>
+                <h3 className="text-sm font-bold text-white tracking-tight">
+                  Recently Updated Lessons
+                </h3>
+                <p className="text-[11px] text-zinc-400">
+                  Latest technical documentation entries across all courses
+                </p>
               </div>
             </div>
 
             {recentlyUpdatedLessons.length === 0 ? (
-              <div className="py-8 text-center text-xs text-zinc-500">
-                No lessons recorded yet.
-              </div>
+              <div className="py-8 text-center text-xs text-zinc-500">No lessons recorded yet.</div>
             ) : (
               <div className="divide-y divide-[#222222] border-t border-[#222222]">
                 {recentlyUpdatedLessons.map(({ lesson, course, module }) => (
@@ -1173,7 +1221,11 @@ test('deterministic enterprise verification', async ({ page }) => {
                             ? 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
                             : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
                         }`}
-                        title={lesson.status === 'published' ? 'Unpublish (revert to Draft)' : 'Publish to learners'}
+                        title={
+                          lesson.status === 'published'
+                            ? 'Unpublish (revert to Draft)'
+                            : 'Publish to learners'
+                        }
                       >
                         {lesson.status === 'published' ? 'Unpublish' : 'Publish'}
                       </button>
@@ -1209,27 +1261,37 @@ test('deterministic enterprise verification', async ({ page }) => {
           {/* Quick Metrics KPI Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             <div className="p-3.5 rounded-xl bg-[#161616] border border-[#262626]">
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Courses</span>
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                Courses
+              </span>
               <p className="text-xl font-black text-white mt-0.5">{totalCourses}</p>
               <p className="text-[10px] text-zinc-400">Total Tracks</p>
             </div>
             <div className="p-3.5 rounded-xl bg-[#161616] border border-[#262626]">
-              <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider block">Modules</span>
+              <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider block">
+                Modules
+              </span>
               <p className="text-xl font-black text-white mt-0.5">{totalModules}</p>
               <p className="text-[10px] text-zinc-400">Active Chapters</p>
             </div>
             <div className="p-3.5 rounded-xl bg-[#161616] border border-[#262626]">
-              <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">Lessons</span>
+              <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">
+                Lessons
+              </span>
               <p className="text-xl font-black text-white mt-0.5">{totalLessons}</p>
               <p className="text-[10px] text-zinc-400">All Technical Content</p>
             </div>
             <div className="p-3.5 rounded-xl bg-[#161616] border border-emerald-500/20">
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Published</span>
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                Published
+              </span>
               <p className="text-xl font-black text-emerald-300 mt-0.5">{publishedLessonsCount}</p>
               <p className="text-[10px] text-zinc-400">Live to Learners</p>
             </div>
             <div className="p-3.5 rounded-xl bg-[#161616] border border-amber-500/20">
-              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">Drafts</span>
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                Drafts
+              </span>
               <p className="text-xl font-black text-amber-300 mt-0.5">{draftLessonsCount}</p>
               <p className="text-[10px] text-zinc-400">Private / Staged</p>
             </div>
@@ -1240,7 +1302,10 @@ test('deterministic enterprise verification', async ({ page }) => {
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
               {courses.map((course) => {
                 const isSelected = course.id === selectedCourseId;
-                const totalCourseLessons = (course.modules || []).reduce((acc, m) => acc + (m.lessons?.length || 0), 0);
+                const totalCourseLessons = (course.modules || []).reduce(
+                  (acc, m) => acc + (m.lessons?.length || 0),
+                  0
+                );
                 return (
                   <button
                     key={course.id}
@@ -1303,7 +1368,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                       {activeCourse.status.toUpperCase()}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">{activeCourse.title}</h3>
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    {activeCourse.title}
+                  </h3>
                   {activeCourse.description && (
                     <p className="text-xs text-zinc-400 max-w-2xl">{activeCourse.description}</p>
                   )}
@@ -1327,7 +1394,10 @@ test('deterministic enterprise verification', async ({ page }) => {
                     const isFirst = activeIndex === 0;
                     const isLast = activeIndex === courses.length - 1;
                     return (
-                      <div className="flex items-center bg-[#222222] border border-[#333] rounded-xl p-0.5" title={`Course Order #${activeIndex + 1} of ${courses.length}`}>
+                      <div
+                        className="flex items-center bg-[#222222] border border-[#333] rounded-xl p-0.5"
+                        title={`Course Order #${activeIndex + 1} of ${courses.length}`}
+                      >
                         <span className="text-[10px] font-mono text-zinc-400 px-2 font-bold">
                           #{activeIndex + 1}
                         </span>
@@ -1453,7 +1523,7 @@ test('deterministic enterprise verification', async ({ page }) => {
 
               {/* Modules Accordion Tree */}
               <div className="space-y-3 pt-2">
-                {(!activeCourse.modules || activeCourse.modules.length === 0) ? (
+                {!activeCourse.modules || activeCourse.modules.length === 0 ? (
                   <div className="py-8 text-center text-xs text-zinc-500 border-2 border-dashed border-[#222] rounded-xl">
                     No modules created for this course yet. Click "Add Module" to begin.
                   </div>
@@ -1473,7 +1543,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                       return true;
                     });
 
-                    const isExpanded = searchQuery.trim() ? true : (expandedModules[mod.id] ?? true);
+                    const isExpanded = searchQuery.trim()
+                      ? true
+                      : (expandedModules[mod.id] ?? true);
 
                     return (
                       <div
@@ -1486,10 +1558,7 @@ test('deterministic enterprise verification', async ({ page }) => {
                             onClick={() => toggleModuleAccordion(mod.id)}
                             className="flex items-center gap-2.5 truncate flex-1 min-w-0 cursor-pointer"
                           >
-                            <button
-                              type="button"
-                              className="text-zinc-400 hover:text-white"
-                            >
+                            <button type="button" className="text-zinc-400 hover:text-white">
                               {isExpanded ? (
                                 <ChevronDown className="w-4 h-4" />
                               ) : (
@@ -1508,7 +1577,11 @@ test('deterministic enterprise verification', async ({ page }) => {
                               {mod.status}
                             </span>
                             <span className="text-[10px] font-mono text-zinc-400">
-                              ({filteredLessons.length}{filteredLessons.length !== lessons.length ? ` / ${lessons.length}` : ''} Lessons)
+                              ({filteredLessons.length}
+                              {filteredLessons.length !== lessons.length
+                                ? ` / ${lessons.length}`
+                                : ''}{' '}
+                              Lessons)
                             </span>
                           </div>
 
@@ -1517,7 +1590,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                               type="button"
                               onClick={() => handleToggleModulePublish(mod)}
                               className="px-2 py-1 rounded text-[10px] font-mono font-bold bg-[#141414] text-zinc-300 hover:text-white transition-colors cursor-pointer"
-                              title={mod.status === 'published' ? 'Unpublish Module' : 'Publish Module'}
+                              title={
+                                mod.status === 'published' ? 'Unpublish Module' : 'Publish Module'
+                              }
                             >
                               {mod.status === 'published' ? 'Unpublish' : 'Publish'}
                             </button>
@@ -1586,7 +1661,8 @@ test('deterministic enterprise verification', async ({ page }) => {
                                         )}
                                       </div>
                                       <p className="text-[10px] text-zinc-400 truncate">
-                                        {lsn.estimatedReadingTime || lsn.estimatedReadTime || 5} min read
+                                        {lsn.estimatedReadingTime || lsn.estimatedReadTime || 5} min
+                                        read
                                       </p>
                                     </div>
                                   </div>
@@ -1594,7 +1670,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                                   <div className="flex items-center gap-1.5 shrink-0">
                                     <button
                                       type="button"
-                                      onClick={() => handleOpenPreviewModal(lsn, activeCourse.title, mod.title)}
+                                      onClick={() =>
+                                        handleOpenPreviewModal(lsn, activeCourse.title, mod.title)
+                                      }
                                       className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#202020] hover:bg-[#282828] text-zinc-300 hover:text-white text-[11px] font-medium transition-colors cursor-pointer"
                                       title="Preview Lesson"
                                     >
@@ -1615,7 +1693,10 @@ test('deterministic enterprise verification', async ({ page }) => {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const parentMod = (activeCourse.modules || []).find((m) => m.id === mod.id) || mod;
+                                        const parentMod =
+                                          (activeCourse.modules || []).find(
+                                            (m) => m.id === mod.id
+                                          ) || mod;
                                         handleOpenReviewLesson(activeCourse, parentMod, lsn);
                                       }}
                                       className="p-1.5 rounded text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 transition-colors cursor-pointer"
@@ -1625,7 +1706,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                                     </button>
                                     <button
                                       type="button"
-                                      onClick={() => handleOpenEditLesson(activeCourse.id, mod.id, lsn)}
+                                      onClick={() =>
+                                        handleOpenEditLesson(activeCourse.id, mod.id, lsn)
+                                      }
                                       className="p-1.5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
                                       title="Edit Lesson & DOCX Document"
                                     >
@@ -1682,12 +1765,16 @@ test('deterministic enterprise verification', async ({ page }) => {
             </div>
 
             <p className="text-xs text-zinc-400">
-              Shift courses up or down to set their display sequence. Changes sync immediately to the left navigation tree.
+              Shift courses up or down to set their display sequence. Changes sync immediately to
+              the left navigation tree.
             </p>
 
             <div className="overflow-y-auto space-y-2 pr-1 flex-1">
               {courses.map((course, idx) => {
-                const totalLessons = (course.modules || []).reduce((acc, m) => acc + (m.lessons?.length || 0), 0);
+                const totalLessons = (course.modules || []).reduce(
+                  (acc, m) => acc + (m.lessons?.length || 0),
+                  0
+                );
                 const isFirst = idx === 0;
                 const isLast = idx === courses.length - 1;
 
@@ -1987,7 +2074,9 @@ test('deterministic enterprise verification', async ({ page }) => {
             <div className="px-6 py-4 border-b border-[#262626] flex items-center justify-between bg-[#191919] shrink-0">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-400" />
-                <span>{editingLessonTarget?.lesson ? 'Edit Lesson' : 'Create Technical Lesson'}</span>
+                <span>
+                  {editingLessonTarget?.lesson ? 'Edit Lesson' : 'Create Technical Lesson'}
+                </span>
               </h3>
               <button
                 type="button"
@@ -2027,7 +2116,9 @@ test('deterministic enterprise verification', async ({ page }) => {
               </div>
 
               <div>
-                <label className="block font-semibold mb-1 text-zinc-300">Short Description / Summary</label>
+                <label className="block font-semibold mb-1 text-zinc-300">
+                  Short Description / Summary
+                </label>
                 <textarea
                   value={lessonSummary}
                   onChange={(e) => setLessonSummary(e.target.value)}
@@ -2046,7 +2137,8 @@ test('deterministic enterprise verification', async ({ page }) => {
                     </span>
                     <h4 className="text-xs font-bold text-white">Visual WYSIWYG Content Studio</h4>
                     <p className="text-[11px] text-zinc-300">
-                      Edit this lesson visually with rich text, code highlighting, tables, callouts, and images. Zero HTML required.
+                      Edit this lesson visually with rich text, code highlighting, tables, callouts,
+                      and images. Zero HTML required.
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -2054,8 +2146,12 @@ test('deterministic enterprise verification', async ({ page }) => {
                       type="button"
                       onClick={() => {
                         if (editingLessonTarget?.lesson) {
-                          const activeC = courses.find((c) => c.id === editingLessonTarget.courseId);
-                          const activeM = (activeC?.modules || []).find((m) => m.id === editingLessonTarget.moduleId);
+                          const activeC = courses.find(
+                            (c) => c.id === editingLessonTarget.courseId
+                          );
+                          const activeM = (activeC?.modules || []).find(
+                            (m) => m.id === editingLessonTarget.moduleId
+                          );
                           if (activeC && activeM) {
                             handleOpenReviewLesson(activeC, activeM, {
                               ...editingLessonTarget.lesson,
@@ -2165,7 +2261,10 @@ test('deterministic enterprise verification', async ({ page }) => {
                       className="w-full p-3 rounded-xl bg-[#141414] border border-[#2D2D2D] text-emerald-300 font-mono text-xs focus:outline-none focus:border-emerald-500 leading-relaxed resize-y"
                     />
                     <p className="text-[10px] text-zinc-400 flex items-center justify-between">
-                      <span>Supports 13 standardized lesson sections with responsive styling & syntax highlights.</span>
+                      <span>
+                        Supports 13 standardized lesson sections with responsive styling & syntax
+                        highlights.
+                      </span>
                       <span>Characters: {lessonContentHtml.length}</span>
                     </p>
                   </div>
@@ -2201,7 +2300,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                       </div>
 
                       <div className="md:col-span-2">
-                        <label className="block text-zinc-400 font-medium mb-1">Diagram Title</label>
+                        <label className="block text-zinc-400 font-medium mb-1">
+                          Diagram Title
+                        </label>
                         <input
                           type="text"
                           value={diagramTitle}
@@ -2213,7 +2314,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                     </div>
 
                     <div>
-                      <label className="block text-zinc-400 font-medium mb-1">Caption / Description</label>
+                      <label className="block text-zinc-400 font-medium mb-1">
+                        Caption / Description
+                      </label>
                       <input
                         type="text"
                         value={diagramCaption}
@@ -2227,7 +2330,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                       <div className="space-y-3">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-zinc-400 font-medium mb-1">Image URL / Path</label>
+                            <label className="block text-zinc-400 font-medium mb-1">
+                              Image URL / Path
+                            </label>
                             <input
                               type="text"
                               value={diagramImageUrl}
@@ -2237,7 +2342,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                             />
                           </div>
                           <div>
-                            <label className="block text-zinc-400 font-medium mb-1">Alternative Text (Alt)</label>
+                            <label className="block text-zinc-400 font-medium mb-1">
+                              Alternative Text (Alt)
+                            </label>
                             <input
                               type="text"
                               value={diagramAltText}
@@ -2248,7 +2355,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                           </div>
                         </div>
                         <div>
-                          <label className="block text-zinc-400 font-medium mb-1">Source Attribution (Optional)</label>
+                          <label className="block text-zinc-400 font-medium mb-1">
+                            Source Attribution (Optional)
+                          </label>
                           <input
                             type="text"
                             value={diagramSourceAttr}
@@ -2260,7 +2369,8 @@ test('deterministic enterprise verification', async ({ page }) => {
                       </div>
                     ) : (
                       <div className="p-3 rounded-xl bg-[#141414] border border-[#262626] text-zinc-400 text-xs">
-                        Will generate an interactive SVG/CSS-powered <strong>{diagramType}</strong> execution diagram with component breakdowns and step transitions.
+                        Will generate an interactive SVG/CSS-powered <strong>{diagramType}</strong>{' '}
+                        execution diagram with component breakdowns and step transitions.
                       </div>
                     )}
 
@@ -2285,7 +2395,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                         <UploadCloud className="w-4 h-4 text-emerald-400" />
                         <span>Upload Word Document (.docx)</span>
                       </label>
-                      <span className="text-[10px] text-zinc-400 font-mono">Preserves Original Format</span>
+                      <span className="text-[10px] text-zinc-400 font-mono">
+                        Preserves Original Format
+                      </span>
                     </div>
 
                     <DocxUploadDropzone
@@ -2299,7 +2411,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                         if (info.metadata?.estimated_reading_time_minutes) {
                           setLessonReadTime(info.metadata.estimated_reading_time_minutes);
                         }
-                        notify(`Uploaded & processed "${info.originalFilename}" with format preservation.`);
+                        notify(
+                          `Uploaded & processed "${info.originalFilename}" with format preservation.`
+                        );
                       }}
                       onClear={() => setLessonDocPath('')}
                     />
@@ -2309,7 +2423,9 @@ test('deterministic enterprise verification', async ({ page }) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1 text-zinc-300">Estimated Reading Time</label>
+                  <label className="block font-semibold mb-1 text-zinc-300">
+                    Estimated Reading Time
+                  </label>
                   <input
                     type="number"
                     min="1"
@@ -2321,7 +2437,9 @@ test('deterministic enterprise verification', async ({ page }) => {
                 </div>
 
                 <div>
-                  <label className="block font-semibold mb-1 text-zinc-300">Initial Publish Status</label>
+                  <label className="block font-semibold mb-1 text-zinc-300">
+                    Initial Publish Status
+                  </label>
                   <select
                     value={lessonStatus}
                     onChange={(e) => setLessonStatus(e.target.value as any)}
@@ -2420,7 +2538,11 @@ test('deterministic enterprise verification', async ({ page }) => {
               relatedLessons: activeVisualLesson.module.lessons?.map((l: any) => l.title) || [],
             }}
             curriculumContext={{
-              moduleHierarchy: [activeVisualLesson.course.title, activeVisualLesson.module.title, activeVisualLesson.lesson.title],
+              moduleHierarchy: [
+                activeVisualLesson.course.title,
+                activeVisualLesson.module.title,
+                activeVisualLesson.lesson.title,
+              ],
             }}
             onSaveDraft={handleVisualEditorSaveDraft}
             onPublish={handleVisualEditorPublish}
@@ -2469,7 +2591,9 @@ test('deterministic enterprise verification', async ({ page }) => {
           }}
           onOpenVisualEditor={() => {
             const activeC = courses.find((c) => c.title === reviewLessonTarget.courseTitle);
-            const activeM = (activeC?.modules || []).find((m) => m.title === reviewLessonTarget.moduleTitle);
+            const activeM = (activeC?.modules || []).find(
+              (m) => m.title === reviewLessonTarget.moduleTitle
+            );
             if (activeC && activeM) {
               setActiveVisualLesson({
                 course: activeC,

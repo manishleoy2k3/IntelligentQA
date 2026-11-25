@@ -10,9 +10,10 @@
 
 ## 1. Executive Summary
 
-Phase 8 elevates the IntelligentQA Learning Academy from a text-centric reading interface into a **high-fidelity, visual-first technical learning platform** engineered specifically for QA Engineers, SDETs, Automation Architects, and Performance Engineers. 
+Phase 8 elevates the IntelligentQA Learning Academy from a text-centric reading interface into a **high-fidelity, visual-first technical learning platform** engineered specifically for QA Engineers, SDETs, Automation Architects, and Performance Engineers.
 
 ### Key Accomplishments
+
 1. **Hierarchical 9-Course Enterprise Catalogue**: Established a complete nested hierarchy (`Course -> Module -> Individual Lesson`) spanning 416+ structured lessons across 9 core engineering tracks.
 2. **Standardized 13-Section Lesson Architecture**: Designed and implemented a reusable AST and HTML content template supporting 13 configurable technical sections, guaranteeing uniformity across all lessons without forcing irrelevant sections into conceptual lessons.
 3. **Open-Source Visual Diagram Engine**: Created responsive, client-side technical diagram components (`DiagramViewer`) supporting Pipelines, Layered Architectures, Client-Server models, Sequence Flows, Mermaid.js code rendering, and custom diagram images with captions, alt text, and source attributions—with zero external paid API dependencies.
@@ -27,20 +28,21 @@ Phase 8 elevates the IntelligentQA Learning Academy from a text-centric reading 
 
 All courses, modules, and lessons are dynamically stored in `src/lib/curriculum-data-store.json` and managed via `AcademyStore` without hardcoded frontend components.
 
-| # | Course Title | Slug | Category | Modules | Lessons | Key Specialization |
-|---|--------------|------|----------|---------|---------|--------------------|
-| 1 | **Selenium WebDriver 4 Enterprise Architecture** | `selenium-webdriver-enterprise-framework` | `cat-selenium` | 10 | 90 | W3C WebDriver, Dynamic Waits, Page Object Design, Docker Grid |
-| 2 | **Playwright Automation with TypeScript** | `playwright-ts-mastery` | `cat-playwright` | 9 | 63 | Auto-Waiting, Network Mocking, Multi-Context, Trace Viewer |
-| 3 | **Full-Stack API Testing & Consumer Contracts** | `api-testing-and-contracts` | `cat-api-testing` | 8 | 57 | REST, OAuth2, Postman/Newman, JSON Schema, Pact Contracts |
-| 4 | **Appium 2.0 Mobile Automation Masterclass** | `appium-mobile-automation` | `cat-appium` | 8 | 53 | UiAutomator2, XCUITest, W3C Gestures, Hybrid WebViews, Device Farms |
-| 5 | **REST Assured: Enterprise API Automation** | `rest-assured-api-automation` | `cat-rest-assured` | 7 | 40 | BDD Given-When-Then, Jackson POJO Mapping, OAuth2, Hamcrest |
-| 6 | **Git & CI/CD Pipelines for QA Engineers** | `git-for-qa-engineers` | `cat-git-cicd` | 7 | 38 | GitFlow, Interactive Rebasing, Automated Quality Gates, CI Metrics |
-| 7 | **GitHub Actions: CI/CD for QA Automation** | `github-actions-qa-automation` | `cat-github-actions` | 6 | 30 | YAML Workflows, Matrix Builds, Headless Browsers, Allure Artifacts |
-| 8 | **APM & Enterprise Performance Testing** | `apm-and-performance-testing` | `cat-apm-performance` | 7 | 39 | Apache JMeter Distributed Grid, k6 Scripting, Distributed Tracing |
-| 9 | **AI Academy (QA Mastery Track)** | `course-ai-qa-mastery` | `cat-ai-for-qa` | 6 | 46 | AI Test Automation, LLM Evals, Autonomous Agents, Self-Healing |
-| **Total** | **9 Standardized Engineering Tracks** | | | **68** | **456** | |
+| #         | Course Title                                     | Slug                                      | Category              | Modules | Lessons | Key Specialization                                                  |
+| --------- | ------------------------------------------------ | ----------------------------------------- | --------------------- | ------- | ------- | ------------------------------------------------------------------- |
+| 1         | **Selenium WebDriver 4 Enterprise Architecture** | `selenium-webdriver-enterprise-framework` | `cat-selenium`        | 10      | 90      | W3C WebDriver, Dynamic Waits, Page Object Design, Docker Grid       |
+| 2         | **Playwright Automation with TypeScript**        | `playwright-ts-mastery`                   | `cat-playwright`      | 9       | 63      | Auto-Waiting, Network Mocking, Multi-Context, Trace Viewer          |
+| 3         | **Full-Stack API Testing & Consumer Contracts**  | `api-testing-and-contracts`               | `cat-api-testing`     | 8       | 57      | REST, OAuth2, Postman/Newman, JSON Schema, Pact Contracts           |
+| 4         | **Appium 2.0 Mobile Automation Masterclass**     | `appium-mobile-automation`                | `cat-appium`          | 8       | 53      | UiAutomator2, XCUITest, W3C Gestures, Hybrid WebViews, Device Farms |
+| 5         | **REST Assured: Enterprise API Automation**      | `rest-assured-api-automation`             | `cat-rest-assured`    | 7       | 40      | BDD Given-When-Then, Jackson POJO Mapping, OAuth2, Hamcrest         |
+| 6         | **Git & CI/CD Pipelines for QA Engineers**       | `git-for-qa-engineers`                    | `cat-git-cicd`        | 7       | 38      | GitFlow, Interactive Rebasing, Automated Quality Gates, CI Metrics  |
+| 7         | **GitHub Actions: CI/CD for QA Automation**      | `github-actions-qa-automation`            | `cat-github-actions`  | 6       | 30      | YAML Workflows, Matrix Builds, Headless Browsers, Allure Artifacts  |
+| 8         | **APM & Enterprise Performance Testing**         | `apm-and-performance-testing`             | `cat-apm-performance` | 7       | 39      | Apache JMeter Distributed Grid, k6 Scripting, Distributed Tracing   |
+| 9         | **AI Academy (QA Mastery Track)**                | `course-ai-qa-mastery`                    | `cat-ai-for-qa`       | 6       | 46      | AI Test Automation, LLM Evals, Autonomous Agents, Self-Healing      |
+| **Total** | **9 Standardized Engineering Tracks**            |                                           |                       | **68**  | **456** |                                                                     |
 
 ### Navigation & Sub-Tracks Alignment
+
 - **Mobile Testing & Automation**: Positioned directly above `CI/CD Concepts` in the sidebar, cleanly grouping child tracks `Mobile Testing` and `Appium`.
 - **API Testing & Automation**: Grouping `FullStack API & Contracts` and `Rest Assured`.
 - **CI/CD Concepts**: Grouping `Git`, `GitHub Actions`, `Azure DevOps`, and `Jenkins`.
@@ -52,6 +54,7 @@ All courses, modules, and lessons are dynamically stored in `src/lib/curriculum-
 Implemented in `src/types/standard-lesson.ts`, `src/components/learning/standard-lesson-template.tsx`, and `scripts/build-phase8-complete-catalogue.js`.
 
 ### 13 Configurable Sections
+
 1. **Lesson Overview**: What is this concept? Why is it important? Where is it used in testing?
 2. **Learning Objectives**: Actionable, measurable competency outcomes.
 3. **Concept Explanation**: Deep theoretical foundation, key terminology table, and practical SDET understanding.
@@ -80,6 +83,7 @@ graph LR
 ```
 
 ### Supported Diagram Types
+
 - **Pipeline Flow**: Horizontal/vertical sequential stages with step badges and active highlights.
 - **System Architecture**: Multi-box component layouts showing relationships and data boundaries.
 - **Client-Server Communication**: Visualizing client language bindings, network transport protocols, and target services.
@@ -94,6 +98,7 @@ graph LR
 Located in `src/components/learning/llm-architecture-infographic.tsx` and dynamically rendered in `academy-shell.tsx` when navigating to `/learning/what-is-an-llm`.
 
 ### Infographic Breakdown
+
 1. **Training Phase Pipeline**:
    - `Raw Text Datasets` $\to$ `Text Processing & Cleaning` $\to$ `Tokenization (BPE/Tiktoken)` $\to$ `High-Dimensional Embeddings` $\to$ `Transformer Core (Attention + FFN)` $\to$ `Pattern Learning & Loss Backpropagation` $\to$ `Optimized Model Parameters`.
 2. **Inference Phase Pipeline**:
@@ -173,16 +178,16 @@ $ npx tsc --noEmit
 
 ## 8. Summary of Created & Modified Assets
 
-| File Path | Description |
-|-----------|-------------|
-| `src/types/standard-lesson.ts` | Complete TypeScript type definitions for the 13-section lesson template, technical diagrams, code blocks, troubleshooting items, and interview questions. |
-| `src/components/learning/diagram-viewer.tsx` | Visual diagram component supporting Pipeline, Layered, Client-Server, Sequence, Mermaid, and image uploads. |
-| `src/components/learning/standard-lesson-template.tsx` | Standard lesson interactive renderer and HTML generator. |
-| `src/components/learning/llm-architecture-infographic.tsx` | Deep-dive interactive infographic component for "What is an LLM?". |
-| `src/components/learning/academy-shell.tsx` | Integrated `LlmArchitectureInfographic` and `StandardLessonRenderer` into learning lesson shell. |
-| `src/components/admin/academy/academy-admin-console.tsx` | Multi-mode lesson editor with Visual Diagram Builder and Standard Section template injector. |
-| `src/lib/academy-store.ts` | Added in-memory cached search index providing sub-millisecond search across 400+ lessons. |
-| `src/lib/curriculum-data-store.json` | Updated persistent curriculum database with all 9 courses and standardized foundational content. |
-| `scripts/populate-phase8-complete-catalogue.js` | Complete 9-course catalogue compiler and standard content generator. |
-| `tests/phase8-standardized-curriculum-and-diagrams.test.cjs` | Dedicated automated test suite covering all Phase 8 requirements. |
-| `docs/learning-platform/PHASE_8_IMPLEMENTATION_REPORT.md` | Formal architectural deliverable report. |
+| File Path                                                    | Description                                                                                                                                               |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/types/standard-lesson.ts`                               | Complete TypeScript type definitions for the 13-section lesson template, technical diagrams, code blocks, troubleshooting items, and interview questions. |
+| `src/components/learning/diagram-viewer.tsx`                 | Visual diagram component supporting Pipeline, Layered, Client-Server, Sequence, Mermaid, and image uploads.                                               |
+| `src/components/learning/standard-lesson-template.tsx`       | Standard lesson interactive renderer and HTML generator.                                                                                                  |
+| `src/components/learning/llm-architecture-infographic.tsx`   | Deep-dive interactive infographic component for "What is an LLM?".                                                                                        |
+| `src/components/learning/academy-shell.tsx`                  | Integrated `LlmArchitectureInfographic` and `StandardLessonRenderer` into learning lesson shell.                                                          |
+| `src/components/admin/academy/academy-admin-console.tsx`     | Multi-mode lesson editor with Visual Diagram Builder and Standard Section template injector.                                                              |
+| `src/lib/academy-store.ts`                                   | Added in-memory cached search index providing sub-millisecond search across 400+ lessons.                                                                 |
+| `src/lib/curriculum-data-store.json`                         | Updated persistent curriculum database with all 9 courses and standardized foundational content.                                                          |
+| `scripts/populate-phase8-complete-catalogue.js`              | Complete 9-course catalogue compiler and standard content generator.                                                                                      |
+| `tests/phase8-standardized-curriculum-and-diagrams.test.cjs` | Dedicated automated test suite covering all Phase 8 requirements.                                                                                         |
+| `docs/learning-platform/PHASE_8_IMPLEMENTATION_REPORT.md`    | Formal architectural deliverable report.                                                                                                                  |

@@ -9,14 +9,17 @@ export async function GET(req: NextRequest) {
     const includeDrafts = auth.authorized && searchParams.get('includeDrafts') === 'true';
 
     const tree = academyStore.getNavigationTree({ includeDrafts });
-    return NextResponse.json({
-      success: true,
-      data: tree,
-    }, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600',
+    return NextResponse.json(
+      {
+        success: true,
+        data: tree,
       },
-    });
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Error fetching navigation tree:', error);
     return NextResponse.json(

@@ -3,7 +3,8 @@ import AuthGuard from '@/components/auth/auth-guard';
 
 export const metadata = {
   title: 'Project Files & Folders | IntelligentQA',
-  description: 'Upload and manage project requirements, test matrices, specs, and slide decks (.pdf, .md, .xlsx, .pptx) for zero-latency AI QA context.',
+  description:
+    'Upload and manage project requirements, test matrices, specs, and slide decks (.pdf, .md, .xlsx, .pptx) for zero-latency AI QA context.',
 };
 
 export default function ProjectFilesPage() {

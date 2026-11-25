@@ -77,7 +77,9 @@ export default function AuthGuard({
 
           <div className="flex items-center gap-3">
             <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
-            <span className="text-[11px] font-semibold text-slate-400 uppercase">Or sign in with email</span>
+            <span className="text-[11px] font-semibold text-slate-400 uppercase">
+              Or sign in with email
+            </span>
             <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
           </div>
 
@@ -100,7 +102,8 @@ export default function AuthGuard({
         </div>
 
         <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400">
-          All courses, practice sandboxes, and interview question banks unlock instantly upon sign-in.
+          All courses, practice sandboxes, and interview question banks unlock instantly upon
+          sign-in.
         </div>
       </div>
     </div>

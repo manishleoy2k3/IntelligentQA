@@ -44,24 +44,47 @@ export const TRACK_TUTORIALS: Record<string, TrackTutorial> = {
   selenium: {
     trackId: 'selenium',
     title: 'Selenium with Java Complete Step-by-Step Tutorial & Setup',
-    subtitle: 'Comprehensive guide covering environment setup, IDE configuration, W3C WebDriver architecture, locators, dynamic synchronization, and framework design.',
+    subtitle:
+      'Comprehensive guide covering environment setup, IDE configuration, W3C WebDriver architecture, locators, dynamic synchronization, and framework design.',
     overview: `Selenium is the world's most widely adopted open-source web browser automation tool. Combined with Java, it provides enterprise-grade scalability, type safety, and seamless integration with continuous delivery pipelines. This tutorial guides you from initial JDK setup and IDE configuration through writing your first script, mastering dynamic locators, and architecting Page Object Model test suites.`,
     architectureDiagram: {
       title: 'Selenium 4 W3C WebDriver Architecture',
       layers: [
-        { layer: 'Layer 1: Bindings', name: 'Java Client Library', description: 'Selenium Java API (ChromeDriver, By, WebDriverWait)', color: 'blue' },
-        { layer: 'Layer 2: Standard', name: 'W3C WebDriver Protocol', description: 'Universal JSON HTTP REST commands over standard port', color: 'emerald' },
-        { layer: 'Layer 3: Driver', name: 'Browser Executable Driver', description: 'ChromeDriver / GeckoDriver running as local HTTP server (port 9515)', color: 'amber' },
-        { layer: 'Layer 4: Target', name: 'Web Browsers', description: 'Chrome, Firefox, Edge, Safari rendering real DOM sessions', color: 'purple' },
+        {
+          layer: 'Layer 1: Bindings',
+          name: 'Java Client Library',
+          description: 'Selenium Java API (ChromeDriver, By, WebDriverWait)',
+          color: 'blue',
+        },
+        {
+          layer: 'Layer 2: Standard',
+          name: 'W3C WebDriver Protocol',
+          description: 'Universal JSON HTTP REST commands over standard port',
+          color: 'emerald',
+        },
+        {
+          layer: 'Layer 3: Driver',
+          name: 'Browser Executable Driver',
+          description: 'ChromeDriver / GeckoDriver running as local HTTP server (port 9515)',
+          color: 'amber',
+        },
+        {
+          layer: 'Layer 4: Target',
+          name: 'Web Browsers',
+          description: 'Chrome, Firefox, Edge, Safari rendering real DOM sessions',
+          color: 'purple',
+        },
       ],
-      flowSummary: 'Java Code ===> W3C HTTP Commands ===> ChromeDriver (Local Port 9515) ===> Chrome Browser OS Process ===> Real User DOM Interactions.',
+      flowSummary:
+        'Java Code ===> W3C HTTP Commands ===> ChromeDriver (Local Port 9515) ===> Chrome Browser OS Process ===> Real User DOM Interactions.',
     },
     steps: [
       {
         stepNumber: 1,
         title: 'Prerequisites & Java Development Kit (JDK) Setup',
         badge: 'Environment Setup',
-        summary: 'Download and install JDK 17 or 21, and configure JAVA_HOME environment variables.',
+        summary:
+          'Download and install JDK 17 or 21, and configure JAVA_HOME environment variables.',
         description: `Before writing Selenium code, you must install the Java Development Kit (JDK 17 LTS or JDK 21 LTS is recommended). Once installed, configure your system environment variables so your terminal and IDE can compile Java programs.
 
 On Windows:
@@ -92,7 +115,8 @@ $ echo $JAVA_HOME
         stepNumber: 2,
         title: 'IDE Installation & Workspace Setup (IntelliJ IDEA / Eclipse)',
         badge: 'IDE Setup',
-        summary: 'Set up an integrated development environment with Maven for dependency management.',
+        summary:
+          'Set up an integrated development environment with Maven for dependency management.',
         description: `Download and install either IntelliJ IDEA Community Edition (recommended for modern Java development) or Eclipse IDE for Java Developers. 
 
 In your IDE:
@@ -201,7 +225,8 @@ public class FirstSeleniumTest {
         stepNumber: 4,
         title: 'Writing Your First Selenium Test Script',
         badge: 'First Script',
-        summary: 'Launch Google Chrome, maximize the window, navigate to a URL, fetch title, and quit the browser.',
+        summary:
+          'Launch Google Chrome, maximize the window, navigate to a URL, fetch title, and quit the browser.',
         description: `Create a new class FirstSeleniumTest.java under src/test/java/com/intelligentqa/tests/. In this test, we instantiate ChromeDriver(), maximize the window, navigate to an address using driver.get(), assert the page title, and gracefully release OS resources using driver.quit().`,
         mockScreenshot: {
           windowTitle: 'IntelliJ Run Console: First Test Executed',
@@ -271,7 +296,8 @@ public class FirstSeleniumTest {
         stepNumber: 5,
         title: 'Locators in Selenium (ID, Name, CSS & XPath Axes)',
         badge: 'Element Locators',
-        summary: 'Locate web elements reliably using the 8 standard locators and master advanced XPath axes.',
+        summary:
+          'Locate web elements reliably using the 8 standard locators and master advanced XPath axes.',
         description: `Selenium uses the By class to identify elements on a page. Locators are the foundation of all test automation.
 
 Standard Locators:
@@ -341,7 +367,8 @@ public class LocatorsDemo {
         stepNumber: 6,
         title: 'Synchronization: Implicit vs Explicit vs FluentWait',
         badge: 'Waits & Timing',
-        summary: 'Master dynamic synchronization to eliminate flaky tests and replace brittle Thread.sleep calls.',
+        summary:
+          'Master dynamic synchronization to eliminate flaky tests and replace brittle Thread.sleep calls.',
         description: `Modern web applications load content asynchronously using AJAX, fetch(), and frontend frameworks (React, Angular, Vue). If Selenium searches for an element before it renders, it throws NoSuchElementException.
 
 1. Thread.sleep(5000): Hard static wait. Freezes the JVM thread. If an element loads in 100ms, it wastes 4.9 seconds. If it takes 5.1s, the test fails. Never use in production!
@@ -408,7 +435,8 @@ public class WaitStrategies {
         stepNumber: 7,
         title: 'Handling Alerts, Popups, Frames & Windows',
         badge: 'Advanced Interactions',
-        summary: 'Switch execution context seamlessly across JavaScript alert dialogs, iframes, and multiple browser tabs.',
+        summary:
+          'Switch execution context seamlessly across JavaScript alert dialogs, iframes, and multiple browser tabs.',
         description: `When a browser spawns a JavaScript alert, inline iframe, or opens a link in a new tab, standard findElement() fails because the element belongs to a separate execution context. Use driver.switchTo() to shift the WebDriver context.
 
 1. JavaScript Alerts:
@@ -484,7 +512,8 @@ public class WindowAndAlertsDemo {
         stepNumber: 8,
         title: 'Test Automation Framework: Page Object Model (POM)',
         badge: 'Enterprise Architecture',
-        summary: 'Build clean, maintainable test architectures by decoupling page locators and actions from test assertions.',
+        summary:
+          'Build clean, maintainable test architectures by decoupling page locators and actions from test assertions.',
         description: `Page Object Model (POM) is the premier design pattern in test automation. Each web page is represented as a distinct Java class. The class encapsulates locators as private fields and exposes business user actions as public methods. Test methods interact with Page Objects and perform Assertions.
 
 Rules of Enterprise POM:
@@ -538,17 +567,39 @@ public class LoginPage {
   playwright: {
     trackId: 'playwright',
     title: 'Playwright with TypeScript: Complete Guide to Writing Tests',
-    subtitle: 'Step-by-step masterclass covering Playwright test runner, resilient user-facing locators, auto-waiting actionability, web-first assertions, and interactive UI mode.',
+    subtitle:
+      'Step-by-step masterclass covering Playwright test runner, resilient user-facing locators, auto-waiting actionability, web-first assertions, and interactive UI mode.',
     overview: `Playwright was created by Microsoft to deliver reliable, fast, and evergreen end-to-end automation. It communicates directly with Chromium, Firefox, and WebKit rendering engines via WebSocket using the Chrome DevTools Protocol (CDP), completely bypassing legacy HTTP proxy overhead. This tutorial covers everything from CLI initialization to resilient locators and time-travel UI debugging.`,
     architectureDiagram: {
       title: 'Playwright WebSocket CDP Architecture',
       layers: [
-        { layer: 'Layer 1: Runner', name: 'Playwright Test Runner', description: 'Parallel worker processes, custom fixtures, retry engine', color: 'blue' },
-        { layer: 'Layer 2: Protocol', name: 'Bi-Directional WebSocket', description: 'Direct Chrome DevTools Protocol (CDP) connection stream', color: 'emerald' },
-        { layer: 'Layer 3: Engine', name: 'Browser Process', description: 'Single OS process hosting isolated BrowserContexts (incognito)', color: 'amber' },
-        { layer: 'Layer 4: Target', name: 'Browser Engines', description: 'Chromium, WebKit (Safari), Firefox headless & headed sessions', color: 'purple' },
+        {
+          layer: 'Layer 1: Runner',
+          name: 'Playwright Test Runner',
+          description: 'Parallel worker processes, custom fixtures, retry engine',
+          color: 'blue',
+        },
+        {
+          layer: 'Layer 2: Protocol',
+          name: 'Bi-Directional WebSocket',
+          description: 'Direct Chrome DevTools Protocol (CDP) connection stream',
+          color: 'emerald',
+        },
+        {
+          layer: 'Layer 3: Engine',
+          name: 'Browser Process',
+          description: 'Single OS process hosting isolated BrowserContexts (incognito)',
+          color: 'amber',
+        },
+        {
+          layer: 'Layer 4: Target',
+          name: 'Browser Engines',
+          description: 'Chromium, WebKit (Safari), Firefox headless & headed sessions',
+          color: 'purple',
+        },
       ],
-      flowSummary: 'Node.js Test Runner <== Bi-directional WebSocket (CDP) ==> Browser Process -> [Isolated Contexts in 5ms] -> Real Browser DOM.',
+      flowSummary:
+        'Node.js Test Runner <== Bi-directional WebSocket (CDP) ==> Browser Process -> [Isolated Contexts in 5ms] -> Real Browser DOM.',
     },
     steps: [
       {
@@ -586,7 +637,8 @@ Happy hacking for QA! Run: npx playwright test`,
         stepNumber: 2,
         title: 'Understanding playwright.config.ts & File Hierarchy',
         badge: 'Configuration',
-        summary: 'Master the central configuration file controlling parallel workers, devices, retries, and traces.',
+        summary:
+          'Master the central configuration file controlling parallel workers, devices, retries, and traces.',
         description: `Playwright centralizes all framework configurations inside playwright.config.ts. This includes multi-browser projects, parallel worker count, CI retries, base URLs, and failure artifact retention (screenshots, videos, traces).`,
         codeSnippet: {
           language: 'typescript',
@@ -622,7 +674,8 @@ export default defineConfig({
         stepNumber: 3,
         title: 'Writing Your First Playwright Test (test, expect)',
         badge: 'First Test',
-        summary: 'Create an end-to-end spec with navigation, link clicking, and Web-First assertions.',
+        summary:
+          'Create an end-to-end spec with navigation, link clicking, and Web-First assertions.',
         description: `Create tests/homepage.spec.ts. In Playwright, tests are declared with test('title', async ({ page }) => { ... }). The { page } argument is a built-in test fixture that provides an isolated incognito browser page for every single test.`,
         mockScreenshot: {
           windowTitle: 'tests/homepage.spec.ts - VS Code Editor',
@@ -714,7 +767,8 @@ test('interact with user-facing semantic locators', async ({ page }) => {
         stepNumber: 5,
         title: 'Auto-Waiting Mechanics & Web-First Assertions',
         badge: 'Actionability',
-        summary: 'Understand the 5 actionability criteria that eliminate test flakiness completely.',
+        summary:
+          'Understand the 5 actionability criteria that eliminate test flakiness completely.',
         description: `Before performing any action (click, fill, check, hover), Playwright automatically validates that the element satisfies 5 actionability criteria:
 1. Attached: Element is attached to the DOM.
 2. Visible: Element is visible and has a non-empty bounding box.
@@ -744,7 +798,8 @@ If any check fails, Playwright keeps polling until the condition passes or timeo
         stepNumber: 6,
         title: 'Interactive UI Mode & Time-Travel Trace Viewer',
         badge: 'Visual Debugging',
-        summary: 'Debug tests interactively with live DOM inspection, network waterfall, and action filmstrips.',
+        summary:
+          'Debug tests interactively with live DOM inspection, network waterfall, and action filmstrips.',
         description: `Run tests using the groundbreaking UI Mode:
 $ npx playwright test --ui
 
@@ -779,24 +834,47 @@ In UI Mode:
   'api-testing': {
     trackId: 'api-testing',
     title: 'API Testing with REST Assured: Complete Step-by-Step Tutorial',
-    subtitle: 'Comprehensive guide covering BDD Given-When-Then DSL, Maven dependencies, CRUD request execution, Hamcrest assertions, POJO serialization, and JSON schema validation.',
+    subtitle:
+      'Comprehensive guide covering BDD Given-When-Then DSL, Maven dependencies, CRUD request execution, Hamcrest assertions, POJO serialization, and JSON schema validation.',
     overview: `REST Assured is an open-source Java library that brings clean, readable Behavior-Driven Development (BDD) syntax to API automation. It eliminates the limitations of manual Postman testing by integrating directly into your Java/Maven build cycle, running hundreds of concurrent requests in seconds, and enforcing strict JSON contract integrity.`,
     architectureDiagram: {
       title: 'REST Assured BDD Architecture Pipeline',
       layers: [
-        { layer: 'Layer 1: Preconditions', name: 'given() Specification', description: 'Base URI, Headers, Query/Path Params, Auth Token, Body Payload', color: 'blue' },
-        { layer: 'Layer 2: Execution', name: 'when() HTTP Action', description: 'GET, POST, PUT, PATCH, DELETE dispatch via Apache HTTP client', color: 'emerald' },
-        { layer: 'Layer 3: Assertion', name: 'then() Verification', description: 'Status code, Hamcrest body assertions, response time, JSON schema', color: 'amber' },
-        { layer: 'Layer 4: Modeling', name: 'Jackson / POJOs', description: 'Bidirectional serialization of Java Objects to/from JSON payloads', color: 'purple' },
+        {
+          layer: 'Layer 1: Preconditions',
+          name: 'given() Specification',
+          description: 'Base URI, Headers, Query/Path Params, Auth Token, Body Payload',
+          color: 'blue',
+        },
+        {
+          layer: 'Layer 2: Execution',
+          name: 'when() HTTP Action',
+          description: 'GET, POST, PUT, PATCH, DELETE dispatch via Apache HTTP client',
+          color: 'emerald',
+        },
+        {
+          layer: 'Layer 3: Assertion',
+          name: 'then() Verification',
+          description: 'Status code, Hamcrest body assertions, response time, JSON schema',
+          color: 'amber',
+        },
+        {
+          layer: 'Layer 4: Modeling',
+          name: 'Jackson / POJOs',
+          description: 'Bidirectional serialization of Java Objects to/from JSON payloads',
+          color: 'purple',
+        },
       ],
-      flowSummary: 'given() [Headers & Auth] ===> when() [GET/POST Request] ===> then() [Status 200 & Hamcrest Body Assertions] ===> Jackson POJO Extraction.',
+      flowSummary:
+        'given() [Headers & Auth] ===> when() [GET/POST Request] ===> then() [Status 200 & Hamcrest Body Assertions] ===> Jackson POJO Extraction.',
     },
     steps: [
       {
         stepNumber: 1,
         title: 'Introduction & Why Migrate from Postman to Code',
         badge: 'Core Architecture',
-        summary: 'Understand the limitations of manual Postman collections in enterprise CI/CD and why code automation scales.',
+        summary:
+          'Understand the limitations of manual Postman collections in enterprise CI/CD and why code automation scales.',
         description: `While Postman GUI is excellent for manual exploratory requests, enterprise automation teams migrate to REST Assured because:
 1. Postman collections are bulky JSON files that cause painful Git merge conflicts across multi-engineer teams.
 2. Newman runner executes tests sequentially, while REST Assured runs 500 tests in parallel in 10 seconds via TestNG.
@@ -875,7 +953,8 @@ given().spec(reqSpec).when().get("/users/1").then().statusCode(200);
         stepNumber: 3,
         title: 'Writing Your First GET Request with Given-When-Then',
         badge: 'First API Test',
-        summary: 'Execute a GET request, verify HTTP 200 status code, and assert JSON response fields using Hamcrest.',
+        summary:
+          'Execute a GET request, verify HTTP 200 status code, and assert JSON response fields using Hamcrest.',
         description: `Create UserApiTest.java under src/test/java. We use REST Assured's Given-When-Then DSL:
 - given(): Specifies base URI and Content-Type.
 - when(): Dispatches the HTTP GET request to /users/1.
@@ -935,7 +1014,8 @@ public class UserApiTest {
         stepNumber: 4,
         title: 'Complete CRUD Operations (POST, PUT, DELETE)',
         badge: 'CRUD Operations',
-        summary: 'Send JSON payloads with POST to create entities, PUT to update, and DELETE to remove.',
+        summary:
+          'Send JSON payloads with POST to create entities, PUT to update, and DELETE to remove.',
         description: `Automating full CRUD lifecycles is essential for testing stateful microservices.
 1. POST: Sends a JSON payload in body() and asserts HTTP 201 Created.
 2. PUT: Modifies an existing resource and asserts HTTP 200 OK.
@@ -989,7 +1069,8 @@ public class CrudApiTests {
         stepNumber: 5,
         title: 'POJO Serialization & Deserialization with Jackson',
         badge: 'Data Modeling',
-        summary: 'Replace fragile string concatenation with strongly typed Java classes and Jackson Object Mapper.',
+        summary:
+          'Replace fragile string concatenation with strongly typed Java classes and Jackson Object Mapper.',
         description: `Manual testers often start by writing JSON strings: String json = "{\\"name\\":\\"" + name + "\\"}";. This causes escaped quote syntax errors and zero compile-time safety. 
 
 Jackson automatically maps Java POJOs or Java 17 Records to JSON request bodies, and deserializes JSON response bodies back into typed Java objects:
@@ -1048,7 +1129,8 @@ public class UserPojoTest {
         stepNumber: 6,
         title: 'RequestSpecification, ResponseSpecification & Schema Testing',
         badge: 'Enterprise DRY',
-        summary: 'Centralize reusable headers, base URIs, and JSON schema validation across hundreds of tests.',
+        summary:
+          'Centralize reusable headers, base URIs, and JSON schema validation across hundreds of tests.',
         description: `In an enterprise suite of 500+ endpoints, repeating headers and URLs violates DRY (Don't Repeat Yourself). Use RequestSpecBuilder and ResponseSpecBuilder to build shared templates, and validate response contracts using json-schema-validator.`,
         codeSnippet: {
           language: 'java',
@@ -1110,31 +1192,58 @@ public class SpecsAndSchemaTest {
   'ai-qa': {
     trackId: 'ai-qa',
     title: 'AI for QA & Autonomous Testing: Complete Step-by-Step Masterclass',
-    subtitle: 'Comprehensive guide covering AI prompt engineering for SDETs, synthetic test data generation, self-healing locators, CI/CD failure triage, LLM evaluation, and autonomous QA agents.',
+    subtitle:
+      'Comprehensive guide covering AI prompt engineering for SDETs, synthetic test data generation, self-healing locators, CI/CD failure triage, LLM evaluation, and autonomous QA agents.',
     overview: `Artificial Intelligence is fundamentally revolutionizing quality engineering. AI does not replace manual testers—rather, manual testers who master AI agents and test automation will replace those who do not. This step-by-step masterclass takes you from foundational prompt engineering and synthetic test data generation through self-healing locators and autonomous QA agents integrated into continuous delivery pipelines.`,
     architectureDiagram: {
       title: 'Autonomous AI-Augmented QA Lifecycle Architecture',
       layers: [
-        { layer: 'Layer 1: Input Ingestion', name: 'Jira Story & Acceptance Criteria', description: 'Parse product specs, Gherkin scenarios, and boundary constraints directly from tickets', color: 'cyan' },
-        { layer: 'Layer 2: Reasoning Engine', name: 'Gemini LLM Cognitive Layer', description: 'Few-shot prompting, structured schema output, and boundary test synthesis', color: 'purple' },
-        { layer: 'Layer 3: Self-Healing & Scaffolding', name: 'DOM Fingerprinting & POM', description: 'Multi-attribute element similarity scoring (tag, text, role, hierarchy) for resilient locators', color: 'emerald' },
-        { layer: 'Layer 4: Autonomous Execution', name: 'Playwright & MCP CI/CD Loop', description: 'Headless browser execution, trace log triage, and automated GitHub PR patch generation', color: 'amber' },
+        {
+          layer: 'Layer 1: Input Ingestion',
+          name: 'Jira Story & Acceptance Criteria',
+          description:
+            'Parse product specs, Gherkin scenarios, and boundary constraints directly from tickets',
+          color: 'cyan',
+        },
+        {
+          layer: 'Layer 2: Reasoning Engine',
+          name: 'Gemini LLM Cognitive Layer',
+          description: 'Few-shot prompting, structured schema output, and boundary test synthesis',
+          color: 'purple',
+        },
+        {
+          layer: 'Layer 3: Self-Healing & Scaffolding',
+          name: 'DOM Fingerprinting & POM',
+          description:
+            'Multi-attribute element similarity scoring (tag, text, role, hierarchy) for resilient locators',
+          color: 'emerald',
+        },
+        {
+          layer: 'Layer 4: Autonomous Execution',
+          name: 'Playwright & MCP CI/CD Loop',
+          description:
+            'Headless browser execution, trace log triage, and automated GitHub PR patch generation',
+          color: 'amber',
+        },
       ],
-      flowSummary: 'User Story Ingestion ===> LLM Cognitive Strategy ===> Synthetic Data & POM Code ===> Playwright Headless Run ===> Self-Healing & Triage CI/CD Loop.',
+      flowSummary:
+        'User Story Ingestion ===> LLM Cognitive Strategy ===> Synthetic Data & POM Code ===> Playwright Headless Run ===> Self-Healing & Triage CI/CD Loop.',
     },
     steps: [
       {
         stepNumber: 1,
         title: 'The AI Mindset Shift: From Manual Tester to AI Quality Architect',
         badge: 'Mental Model',
-        summary: 'Understand the role of Generative AI in software quality and how to transition from repetitive manual clicking to strategic quality orchestration.',
+        summary:
+          'Understand the role of Generative AI in software quality and how to transition from repetitive manual clicking to strategic quality orchestration.',
         description: `Manual testers spend up to 70% of their time writing repetitive test cases, clicking identical UI flows, and manually entering test data. Generative AI flips this dynamic:
 1. AI handles the rote mechanical synthesis (writing boilerplate assertions, generating 100 variations of test data, drafting Gherkin feature files).
 2. The QA Engineer acts as the Quality Architect: defining domain constraints, verifying boundary coverage, spotting edge-case omissions, and orchestrating autonomous test pipelines.
 3. Instead of writing tests from scratch, you review, refine, and validate AI-generated test scaffolding in minutes.`,
         mockScreenshot: {
           windowTitle: 'Mental Model: Manual Tester vs AI-Augmented SDET',
-          caption: 'Visual workflow transformation from manual repetitive clicking to high-leverage AI orchestration',
+          caption:
+            'Visual workflow transformation from manual repetitive clicking to high-leverage AI orchestration',
           type: 'terminal',
           codeOrOutput: `Traditional Manual QA Workflow:
 [Read Jira Ticket] -> [Spend 4 hours drafting 25 test cases in Excel] -> [Manually click form 25 times]
@@ -1157,7 +1266,8 @@ AI-Augmented QA Architect Workflow:
         stepNumber: 2,
         title: 'Precision Prompt Engineering for Test Case Generation',
         badge: 'Prompt Craft',
-        summary: 'Master the Role-Context-Constraint-Format (RCCF) prompting framework for generating exhaustive, production-grade test cases.',
+        summary:
+          'Master the Role-Context-Constraint-Format (RCCF) prompting framework for generating exhaustive, production-grade test cases.',
         description: `Generic prompts like "write test cases for checkout" produce shallow, generic bullet points that miss critical production bugs. The RCCF framework guarantees deep, edge-case-dense output:
 - [ROLE]: Tell the AI who it is (e.g. Principal SDET & Security Specialist).
 - [CONTEXT]: Provide domain context (e.g. Stripe 3D Secure checkout with coupon discounts).
@@ -1190,7 +1300,8 @@ Feature: <Feature Name>
         stepNumber: 3,
         title: 'AI Synthetic Test Data Generation & Zero-PII Compliance',
         badge: 'Data Strategy',
-        summary: 'Generate high-fidelity, boundary-dense synthetic test datasets without violating GDPR or risking customer data breaches.',
+        summary:
+          'Generate high-fidelity, boundary-dense synthetic test datasets without violating GDPR or risking customer data breaches.',
         description: `Copying production customer databases into staging or QA test environments violates privacy laws (GDPR, CCPA, HIPAA) and exposes companies to multi-million-dollar fines. AI allows QA teams to generate synthetic datasets that perfectly mirror production schema distributions, relational foreign keys, and edge cases with zero actual customer PII.`,
         codeSnippet: {
           language: 'typescript',
@@ -1222,7 +1333,8 @@ export type UserPersona = z.infer<typeof UserPersonaSchema>;
         stepNumber: 4,
         title: 'Self-Healing Locators & Resilient DOM Fingerprinting',
         badge: 'Self-Healing',
-        summary: 'Eliminate 80% of test maintenance flakiness by implementing multi-attribute heuristic locator matching.',
+        summary:
+          'Eliminate 80% of test maintenance flakiness by implementing multi-attribute heuristic locator matching.',
         description: `In traditional automation frameworks, whenever a frontend engineer modifies a CSS class or updates a button ID from "login-btn-v1" to "btn-submit-v2", test runs throw NoSuchElementException and halt the deployment pipeline.
 Self-healing engines resolve this by capturing a multi-attribute fingerprint during test authoring:
 1. Accessibility Role (role="button")
@@ -1270,7 +1382,8 @@ export function findBestMatch(candidates: Element[], target: ElementFingerprint)
         stepNumber: 5,
         title: 'AI Failure Triage & Root Cause Analysis in CI/CD',
         badge: 'Observability',
-        summary: 'Automatically diagnose failed test traces, distinguish environment flakes from genuine regression bugs, and draft Jira tickets.',
+        summary:
+          'Automatically diagnose failed test traces, distinguish environment flakes from genuine regression bugs, and draft Jira tickets.',
         description: `When an enterprise suite of 1,000 tests executes in CI/CD, 10-15 tests might fail. Manually sifting through thousands of lines of terminal logs, network HAR files, and browser console errors takes hours.
 An AI triage agent ingests the failure stack trace, the Playwright trace filmstrip, and the Git commit diff:
 1. Analyzes the exception (e.g. HTTP 504 Gateway Timeout vs AssertionError).
@@ -1312,7 +1425,8 @@ Provide:
         stepNumber: 6,
         title: 'Testing AI Applications: Hallucination & RAG Guardrails',
         badge: 'LLM Testing',
-        summary: 'Learn how to test AI chatbots, Copilots, and RAG pipelines using LLM-as-a-Judge and deterministic assertion harnesses.',
+        summary:
+          'Learn how to test AI chatbots, Copilots, and RAG pipelines using LLM-as-a-Judge and deterministic assertion harnesses.',
         description: `Testing software that contains LLMs requires a new testing paradigm. Unlike traditional deterministic software where input "2 + 2" always returns "4", LLM outputs are non-deterministic.
 To test AI applications effectively, QA engineers implement:
 1. LLM-as-a-Judge: A second, more capable model (e.g. Gemini 2.5 Pro) evaluates the application output against strict rubrics (Faithfulness, Groundedness, Toxicity, Prompt Injection Defense).
@@ -1348,7 +1462,8 @@ Model Response: \${modelOutput}
         stepNumber: 7,
         title: 'Autonomous QA Agents & Model Context Protocol (MCP) in CI/CD',
         badge: 'Future SDET',
-        summary: 'Orchestrate autonomous multi-agent QA workflows where agents write tests, run headless browsers, fix broken locators, and open pull requests.',
+        summary:
+          'Orchestrate autonomous multi-agent QA workflows where agents write tests, run headless browsers, fix broken locators, and open pull requests.',
         description: `The pinnacle of AI in software testing is the Autonomous QA Agent. By leveraging the Model Context Protocol (MCP), an AI agent can safely interact with local tools, run commands, inspect the DOM tree, execute Playwright scripts, and open GitHub pull requests with zero human intervention.
 The autonomous agent loop:
 1. Ingests Jira ticket acceptance criteria.
@@ -1359,7 +1474,8 @@ The autonomous agent loop:
 6. Pushes a Git branch and creates a pull request for human sign-off!`,
         mockScreenshot: {
           windowTitle: 'Autonomous QA Agent CI/CD Terminal Loop',
-          caption: 'Autonomous agent executing test suite, detecting locator failure, healing in real time, and passing the build',
+          caption:
+            'Autonomous agent executing test suite, detecting locator failure, healing in real time, and passing the build',
           type: 'terminal',
           codeOrOutput: `[AI QA Agent]: Reading Jira Ticket PROJ-482 "Update Checkout 2FA Flow"...
 [AI QA Agent]: Scaffolding Playwright spec 'tests/checkout-2fa.spec.ts'...

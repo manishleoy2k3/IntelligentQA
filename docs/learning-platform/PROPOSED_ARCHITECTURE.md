@@ -3,7 +3,7 @@
 > **Document Version:** 1.0.0  
 > **Author:** Senior Full Stack Architect & Technical Lead  
 > **Status:** Proposal / Review  
-> **Target Audience:** Engineering Team, Product Owner, Technical Leadership  
+> **Target Audience:** Engineering Team, Product Owner, Technical Leadership
 
 ---
 
@@ -12,6 +12,7 @@
 The **IntelligentQA Learning Academy & Technical Documentation Platform** extends the existing IntelligentQA Community platform into a comprehensive, enterprise-ready technical learning and documentation hub.
 
 ### Core Architecture Tenets
+
 1. **Zero Greenfield Disruption:** The architecture builds directly on top of the existing Next.js 16 App Router, React 19, Tailwind CSS v4, and existing persistence layer (`curriculum-data-store.json` + PostgreSQL relational migration path).
 2. **Strictly Free & Open-Source:** Zero proprietary cloud APIs, paid SaaS services, or recurring third-party subscriptions. Every conversion, indexing, rendering, and storage component runs self-hosted.
 3. **No Code Deployments for Content:** Course administrators can create categories, courses, modules, and lessons dynamically from the Admin Console, upload `.docx` technical guides, reorder curriculum items via drag-and-drop, and publish instantly without committing code or rebuilding the application.
@@ -67,6 +68,7 @@ flowchart TD
 ## 3. Learning Navigation & Information Architecture
 
 ### 3.1 Required Navigation Hierarchy
+
 The platform organizes learning materials into a strict 4-level hierarchy:
 
 ```text
@@ -77,6 +79,7 @@ Level 1: Category (e.g., "AI for QA", "Selenium", "Git & CI/CD")
 ```
 
 #### Category Taxonomy (Pre-seeded & Dynamic)
+
 1. **AI for QA** (Generative AI testing, LLM evals, prompt regression, synthetic test generation)
 2. **Selenium** (Selenium WebDriver 4, Grid, architecture, locators, cross-browser automation)
 3. **Playwright** (Modern E2E automation, trace viewer, network mocking, component testing)
@@ -89,6 +92,7 @@ Level 1: Category (e.g., "AI for QA", "Selenium", "Git & CI/CD")
    - **Jenkins**
 
 ### 3.2 Dynamic Hierarchy Model
+
 To allow unlimited nested groupings without schema redesign, categories support optional parent-child relationships (e.g., Category: "Git & CI/CD" -> Subcategories: "GitHub Actions", "Azure DevOps", "Jenkins").
 
 ---
@@ -139,12 +143,12 @@ Preserving Microsoft Word `.docx` formatting without proprietary cloud services 
 
 ### 5.1 Library Evaluation Matrix
 
-| Library | Strengths | Limitations | Recommendation |
-| :--- | :--- | :--- | :--- |
-| **`mammoth.js`** | • 100% JavaScript (zero native dependencies)<br>• Converts `.docx` to semantic HTML<br>• Extracts inline images cleanly<br>• Fast and secure execution in Node.js serverless functions | • Ignores page breaks and exact margins<br>• Simplified table layouts<br>• Does not preserve complex shapes/SmartArt | **Primary Ingestion Engine** (Generates responsive web content) |
-| **`docx-preview`** | • Pure client-side browser rendering<br>• Near pixel-perfect Word canvas/DOM rendering<br>• Preserves pagination, page breaks, headers/footers | • Client-only (heavy for mobile web)<br>• HTML is difficult to edit or index for full-text search | **High-Fidelity Reader Option** (Rendered client-side on demand) |
-| **`LibreOffice Headless`** | • Industry-standard fidelity<br>• Direct `.docx` to PDF / HTML conversion | • Requires heavy OS package (`apt install libreoffice`)<br>• High CPU/memory overhead<br>• Incompatible with standard serverless/Vercel edge runtimes | **Optional Self-Hosted Worker** (For on-prem Docker/VPS setups only) |
-| **`Tiptap / Editor.js`** | • Structured block-based editor<br>• Perfect for fine-tuning converted lessons<br>• Already compatible with existing `rich-block-editor.tsx` | • Cannot directly parse raw `.docx` binaries without an intermediate parser | **Post-Import Content Refinement** (Admin editing interface) |
+| Library                    | Strengths                                                                                                                                                                              | Limitations                                                                                                                                           | Recommendation                                                       |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------- |
+| **`mammoth.js`**           | • 100% JavaScript (zero native dependencies)<br>• Converts `.docx` to semantic HTML<br>• Extracts inline images cleanly<br>• Fast and secure execution in Node.js serverless functions | • Ignores page breaks and exact margins<br>• Simplified table layouts<br>• Does not preserve complex shapes/SmartArt                                  | **Primary Ingestion Engine** (Generates responsive web content)      |
+| **`docx-preview`**         | • Pure client-side browser rendering<br>• Near pixel-perfect Word canvas/DOM rendering<br>• Preserves pagination, page breaks, headers/footers                                         | • Client-only (heavy for mobile web)<br>• HTML is difficult to edit or index for full-text search                                                     | **High-Fidelity Reader Option** (Rendered client-side on demand)     |
+| **`LibreOffice Headless`** | • Industry-standard fidelity<br>• Direct `.docx` to PDF / HTML conversion                                                                                                              | • Requires heavy OS package (`apt install libreoffice`)<br>• High CPU/memory overhead<br>• Incompatible with standard serverless/Vercel edge runtimes | **Optional Self-Hosted Worker** (For on-prem Docker/VPS setups only) |
+| **`Tiptap / Editor.js`**   | • Structured block-based editor<br>• Perfect for fine-tuning converted lessons<br>• Already compatible with existing `rich-block-editor.tsx`                                           | • Cannot directly parse raw `.docx` binaries without an intermediate parser                                                                           | **Post-Import Content Refinement** (Admin editing interface)         |
 
 ### 5.2 Recommended Hybrid Ingestion Architecture
 
@@ -191,6 +195,7 @@ sequenceDiagram
 ## 6. Admin Experience & Content Management
 
 ### 6.1 Admin Console Capabilities
+
 Located under `/admin/academy` (integrated seamlessly with the existing `/admin` and `/admin/cms` workflows):
 
 1. **Course & Module Tree Manager:**
@@ -209,17 +214,20 @@ Located under `/admin/academy` (integrated seamlessly with the existing `/admin`
 ## 7. Security, Authorization & Integrity
 
 ### 7.1 Access Control (RBAC)
+
 - **Public / Community Members:** Read-only access to published courses, modules, and lessons.
 - **Instructors / Authors:** Create and edit drafted content within assigned categories.
 - **Super Administrators:** Full write/publish/delete/reorder permissions, access to system audit logs, file uploads, and raw database exports.
 - **Enforcement:** All mutations guarded by `verifyAdminPasscode` and `QADatabase.isAdmin(user)` server-side checks.
 
 ### 7.2 Content Sanitization & XSS Prevention
+
 - All imported Word document HTML must pass through server-side sanitization (`DOMPurify` / `isomorphic-dompurify` or `sanitize-html`) before persistence.
 - Forbidden tags: `<script>`, `<iframe src="javascript:...">`, `<object>`, `<embed>`, raw inline `onclick` or event handler attributes.
 - Permitted embedded media: Whitelisted iframe sources (`youtube.com`, `player.vimeo.com`, `loom.com`).
 
 ### 7.3 File Upload Security
+
 - Strict MIME-type checking (`application/vnd.openxmlformats-officedocument.wordprocessingml.document`).
 - File magic number validation (checking the ZIP header `PK\x03\x04` of `.docx` files).
 - File size limit: 50MB per document (customizable in admin settings).
@@ -241,15 +249,15 @@ Located under `/admin/academy` (integrated seamlessly with the existing `/admin`
 
 ## 9. Compatibility Assessment
 
-| System Dimension | Current Implementation | Proposed Learning Academy | Verdict |
-| :--- | :--- | :--- | :--- |
-| **Framework** | Next.js 16.4.6 App Router | Uses App Router subtrees (`/app/learning/`, `/app/admin/academy/`) | **100% Compatible** |
-| **Language** | TypeScript 7.0.2 / React 19.3.1 | Standard React 19 Server/Client Components | **100% Compatible** |
-| **Styling** | Tailwind CSS v4 custom theme | Uses existing `#111111`, `#161616`, `#81FF89` color tokens & typography | **100% Compatible** |
-| **Data Store** | `curriculum-data-store.json` + Postgres DDL | Extends JSON store and Postgres DDL without breaking existing fields | **100% Compatible** |
-| **Existing Courses** | Existing courses under `/courses` | Untouched. Can be migrated or cross-linked into Academy categories | **100% Compatible** |
-| **Admin System** | Existing `/admin` & `/admin/cms` | Academy Admin embeds directly into existing Admin dashboard | **100% Compatible** |
+| System Dimension     | Current Implementation                      | Proposed Learning Academy                                               | Verdict             |
+| :------------------- | :------------------------------------------ | :---------------------------------------------------------------------- | :------------------ |
+| **Framework**        | Next.js 16.4.6 App Router                   | Uses App Router subtrees (`/app/learning/`, `/app/admin/academy/`)      | **100% Compatible** |
+| **Language**         | TypeScript 7.0.2 / React 19.3.1             | Standard React 19 Server/Client Components                              | **100% Compatible** |
+| **Styling**          | Tailwind CSS v4 custom theme                | Uses existing `#111111`, `#161616`, `#81FF89` color tokens & typography | **100% Compatible** |
+| **Data Store**       | `curriculum-data-store.json` + Postgres DDL | Extends JSON store and Postgres DDL without breaking existing fields    | **100% Compatible** |
+| **Existing Courses** | Existing courses under `/courses`           | Untouched. Can be migrated or cross-linked into Academy categories      | **100% Compatible** |
+| **Admin System**     | Existing `/admin` & `/admin/cms`            | Academy Admin embeds directly into existing Admin dashboard             | **100% Compatible** |
 
 ---
 
-*End of Architecture Document. Approved for Phase 0 review.*
+_End of Architecture Document. Approved for Phase 0 review._

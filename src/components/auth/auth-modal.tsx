@@ -49,11 +49,7 @@ export default function AuthModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-[480px]">
-        <AscentAuthCard
-          initialMode={mode}
-          redirectTo={redirectTo}
-          onClose={handleClose}
-        />
+        <AscentAuthCard initialMode={mode} redirectTo={redirectTo} onClose={handleClose} />
       </div>
     </div>
   );

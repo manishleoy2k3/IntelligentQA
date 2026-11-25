@@ -3,7 +3,7 @@
 **Status:** Completed  
 **Technology:** React Flow (`@xyflow/react`), ELK.js (`elkjs`), Zod, Google Gemini API (Imagen 3 & Text Flash), SVG Vector Engine, Next.js 16  
 **Target:** Admin Content Management Studio, Visual Lesson Editor, Media Library  
-**Date:** November 24, 2026  
+**Date:** November 24, 2026
 
 ---
 
@@ -12,6 +12,7 @@
 Phase 11 transitions the **IntelligentQA Learning Academy** from basic Mermaid-style text-in-box flowcharts to an **Enterprise-Grade Technical Architecture Visualization Engine**.
 
 Rather than relying on basic flowchart boxes or asking generative image models to invent system components, the platform now utilizes a structured, deterministic architecture generation workflow:
+
 1. **Mode A — Professional Architecture Diagram**: Text-based QA Content Architect generates structured, schema-validated JSON representing real-world components, communication protocols, and architectural tiers. Layout is calculated using **ELK.js** (`elkjs`) and rendered interactively with **React Flow** (`@xyflow/react`) and standalone SVG vector graphics with 6 enterprise themes.
 2. **Mode B — Educational Technical Infographic**: Powered by a dedicated image-generation pipeline (**Google Gemini Imagen 3** / Local High-Resolution Rasterizer), generating persistent PNG graphics for complex conceptual breakdowns (e.g. LLMs, Tokenization, Self-Attention, Test Pyramid).
 
@@ -76,12 +77,12 @@ The architecture separates structured data specification from vector rendering a
 
 All packages integrated in Phase 11 are strictly open-source, permissive, and free of paid enterprise tiers:
 
-| Package | Version | Purpose | License |
-| :--- | :--- | :--- | :--- |
-| `@xyflow/react` | `^12.15.0` | Interactive canvas, panning, zooming, custom node mounting | MIT |
-| `elkjs` | `^0.9.3` | Eclipse Layout Kernel compiled to JS for automatic graph layout | EPL-2.0 / EDLv1.0 |
-| `zod` | `^3.25.0` | Strict server-side JSON schema validation and refinement | MIT |
-| `lucide-react` | `^1.73.0` | Production technical SVG icons for 15 node types | ISC |
+| Package         | Version    | Purpose                                                         | License           |
+| :-------------- | :--------- | :-------------------------------------------------------------- | :---------------- |
+| `@xyflow/react` | `^12.15.0` | Interactive canvas, panning, zooming, custom node mounting      | MIT               |
+| `elkjs`         | `^0.9.3`   | Eclipse Layout Kernel compiled to JS for automatic graph layout | EPL-2.0 / EDLv1.0 |
+| `zod`           | `^3.25.0`  | Strict server-side JSON schema validation and refinement        | MIT               |
+| `lucide-react`  | `^1.73.0`  | Production technical SVG icons for 15 node types                | ISC               |
 
 **No paid React Flow Pro components or proprietary diagram SaaS APIs were used.**
 
@@ -90,12 +91,14 @@ All packages integrated in Phase 11 are strictly open-source, permissive, and fr
 ## 4. Architecture JSON Schema
 
 Architecture diagrams are governed by a strict Zod schema (`src/lib/diagram/schema.ts`):
+
 - Node IDs must be unique across the diagram.
 - All edges must reference existing source and target node IDs.
 - Connecting a node to itself is rejected.
 - Protocols and communication types are strictly categorized.
 
 ### Specification Interface:
+
 ```typescript
 interface ArchitectureDiagramData {
   diagramType: 'architecture';
@@ -135,6 +138,7 @@ The visual design system implements 15 dedicated technical node types, each with
 15. **Security / Authentication Node (`security`)**: OAuth2, Keycloak, JWT, TLS terminators (Icon: `Shield`).
 
 ### Connection Protocols & Styles:
+
 - **Synchronous (`sync`)**: Solid blue `#2563EB`.
 - **Asynchronous (`async`)**: Dashed amber stroke `6 4`.
 - **W3C WebDriver (`webdriver`)**: Solid blue `#2563EB` with `[W3C WebDriver]` badge.
@@ -147,6 +151,7 @@ The visual design system implements 15 dedicated technical node types, each with
 ## 6. Layout Implementation (ELK.js)
 
 The layout engine (`src/lib/diagram/elk-layout.ts`) executes Eclipse Layout Kernel's layered hierarchy algorithm:
+
 - **Direction**: Supports Left-to-Right (`LR` / `DOWN`) and Top-to-Bottom (`TB` / `RIGHT`).
 - **Node Collision Prevention**: Sets `elk.spacing.nodeNode = 60` and `nodeNodeBetweenLayers = 85`.
 - **Edge Routing**: Employs `ORTHOGONAL` routing and `LAYER_SWEEP` crossing minimization.
@@ -170,6 +175,7 @@ The layout engine (`src/lib/diagram/elk-layout.ts`) executes Eclipse Layout Kern
 ## 8. Gemini Image-Generation Integration (Mode B)
 
 For Mode B (Educational Technical Infographics):
+
 - Uses dedicated image model: **`imagen-3.0-generate-002`** (Google AI Studio Imagen 3).
 - **Separately configurable**: Configured via `GEMINI_IMAGE_MODEL` independently from text models.
 - **Safety & Cost Guardrails**: Rate limited to maximum 5 requests/min. Displays estimated cost ($0.00 on Free Tier, $0.03/image on pay-as-you-go).
@@ -181,6 +187,7 @@ For Mode B (Educational Technical Infographics):
 ## 9. Security & SVG Sanitization
 
 All SVG outputs undergo sanitization (`src/lib/diagram/sanitizer.ts`) prior to storage or rendering:
+
 - Strips `<script>`, `<iframe>`, `<object>`, `<embed>`, `<foreignObject>`.
 - Removes all `on*` event handlers (`onload`, `onerror`, `onclick`, etc.).
 - Neutralizes `javascript:`, `vbscript:`, and `data:text/html` URLs.
@@ -192,17 +199,18 @@ All SVG outputs undergo sanitization (`src/lib/diagram/sanitizer.ts`) prior to s
 
 The test suite (`tests/phase11-diagram-engine.test.cjs`) verified all required scenarios:
 
-| Test Scenario | Status | Key Validations |
-| :--- | :--- | :--- |
-| **TEST 1: Selenium Architecture** | **PASSED** | Test Script, Client Library, W3C Protocol, Browser Driver, Chrome Browser. Verified NO incorrect assumption of Selenium Grid in local execution. |
-| **TEST 2: Playwright Architecture** | **PASSED** | Test Runner, Playwright API, WebSocket/CDP, Browser process, BrowserContext, Page Target. |
-| **TEST 3: Appium Architecture** | **PASSED** | Test Client, Appium Server, WebDriver Protocol, Platform Driver (UiAutomator2/XCUITest), Mobile Device/Emulator. |
-| **TEST 4: MCP Architecture** | **PASSED** | MCP Host, MCP Client, MCP Server, JSON-RPC 2.0, Tools & Resources. |
-| **TEST 5: LLM Educational Infographic** | **PASSED** | Generated real binary PNG file (`image/png` header bytes `0x89 0x50 0x4E 0x47`), saved to `/uploads/`, verified NOT Mermaid or SVG text. |
-| **TEST 6: Export & Publishing** | **PASSED** | SVG export, 2x Retina PNG export, SVG XSS sanitization, 6 themes rendering, Advisory AI Review. |
-| **Extra: Schema Rejection** | **PASSED** | Duplicate node IDs and non-existent edge references are properly rejected with detailed Zod issues. |
+| Test Scenario                           | Status     | Key Validations                                                                                                                                  |
+| :-------------------------------------- | :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TEST 1: Selenium Architecture**       | **PASSED** | Test Script, Client Library, W3C Protocol, Browser Driver, Chrome Browser. Verified NO incorrect assumption of Selenium Grid in local execution. |
+| **TEST 2: Playwright Architecture**     | **PASSED** | Test Runner, Playwright API, WebSocket/CDP, Browser process, BrowserContext, Page Target.                                                        |
+| **TEST 3: Appium Architecture**         | **PASSED** | Test Client, Appium Server, WebDriver Protocol, Platform Driver (UiAutomator2/XCUITest), Mobile Device/Emulator.                                 |
+| **TEST 4: MCP Architecture**            | **PASSED** | MCP Host, MCP Client, MCP Server, JSON-RPC 2.0, Tools & Resources.                                                                               |
+| **TEST 5: LLM Educational Infographic** | **PASSED** | Generated real binary PNG file (`image/png` header bytes `0x89 0x50 0x4E 0x47`), saved to `/uploads/`, verified NOT Mermaid or SVG text.         |
+| **TEST 6: Export & Publishing**         | **PASSED** | SVG export, 2x Retina PNG export, SVG XSS sanitization, 6 themes rendering, Advisory AI Review.                                                  |
+| **Extra: Schema Rejection**             | **PASSED** | Duplicate node IDs and non-existent edge references are properly rejected with detailed Zod issues.                                              |
 
 Production build verification:
+
 - `next build --webpack`: **Passed with exit code 0**. All 149 static pages and dynamic routes compiled cleanly.
 
 ---

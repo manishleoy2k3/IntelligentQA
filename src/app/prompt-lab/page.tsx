@@ -42,7 +42,8 @@ const QA_PROMPTS: QAPromptTemplate[] = [
     category: 'test-design',
     categoryLabel: 'Test Design & Scenarios',
     source: 'DeviQA & Ministry of Testing Standard',
-    summary: 'Systematically generates Happy Path, Negative, Boundary, and obscure concurrency/security edge cases formatted in a clean table.',
+    summary:
+      'Systematically generates Happy Path, Negative, Boundary, and obscure concurrency/security edge cases formatted in a clean table.',
     variables: ['[User Story / Feature Description]', '[Acceptance Criteria]'],
     prompt: `Act as a Staff QA Automation and Manual Testing Engineer with 10+ years of experience in risk-based testing. Analyze the following feature requirement:
 
@@ -69,7 +70,8 @@ Acceptance Criteria: User can apply 1 promo coupon per order, must have valid bi
     category: 'test-design',
     categoryLabel: 'Test Design & Scenarios',
     source: 'ISTQB Certified SDET Practice',
-    summary: 'Calculates exact numerical and string boundaries, including 2-value and 3-value boundary test sets.',
+    summary:
+      'Calculates exact numerical and string boundaries, including 2-value and 3-value boundary test sets.',
     variables: ['[Field Name]', '[Field Constraints / Rules]'],
     prompt: `I need to perform exhaustive Boundary Value Analysis (BVA) and Equivalence Partitioning (EP) for the following input specification:
 
@@ -90,7 +92,8 @@ Rules: Must be an integer between 18 and 65 inclusive. Under 18 requires parenta
     category: 'test-design',
     categoryLabel: 'Test Design & Scenarios',
     source: 'Cucumber & BDD Industry Practice',
-    summary: 'Converts ambiguous requirements into formal Gherkin Given-When-Then feature files with Scenario Outlines and Examples tables.',
+    summary:
+      'Converts ambiguous requirements into formal Gherkin Given-When-Then feature files with Scenario Outlines and Examples tables.',
     variables: ['[User Story]', '[Business Rules]'],
     prompt: `Act as a BDD and Test Architecture expert. Translate the following user story and business rules into a clean, standard Gherkin (.feature) specification.
 
@@ -114,7 +117,8 @@ Rules: Unpaid accounts cannot download invoices; invoices older than 24 months a
     category: 'automation-pom',
     categoryLabel: 'Automation & POM',
     source: 'Playwright Official Best Practices',
-    summary: 'Scaffolds production-grade Page Object Model classes using resilient user-facing locators (getByRole, getByTestId) and auto-waiting.',
+    summary:
+      'Scaffolds production-grade Page Object Model classes using resilient user-facing locators (getByRole, getByTestId) and auto-waiting.',
     variables: ['[Page Name]', '[UI Elements / HTML Snippet]', '[User Actions]'],
     prompt: `Act as a Staff SDET specializing in Playwright and TypeScript. Create a production-ready Page Object Model (POM) class and an accompanying test spec for:
 
@@ -138,7 +142,8 @@ Actions: Updating full name, attempting to edit read-only email, asserting toast
     category: 'automation-pom',
     categoryLabel: 'Automation & POM',
     source: 'Enterprise TestNG & Selenium Frameworks',
-    summary: 'Generates Java 21 + Selenium 4 Page Object with WebDriverWait synchronization, expected conditions, and zero Thread.sleep().',
+    summary:
+      'Generates Java 21 + Selenium 4 Page Object with WebDriverWait synchronization, expected conditions, and zero Thread.sleep().',
     variables: ['[Class Name]', '[Page Description]', '[Actions]'],
     prompt: `Act as a Lead SDET specializing in Java, TestNG, and Selenium 4. Write an enterprise-grade Page Object class for:
 
@@ -162,7 +167,8 @@ Actions: Select payment method, enter card details, submit order, verify confirm
     category: 'automation-pom',
     categoryLabel: 'Automation & POM',
     source: 'Test Automation Architecture Standards',
-    summary: 'Audits intermittent failures, stale element exceptions, and dynamic DOM mutation race conditions with modern fixes.',
+    summary:
+      'Audits intermittent failures, stale element exceptions, and dynamic DOM mutation race conditions with modern fixes.',
     variables: ['[Flaky Test Code / Snippet]', '[Error Message / Stack Trace]'],
     prompt: `Act as a Principal SDET specializing in test flakiness eradication. Review the following flaky automated test code and failure log:
 
@@ -191,7 +197,8 @@ TimeoutError: locator.textContent: Timeout 5000ms exceeded waiting for locator('
     category: 'api-security',
     categoryLabel: 'API & Security Testing',
     source: 'OWASP API Security Top 10',
-    summary: 'Synthesizes security test cases covering broken object level authorization (BOLA), mass assignment, SQLi, and rate limiting.',
+    summary:
+      'Synthesizes security test cases covering broken object level authorization (BOLA), mass assignment, SQLi, and rate limiting.',
     variables: ['[API Endpoint & Method]', '[Sample JSON Payload]', '[Auth Type]'],
     prompt: `Act as an API Security Testing and Automation Engineer. I need an exhaustive security and boundary test suite for the following endpoint:
 
@@ -217,7 +224,8 @@ Auth: Bearer JWT Token in Authorization header.`,
     category: 'rca-performance',
     categoryLabel: 'Bug RCA & Performance',
     source: 'Senior QA Lead Defect Triage Standard',
-    summary: 'Transforms vague bug descriptions into a professional Jira ticket with exact reproduction steps, logs, RCA, and regression automated test specs.',
+    summary:
+      'Transforms vague bug descriptions into a professional Jira ticket with exact reproduction steps, logs, RCA, and regression automated test specs.',
     variables: ['[Raw Bug Description / User Report]', '[Environment & Device]'],
     prompt: `Act as a Senior SDET / QA Lead. Transform this raw bug report into an elite, developer-ready Defect Ticket and Automated Regression Plan:
 
@@ -253,7 +261,7 @@ export default function PromptLabPage() {
   const [aiResponse, setAiResponse] = useState<string>('');
   const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
 
-  const filteredPrompts = QA_PROMPTS.filter(p => {
+  const filteredPrompts = QA_PROMPTS.filter((p) => {
     const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
     const matchesSearch =
       searchQuery === '' ||
@@ -344,7 +352,9 @@ export default function PromptLabPage() {
             AI Prompt Lab for QA
           </h1>
           <p className="text-sm sm:text-base text-slate-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
-            Curated, battle-tested prompt engineering templates collected from leading SDET practitioners, DeviQA, and Ministry of Testing. Generate comprehensive test matrices, scaffold Page Object Models, eradicate test flakiness, and analyze complex edge cases.
+            Curated, battle-tested prompt engineering templates collected from leading SDET
+            practitioners, DeviQA, and Ministry of Testing. Generate comprehensive test matrices,
+            scaffold Page Object Models, eradicate test flakiness, and analyze complex edge cases.
           </p>
         </div>
 
@@ -368,7 +378,7 @@ export default function PromptLabPage() {
             { id: 'automation-pom', label: 'Automation & POM' },
             { id: 'api-security', label: 'API & Security' },
             { id: 'rca-performance', label: 'Bug RCA' },
-          ].map(cat => (
+          ].map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
@@ -389,7 +399,7 @@ export default function PromptLabPage() {
           <input
             type="text"
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search prompt templates..."
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#262626] text-xs text-slate-900 dark:text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#81FF89]"
           />
@@ -405,7 +415,7 @@ export default function PromptLabPage() {
           </div>
 
           <div className="space-y-3 max-h-[750px] overflow-y-auto pr-1">
-            {filteredPrompts.map(prompt => {
+            {filteredPrompts.map((prompt) => {
               const isSelected = activePrompt.id === prompt.id;
               return (
                 <div
@@ -448,7 +458,7 @@ export default function PromptLabPage() {
 
                     <button
                       type="button"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
                         handleCopy(prompt.id, prompt.prompt);
                       }}
@@ -539,7 +549,7 @@ export default function PromptLabPage() {
               <textarea
                 rows={3}
                 value={customInput}
-                onChange={e => setCustomInput(e.target.value)}
+                onChange={(e) => setCustomInput(e.target.value)}
                 placeholder="Insert your user story, acceptance criteria, or code snippet here..."
                 className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#262626] text-xs text-slate-900 dark:text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#81FF89] font-sans"
               />
@@ -583,7 +593,11 @@ export default function PromptLabPage() {
                     onClick={() => handleCopy('output', aiResponse)}
                     className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 cursor-pointer"
                   >
-                    {copiedId === 'output' ? <Check className="w-3 h-3 text-[#81FF89]" /> : <Copy className="w-3 h-3" />}
+                    {copiedId === 'output' ? (
+                      <Check className="w-3 h-3 text-[#81FF89]" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
                     <span>{copiedId === 'output' ? 'Copied' : 'Copy Output'}</span>
                   </button>
                 </div>

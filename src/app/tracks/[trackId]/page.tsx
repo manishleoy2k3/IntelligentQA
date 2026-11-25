@@ -5,7 +5,7 @@ import AcademyShell from '@/components/learning/academy-shell';
 import { academyStore } from '@/lib/academy-store';
 
 export function generateStaticParams() {
-  return QA_TRACKS.map(t => ({ trackId: t.id }));
+  return QA_TRACKS.map((t) => ({ trackId: t.id }));
 }
 
 export default async function TrackOverviewPage({
@@ -32,7 +32,12 @@ export default async function TrackOverviewPage({
     return <AcademyShell initialLessonSlug="what-is-artificial-intelligence" />;
   }
 
-  const guideSlug = track.id === 'selenium-java' ? 'selenium' : track.id === 'playwright-ts' ? 'playwright' : track.id;
+  const guideSlug =
+    track.id === 'selenium-java'
+      ? 'selenium'
+      : track.id === 'playwright-ts'
+        ? 'playwright'
+        : track.id;
 
   return <TrackOverviewClient initialTrack={track} guideSlug={guideSlug} />;
 }

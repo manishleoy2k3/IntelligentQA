@@ -48,12 +48,7 @@ import {
   Download,
   BookOpen,
 } from 'lucide-react';
-import {
-  EditorBlock,
-  EditorJSData,
-  CMSRevision,
-  CMSMediaItem,
-} from '@/types/cms';
+import { EditorBlock, EditorJSData, CMSRevision, CMSMediaItem } from '@/types/cms';
 import MediaLibraryModal from '../media-library-modal';
 
 interface RichBlockEditorProps {
@@ -76,13 +71,15 @@ export default function RichBlockEditor({
   isSaving = false,
 }: RichBlockEditorProps) {
   const [blocks, setBlocks] = useState<EditorBlock[]>(
-    initialData?.blocks?.length ? initialData.blocks : [
-      {
-        id: `blk-${Date.now()}`,
-        type: 'paragraph',
-        data: { text: '' },
-      },
-    ]
+    initialData?.blocks?.length
+      ? initialData.blocks
+      : [
+          {
+            id: `blk-${Date.now()}`,
+            type: 'paragraph',
+            data: { text: '' },
+          },
+        ]
   );
 
   const [dirty, setDirty] = useState(false);
@@ -603,8 +600,14 @@ export default function RichBlockEditor({
                   title: 'Feature Comparison',
                   columns: ['Feature', 'Selenium', 'Playwright'],
                   rows: [
-                    { feature: 'Auto-Wait', values: ['Manual WebDriverWait', 'Built-in auto-waiting'] },
-                    { feature: 'CDP Support', values: ['Selenium 4 only', 'Native bi-directional'] },
+                    {
+                      feature: 'Auto-Wait',
+                      values: ['Manual WebDriverWait', 'Built-in auto-waiting'],
+                    },
+                    {
+                      feature: 'CDP Support',
+                      values: ['Selenium 4 only', 'Native bi-directional'],
+                    },
                   ],
                 },
               })
@@ -760,7 +763,9 @@ export default function RichBlockEditor({
 
             <div className="mt-4 space-y-3 overflow-y-auto max-h-[70vh]">
               {revisions.length === 0 ? (
-                <p className="text-xs text-[#71717A] py-8 text-center">No prior revisions saved yet.</p>
+                <p className="text-xs text-[#71717A] py-8 text-center">
+                  No prior revisions saved yet.
+                </p>
               ) : (
                 revisions.map((rev) => (
                   <div
@@ -1033,7 +1038,8 @@ function BlockEditorDispatcher({
                 onClick={() =>
                   onChange({
                     file: { url: '/images/selenium-architecture.svg' },
-                    caption: 'Figure 1.1: 4-Tier Selenium WebDriver 4 Architecture & W3C Standard Protocol Flow',
+                    caption:
+                      'Figure 1.1: 4-Tier Selenium WebDriver 4 Architecture & W3C Standard Protocol Flow',
                     alt: 'Selenium 4 Architecture Diagram',
                   })
                 }
@@ -1101,7 +1107,9 @@ function BlockEditorDispatcher({
           ) : (
             <div className="py-8 border border-dashed border-[#27272A] rounded-xl bg-[#121216] text-center space-y-1">
               <ImageIcon className="w-8 h-8 text-[#52525B] mx-auto" />
-              <p className="text-xs text-[#A1A1AA] font-semibold">No image selected for this block</p>
+              <p className="text-xs text-[#A1A1AA] font-semibold">
+                No image selected for this block
+              </p>
               <p className="text-[11px] text-[#71717A]">
                 Click "Upload from Computer", "Media Library", or choose one of the Presets above.
               </p>
@@ -1302,7 +1310,10 @@ function BlockEditorDispatcher({
             className="w-full px-3 py-1.5 bg-[#1A1A1E] border border-[#27272A] rounded-lg text-xs font-bold text-white"
           />
           {block.data.steps.map((st, sIdx) => (
-            <div key={sIdx} className="p-3 rounded-lg border border-[#27272A] bg-[#09090B] space-y-2">
+            <div
+              key={sIdx}
+              className="p-3 rounded-lg border border-[#27272A] bg-[#09090B] space-y-2"
+            >
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center">
                   {st.stepNumber || sIdx + 1}
@@ -1370,7 +1381,10 @@ function BlockEditorDispatcher({
             className="w-full px-3 py-1.5 bg-[#1A1A1E] border border-[#27272A] rounded-lg text-xs font-bold text-white"
           />
           {block.data.items.map((item, fIdx) => (
-            <div key={fIdx} className="p-3 rounded-lg border border-[#27272A] bg-[#09090B] space-y-2">
+            <div
+              key={fIdx}
+              className="p-3 rounded-lg border border-[#27272A] bg-[#09090B] space-y-2"
+            >
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -1450,7 +1464,10 @@ function BlockEditorDispatcher({
             ))}
           </div>
           {block.data.rows.map((row, rIdx) => (
-            <div key={rIdx} className="grid grid-cols-3 gap-2 p-2 rounded bg-[#09090B] border border-[#27272A]">
+            <div
+              key={rIdx}
+              className="grid grid-cols-3 gap-2 p-2 rounded bg-[#09090B] border border-[#27272A]"
+            >
               <input
                 type="text"
                 value={row.feature}
@@ -1484,7 +1501,10 @@ function BlockEditorDispatcher({
               onChange({
                 rows: [
                   ...block.data.rows,
-                  { feature: 'New Feature', values: new Array(block.data.columns.length - 1).fill('Value') },
+                  {
+                    feature: 'New Feature',
+                    values: new Array(block.data.columns.length - 1).fill('Value'),
+                  },
                 ],
               });
             }}
@@ -1497,9 +1517,7 @@ function BlockEditorDispatcher({
 
     default:
       return (
-        <div className="text-xs text-[#71717A]">
-          Editing for {block.type} block is configured.
-        </div>
+        <div className="text-xs text-[#71717A]">Editing for {block.type} block is configured.</div>
       );
   }
 }
@@ -1512,13 +1530,20 @@ function PreviewBlockItem({ block }: { block: EditorBlock }) {
 
   switch (block.type) {
     case 'header': {
-      const Tag = block.data.level === 1 ? 'h1' : block.data.level === 2 ? 'h2' : block.data.level === 3 ? 'h3' : 'h4';
+      const Tag =
+        block.data.level === 1
+          ? 'h1'
+          : block.data.level === 2
+            ? 'h2'
+            : block.data.level === 3
+              ? 'h3'
+              : 'h4';
       const styles =
         block.data.level === 2
           ? 'text-2xl font-extrabold text-white mt-8 mb-3 pb-2 border-b border-[#27272A]'
           : block.data.level === 3
-          ? 'text-xl font-bold text-white mt-6 mb-2'
-          : 'text-lg font-bold text-[#E4E4E7] mt-4 mb-2';
+            ? 'text-xl font-bold text-white mt-6 mb-2'
+            : 'text-lg font-bold text-[#E4E4E7] mt-4 mb-2';
       return (
         <Tag id={block.data.anchor} className={styles}>
           {block.data.text}
@@ -1555,7 +1580,11 @@ function PreviewBlockItem({ block }: { block: EditorBlock }) {
               }}
               className="p-1 rounded text-[#71717A] hover:text-white flex items-center gap-1 text-xs"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
               <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
           </div>
@@ -1619,14 +1648,18 @@ function PreviewBlockItem({ block }: { block: EditorBlock }) {
       const bg = isWarn
         ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
         : isTip
-        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-        : isDanger
-        ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
-        : 'bg-sky-500/10 border-sky-500/30 text-sky-200';
+          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+          : isDanger
+            ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+            : 'bg-sky-500/10 border-sky-500/30 text-sky-200';
       return (
         <div className={`p-4 rounded-xl border ${bg} my-4 space-y-1`}>
           <div className="font-bold text-sm text-white flex items-center gap-2">
-            {isWarn ? <AlertTriangle className="w-4 h-4 text-amber-400" /> : <Info className="w-4 h-4 text-sky-400" />}
+            {isWarn ? (
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Info className="w-4 h-4 text-sky-400" />
+            )}
             <span>{block.data.title}</span>
           </div>
           <p className="text-xs sm:text-sm text-[#D4D4D8] leading-relaxed">{block.data.message}</p>
@@ -1663,9 +1696,7 @@ function PreviewBlockItem({ block }: { block: EditorBlock }) {
     case 'stepByStep':
       return (
         <div className="space-y-4 my-6">
-          {block.data.title && (
-            <h3 className="text-lg font-bold text-white">{block.data.title}</h3>
-          )}
+          {block.data.title && <h3 className="text-lg font-bold text-white">{block.data.title}</h3>}
           {block.data.steps.map((st, i) => (
             <div key={i} className="p-4 rounded-2xl border border-[#27272A] bg-[#121215] space-y-2">
               <div className="flex items-center gap-2">
@@ -1688,9 +1719,7 @@ function PreviewBlockItem({ block }: { block: EditorBlock }) {
     case 'faq':
       return (
         <div className="space-y-3 my-6">
-          {block.data.title && (
-            <h3 className="text-lg font-bold text-white">{block.data.title}</h3>
-          )}
+          {block.data.title && <h3 className="text-lg font-bold text-white">{block.data.title}</h3>}
           {block.data.items.map((item, i) => (
             <details
               key={i}

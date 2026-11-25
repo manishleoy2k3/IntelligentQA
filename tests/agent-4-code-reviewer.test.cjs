@@ -40,11 +40,16 @@ async function simulateAgent4(input, techStack = 'playwright-ts', options = {}) 
 }
 
 async function runAllTests() {
-  console.log('🧪 Starting Enterprise Verification Suite for Agent 4: Code Reviewer & Quality Auditor...\n');
+  console.log(
+    '🧪 Starting Enterprise Verification Suite for Agent 4: Code Reviewer & Quality Auditor...\n'
+  );
 
   // Test 0: System Prompt & Specification Integrity
   console.log('Testing: Specification & System Prompt Integrity...');
-  assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('Principal Software Engineer'), 'Must define role');
+  assert(
+    CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('Principal Software Engineer'),
+    'Must define role'
+  );
   assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('Selenium'), 'Must cover Selenium');
   assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('Playwright'), 'Must cover Playwright');
   assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('REST Assured'), 'Must cover REST Assured');
@@ -52,10 +57,22 @@ async function runAllTests() {
   assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('CRITICAL'), 'Must include CRITICAL severity');
   assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('HIGH'), 'Must include HIGH severity');
   assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('REVIEW ONLY'), 'Must define REVIEW ONLY mode');
-  assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('REVIEW AND FIX'), 'Must define REVIEW AND FIX mode');
-  assert(CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('Do not invent line numbers'), 'Must mandate no invented line numbers');
-  assert(CODE_REVIEWER_DEBUGGER_SYSTEM_PROMPT.includes('CRITICAL'), 'System prompt must mandate severity');
-  assert(CODE_REVIEWER_DEBUGGER_SYSTEM_PROMPT.includes('NEVER repeat raw secrets'), 'System prompt must mandate secret protection');
+  assert(
+    CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('REVIEW AND FIX'),
+    'Must define REVIEW AND FIX mode'
+  );
+  assert(
+    CODE_REVIEWER_DEBUGGER_AGENT_MD.includes('Do not invent line numbers'),
+    'Must mandate no invented line numbers'
+  );
+  assert(
+    CODE_REVIEWER_DEBUGGER_SYSTEM_PROMPT.includes('CRITICAL'),
+    'System prompt must mandate severity'
+  );
+  assert(
+    CODE_REVIEWER_DEBUGGER_SYSTEM_PROMPT.includes('NEVER repeat raw secrets'),
+    'System prompt must mandate secret protection'
+  );
   console.log('Testing: Specification & System Prompt Integrity... ✅ PASSED\n');
 
   // TEST 1: Playwright Code with Fixed Timeout
@@ -69,13 +86,22 @@ async function runAllTests() {
   const test1Output = await simulateAgent4(test1Input, 'playwright-ts', { mode: 'review_and_fix' });
 
   assert(test1Output.includes('[FINDING-PW-001]'), 'Must issue finding for fixed wait');
-  assert(test1Output.includes('Automation Reliability') || test1Output.includes('Reliability'), 'Must identify reliability dimension');
+  assert(
+    test1Output.includes('Automation Reliability') || test1Output.includes('Reliability'),
+    'Must identify reliability dimension'
+  );
   assert(test1Output.includes('waitForTimeout'), 'Must target waitForTimeout');
-  assert(test1Output.includes('web-first') || test1Output.includes('expect('), 'Must recommend web-first locator assertion');
+  assert(
+    test1Output.includes('web-first') || test1Output.includes('expect('),
+    'Must recommend web-first locator assertion'
+  );
   assert(test1Output.includes('Technical Explanation'), 'Must explain technical root cause');
   assert(test1Output.includes('Impact'), 'Must explain impact on CI and test flakiness');
   assert(test1Output.includes('Corrected Code'), 'Must provide corrected code');
-  assert(test1Output.includes('toBeVisible'), 'Corrected code must suggest auto-retrying assertion');
+  assert(
+    test1Output.includes('toBeVisible'),
+    'Corrected code must suggest auto-retrying assertion'
+  );
   console.log('Testing: TEST 1 - Playwright Fixed Timeout... ✅ PASSED\n');
 
   // TEST 2: Selenium Java Missing Driver Cleanup
@@ -96,11 +122,25 @@ public class UserLoginTest {
 }`;
   const test2Output = await simulateAgent4(test2Input, 'selenium-java', { mode: 'review_and_fix' });
 
-  assert(test2Output.includes('[FINDING-SEL-001]'), 'Must issue finding for missing driver cleanup');
+  assert(
+    test2Output.includes('[FINDING-SEL-001]'),
+    'Must issue finding for missing driver cleanup'
+  );
   assert(test2Output.includes('driver.quit()'), 'Must highlight driver.quit() requirement');
-  assert(test2Output.includes('Lifecycle') || test2Output.includes('Architecture'), 'Must identify lifecycle/architectural issue');
-  assert(test2Output.includes('zombie') || test2Output.includes('leak') || test2Output.includes('resource exhaustion'), 'Must explain OS resource leak / zombie process impact');
-  assert(test2Output.includes('@AfterMethod') || test2Output.includes('@AfterEach'), 'Must recommend teardown hook');
+  assert(
+    test2Output.includes('Lifecycle') || test2Output.includes('Architecture'),
+    'Must identify lifecycle/architectural issue'
+  );
+  assert(
+    test2Output.includes('zombie') ||
+      test2Output.includes('leak') ||
+      test2Output.includes('resource exhaustion'),
+    'Must explain OS resource leak / zombie process impact'
+  );
+  assert(
+    test2Output.includes('@AfterMethod') || test2Output.includes('@AfterEach'),
+    'Must recommend teardown hook'
+  );
   assert(test2Output.includes('Corrected Code'), 'Must provide corrected code');
   console.log('Testing: TEST 2 - Selenium Java Driver Cleanup... ✅ PASSED\n');
 
@@ -125,10 +165,19 @@ public class AuthApiTest {
 }`;
   const test3Output = await simulateAgent4(test3Input, 'restassured', { mode: 'review_and_fix' });
 
-  assert(test3Output.includes('[FINDING-RA-001]'), 'Must issue finding for missing response assertions');
-  assert(test3Output.includes('Functional Correctness'), 'Must classify under functional correctness');
+  assert(
+    test3Output.includes('[FINDING-RA-001]'),
+    'Must issue finding for missing response assertions'
+  );
+  assert(
+    test3Output.includes('Functional Correctness'),
+    'Must classify under functional correctness'
+  );
   assert(test3Output.includes('statusCode'), 'Must recommend statusCode assertion');
-  assert(test3Output.includes('false positive') || test3Output.includes('silently pass'), 'Must explain false positive risk');
+  assert(
+    test3Output.includes('false positive') || test3Output.includes('silently pass'),
+    'Must explain false positive risk'
+  );
   assert(test3Output.includes('Corrected Code'), 'Must provide corrected code');
   console.log('Testing: TEST 3 - REST Assured Missing Assertions... ✅ PASSED\n');
 
@@ -150,9 +199,21 @@ public class AuthApiTest {
   assert(test4Output.includes('[FINDING-SEC-001]'), 'Must issue security finding');
   assert(test4Output.includes('CRITICAL'), 'Must classify secret as CRITICAL severity');
   assert(test4Output.includes('Security'), 'Must classify under Security dimension');
-  assert(test4Output.includes('[REDACTED_API_TOKEN_***]') || test4Output.includes('[REDACTED_API_KEY_***]'), 'Must mask the secret token');
-  assert(!test4Output.includes(rawSecret), 'CRITICAL: Raw secret token must NOT be leaked or repeated in response!');
-  assert(test4Output.includes('process.env') || test4Output.includes('System.getenv') || test4Output.includes('environment variable'), 'Must recommend environment variable or secure config');
+  assert(
+    test4Output.includes('[REDACTED_API_TOKEN_***]') ||
+      test4Output.includes('[REDACTED_API_KEY_***]'),
+    'Must mask the secret token'
+  );
+  assert(
+    !test4Output.includes(rawSecret),
+    'CRITICAL: Raw secret token must NOT be leaked or repeated in response!'
+  );
+  assert(
+    test4Output.includes('process.env') ||
+      test4Output.includes('System.getenv') ||
+      test4Output.includes('environment variable'),
+    'Must recommend environment variable or secure config'
+  );
   console.log('Testing: TEST 4 - Hardcoded Secret Token... ✅ PASSED\n');
 
   // TEST 5: Multi-File Framework Project Review
@@ -203,19 +264,39 @@ public class LoginTest extends BaseTest {
 
   assert(test5Output.includes('[FINDING-ARCH-001]'), 'Must detect static driver cross-file issue');
   assert(test5Output.includes('[FINDING-ARCH-002]'), 'Must detect assertions in Page Object Model');
-  assert(test5Output.includes('[FINDING-ARCH-003]'), 'Must detect missing lifecycle teardown in BaseTest');
-  assert(test5Output.includes('ThreadLocal<WebDriver>'), 'Must recommend ThreadLocal for parallel thread safety');
+  assert(
+    test5Output.includes('[FINDING-ARCH-003]'),
+    'Must detect missing lifecycle teardown in BaseTest'
+  );
+  assert(
+    test5Output.includes('ThreadLocal<WebDriver>'),
+    'Must recommend ThreadLocal for parallel thread safety'
+  );
   assert(test5Output.includes('Inspected Files'), 'Must list inspected files');
-  assert(test5Output.includes('Explicitly Uninspected Files') || test5Output.includes('not inspected'), 'Must clearly identify files NOT inspected');
-  assert(test5Output.includes('pom.xml') || test5Output.includes('testng.xml'), 'Must identify unuploaded configs');
-  assert(test5Output.includes('Refactored Production Code Suite'), 'Must provide refactored code across files');
+  assert(
+    test5Output.includes('Explicitly Uninspected Files') || test5Output.includes('not inspected'),
+    'Must clearly identify files NOT inspected'
+  );
+  assert(
+    test5Output.includes('pom.xml') || test5Output.includes('testng.xml'),
+    'Must identify unuploaded configs'
+  );
+  assert(
+    test5Output.includes('Refactored Production Code Suite'),
+    'Must provide refactored code across files'
+  );
   console.log('Testing: TEST 5 - Multi-File Framework Architecture... ✅ PASSED\n');
 
   // Test 6: REVIEW ONLY Mode Verification
   console.log('Testing: Mode Distinction - REVIEW ONLY Mode...');
-  const reviewOnlyOutput = await simulateAgent4(test1Input, 'playwright-ts', { mode: 'review_only' });
+  const reviewOnlyOutput = await simulateAgent4(test1Input, 'playwright-ts', {
+    mode: 'review_only',
+  });
   assert(reviewOnlyOutput.includes('REVIEW ONLY'), 'Header must state REVIEW ONLY');
-  assert(!reviewOnlyOutput.includes('## 4. Refactored Production Code Suite'), 'REVIEW ONLY mode must not emit full refactored code block');
+  assert(
+    !reviewOnlyOutput.includes('## 4. Refactored Production Code Suite'),
+    'REVIEW ONLY mode must not emit full refactored code block'
+  );
   console.log('Testing: Mode Distinction - REVIEW ONLY Mode... ✅ PASSED\n');
 
   // Test 7: Line Number Rule - No Invented Line Numbers
@@ -224,8 +305,13 @@ public class LoginTest extends BaseTest {
   await page.click("#checkout");
   await page.waitForTimeout(5000);
 });`;
-  const noLineNumOutput = await simulateAgent4(noLineNumInput, 'playwright-ts', { mode: 'review_only' });
-  assert(noLineNumOutput.includes('Line number not provided in input snippet'), 'Must state line number not provided rather than inventing one');
+  const noLineNumOutput = await simulateAgent4(noLineNumInput, 'playwright-ts', {
+    mode: 'review_only',
+  });
+  assert(
+    noLineNumOutput.includes('Line number not provided in input snippet'),
+    'Must state line number not provided rather than inventing one'
+  );
   console.log('Testing: Line Number Rule... ✅ PASSED\n');
 
   console.log('======================================================================');

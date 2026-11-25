@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   BookOpen,
   Search,
@@ -29,7 +29,7 @@ import {
   AlertTriangle,
   Clock,
   Send,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   ConceptGuide,
   TRACK_META,
@@ -47,15 +47,15 @@ import {
   generateConceptGuideTemplate,
   downloadConceptGuideTemplate,
   extractTextFromOfficeZip,
-} from "@/lib/concept-guides";
-import { QADatabase } from "@/lib/qa-db";
-import TrackTutorialView from "@/components/guides/track-tutorial-view";
-import { TRACK_TUTORIALS } from "@/lib/track-tutorials";
-import FormattedOverviewEditor from "@/components/ui/formatted-overview-editor";
-import FormattedInterviewAnswer from "@/components/ui/formatted-interview-answer";
+} from '@/lib/concept-guides';
+import { QADatabase } from '@/lib/qa-db';
+import TrackTutorialView from '@/components/guides/track-tutorial-view';
+import { TRACK_TUTORIALS } from '@/lib/track-tutorials';
+import FormattedOverviewEditor from '@/components/ui/formatted-overview-editor';
+import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
 
 export default function GuideCatalogClient({
-  initialTrackId = "selenium",
+  initialTrackId = 'selenium',
 }: {
   initialTrackId: string;
 }) {
@@ -64,10 +64,10 @@ export default function GuideCatalogClient({
 
   // Normalize trackId strictly to the current course
   const normalizedTrack =
-    initialTrackId === "selenium-java"
-      ? "selenium"
-      : initialTrackId === "playwright-ts"
-        ? "playwright"
+    initialTrackId === 'selenium-java'
+      ? 'selenium'
+      : initialTrackId === 'playwright-ts'
+        ? 'playwright'
         : initialTrackId;
 
   const activeTrack = normalizedTrack;
@@ -81,53 +81,55 @@ export default function GuideCatalogClient({
   }
   const trackInfo = TRACK_META[activeTrack] || {
     id: activeTrack,
-    name: "Automation",
-    tag: "Core",
-    color: "emerald",
-    badgeClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    name: 'Automation',
+    tag: 'Core',
+    color: 'emerald',
+    badgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
   };
 
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
 
   // Tabs: 'tutorial' (Step-by-Step Tutorial & Setup) vs 'confirmed-guides' (Architecture Concept Guides)
-  const [activeTab, setActiveTab] = useState<
-    "tutorial" | "confirmed-guides"
-  >(() => {
-    if (typeof window !== "undefined") {
-      const tabParam = new URLSearchParams(window.location.search).get("tab");
-      if (tabParam === "guides" || tabParam === "import") return "confirmed-guides";
+  const [activeTab, setActiveTab] = useState<'tutorial' | 'confirmed-guides'>(() => {
+    if (typeof window !== 'undefined') {
+      const tabParam = new URLSearchParams(window.location.search).get('tab');
+      if (tabParam === 'guides' || tabParam === 'import') return 'confirmed-guides';
     }
-    return "tutorial";
+    return 'tutorial';
   });
 
   const currentTutorial =
     TRACK_TUTORIALS[activeTrack] ||
-    (activeTrack === "selenium" || activeTrack === "selenium-java" ? TRACK_TUTORIALS["selenium"] : undefined) ||
-    (activeTrack === "playwright" || activeTrack === "playwright-ts" ? TRACK_TUTORIALS["playwright"] : undefined) ||
-    (activeTrack === "api-testing" ? TRACK_TUTORIALS["api-testing"] : undefined) ||
-    (activeTrack === "ai-qa" ? TRACK_TUTORIALS["ai-qa"] : undefined);
+    (activeTrack === 'selenium' || activeTrack === 'selenium-java'
+      ? TRACK_TUTORIALS['selenium']
+      : undefined) ||
+    (activeTrack === 'playwright' || activeTrack === 'playwright-ts'
+      ? TRACK_TUTORIALS['playwright']
+      : undefined) ||
+    (activeTrack === 'api-testing' ? TRACK_TUTORIALS['api-testing'] : undefined) ||
+    (activeTrack === 'ai-qa' ? TRACK_TUTORIALS['ai-qa'] : undefined);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const u = QADatabase.getCurrentUser();
       const adminStatus = QADatabase.isAdmin(u);
       setIsAdmin(adminStatus);
-      const tabParam = searchParams.get("tab");
-      if (tabParam === "guides" || tabParam === "import") {
-        setActiveTab("confirmed-guides");
-      } else if (tabParam === "tutorial") {
-        setActiveTab("tutorial");
+      const tabParam = searchParams.get('tab');
+      if (tabParam === 'guides' || tabParam === 'import') {
+        setActiveTab('confirmed-guides');
+      } else if (tabParam === 'tutorial') {
+        setActiveTab('tutorial');
       }
       const handleAuth = () => {
         const updated = QADatabase.getCurrentUser();
         const nextAdmin = QADatabase.isAdmin(updated);
         setIsAdmin(nextAdmin);
       };
-      window.addEventListener("intelligentqa_auth_changed", handleAuth);
-      window.addEventListener("intelligentqa_role_changed", handleAuth);
+      window.addEventListener('intelligentqa_auth_changed', handleAuth);
+      window.addEventListener('intelligentqa_role_changed', handleAuth);
       return () => {
-        window.removeEventListener("intelligentqa_auth_changed", handleAuth);
-        window.removeEventListener("intelligentqa_role_changed", handleAuth);
+        window.removeEventListener('intelligentqa_auth_changed', handleAuth);
+        window.removeEventListener('intelligentqa_role_changed', handleAuth);
       };
     }
   }, [searchParams]);
@@ -137,11 +139,13 @@ export default function GuideCatalogClient({
 
   // Modals
   const [showTemplateModal, setShowTemplateModal] = useState<boolean>(false);
-  const [templateFormat, setTemplateFormat] = useState<"xlsx" | "docx" | "excel" | "word" | "json" | "csv">("xlsx");
+  const [templateFormat, setTemplateFormat] = useState<
+    'xlsx' | 'docx' | 'excel' | 'word' | 'json' | 'csv'
+  >('xlsx');
   const [templateCopied, setTemplateCopied] = useState<boolean>(false);
 
   const [showImportModal, setShowImportModal] = useState<boolean>(false);
-  const [importText, setImportText] = useState<string>("");
+  const [importText, setImportText] = useState<string>('');
   const [importStatus, setImportStatus] = useState<{
     error?: string;
     success?: string;
@@ -150,39 +154,36 @@ export default function GuideCatalogClient({
 
   // Edit Staged Guide Modal
   const [editingGuide, setEditingGuide] = useState<ConceptGuide | null>(null);
-  const [editTitle, setEditTitle] = useState<string>("");
-  const [editCategory, setEditCategory] = useState<string>("");
-  const [editLevel, setEditLevel] = useState<
-    "Beginner" | "Intermediate" | "Advanced"
-  >("Intermediate");
-  const [editSummary, setEditSummary] = useState<string>("");
-  const [editOverview, setEditOverview] = useState<string>("");
-  const [editMechanism, setEditMechanism] = useState<string>("");
-  const [editCode, setEditCode] = useState<string>("");
-  const [editCodeLang, setEditCodeLang] = useState<string>("java");
-  const [editInterviewTips, setEditInterviewTips] = useState<string>("");
+  const [editTitle, setEditTitle] = useState<string>('');
+  const [editCategory, setEditCategory] = useState<string>('');
+  const [editLevel, setEditLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>(
+    'Intermediate'
+  );
+  const [editSummary, setEditSummary] = useState<string>('');
+  const [editOverview, setEditOverview] = useState<string>('');
+  const [editMechanism, setEditMechanism] = useState<string>('');
+  const [editCode, setEditCode] = useState<string>('');
+  const [editCodeLang, setEditCodeLang] = useState<string>('java');
+  const [editInterviewTips, setEditInterviewTips] = useState<string>('');
 
   // Add Manual Guide Modal
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
-  const [newTitle, setNewTitle] = useState<string>("");
-  const [newCategory, setNewCategory] = useState<string>(
-    "Framework Architecture",
+  const [newTitle, setNewTitle] = useState<string>('');
+  const [newCategory, setNewCategory] = useState<string>('Framework Architecture');
+  const [newLevel, setNewLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>(
+    'Intermediate'
   );
-  const [newLevel, setNewLevel] = useState<
-    "Beginner" | "Intermediate" | "Advanced"
-  >("Intermediate");
-  const [newSummary, setNewSummary] = useState<string>("");
-  const [newOverview, setNewOverview] = useState<string>("");
-  const [newMechanism, setNewMechanism] = useState<string>("");
-  const [newCode, setNewCode] = useState<string>("");
+  const [newSummary, setNewSummary] = useState<string>('');
+  const [newOverview, setNewOverview] = useState<string>('');
+  const [newMechanism, setNewMechanism] = useState<string>('');
+  const [newCode, setNewCode] = useState<string>('');
   const [newCodeLang, setNewCodeLang] = useState<string>(
-    activeTrack === "playwright" ? "typescript" : "java",
+    activeTrack === 'playwright' ? 'typescript' : 'java'
   );
-  const [newInterviewTips, setNewInterviewTips] = useState<string>("");
+  const [newInterviewTips, setNewInterviewTips] = useState<string>('');
 
   // View Details Modal
-  const [selectedGuideForView, setSelectedGuideForView] =
-    useState<ConceptGuide | null>(null);
+  const [selectedGuideForView, setSelectedGuideForView] = useState<ConceptGuide | null>(null);
   const [copiedCodeIndex, setCopiedCodeIndex] = useState<number | null>(null);
 
   // Feedback Banner
@@ -204,7 +205,7 @@ export default function GuideCatalogClient({
 
   // Handle URL query action params (e.g. ?action=template or ?action=import)
   useEffect(() => {
-    const action = searchParams?.get("action");
+    const action = searchParams?.get('action');
     if (action === 'template') {
       setShowTemplateModal(true);
     } else if (action === 'import') {
@@ -230,15 +231,15 @@ export default function GuideCatalogClient({
       const u = QADatabase.getCurrentUser();
       result.guides.forEach((g) => {
         QADatabase.submitContentForReview({
-          type: "guide",
+          type: 'guide',
           title: g.title,
           trackOrLanguage: activeTrack,
           category: g.category,
           summary: g.summary,
           submittedBy: {
-            id: u?.id || "guest",
-            name: u?.displayName || "Community Student",
-            email: u?.email || "student@intelligentqa.io",
+            id: u?.id || 'guest',
+            name: u?.displayName || 'Community Student',
+            email: u?.email || 'student@intelligentqa.io',
           },
           contentPayload: g,
         });
@@ -246,10 +247,8 @@ export default function GuideCatalogClient({
       setImportStatus({
         success: `🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`,
       });
-      setImportText("");
-      showBanner(
-        `🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`,
-      );
+      setImportText('');
+      showBanner(`🎉 ${result.guides.length} guide(s) submitted for Admin review and approval!`);
       return;
     }
 
@@ -257,11 +256,9 @@ export default function GuideCatalogClient({
     setImportStatus({
       success: `Successfully parsed ${result.guides.length} guide(s) into staging! Review them in the Add Guide modal, edit or delete as needed, then Confirm & Submit.`,
     });
-    setImportText("");
-    setActiveTab("confirmed-guides");
-    showBanner(
-      `📥 ${result.guides.length} guide(s) loaded into staging review.`,
-    );
+    setImportText('');
+    setActiveTab('confirmed-guides');
+    showBanner(`📥 ${result.guides.length} guide(s) loaded into staging review.`);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,26 +266,30 @@ export default function GuideCatalogClient({
     if (!file) return;
 
     const lowerName = file.name.toLowerCase();
-    if (lowerName.endsWith(".xlsx") || lowerName.endsWith(".docx")) {
+    if (lowerName.endsWith('.xlsx') || lowerName.endsWith('.docx')) {
       try {
         const buffer = await file.arrayBuffer();
         const extracted = await extractTextFromOfficeZip(
           buffer,
-          lowerName.endsWith(".docx") ? "docx" : "xlsx"
+          lowerName.endsWith('.docx') ? 'docx' : 'xlsx'
         );
         if (extracted && extracted.trim()) {
           handleParseImport(extracted);
-          if (fileInputRef.current) fileInputRef.current.value = "";
+          if (fileInputRef.current) fileInputRef.current.value = '';
           return;
         } else {
-          showBanner(`❌ Could not extract guide data from "${file.name}". Please ensure the Word/Excel document contains tables or text.`);
-          if (fileInputRef.current) fileInputRef.current.value = "";
+          showBanner(
+            `❌ Could not extract guide data from "${file.name}". Please ensure the Word/Excel document contains tables or text.`
+          );
+          if (fileInputRef.current) fileInputRef.current.value = '';
           return;
         }
       } catch (err: any) {
-        console.warn("Office ZIP extraction error:", err);
-        showBanner(`❌ Failed to read "${file.name}": ${err?.message || 'Unsupported or corrupted format'}`);
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        console.warn('Office ZIP extraction error:', err);
+        showBanner(
+          `❌ Failed to read "${file.name}": ${err?.message || 'Unsupported or corrupted format'}`
+        );
+        if (fileInputRef.current) fileInputRef.current.value = '';
         return;
       }
     }
@@ -299,7 +300,7 @@ export default function GuideCatalogClient({
       handleParseImport(content);
     };
     reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   // ==========================================
@@ -312,13 +313,12 @@ export default function GuideCatalogClient({
     setEditLevel(guide.level);
     setEditSummary(guide.summary);
     setEditOverview(guide.overview || guide.summary);
-    setEditMechanism(guide.architectureOrMechanism || "");
-    setEditCode(guide.codeSnippets?.[0]?.code || "");
+    setEditMechanism(guide.architectureOrMechanism || '');
+    setEditCode(guide.codeSnippets?.[0]?.code || '');
     setEditCodeLang(
-      guide.codeSnippets?.[0]?.language ||
-        (activeTrack === "playwright" ? "typescript" : "java"),
+      guide.codeSnippets?.[0]?.language || (activeTrack === 'playwright' ? 'typescript' : 'java')
     );
-    setEditInterviewTips(guide.interviewTips || "");
+    setEditInterviewTips(guide.interviewTips || '');
   };
 
   const handleSaveEdit = () => {
@@ -345,13 +345,13 @@ export default function GuideCatalogClient({
     updateStagedGuide(updated);
     setStagedGuides(getStagedGuides(activeTrack));
     setEditingGuide(null);
-    showBanner("✔ Imported guide updated successfully in staging!");
+    showBanner('✔ Imported guide updated successfully in staging!');
   };
 
   const handleDeleteStaged = (id: string) => {
     deleteStagedGuide(id, activeTrack);
     setStagedGuides(getStagedGuides(activeTrack));
-    showBanner("🗑 Removed guide from import staging.");
+    showBanner('🗑 Removed guide from import staging.');
   };
 
   // ==========================================
@@ -364,13 +364,13 @@ export default function GuideCatalogClient({
       setStagedGuides([]);
       loadData();
       showBanner(
-        `🎉 Confirmed and saved ${res.count} guide(s) to ${trackInfo.name} Guide List! Staging list cleared.`,
+        `🎉 Confirmed and saved ${res.count} guide(s) to ${trackInfo.name} Guide List! Staging list cleared.`
       );
     } else {
       const res = submitStagedGuidesForApproval(activeTrack);
       setStagedGuides([]);
       showBanner(
-        `📬 Submitted for Admin Approval: ${res.count} guide(s) queued for Admin review! Admins will verify duplicate checks and approve before adding to the course.`,
+        `📬 Submitted for Admin Approval: ${res.count} guide(s) queued for Admin review! Admins will verify duplicate checks and approve before adding to the course.`
       );
     }
   };
@@ -384,7 +384,9 @@ export default function GuideCatalogClient({
     } else {
       const res = submitStagedGuidesForApproval(activeTrack, [guideId]);
       setStagedGuides(getStagedGuides(activeTrack));
-      showBanner(`📬 Submitted for Admin Approval: Guide queued for duplicate review and approval.`);
+      showBanner(
+        `📬 Submitted for Admin Approval: Guide queued for duplicate review and approval.`
+      );
     }
   };
 
@@ -392,7 +394,7 @@ export default function GuideCatalogClient({
   const handleAddManualGuide = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newSummary.trim()) {
-      showBanner("Title and Summary are mandatory.");
+      showBanner('Title and Summary are mandatory.');
       return;
     }
 
@@ -400,7 +402,7 @@ export default function GuideCatalogClient({
       id: `custom-guide-${Date.now()}`,
       trackId: activeTrack,
       title: newTitle.trim(),
-      category: newCategory.trim() || "General",
+      category: newCategory.trim() || 'General',
       level: newLevel,
       summary: newSummary.trim(),
       overview: newOverview.trim() || newSummary.trim(),
@@ -421,42 +423,40 @@ export default function GuideCatalogClient({
     if (!isAdmin) {
       const u = QADatabase.getCurrentUser();
       QADatabase.submitContentForReview({
-        type: "guide",
+        type: 'guide',
         title: newGuide.title,
         trackOrLanguage: activeTrack,
         category: newGuide.category,
         summary: newGuide.summary,
         submittedBy: {
-          id: u?.id || "guest",
-          name: u?.displayName || "Community Student",
-          email: u?.email || "student@intelligentqa.io",
+          id: u?.id || 'guest',
+          name: u?.displayName || 'Community Student',
+          email: u?.email || 'student@intelligentqa.io',
         },
         contentPayload: newGuide,
       });
       setShowAddModal(false);
-      setNewTitle("");
-      setNewSummary("");
-      setNewOverview("");
-      setNewMechanism("");
-      setNewCode("");
-      setNewInterviewTips("");
-      showBanner(
-        `🎉 Guide "${newGuide.title}" submitted for Admin review and approval!`,
-      );
+      setNewTitle('');
+      setNewSummary('');
+      setNewOverview('');
+      setNewMechanism('');
+      setNewCode('');
+      setNewInterviewTips('');
+      showBanner(`🎉 Guide "${newGuide.title}" submitted for Admin review and approval!`);
       return;
     }
 
     saveStagedGuide(newGuide);
     setStagedGuides(getStagedGuides(activeTrack));
     setShowAddModal(false);
-    setNewTitle("");
-    setNewSummary("");
-    setNewOverview("");
-    setNewMechanism("");
-    setNewCode("");
-    setNewInterviewTips("");
-    setActiveTab("confirmed-guides");
-    showBanner("✔ Guide added to staging review list.");
+    setNewTitle('');
+    setNewSummary('');
+    setNewOverview('');
+    setNewMechanism('');
+    setNewCode('');
+    setNewInterviewTips('');
+    setActiveTab('confirmed-guides');
+    showBanner('✔ Guide added to staging review list.');
   };
 
   const handleCopyTemplate = () => {
@@ -498,18 +498,16 @@ export default function GuideCatalogClient({
                 </Link>
                 <span>/</span>
                 <span className="text-slate-300 font-semibold">
-                  {activeTrack === "selenium" || activeTrack === "selenium-java"
-                    ? "Selenium (Java)"
+                  {activeTrack === 'selenium' || activeTrack === 'selenium-java'
+                    ? 'Selenium (Java)'
                     : trackInfo.name}
                 </span>
                 <span>/</span>
-                <span className="text-blue-400 font-bold">
-                  Architecture &amp; Concepts Library
-                </span>
+                <span className="text-blue-400 font-bold">Architecture &amp; Concepts Library</span>
               </div>
               <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 mt-0.5">
-                {activeTrack === "selenium" || activeTrack === "selenium-java"
-                  ? "Selenium (Java)"
+                {activeTrack === 'selenium' || activeTrack === 'selenium-java'
+                  ? 'Selenium (Java)'
                   : trackInfo.name}
                 {trackInfo.tag && (
                   <span
@@ -543,11 +541,11 @@ export default function GuideCatalogClient({
         <div className="flex items-center gap-2 border-b border-slate-800 pt-3 flex-wrap">
           <button
             type="button"
-            onClick={() => setActiveTab("tutorial")}
+            onClick={() => setActiveTab('tutorial')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === "tutorial"
-                ? "bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-slate-900/40"
+              activeTab === 'tutorial'
+                ? 'bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-slate-900/40'
             }`}
           >
             <BookOpen className="w-4 h-4 text-emerald-400" />
@@ -559,11 +557,11 @@ export default function GuideCatalogClient({
 
           <button
             type="button"
-            onClick={() => setActiveTab("confirmed-guides")}
+            onClick={() => setActiveTab('confirmed-guides')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === "confirmed-guides"
-                ? "bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-slate-900/40"
+              activeTab === 'confirmed-guides'
+                ? 'bg-slate-900 text-emerald-400 border-t-2 border-x border-slate-800 border-t-emerald-500 shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-slate-900/40'
             }`}
           >
             <Layers className="w-4 h-4 text-sky-400" />
@@ -580,18 +578,17 @@ export default function GuideCatalogClient({
         {/* ======================================================== */}
         {/* TAB 0: STEP-BY-STEP TUTORIAL & SETUP (GfG / Docs Edition) */}
         {/* ======================================================== */}
-        {activeTab === "tutorial" && currentTutorial && (
+        {activeTab === 'tutorial' && currentTutorial && (
           <TrackTutorialView tutorial={currentTutorial} />
         )}
 
         {/* ======================================================== */}
         {/* TAB 1: CONFIRMED GUIDES LIST                             */}
         {/* ======================================================== */}
-        {activeTab === "confirmed-guides" && (
+        {activeTab === 'confirmed-guides' && (
           <div className="space-y-5">
             {/* Generic details of Selenium Java Automation Framework with architectural diagram */}
-            {(activeTrack === "selenium" ||
-              activeTrack === "selenium-java") && (
+            {(activeTrack === 'selenium' || activeTrack === 'selenium-java') && (
               <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
                 <div className="border-b border-slate-800 pb-4">
                   <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-2">
@@ -601,10 +598,9 @@ export default function GuideCatalogClient({
                     Selenium WebDriver + Java Enterprise Framework Architecture
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    Industry-standard layered test automation architecture
-                    utilizing Core Java, Selenium 4 W3C WebDriver, TestNG
-                    multi-threading, and Page Object Model (POM) with decoupled
-                    reporting and continuous delivery.
+                    Industry-standard layered test automation architecture utilizing Core Java,
+                    Selenium 4 W3C WebDriver, TestNG multi-threading, and Page Object Model (POM)
+                    with decoupled reporting and continuous delivery.
                   </p>
                 </div>
 
@@ -620,9 +616,7 @@ export default function GuideCatalogClient({
                         <span className="text-[10px] font-mono font-bold text-blue-400">
                           LAYER 1
                         </span>
-                        <div className="font-bold text-white text-xs">
-                          Test Runner
-                        </div>
+                        <div className="font-bold text-white text-xs">Test Runner</div>
                         <div className="text-[10px] text-slate-400">
                           TestNG / JUnit 5 · Parallel Execution
                         </div>
@@ -632,9 +626,7 @@ export default function GuideCatalogClient({
                         <span className="text-[10px] font-mono font-bold text-emerald-400">
                           LAYER 2
                         </span>
-                        <div className="font-bold text-white text-xs">
-                          Page Objects
-                        </div>
+                        <div className="font-bold text-white text-xs">Page Objects</div>
                         <div className="text-[10px] text-slate-400">
                           POM · Encapsulated Locators &amp; Actions
                         </div>
@@ -644,9 +636,7 @@ export default function GuideCatalogClient({
                         <span className="text-[10px] font-mono font-bold text-amber-400">
                           LAYER 3
                         </span>
-                        <div className="font-bold text-white text-xs">
-                          Driver Factory
-                        </div>
+                        <div className="font-bold text-white text-xs">Driver Factory</div>
                         <div className="text-[10px] text-slate-400">
                           ThreadLocal&lt;WebDriver&gt; · W3C Protocols
                         </div>
@@ -656,9 +646,7 @@ export default function GuideCatalogClient({
                         <span className="text-[10px] font-mono font-bold text-purple-400">
                           LAYER 4
                         </span>
-                        <div className="font-bold text-white text-xs">
-                          Reports &amp; CI/CD
-                        </div>
+                        <div className="font-bold text-white text-xs">Reports &amp; CI/CD</div>
                         <div className="text-[10px] text-slate-400">
                           Allure · Docker Grid · GitHub Actions
                         </div>
@@ -667,14 +655,11 @@ export default function GuideCatalogClient({
 
                     {/* Visual Connector Flow */}
                     <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
-                      <div className="text-emerald-400 font-bold">
-                        Execution Lifecycle Flow:
-                      </div>
+                      <div className="text-emerald-400 font-bold">Execution Lifecycle Flow:</div>
                       <div className="text-slate-400">
-                        Test Suites (testng.xml) ➔ BaseTest (@BeforeMethod) ➔
-                        ThreadLocal DriverFactory ➔ Page Action ➔ Explicit
-                        WebDriverWait ➔ Assertions (AssertJ) ➔ Listeners
-                        (@AfterMethod) ➔ Allure Reports
+                        Test Suites (testng.xml) ➔ BaseTest (@BeforeMethod) ➔ ThreadLocal
+                        DriverFactory ➔ Page Action ➔ Explicit WebDriverWait ➔ Assertions (AssertJ)
+                        ➔ Listeners (@AfterMethod) ➔ Allure Reports
                       </div>
                     </div>
                   </div>
@@ -688,12 +673,11 @@ export default function GuideCatalogClient({
                       <span>1. Robust Dynamic Synchronization</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Eliminates test flakiness by replacing rigid{" "}
-                      <code className="text-rose-400">Thread.sleep()</code> with
-                      dynamic{" "}
-                      <code className="text-emerald-400">WebDriverWait</code>{" "}
-                      &amp; <code className="text-emerald-400">FluentWait</code>{" "}
-                      polling against expected conditions.
+                      Eliminates test flakiness by replacing rigid{' '}
+                      <code className="text-rose-400">Thread.sleep()</code> with dynamic{' '}
+                      <code className="text-emerald-400">WebDriverWait</code> &amp;{' '}
+                      <code className="text-emerald-400">FluentWait</code> polling against expected
+                      conditions.
                     </p>
                   </div>
 
@@ -703,13 +687,9 @@ export default function GuideCatalogClient({
                       <span>2. Thread-Safe Parallel Scaling</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Utilizes{" "}
-                      <code className="text-blue-400">
-                        ThreadLocal&lt;WebDriver&gt;
-                      </code>{" "}
-                      ensuring each parallel test runs isolated in its own JVM
-                      thread without race conditions or browser
-                      cross-contamination.
+                      Utilizes <code className="text-blue-400">ThreadLocal&lt;WebDriver&gt;</code>{' '}
+                      ensuring each parallel test runs isolated in its own JVM thread without race
+                      conditions or browser cross-contamination.
                     </p>
                   </div>
 
@@ -719,11 +699,9 @@ export default function GuideCatalogClient({
                       <span>3. Clean Page Object Model</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Decouples UI locators (
-                      <code className="text-amber-400">By.id</code>,{" "}
-                      <code className="text-amber-400">By.xpath</code>) and user
-                      actions from test validations, providing single-point
-                      maintenance when application DOM updates.
+                      Decouples UI locators (<code className="text-amber-400">By.id</code>,{' '}
+                      <code className="text-amber-400">By.xpath</code>) and user actions from test
+                      validations, providing single-point maintenance when application DOM updates.
                     </p>
                   </div>
 
@@ -733,9 +711,8 @@ export default function GuideCatalogClient({
                       <span>4. Cross-Browser &amp; Headless Ready</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Integrates Selenium 4 Selenium Manager for automated
-                      browser driver resolution across Chrome, Firefox, and Edge
-                      with containerized CI execution.
+                      Integrates Selenium 4 Selenium Manager for automated browser driver resolution
+                      across Chrome, Firefox, and Edge with containerized CI execution.
                     </p>
                   </div>
                 </div>
@@ -753,7 +730,9 @@ export default function GuideCatalogClient({
                     Playwright + TypeScript Modern Automation Architecture
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    Modern high-velocity end-to-end testing platform utilizing direct WebSocket Chrome DevTools Protocol (CDP), isolated BrowserContexts, built-in auto-waiting fixtures, and multi-machine CI sharding.
+                    Modern high-velocity end-to-end testing platform utilizing direct WebSocket
+                    Chrome DevTools Protocol (CDP), isolated BrowserContexts, built-in auto-waiting
+                    fixtures, and multi-machine CI sharding.
                   </p>
                 </div>
 
@@ -766,27 +745,43 @@ export default function GuideCatalogClient({
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
                       {/* Layer 1 */}
                       <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 1</span>
+                        <span className="text-[10px] font-mono font-bold text-blue-400">
+                          LAYER 1
+                        </span>
                         <div className="font-bold text-white text-xs">Test Runner</div>
-                        <div className="text-[10px] text-slate-400">Playwright Runner · Parallel Workers</div>
+                        <div className="text-[10px] text-slate-400">
+                          Playwright Runner · Parallel Workers
+                        </div>
                       </div>
                       {/* Layer 2 */}
                       <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 2</span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">
+                          LAYER 2
+                        </span>
                         <div className="font-bold text-white text-xs">Fixtures &amp; Pages</div>
-                        <div className="text-[10px] text-slate-400">Custom Fixtures · POM · Locators</div>
+                        <div className="text-[10px] text-slate-400">
+                          Custom Fixtures · POM · Locators
+                        </div>
                       </div>
                       {/* Layer 3 */}
                       <div className="bg-slate-900 border border-amber-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-amber-400">LAYER 3</span>
+                        <span className="text-[10px] font-mono font-bold text-amber-400">
+                          LAYER 3
+                        </span>
                         <div className="font-bold text-white text-xs">Browser Engine</div>
-                        <div className="text-[10px] text-slate-400">CDP WebSockets · Isolated Contexts</div>
+                        <div className="text-[10px] text-slate-400">
+                          CDP WebSockets · Isolated Contexts
+                        </div>
                       </div>
                       {/* Layer 4 */}
                       <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 4</span>
+                        <span className="text-[10px] font-mono font-bold text-purple-400">
+                          LAYER 4
+                        </span>
                         <div className="font-bold text-white text-xs">Trace &amp; CI/CD</div>
-                        <div className="text-[10px] text-slate-400">Trace Viewer · Sharding · GitHub Actions</div>
+                        <div className="text-[10px] text-slate-400">
+                          Trace Viewer · Sharding · GitHub Actions
+                        </div>
                       </div>
                     </div>
 
@@ -794,7 +789,9 @@ export default function GuideCatalogClient({
                     <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
                       <div className="text-emerald-400 font-bold">Execution Lifecycle Flow:</div>
                       <div className="text-slate-400">
-                        Test Specs (.spec.ts) ➔ Worker Fixture (Browser) ➔ Isolated BrowserContext (storageState) ➔ Page Actions ➔ Built-in Auto-Waiting ➔ Web-First Assertions (expect) ➔ Trace Viewer (.zip) ➔ HTML Report
+                        Test Specs (.spec.ts) ➔ Worker Fixture (Browser) ➔ Isolated BrowserContext
+                        (storageState) ➔ Page Actions ➔ Built-in Auto-Waiting ➔ Web-First Assertions
+                        (expect) ➔ Trace Viewer (.zip) ➔ HTML Report
                       </div>
                     </div>
                   </div>
@@ -808,7 +805,9 @@ export default function GuideCatalogClient({
                       <span>1. Zero-Sleep Dynamic Auto-Waiting</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Eliminates test flakiness by verifying 5 actionability criteria (visible, stable, enabled, editable, receiving events) before every click or fill action automatically.
+                      Eliminates test flakiness by verifying 5 actionability criteria (visible,
+                      stable, enabled, editable, receiving events) before every click or fill action
+                      automatically.
                     </p>
                   </div>
 
@@ -818,7 +817,10 @@ export default function GuideCatalogClient({
                       <span>2. Sub-Millisecond BrowserContext Isolation</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Creates lightweight incognito browser contexts per test in milliseconds, sharing authenticated session states via <code className="text-blue-400">storageState.json</code> without repetitive logins.
+                      Creates lightweight incognito browser contexts per test in milliseconds,
+                      sharing authenticated session states via{' '}
+                      <code className="text-blue-400">storageState.json</code> without repetitive
+                      logins.
                     </p>
                   </div>
 
@@ -828,7 +830,9 @@ export default function GuideCatalogClient({
                       <span>3. Native Network Interception &amp; Mocking</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Intercepts HTTP/REST requests directly with <code className="text-amber-400">page.route()</code> to stub responses, mock network latency, or simulate 500 error scenarios without external proxies.
+                      Intercepts HTTP/REST requests directly with{' '}
+                      <code className="text-amber-400">page.route()</code> to stub responses, mock
+                      network latency, or simulate 500 error scenarios without external proxies.
                     </p>
                   </div>
 
@@ -838,7 +842,10 @@ export default function GuideCatalogClient({
                       <span>4. Time-Travel Trace Viewer Diagnostics</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Captures full DOM snapshots, action filmstrips, console messages, and network HAR recordings with <code className="text-purple-400">trace: &apos;on-first-retry&apos;</code> with 0% overhead on passing tests.
+                      Captures full DOM snapshots, action filmstrips, console messages, and network
+                      HAR recordings with{' '}
+                      <code className="text-purple-400">trace: &apos;on-first-retry&apos;</code>{' '}
+                      with 0% overhead on passing tests.
                     </p>
                   </div>
                 </div>
@@ -856,7 +863,9 @@ export default function GuideCatalogClient({
                     REST Assured + Java Enterprise API Architecture
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    Industry-standard layered API automation architecture leveraging Given-When-Then BDD syntax, Request/Response Specifications, Jackson POJO serialization, and JSON Schema contract validation.
+                    Industry-standard layered API automation architecture leveraging Given-When-Then
+                    BDD syntax, Request/Response Specifications, Jackson POJO serialization, and
+                    JSON Schema contract validation.
                   </p>
                 </div>
 
@@ -869,27 +878,43 @@ export default function GuideCatalogClient({
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
                       {/* Layer 1 */}
                       <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 1</span>
+                        <span className="text-[10px] font-mono font-bold text-blue-400">
+                          LAYER 1
+                        </span>
                         <div className="font-bold text-white text-xs">Test Runner</div>
-                        <div className="text-[10px] text-slate-400">TestNG / JUnit 5 · Data Providers</div>
+                        <div className="text-[10px] text-slate-400">
+                          TestNG / JUnit 5 · Data Providers
+                        </div>
                       </div>
                       {/* Layer 2 */}
                       <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 2</span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">
+                          LAYER 2
+                        </span>
                         <div className="font-bold text-white text-xs">API Services</div>
-                        <div className="text-[10px] text-slate-400">Given-When-Then BDD · Endpoints</div>
+                        <div className="text-[10px] text-slate-400">
+                          Given-When-Then BDD · Endpoints
+                        </div>
                       </div>
                       {/* Layer 3 */}
                       <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 3</span>
+                        <span className="text-[10px] font-mono font-bold text-purple-400">
+                          LAYER 3
+                        </span>
                         <div className="font-bold text-white text-xs">Specs &amp; POJOs</div>
-                        <div className="text-[10px] text-slate-400">RequestSpecBuilder · Jackson SerDe</div>
+                        <div className="text-[10px] text-slate-400">
+                          RequestSpecBuilder · Jackson SerDe
+                        </div>
                       </div>
                       {/* Layer 4 */}
                       <div className="bg-slate-900 border border-amber-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-amber-400">LAYER 4</span>
+                        <span className="text-[10px] font-mono font-bold text-amber-400">
+                          LAYER 4
+                        </span>
                         <div className="font-bold text-white text-xs">Contracts &amp; CI/CD</div>
-                        <div className="text-[10px] text-slate-400">JsonSchemaValidator · Allure Gates</div>
+                        <div className="text-[10px] text-slate-400">
+                          JsonSchemaValidator · Allure Gates
+                        </div>
                       </div>
                     </div>
 
@@ -897,7 +922,9 @@ export default function GuideCatalogClient({
                     <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
                       <div className="text-purple-400 font-bold">Execution Lifecycle Flow:</div>
                       <div className="text-slate-400">
-                        Test Suites (@Test) ➔ BaseApiTest (reqSpec) ➔ Request Body POJO (Serialization) ➔ HTTP Client Wire ➔ Response (HTTP 200) ➔ JSON Schema Validator ➔ JSONPath / AssertJ ➔ Allure Reports
+                        Test Suites (@Test) ➔ BaseApiTest (reqSpec) ➔ Request Body POJO
+                        (Serialization) ➔ HTTP Client Wire ➔ Response (HTTP 200) ➔ JSON Schema
+                        Validator ➔ JSONPath / AssertJ ➔ Allure Reports
                       </div>
                     </div>
                   </div>
@@ -911,7 +938,10 @@ export default function GuideCatalogClient({
                       <span>1. Declarative Given-When-Then BDD</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Structures API tests into fluent, readable blocks separating preconditions (<code className="text-purple-400">given()</code>), HTTP verbs (<code className="text-purple-400">when()</code>), and assertions (<code className="text-purple-400">then()</code>).
+                      Structures API tests into fluent, readable blocks separating preconditions (
+                      <code className="text-purple-400">given()</code>), HTTP verbs (
+                      <code className="text-purple-400">when()</code>), and assertions (
+                      <code className="text-purple-400">then()</code>).
                     </p>
                   </div>
 
@@ -921,7 +951,9 @@ export default function GuideCatalogClient({
                       <span>2. Reusable Specification Builders</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Consolidates base URIs, Bearer tokens, headers, and SLA response time checks into reusable <code className="text-blue-400">RequestSpecification</code> &amp; <code className="text-blue-400">ResponseSpecification</code> templates.
+                      Consolidates base URIs, Bearer tokens, headers, and SLA response time checks
+                      into reusable <code className="text-blue-400">RequestSpecification</code>{' '}
+                      &amp; <code className="text-blue-400">ResponseSpecification</code> templates.
                     </p>
                   </div>
 
@@ -931,7 +963,9 @@ export default function GuideCatalogClient({
                       <span>3. Type-Safe POJO Serialization</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Leverages Jackson / Gson object mappers to serialize Java objects into JSON payloads and deserialize responses into typed objects, avoiding fragile string parsing.
+                      Leverages Jackson / Gson object mappers to serialize Java objects into JSON
+                      payloads and deserialize responses into typed objects, avoiding fragile string
+                      parsing.
                     </p>
                   </div>
 
@@ -941,7 +975,9 @@ export default function GuideCatalogClient({
                       <span>4. Automated Schema Contract Guardrails</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Validates 100% of the JSON response payload against RFC Draft-07 schemas using <code className="text-amber-400">matchesJsonSchemaInClasspath</code> to block contract breaking changes in CI/CD.
+                      Validates 100% of the JSON response payload against RFC Draft-07 schemas using{' '}
+                      <code className="text-amber-400">matchesJsonSchemaInClasspath</code> to block
+                      contract breaking changes in CI/CD.
                     </p>
                   </div>
                 </div>
@@ -959,7 +995,9 @@ export default function GuideCatalogClient({
                     AI Academy &amp; Autonomous Agentic Testing Architecture
                   </h3>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    Next-generation intelligent quality engineering leveraging LLM reasoning loops, autonomous test generation agents, dynamic locator self-healing, and automated root cause analysis (RCA).
+                    Next-generation intelligent quality engineering leveraging LLM reasoning loops,
+                    autonomous test generation agents, dynamic locator self-healing, and automated
+                    root cause analysis (RCA).
                   </p>
                 </div>
 
@@ -972,27 +1010,43 @@ export default function GuideCatalogClient({
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
                       {/* Layer 1 */}
                       <div className="bg-slate-900 border border-cyan-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-cyan-400">LAYER 1</span>
+                        <span className="text-[10px] font-mono font-bold text-cyan-400">
+                          LAYER 1
+                        </span>
                         <div className="font-bold text-white text-xs">Agentic Planner</div>
-                        <div className="text-[10px] text-slate-400">ReAct Loop · Task Decomposition</div>
+                        <div className="text-[10px] text-slate-400">
+                          ReAct Loop · Task Decomposition
+                        </div>
                       </div>
                       {/* Layer 2 */}
                       <div className="bg-slate-900 border border-blue-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-blue-400">LAYER 2</span>
+                        <span className="text-[10px] font-mono font-bold text-blue-400">
+                          LAYER 2
+                        </span>
                         <div className="font-bold text-white text-xs">Prompt &amp; RAG</div>
-                        <div className="text-[10px] text-slate-400">DOM Tree Reduction · Few-Shot QA</div>
+                        <div className="text-[10px] text-slate-400">
+                          DOM Tree Reduction · Few-Shot QA
+                        </div>
                       </div>
                       {/* Layer 3 */}
                       <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-emerald-400">LAYER 3</span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">
+                          LAYER 3
+                        </span>
                         <div className="font-bold text-white text-xs">Self-Healing Engine</div>
-                        <div className="text-[10px] text-slate-400">Playwright/Selenium · Semantic Recovery</div>
+                        <div className="text-[10px] text-slate-400">
+                          Playwright/Selenium · Semantic Recovery
+                        </div>
                       </div>
                       {/* Layer 4 */}
                       <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-3 space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-purple-400">LAYER 4</span>
+                        <span className="text-[10px] font-mono font-bold text-purple-400">
+                          LAYER 4
+                        </span>
                         <div className="font-bold text-white text-xs">Vision &amp; RCA</div>
-                        <div className="text-[10px] text-slate-400">Multimodal Diff · Defect Reporting</div>
+                        <div className="text-[10px] text-slate-400">
+                          Multimodal Diff · Defect Reporting
+                        </div>
                       </div>
                     </div>
 
@@ -1000,7 +1054,9 @@ export default function GuideCatalogClient({
                     <div className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 space-y-1">
                       <div className="text-cyan-400 font-bold">Execution Lifecycle Flow:</div>
                       <div className="text-slate-400">
-                        User Story / Requirement ➔ QA Agent Planner ➔ Reduced DOM Snapshot ➔ LLM Reasoning (Gemini / Claude) ➔ Action Dispatch (Playwright/Selenium) ➔ Self-Healing Recovery ➔ Vision Diff ➔ Jira Bug Report
+                        User Story / Requirement ➔ QA Agent Planner ➔ Reduced DOM Snapshot ➔ LLM
+                        Reasoning (Gemini / Claude) ➔ Action Dispatch (Playwright/Selenium) ➔
+                        Self-Healing Recovery ➔ Vision Diff ➔ Jira Bug Report
                       </div>
                     </div>
                   </div>
@@ -1014,7 +1070,9 @@ export default function GuideCatalogClient({
                       <span>1. Autonomous Scenario Generation</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Converts acceptance criteria and Jira user stories directly into executable BDD test scenarios and Playwright/Selenium suites using targeted QA system prompts.
+                      Converts acceptance criteria and Jira user stories directly into executable
+                      BDD test scenarios and Playwright/Selenium suites using targeted QA system
+                      prompts.
                     </p>
                   </div>
 
@@ -1024,7 +1082,9 @@ export default function GuideCatalogClient({
                       <span>2. Semantic Self-Healing Locators</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Dynamically recalculates broken locators at runtime by matching element visual positions, accessibility roles, and semantic parent trees without manual test maintenance.
+                      Dynamically recalculates broken locators at runtime by matching element visual
+                      positions, accessibility roles, and semantic parent trees without manual test
+                      maintenance.
                     </p>
                   </div>
 
@@ -1034,7 +1094,9 @@ export default function GuideCatalogClient({
                       <span>3. Synthetic Test Data Synthesis</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Generates edge-case, localized, and privacy-compliant (PII-safe) synthetic payloads on demand to stress test validation constraints and boundary conditions.
+                      Generates edge-case, localized, and privacy-compliant (PII-safe) synthetic
+                      payloads on demand to stress test validation constraints and boundary
+                      conditions.
                     </p>
                   </div>
 
@@ -1044,7 +1106,9 @@ export default function GuideCatalogClient({
                       <span>4. Automated Root Cause Analysis (RCA)</span>
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Analyzes failure stack traces, browser console errors, and network HAR recordings to automatically classify whether failures are real product bugs or transient network flakiness.
+                      Analyzes failure stack traces, browser console errors, and network HAR
+                      recordings to automatically classify whether failures are real product bugs or
+                      transient network flakiness.
                     </p>
                   </div>
                 </div>
@@ -1063,9 +1127,7 @@ export default function GuideCatalogClient({
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-5 h-5 text-blue-400" />
-                <h3 className="text-base font-bold text-white">
-                  Edit Imported Guide
-                </h3>
+                <h3 className="text-base font-bold text-white">Edit Imported Guide</h3>
               </div>
               <button
                 type="button"
@@ -1102,9 +1164,7 @@ export default function GuideCatalogClient({
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">
-                    Level
-                  </label>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Level</label>
                   <select
                     value={editLevel}
                     onChange={(e) => setEditLevel(e.target.value as any)}
@@ -1242,11 +1302,11 @@ export default function GuideCatalogClient({
               <div className="inline-flex rounded-xl p-1 bg-slate-950 border border-slate-800 text-xs">
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat("xlsx")}
+                  onClick={() => setTemplateFormat('xlsx')}
                   className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition cursor-pointer ${
-                    templateFormat === "xlsx" || templateFormat === "excel"
-                      ? "bg-emerald-600 text-white shadow-xs"
-                      : "text-slate-400 hover:text-white"
+                    templateFormat === 'xlsx' || templateFormat === 'excel'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
@@ -1254,11 +1314,11 @@ export default function GuideCatalogClient({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTemplateFormat("docx")}
+                  onClick={() => setTemplateFormat('docx')}
                   className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition cursor-pointer ${
-                    templateFormat === "docx" || templateFormat === "word"
-                      ? "bg-blue-600 text-white shadow-xs"
-                      : "text-slate-400 hover:text-white"
+                    templateFormat === 'docx' || templateFormat === 'word'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <FileText className="w-3.5 h-3.5 text-blue-300" />
@@ -1288,9 +1348,7 @@ export default function GuideCatalogClient({
                 {/* Direct Download .XLSX Button */}
                 <button
                   type="button"
-                  onClick={() =>
-                    downloadConceptGuideTemplate("xlsx", activeTrack)
-                  }
+                  onClick={() => downloadConceptGuideTemplate('xlsx', activeTrack)}
                   className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
                   title="Download genuine Microsoft Excel (.xlsx) file"
                 >
@@ -1301,9 +1359,7 @@ export default function GuideCatalogClient({
                 {/* Direct Download .DOCX Button */}
                 <button
                   type="button"
-                  onClick={() =>
-                    downloadConceptGuideTemplate("docx", activeTrack)
-                  }
+                  onClick={() => downloadConceptGuideTemplate('docx', activeTrack)}
                   className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
                   title="Download genuine Microsoft Word (.docx) file"
                 >
@@ -1376,8 +1432,8 @@ export default function GuideCatalogClient({
             >
               <UploadCloud className="w-8 h-8 text-blue-400 mx-auto" />
               <div className="text-xs text-slate-300">
-                <span className="font-bold text-white">Click to upload Excel or Word document</span> or
-                drag and drop
+                <span className="font-bold text-white">Click to upload Excel or Word document</span>{' '}
+                or drag and drop
               </div>
               <p className="text-[11px] text-slate-500">
                 Supports Excel (.xlsx, .xls) and Word (.docx, .doc) files or tables
@@ -1455,12 +1511,9 @@ export default function GuideCatalogClient({
                   <Plus className="w-5 h-5 text-[#81FF89]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">
-                    Add Guide &amp; Management
-                  </h3>
+                  <h3 className="text-base font-bold text-white">Add Guide &amp; Management</h3>
                   <p className="text-xs text-zinc-400">
-                    Author custom guides, import from file, or download
-                    templates
+                    Author custom guides, import from file, or download templates
                   </p>
                 </div>
               </div>
@@ -1677,9 +1730,7 @@ export default function GuideCatalogClient({
                     {selectedGuideForView.level}
                   </span>
                 </div>
-                <h2 className="text-xl font-bold text-white">
-                  {selectedGuideForView.title}
-                </h2>
+                <h2 className="text-xl font-bold text-white">{selectedGuideForView.title}</h2>
               </div>
               <button
                 type="button"
@@ -1722,7 +1773,7 @@ export default function GuideCatalogClient({
                 <div key={sIdx} className="space-y-1.5">
                   <div className="flex items-center justify-between text-[11px] text-slate-400">
                     <span className="font-semibold uppercase">
-                      {snip.language}: {snip.caption || "Code Example"}
+                      {snip.language}: {snip.caption || 'Code Example'}
                     </span>
                     <button
                       type="button"
@@ -1738,9 +1789,7 @@ export default function GuideCatalogClient({
                       ) : (
                         <Copy className="w-3 h-3" />
                       )}
-                      <span>
-                        {copiedCodeIndex === sIdx ? "Copied!" : "Copy"}
-                      </span>
+                      <span>{copiedCodeIndex === sIdx ? 'Copied!' : 'Copy'}</span>
                     </button>
                   </div>
                   <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-emerald-300 overflow-x-auto">
@@ -1755,9 +1804,7 @@ export default function GuideCatalogClient({
                     <Lightbulb className="w-4 h-4" />
                     <span>SDET Interview Tips &amp; Tradeoffs</span>
                   </div>
-                  <p className="text-slate-300 text-[11px]">
-                    {selectedGuideForView.interviewTips}
-                  </p>
+                  <p className="text-slate-300 text-[11px]">{selectedGuideForView.interviewTips}</p>
                 </div>
               )}
             </div>

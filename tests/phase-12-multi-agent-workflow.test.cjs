@@ -11,12 +11,8 @@ const qaAgentRoute = jiti('../src/app/api/ai/qa-agent/route.ts').POST;
 const qaChatRoute = jiti('../src/app/api/ai/qa-chat/route.ts').POST;
 const grillHandler = jiti('../src/app/api/ai/interview-grill/route.ts').POST;
 
-const {
-  QAInterviewAgent,
-} = jiti('../src/lib/qa-interview-agent.ts');
-const {
-  getQuestionsByLevelAndDifficulty,
-} = jiti('../src/lib/interview-questions-bank.ts');
+const { QAInterviewAgent } = jiti('../src/lib/qa-interview-agent.ts');
+const { getQuestionsByLevelAndDifficulty } = jiti('../src/lib/interview-questions-bank.ts');
 const kb = jiti('../src/lib/qa-knowledge-base.ts');
 
 // Helper to simulate NextRequest
@@ -30,7 +26,6 @@ function createMockRequest(body, headers = {}) {
 }
 
 describe('PHASE 12: End-to-End Multi-Agent QA Engineering Workflow Validation', () => {
-
   let generatedRequirements = '';
   let generatedTestCases = '';
   let generatedAutomationCode = '';
@@ -62,10 +57,24 @@ So that my funds are securely transferred without unauthorized access or duplica
       assert.ok(generatedRequirements.includes('REQ-001'), 'Must generate REQ-001');
       assert.ok(generatedRequirements.includes('REQ-002'), 'Must generate REQ-002');
       assert.ok(generatedRequirements.includes('REQ-003'), 'Must generate REQ-003');
-      assert.ok(generatedRequirements.includes('AC-001'), 'Must generate AC-001 acceptance criteria');
-      assert.ok(generatedRequirements.includes('AC-002'), 'Must generate AC-002 acceptance criteria');
-      assert.ok(generatedRequirements.includes('Given') && generatedRequirements.includes('When') && generatedRequirements.includes('Then'), 'Must include Gherkin BDD format');
-      assert.ok(generatedRequirements.includes('Requirement Traceability Matrix'), 'Must include initial RTM table');
+      assert.ok(
+        generatedRequirements.includes('AC-001'),
+        'Must generate AC-001 acceptance criteria'
+      );
+      assert.ok(
+        generatedRequirements.includes('AC-002'),
+        'Must generate AC-002 acceptance criteria'
+      );
+      assert.ok(
+        generatedRequirements.includes('Given') &&
+          generatedRequirements.includes('When') &&
+          generatedRequirements.includes('Then'),
+        'Must include Gherkin BDD format'
+      );
+      assert.ok(
+        generatedRequirements.includes('Requirement Traceability Matrix'),
+        'Must include initial RTM table'
+      );
     });
 
     it('Step 3 & 4: Transfer generated requirements to Test Case Generator and verify consistency', async () => {
@@ -75,8 +84,8 @@ So that my funds are securely transferred without unauthorized access or duplica
         action: 'test_cases',
         input: generatedRequirements,
         options: {
-          coverage: { positive: true, negative: true, bva: true, security: true, edgeCases: true }
-        }
+          coverage: { positive: true, negative: true, bva: true, security: true, edgeCases: true },
+        },
       });
 
       const res = await qaAgentRoute(req);
@@ -96,11 +105,21 @@ So that my funds are securely transferred without unauthorized access or duplica
       assert.ok(generatedTestCases.includes('TC-001'), 'Must generate TC-001');
       assert.ok(generatedTestCases.includes('TC-002'), 'Must generate TC-002');
       assert.ok(generatedTestCases.includes('TC-003'), 'Must generate TC-003');
-      assert.ok(generatedTestCases.includes('Requirements Traceability Matrix (RTM)'), 'Must contain detailed RTM');
+      assert.ok(
+        generatedTestCases.includes('Requirements Traceability Matrix (RTM)'),
+        'Must contain detailed RTM'
+      );
 
       // 3. No context lost and no requirements invented
-      assert.ok(generatedTestCases.includes('Equivalence Partitioning') || generatedTestCases.includes('Boundary Value Analysis'), 'Must contain standard QA techniques');
-      assert.ok(generatedTestCases.includes('Automation Suitability Matrix'), 'Must assess automation suitability');
+      assert.ok(
+        generatedTestCases.includes('Equivalence Partitioning') ||
+          generatedTestCases.includes('Boundary Value Analysis'),
+        'Must contain standard QA techniques'
+      );
+      assert.ok(
+        generatedTestCases.includes('Automation Suitability Matrix'),
+        'Must assess automation suitability'
+      );
     });
   });
 
@@ -130,21 +149,50 @@ So that my funds are securely transferred without unauthorized access or duplica
       assert.ok(generatedAutomationCode.includes('TC-002'), 'Must trace TC-002');
 
       // 2. Correct scenarios implemented
-      assert.ok(generatedAutomationCode.includes('test.describe'), 'Must contain test.describe block');
+      assert.ok(
+        generatedAutomationCode.includes('test.describe'),
+        'Must contain test.describe block'
+      );
       assert.ok(generatedAutomationCode.includes('test('), 'Must contain individual test blocks');
 
       // 3. Assertions match expected results (web-first assertions)
-      assert.ok(generatedAutomationCode.includes('expect('), 'Must contain Playwright expect assertions');
-      assert.ok(generatedAutomationCode.includes('toBeVisible') || generatedAutomationCode.includes('toHaveURL'), 'Must use web-first auto-retrying assertions');
+      assert.ok(
+        generatedAutomationCode.includes('expect('),
+        'Must contain Playwright expect assertions'
+      );
+      assert.ok(
+        generatedAutomationCode.includes('toBeVisible') ||
+          generatedAutomationCode.includes('toHaveURL'),
+        'Must use web-first auto-retrying assertions'
+      );
 
       // 4. Code follows the selected framework (Playwright TS POM)
-      assert.ok(generatedAutomationCode.includes('@playwright/test'), 'Must import @playwright/test');
-      assert.ok(generatedAutomationCode.includes('class ') || generatedAutomationCode.includes('Page'), 'Must follow Page Object Model pattern');
-      assert.ok(generatedAutomationCode.includes('getByRole') || generatedAutomationCode.includes('getByLabel') || generatedAutomationCode.includes('getByTestId'), 'Must use resilient accessible locators');
+      assert.ok(
+        generatedAutomationCode.includes('@playwright/test'),
+        'Must import @playwright/test'
+      );
+      assert.ok(
+        generatedAutomationCode.includes('class ') || generatedAutomationCode.includes('Page'),
+        'Must follow Page Object Model pattern'
+      );
+      assert.ok(
+        generatedAutomationCode.includes('getByRole') ||
+          generatedAutomationCode.includes('getByLabel') ||
+          generatedAutomationCode.includes('getByTestId'),
+        'Must use resilient accessible locators'
+      );
 
       // 5. Dependencies and configuration are identified
-      assert.ok(generatedAutomationCode.includes('package.json') || generatedAutomationCode.includes('@playwright/test'), 'Must identify dependencies');
-      assert.ok(generatedAutomationCode.includes('playwright.config.ts') || generatedAutomationCode.includes('defineConfig'), 'Must provide playwright configuration');
+      assert.ok(
+        generatedAutomationCode.includes('package.json') ||
+          generatedAutomationCode.includes('@playwright/test'),
+        'Must identify dependencies'
+      );
+      assert.ok(
+        generatedAutomationCode.includes('playwright.config.ts') ||
+          generatedAutomationCode.includes('defineConfig'),
+        'Must provide playwright configuration'
+      );
     });
   });
 
@@ -163,8 +211,8 @@ So that my funds are securely transferred without unauthorized access or duplica
         input: codeWithFlakiness,
         techStack: 'playwright-ts',
         options: {
-          mode: 'review_and_fix'
-        }
+          mode: 'review_and_fix',
+        },
       });
 
       const res = await qaAgentRoute(req);
@@ -176,13 +224,30 @@ So that my funds are securely transferred without unauthorized access or duplica
 
       // Verification checks:
       // 1. Actual code defects / best practices are identified
-      assert.ok(generatedCodeReview.includes('Findings Matrix') || generatedCodeReview.includes('Findings') || generatedCodeReview.includes('Critical Issues') || generatedCodeReview.includes('FINDING'), 'Must provide structured findings');
-      
+      assert.ok(
+        generatedCodeReview.includes('Findings Matrix') ||
+          generatedCodeReview.includes('Findings') ||
+          generatedCodeReview.includes('Critical Issues') ||
+          generatedCodeReview.includes('FINDING'),
+        'Must provide structured findings'
+      );
+
       // 2. Framework guidelines followed
-      assert.ok(generatedCodeReview.includes('Playwright') || generatedCodeReview.includes('Selenium') || generatedCodeReview.includes('Page Object'), 'Must adhere to framework guidelines');
+      assert.ok(
+        generatedCodeReview.includes('Playwright') ||
+          generatedCodeReview.includes('Selenium') ||
+          generatedCodeReview.includes('Page Object'),
+        'Must adhere to framework guidelines'
+      );
 
       // 3. False positives are minimized and corrections preserve functionality
-      assert.ok(generatedCodeReview.includes('Refactored') || generatedCodeReview.includes('Corrected') || generatedCodeReview.includes('Fix') || generatedCodeReview.includes('Recommendation'), 'Must provide refactoring guidance or corrected code');
+      assert.ok(
+        generatedCodeReview.includes('Refactored') ||
+          generatedCodeReview.includes('Corrected') ||
+          generatedCodeReview.includes('Fix') ||
+          generatedCodeReview.includes('Recommendation'),
+        'Must provide refactoring guidance or corrected code'
+      );
     });
   });
 
@@ -223,7 +288,10 @@ So that my funds are securely transferred without unauthorized access or duplica
         const lowerReply = json.reply.toLowerCase();
 
         // Check for architectural depth & absence of anti-patterns
-        assert.ok(!json.reply.includes('Thread.sleep'), 'Must not recommend arbitrary sleep anti-patterns');
+        assert.ok(
+          !json.reply.includes('Thread.sleep'),
+          'Must not recommend arbitrary sleep anti-patterns'
+        );
         assert.ok(json.reply.length > 200, 'Must provide comprehensive depth');
 
         // Verify specific keywords relevant to the question
@@ -231,7 +299,10 @@ So that my funds are securely transferred without unauthorized access or duplica
         for (const k of item.checks) {
           if (lowerReply.includes(k)) matchCount++;
         }
-        assert.ok(matchCount >= 2, `Expected at least 2 architectural matches for "${item.q}", found ${matchCount}`);
+        assert.ok(
+          matchCount >= 2,
+          `Expected at least 2 architectural matches for "${item.q}", found ${matchCount}`
+        );
       });
     }
   });
@@ -261,7 +332,11 @@ So that my funds are securely transferred without unauthorized access or duplica
       assert.strictEqual(json.totalQuestions, 3, 'Must schedule 3 questions');
       assert.ok(json.question, 'Must deliver question text');
       assert.ok(json.questionList && json.questionList.length === 3, 'Must maintain questionList');
-      assert.strictEqual(json.questionList[0].source, 'internal_knowledge_base', 'Must retrieve from 800+ question bank');
+      assert.strictEqual(
+        json.questionList[0].source,
+        'internal_knowledge_base',
+        'Must retrieve from 800+ question bank'
+      );
       assert.ok(json.questionList[0].id, 'Must preserve question ID');
 
       sessionData = json;
@@ -293,7 +368,10 @@ This ensures tests never leak authentication cookies across threads.`;
       assert.strictEqual(json.isFinished, false, 'Turn 1 must not terminate session');
       assert.ok(json.evaluation, 'Must return evaluation');
       assert.ok(json.evaluation.rubricScores, 'Must provide 6D rubric scores');
-      assert.ok(json.evaluation.rubricScores.technicalAccuracy >= 3, 'Technical accuracy must be scored');
+      assert.ok(
+        json.evaluation.rubricScores.technicalAccuracy >= 3,
+        'Technical accuracy must be scored'
+      );
       assert.ok(json.probingQuestion, 'Must challenge with an adaptive follow-up probing question');
       assert.ok(json.nextQuestion, 'Must provide Question 2 for adaptive flow');
 
@@ -364,13 +442,28 @@ This ensures tests never leak authentication cookies across threads.`;
       // Verify Sections A through J
       assert.ok(report.candidateOverview, 'Section A: Candidate Overview');
       assert.ok(report.interviewSummary, 'Section B: Interview Summary');
-      assert.ok(report.questionsAsked && report.questionsAsked.length >= 2, 'Section C: Questions Asked');
-      assert.ok(report.questionWiseEvaluation && report.questionWiseEvaluation.length >= 2, 'Section D: Question-wise Evaluation');
+      assert.ok(
+        report.questionsAsked && report.questionsAsked.length >= 2,
+        'Section C: Questions Asked'
+      );
+      assert.ok(
+        report.questionWiseEvaluation && report.questionWiseEvaluation.length >= 2,
+        'Section D: Question-wise Evaluation'
+      );
       assert.ok(report.technicalScoresBreakdown, 'Section E: Technical Scores');
       assert.ok(report.strengths && report.strengths.length > 0, 'Section F: Strengths');
-      assert.ok(report.areasForImprovement, 'Section G/H: Knowledge Gaps & Areas Requiring Improvement');
-      assert.ok(report.actionableDrills || report.learningRoadmap, 'Section I: Recommended Learning Topics');
-      assert.ok(report.overallAssessment && report.overallAssessment.rating, 'Section J: Overall Assessment (Rating)');
+      assert.ok(
+        report.areasForImprovement,
+        'Section G/H: Knowledge Gaps & Areas Requiring Improvement'
+      );
+      assert.ok(
+        report.actionableDrills || report.learningRoadmap,
+        'Section I: Recommended Learning Topics'
+      );
+      assert.ok(
+        report.overallAssessment && report.overallAssessment.rating,
+        'Section J: Overall Assessment (Rating)'
+      );
     });
   });
 
@@ -399,19 +492,34 @@ This ensures tests never leak authentication cookies across threads.`;
 
     it('2. Structured Output: Verifies export capabilities (Markdown & Excel helpers)', () => {
       const excel = jiti('../src/lib/excel-export.ts');
-      assert.ok(typeof excel.exportRequirementsToExcel === 'function', 'Excel requirement exporter available');
-      assert.ok(typeof excel.exportTestMatrixToExcel === 'function', 'Excel test matrix exporter available');
+      assert.ok(
+        typeof excel.exportRequirementsToExcel === 'function',
+        'Excel requirement exporter available'
+      );
+      assert.ok(
+        typeof excel.exportTestMatrixToExcel === 'function',
+        'Excel test matrix exporter available'
+      );
     });
 
     it('3. Source Traceability: Ensures all agents preserve source traceability IDs', () => {
       assert.ok(generatedRequirements.includes('REQ-001'), 'Agent 1 produces REQ IDs');
-      assert.ok(generatedTestCases.includes('REQ-001') && generatedTestCases.includes('TC-001'), 'Agent 2 preserves REQ IDs and outputs TC IDs');
+      assert.ok(
+        generatedTestCases.includes('REQ-001') && generatedTestCases.includes('TC-001'),
+        'Agent 2 preserves REQ IDs and outputs TC IDs'
+      );
       assert.ok(generatedAutomationCode.includes('TC-001'), 'Agent 3 maps TC IDs into code');
     });
 
     it('4. Feedback & Quality Evaluation: Evaluates response quality and actionable next steps', () => {
-      assert.ok(generatedRequirements.includes('Requirement Traceability Matrix'), 'Requirements include audit matrix');
-      assert.ok(generatedTestCases.includes('Risk and Priority Matrix'), 'Test cases include priority matrix');
+      assert.ok(
+        generatedRequirements.includes('Requirement Traceability Matrix'),
+        'Requirements include audit matrix'
+      );
+      assert.ok(
+        generatedTestCases.includes('Risk and Priority Matrix'),
+        'Test cases include priority matrix'
+      );
     });
   });
 });

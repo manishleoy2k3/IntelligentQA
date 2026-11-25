@@ -9,11 +9,7 @@ export const metadata: Metadata = {
     'Transform from Manual QA to high-demand SDET & AI Test Automation Architect. Master Playwright, TypeScript, Selenium, Java, REST Assured, and Testing AI Applications with live in-browser sandboxes.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

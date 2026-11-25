@@ -11,21 +11,24 @@ export function markdownToTiptapHtml(markdown: string): string {
   // 1. Process fenced code blocks with language: ```typescript ... ```
   html = html.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (_match, lang, code) => {
     const cleanLang = lang?.trim() || 'typescript';
-    const escapedCode = code
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return `<pre><code class="language-${cleanLang}">${escapedCode}</code></pre>`;
   });
 
   // 2. Process callout quotes (GitHub style > [!TIP], > [!NOTE], > [!WARNING], > [!IMPORTANT], > [!BEST-PRACTICE])
-  html = html.replace(/^>\s*\[!(NOTE|INFO|TIP|WARNING|IMPORTANT|CAUTION|BEST-PRACTICE)\]\s*\n((?:>.*(?:\n|$))*)/gim, (_match, type, content) => {
-    const cleanType = type.toLowerCase() === 'note' ? 'info' : 
-                      type.toLowerCase() === 'caution' ? 'warning' :
-                      type.toLowerCase();
-    const cleanContent = content.replace(/^>\s?/gm, '').trim();
-    return `<div data-type="callout" data-callout-type="${cleanType}"><p>${cleanContent}</p></div>`;
-  });
+  html = html.replace(
+    /^>\s*\[!(NOTE|INFO|TIP|WARNING|IMPORTANT|CAUTION|BEST-PRACTICE)\]\s*\n((?:>.*(?:\n|$))*)/gim,
+    (_match, type, content) => {
+      const cleanType =
+        type.toLowerCase() === 'note'
+          ? 'info'
+          : type.toLowerCase() === 'caution'
+            ? 'warning'
+            : type.toLowerCase();
+      const cleanContent = content.replace(/^>\s?/gm, '').trim();
+      return `<div data-type="callout" data-callout-type="${cleanType}"><p>${cleanContent}</p></div>`;
+    }
+  );
 
   // 3. Process headings: ####, ###, ##, #
   html = html.replace(/^#### (.*?)$/gm, '<h4>$1</h4>');
@@ -63,7 +66,10 @@ export function markdownToTiptapHtml(markdown: string): string {
 
   // 8. Process Markdown tables
   html = html.replace(/(?:^\|.*\|\n?)+/gm, (tableMatch) => {
-    const lines = tableMatch.trim().split('\n').filter(l => l.trim().length > 0);
+    const lines = tableMatch
+      .trim()
+      .split('\n')
+      .filter((l) => l.trim().length > 0);
     if (lines.length < 2) return tableMatch;
 
     let tableHtml = '<table><tbody>';
@@ -72,9 +78,12 @@ export function markdownToTiptapHtml(markdown: string): string {
       if (line.match(/^\|[\s-:]+\|$/)) return;
       if (line.includes('---')) return;
 
-      const cells = line.split('|').slice(1, -1).map(c => c.trim());
+      const cells = line
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim());
       tableHtml += '<tr>';
-      cells.forEach(cell => {
+      cells.forEach((cell) => {
         const tag = index === 0 ? 'th' : 'td';
         tableHtml += `<${tag}>${cell}</${tag}>`;
       });
@@ -86,13 +95,25 @@ export function markdownToTiptapHtml(markdown: string): string {
 
   // 9. Wrap remaining plain text paragraphs (lines not already wrapped in tags)
   const lines = html.split('\n');
-  const formattedLines = lines.map(line => {
+  const formattedLines = lines.map((line) => {
     const trimmed = line.trim();
     if (!trimmed) return '';
-    if (trimmed.startsWith('<h1') || trimmed.startsWith('<h2') || trimmed.startsWith('<h3') || trimmed.startsWith('<h4') ||
-        trimmed.startsWith('<ul') || trimmed.startsWith('<ol') || trimmed.startsWith('<li') ||
-        trimmed.startsWith('<pre') || trimmed.startsWith('<div') || trimmed.startsWith('<table') ||
-        trimmed.startsWith('</') || trimmed.endsWith('</pre>') || trimmed.endsWith('</div>') || trimmed.endsWith('</table>')) {
+    if (
+      trimmed.startsWith('<h1') ||
+      trimmed.startsWith('<h2') ||
+      trimmed.startsWith('<h3') ||
+      trimmed.startsWith('<h4') ||
+      trimmed.startsWith('<ul') ||
+      trimmed.startsWith('<ol') ||
+      trimmed.startsWith('<li') ||
+      trimmed.startsWith('<pre') ||
+      trimmed.startsWith('<div') ||
+      trimmed.startsWith('<table') ||
+      trimmed.startsWith('</') ||
+      trimmed.endsWith('</pre>') ||
+      trimmed.endsWith('</div>') ||
+      trimmed.endsWith('</table>')
+    ) {
       return line;
     }
     return `<p>${trimmed}</p>`;

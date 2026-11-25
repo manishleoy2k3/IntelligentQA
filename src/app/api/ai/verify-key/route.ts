@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
           valid: true,
           status: 'ACTIVE',
-          message: 'API Key successfully verified with Google AI Studio. AI features are now activated.',
+          message:
+            'API Key successfully verified with Google AI Studio. AI features are now activated.',
           provider: 'google-ai-studio',
         });
       }
@@ -72,7 +73,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
           valid: true,
           status: 'RATE_LIMITED',
-          message: 'Key is authentic, but currently experiencing rate limiting by Google AI Studio.',
+          message:
+            'Key is authentic, but currently experiencing rate limiting by Google AI Studio.',
           provider: 'google-ai-studio',
         });
       }
@@ -81,7 +83,8 @@ export async function POST(req: NextRequest) {
         {
           valid: false,
           code: 'VERIFICATION_FAILED',
-          error: googleErrorMsg || `Google AI Studio verification returned HTTP ${googleRes.status}.`,
+          error:
+            googleErrorMsg || `Google AI Studio verification returned HTTP ${googleRes.status}.`,
         },
         { status: 400 }
       );
@@ -92,7 +95,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         valid: true,
         status: 'FORMAT_VERIFIED_OFFLINE',
-        message: 'Key structure verified (AIzaSy... 39 characters). Live Google ping unreachable in current offline sandbox environment.',
+        message:
+          'Key structure verified (AIzaSy... 39 characters). Live Google ping unreachable in current offline sandbox environment.',
         provider: 'google-ai-studio',
       });
     }

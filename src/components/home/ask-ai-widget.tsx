@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   MessageSquare,
   X,
@@ -22,9 +22,9 @@ import {
   BookOpen,
   Minus,
   ChevronUp,
-} from "lucide-react";
-import { QADatabase } from "@/lib/qa-db";
-import GeminiKeyModal from "@/components/auth/gemini-key-modal";
+} from 'lucide-react';
+import { QADatabase } from '@/lib/qa-db';
+import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 
 const GUEST_MAX_QUESTIONS = 3;
 
@@ -33,36 +33,34 @@ export default function AskAIWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [showKeyModal, setShowKeyModal] = useState(false);
-  const [activeApiKey, setActiveApiKey] = useState("");
+  const [activeApiKey, setActiveApiKey] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [guestCount, setGuestCount] = useState<number>(0);
-  const [aiPref, setAiPref] = useState<"enabled" | "opted_out" | "unset">(
-    "unset",
-  );
+  const [aiPref, setAiPref] = useState<'enabled' | 'opted_out' | 'unset'>('unset');
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<
     {
-      role: "user" | "assistant";
+      role: 'user' | 'assistant';
       text: string;
       engine?: string;
       isLiveAI?: boolean;
     }[]
   >([
     {
-      role: "assistant",
-      text: "Hello! I am your AI Coding Coach. Ask me any coding query, debugging question, or concept in Python, JavaScript, TypeScript, Java, or C#!",
+      role: 'assistant',
+      text: 'Hello! I am your AI Coding Coach. Ask me any coding query, debugging question, or concept in Python, JavaScript, TypeScript, Java, or C#!',
     },
   ]);
 
   // Adjust textarea height dynamically up to 140px
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = 'auto';
       const newHeight = Math.min(Math.max(textareaRef.current.scrollHeight, 42), 140);
       textareaRef.current.style.height = `${newHeight}px`;
     }
@@ -71,13 +69,13 @@ export default function AskAIWidget() {
   // Scroll to bottom when messages update and chat is visible
   useEffect(() => {
     if (isOpen && !isMinimized) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, loading, isOpen, isMinimized]);
 
   // Sync auth and key state
   const syncState = useCallback(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const user = QADatabase.getCurrentUser();
       setCurrentUser(user);
       const key = QADatabase.getUserGeminiKey(user?.id);
@@ -100,34 +98,25 @@ export default function AskAIWidget() {
       setIsMinimized(false);
     };
 
-    window.addEventListener("intelligentqa_auth_changed", handleAuthChange);
-    window.addEventListener("intelligentqa_key_changed", handleKeyChange);
-    window.addEventListener(
-      "intelligentqa_ai_pref_changed",
-      handleAiPrefChange,
-    );
-    window.addEventListener("intelligentqa_open_ask_ai", handleOpenAskAI);
-    window.addEventListener("intelligentqa_open_ai_coding_coach", handleOpenAskAI);
+    window.addEventListener('intelligentqa_auth_changed', handleAuthChange);
+    window.addEventListener('intelligentqa_key_changed', handleKeyChange);
+    window.addEventListener('intelligentqa_ai_pref_changed', handleAiPrefChange);
+    window.addEventListener('intelligentqa_open_ask_ai', handleOpenAskAI);
+    window.addEventListener('intelligentqa_open_ai_coding_coach', handleOpenAskAI);
 
     return () => {
-      window.removeEventListener(
-        "intelligentqa_auth_changed",
-        handleAuthChange,
-      );
-      window.removeEventListener("intelligentqa_key_changed", handleKeyChange);
-      window.removeEventListener(
-        "intelligentqa_ai_pref_changed",
-        handleAiPrefChange,
-      );
-      window.removeEventListener("intelligentqa_open_ask_ai", handleOpenAskAI);
-      window.removeEventListener("intelligentqa_open_ai_coding_coach", handleOpenAskAI);
+      window.removeEventListener('intelligentqa_auth_changed', handleAuthChange);
+      window.removeEventListener('intelligentqa_key_changed', handleKeyChange);
+      window.removeEventListener('intelligentqa_ai_pref_changed', handleAiPrefChange);
+      window.removeEventListener('intelligentqa_open_ask_ai', handleOpenAskAI);
+      window.removeEventListener('intelligentqa_open_ai_coding_coach', handleOpenAskAI);
     };
   }, [syncState]);
 
   // Strict Privacy Shield: Exclude chatbot on authentication pages
   // Note: single quotes preserved for test assertions
   const excludedPaths = ['/login', '/signup', '/recovery', '/reset-password'];
-  if (excludedPaths.includes(pathname || "")) {
+  if (excludedPaths.includes(pathname || '')) {
     return null;
   }
 
@@ -148,11 +137,11 @@ export default function AskAIWidget() {
       return;
     }
 
-    setMessages((prev) => [...prev, { role: "user", text: textToSend }]);
+    setMessages((prev) => [...prev, { role: 'user', text: textToSend }]);
     if (!userText) {
-      setQuery("");
+      setQuery('');
       if (textareaRef.current) {
-        textareaRef.current.style.height = "42px";
+        textareaRef.current.style.height = '42px';
       }
     }
     setLoading(true);
@@ -165,10 +154,10 @@ export default function AskAIWidget() {
 
     try {
       const headers: Record<string, string> = {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       };
       if (activeApiKey) {
-        headers["x-gemini-api-key"] = activeApiKey;
+        headers['x-gemini-api-key'] = activeApiKey;
       }
 
       // Preserve full multi-turn conversational context for continuity
@@ -180,8 +169,8 @@ export default function AskAIWidget() {
         }))
         .slice(-10);
 
-      const res = await fetch("/api/ai/qa-chat", {
-        method: "POST",
+      const res = await fetch('/api/ai/qa-chat', {
+        method: 'POST',
         headers,
         body: JSON.stringify({
           message: textToSend,
@@ -194,8 +183,8 @@ export default function AskAIWidget() {
       setMessages((prev) => [
         ...prev,
         {
-          role: "assistant",
-          text: data.reply || "Here is the guidance you requested.",
+          role: 'assistant',
+          text: data.reply || 'Here is the guidance you requested.',
           engine: data.engine,
           isLiveAI: data.isLiveAI,
         },
@@ -204,8 +193,8 @@ export default function AskAIWidget() {
       setMessages((prev) => [
         ...prev,
         {
-          role: "assistant",
-          text: "I am ready to help you with any programming, debugging, or SDET practice. Please feel free to rephrase or verify your connection.",
+          role: 'assistant',
+          text: 'I am ready to help you with any programming, debugging, or SDET practice. Please feel free to rephrase or verify your connection.',
         },
       ]);
     } finally {
@@ -234,7 +223,7 @@ export default function AskAIWidget() {
                   AI Coding Coach
                 </span>
                 <span className="text-[10px] bg-[#81FF89]/15 text-[#81FF89] px-1.5 py-0.2 rounded-full font-semibold">
-                  {messages.filter((m) => m.role === "user").length} queries
+                  {messages.filter((m) => m.role === 'user').length} queries
                 </span>
               </div>
               <p className="text-[10px] text-[#A1A1AA] flex items-center gap-1">
@@ -284,8 +273,7 @@ export default function AskAIWidget() {
                     </span>
                   ) : (
                     <span className="text-[10px] font-semibold bg-[#80FFF9]/15 text-[#80FFF9] px-2 py-0.5 rounded-full">
-                      Free Preview (
-                      {Math.max(0, GUEST_MAX_QUESTIONS - guestCount)} left)
+                      Free Preview ({Math.max(0, GUEST_MAX_QUESTIONS - guestCount)} left)
                     </span>
                   )}
                 </h4>
@@ -322,18 +310,18 @@ export default function AskAIWidget() {
             {messages.map((m, idx) => (
               <div
                 key={idx}
-                className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {m.role === "assistant" && (
+                {m.role === 'assistant' && (
                   <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#81FF89] to-[#80FFF9] text-black flex items-center justify-center shrink-0 text-[10px] font-black mt-1 shadow-sm">
                     QA
                   </div>
                 )}
                 <div
                   className={`p-3.5 rounded-2xl text-xs leading-relaxed max-w-[88%] whitespace-pre-wrap ${
-                    m.role === "user"
-                      ? "bg-white text-black font-medium rounded-br-none shadow-sm"
-                      : "bg-[#1E1E1E] text-white rounded-bl-none border border-[#262626]"
+                    m.role === 'user'
+                      ? 'bg-white text-black font-medium rounded-br-none shadow-sm'
+                      : 'bg-[#1E1E1E] text-white rounded-bl-none border border-[#262626]'
                   }`}
                 >
                   {m.text}
@@ -341,9 +329,7 @@ export default function AskAIWidget() {
                     <div className="mt-1.5 pt-1.5 border-t border-[#262626] text-[10px] text-[#A1A1AA] flex items-center justify-between">
                       <span>via {m.engine}</span>
                       {m.isLiveAI && (
-                        <span className="text-[#81FF89] font-semibold">
-                          ● Live Gemini
-                        </span>
+                        <span className="text-[#81FF89] font-semibold">● Live Gemini</span>
                       )}
                     </div>
                   )}
@@ -372,9 +358,8 @@ export default function AskAIWidget() {
                     You have used your 3 free guest questions!
                   </h5>
                   <p className="text-[11px] text-[#D4D4D8] mt-0.5 leading-relaxed">
-                    Create a <strong>100% Free Account</strong> to continue
-                    asking unlimited SDET questions, access all courses,
-                    interactive sandboxes, and progress tracking.
+                    Create a <strong>100% Free Account</strong> to continue asking unlimited SDET
+                    questions, access all courses, interactive sandboxes, and progress tracking.
                   </p>
                 </div>
               </div>
@@ -412,7 +397,8 @@ export default function AskAIWidget() {
                   <span>AI Mentor Disabled · Gemini Key Required</span>
                 </div>
                 <p className="text-[11px] text-[#A1A1AA] leading-relaxed">
-                  "To protect shared quota and prevent server token burn, please configure your personal free Gemini API key to activate AI chat."
+                  "To protect shared quota and prevent server token burn, please configure your
+                  personal free Gemini API key to activate AI chat."
                 </p>
                 <button
                   type="button"
@@ -430,7 +416,7 @@ export default function AskAIWidget() {
                   rows={1}
                   placeholder="Gemini Key required in navigation to chat..."
                   className="flex-1 px-4 py-2.5 bg-[#0F0F0F] border border-[#262626] rounded-2xl text-xs text-[#71717A] cursor-not-allowed resize-none"
-                  style={{ minHeight: "42px", height: "42px" }}
+                  style={{ minHeight: '42px', height: '42px' }}
                 />
                 <button
                   disabled
@@ -452,7 +438,7 @@ export default function AskAIWidget() {
                     adjustTextareaHeight();
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
                       handleSend();
                     }
@@ -460,10 +446,10 @@ export default function AskAIWidget() {
                   placeholder={
                     !currentUser
                       ? `Ask anything (${GUEST_MAX_QUESTIONS - guestCount} guest questions left)... (Shift+Enter for newline)`
-                      : "Ask your AI Coding Coach anything... (Shift+Enter for newline)"
+                      : 'Ask your AI Coding Coach anything... (Shift+Enter for newline)'
                   }
                   className="flex-1 px-4 py-2.5 bg-[#0F0F0F] border border-[#2B2B2B] rounded-2xl text-xs text-white placeholder-[#71717A] focus:outline-none focus:border-[#81FF89] resize-none overflow-y-auto max-h-[140px] leading-relaxed transition-all"
-                  style={{ minHeight: "42px", height: "42px" }}
+                  style={{ minHeight: '42px', height: '42px' }}
                 />
                 <button
                   onClick={() => handleSend()}
@@ -479,13 +465,9 @@ export default function AskAIWidget() {
               {!currentUser && (
                 <div className="flex items-center justify-between text-[11px] text-[#A1A1AA] px-1">
                   <span>
-                    Guest Preview: {guestCount}/{GUEST_MAX_QUESTIONS} questions
-                    used
+                    Guest Preview: {guestCount}/{GUEST_MAX_QUESTIONS} questions used
                   </span>
-                  <Link
-                    href="/signup"
-                    className="text-[#81FF89] font-semibold hover:underline"
-                  >
+                  <Link href="/signup" className="text-[#81FF89] font-semibold hover:underline">
                     Sign up for unlimited free chat →
                   </Link>
                 </div>

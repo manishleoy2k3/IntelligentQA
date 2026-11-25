@@ -36,7 +36,10 @@ export interface ConceptGuide {
   highestMatchTitle?: string;
 }
 
-export const TRACK_META: Record<string, { id: string; name: string; tag: string; color: string; badgeClass: string }> = {
+export const TRACK_META: Record<
+  string,
+  { id: string; name: string; tag: string; color: string; badgeClass: string }
+> = {
   selenium: {
     id: 'selenium',
     name: 'Selenium',
@@ -105,7 +108,8 @@ export const DEFAULT_CONCEPT_GUIDES: ConceptGuide[] = [
     title: 'Selenium WebDriver Architecture & Complete Framework Setup from Scratch',
     category: 'Foundations & Setup',
     level: 'Beginner',
-    summary: 'Understand why WebDriver is required under the W3C protocol and build a complete enterprise Maven + TestNG framework from scratch.',
+    summary:
+      'Understand why WebDriver is required under the W3C protocol and build a complete enterprise Maven + TestNG framework from scratch.',
     overview: `Manual testers often ask: "Why can't Java just click buttons in Chrome directly?"
 Browsers run in isolated OS sandboxes for user security. An external program cannot reach into Chrome's memory to click elements.
 
@@ -211,7 +215,8 @@ public class DriverFactory {
       'Hardcoding System.setProperty("webdriver.chrome.driver", "C:/chromedriver.exe") which breaks on different machines/CI.',
       'Instantiating ChromeDriver directly inside test methods instead of using a centralized Factory pattern.',
     ],
-    interviewTips: 'Test Architects love asking: "Explain what happens under the hood when you run WebDriver driver = new ChromeDriver()?" Explain the W3C HTTP session creation, port binding, and binary handshake.',
+    interviewTips:
+      'Test Architects love asking: "Explain what happens under the hood when you run WebDriver driver = new ChromeDriver()?" Explain the W3C HTTP session creation, port binding, and binary handshake.',
   },
   {
     id: 'sel-dynamic-waits',
@@ -219,7 +224,8 @@ public class DriverFactory {
     title: 'Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep',
     category: 'Synchronization & Waits',
     level: 'Intermediate',
-    summary: 'Master dynamic synchronization to eliminate flaky tests, understand polling intervals, and replace brittle sleep calls.',
+    summary:
+      'Master dynamic synchronization to eliminate flaky tests, understand polling intervals, and replace brittle sleep calls.',
     overview: `Synchronization is the #1 cause of flaky automation tests in enterprise CI/CD pipelines.
 
 Modern web applications use asynchronous AJAX calls, React state hydration, and animations where elements exist in the DOM but cannot receive click actions yet. Using Thread.sleep() freezes the JVM thread unconditionally, dramatically slowing down suites.
@@ -266,7 +272,8 @@ submit_btn.click()`,
       'Setting a global implicit wait of 30 seconds and using Thread.sleep(5000) for animations.',
       'Catching TimeoutException silently and continuing test execution without assertion.',
     ],
-    interviewTips: 'In interviews, emphasize why mixing Implicit and Explicit waits is undefined behavior in WebDriver specifications, and explain how FluentWait customizes polling intervals.',
+    interviewTips:
+      'In interviews, emphasize why mixing Implicit and Explicit waits is undefined behavior in WebDriver specifications, and explain how FluentWait customizes polling intervals.',
   },
   {
     id: 'sel-threadlocal-driver',
@@ -274,7 +281,8 @@ submit_btn.click()`,
     title: 'ThreadLocal WebDriver for Parallel Test Execution',
     category: 'Framework Architecture',
     level: 'Advanced',
-    summary: 'Design thread-safe WebDriver architectures for multi-threaded parallel execution in TestNG and CI/CD pipelines.',
+    summary:
+      'Design thread-safe WebDriver architectures for multi-threaded parallel execution in TestNG and CI/CD pipelines.',
     overview: `When executing tests in parallel using TestNG (parallel="methods" or parallel="classes"), sharing a single static WebDriver instance results in race conditions, session collisions, and tests failing unpredictably.
 
 ThreadLocal<WebDriver> isolates each browser instance to its own dedicated worker thread, allowing 10+ parallel tests on a multi-core machine or grid node without cross-test state leakage.`,
@@ -326,7 +334,8 @@ public abstract class BaseTest {
       'Using public static WebDriver driver; across base classes in parallel suites.',
       'Forgetting to invoke remove(), causing zombie browser sessions on CI runners.',
     ],
-    interviewTips: 'Test architects always ask: "How do you handle parallel execution without collision?" Answer with ThreadLocal<WebDriver>, DriverFactory, and cleanup in TestNG listeners.',
+    interviewTips:
+      'Test architects always ask: "How do you handle parallel execution without collision?" Answer with ThreadLocal<WebDriver>, DriverFactory, and cleanup in TestNG listeners.',
   },
   {
     id: 'sel-pom-pattern',
@@ -334,7 +343,8 @@ public abstract class BaseTest {
     title: 'Page Object Model (POM) & Component Architecture',
     category: 'Design Patterns',
     level: 'Intermediate',
-    summary: 'Build scalable, maintainable test architectures by cleanly decoupling page locators and user actions from assertions.',
+    summary:
+      'Build scalable, maintainable test architectures by cleanly decoupling page locators and user actions from assertions.',
     overview: `Page Object Model (POM) is the industry-standard design pattern for test automation. Each web page is represented as a Java/Python class, encapsulating web elements (locators) and business actions (methods) while hiding WebDriver implementation details from test scripts.
 
 This drastically reduces maintenance costs: when a developer alters a button ID or DOM structure, changes are made in only one place (the Page class), without modifying 50 test cases.`,
@@ -373,7 +383,8 @@ This drastically reduces maintenance costs: when a developer alters a button ID 
     antiPatterns: [
       'Overusing PageFactory @FindBy in modern Selenium (can cause StaleElementReferenceException during dynamic DOM rerenders).',
     ],
-    interviewTips: 'Explain how returning next Page Objects creates a Fluent API and why assertions belong strictly in test classes.',
+    interviewTips:
+      'Explain how returning next Page Objects creates a Fluent API and why assertions belong strictly in test classes.',
   },
   {
     id: 'sel-listeners-reports-cicd',
@@ -381,7 +392,8 @@ This drastically reduces maintenance costs: when a developer alters a button ID 
     title: 'TestNG Listeners & Extent / Allure Reports with Automated Failure Screenshots',
     category: 'Enterprise Observability & CI/CD',
     level: 'Advanced',
-    summary: 'Intercept test outcomes via TestNG ITestListener, capture automatic failure screenshots, and publish visual Allure reports in CI/CD.',
+    summary:
+      'Intercept test outcomes via TestNG ITestListener, capture automatic failure screenshots, and publish visual Allure reports in CI/CD.',
     overview: `Manual testers take screenshots manually whenever a test fails. In unattended CI/CD runs (GitHub Actions, Jenkins), if a test fails and leaves no visual evidence, debugging requires hours of guessing.
 
 TestNG Listeners implement the Observer pattern: they listen for lifecycle events (onTestStart, onTestSuccess, onTestFailure, onTestSkipped). When onTestFailure fires, the listener automatically grabs the active ThreadLocal WebDriver, captures a timestamped screenshot, and embeds it directly into the Allure or Extent report.`,
@@ -442,7 +454,8 @@ public class TestListener implements ITestListener {
       'Writing try-catch blocks with screenshot logic inside test methods.',
       'Taking screenshots on successful tests, filling CI runner disk storage unnecessarily.',
     ],
-    interviewTips: 'Explain the difference between ITestListener, IAnnotationTransformer (dynamic retry), and ISuiteListener in TestNG architecture.',
+    interviewTips:
+      'Explain the difference between ITestListener, IAnnotationTransformer (dynamic retry), and ISuiteListener in TestNG architecture.',
   },
 
   // ==========================================
@@ -454,7 +467,8 @@ public class TestListener implements ITestListener {
     title: 'Playwright Framework Architecture & Setup from Scratch',
     category: 'Foundations & Architecture',
     level: 'Beginner',
-    summary: 'Why Browser vs BrowserContext vs Page matters for speed and isolation, and how to build a complete TypeScript automation framework from scratch.',
+    summary:
+      'Why Browser vs BrowserContext vs Page matters for speed and isolation, and how to build a complete TypeScript automation framework from scratch.',
     overview: `Manual testers migrating to Playwright often wonder: "Why does Playwright have Browser, BrowserContext, AND Page instead of just a WebDriver?"
 
 In legacy Selenium, launching a new browser window for every test creates a heavy operating system process that takes 3 to 4 seconds and consumes 300MB+ RAM. If you run 20 tests in parallel, your machine runs out of memory.
@@ -538,7 +552,8 @@ test.describe('Authentication Flow', () => {
       'Using page.waitForTimeout(5000) instead of relying on Playwright built-in auto-waiting.',
       'Launching separate browser.launch() instances inside individual test methods.',
     ],
-    interviewTips: 'Explain the difference between Browser, BrowserContext, and Page, and how BrowserContext achieves 10x faster isolation than Selenium WebDriver restarts.',
+    interviewTips:
+      'Explain the difference between Browser, BrowserContext, and Page, and how BrowserContext achieves 10x faster isolation than Selenium WebDriver restarts.',
   },
   {
     id: 'pw-browser-context',
@@ -546,7 +561,8 @@ test.describe('Authentication Flow', () => {
     title: 'Browser Context Architecture in Playwright',
     category: 'Architecture & Engine',
     level: 'Beginner',
-    summary: 'Understand how Playwright uses lightweight browser contexts to achieve instant isolation and blazing-fast parallel execution.',
+    summary:
+      'Understand how Playwright uses lightweight browser contexts to achieve instant isolation and blazing-fast parallel execution.',
     overview: `Unlike Selenium where every test must launch a heavy operating system browser process (taking 2-4 seconds per test), Playwright launches a single Browser instance once and creates isolated BrowserContexts for each test.
 
 A BrowserContext operates like an incognito browser window: it has completely separate cookies, localStorage, session storage, and cache, isolated from other contexts at negligible RAM cost (< 20ms startup).`,
@@ -590,7 +606,8 @@ test('Real-time chat between Buyer and Seller', async ({ browser }) => {
       'Reusing the same browser context across multiple tests without clearing state.',
       'Launching multiple browser.launch() processes inside tests instead of using contexts.',
     ],
-    interviewTips: 'Explain the hierarchy: Browser -> BrowserContext -> Page, and emphasize the memory and speed advantages over opening multiple WebDriver instances.',
+    interviewTips:
+      'Explain the hierarchy: Browser -> BrowserContext -> Page, and emphasize the memory and speed advantages over opening multiple WebDriver instances.',
   },
   {
     id: 'pw-fixtures-hierarchy',
@@ -598,7 +615,8 @@ test('Real-time chat between Buyer and Seller', async ({ browser }) => {
     title: 'Test Fixtures vs Worker Fixtures vs Custom Fixtures',
     category: 'Fixtures & DI',
     level: 'Advanced',
-    summary: 'Master Playwright’s dependency injection system, fixture scoping, and custom composable test environments.',
+    summary:
+      'Master Playwright’s dependency injection system, fixture scoping, and custom composable test environments.',
     overview: `Playwright’s fixture system is inspired by Pytest and acts as an advanced dependency injection (DI) engine. Fixtures provide setup and teardown for tests in a modular, reusable fashion.
 
 Fixtures have two primary scopes:
@@ -650,7 +668,8 @@ export const test = base.extend<CustomFixtures>({
       'Storing mutable global state in test-scoped fixtures.',
       'Putting long teardown logic in afterEach when a fixture yield / use cleanly handles cleanup.',
     ],
-    interviewTips: 'Interviewers love to ask: "Why choose custom fixtures over beforeEach hooks?" Mention encapsulation, automatic teardown, lazy evaluation, and parallel safety.',
+    interviewTips:
+      'Interviewers love to ask: "Why choose custom fixtures over beforeEach hooks?" Mention encapsulation, automatic teardown, lazy evaluation, and parallel safety.',
   },
   {
     id: 'pw-api-mocking',
@@ -658,7 +677,8 @@ export const test = base.extend<CustomFixtures>({
     title: 'API Mocking & Network Interception with page.route()',
     category: 'Network & API Mocking',
     level: 'Intermediate',
-    summary: 'Intercept HTTP requests, mock backend responses, and simulate network failures without touching server code.',
+    summary:
+      'Intercept HTTP requests, mock backend responses, and simulate network failures without touching server code.',
     overview: `End-to-end tests frequently break when backend third-party APIs (Stripe payments, SMS OTP, external credit bureaus) are slow or offline.
 
 Playwright’s page.route() allows intercepting outgoing HTTP network traffic and returning mock JSON fixtures, modifying request headers, or simulating HTTP 500 errors and network aborts instantly.`,
@@ -706,7 +726,8 @@ test('Mock third-party payment gateway response', async ({ page }) => {
       'Hardcoding reliance on flaky external sandbox APIs for payment processing.',
       'Forgetting wildcard patterns like **/api/* resulting in unmatched routes.',
     ],
-    interviewTips: 'Explain how network mocking allows testing edge-case errors (e.g. HTTP 429 Rate Limited, 502 Bad Gateway) that are impossible to reliably trigger in live staging.',
+    interviewTips:
+      'Explain how network mocking allows testing edge-case errors (e.g. HTTP 429 Rate Limited, 502 Bad Gateway) that are impossible to reliably trigger in live staging.',
   },
   {
     id: 'pw-storagestate-auth',
@@ -714,7 +735,8 @@ test('Mock third-party payment gateway response', async ({ page }) => {
     title: 'Authentication Reuse with storageState & Global Setup',
     category: 'State Management & Performance',
     level: 'Intermediate',
-    summary: 'Eliminate repetitive UI logins across 100+ tests by authenticating once and caching session tokens/cookies with storageState.',
+    summary:
+      'Eliminate repetitive UI logins across 100+ tests by authenticating once and caching session tokens/cookies with storageState.',
     overview: `Manual testers and junior automation engineers often write login steps into every single test: visit login page, enter email, enter password, submit, and wait for 2FA.
 In an enterprise suite of 250 tests, logging in 250 times wastes 35+ minutes of pipeline run time and frequently triggers account lockout or rate-limiting in test environments.
 
@@ -777,7 +799,8 @@ export default defineConfig({
       'Logging in via UI in a beforeEach hook for every test method.',
       'Checking hardcoded credentials into source control.',
     ],
-    interviewTips: 'Explain how storageState works under the hood (persisting cookies and localStorage) and how project dependencies enforce execution order.',
+    interviewTips:
+      'Explain how storageState works under the hood (persisting cookies and localStorage) and how project dependencies enforce execution order.',
   },
   {
     id: 'pw-sharding-cicd',
@@ -785,7 +808,8 @@ export default defineConfig({
     title: 'Enterprise Test Sharding & GitHub Actions CI/CD Pipeline',
     category: 'Enterprise CI/CD & Scaling',
     level: 'Advanced',
-    summary: 'Distribute 1,000+ tests across parallel cloud runners using Playwright --shard and merge blob reports into a single unified dashboard.',
+    summary:
+      'Distribute 1,000+ tests across parallel cloud runners using Playwright --shard and merge blob reports into a single unified dashboard.',
     overview: `When an automation test suite grows beyond 500 tests, running them on a single CI machine takes 40+ minutes, delaying development feedback loops.
 
 Playwright provides native test sharding: by passing \`--shard=x/y\`, Playwright slices the test suite into equal parts across independent CI runners. For instance, with 4 shards, each runner executes 25% of the suite simultaneously, slashing total pipeline duration from 40 minutes to under 10 minutes.
@@ -853,7 +877,8 @@ jobs:
       'Creating 20+ shards on small test suites (CI VM boot time will exceed actual test run time).',
       'Discarding blob reports on failure, losing trace artifacts needed for root cause analysis.',
     ],
-    interviewTips: 'Explain the difference between worker parallelization (threads on one machine) and test sharding (distributing across multiple separate CI machines).',
+    interviewTips:
+      'Explain the difference between worker parallelization (threads on one machine) and test sharding (distributing across multiple separate CI machines).',
   },
 
   // ==========================================
@@ -865,7 +890,8 @@ jobs:
     title: 'REST Assured Enterprise Framework Architecture from Scratch',
     category: 'Foundations & Architecture',
     level: 'Beginner',
-    summary: 'Transition from manual Postman clicking to code: complete Maven pom.xml, Given-When-Then BDD syntax, and enterprise directory structure.',
+    summary:
+      'Transition from manual Postman clicking to code: complete Maven pom.xml, Given-When-Then BDD syntax, and enterprise directory structure.',
     overview: `Manual testers often rely on Postman GUI to test APIs by manually clicking "Send", verifying JSON tabs, and copying tokens. While Postman is great for exploratory testing, it struggles with enterprise CI/CD automation:
 - Postman collections are stored as bulky JSON files that cause painful Git merge conflicts.
 - Automating complex database verification, message queues (Kafka), or multi-step business logic requires cumbersome JavaScript workarounds.
@@ -997,7 +1023,8 @@ public class UserApiTests {
       'Hardcoding API base URLs inside individual test methods instead of a central configuration file.',
       'Relying on manual Postman runs for pull-request regression gates.',
     ],
-    interviewTips: 'Explain the Given-When-Then BDD DSL in REST Assured and why compiling tests in Maven/Gradle is superior to Newman runner scripts.',
+    interviewTips:
+      'Explain the Given-When-Then BDD DSL in REST Assured and why compiling tests in Maven/Gradle is superior to Newman runner scripts.',
   },
   {
     id: 'api-req-res-spec',
@@ -1005,7 +1032,8 @@ public class UserApiTests {
     title: 'RequestSpecification & ResponseSpecification Architecture',
     category: 'Architecture & DRY',
     level: 'Intermediate',
-    summary: 'Build clean, reusable API automation suites using specifications to eliminate boilerplate header and auth configuration.',
+    summary:
+      'Build clean, reusable API automation suites using specifications to eliminate boilerplate header and auth configuration.',
     overview: `In large-scale API test suites with 500+ endpoints, repeating base URLs, Bearer tokens, Content-Type headers, and status code assertions in every test method creates thousands of lines of duplicate code.
 
 Rest Assured’s RequestSpecBuilder and ResponseSpecBuilder consolidate shared HTTP configurations into reusable templates that can be applied to entire test classes or suites.`,
@@ -1060,7 +1088,8 @@ public class UserApiTests extends ApiBaseTest {
     antiPatterns: [
       'Copy-pasting given().header("Auth", token).contentType("application/json") in every single @Test method.',
     ],
-    interviewTips: 'Explain how ResponseSpecBuilder enforces uniform SLAs across microservices, such as guaranteeing all API responses complete under 2000ms.',
+    interviewTips:
+      'Explain how ResponseSpecBuilder enforces uniform SLAs across microservices, such as guaranteeing all API responses complete under 2000ms.',
   },
   {
     id: 'api-json-schema',
@@ -1068,7 +1097,8 @@ public class UserApiTests extends ApiBaseTest {
     title: 'JSON Schema Validation & Contract Testing',
     category: 'Contract Validation',
     level: 'Intermediate',
-    summary: 'Verify API response payloads against strict JSON schema definitions to catch breaking contract regressions before clients fail.',
+    summary:
+      'Verify API response payloads against strict JSON schema definitions to catch breaking contract regressions before clients fail.',
     overview: `Validating specific fields (like body("id", equalTo(1))) only checks values, not contract integrity. If a backend developer changes a field from an Integer to a String or removes a required array, simple field assertions might pass while client apps crash.
 
 JSON Schema Validation checks the entire response payload against a predefined Draft v7/v12 JSON Schema definition, validating field types, mandatory properties, and allowed values in one assertion.`,
@@ -1117,7 +1147,8 @@ public void verifyUserPayloadContract() {
     antiPatterns: [
       'Writing 40 individual body() assertions to test data types instead of using JSON Schema.',
     ],
-    interviewTips: 'Emphasize that JSON Schema validation is true contract testing that catches subtle breaking API changes before mobile or web frontend teams are impacted.',
+    interviewTips:
+      'Emphasize that JSON Schema validation is true contract testing that catches subtle breaking API changes before mobile or web frontend teams are impacted.',
   },
   {
     id: 'api-pojo-jackson',
@@ -1125,7 +1156,8 @@ public void verifyUserPayloadContract() {
     title: 'POJO Serialization & Deserialization with Jackson & Java Records',
     category: 'Payload & Data Modeling',
     level: 'Intermediate',
-    summary: 'Replace brittle JSON string concatenation with type-safe Jackson POJOs and Java Records for resilient API automation.',
+    summary:
+      'Replace brittle JSON string concatenation with type-safe Jackson POJOs and Java Records for resilient API automation.',
     overview: `Manual testers starting automation often build JSON payloads using raw String concatenation:
 \`String payload = "{\\"username\\": \\"" + user + "\\", \\"age\\": " + age + "}";\`
 
@@ -1212,7 +1244,8 @@ public class UserPojoTests {
       'Using manual string concatenation to construct JSON payloads.',
       'Relying on fragile HashMap<String, Object> structures that lack compile-time field validation.',
     ],
-    interviewTips: 'Explain the difference between Jackson ObjectMapper serialization and deserialization, and why @JsonIgnoreProperties is crucial for API backward compatibility.',
+    interviewTips:
+      'Explain the difference between Jackson ObjectMapper serialization and deserialization, and why @JsonIgnoreProperties is crucial for API backward compatibility.',
   },
   {
     id: 'api-allure-cicd',
@@ -1220,7 +1253,8 @@ public class UserPojoTests {
     title: 'Allure Reporting & TestNG Listeners for REST Assured CI/CD',
     category: 'Enterprise Observability & CI/CD',
     level: 'Advanced',
-    summary: 'Intercept every HTTP request/response with AllureRestAssured filter to capture full payloads and headers in CI/CD test reports.',
+    summary:
+      'Intercept every HTTP request/response with AllureRestAssured filter to capture full payloads and headers in CI/CD test reports.',
     overview: `When an API test fails in an unattended CI/CD pipeline (e.g. Jenkins, GitHub Actions) with a generic error like:
 \`java.lang.AssertionError: 1 expectation failed. Expected status code <200> but was <500>.\`
 Without seeing the exact HTTP request URL, query parameters, authorization headers, and backend response body, engineers waste hours trying to reproduce the failure.
@@ -1298,7 +1332,8 @@ jobs:
       'Manually adding System.out.println() for request and response bodies in test methods.',
       'Discarding report artifacts when builds fail in CI/CD.',
     ],
-    interviewTips: 'Explain how TestNG Listeners and REST Assured Filters work together to give 100% transparency into HTTP transactions during unattended CI/CD test runs.',
+    interviewTips:
+      'Explain how TestNG Listeners and REST Assured Filters work together to give 100% transparency into HTTP transactions during unattended CI/CD test runs.',
   },
 
   // ==========================================
@@ -1310,7 +1345,8 @@ jobs:
     title: 'Prompt Engineering for Test Scenario Generation',
     category: 'LLM & Prompts',
     level: 'Beginner',
-    summary: 'Craft structured, deterministic prompts with JSON schemas to generate exhaustive positive, negative, and edge-case test suites.',
+    summary:
+      'Craft structured, deterministic prompts with JSON schemas to generate exhaustive positive, negative, and edge-case test suites.',
     overview: `Generative AI tools (Gemini, Claude, GPT-4) can produce thorough QA test scenarios in seconds when guided with structured prompt techniques.
 
 Ad-hoc casual prompts like "write tests for login" produce shallow, repetitive tests. Professional SDET prompt engineering uses Role-Prompting, Few-Shot examples, and Strict JSON Schema enforcement to output production-grade test cases.`,
@@ -1349,7 +1385,8 @@ Ad-hoc casual prompts like "write tests for login" produce shallow, repetitive t
       'Trusting LLM output without human validation.',
       'Using open-ended prose prompts that require manual reformatting.',
     ],
-    interviewTips: 'Discuss how you combine prompt engineering with autonomous validation agents to continuously verify generated requirements against live systems.',
+    interviewTips:
+      'Discuss how you combine prompt engineering with autonomous validation agents to continuously verify generated requirements against live systems.',
   },
   {
     id: 'ai-self-healing-locators',
@@ -1357,7 +1394,8 @@ Ad-hoc casual prompts like "write tests for login" produce shallow, repetitive t
     title: 'Self-Healing Locator Architecture & AST DOM Recovery',
     category: 'Autonomous Agents & AI',
     level: 'Advanced',
-    summary: 'How AI algorithms compute multi-attribute DOM fingerprints to heal broken locators in real-time without failing CI builds.',
+    summary:
+      'How AI algorithms compute multi-attribute DOM fingerprints to heal broken locators in real-time without failing CI builds.',
     overview: `In agile software development, frontend engineers frequently modify button IDs, CSS classes, or DOM hierarchy during rapid UI redesigns. In traditional automation, a renamed class instantly causes NoSuchElementException or TimeoutError, halting entire CI/CD test runs.
 
 Self-healing test automation resolves this:
@@ -1415,7 +1453,8 @@ export function computeElementSimilarity(
       'Relying on brittle absolute XPaths like /html/body/div[2]/div/div[3]/button.',
       'Allowing self-healing to click wrong elements when confidence falls below 80%.',
     ],
-    interviewTips: 'Explain the difference between heuristic fallback locators and ML-driven AST semantic healing in modern SDET frameworks.',
+    interviewTips:
+      'Explain the difference between heuristic fallback locators and ML-driven AST semantic healing in modern SDET frameworks.',
   },
   {
     id: 'ai-synthetic-test-data',
@@ -1423,7 +1462,8 @@ export function computeElementSimilarity(
     title: 'Autonomous Synthetic Test Data Generation & Edge Case Coverage',
     category: 'Test Data Management',
     level: 'Intermediate',
-    summary: 'Generate production-realistic, GDPR-compliant synthetic test data with complex relational constraints using LLMs.',
+    summary:
+      'Generate production-realistic, GDPR-compliant synthetic test data with complex relational constraints using LLMs.',
     overview: `Test automation frequently breaks or produces false positives due to corrupted, stale, or shared test data. Using production data backups violates privacy regulations (GDPR, HIPAA, CCPA) and risks data leaks.
 
 AI-driven synthetic data generation creates realistic datasets that adhere to strict relational schemas, edge cases (boundary values, special Unicode characters, extreme date formats), and business validation rules with zero real customer PII.`,
@@ -1468,7 +1508,8 @@ export function generateSyntheticUser(overrides: Partial<UserRegistration> = {})
       'Reusing the exact same test account across multiple parallel threads.',
       'Copying unmasked production customer databases into development or staging environments.',
     ],
-    interviewTips: 'Discuss the risks of test data pollution in parallel automation suites and how automated data teardown or synthetic generation resolves it.',
+    interviewTips:
+      'Discuss the risks of test data pollution in parallel automation suites and how automated data teardown or synthetic generation resolves it.',
   },
 ];
 
@@ -1478,8 +1519,15 @@ export const STAGED_STORAGE_KEY_PREFIX = 'intelligentqa_staged_guides_';
 export function getStagedGuides(trackId?: string): ConceptGuide[] {
   if (typeof window === 'undefined') return [];
   try {
-    const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
-    const key = normTrack ? `${STAGED_STORAGE_KEY_PREFIX}${normTrack}` : `${STAGED_STORAGE_KEY_PREFIX}selenium`;
+    const normTrack =
+      trackId === 'selenium-java'
+        ? 'selenium'
+        : trackId === 'playwright-ts'
+          ? 'playwright'
+          : trackId;
+    const key = normTrack
+      ? `${STAGED_STORAGE_KEY_PREFIX}${normTrack}`
+      : `${STAGED_STORAGE_KEY_PREFIX}selenium`;
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
   } catch (e) {
@@ -1489,33 +1537,45 @@ export function getStagedGuides(trackId?: string): ConceptGuide[] {
 
 export function saveStagedGuide(guide: ConceptGuide): ConceptGuide {
   if (typeof window === 'undefined') return guide;
-  const normTrack = guide.trackId === 'selenium-java' ? 'selenium' : guide.trackId === 'playwright-ts' ? 'playwright' : guide.trackId;
+  const normTrack =
+    guide.trackId === 'selenium-java'
+      ? 'selenium'
+      : guide.trackId === 'playwright-ts'
+        ? 'playwright'
+        : guide.trackId;
   const existing = getStagedGuides(normTrack);
-  const updated = [guide, ...existing.filter(g => g.id !== guide.id)];
+  const updated = [guide, ...existing.filter((g) => g.id !== guide.id)];
   localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
   return guide;
 }
 
 export function updateStagedGuide(guide: ConceptGuide): ConceptGuide {
   if (typeof window === 'undefined') return guide;
-  const normTrack = guide.trackId === 'selenium-java' ? 'selenium' : guide.trackId === 'playwright-ts' ? 'playwright' : guide.trackId;
+  const normTrack =
+    guide.trackId === 'selenium-java'
+      ? 'selenium'
+      : guide.trackId === 'playwright-ts'
+        ? 'playwright'
+        : guide.trackId;
   const existing = getStagedGuides(normTrack);
-  const updated = existing.map(g => (g.id === guide.id ? guide : g));
+  const updated = existing.map((g) => (g.id === guide.id ? guide : g));
   localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
   return guide;
 }
 
 export function deleteStagedGuide(id: string, trackId?: string): void {
   if (typeof window === 'undefined') return;
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const existing = getStagedGuides(normTrack);
-  const updated = existing.filter(g => g.id !== id);
+  const updated = existing.filter((g) => g.id !== id);
   localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
 }
 
 export function clearStagedGuides(trackId?: string): void {
   if (typeof window === 'undefined') return;
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   localStorage.removeItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`);
 }
 
@@ -1538,17 +1598,25 @@ export function confirmAndSubmitStagedGuides(
   guideIds?: string[]
 ): { count: number; saved: ConceptGuide[] } {
   if (typeof window === 'undefined') return { count: 0, saved: [] };
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const staged = getStagedGuides(normTrack);
   if (staged.length === 0) return { count: 0, saved: [] };
 
-  const toConfirm = guideIds ? staged.filter(g => guideIds.includes(g.id)) : staged;
-  const remaining = guideIds ? staged.filter(g => !guideIds.includes(g.id)) : [];
+  const toConfirm = guideIds ? staged.filter((g) => guideIds.includes(g.id)) : staged;
+  const remaining = guideIds ? staged.filter((g) => !guideIds.includes(g.id)) : [];
 
   // Save to confirmed list
   const existingConfirmed = getStoredCustomGuides(normTrack);
-  const newConfirmed = toConfirm.map(g => ({ ...g, isCustom: true, status: 'approved' as const }));
-  const updatedConfirmed = [...newConfirmed, ...existingConfirmed.filter(e => !newConfirmed.some(n => n.id === e.id))];
+  const newConfirmed = toConfirm.map((g) => ({
+    ...g,
+    isCustom: true,
+    status: 'approved' as const,
+  }));
+  const updatedConfirmed = [
+    ...newConfirmed,
+    ...existingConfirmed.filter((e) => !newConfirmed.some((n) => n.id === e.id)),
+  ];
   localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updatedConfirmed));
 
   // Update or clear staging
@@ -1568,12 +1636,13 @@ export function submitStagedGuidesForApproval(
   user?: any
 ): { count: number; submitted: ConceptGuide[] } {
   if (typeof window === 'undefined') return { count: 0, submitted: [] };
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const staged = getStagedGuides(normTrack);
   if (staged.length === 0) return { count: 0, submitted: [] };
 
-  const toSubmit = guideIds ? staged.filter(g => guideIds.includes(g.id)) : staged;
-  const remaining = guideIds ? staged.filter(g => !guideIds.includes(g.id)) : [];
+  const toSubmit = guideIds ? staged.filter((g) => guideIds.includes(g.id)) : staged;
+  const remaining = guideIds ? staged.filter((g) => !guideIds.includes(g.id)) : [];
 
   const currentUser = user || QADatabase.getCurrentUser();
   const submittedList: ConceptGuide[] = [];
@@ -1632,7 +1701,9 @@ export function submitStagedGuidesForApproval(
 export function getStoredCustomGuides(trackId?: string): ConceptGuide[] {
   if (typeof window === 'undefined') return [];
   try {
-    const key = trackId ? `${LOCAL_STORAGE_KEY_PREFIX}${trackId}` : `${LOCAL_STORAGE_KEY_PREFIX}all`;
+    const key = trackId
+      ? `${LOCAL_STORAGE_KEY_PREFIX}${trackId}`
+      : `${LOCAL_STORAGE_KEY_PREFIX}all`;
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
   } catch (e) {
@@ -1641,30 +1712,43 @@ export function getStoredCustomGuides(trackId?: string): ConceptGuide[] {
 }
 
 export function getAllGuides(trackId?: string): ConceptGuide[] {
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
-  const defaults = normTrack ? DEFAULT_CONCEPT_GUIDES.filter(g => g.trackId === normTrack) : DEFAULT_CONCEPT_GUIDES;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const defaults = normTrack
+    ? DEFAULT_CONCEPT_GUIDES.filter((g) => g.trackId === normTrack)
+    : DEFAULT_CONCEPT_GUIDES;
   const custom = getStoredCustomGuides(normTrack);
   return [...custom, ...defaults];
 }
 
 export function saveCustomGuide(guide: ConceptGuide): ConceptGuide {
   if (typeof window === 'undefined') return guide;
-  const normTrack = guide.trackId === 'selenium-java' ? 'selenium' : guide.trackId === 'playwright-ts' ? 'playwright' : guide.trackId;
+  const normTrack =
+    guide.trackId === 'selenium-java'
+      ? 'selenium'
+      : guide.trackId === 'playwright-ts'
+        ? 'playwright'
+        : guide.trackId;
   const existing = getStoredCustomGuides(normTrack);
-  const updated = [guide, ...existing.filter(g => g.id !== guide.id)];
+  const updated = [guide, ...existing.filter((g) => g.id !== guide.id)];
   localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
   return guide;
 }
 
 export function deleteCustomGuide(id: string, trackId?: string): void {
   if (typeof window === 'undefined') return;
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const existing = getStoredCustomGuides(normTrack);
-  const updated = existing.filter(g => g.id !== id);
+  const updated = existing.filter((g) => g.id !== id);
   localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
 }
 
-import { downloadOfficeTemplate, extractTextFromOfficeZip, SampleGuideData } from './office-documents';
+import {
+  downloadOfficeTemplate,
+  extractTextFromOfficeZip,
+  SampleGuideData,
+} from './office-documents';
 export { extractTextFromOfficeZip };
 function getTrackSampleData(normTrack: string) {
   if (normTrack === 'playwright') {
@@ -1672,9 +1756,12 @@ function getTrackSampleData(normTrack: string) {
       title: 'Auto-Waiting Engine & Actionability Assertions',
       category: 'Core Mechanics & Synchronization',
       level: 'Intermediate',
-      summary: 'How Playwright eliminates flaky tests through automated actionability state verification before executing user actions.',
-      overview: 'Playwright automatically verifies that elements are attached to the DOM, visible, stable (not animating), enabled, and receive pointer events before performing actions like click() or fill(). This eliminates flaky tests without manual wait logic.\n\nUnlike legacy tools that require explicit Thread.sleep or polling loops, Playwright checks the actionability status of target elements continuously until the timeout is reached.',
-      architecture: 'Actionability checks run repeatedly within the actionTimeout window (default 30s) until all checks pass simultaneously before firing the browser CDP event.',
+      summary:
+        'How Playwright eliminates flaky tests through automated actionability state verification before executing user actions.',
+      overview:
+        'Playwright automatically verifies that elements are attached to the DOM, visible, stable (not animating), enabled, and receive pointer events before performing actions like click() or fill(). This eliminates flaky tests without manual wait logic.\n\nUnlike legacy tools that require explicit Thread.sleep or polling loops, Playwright checks the actionability status of target elements continuously until the timeout is reached.',
+      architecture:
+        'Actionability checks run repeatedly within the actionTimeout window (default 30s) until all checks pass simultaneously before firing the browser CDP event.',
       language: 'typescript',
       caption: 'TypeScript: Playwright Auto-Waiting & Expect Assertions',
       code: `import { test, expect } from '@playwright/test';
@@ -1688,13 +1775,14 @@ test('resilient checkout action', async ({ page }) => {
       bestPractices: [
         'Prefer user-facing locators (getByRole, getByText) over brittle CSS/XPath',
         'Use web-first assertions like await expect(locator).toBeVisible()',
-        'Avoid page.waitForTimeout() in automated CI pipelines'
+        'Avoid page.waitForTimeout() in automated CI pipelines',
       ],
       antiPatterns: [
         'Using manual page.waitForTimeout(5000) for UI animation delays',
-        'Mixing Playwright locators with legacy page.$ query selectors'
+        'Mixing Playwright locators with legacy page.$ query selectors',
       ],
-      interviewTips: 'Explain why Playwright does not require explicit sleep or wait statements and how auto-waiting differs from Selenium Implicit Wait.',
+      interviewTips:
+        'Explain why Playwright does not require explicit sleep or wait statements and how auto-waiting differs from Selenium Implicit Wait.',
     };
   }
 
@@ -1703,9 +1791,12 @@ test('resilient checkout action', async ({ page }) => {
       title: 'RequestSpecification & ResponseSpecification Architecture',
       category: 'API Framework Architecture',
       level: 'Advanced',
-      summary: 'Centralizing base URIs, OAuth authentication headers, and response status code validation into reusable specifications.',
-      overview: 'Large API test suites often duplicate headers, tokens, and base paths across hundreds of tests. RequestSpecBuilder and ResponseSpecBuilder consolidate configurations into immutable specifications that can be injected across all test endpoints.\n\nThis enforces contract consistency and enables seamless switching between staging, QA, and production environments.',
-      architecture: 'Specifications decouple environment configuration from test assertions, allowing global filter logging and environment switching.',
+      summary:
+        'Centralizing base URIs, OAuth authentication headers, and response status code validation into reusable specifications.',
+      overview:
+        'Large API test suites often duplicate headers, tokens, and base paths across hundreds of tests. RequestSpecBuilder and ResponseSpecBuilder consolidate configurations into immutable specifications that can be injected across all test endpoints.\n\nThis enforces contract consistency and enables seamless switching between staging, QA, and production environments.',
+      architecture:
+        'Specifications decouple environment configuration from test assertions, allowing global filter logging and environment switching.',
       language: 'java',
       caption: 'Java: RequestSpecification & Logging Filters with REST Assured',
       code: `RequestSpecification baseReq = new RequestSpecBuilder()
@@ -1723,13 +1814,14 @@ given().spec(baseReq).when().get("/users").then().spec(baseRes);`,
       bestPractices: [
         'Build specifications once in a BaseApiTest class and reuse across tests',
         'Attach RequestLoggingFilter and ResponseLoggingFilter for CI diagnostic traces',
-        'Use POJOs for serialization instead of raw string JSON bodies'
+        'Use POJOs for serialization instead of raw string JSON bodies',
       ],
       antiPatterns: [
         'Hardcoding authorization headers or URLs inside individual @Test methods',
-        'Asserting HTTP status codes manually with if-statements instead of then().statusCode()'
+        'Asserting HTTP status codes manually with if-statements instead of then().statusCode()',
       ],
-      interviewTips: 'Explain how Specifications decouple environment configuration from test assertions and how filters intercept HTTP traffic for logging.',
+      interviewTips:
+        'Explain how Specifications decouple environment configuration from test assertions and how filters intercept HTTP traffic for logging.',
     };
   }
 
@@ -1738,9 +1830,12 @@ given().spec(baseReq).when().get("/users").then().spec(baseRes);`,
       title: 'Self-Healing Test Automation with LLM DOM Embeddings',
       category: 'Autonomous QA Agents',
       level: 'Advanced',
-      summary: 'Using vector embeddings to resolve broken locators when UI designs change dynamically.',
-      overview: 'When an element ID or class name changes in a release, self-healing agents compute semantic similarity between the old DOM node attributes and new candidate elements to continue execution without test suite failures.\n\nThe agent captures historical attribute snapshots and uses cosine similarity to identify the closest match.',
-      architecture: 'Vector embeddings compare tag, text, and accessibility role against historical baseline snapshots with confidence score thresholds (>0.85).',
+      summary:
+        'Using vector embeddings to resolve broken locators when UI designs change dynamically.',
+      overview:
+        'When an element ID or class name changes in a release, self-healing agents compute semantic similarity between the old DOM node attributes and new candidate elements to continue execution without test suite failures.\n\nThe agent captures historical attribute snapshots and uses cosine similarity to identify the closest match.',
+      architecture:
+        'Vector embeddings compare tag, text, and accessibility role against historical baseline snapshots with confidence score thresholds (>0.85).',
       language: 'python',
       caption: 'Python: Self-Healing Element Resolution Workflow',
       code: `def self_heal_locator(driver, failed_locator, dom_snapshot):
@@ -1750,13 +1845,14 @@ given().spec(baseReq).when().get("/users").then().spec(baseRes);`,
       bestPractices: [
         'Set high confidence score thresholds (e.g., >0.85) to prevent clicking wrong elements',
         'Log all self-healing mutations to a dashboard so developers can update baseline locators',
-        'Keep self-healing enabled on regression suites but disabled on strict unit tests'
+        'Keep self-healing enabled on regression suites but disabled on strict unit tests',
       ],
       antiPatterns: [
         'Silently self-healing without notifying the test reporter or team',
-        'Relying on self-healing as an excuse for writing brittle locators'
+        'Relying on self-healing as an excuse for writing brittle locators',
       ],
-      interviewTips: 'Discuss latency trade-offs and confidence thresholds in self-healing engines compared to strict assertions.',
+      interviewTips:
+        'Discuss latency trade-offs and confidence thresholds in self-healing engines compared to strict assertions.',
     };
   }
 
@@ -1765,9 +1861,12 @@ given().spec(baseReq).when().get("/users").then().spec(baseRes);`,
       title: 'Enterprise Test Automation Architecture & CI/CD Pipeline Design',
       category: 'Tutorials & Articles',
       level: 'Advanced',
-      summary: 'Design patterns and strategies for architecting scalable, parallelized test automation frameworks across distributed CI/CD environments.',
-      overview: 'Modern test automation frameworks require clean separation of concerns: test runners, configuration managers, page abstractions, assertion engines, and reporting listeners.\n\nIn this technical article, we explore how to build resilient pipelines that run hundreds of parallel tests without flaky failures or environment collisions.',
-      architecture: 'Decoupled multi-layer architecture separating execution logic, test data providers, and reporting adapters.',
+      summary:
+        'Design patterns and strategies for architecting scalable, parallelized test automation frameworks across distributed CI/CD environments.',
+      overview:
+        'Modern test automation frameworks require clean separation of concerns: test runners, configuration managers, page abstractions, assertion engines, and reporting listeners.\n\nIn this technical article, we explore how to build resilient pipelines that run hundreds of parallel tests without flaky failures or environment collisions.',
+      architecture:
+        'Decoupled multi-layer architecture separating execution logic, test data providers, and reporting adapters.',
       language: 'java',
       caption: 'Technical Architecture & Pipeline Implementation',
       code: `// Enterprise Test Engine Configuration
@@ -1779,13 +1878,14 @@ public class AutomationEngineConfig {
       bestPractices: [
         'Decouple test configuration from environment execution parameters',
         'Implement parallel-safe WebDriver and HTTP client thread-local factories',
-        'Integrate automated retry analyzers only for transient infrastructure network blips'
+        'Integrate automated retry analyzers only for transient infrastructure network blips',
       ],
       antiPatterns: [
         'Sharing mutable state or browser instances across concurrent test threads',
-        'Hardcoding environment URLs and credentials inside test classes'
+        'Hardcoding environment URLs and credentials inside test classes',
       ],
-      interviewTips: 'Explain the principles of the Test Automation Pyramid and how you design frameworks for high concurrency and CI/CD maintainability.'
+      interviewTips:
+        'Explain the principles of the Test Automation Pyramid and how you design frameworks for high concurrency and CI/CD maintainability.',
     };
   }
 
@@ -1794,9 +1894,12 @@ public class AutomationEngineConfig {
     title: 'Dynamic Synchronization: Explicit vs FluentWait vs Thread.sleep',
     category: 'Synchronization & Waits',
     level: 'Intermediate',
-    summary: 'Master dynamic synchronization to eliminate flaky tests, understand polling intervals, and replace brittle sleep calls.',
-    overview: 'Synchronization is the #1 cause of flaky automation tests in enterprise CI/CD pipelines.\n\nModern web applications use asynchronous AJAX calls, React state hydration, and animations where elements exist in the DOM but cannot receive click actions yet. Using Thread.sleep() freezes the JVM thread unconditionally, dramatically slowing down suites.\n\nSelenium provides WebDriverWait (Explicit Wait) and FluentWait to poll the DOM dynamically until ExpectedConditions evaluate to true, proceeding instantly without unnecessary delays.',
-    architecture: 'WebDriverWait polls the browser every 500ms by default and ignores NoSuchElementException. FluentWait allows custom polling intervals (e.g., 250ms) and custom ignored exception lists (e.g., StaleElementReferenceException).',
+    summary:
+      'Master dynamic synchronization to eliminate flaky tests, understand polling intervals, and replace brittle sleep calls.',
+    overview:
+      'Synchronization is the #1 cause of flaky automation tests in enterprise CI/CD pipelines.\n\nModern web applications use asynchronous AJAX calls, React state hydration, and animations where elements exist in the DOM but cannot receive click actions yet. Using Thread.sleep() freezes the JVM thread unconditionally, dramatically slowing down suites.\n\nSelenium provides WebDriverWait (Explicit Wait) and FluentWait to poll the DOM dynamically until ExpectedConditions evaluate to true, proceeding instantly without unnecessary delays.',
+    architecture:
+      'WebDriverWait polls the browser every 500ms by default and ignores NoSuchElementException. FluentWait allows custom polling intervals (e.g., 250ms) and custom ignored exception lists (e.g., StaleElementReferenceException).',
     language: 'java',
     caption: 'Java: WebDriverWait & FluentWait Implementation',
     code: `// Enterprise Explicit Wait
@@ -1815,21 +1918,30 @@ WebElement status = fluentWait.until(d -> d.findElement(By.id("txn-status")));`,
     bestPractices: [
       'Always favor Explicit Waits over Implicit Waits. Mixing both causes unexpected timeout compounding in Selenium.',
       'Use expected condition elementToBeClickable before click() and visibilityOf for assertions.',
-      'Never commit Thread.sleep() in production framework suites.'
+      'Never commit Thread.sleep() in production framework suites.',
     ],
     antiPatterns: [
       'Setting a global implicit wait of 30 seconds and using Thread.sleep(5000) for animations.',
-      'Catching TimeoutException silently and continuing test execution without assertion.'
+      'Catching TimeoutException silently and continuing test execution without assertion.',
     ],
-    interviewTips: 'In interviews, emphasize why mixing Implicit and Explicit waits is undefined behavior in WebDriver specifications, and explain how FluentWait customizes polling intervals.',
+    interviewTips:
+      'In interviews, emphasize why mixing Implicit and Explicit waits is undefined behavior in WebDriver specifications, and explain how FluentWait customizes polling intervals.',
   };
 }
 
 // Generate Excel Spreadsheet (.xls XML/HTML format) with all Mandatory and Optional fields
 export function generateExcelTemplate(trackId: string = 'selenium'): string {
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
-  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI Academy';
+  const trackName =
+    normTrack === 'selenium'
+      ? 'Selenium (Java)'
+      : normTrack === 'playwright'
+        ? 'Playwright (TS)'
+        : normTrack === 'api-testing'
+          ? 'Rest Assured (API)'
+          : 'AI Academy';
 
   const bestPracticesStr = sample.bestPractices.join('; ');
   const antiPatternsStr = sample.antiPatterns.join('; ');
@@ -1927,9 +2039,17 @@ export function generateExcelTemplate(trackId: string = 'selenium'): string {
 
 // Generate Word Document (.doc HTML format) with all Mandatory and Optional fields
 export function generateWordTemplate(trackId: string = 'selenium'): string {
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
-  const trackName = normTrack === 'selenium' ? 'Selenium (Java)' : normTrack === 'playwright' ? 'Playwright (TS)' : normTrack === 'api-testing' ? 'Rest Assured (API)' : 'AI Academy';
+  const trackName =
+    normTrack === 'selenium'
+      ? 'Selenium (Java)'
+      : normTrack === 'playwright'
+        ? 'Playwright (TS)'
+        : normTrack === 'api-testing'
+          ? 'Rest Assured (API)'
+          : 'AI Academy';
 
   return `<html xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head>
@@ -2005,7 +2125,7 @@ export function generateWordTemplate(trackId: string = 'selenium'): string {
       <td class="label-optional">Best Practices <span class="badge-optional">OPTIONAL</span></td>
       <td class="val">
         <ul class="bullet-list">
-          ${sample.bestPractices.map(bp => `<li>${bp}</li>`).join('')}
+          ${sample.bestPractices.map((bp) => `<li>${bp}</li>`).join('')}
         </ul>
       </td>
     </tr>
@@ -2013,7 +2133,7 @@ export function generateWordTemplate(trackId: string = 'selenium'): string {
       <td class="label-optional">Anti-Patterns <span class="badge-optional">OPTIONAL</span></td>
       <td class="val">
         <ul class="bullet-list">
-          ${sample.antiPatterns.map(ap => `<li>${ap}</li>`).join('')}
+          ${sample.antiPatterns.map((ap) => `<li>${ap}</li>`).join('')}
         </ul>
       </td>
     </tr>
@@ -2084,7 +2204,8 @@ export function generateConceptGuideTemplate(
   format: 'xlsx' | 'docx' | 'excel' | 'word' | 'json' | 'csv' = 'xlsx',
   trackId: string = 'selenium'
 ): string {
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
 
   if (format === 'xlsx' || format === 'excel') {
@@ -2158,9 +2279,9 @@ IntelligentQA Concept Guide Import Template: Word (.DOCX) Format
 • Code Snippet [MANDATORY]:
 ${sample.code}
 • Best Practices [OPTIONAL]:
-  ${sample.bestPractices.map(b => `• ${b}`).join('\n  ')}
+  ${sample.bestPractices.map((b) => `• ${b}`).join('\n  ')}
 • Anti-Patterns [OPTIONAL]:
-  ${sample.antiPatterns.map(a => `• ${a}`).join('\n  ')}
+  ${sample.antiPatterns.map((a) => `• ${a}`).join('\n  ')}
 • Interview Tips [OPTIONAL]:
   ${sample.interviewTips}
 
@@ -2188,30 +2309,27 @@ ${sample.code}
 
   const sampleTemplate: Partial<ConceptGuide>[] = [
     {
-      title: "Sample Concept Title (Mandatory)",
+      title: 'Sample Concept Title (Mandatory)',
       trackId: (normTrack as any) || 'selenium',
-      category: "Framework Design (Mandatory)",
-      level: "Intermediate",
-      summary: "Concise 1-2 sentence overview explaining why this concept matters for SDETs.",
-      overview: "Detailed multi-paragraph explanation of the concept, pain points in manual/legacy QA, and how modern automation solves it.",
-      architectureOrMechanism: "Internal mechanics, lifecycle flow, or diagram explanation.",
+      category: 'Framework Design (Mandatory)',
+      level: 'Intermediate',
+      summary: 'Concise 1-2 sentence overview explaining why this concept matters for SDETs.',
+      overview:
+        'Detailed multi-paragraph explanation of the concept, pain points in manual/legacy QA, and how modern automation solves it.',
+      architectureOrMechanism: 'Internal mechanics, lifecycle flow, or diagram explanation.',
       codeSnippets: [
         {
           language: normTrack === 'playwright' ? 'typescript' : 'java',
-          caption: "Primary implementation snippet",
-          code: normTrack === 'playwright' 
-            ? "import { test, expect } from '@playwright/test';\n\ntest('sample concept', async ({ page }) => {\n  await page.goto('/');\n  await expect(page.locator('h1')).toBeVisible();\n});"
-            : "public class SampleConcept {\n    public static void execute() {\n        System.out.println(\"Concept executed\");\n    }\n}",
+          caption: 'Primary implementation snippet',
+          code:
+            normTrack === 'playwright'
+              ? "import { test, expect } from '@playwright/test';\n\ntest('sample concept', async ({ page }) => {\n  await page.goto('/');\n  await expect(page.locator('h1')).toBeVisible();\n});"
+              : 'public class SampleConcept {\n    public static void execute() {\n        System.out.println("Concept executed");\n    }\n}',
         },
       ],
-      bestPractices: [
-        "Best practice recommendation 1",
-        "Best practice recommendation 2"
-      ],
-      antiPatterns: [
-        "Common mistake / anti-pattern to avoid 1"
-      ],
-      interviewTips: "Key points to emphasize during senior SDET interview rounds.",
+      bestPractices: ['Best practice recommendation 1', 'Best practice recommendation 2'],
+      antiPatterns: ['Common mistake / anti-pattern to avoid 1'],
+      interviewTips: 'Key points to emphasize during senior SDET interview rounds.',
     },
   ];
 
@@ -2223,17 +2341,18 @@ export function downloadConceptGuideTemplate(
   format: 'xlsx' | 'docx' | 'excel' | 'word' | 'json' | 'csv' = 'xlsx',
   trackId: string = 'selenium'
 ): void {
-  const normTrack = trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
+  const normTrack =
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId;
   const sample = getTrackSampleData(normTrack);
 
   const targetFormat: 'xlsx' | 'docx' | 'json' | 'csv' =
     format === 'excel' || format === 'xlsx'
       ? 'xlsx'
       : format === 'word' || format === 'docx'
-      ? 'docx'
-      : format === 'csv'
-      ? 'csv'
-      : 'json';
+        ? 'docx'
+        : format === 'csv'
+          ? 'csv'
+          : 'json';
 
   downloadOfficeTemplate(targetFormat, normTrack, sample);
 }
@@ -2245,26 +2364,39 @@ export function parseImportedGuides(
   stageOnly: boolean = true,
   singleGuide: boolean = true
 ): { guides: ConceptGuide[]; error?: string } {
-  const normTrack = (trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId) as any;
+  const normTrack = (
+    trackId === 'selenium-java' ? 'selenium' : trackId === 'playwright-ts' ? 'playwright' : trackId
+  ) as any;
   const trimmed = content.trim();
 
   if (!trimmed) {
     return { guides: [], error: 'Import content is empty.' };
   }
 
-  const defaultLang = normTrack === 'playwright' ? 'typescript' : normTrack === 'ai-qa' ? 'python' : 'java';
+  const defaultLang =
+    normTrack === 'playwright' ? 'typescript' : normTrack === 'ai-qa' ? 'python' : 'java';
   const valid: ConceptGuide[] = [];
 
   // Helper to sanitize extracted cell text
-  const cleanText = (str: string) => str.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').trim();
+  const cleanText = (str: string) =>
+    str
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .trim();
 
   // Helper to parse semicolon, bullet, or newline separated lists
   const parseList = (val?: string): string[] => {
     if (!val) return [];
     return val
       .split(/[\n;•]+/)
-      .map(s => s.trim().replace(/^[-*•]\s*/, ''))
-      .filter(s => s && !s.startsWith('[') && !s.startsWith('Recommendation') && !s.startsWith('Common'));
+      .map((s) => s.trim().replace(/^[-*•]\s*/, ''))
+      .filter(
+        (s) => s && !s.startsWith('[') && !s.startsWith('Recommendation') && !s.startsWith('Common')
+      );
   };
 
   // 1. Try JSON parsing
@@ -2283,19 +2415,33 @@ export function parseImportedGuides(
           trackId: normTrack,
           title: item.title,
           category: item.category || 'General',
-          level: ['Beginner', 'Intermediate', 'Advanced'].includes(item.level) ? item.level : 'Intermediate',
+          level: ['Beginner', 'Intermediate', 'Advanced'].includes(item.level)
+            ? item.level
+            : 'Intermediate',
           summary: item.summary || item.title,
           overview: item.overview || item.summary || item.title,
           architectureOrMechanism: item.architectureOrMechanism || '',
-          codeSnippets: Array.isArray(item.codeSnippets) && item.codeSnippets.length > 0 ? item.codeSnippets : [
-            {
-              language: item.language || defaultLang,
-              caption: item.caption || `${item.title} Implementation`,
-              code: typeof item.code === 'string' ? item.code : typeof item.codeSnippet === 'string' ? item.codeSnippet : '// Add concept implementation here',
-            }
-          ],
-          bestPractices: Array.isArray(item.bestPractices) ? item.bestPractices : parseList(item.bestPractices),
-          antiPatterns: Array.isArray(item.antiPatterns) ? item.antiPatterns : parseList(item.antiPatterns),
+          codeSnippets:
+            Array.isArray(item.codeSnippets) && item.codeSnippets.length > 0
+              ? item.codeSnippets
+              : [
+                  {
+                    language: item.language || defaultLang,
+                    caption: item.caption || `${item.title} Implementation`,
+                    code:
+                      typeof item.code === 'string'
+                        ? item.code
+                        : typeof item.codeSnippet === 'string'
+                          ? item.codeSnippet
+                          : '// Add concept implementation here',
+                  },
+                ],
+          bestPractices: Array.isArray(item.bestPractices)
+            ? item.bestPractices
+            : parseList(item.bestPractices),
+          antiPatterns: Array.isArray(item.antiPatterns)
+            ? item.antiPatterns
+            : parseList(item.antiPatterns),
           interviewTips: item.interviewTips || '',
           isCustom: true,
         });
@@ -2328,7 +2474,27 @@ export function parseImportedGuides(
           if (cells.length >= 2) {
             const rawKey = cells[0].toLowerCase().replace(/[^a-z0-9]/g, '');
             const rawVal = cells.slice(1).join(' ').trim();
-            if (['title', 'category', 'level', 'difficulty', 'summary', 'overview', 'explanation', 'architecture', 'mechanism', 'code', 'codelanguage', 'codecaption', 'caption', 'codesnippet', 'bestpractices', 'antipatterns', 'interviewtips'].some(k => rawKey.includes(k))) {
+            if (
+              [
+                'title',
+                'category',
+                'level',
+                'difficulty',
+                'summary',
+                'overview',
+                'explanation',
+                'architecture',
+                'mechanism',
+                'code',
+                'codelanguage',
+                'codecaption',
+                'caption',
+                'codesnippet',
+                'bestpractices',
+                'antipatterns',
+                'interviewtips',
+              ].some((k) => rawKey.includes(k))
+            ) {
               isKeyValueTable = true;
               kvMap[rawKey] = rawVal;
             }
@@ -2336,7 +2502,7 @@ export function parseImportedGuides(
         }
 
         const getKvVal = (keyword: string): string => {
-          const matchKey = Object.keys(kvMap).find(k => k.includes(keyword));
+          const matchKey = Object.keys(kvMap).find((k) => k.includes(keyword));
           return matchKey && kvMap[matchKey] ? kvMap[matchKey].trim() : '';
         };
 
@@ -2345,19 +2511,28 @@ export function parseImportedGuides(
         if (isKeyValueTable && title) {
           const category = getKvVal('category') || 'General';
           const levelRaw = getKvVal('level') || getKvVal('difficulty');
-          const levelVal = ['Beginner', 'Advanced'].find(l => levelRaw.toLowerCase().includes(l.toLowerCase())) || 'Intermediate';
+          const levelVal =
+            ['Beginner', 'Advanced'].find((l) =>
+              levelRaw.toLowerCase().includes(l.toLowerCase())
+            ) || 'Intermediate';
           const summary = getKvVal('summary') || title;
           const overview = getKvVal('overview') || getKvVal('explanation') || summary;
           const architecture = getKvVal('architecture') || getKvVal('mechanism') || '';
           const codeLang = getKvVal('codelanguage') || getKvVal('language') || defaultLang;
-          const caption = getKvVal('codecaption') || getKvVal('caption') || `${title} Implementation`;
-          const codeSnippet = getKvVal('codesnippet') || getKvVal('code') || `// Code example for ${title}`;
+          const caption =
+            getKvVal('codecaption') || getKvVal('caption') || `${title} Implementation`;
+          const codeSnippet =
+            getKvVal('codesnippet') || getKvVal('code') || `// Code example for ${title}`;
           const bestPractices = parseList(getKvVal('bestpractice'));
           const antiPatterns = parseList(getKvVal('antipattern'));
           const interviewTips = getKvVal('interview');
 
           // Filter out placeholders like "[Enter Guide Title]"
-          if (!title.includes('[Enter Guide') && !title.includes('[Your New Guide') && !title.includes('[FILL YOUR GUIDE')) {
+          if (
+            !title.includes('[Enter Guide') &&
+            !title.includes('[Your New Guide') &&
+            !title.includes('[FILL YOUR GUIDE')
+          ) {
             valid.push({
               id: `imported-word-${Date.now()}-${valid.length}`,
               trackId: normTrack,
@@ -2386,16 +2561,26 @@ export function parseImportedGuides(
             const cells = (row.match(/<t[dh][\s\S]*?<\/t[dh]>/gi) || []).map(cleanText);
             if (cells.length === 0) continue;
 
-            const isHeader = r === 0 && (row.includes('<th') || cells[0].toLowerCase().includes('title'));
+            const isHeader =
+              r === 0 && (row.includes('<th') || cells[0].toLowerCase().includes('title'));
             if (isHeader) {
-              headers = cells.map(c => c.toLowerCase().replace(/[^a-z]/g, ''));
+              headers = cells.map((c) => c.toLowerCase().replace(/[^a-z]/g, ''));
               continue;
             }
 
             // Only parse if header has explicit guide columns (prevents converting a 13-row data/step/status table into 13 guides)
-            const hasGuideHeaders = headers.length > 0 &&
-              headers.some(h => h.includes('title')) &&
-              headers.some(h => h.includes('category') || h.includes('summary') || h.includes('level') || h.includes('code') || h.includes('snippet') || h.includes('overview'));
+            const hasGuideHeaders =
+              headers.length > 0 &&
+              headers.some((h) => h.includes('title')) &&
+              headers.some(
+                (h) =>
+                  h.includes('category') ||
+                  h.includes('summary') ||
+                  h.includes('level') ||
+                  h.includes('code') ||
+                  h.includes('snippet') ||
+                  h.includes('overview')
+              );
 
             if (!hasGuideHeaders) {
               continue;
@@ -2403,22 +2588,32 @@ export function parseImportedGuides(
 
             // Map data row with resilient keyword matching
             const getCol = (keyword: string, fallbackIdx: number): string => {
-              const idx = headers.findIndex(h => h.includes(keyword));
-              return (idx !== -1 && cells[idx] !== undefined ? cells[idx] : cells[fallbackIdx]) || '';
+              const idx = headers.findIndex((h) => h.includes(keyword));
+              return (
+                (idx !== -1 && cells[idx] !== undefined ? cells[idx] : cells[fallbackIdx]) || ''
+              );
             };
 
             const title = getCol('title', 0);
-            if (!title || title.includes('[Enter Guide') || title.includes('[FILL YOUR GUIDE')) continue;
+            if (!title || title.includes('[Enter Guide') || title.includes('[FILL YOUR GUIDE'))
+              continue;
 
             const category = getCol('category', 1) || 'General';
             const levelRaw = getCol('level', 2) || 'Intermediate';
-            const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
+            const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw)
+              ? (levelRaw as any)
+              : 'Intermediate';
             const summary = getCol('summary', 3) || title;
             const overview = getCol('overview', 4) || summary;
             const architecture = getCol('architecture', 5) || getCol('mechanism', 5) || '';
             const codeLang = getCol('language', 6) || defaultLang;
             const caption = getCol('caption', 7) || `${title} Implementation`;
-            const code = getCol('snippet', 8) || getCol('code', 8) || cells[8] || cells[7] || `// Code example for ${title}`;
+            const code =
+              getCol('snippet', 8) ||
+              getCol('code', 8) ||
+              cells[8] ||
+              cells[7] ||
+              `// Code example for ${title}`;
             const bestPractices = parseList(getCol('bestpractice', 9));
             const antiPatterns = parseList(getCol('antipattern', 10));
             const interviewTips = getCol('interview', 11);
@@ -2453,38 +2648,51 @@ export function parseImportedGuides(
   // 3. Try Tab-Separated Values (TSV) - Direct Copy & Paste from Excel / Google Sheets
   if (trimmed.includes('\t')) {
     try {
-      const rawLines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-      const tsvCandidateLines = rawLines.filter(l => l.split('\t').length >= 3);
+      const rawLines = trimmed
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean);
+      const tsvCandidateLines = rawLines.filter((l) => l.split('\t').length >= 3);
 
       if (tsvCandidateLines.length > 0) {
         let headers: string[] = [];
 
         for (let i = 0; i < rawLines.length; i++) {
-          const parts = rawLines[i].split('\t').map(s => s.replace(/^["']|["']$/g, '').trim());
+          const parts = rawLines[i].split('\t').map((s) => s.replace(/^["']|["']$/g, '').trim());
           if (parts.length < 3 || !parts[0]) continue;
 
           if (i === 0 && parts[0].toLowerCase().includes('title')) {
-            headers = parts.map(p => p.toLowerCase().replace(/[^a-z]/g, ''));
+            headers = parts.map((p) => p.toLowerCase().replace(/[^a-z]/g, ''));
             continue;
           }
 
           const getTsvCol = (keyword: string, fallbackIdx: number): string => {
-            const idx = headers.findIndex(h => h.includes(keyword));
+            const idx = headers.findIndex((h) => h.includes(keyword));
             return (idx !== -1 && parts[idx] !== undefined ? parts[idx] : parts[fallbackIdx]) || '';
           };
 
           const title = getTsvCol('title', 0);
-          if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
+          if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE'))
+            continue;
 
-          const category = getTsvCol('category', 1) || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
+          const category =
+            getTsvCol('category', 1) ||
+            (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
           const levelRaw = getTsvCol('level', 2) || 'Intermediate';
-          const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
+          const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw)
+            ? (levelRaw as any)
+            : 'Intermediate';
           const summary = getTsvCol('summary', 3) || title;
           const overview = getTsvCol('overview', 4) || summary;
           const architecture = getTsvCol('architecture', 5) || getTsvCol('mechanism', 5) || '';
           const codeLang = getTsvCol('language', 6) || defaultLang;
           const caption = getTsvCol('caption', 7) || `${title} Implementation`;
-          const code = getTsvCol('snippet', 8) || getTsvCol('code', 8) || parts[8] || parts[7] || `// Code example for ${title}`;
+          const code =
+            getTsvCol('snippet', 8) ||
+            getTsvCol('code', 8) ||
+            parts[8] ||
+            parts[7] ||
+            `// Code example for ${title}`;
           const bestPractices = parseList(getTsvCol('bestpractice', 9));
           const antiPatterns = parseList(getTsvCol('antipattern', 10));
           const interviewTips = getTsvCol('interview', 11);
@@ -2518,34 +2726,48 @@ export function parseImportedGuides(
   // 4. Try True CSV Parsing (Must have multiple rows with >= 3 comma-separated columns or header row)
   if (trimmed.includes(',')) {
     try {
-      const rawLines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-      const csvCandidateLines = rawLines.filter(l => l.includes(',') && l.split(',').length >= 3);
+      const rawLines = trimmed
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean);
+      const csvCandidateLines = rawLines.filter((l) => l.includes(',') && l.split(',').length >= 3);
 
       // Only treat as CSV if at least 2 lines have 3+ comma-separated columns, or line 0 has a clear Title header
-      const hasTitleHeader = rawLines[0]?.toLowerCase().includes('title') && rawLines[0]?.includes(',');
+      const hasTitleHeader =
+        rawLines[0]?.toLowerCase().includes('title') && rawLines[0]?.includes(',');
       if (csvCandidateLines.length >= 2 || (hasTitleHeader && csvCandidateLines.length >= 1)) {
         let headers: string[] = [];
         const startIndex = hasTitleHeader ? 1 : 0;
         if (hasTitleHeader) {
-          headers = rawLines[0].split(',').map(s => s.toLowerCase().replace(/[^a-z]/g, ''));
+          headers = rawLines[0].split(',').map((s) => s.toLowerCase().replace(/[^a-z]/g, ''));
         }
 
         for (let i = startIndex; i < rawLines.length; i++) {
           const line = rawLines[i];
-          const parts = line.split(',').map(s => s.replace(/^["']|["']$/g, '').trim());
-          if (parts.length < 3 || !parts[0] || parts[0].startsWith('[Enter') || parts[0].startsWith('[FILL YOUR GUIDE')) continue;
+          const parts = line.split(',').map((s) => s.replace(/^["']|["']$/g, '').trim());
+          if (
+            parts.length < 3 ||
+            !parts[0] ||
+            parts[0].startsWith('[Enter') ||
+            parts[0].startsWith('[FILL YOUR GUIDE')
+          )
+            continue;
 
           const getCsvCol = (keyword: string, fallbackIdx: number): string => {
-            const idx = headers.findIndex(h => h.includes(keyword));
+            const idx = headers.findIndex((h) => h.includes(keyword));
             return (idx !== -1 && parts[idx] !== undefined ? parts[idx] : parts[fallbackIdx]) || '';
           };
 
           const title = getCsvCol('title', 0);
           if (!title) continue;
 
-          const category = getCsvCol('category', 1) || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
+          const category =
+            getCsvCol('category', 1) ||
+            (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
           const levelRaw = getCsvCol('level', 2) || 'Intermediate';
-          const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw) ? levelRaw as any : 'Intermediate';
+          const level = ['Beginner', 'Intermediate', 'Advanced'].includes(levelRaw)
+            ? (levelRaw as any)
+            : 'Intermediate';
           const summary = getCsvCol('summary', 3) || title;
           const overview = getCsvCol('overview', 4) || summary;
           const codeLang = getCsvCol('language', 5) || defaultLang;
@@ -2577,15 +2799,19 @@ export function parseImportedGuides(
 
   // 5. Try Explicit Multi-Guide Structured Text
   // ONLY split into MULTIPLE guides if explicit multiple guide markers exist (e.g. Guide 1:, Guide 2: or >= 2 Title: declarations)
-  const titleHeaderMatches = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title)(?:\s*\[[^\]]*\])?\*{0,2}\s*:/gi) || [];
+  const titleHeaderMatches =
+    trimmed.match(
+      /(?:^|\n)\s*\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title)(?:\s*\[[^\]]*\])?\*{0,2}\s*:/gi
+    ) || [];
   const guideNumMatches = trimmed.match(/(?:^|\n)\s*guide\s*\d+\s*:/gi) || [];
 
   if (guideNumMatches.length >= 2 || titleHeaderMatches.length >= 2) {
     try {
-      const splitRegex = guideNumMatches.length >= 2
-        ? /(?:^|\n)(?=guide\s*\d+\s*:)/i
-        : /(?:^|\n)(?=(?:\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title)(?:\s*\[[^\]]*\])?\*{0,2}\s*:))/i;
-      const blocks = trimmed.split(splitRegex).filter(b => b.trim());
+      const splitRegex =
+        guideNumMatches.length >= 2
+          ? /(?:^|\n)(?=guide\s*\d+\s*:)/i
+          : /(?:^|\n)(?=(?:\*{0,2}(?:guide\s*\d+|title|concept\s*title|guide\s*title)(?:\s*\[[^\]]*\])?\*{0,2}\s*:))/i;
+      const blocks = trimmed.split(splitRegex).filter((b) => b.trim());
 
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
@@ -2594,18 +2820,42 @@ export function parseImportedGuides(
           return match ? match[1].trim() : '';
         };
 
-        const title = getField(/(?:\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i);
+        const title = getField(
+          /(?:\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i
+        );
         if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) continue;
 
-        const category = getField(/(?:\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
-        const levelRaw = getField(/(?:\*{0,2}(?:level|difficulty)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || 'Intermediate';
-        const level = ['Beginner', 'Intermediate', 'Advanced'].find(l => levelRaw.toLowerCase().includes(l.toLowerCase())) || 'Intermediate';
-        const summary = getField(/(?:\*{0,2}(?:summary)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || title;
-        const overview = getField(/(?:\*{0,2}(?:overview|explanation)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:architecture|mechanism|code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i) || summary;
-        const architecture = getField(/(?:\*{0,2}(?:architecture|mechanism)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i) || '';
-        const codeLang = getField(/(?:\*{0,2}(?:code\s*language|language)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || defaultLang;
-        const caption = getField(/(?:\*{0,2}(?:code\s*caption|caption)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || `${title} Implementation`;
-        let code = getField(/(?:\*{0,2}(?:code\s*snippet|snippet|code)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:best\s*practices|anti[- ]patterns|interview)|\n#|$))/i);
+        const category =
+          getField(/(?:\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) ||
+          (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
+        const levelRaw =
+          getField(/(?:\*{0,2}(?:level|difficulty)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) ||
+          'Intermediate';
+        const level =
+          ['Beginner', 'Intermediate', 'Advanced'].find((l) =>
+            levelRaw.toLowerCase().includes(l.toLowerCase())
+          ) || 'Intermediate';
+        const summary =
+          getField(/(?:\*{0,2}(?:summary)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i) || title;
+        const overview =
+          getField(
+            /(?:\*{0,2}(?:overview|explanation)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:architecture|mechanism|code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i
+          ) || summary;
+        const architecture =
+          getField(
+            /(?:\*{0,2}(?:architecture|mechanism)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i
+          ) || '';
+        const codeLang =
+          getField(
+            /(?:\*{0,2}(?:code\s*language|language)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i
+          ) || defaultLang;
+        const caption =
+          getField(
+            /(?:\*{0,2}(?:code\s*caption|caption)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([^\n\r]+)/i
+          ) || `${title} Implementation`;
+        let code = getField(
+          /(?:\*{0,2}(?:code\s*snippet|snippet|code)(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}(?:best\s*practices|anti[- ]patterns|interview)|\n#|$))/i
+        );
 
         if (!code) {
           const fencedMatch = block.match(/```(?:[a-z0-9_-]+)?\s*([\s\S]*?)```/i);
@@ -2617,9 +2867,19 @@ export function parseImportedGuides(
           code = `// Code example for ${title}`;
         }
 
-        const bestPractices = parseList(getField(/(?:\*{0,2}best\s*practices?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}anti[- ]patterns?|\*{0,2}interview|\n#|$))/i));
-        const antiPatterns = parseList(getField(/(?:\*{0,2}anti[- ]patterns?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}interview|\n#|$))/i));
-        const interviewTips = getField(/(?:\*{0,2}interview\s*tips?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)$/i) || '';
+        const bestPractices = parseList(
+          getField(
+            /(?:\*{0,2}best\s*practices?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}anti[- ]patterns?|\*{0,2}interview|\n#|$))/i
+          )
+        );
+        const antiPatterns = parseList(
+          getField(
+            /(?:\*{0,2}anti[- ]patterns?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)(?=(?:\*{0,2}interview|\n#|$))/i
+          )
+        );
+        const interviewTips =
+          getField(/(?:\*{0,2}interview\s*tips?(?:\s*\[[^\]]*\])?\*{0,2})\s*:\s*([\s\S]*?)$/i) ||
+          '';
 
         valid.push({
           id: `imported-text-${Date.now()}-${valid.length}`,
@@ -2652,7 +2912,9 @@ export function parseImportedGuides(
   try {
     // 1. Extract Title:
     let title = '';
-    const titleMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    const titleMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}(?:title|concept\s*title|guide\s*title|topic)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i
+    );
     if (titleMatch) {
       title = titleMatch[1].trim();
     } else {
@@ -2661,10 +2923,22 @@ export function parseImportedGuides(
         title = headingMatch[1].replace(/^\*+|\*+$/g, '').trim();
       } else {
         // Look for the first non-empty line that isn't a bullet point or code comment
-        const docLines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+        const docLines = trimmed
+          .split('\n')
+          .map((l) => l.trim())
+          .filter(Boolean);
         for (const line of docLines) {
-          const cleanLine = line.replace(/^\*+|\*+$/g, '').replace(/^[#•\-\d\.]+\s*/, '').trim();
-          if (cleanLine && cleanLine.length >= 4 && cleanLine.length <= 120 && !cleanLine.startsWith('//') && !cleanLine.startsWith('/*')) {
+          const cleanLine = line
+            .replace(/^\*+|\*+$/g, '')
+            .replace(/^[#•\-\d\.]+\s*/, '')
+            .trim();
+          if (
+            cleanLine &&
+            cleanLine.length >= 4 &&
+            cleanLine.length <= 120 &&
+            !cleanLine.startsWith('//') &&
+            !cleanLine.startsWith('/*')
+          ) {
             title = cleanLine;
             break;
           }
@@ -2673,29 +2947,35 @@ export function parseImportedGuides(
     }
 
     if (!title || title.startsWith('[Enter') || title.startsWith('[FILL YOUR GUIDE')) {
-      title = normTrack === 'articles' ? 'Technical Tutorial & Deep Dive' : 'Imported Concept Guide';
+      title =
+        normTrack === 'articles' ? 'Technical Tutorial & Deep Dive' : 'Imported Concept Guide';
     }
 
     // 2. Extract Category:
     let category = '';
-    const categoryMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    const categoryMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}(?:category)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i
+    );
     if (categoryMatch) {
       category = categoryMatch[1].trim();
     } else {
-      category = normTrack === 'articles'
-        ? 'Tutorials & Articles'
-        : normTrack === 'api-testing'
-        ? 'Rest Assured (API)'
-        : normTrack === 'playwright'
-        ? 'Playwright (TS)'
-        : normTrack === 'selenium'
-        ? 'Selenium WebDriver'
-        : 'AI Academy';
+      category =
+        normTrack === 'articles'
+          ? 'Tutorials & Articles'
+          : normTrack === 'api-testing'
+            ? 'Rest Assured (API)'
+            : normTrack === 'playwright'
+              ? 'Playwright (TS)'
+              : normTrack === 'selenium'
+                ? 'Selenium WebDriver'
+                : 'AI Academy';
     }
 
     // 3. Extract Level:
     let levelVal: 'Beginner' | 'Intermediate' | 'Advanced' = 'Intermediate';
-    const levelMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:level|difficulty)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    const levelMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}(?:level|difficulty)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i
+    );
     if (levelMatch) {
       const lStr = levelMatch[1].toLowerCase();
       if (lStr.includes('beg')) levelVal = 'Beginner';
@@ -2704,12 +2984,17 @@ export function parseImportedGuides(
 
     // 4. Extract Summary:
     let summary = '';
-    const summaryMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:summary)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i);
+    const summaryMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}(?:summary)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([^\n\r]+)/i
+    );
     if (summaryMatch) {
       summary = summaryMatch[1].trim();
     } else {
       // Find the first narrative paragraph (after title) that isn't a code or bullet line
-      const paragraphs = trimmed.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+      const paragraphs = trimmed
+        .split(/\n\s*\n/)
+        .map((p) => p.trim())
+        .filter(Boolean);
       for (const p of paragraphs) {
         const cleanP = p.replace(/^[#•\-\*\d\.\s]+/, '').trim();
         if (cleanP && !cleanP.startsWith('//') && cleanP !== title && cleanP.length >= 20) {
@@ -2726,7 +3011,9 @@ export function parseImportedGuides(
 
     // 6. Architecture / Mechanism:
     let architecture = '';
-    const archMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:architecture|mechanism)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}(?:code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i);
+    const archMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}(?:architecture|mechanism)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}(?:code|best\s*practices|anti[- ]patterns|interview)|\n#|$))/i
+    );
     if (archMatch) {
       architecture = archMatch[1].trim();
     }
@@ -2750,7 +3037,9 @@ export function parseImportedGuides(
     }
 
     if (codeSnippets.length === 0) {
-      const codeMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}(?:code|snippet)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}(?:best\s*practices|anti[- ]patterns|interview)|\n#|$))/i);
+      const codeMatch = trimmed.match(
+        /(?:^|\n)\s*\*{0,2}(?:code|snippet)(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}(?:best\s*practices|anti[- ]patterns|interview)|\n#|$))/i
+      );
       const codeText = codeMatch ? codeMatch[1].trim() : `// Code example for ${title}`;
       codeSnippets.push({
         language: defaultLang,
@@ -2760,13 +3049,19 @@ export function parseImportedGuides(
     }
 
     // 8. Best Practices, Anti-Patterns, Interview Tips:
-    const bpMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}best\s*practices?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}anti[- ]patterns?|\n\s*\*{0,2}interview|\n#|$))/i);
+    const bpMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}best\s*practices?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}anti[- ]patterns?|\n\s*\*{0,2}interview|\n#|$))/i
+    );
     const bestPractices = bpMatch ? parseList(bpMatch[1]) : [];
 
-    const apMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}anti[- ]patterns?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}interview|\n#|$))/i);
+    const apMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}anti[- ]patterns?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)(?=(?:\n\s*\*{0,2}interview|\n#|$))/i
+    );
     const antiPatterns = apMatch ? parseList(apMatch[1]) : [];
 
-    const itMatch = trimmed.match(/(?:^|\n)\s*\*{0,2}interview\s*tips?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)$/i);
+    const itMatch = trimmed.match(
+      /(?:^|\n)\s*\*{0,2}interview\s*tips?(?:\s*\[[^\]]*\])?\*{0,2}\s*:\s*([\s\S]*?)$/i
+    );
     const interviewTips = itMatch ? itMatch[1].trim() : '';
 
     valid.push({
@@ -2794,12 +3089,16 @@ export function parseImportedGuides(
 
   return {
     guides: [],
-    error: 'Could not extract valid guides. Please use the Excel (.XLS) or Word (.DOC) template, or paste rows with Title, Category, and Summary.'
+    error:
+      'Could not extract valid guides. Please use the Excel (.XLS) or Word (.DOC) template, or paste rows with Title, Category, and Summary.',
   };
 }
 
 // Consolidate multiple guide sections, tables, and notes into 1 comprehensive guide
-export function consolidateGuidesIntoSingle(guides: ConceptGuide[], normTrack: string): ConceptGuide {
+export function consolidateGuidesIntoSingle(
+  guides: ConceptGuide[],
+  normTrack: string
+): ConceptGuide {
   if (guides.length === 0) {
     throw new Error('No guides to consolidate');
   }
@@ -2808,15 +3107,20 @@ export function consolidateGuidesIntoSingle(guides: ConceptGuide[], normTrack: s
   }
 
   // 1. Pick the best primary title (ignore placeholders like "[Enter Guide Title]")
-  const validGuides = guides.filter(g => g.title && !g.title.includes('[Enter') && !g.title.includes('[FILL'));
+  const validGuides = guides.filter(
+    (g) => g.title && !g.title.includes('[Enter') && !g.title.includes('[FILL')
+  );
   const primary = validGuides.length > 0 ? validGuides[0] : guides[0];
 
-  const primaryTitle = primary.title.replace(/^\[.*?\]\s*/, '').trim() || 'Comprehensive Technical Guide';
-  const category = primary.category || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
+  const primaryTitle =
+    primary.title.replace(/^\[.*?\]\s*/, '').trim() || 'Comprehensive Technical Guide';
+  const category =
+    primary.category || (normTrack === 'articles' ? 'Tutorials & Articles' : 'General');
   const level = primary.level || 'Intermediate';
-  const summary = primary.summary && !primary.summary.includes('[Enter')
-    ? primary.summary
-    : `${primaryTitle} - Comprehensive architecture, practical code examples, and production test automation guide.`;
+  const summary =
+    primary.summary && !primary.summary.includes('[Enter')
+      ? primary.summary
+      : `${primaryTitle} - Comprehensive architecture, practical code examples, and production test automation guide.`;
 
   // 2. Consolidate full Overview & Explanation with rich formatting
   const sections: string[] = [];
@@ -2843,16 +3147,16 @@ export function consolidateGuidesIntoSingle(guides: ConceptGuide[], normTrack: s
     }
 
     if (g.bestPractices && g.bestPractices.length > 0) {
-      const bp = g.bestPractices.filter(b => !b.includes('Recommendation'));
+      const bp = g.bestPractices.filter((b) => !b.includes('Recommendation'));
       if (bp.length > 0) {
-        parts.push(`**Best Practices:**\n${bp.map(b => `• ${b}`).join('\n')}`);
+        parts.push(`**Best Practices:**\n${bp.map((b) => `• ${b}`).join('\n')}`);
       }
     }
 
     if (g.antiPatterns && g.antiPatterns.length > 0) {
-      const ap = g.antiPatterns.filter(a => !a.includes('Common pitfall'));
+      const ap = g.antiPatterns.filter((a) => !a.includes('Common pitfall'));
       if (ap.length > 0) {
-        parts.push(`**Anti-Patterns to Avoid:**\n${ap.map(a => `• ${a}`).join('\n')}`);
+        parts.push(`**Anti-Patterns to Avoid:**\n${ap.map((a) => `• ${a}`).join('\n')}`);
       }
     }
 
@@ -2865,9 +3169,8 @@ export function consolidateGuidesIntoSingle(guides: ConceptGuide[], normTrack: s
     }
   }
 
-  const finalOverview = sections.length > 0
-    ? sections.join('\n\n---\n\n')
-    : primary.overview || summary;
+  const finalOverview =
+    sections.length > 0 ? sections.join('\n\n---\n\n') : primary.overview || summary;
 
   // 3. Consolidate code snippets across all guides
   const allSnippets: CodeSnippet[] = [];
@@ -2876,7 +3179,12 @@ export function consolidateGuidesIntoSingle(guides: ConceptGuide[], normTrack: s
   for (const g of guides) {
     if (g.codeSnippets && g.codeSnippets.length > 0) {
       for (const cs of g.codeSnippets) {
-        if (!cs.code || cs.code.includes('// Paste your complete') || cs.code.includes('// Code example for [') || seenCodes.has(cs.code.trim())) {
+        if (
+          !cs.code ||
+          cs.code.includes('// Paste your complete') ||
+          cs.code.includes('// Code example for [') ||
+          seenCodes.has(cs.code.trim())
+        ) {
           continue;
         }
         seenCodes.add(cs.code.trim());
@@ -2887,16 +3195,23 @@ export function consolidateGuidesIntoSingle(guides: ConceptGuide[], normTrack: s
 
   if (allSnippets.length === 0) {
     allSnippets.push({
-      language: normTrack === 'playwright' ? 'typescript' : normTrack === 'ai-qa' ? 'python' : 'java',
+      language:
+        normTrack === 'playwright' ? 'typescript' : normTrack === 'ai-qa' ? 'python' : 'java',
       caption: `${primaryTitle} Implementation`,
       code: primary.codeSnippets?.[0]?.code || `// Technical implementation for ${primaryTitle}`,
     });
   }
 
   // 4. Consolidate interview tips, best practices, and anti-patterns
-  const consolidatedBp = Array.from(new Set(guides.flatMap(g => g.bestPractices || []))).filter(b => !b.includes('Recommendation'));
-  const consolidatedAp = Array.from(new Set(guides.flatMap(g => g.antiPatterns || []))).filter(a => !a.includes('Common pitfall'));
-  const consolidatedTips = Array.from(new Set(guides.map(g => g.interviewTips).filter(Boolean))).join('\n• ');
+  const consolidatedBp = Array.from(new Set(guides.flatMap((g) => g.bestPractices || []))).filter(
+    (b) => !b.includes('Recommendation')
+  );
+  const consolidatedAp = Array.from(new Set(guides.flatMap((g) => g.antiPatterns || []))).filter(
+    (a) => !a.includes('Common pitfall')
+  );
+  const consolidatedTips = Array.from(
+    new Set(guides.map((g) => g.interviewTips).filter(Boolean))
+  ).join('\n• ');
 
   return {
     id: `imported-single-${Date.now()}`,
@@ -2929,11 +3244,17 @@ function finalizeImportResult(
 
   if (stageOnly) {
     const existing = getStagedGuides(normTrack);
-    const updated = [...finalGuides, ...existing.filter(e => !finalGuides.some(v => v.id === e.id))];
+    const updated = [
+      ...finalGuides,
+      ...existing.filter((e) => !finalGuides.some((v) => v.id === e.id)),
+    ];
     localStorage.setItem(`${STAGED_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
   } else {
     const existing = getStoredCustomGuides(normTrack);
-    const updated = [...finalGuides, ...existing.filter(e => !finalGuides.some(v => v.id === e.id))];
+    const updated = [
+      ...finalGuides,
+      ...existing.filter((e) => !finalGuides.some((v) => v.id === e.id)),
+    ];
     localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${normTrack}`, JSON.stringify(updated));
   }
   return { guides: finalGuides };

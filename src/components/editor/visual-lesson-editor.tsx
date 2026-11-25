@@ -87,7 +87,9 @@ export default function VisualLessonEditor({
   moduleContext,
   curriculumContext,
 }: VisualLessonEditorProps) {
-  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved' | 'error' | 'publish-error'>('saved');
+  const [saveStatus, setSaveStatus] = useState<
+    'saved' | 'saving' | 'unsaved' | 'error' | 'publish-error'
+  >('saved');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [lastSavedTime, setLastSavedTime] = useState<string>('Just now');
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
@@ -165,11 +167,13 @@ export default function VisualLessonEditor({
     extensions: [
       ...sharedTiptapExtensions,
       Placeholder.configure({
-        placeholder: 'Write your comprehensive technical lesson content here. Start typing or insert headings, code snippets, tables, and architecture diagrams...',
+        placeholder:
+          'Write your comprehensive technical lesson content here. Start typing or insert headings, code snippets, tables, and architecture diagrams...',
       }),
       CharacterCount,
     ],
-    content: initialBlockData?.tiptapJson || initialHtml || '<p>Start writing your lesson content...</p>',
+    content:
+      initialBlockData?.tiptapJson || initialHtml || '<p>Start writing your lesson content...</p>',
     editorProps: {
       attributes: {
         class:
@@ -201,7 +205,13 @@ export default function VisualLessonEditor({
       const success = await onSaveDraft(currentHtml, { tiptapJson: currentJson });
       if (success) {
         setSaveStatus('saved');
-        setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        setLastSavedTime(
+          new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })
+        );
       } else {
         setSaveStatus('error');
       }
@@ -238,10 +248,15 @@ export default function VisualLessonEditor({
     const htmlToSave = mode === 'visual' && editor ? editor.getHTML() : rawHtml;
     const jsonToSave = editor ? editor.getJSON() : undefined;
     setSaveStatus('saving');
-    const success = await onSaveDraft(htmlToSave, jsonToSave ? { tiptapJson: jsonToSave } : undefined);
+    const success = await onSaveDraft(
+      htmlToSave,
+      jsonToSave ? { tiptapJson: jsonToSave } : undefined
+    );
     if (success) {
       setSaveStatus('saved');
-      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setLastSavedTime(
+        new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      );
     } else {
       setSaveStatus('error');
     }
@@ -252,10 +267,19 @@ export default function VisualLessonEditor({
     const jsonToSave = editor ? editor.getJSON() : undefined;
     setSaveStatus('saving');
     try {
-      const success = await onPublish(htmlToSave, jsonToSave ? { tiptapJson: jsonToSave } : undefined);
+      const success = await onPublish(
+        htmlToSave,
+        jsonToSave ? { tiptapJson: jsonToSave } : undefined
+      );
       if (success) {
         setSaveStatus('saved');
-        setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        setLastSavedTime(
+          new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })
+        );
       } else {
         setSaveStatus('publish-error');
       }
@@ -312,9 +336,10 @@ export default function VisualLessonEditor({
 
   // Construct Context Package for AI
   const currentContentForAi = mode === 'visual' && editor ? editor.getHTML() : rawHtml;
-  const selectedTextForAi = editor && !editor.state.selection.empty
-    ? editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to, ' ')
-    : undefined;
+  const selectedTextForAi =
+    editor && !editor.state.selection.empty
+      ? editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to, ' ')
+      : undefined;
 
   const lessonContextPackage: LessonContextPackage = {
     course: {
@@ -388,13 +413,19 @@ export default function VisualLessonEditor({
                 </span>
               )}
               {saveStatus === 'error' && (
-                <span className="flex items-center gap-1 text-rose-500 dark:text-rose-400 font-semibold" title={errorMessage}>
+                <span
+                  className="flex items-center gap-1 text-rose-500 dark:text-rose-400 font-semibold"
+                  title={errorMessage}
+                >
                   <AlertCircle className="w-3.5 h-3.5" />
                   <span>{errorMessage || 'Error saving draft'}</span>
                 </span>
               )}
               {saveStatus === 'publish-error' && (
-                <span className="flex items-center gap-1 text-rose-500 dark:text-rose-400 font-semibold" title={errorMessage}>
+                <span
+                  className="flex items-center gap-1 text-rose-500 dark:text-rose-400 font-semibold"
+                  title={errorMessage}
+                >
                   <AlertCircle className="w-3.5 h-3.5" />
                   <span>{errorMessage || 'Error publishing lesson'}</span>
                 </span>
@@ -530,9 +561,7 @@ export default function VisualLessonEditor({
         {/* Left / Main Editor Area */}
         <div
           className={`overflow-y-auto p-4 sm:p-8 bg-slate-100/70 dark:bg-[#09090B] flex justify-center transition-all ${
-            showAiAssistant && aiPanelState === 'maximized'
-              ? 'hidden'
-              : 'flex-1 min-w-0'
+            showAiAssistant && aiPanelState === 'maximized' ? 'hidden' : 'flex-1 min-w-0'
           }`}
         >
           {mode === 'visual' ? (
@@ -543,16 +572,21 @@ export default function VisualLessonEditor({
               {editor && (
                 <div className="px-8 py-3 border-t border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-zinc-500 font-mono text-[11px] flex items-center justify-between select-none">
                   <span>
-                    {editor.storage.characterCount.words()} words • {editor.storage.characterCount.characters()} characters
+                    {editor.storage.characterCount.words()} words •{' '}
+                    {editor.storage.characterCount.characters()} characters
                   </span>
-                  <span className="text-slate-400 dark:text-zinc-600">Visual WYSIWYG Mode (Tiptap Engine)</span>
+                  <span className="text-slate-400 dark:text-zinc-600">
+                    Visual WYSIWYG Mode (Tiptap Engine)
+                  </span>
                 </div>
               )}
             </div>
           ) : (
             <div className="w-full max-w-4xl bg-white dark:bg-[#141417] border border-slate-200 dark:border-[#27272A] rounded-3xl p-6 flex flex-col space-y-3 shadow-md">
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400 pb-2 border-b border-slate-200 dark:border-[#27272A]">
-                <span className="font-mono text-cyan-600 dark:text-cyan-400">Raw HTML Source Mode</span>
+                <span className="font-mono text-cyan-600 dark:text-cyan-400">
+                  Raw HTML Source Mode
+                </span>
                 <span>Changes sync automatically to visual editor when switching back</span>
               </div>
               <textarea

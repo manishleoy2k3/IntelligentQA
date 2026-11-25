@@ -6,18 +6,12 @@ interface ComparisonTableProps {
   rows: string[][];
 }
 
-export default function ComparisonTable({
-  title,
-  headers,
-  rows,
-}: ComparisonTableProps) {
+export default function ComparisonTable({ title, headers, rows }: ComparisonTableProps) {
   return (
     <div className="my-6 overflow-hidden rounded-xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/40 shadow-xs">
       {title && (
         <div className="px-4 py-3 bg-slate-50 dark:bg-neutral-900 border-b border-slate-200 dark:border-neutral-800">
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            {title}
-          </h4>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h4>
         </div>
       )}
 

@@ -22,7 +22,9 @@ export default function ProfileModal({
 }: ProfileModalProps) {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [displayName, setDisplayName] = useState('');
-  const [targetRole, setTargetRole] = useState<'Manual QA' | 'Automation Tester' | 'SDET' | 'QA Lead' | 'Test Architect'>('Manual QA');
+  const [targetRole, setTargetRole] = useState<
+    'Manual QA' | 'Automation Tester' | 'SDET' | 'QA Lead' | 'Test Architect'
+  >('Manual QA');
   const [experienceYears, setExperienceYears] = useState<number>(0);
   const [primaryTrack, setPrimaryTrack] = useState<TrackId>('playwright-ts');
   const [saving, setSaving] = useState(false);
@@ -78,7 +80,7 @@ export default function ProfileModal({
 
   return (
     <div
-      onClick={e => {
+      onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150"
@@ -102,12 +104,8 @@ export default function ProfileModal({
             <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>Profile Customization</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-            {title}
-          </h2>
-          <p className="text-sm text-slate-500 leading-relaxed">
-            {subtitle}
-          </p>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{title}</h2>
+          <p className="text-sm text-slate-500 leading-relaxed">{subtitle}</p>
         </div>
 
         {/* Profile Form */}
@@ -122,7 +120,7 @@ export default function ProfileModal({
               type="text"
               required
               value={displayName}
-              onChange={e => setDisplayName(e.target.value)}
+              onChange={(e) => setDisplayName(e.target.value)}
               placeholder="e.g. Manish Kumar"
               className="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base"
             />
@@ -136,10 +134,12 @@ export default function ProfileModal({
             </label>
             <select
               value={targetRole}
-              onChange={e => setTargetRole(e.target.value as any)}
+              onChange={(e) => setTargetRole(e.target.value as any)}
               className="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base cursor-pointer"
             >
-              <option value="Manual QA">Manual QA Engineer (Testing manually, starting automation)</option>
+              <option value="Manual QA">
+                Manual QA Engineer (Testing manually, starting automation)
+              </option>
               <option value="Automation Tester">Automation Tester (Junior / Mid automation)</option>
               <option value="SDET">SDET (Full SDET / Framework author)</option>
               <option value="QA Lead">QA Lead / Test Manager</option>
@@ -155,7 +155,7 @@ export default function ProfileModal({
             </label>
             <select
               value={experienceYears}
-              onChange={e => setExperienceYears(Number(e.target.value))}
+              onChange={(e) => setExperienceYears(Number(e.target.value))}
               className="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base cursor-pointer"
             >
               <option value={0}>Fresher / Transitioning to QA (&lt; 1 Year)</option>
@@ -176,12 +176,18 @@ export default function ProfileModal({
             </label>
             <select
               value={primaryTrack}
-              onChange={e => setPrimaryTrack(e.target.value as TrackId)}
+              onChange={(e) => setPrimaryTrack(e.target.value as TrackId)}
               className="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base cursor-pointer"
             >
-              <option value="playwright-ts">Playwright with TypeScript (Recommended for fastest SDET transition)</option>
-              <option value="selenium-java">Selenium WebDriver with Java (Enterprise standard)</option>
-              <option value="api-testing">API Automation (Postman + RestAssured + Playwright API)</option>
+              <option value="playwright-ts">
+                Playwright with TypeScript (Recommended for fastest SDET transition)
+              </option>
+              <option value="selenium-java">
+                Selenium WebDriver with Java (Enterprise standard)
+              </option>
+              <option value="api-testing">
+                API Automation (Postman + RestAssured + Playwright API)
+              </option>
               <option value="ai-qa">AI Academy &amp; Autonomous Testing Agents</option>
             </select>
           </div>

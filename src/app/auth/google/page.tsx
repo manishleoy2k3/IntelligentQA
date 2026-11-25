@@ -52,8 +52,8 @@ function GoogleOAuthContent() {
         const remembered = QADatabase.getRememberedGoogleAccounts();
         if (remembered && remembered.length > 0) {
           const userAccounts = remembered
-            .filter(r => r.email)
-            .map(r => ({ email: r.email, name: r.name || r.email.split('@')[0] }));
+            .filter((r) => r.email)
+            .map((r) => ({ email: r.email, name: r.name || r.email.split('@')[0] }));
           setAccounts(userAccounts);
           setShowCustomInput(false);
         } else {
@@ -74,7 +74,7 @@ function GoogleOAuthContent() {
 
     try {
       // Brief smooth transition (200ms) for authentic OAuth confirmation
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       // Authenticate directly in database
       const user = await QADatabase.loginWithGoogle(acc.email, acc.name);
@@ -97,7 +97,7 @@ function GoogleOAuthContent() {
       cleanEmail
         .split('@')[0]
         .replace(/[._]/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
+        .replace(/\b\w/g, (l) => l.toUpperCase());
 
     handleSelectExisting({ email: cleanEmail, name: cleanName });
   };
@@ -165,7 +165,7 @@ function GoogleOAuthContent() {
           <div className="md:col-span-7">
             {!showCustomInput ? (
               <div className="divide-y divide-neutral-800">
-                {accounts.map(acc => (
+                {accounts.map((acc) => (
                   <button
                     key={acc.email}
                     type="button"
@@ -207,7 +207,9 @@ function GoogleOAuthContent() {
                   <div className="w-10 h-10 rounded-full bg-neutral-800 text-neutral-400 group-hover:text-white flex items-center justify-center shrink-0">
                     <UserPlus className="w-5 h-5" />
                   </div>
-                  <span className="text-sm sm:text-base font-medium">Use another Google Account</span>
+                  <span className="text-sm sm:text-base font-medium">
+                    Use another Google Account
+                  </span>
                 </button>
               </div>
             ) : (
@@ -222,7 +224,7 @@ function GoogleOAuthContent() {
                     required
                     autoFocus
                     value={customEmail}
-                    onChange={e => setCustomEmail(e.target.value)}
+                    onChange={(e) => setCustomEmail(e.target.value)}
                     placeholder="you@gmail.com"
                     className="w-full px-4 py-3 bg-[#090A0C] border border-neutral-700 rounded-xl text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                   />
@@ -235,7 +237,7 @@ function GoogleOAuthContent() {
                   <input
                     type="text"
                     value={customName}
-                    onChange={e => setCustomName(e.target.value)}
+                    onChange={(e) => setCustomName(e.target.value)}
                     placeholder="e.g. Manish Kumar"
                     className="w-full px-4 py-3 bg-[#090A0C] border border-neutral-700 rounded-xl text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                   />

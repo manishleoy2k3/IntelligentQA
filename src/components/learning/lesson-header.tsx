@@ -42,7 +42,9 @@ export default function LessonHeader({
     : null;
 
   return (
-    <header className={`mb-6 pb-6 border-b border-slate-200 dark:border-neutral-800 lesson-header-container ${className}`}>
+    <header
+      className={`mb-6 pb-6 border-b border-slate-200 dark:border-neutral-800 lesson-header-container ${className}`}
+    >
       {/* Lesson Title */}
       <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
         {title}
@@ -57,7 +59,9 @@ export default function LessonHeader({
 
         <span className="text-slate-300 dark:text-neutral-700">•</span>
 
-        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${getDifficultyBadge(difficulty)}`}>
+        <span
+          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${getDifficultyBadge(difficulty)}`}
+        >
           {difficulty}
         </span>
 

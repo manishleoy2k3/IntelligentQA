@@ -89,9 +89,10 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
     id: 'mod-intro-ai',
     slug: 'introduction-to-ai',
     title: 'Module 1 — Introduction to AI',
-    description: 'Foundational concepts of artificial intelligence, machine learning paradigms, generative models, transformer mechanics, and LLM token processing.',
+    description:
+      'Foundational concepts of artificial intelligence, machine learning paradigms, generative models, transformer mechanics, and LLM token processing.',
     lessons: [
-{
+      {
         id: 'les-what-is-ai',
         slug: 'what-is-artificial-intelligence',
         title: 'What is Artificial Intelligence?',
@@ -100,7 +101,8 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
         estimatedTime: '8 min read',
         difficulty: 'Beginner',
         tags: ['AI Fundamentals', 'Machine Learning', 'Overview'],
-        summary: 'Explore the fundamental definition of AI, its historical progression from rule-based heuristic systems to deep learning, and its modern applications in software quality assurance.',
+        summary:
+          'Explore the fundamental definition of AI, its historical progression from rule-based heuristic systems to deep learning, and its modern applications in software quality assurance.',
         sections: [
           {
             id: 'ai-definition',
@@ -112,7 +114,8 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
             ],
             infoCallout: {
               title: 'Key Industry Takeaway',
-              message: 'AI in QA is not about replacing human testers, but rather eliminating repetitive locator maintenance and accelerating regression test cycles.',
+              message:
+                'AI in QA is not about replacing human testers, but rather eliminating repetitive locator maintenance and accelerating regression test cycles.',
             },
           },
           {
@@ -127,10 +130,26 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
               title: 'Comparison: Traditional Automation vs AI-Enhanced QA',
               headers: ['Aspect', 'Traditional Test Automation', 'AI-Enhanced QA Platform'],
               rows: [
-                ['Element Locators', 'Rigid XPath or CSS selectors that break when DOM changes', 'Self-healing multi-attribute fingerprints with confidence scoring'],
-                ['Test Generation', 'Manual authoring of step-by-step scripts in Java/TypeScript', 'Autonomous synthesis of executable tests from requirements and user stories'],
-                ['Visual Validation', 'Brittle pixel-by-pixel comparisons causing false positives', 'Semantic computer vision recognizing layout anomalies across screen resolutions'],
-                ['Failure Triage', 'Engineers manually parsing 500-line stack traces in CI logs', 'Automated root-cause analysis with actionable remediation code snippets'],
+                [
+                  'Element Locators',
+                  'Rigid XPath or CSS selectors that break when DOM changes',
+                  'Self-healing multi-attribute fingerprints with confidence scoring',
+                ],
+                [
+                  'Test Generation',
+                  'Manual authoring of step-by-step scripts in Java/TypeScript',
+                  'Autonomous synthesis of executable tests from requirements and user stories',
+                ],
+                [
+                  'Visual Validation',
+                  'Brittle pixel-by-pixel comparisons causing false positives',
+                  'Semantic computer vision recognizing layout anomalies across screen resolutions',
+                ],
+                [
+                  'Failure Triage',
+                  'Engineers manually parsing 500-line stack traces in CI logs',
+                  'Automated root-cause analysis with actionable remediation code snippets',
+                ],
               ],
             },
           },
@@ -145,7 +164,8 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Introduction to AI', 'AI Quality Engineering'],
-        summary: 'Supervised, unsupervised, and reinforcement learning applied to automated test classification.',
+        summary:
+          'Supervised, unsupervised, and reinforcement learning applied to automated test classification.',
         sections: [
           {
             id: 'what-is-machine-learning-overview',
@@ -157,7 +177,8 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering What is Machine Learning? enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering What is Machine Learning? enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -169,11 +190,27 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -189,7 +226,8 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
               title: 'Production Implementation (what-is-machine-learning)',
               filename: 'what-is-machine-learning.java',
               code: `public class Spec { public static void main(String[] args) { System.out.println("Executing What is Machine Learning?"); } }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -202,15 +240,17 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-what-is-genai',
         slug: 'what-is-generative-ai',
         title: 'What is Generative AI?',
@@ -219,7 +259,8 @@ export const ACADEMY_MODULES: AcademyModuleData[] = [
         estimatedTime: '10 min read',
         difficulty: 'Beginner',
         tags: ['Generative AI', 'Transformers', 'Content Generation'],
-        summary: 'Understand generative models, how they differ from discriminative models, and how transformer architectures generate novel text, test suites, and synthetic test data.',
+        summary:
+          'Understand generative models, how they differ from discriminative models, and how transformer architectures generate novel text, test suites, and synthetic test data.',
         sections: [
           {
             id: 'genai-concept',
@@ -248,12 +289,13 @@ Generate 5 boundary test payloads including edge cases (null bytes, max integers
 
   return JSON.parse(response.text || '[]');
 }`,
-              explanation: 'Generative models take structured prompt instructions and output production-ready test data that accounts for boundary conditions.',
+              explanation:
+                'Generative models take structured prompt instructions and output production-ready test data that accounts for boundary conditions.',
             },
           },
         ],
       },
-{
+      {
         id: 'les-what-is-llm',
         slug: 'what-is-an-llm',
         title: 'What is an LLM?',
@@ -262,7 +304,8 @@ Generate 5 boundary test payloads including edge cases (null bytes, max integers
         estimatedTime: '14 min read',
         difficulty: 'Beginner',
         tags: ['LLM Architecture', 'Transformers', 'Self-Attention', 'Tokenization'],
-        summary: 'A deep architectural guide to Large Language Models: from tokenization and embeddings to transformer self-attention and inference token generation.',
+        summary:
+          'A deep architectural guide to Large Language Models: from tokenization and embeddings to transformer self-attention and inference token generation.',
         sections: [
           {
             id: 'llm-fundamentals',
@@ -274,7 +317,8 @@ Generate 5 boundary test payloads including edge cases (null bytes, max integers
             ],
             infoCallout: {
               title: 'Core Concept: Next-Token Prediction',
-              message: 'An LLM does not "think" in human concepts. It computes matrix multiplications across billions of weights to iteratively sample the next token according to a softmax temperature probability curve.',
+              message:
+                'An LLM does not "think" in human concepts. It computes matrix multiplications across billions of weights to iteratively sample the next token according to a softmax temperature probability curve.',
             },
           },
           {
@@ -287,14 +331,46 @@ Generate 5 boundary test payloads including edge cases (null bytes, max integers
             diagram: {
               type: 'pipeline',
               title: 'Figure 1: End-to-End LLM Transformer Inference Pipeline',
-              caption: 'How raw user prompt text transforms into numerical embeddings, traverses attention layers, and generates output tokens.',
+              caption:
+                'How raw user prompt text transforms into numerical embeddings, traverses attention layers, and generates output tokens.',
               nodes: [
-                { id: 'n1', label: 'Raw User Prompt', subtitle: 'e.g. "Write Playwright POM"', badge: 'Input' },
-                { id: 'n2', label: 'Byte-Pair Tokenizer', subtitle: 'Converts text into token IDs', badge: 'Tokenization' },
-                { id: 'n3', label: 'Embedding & Positional Encoding', subtitle: 'Maps tokens to dense vectors', badge: 'Vector Space' },
-                { id: 'n4', label: 'Multi-Head Self-Attention', subtitle: 'Computes query-key-value matrices', badge: 'Transformer Core', highlight: true },
-                { id: 'n5', label: 'Feed-Forward & Softmax', subtitle: 'Calculates vocabulary probability', badge: 'Probabilities' },
-                { id: 'n6', label: 'Decoded Output Stream', subtitle: 'Generated response tokens', badge: 'Output Stream' },
+                {
+                  id: 'n1',
+                  label: 'Raw User Prompt',
+                  subtitle: 'e.g. "Write Playwright POM"',
+                  badge: 'Input',
+                },
+                {
+                  id: 'n2',
+                  label: 'Byte-Pair Tokenizer',
+                  subtitle: 'Converts text into token IDs',
+                  badge: 'Tokenization',
+                },
+                {
+                  id: 'n3',
+                  label: 'Embedding & Positional Encoding',
+                  subtitle: 'Maps tokens to dense vectors',
+                  badge: 'Vector Space',
+                },
+                {
+                  id: 'n4',
+                  label: 'Multi-Head Self-Attention',
+                  subtitle: 'Computes query-key-value matrices',
+                  badge: 'Transformer Core',
+                  highlight: true,
+                },
+                {
+                  id: 'n5',
+                  label: 'Feed-Forward & Softmax',
+                  subtitle: 'Calculates vocabulary probability',
+                  badge: 'Probabilities',
+                },
+                {
+                  id: 'n6',
+                  label: 'Decoded Output Stream',
+                  subtitle: 'Generated response tokens',
+                  badge: 'Output Stream',
+                },
               ],
               connections: [
                 { from: 'n1', to: 'n2', label: 'Text string' },
@@ -359,7 +435,8 @@ Rules:
     return response.text ?? '// No code generated';
   }
 }`,
-              explanation: 'Notice temperature is pinned to 0.1 for deterministic, syntax-compliant code generation without hallucinated APIs.',
+              explanation:
+                'Notice temperature is pinned to 0.1 for deterministic, syntax-compliant code generation without hallucinated APIs.',
             },
           },
           {
@@ -371,16 +448,37 @@ Rules:
             ],
             warningCallout: {
               title: 'Caution: Hallucinated Selectors in High-Temperature Runs',
-              message: 'Setting temperature > 0.4 for code generation tasks frequently results in hallucinated CSS selectors and non-existent framework methods. For test synthesis, always maintain temperature between 0.0 and 0.2.',
+              message:
+                'Setting temperature > 0.4 for code generation tasks frequently results in hallucinated CSS selectors and non-existent framework methods. For test synthesis, always maintain temperature between 0.0 and 0.2.',
             },
             comparisonTable: {
               title: 'LLM Hyperparameter Guide for QA Engineers',
               headers: ['Parameter', 'Range', 'Recommended for QA', 'Impact on Generation'],
               rows: [
-                ['Temperature', '0.0 - 2.0', '0.0 - 0.2', 'Lower values guarantee deterministic, reproducible test code'],
-                ['Top-P (Nucleus)', '0.0 - 1.0', '0.95', 'Restricts token sampling to cumulative probability mass'],
-                ['Max Output Tokens', '1 - 8192', '4096', 'Prevents mid-syntax truncation in large class files'],
-                ['Presence Penalty', '-2.0 - 2.0', '0.0', 'Encourages repetition of necessary standard boilerplate'],
+                [
+                  'Temperature',
+                  '0.0 - 2.0',
+                  '0.0 - 0.2',
+                  'Lower values guarantee deterministic, reproducible test code',
+                ],
+                [
+                  'Top-P (Nucleus)',
+                  '0.0 - 1.0',
+                  '0.95',
+                  'Restricts token sampling to cumulative probability mass',
+                ],
+                [
+                  'Max Output Tokens',
+                  '1 - 8192',
+                  '4096',
+                  'Prevents mid-syntax truncation in large class files',
+                ],
+                [
+                  'Presence Penalty',
+                  '-2.0 - 2.0',
+                  '0.0',
+                  'Encourages repetition of necessary standard boilerplate',
+                ],
               ],
             },
           },
@@ -394,20 +492,26 @@ Rules:
             troubleshooting: [
               {
                 error: 'ContextWindowExceededError (Max Tokens 128k exceeded)',
-                cause: 'Passing raw uncompressed DOM dumps or 20MB application log files directly into the prompt.',
-                solution: 'Strip script tags, style sheets, and SVG paths before sending HTML. Use Chunking or Semantic RAG to feed only relevant elements.',
+                cause:
+                  'Passing raw uncompressed DOM dumps or 20MB application log files directly into the prompt.',
+                solution:
+                  'Strip script tags, style sheets, and SVG paths before sending HTML. Use Chunking or Semantic RAG to feed only relevant elements.',
                 codeFix: `const cleanHtml = rawHtml.replace(/<script[\\s\\S]*?<\\/script>/gi, '').replace(/<style[\\s\\S]*?<\\/style>/gi, '');`,
               },
               {
                 error: 'Non-Deterministic Assertion Failures in CI',
-                cause: 'Running evaluations with default temperature (0.7+), causing slightly different assertion text across CI runs.',
-                solution: 'Enforce temperature: 0.0 and configure a deterministic seed parameter in your model options.',
+                cause:
+                  'Running evaluations with default temperature (0.7+), causing slightly different assertion text across CI runs.',
+                solution:
+                  'Enforce temperature: 0.0 and configure a deterministic seed parameter in your model options.',
                 codeFix: `config: { temperature: 0.0, seed: 42 }`,
               },
               {
                 error: 'Truncated Output / Incomplete Closing Brackets',
-                cause: 'maxOutputTokens ceiling reached before the LLM finished generating all test methods.',
-                solution: 'Increase maxOutputTokens to at least 4096 and instruct the model to partition large test suites across multiple modular files.',
+                cause:
+                  'maxOutputTokens ceiling reached before the LLM finished generating all test methods.',
+                solution:
+                  'Increase maxOutputTokens to at least 4096 and instruct the model to partition large test suites across multiple modular files.',
               },
             ],
           },
@@ -422,7 +526,8 @@ Rules:
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Introduction to AI', 'AI Quality Engineering'],
-        summary: 'Inference loops, next-token prediction, softmax sampling, and temperature tuning in test automation.',
+        summary:
+          'Inference loops, next-token prediction, softmax sampling, and temperature tuning in test automation.',
         sections: [
           {
             id: 'how-llms-work-overview',
@@ -434,7 +539,8 @@ Rules:
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering How LLMs Work enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering How LLMs Work enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -446,11 +552,27 @@ Rules:
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -466,7 +588,8 @@ Rules:
               title: 'Production Implementation (how-llms-work)',
               filename: 'how-llms-work.ts',
               code: `export async function executeQAFlow() { console.log("Executing How LLMs Work"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -479,8 +602,10 @@ Rules:
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -496,7 +621,8 @@ Rules:
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Introduction to AI', 'AI Quality Engineering'],
-        summary: 'Multi-head self-attention, query-key-value vector matrices, feed-forward layers, and positional embeddings.',
+        summary:
+          'Multi-head self-attention, query-key-value vector matrices, feed-forward layers, and positional embeddings.',
         sections: [
           {
             id: 'transformer-architecture-overview',
@@ -508,7 +634,8 @@ Rules:
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Transformer Architecture enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Transformer Architecture enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -520,11 +647,27 @@ Rules:
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -540,7 +683,8 @@ Rules:
               title: 'Production Implementation (transformer-architecture)',
               filename: 'transformer-architecture.ts',
               code: `export async function executeQAFlow() { console.log("Executing Transformer Architecture"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -553,8 +697,10 @@ Rules:
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -570,7 +716,8 @@ Rules:
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Introduction to AI', 'AI Quality Engineering'],
-        summary: 'Byte-Pair Encoding, high-dimensional vector representations, and contextual attention matrices.',
+        summary:
+          'Byte-Pair Encoding, high-dimensional vector representations, and contextual attention matrices.',
         sections: [
           {
             id: 'tokens-embeddings-and-attention-overview',
@@ -582,7 +729,8 @@ Rules:
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Tokens, Embeddings and Attention enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Tokens, Embeddings and Attention enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -594,11 +742,27 @@ Rules:
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -614,7 +778,8 @@ Rules:
               title: 'Production Implementation (tokens-embeddings-and-attention)',
               filename: 'tokens-embeddings-and-attention.ts',
               code: `export async function executeQAFlow() { console.log("Executing Tokens, Embeddings and Attention"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -627,14 +792,16 @@ Rules:
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
-      }
+      },
     ],
   },
 
@@ -645,9 +812,10 @@ Rules:
     id: 'mod-prompt-engineering',
     slug: 'prompt-engineering',
     title: 'Module 2 — Prompt Engineering',
-    description: 'Systematic prompt design, few-shot patterns, reasoning chains, and deterministic test code synthesis.',
+    description:
+      'Systematic prompt design, few-shot patterns, reasoning chains, and deterministic test code synthesis.',
     lessons: [
-{
+      {
         id: 'les-what-is-prompt-eng',
         slug: 'what-is-prompt-engineering',
         title: 'What is Prompt Engineering?',
@@ -656,7 +824,8 @@ Rules:
         estimatedTime: '12 min read',
         difficulty: 'Beginner',
         tags: ['Prompt Engineering', 'Few-Shot Learning', 'Chain-of-Thought', 'System Prompts'],
-        summary: 'Learn the principles of prompt engineering for QA: structuring system prompts, persona framing, few-shot demonstration pairs, and guardrails for test generation.',
+        summary:
+          'Learn the principles of prompt engineering for QA: structuring system prompts, persona framing, few-shot demonstration pairs, and guardrails for test generation.',
         sections: [
           {
             id: 'prompt-eng-definition',
@@ -668,7 +837,8 @@ Rules:
             ],
             infoCallout: {
               title: 'The Golden Rule of Prompting',
-              message: 'Garbage in, garbage out. If a human engineer cannot unequivocally understand the criteria from the prompt alone, an LLM will invent assumptions to fill in the gaps.',
+              message:
+                'Garbage in, garbage out. If a human engineer cannot unequivocally understand the criteria from the prompt alone, an LLM will invent assumptions to fill in the gaps.',
             },
           },
           {
@@ -681,13 +851,40 @@ Rules:
             diagram: {
               type: 'layers',
               title: 'Figure 2: 5-Tier Architecture of a Production QA Prompt',
-              caption: 'Structured anatomy of a high-fidelity prompt ensuring consistent test automation output.',
+              caption:
+                'Structured anatomy of a high-fidelity prompt ensuring consistent test automation output.',
               nodes: [
-                { id: 'p1', label: '1. Role & Persona Definition', subtitle: '"You are a Staff Quality Engineer..."', badge: 'Context' },
-                { id: 'p2', label: '2. Task & Primary Objective', subtitle: '"Generate a TestNG data-driven suite..."', badge: 'Core Task' },
-                { id: 'p3', label: '3. Technical Constraints & Guardrails', subtitle: '"Use PageFactory; Do not use Thread.sleep"', badge: 'Rules', highlight: true },
-                { id: 'p4', label: '4. Few-Shot Exemplars', subtitle: 'Input-output reference pairs', badge: 'Demonstration' },
-                { id: 'p5', label: '5. Output Format Contract', subtitle: '"Return pure JSON conforming to Schema X"', badge: 'Envelope' },
+                {
+                  id: 'p1',
+                  label: '1. Role & Persona Definition',
+                  subtitle: '"You are a Staff Quality Engineer..."',
+                  badge: 'Context',
+                },
+                {
+                  id: 'p2',
+                  label: '2. Task & Primary Objective',
+                  subtitle: '"Generate a TestNG data-driven suite..."',
+                  badge: 'Core Task',
+                },
+                {
+                  id: 'p3',
+                  label: '3. Technical Constraints & Guardrails',
+                  subtitle: '"Use PageFactory; Do not use Thread.sleep"',
+                  badge: 'Rules',
+                  highlight: true,
+                },
+                {
+                  id: 'p4',
+                  label: '4. Few-Shot Exemplars',
+                  subtitle: 'Input-output reference pairs',
+                  badge: 'Demonstration',
+                },
+                {
+                  id: 'p5',
+                  label: '5. Output Format Contract',
+                  subtitle: '"Return pure JSON conforming to Schema X"',
+                  badge: 'Envelope',
+                },
               ],
             },
           },
@@ -724,7 +921,8 @@ Analyze the OpenAPI 3.0 specification below and generate a complete, non-truncat
 ### OUTPUT FORMAT
 Provide the complete .java file with package declarations and imports.\`;
 }`,
-              explanation: 'Explicit constraints and negative rules prevent the model from omitting imports or generating truncated placeholder code.',
+              explanation:
+                'Explicit constraints and negative rules prevent the model from omitting imports or generating truncated placeholder code.',
             },
           },
           {
@@ -733,16 +931,31 @@ Provide the complete .java file with package declarations and imports.\`;
             level: 2,
             content: [
               'Two prompting methodologies deliver transformative improvements in complex QA tasks:',
-              '• <strong>Few-Shot Learning:</strong> Providing 2-3 concrete examples of input DOM and output Page Object Model classes dramatically increases alignment with your organization\'s internal framework conventions.',
+              "• <strong>Few-Shot Learning:</strong> Providing 2-3 concrete examples of input DOM and output Page Object Model classes dramatically increases alignment with your organization's internal framework conventions.",
               '• <strong>Chain-of-Thought (CoT):</strong> Instructing the model to "think step by step" before generating code forces it to analyze DOM hierarchy, identify stable parent containers, and evaluate aria attributes before outputting selectors.',
             ],
             comparisonTable: {
               title: 'Zero-Shot vs Few-Shot vs Chain-of-Thought for QA',
               headers: ['Technique', 'When to Use', 'Token Cost', 'Accuracy on Edge Cases'],
               rows: [
-                ['Zero-Shot', 'Simple queries, explanations, and boilerplate generation', 'Lowest', '65 - 75%'],
-                ['Few-Shot', 'Enforcing strict internal coding patterns or custom assertions', 'Moderate (+500-1500 tokens)', '88 - 94%'],
-                ['Chain-of-Thought', 'Complex flaky test triage, multi-step debugging, root cause analysis', 'Higher (+200-800 tokens generated)', '95 - 99%'],
+                [
+                  'Zero-Shot',
+                  'Simple queries, explanations, and boilerplate generation',
+                  'Lowest',
+                  '65 - 75%',
+                ],
+                [
+                  'Few-Shot',
+                  'Enforcing strict internal coding patterns or custom assertions',
+                  'Moderate (+500-1500 tokens)',
+                  '88 - 94%',
+                ],
+                [
+                  'Chain-of-Thought',
+                  'Complex flaky test triage, multi-step debugging, root cause analysis',
+                  'Higher (+200-800 tokens generated)',
+                  '95 - 99%',
+                ],
               ],
             },
           },
@@ -750,20 +963,21 @@ Provide the complete .java file with package declarations and imports.\`;
             id: 'prompt-troubleshooting',
             title: '5. Troubleshooting Prompt Engineering Failures',
             level: 2,
-            content: [
-              'Diagnose and correct the most common prompt engineering anti-patterns:',
-            ],
+            content: ['Diagnose and correct the most common prompt engineering anti-patterns:'],
             troubleshooting: [
               {
                 error: 'Model Returns Conversational Preamble ("Sure, here is your code...")',
                 cause: 'Absence of negative constraints and structured format markers.',
-                solution: 'Add: "Return ONLY executable code inside markdown fence. Do not include introductory or concluding conversational prose."',
+                solution:
+                  'Add: "Return ONLY executable code inside markdown fence. Do not include introductory or concluding conversational prose."',
                 codeFix: `systemInstruction: "You are a code compiler. Output pure code only."`,
               },
               {
                 error: 'Flaky JSON Parsing ("SyntaxError: Unexpected token in JSON")',
-                cause: 'Model returns markdown code blocks (\`\`\`json ... \`\`\`) around JSON response or includes trailing commas.',
-                solution: 'Use Gemini or OpenAI Structured Outputs mode with responseSchema, or strip markdown fences before JSON.parse().',
+                cause:
+                  'Model returns markdown code blocks (\`\`\`json ... \`\`\`) around JSON response or includes trailing commas.',
+                solution:
+                  'Use Gemini or OpenAI Structured Outputs mode with responseSchema, or strip markdown fences before JSON.parse().',
                 codeFix: `const cleanJson = response.text.replace(/^\\s*\`\`\`json/i, '').replace(/\`\`\`\\s*$/i, '').trim();`,
               },
             ],
@@ -779,7 +993,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Prompt Engineering', 'AI Quality Engineering'],
-        summary: 'Role definitions, context framing, explicit constraints, input data boundaries, and output schemas.',
+        summary:
+          'Role definitions, context framing, explicit constraints, input data boundaries, and output schemas.',
         sections: [
           {
             id: 'anatomy-of-a-good-prompt-overview',
@@ -791,7 +1006,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Anatomy of a Good Prompt enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Anatomy of a Good Prompt enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -803,11 +1019,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -823,7 +1055,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (anatomy-of-a-good-prompt)',
               filename: 'anatomy-of-a-good-prompt.ts',
               code: `export async function executeQAFlow() { console.log("Executing Anatomy of a Good Prompt"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -836,8 +1069,10 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -853,7 +1088,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Prompt Engineering', 'AI Quality Engineering'],
-        summary: 'Direct task instruction without demonstrations: baseline testing prompts and limitations.',
+        summary:
+          'Direct task instruction without demonstrations: baseline testing prompts and limitations.',
         sections: [
           {
             id: 'zero-shot-prompting-overview',
@@ -865,7 +1101,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Zero-shot Prompting enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Zero-shot Prompting enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -877,11 +1114,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -897,7 +1150,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (zero-shot-prompting)',
               filename: 'zero-shot-prompting.ts',
               code: `export async function executeQAFlow() { console.log("Executing Zero-shot Prompting"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -910,8 +1164,10 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -927,7 +1183,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Prompt Engineering', 'AI Quality Engineering'],
-        summary: 'In-context exemplar pairs to anchor style, syntax compliance, and locator conventions in test generation.',
+        summary:
+          'In-context exemplar pairs to anchor style, syntax compliance, and locator conventions in test generation.',
         sections: [
           {
             id: 'few-shot-prompting-overview',
@@ -939,7 +1196,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Few-shot Prompting enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Few-shot Prompting enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -951,11 +1209,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -971,7 +1245,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (few-shot-prompting)',
               filename: 'few-shot-prompting.ts',
               code: `export async function executeQAFlow() { console.log("Executing Few-shot Prompting"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -984,8 +1259,10 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -1001,7 +1278,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Prompt Engineering', 'AI Quality Engineering'],
-        summary: 'Step-by-step reasoning elicitation for complex test scenario synthesis and edge case discovery.',
+        summary:
+          'Step-by-step reasoning elicitation for complex test scenario synthesis and edge case discovery.',
         sections: [
           {
             id: 'chain-of-thought-concepts-overview',
@@ -1013,7 +1291,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Chain-of-Thought Concepts enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Chain-of-Thought Concepts enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1025,11 +1304,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1045,7 +1340,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (chain-of-thought-concepts)',
               filename: 'chain-of-thought-concepts.ts',
               code: `export async function executeQAFlow() { console.log("Executing Chain-of-Thought Concepts"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1058,15 +1354,17 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-prompt-best-practices',
         slug: 'prompting-best-practices',
         title: 'Prompting Best Practices',
@@ -1075,7 +1373,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Best Practices', 'System Prompts', 'Constraints'],
-        summary: 'Explore proven enterprise best practices for engineering robust, production-grade prompts for automated testing pipelines.',
+        summary:
+          'Explore proven enterprise best practices for engineering robust, production-grade prompts for automated testing pipelines.',
         sections: [
           {
             id: 'bp-overview',
@@ -1098,7 +1397,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Prompt Engineering', 'AI Quality Engineering'],
-        summary: 'Ambiguous scopes, excessive temperature, conflicting instructions, and missing boundary constraints.',
+        summary:
+          'Ambiguous scopes, excessive temperature, conflicting instructions, and missing boundary constraints.',
         sections: [
           {
             id: 'common-prompting-mistakes-overview',
@@ -1110,7 +1410,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Common Prompting Mistakes enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Common Prompting Mistakes enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1122,11 +1423,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1142,7 +1459,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (common-prompting-mistakes)',
               filename: 'common-prompting-mistakes.ts',
               code: `export async function executeQAFlow() { console.log("Executing Common Prompting Mistakes"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1155,15 +1473,17 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-adv-prompt-patterns',
         slug: 'advanced-prompt-patterns',
         title: 'Advanced Prompt Patterns',
@@ -1172,7 +1492,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '15 min read',
         difficulty: 'Advanced',
         tags: ['Self-Consistency', 'ReAct', 'Meta-Prompting'],
-        summary: 'Deep dive into advanced prompting frameworks: ReAct (Reason + Act), Reflection loops, and Self-Consistency voting for mission-critical automation.',
+        summary:
+          'Deep dive into advanced prompting frameworks: ReAct (Reason + Act), Reflection loops, and Self-Consistency voting for mission-critical automation.',
         sections: [
           {
             id: 'adv-patterns',
@@ -1184,7 +1505,7 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
           },
         ],
-      }
+      },
     ],
   },
 
@@ -1195,9 +1516,10 @@ Provide the complete .java file with package declarations and imports.\`;
     id: 'mod-context-engineering',
     slug: 'context-engineering',
     title: 'Module 3 — Context Engineering',
-    description: 'Context window optimization, system instructions, vector embeddings, and Retrieval-Augmented Generation (RAG).',
+    description:
+      'Context window optimization, system instructions, vector embeddings, and Retrieval-Augmented Generation (RAG).',
     lessons: [
-{
+      {
         id: 'les-what-is-context-eng',
         slug: 'what-is-context-engineering',
         title: 'What is Context Engineering?',
@@ -1206,7 +1528,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '11 min read',
         difficulty: 'Intermediate',
         tags: ['Context Windows', 'RAG', 'Vector Search'],
-        summary: 'Understand how context engineering enables models to accurately understand entire enterprise test repositories and Jira histories.',
+        summary:
+          'Understand how context engineering enables models to accurately understand entire enterprise test repositories and Jira histories.',
         sections: [
           {
             id: 'context-definition',
@@ -1214,7 +1537,7 @@ Provide the complete .java file with package declarations and imports.\`;
             level: 2,
             content: [
               'Context Engineering is the practice of dynamically selecting, compressing, and structuring external domain knowledge into the prompt context window at runtime.',
-              'Without context engineering, an LLM only knows public open-source patterns. With context engineering, it knows your company\'s custom BaseTest utilities, authentication cookies, and proprietary CI/CD configurations.',
+              "Without context engineering, an LLM only knows public open-source patterns. With context engineering, it knows your company's custom BaseTest utilities, authentication cookies, and proprietary CI/CD configurations.",
             ],
           },
         ],
@@ -1228,7 +1551,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Context Engineering', 'AI Quality Engineering'],
-        summary: 'Input/output token limits, context degradation, needle-in-a-haystack recall, and sliding window chunking.',
+        summary:
+          'Input/output token limits, context degradation, needle-in-a-haystack recall, and sliding window chunking.',
         sections: [
           {
             id: 'context-window-overview',
@@ -1240,7 +1564,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Context Window enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Context Window enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1252,11 +1577,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1272,7 +1613,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (context-window)',
               filename: 'context-window.ts',
               code: `export async function executeQAFlow() { console.log("Executing Context Window"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1285,8 +1627,10 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -1302,7 +1646,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Context Engineering', 'AI Quality Engineering'],
-        summary: 'Immutable persona guidelines, behavioral guardrails, and deterministic code constraints in SDET copilots.',
+        summary:
+          'Immutable persona guidelines, behavioral guardrails, and deterministic code constraints in SDET copilots.',
         sections: [
           {
             id: 'system-instructions-overview',
@@ -1314,7 +1659,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering System Instructions enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering System Instructions enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1326,11 +1672,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1346,7 +1708,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (system-instructions)',
               filename: 'system-instructions.ts',
               code: `export async function executeQAFlow() { console.log("Executing System Instructions"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1359,15 +1722,17 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-rag-architecture',
         slug: 'rag-architecture',
         title: 'RAG Architecture',
@@ -1376,7 +1741,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '14 min read',
         difficulty: 'Intermediate',
         tags: ['RAG', 'Embeddings', 'Vector Databases'],
-        summary: 'Learn how Retrieval-Augmented Generation indexes test suites, documentation, and defect databases using vector embeddings.',
+        summary:
+          'Learn how Retrieval-Augmented Generation indexes test suites, documentation, and defect databases using vector embeddings.',
         sections: [
           {
             id: 'rag-flow',
@@ -1388,14 +1754,46 @@ Provide the complete .java file with package declarations and imports.\`;
             diagram: {
               type: 'pipeline',
               title: 'Figure 3: Retrieval-Augmented Generation (RAG) Architecture for QA',
-              caption: 'Indexing internal test repositories and augmenting prompts with real-time vector search matches.',
+              caption:
+                'Indexing internal test repositories and augmenting prompts with real-time vector search matches.',
               nodes: [
-                { id: 'r1', label: 'Company Test Repo', subtitle: 'POM classes, configs, docs', badge: 'Knowledge Source' },
-                { id: 'r2', label: 'Chunking & Embedding', subtitle: 'text-embedding-004 vectors', badge: 'Embeddings' },
-                { id: 'r3', label: 'Vector Index', subtitle: 'Stores vectors with metadata', badge: 'Vector DB' },
-                { id: 'r4', label: 'Query Similarity Search', subtitle: 'Finds top-3 matching tests', badge: 'Retrieval', highlight: true },
-                { id: 'r5', label: 'Augmented Context Prompt', subtitle: 'Knowledge + User Question', badge: 'Augmented Prompt' },
-                { id: 'r6', label: 'Precision Generated Answer', subtitle: 'Company-specific test code', badge: 'Accurate Output' },
+                {
+                  id: 'r1',
+                  label: 'Company Test Repo',
+                  subtitle: 'POM classes, configs, docs',
+                  badge: 'Knowledge Source',
+                },
+                {
+                  id: 'r2',
+                  label: 'Chunking & Embedding',
+                  subtitle: 'text-embedding-004 vectors',
+                  badge: 'Embeddings',
+                },
+                {
+                  id: 'r3',
+                  label: 'Vector Index',
+                  subtitle: 'Stores vectors with metadata',
+                  badge: 'Vector DB',
+                },
+                {
+                  id: 'r4',
+                  label: 'Query Similarity Search',
+                  subtitle: 'Finds top-3 matching tests',
+                  badge: 'Retrieval',
+                  highlight: true,
+                },
+                {
+                  id: 'r5',
+                  label: 'Augmented Context Prompt',
+                  subtitle: 'Knowledge + User Question',
+                  badge: 'Augmented Prompt',
+                },
+                {
+                  id: 'r6',
+                  label: 'Precision Generated Answer',
+                  subtitle: 'Company-specific test code',
+                  badge: 'Accurate Output',
+                },
               ],
             },
           },
@@ -1410,7 +1808,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Context Engineering', 'AI Quality Engineering'],
-        summary: 'ChromaDB, Pinecone, and pgvector: indexing DOM snapshots, test failure logs, and enterprise API specifications.',
+        summary:
+          'ChromaDB, Pinecone, and pgvector: indexing DOM snapshots, test failure logs, and enterprise API specifications.',
         sections: [
           {
             id: 'vector-databases-overview',
@@ -1422,7 +1821,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Vector Databases enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Vector Databases enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1434,11 +1834,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1454,7 +1870,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (vector-databases)',
               filename: 'vector-databases.ts',
               code: `export async function executeQAFlow() { console.log("Executing Vector Databases"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1467,8 +1884,10 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -1484,7 +1903,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Context Engineering', 'AI Quality Engineering'],
-        summary: 'Text embedding models, dense vector search, cosine distance thresholds, and reciprocal rank fusion.',
+        summary:
+          'Text embedding models, dense vector search, cosine distance thresholds, and reciprocal rank fusion.',
         sections: [
           {
             id: 'embeddings-and-retrieval-overview',
@@ -1496,7 +1916,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Embeddings and Retrieval enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Embeddings and Retrieval enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1508,11 +1929,27 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1528,7 +1965,8 @@ Provide the complete .java file with package declarations and imports.\`;
               title: 'Production Implementation (embeddings-and-retrieval)',
               filename: 'embeddings-and-retrieval.ts',
               code: `export async function executeQAFlow() { console.log("Executing Embeddings and Retrieval"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1541,15 +1979,17 @@ Provide the complete .java file with package declarations and imports.\`;
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-context-management',
         slug: 'context-management',
         title: 'Context Management',
@@ -1558,7 +1998,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '10 min read',
         difficulty: 'Advanced',
         tags: ['Pruning', 'Summarization', 'Sliding Windows'],
-        summary: 'Techniques for managing context budgets: sliding window memory, token distillation, and prompt caching.',
+        summary:
+          'Techniques for managing context budgets: sliding window memory, token distillation, and prompt caching.',
         sections: [
           {
             id: 'context-budgeting',
@@ -1570,7 +2011,7 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
           },
         ],
-      }
+      },
     ],
   },
 
@@ -1581,9 +2022,10 @@ Provide the complete .java file with package declarations and imports.\`;
     id: 'mod-mcp',
     slug: 'model-context-protocol',
     title: 'Module 4 — Model Context Protocol (MCP)',
-    description: 'Standardized client-host-server protocol for exposing development tools, databases, and test frameworks to AI models.',
+    description:
+      'Standardized client-host-server protocol for exposing development tools, databases, and test frameworks to AI models.',
     lessons: [
-{
+      {
         id: 'les-what-is-mcp',
         slug: 'what-is-mcp',
         title: 'What is MCP?',
@@ -1592,7 +2034,8 @@ Provide the complete .java file with package declarations and imports.\`;
         estimatedTime: '15 min read',
         difficulty: 'Intermediate',
         tags: ['MCP', 'Model Context Protocol', 'Tool Use', 'Open Standard', 'Anthropic'],
-        summary: 'An architectural deep dive into the Model Context Protocol (MCP): how it solves the N×M integration problem and transforms LLMs from passive text generators into active test automation orchestrators.',
+        summary:
+          'An architectural deep dive into the Model Context Protocol (MCP): how it solves the N×M integration problem and transforms LLMs from passive text generators into active test automation orchestrators.',
         sections: [
           {
             id: 'mcp-overview',
@@ -1604,7 +2047,8 @@ Provide the complete .java file with package declarations and imports.\`;
             ],
             infoCallout: {
               title: 'The USB-C of Artificial Intelligence',
-              message: 'Just as USB-C created a universal physical interface for charging and peripheral connections, MCP creates a universal protocol for AI applications to discover and execute tools securely.',
+              message:
+                'Just as USB-C created a universal physical interface for charging and peripheral connections, MCP creates a universal protocol for AI applications to discover and execute tools securely.',
             },
           },
           {
@@ -1617,13 +2061,40 @@ Provide the complete .java file with package declarations and imports.\`;
             diagram: {
               type: 'client-server',
               title: 'Figure 4: Model Context Protocol (MCP) Multi-Server Topology',
-              caption: 'An MCP Host connects through MCP Clients to specialized local and remote tool servers over JSON-RPC.',
+              caption:
+                'An MCP Host connects through MCP Clients to specialized local and remote tool servers over JSON-RPC.',
               nodes: [
-                { id: 'm1', label: 'MCP Host Application', subtitle: 'e.g. Antigravity IDE, Claude Desktop', badge: 'Host Environment' },
-                { id: 'm2', label: 'MCP Client Core', subtitle: 'Protocol negotiation & connection pool', badge: 'Client Protocol Layer', highlight: true },
-                { id: 's1', label: 'Playwright MCP Server', subtitle: 'run_test, inspect_dom, capture_trace', badge: 'Local Server (stdio)' },
-                { id: 's2', label: 'PostgreSQL MCP Server', subtitle: 'query_db, check_schema, seed_data', badge: 'Local Server (stdio)' },
-                { id: 's3', label: 'Jira / GitHub MCP Server', subtitle: 'create_issue, update_test_status', badge: 'Remote Server (SSE)' },
+                {
+                  id: 'm1',
+                  label: 'MCP Host Application',
+                  subtitle: 'e.g. Antigravity IDE, Claude Desktop',
+                  badge: 'Host Environment',
+                },
+                {
+                  id: 'm2',
+                  label: 'MCP Client Core',
+                  subtitle: 'Protocol negotiation & connection pool',
+                  badge: 'Client Protocol Layer',
+                  highlight: true,
+                },
+                {
+                  id: 's1',
+                  label: 'Playwright MCP Server',
+                  subtitle: 'run_test, inspect_dom, capture_trace',
+                  badge: 'Local Server (stdio)',
+                },
+                {
+                  id: 's2',
+                  label: 'PostgreSQL MCP Server',
+                  subtitle: 'query_db, check_schema, seed_data',
+                  badge: 'Local Server (stdio)',
+                },
+                {
+                  id: 's3',
+                  label: 'Jira / GitHub MCP Server',
+                  subtitle: 'create_issue, update_test_status',
+                  badge: 'Remote Server (SSE)',
+                },
               ],
               connections: [
                 { from: 'm1', to: 'm2', label: 'User request' },
@@ -1702,7 +2173,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 const transport = new StdioServerTransport();
 await server.connect(transport);
 console.error('Playwright QA MCP Server running over Stdio');`,
-              explanation: 'The MCP Server registers tools with standard JSON Schema input contracts and handles execution over standard I/O.',
+              explanation:
+                'The MCP Server registers tools with standard JSON Schema input contracts and handles execution over standard I/O.',
             },
           },
           {
@@ -1716,9 +2188,24 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'MCP Core Primitives Explained',
               headers: ['Primitive', 'Direction', 'Description', 'QA Automation Use Case'],
               rows: [
-                ['Tools', 'Model -> Server', 'Callable functions with side effects and input validation schemas', 'Triggering a test run, restarting Docker grid container, taking screenshot'],
-                ['Resources', 'Server -> Model', 'Passive contextual data (files, schemas, logs) readable like URIs', 'Reading playwright.config.ts, accessing database schemas, reading test reports'],
-                ['Prompts', 'Server -> User/Model', 'Pre-parameterized prompt templates published by the server', 'Standardized "triage-flaky-test" or "generate-e2e-suite" templates'],
+                [
+                  'Tools',
+                  'Model -> Server',
+                  'Callable functions with side effects and input validation schemas',
+                  'Triggering a test run, restarting Docker grid container, taking screenshot',
+                ],
+                [
+                  'Resources',
+                  'Server -> Model',
+                  'Passive contextual data (files, schemas, logs) readable like URIs',
+                  'Reading playwright.config.ts, accessing database schemas, reading test reports',
+                ],
+                [
+                  'Prompts',
+                  'Server -> User/Model',
+                  'Pre-parameterized prompt templates published by the server',
+                  'Standardized "triage-flaky-test" or "generate-e2e-suite" templates',
+                ],
               ],
             },
           },
@@ -1732,19 +2219,24 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'Server Process Exits Immediately with Code 1 on Startup',
-                cause: 'Console.log() statements writing non-JSON text to stdout, corrupting the JSON-RPC stdio stream.',
-                solution: 'Always direct internal debugging and startup logs to stderr using console.error(). Only the MCP SDK may write to stdout.',
+                cause:
+                  'Console.log() statements writing non-JSON text to stdout, corrupting the JSON-RPC stdio stream.',
+                solution:
+                  'Always direct internal debugging and startup logs to stderr using console.error(). Only the MCP SDK may write to stdout.',
                 codeFix: `// BAD: console.log("Server started");\n// GOOD: console.error("Server started on stdio");`,
               },
               {
                 error: 'Tool Call Timed Out (Timeout 60000ms exceeded)',
                 cause: 'Long-running test suites exceeding the host default RPC timeout.',
-                solution: 'Configure asynchronous job polling tools: return a jobId immediately and provide a separate check_job_status tool.',
+                solution:
+                  'Configure asynchronous job polling tools: return a jobId immediately and provide a separate check_job_status tool.',
               },
               {
                 error: 'EACCES: Permission Denied executing npx playwright',
-                cause: 'MCP server process running without execution privileges or missing environment variables (PATH, NODE_PATH).',
-                solution: 'Pass explicit env variables in the MCP host configuration file (mcpServers.env).',
+                cause:
+                  'MCP server process running without execution privileges or missing environment variables (PATH, NODE_PATH).',
+                solution:
+                  'Pass explicit env variables in the MCP host configuration file (mcpServers.env).',
               },
             ],
           },
@@ -1759,7 +2251,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
-        summary: 'The M×N integration problem between LLM hosts and software development toolchains in automated testing.',
+        summary:
+          'The M×N integration problem between LLM hosts and software development toolchains in automated testing.',
         sections: [
           {
             id: 'why-mcp-is-needed-overview',
@@ -1771,7 +2264,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Why MCP is Needed enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Why MCP is Needed enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1783,11 +2277,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1803,7 +2313,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (why-mcp-is-needed)',
               filename: 'why-mcp-is-needed.ts',
               code: `export async function executeQAFlow() { console.log("Executing Why MCP is Needed"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1816,15 +2327,17 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-mcp-arch',
         slug: 'mcp-architecture',
         title: 'MCP Architecture',
@@ -1833,7 +2346,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '13 min read',
         difficulty: 'Intermediate',
         tags: ['JSON-RPC', 'Transport Layer', 'Stdio', 'SSE'],
-        summary: 'Explore the protocol internals: JSON-RPC 2.0 message frames, initialization handshakes, and security boundaries.',
+        summary:
+          'Explore the protocol internals: JSON-RPC 2.0 message frames, initialization handshakes, and security boundaries.',
         sections: [
           {
             id: 'mcp-internals',
@@ -1854,7 +2368,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
-        summary: 'Responsibilities of hosts (IDEs/Agents), clients (session managers), and servers (tool/resource providers).',
+        summary:
+          'Responsibilities of hosts (IDEs/Agents), clients (session managers), and servers (tool/resource providers).',
         sections: [
           {
             id: 'mcp-host-client-and-server-overview',
@@ -1866,7 +2381,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering MCP Host, Client and Server enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering MCP Host, Client and Server enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1878,11 +2394,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1898,7 +2430,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (mcp-host-client-and-server)',
               filename: 'mcp-host-client-and-server.ts',
               code: `export async function executeQAFlow() { console.log("Executing MCP Host, Client and Server"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1911,8 +2444,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -1928,7 +2463,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
-        summary: 'The three core primitives of MCP: read-only resources, callable tools, and standardized prompt templates.',
+        summary:
+          'The three core primitives of MCP: read-only resources, callable tools, and standardized prompt templates.',
         sections: [
           {
             id: 'resources-tools-and-prompts-overview',
@@ -1940,7 +2476,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Resources, Tools and Prompts enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Resources, Tools and Prompts enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -1952,11 +2489,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -1972,7 +2525,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (resources-tools-and-prompts)',
               filename: 'resources-tools-and-prompts.ts',
               code: `export async function executeQAFlow() { console.log("Executing Resources, Tools and Prompts"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -1985,8 +2539,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2002,7 +2558,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
-        summary: 'Initialization handshakes, tool listing, sampling requests, progress reporting, and notification streams.',
+        summary:
+          'Initialization handshakes, tool listing, sampling requests, progress reporting, and notification streams.',
         sections: [
           {
             id: 'mcp-communication-flow-overview',
@@ -2014,7 +2571,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering MCP Communication Flow enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering MCP Communication Flow enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2026,11 +2584,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2046,7 +2620,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (mcp-communication-flow)',
               filename: 'mcp-communication-flow.ts',
               code: `export async function executeQAFlow() { console.log("Executing MCP Communication Flow"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2059,15 +2634,17 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-create-mcp-server',
         slug: 'creating-custom-mcp-servers',
         title: 'Creating Custom MCP Servers',
@@ -2076,7 +2653,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '16 min read',
         difficulty: 'Advanced',
         tags: ['TypeScript SDK', 'Python SDK', 'Server Development'],
-        summary: 'Step-by-step guide to building production MCP servers using the official TypeScript and Python SDKs.',
+        summary:
+          'Step-by-step guide to building production MCP servers using the official TypeScript and Python SDKs.',
         sections: [
           {
             id: 'mcp-server-dev',
@@ -2088,7 +2666,7 @@ console.error('Playwright QA MCP Server running over Stdio');`,
           },
         ],
       },
-{
+      {
         id: 'les-connect-ext-tools',
         slug: 'connecting-external-tools',
         title: 'Connecting External Tools',
@@ -2097,7 +2675,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '11 min read',
         difficulty: 'Intermediate',
         tags: ['Integrations', 'Docker', 'Database Connectors'],
-        summary: 'How to configure Claude Desktop, Antigravity IDE, and Cursor to connect to your custom QA MCP tools.',
+        summary:
+          'How to configure Claude Desktop, Antigravity IDE, and Cursor to connect to your custom QA MCP tools.',
         sections: [
           {
             id: 'mcp-config-guide',
@@ -2118,7 +2697,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['Model Context Protocol (MCP)', 'AI Quality Engineering'],
-        summary: 'Permission boundaries, tool execution sandboxing, input parameter validation, and rate limiting.',
+        summary:
+          'Permission boundaries, tool execution sandboxing, input parameter validation, and rate limiting.',
         sections: [
           {
             id: 'mcp-security-best-practices-overview',
@@ -2130,7 +2710,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering MCP Security Best Practices enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering MCP Security Best Practices enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2142,11 +2723,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2162,7 +2759,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (mcp-security-best-practices)',
               filename: 'mcp-security-best-practices.ts',
               code: `export async function executeQAFlow() { console.log("Executing MCP Security Best Practices"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2175,14 +2773,16 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
-      }
+      },
     ],
   },
 
@@ -2193,9 +2793,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
     id: 'mod-ai-agents',
     slug: 'ai-agents-for-qa',
     title: 'Module 5 — AI Agents for QA',
-    description: 'Autonomous reasoning loops, tool invocation, multi-agent systems, and self-directing quality engineering agents.',
+    description:
+      'Autonomous reasoning loops, tool invocation, multi-agent systems, and self-directing quality engineering agents.',
     lessons: [
-{
+      {
         id: 'les-what-are-agents',
         slug: 'what-are-ai-agents',
         title: 'What are AI Agents?',
@@ -2204,7 +2805,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '12 min read',
         difficulty: 'Intermediate',
         tags: ['AI Agents', 'Autonomous Loops', 'ReAct', 'Planning'],
-        summary: 'Understand the difference between linear LLM chat and autonomous agents equipped with perception, memory, tool access, and goal-directed planning.',
+        summary:
+          'Understand the difference between linear LLM chat and autonomous agents equipped with perception, memory, tool access, and goal-directed planning.',
         sections: [
           {
             id: 'agent-definition',
@@ -2219,11 +2821,37 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Figure 5: Autonomous QA Agent Closed Feedback Loop',
               caption: 'The continuous perceive-plan-act-reflect cycle of an automated SDET agent.',
               nodes: [
-                { id: 'a1', label: '1. Goal & Requirements', subtitle: 'e.g. "Automate Cart Checkout"', badge: 'Input Goal' },
-                { id: 'a2', label: '2. Planning & Strategy', subtitle: 'Decompose into step actions', badge: 'Reasoning Engine', highlight: true },
-                { id: 'a3', label: '3. Tool Execution', subtitle: 'Playwright, DOM inspect, Shell', badge: 'Action Execution' },
-                { id: 'a4', label: '4. Environment Observation', subtitle: 'Test output, errors, screenshots', badge: 'Perception' },
-                { id: 'a5', label: '5. Reflection & Self-Correction', subtitle: 'Fix locator, adjust wait, retry', badge: 'Self-Healing' },
+                {
+                  id: 'a1',
+                  label: '1. Goal & Requirements',
+                  subtitle: 'e.g. "Automate Cart Checkout"',
+                  badge: 'Input Goal',
+                },
+                {
+                  id: 'a2',
+                  label: '2. Planning & Strategy',
+                  subtitle: 'Decompose into step actions',
+                  badge: 'Reasoning Engine',
+                  highlight: true,
+                },
+                {
+                  id: 'a3',
+                  label: '3. Tool Execution',
+                  subtitle: 'Playwright, DOM inspect, Shell',
+                  badge: 'Action Execution',
+                },
+                {
+                  id: 'a4',
+                  label: '4. Environment Observation',
+                  subtitle: 'Test output, errors, screenshots',
+                  badge: 'Perception',
+                },
+                {
+                  id: 'a5',
+                  label: '5. Reflection & Self-Correction',
+                  subtitle: 'Fix locator, adjust wait, retry',
+                  badge: 'Self-Healing',
+                },
               ],
               connections: [
                 { from: 'a1', to: 'a2', label: 'Goal input' },
@@ -2236,7 +2864,7 @@ console.error('Playwright QA MCP Server running over Stdio');`,
           },
         ],
       },
-{
+      {
         id: 'les-agentic-testing',
         slug: 'agentic-testing',
         title: 'Agentic Testing',
@@ -2245,7 +2873,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '15 min read',
         difficulty: 'Advanced',
         tags: ['Agentic Testing', 'Exploratory Automation', 'Visual QA'],
-        summary: 'Explore exploratory agentic testing: unleashing autonomous agents to discover unexpected user paths, accessibility violations, and edge-case crashes.',
+        summary:
+          'Explore exploratory agentic testing: unleashing autonomous agents to discover unexpected user paths, accessibility violations, and edge-case crashes.',
         sections: [
           {
             id: 'agentic-testing-overview',
@@ -2266,7 +2895,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI Agents for QA', 'AI Quality Engineering'],
-        summary: 'Static procedural execution scripts versus dynamic adaptive goal resolution in flakiness reduction.',
+        summary:
+          'Static procedural execution scripts versus dynamic adaptive goal resolution in flakiness reduction.',
         sections: [
           {
             id: 'ai-agent-vs-traditional-automation-overview',
@@ -2278,7 +2908,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI Agent vs Traditional Automation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI Agent vs Traditional Automation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2290,11 +2921,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2310,7 +2957,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-agent-vs-traditional-automation)',
               filename: 'ai-agent-vs-traditional-automation.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI Agent vs Traditional Automation"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2323,8 +2971,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2340,7 +2990,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI Agents for QA', 'AI Quality Engineering'],
-        summary: 'JSON Schema tool contracts, function argument generation, execution callbacks, and error recovery loops.',
+        summary:
+          'JSON Schema tool contracts, function argument generation, execution callbacks, and error recovery loops.',
         sections: [
           {
             id: 'tool-calling-overview',
@@ -2352,7 +3003,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Tool Calling enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Tool Calling enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2364,11 +3016,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2384,7 +3052,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (tool-calling)',
               filename: 'tool-calling.ts',
               code: `export async function executeQAFlow() { console.log("Executing Tool Calling"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2397,8 +3066,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2414,7 +3085,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI Agents for QA', 'AI Quality Engineering'],
-        summary: 'Specialized agent orchestration: Test Planner, Code Synthesizer, Locator Healer, and RCA swarms.',
+        summary:
+          'Specialized agent orchestration: Test Planner, Code Synthesizer, Locator Healer, and RCA swarms.',
         sections: [
           {
             id: 'multi-agent-systems-overview',
@@ -2426,7 +3098,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Multi-Agent Systems enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Multi-Agent Systems enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2438,11 +3111,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2458,7 +3147,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (multi-agent-systems)',
               filename: 'multi-agent-systems.ts',
               code: `export async function executeQAFlow() { console.log("Executing Multi-Agent Systems"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2471,15 +3161,17 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
       },
-{
+      {
         id: 'les-building-qa-agents',
         slug: 'building-qa-automation-agents',
         title: 'Building QA Automation Agents',
@@ -2488,7 +3180,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '18 min read',
         difficulty: 'Advanced',
         tags: ['Agent Implementation', 'LangChain', 'LlamaIndex', 'MCP'],
-        summary: 'Architect and build a complete self-healing test automation agent capable of executing test runs and patching broken locators automatically.',
+        summary:
+          'Architect and build a complete self-healing test automation agent capable of executing test runs and patching broken locators automatically.',
         sections: [
           {
             id: 'building-agent-walkthrough',
@@ -2509,7 +3202,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI Agents for QA', 'AI Quality Engineering'],
-        summary: 'Autonomous derivation of edge cases, pairwise parameter combinations, and executable test suites.',
+        summary:
+          'Autonomous derivation of edge cases, pairwise parameter combinations, and executable test suites.',
         sections: [
           {
             id: 'ai-powered-test-case-generation-overview',
@@ -2521,7 +3215,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI-Powered Test Case Generation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI-Powered Test Case Generation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2533,11 +3228,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2553,7 +3264,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-powered-test-case-generation)',
               filename: 'ai-powered-test-case-generation.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI-Powered Test Case Generation"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2566,8 +3278,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2583,7 +3297,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI Agents for QA', 'AI Quality Engineering'],
-        summary: 'Automated correlation of stack traces, network telemetry, and visual snapshots to diagnose root cause.',
+        summary:
+          'Automated correlation of stack traces, network telemetry, and visual snapshots to diagnose root cause.',
         sections: [
           {
             id: 'ai-powered-test-failure-analysis-overview',
@@ -2595,7 +3310,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI-Powered Test Failure Analysis enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI-Powered Test Failure Analysis enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2607,11 +3323,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2627,7 +3359,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-powered-test-failure-analysis)',
               filename: 'ai-powered-test-failure-analysis.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI-Powered Test Failure Analysis"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2640,14 +3373,16 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
-      }
+      },
     ],
   },
 
@@ -2658,7 +3393,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
     id: 'mod-ai-automation',
     slug: 'ai-powered-test-automation',
     title: 'Module 6 — AI-Powered Test Automation',
-    description: 'Practical application of AI across Selenium, Playwright, API testing, synthetic data, and self-healing automation.',
+    description:
+      'Practical application of AI across Selenium, Playwright, API testing, synthetic data, and self-healing automation.',
     lessons: [
       {
         id: 'les-ai-with-selenium',
@@ -2669,7 +3405,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
-        summary: 'Augmenting Selenium WebDriver 4 with LLM-based element discovery, dynamic waits, and automated Page Objects.',
+        summary:
+          'Augmenting Selenium WebDriver 4 with LLM-based element discovery, dynamic waits, and automated Page Objects.',
         sections: [
           {
             id: 'ai-with-selenium-overview',
@@ -2681,7 +3418,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI with Selenium enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI with Selenium enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2693,11 +3431,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2713,7 +3467,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-with-selenium)',
               filename: 'ai-with-selenium.java',
               code: `public class Spec { public static void main(String[] args) { System.out.println("Executing AI with Selenium"); } }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2726,8 +3481,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2743,7 +3500,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
-        summary: 'Leveraging Playwright auto-waiting and CDP protocol alongside AI agents for resilient web testing.',
+        summary:
+          'Leveraging Playwright auto-waiting and CDP protocol alongside AI agents for resilient web testing.',
         sections: [
           {
             id: 'ai-with-playwright-overview',
@@ -2755,7 +3513,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI with Playwright enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI with Playwright enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2767,11 +3526,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2787,7 +3562,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-with-playwright)',
               filename: 'ai-with-playwright.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI with Playwright"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2800,8 +3576,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2817,7 +3595,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
-        summary: 'OpenAPI schema-driven test generation, intelligent payload mutation, and automated contract drift detection.',
+        summary:
+          'OpenAPI schema-driven test generation, intelligent payload mutation, and automated contract drift detection.',
         sections: [
           {
             id: 'ai-api-testing-overview',
@@ -2829,7 +3608,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI API Testing enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI API Testing enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2841,11 +3621,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2861,7 +3657,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-api-testing)',
               filename: 'ai-api-testing.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI API Testing"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2874,8 +3671,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2891,7 +3690,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
-        summary: 'Synthesizing production-realistic, GDPR-compliant relational test data using generative models.',
+        summary:
+          'Synthesizing production-realistic, GDPR-compliant relational test data using generative models.',
         sections: [
           {
             id: 'ai-test-data-generation-overview',
@@ -2903,7 +3703,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI Test Data Generation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI Test Data Generation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2915,11 +3716,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -2935,7 +3752,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-test-data-generation)',
               filename: 'ai-test-data-generation.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI Test Data Generation"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -2948,8 +3766,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -2965,7 +3785,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
-        summary: 'Test suite reduction, flakiness scoring, risk-based test selection, and regression minimization algorithms.',
+        summary:
+          'Test suite reduction, flakiness scoring, risk-based test selection, and regression minimization algorithms.',
         sections: [
           {
             id: 'ai-test-case-optimization-overview',
@@ -2977,7 +3798,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI Test Case Optimization enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI Test Case Optimization enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -2989,11 +3811,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -3009,7 +3847,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-test-case-optimization)',
               filename: 'ai-test-case-optimization.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI Test Case Optimization"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -3022,8 +3861,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -3039,7 +3880,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
-        summary: 'Multi-attribute weighted distance algorithms for locator healing in dynamic DOM environments without failure.',
+        summary:
+          'Multi-attribute weighted distance algorithms for locator healing in dynamic DOM environments without failure.',
         sections: [
           {
             id: 'self-healing-test-automation-overview',
@@ -3051,7 +3893,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering Self-Healing Test Automation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering Self-Healing Test Automation enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -3063,11 +3906,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -3083,7 +3942,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (self-healing-test-automation)',
               filename: 'self-healing-test-automation.ts',
               code: `export async function executeQAFlow() { console.log("Executing Self-Healing Test Automation"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -3096,8 +3956,10 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
@@ -3113,7 +3975,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
         estimatedTime: '10 min read',
         difficulty: 'Intermediate',
         tags: ['AI-Powered Test Automation', 'AI Quality Engineering'],
-        summary: 'Correlating CI/CD pipeline logs, container metrics, and application traces to isolate defect origins automatically.',
+        summary:
+          'Correlating CI/CD pipeline logs, container metrics, and application traces to isolate defect origins automatically.',
         sections: [
           {
             id: 'ai-based-root-cause-analysis-overview',
@@ -3125,7 +3988,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             infoCallout: {
               title: 'Strategic Value',
-              message: 'Mastering AI-Based Root Cause Analysis enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
+              message:
+                'Mastering AI-Based Root Cause Analysis enables test architects to transition from brittle scripted execution to self-healing quality pipelines.',
             },
           },
           {
@@ -3137,11 +4001,27 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             ],
             comparisonTable: {
               title: 'Enterprise Architecture Evaluation Matrix',
-              headers: ['Evaluation Dimension', 'Traditional Automation', 'AI-Augmented Architecture'],
+              headers: [
+                'Evaluation Dimension',
+                'Traditional Automation',
+                'AI-Augmented Architecture',
+              ],
               rows: [
-                ['Locator Resilience', 'Rigid XPath/CSS (breaks on DOM change)', 'Multi-attribute vector distance with confidence scoring'],
-                ['Maintenance Cost', 'High manual overhead', 'Automated background healing and clustering'],
-                ['Execution Speed', 'Deterministic local execution', 'Sandboxed parallel execution with sub-second inference'],
+                [
+                  'Locator Resilience',
+                  'Rigid XPath/CSS (breaks on DOM change)',
+                  'Multi-attribute vector distance with confidence scoring',
+                ],
+                [
+                  'Maintenance Cost',
+                  'High manual overhead',
+                  'Automated background healing and clustering',
+                ],
+                [
+                  'Execution Speed',
+                  'Deterministic local execution',
+                  'Sandboxed parallel execution with sub-second inference',
+                ],
               ],
             },
           },
@@ -3157,7 +4037,8 @@ console.error('Playwright QA MCP Server running over Stdio');`,
               title: 'Production Implementation (ai-based-root-cause-analysis)',
               filename: 'ai-based-root-cause-analysis.ts',
               code: `export async function executeQAFlow() { console.log("Executing AI-Based Root Cause Analysis"); }`,
-              explanation: 'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
+              explanation:
+                'Production-ready handler adhering to enterprise security constraints and deterministic validation.',
             },
           },
           {
@@ -3170,14 +4051,16 @@ console.error('Playwright QA MCP Server running over Stdio');`,
             troubleshooting: [
               {
                 error: 'NonDeterministicInferenceError',
-                cause: 'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
-                solution: 'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
+                cause:
+                  'Model temperature set too high (> 0.2), causing flaky code or locator drift.',
+                solution:
+                  'Pin temperature to 0.0 - 0.1 for all code generation and verification tasks.',
                 codeFix: 'const config = { temperature: 0.1, maxOutputTokens: 4096 };',
               },
             ],
           },
         ],
-      }
+      },
     ],
   },
 ];

@@ -80,7 +80,9 @@ export default function AcademyShell({
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isNotFound, setIsNotFound] = useState(false);
-  const [apiLessonData, setApiLessonData] = useState<any | null>(() => lessonClientCache.get(defaultSlug) || null);
+  const [apiLessonData, setApiLessonData] = useState<any | null>(
+    () => lessonClientCache.get(defaultSlug) || null
+  );
   const [isCompleted, setIsCompleted] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
@@ -109,9 +111,12 @@ export default function AcademyShell({
   const handleContentClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     const figure = target.closest('figure');
-    const clickedImg = (target.tagName.toLowerCase() === 'img' ? target : null) as HTMLImageElement | null;
+    const clickedImg = (
+      target.tagName.toLowerCase() === 'img' ? target : null
+    ) as HTMLImageElement | null;
     const expandBtn = target.closest('.expand-diagram-btn');
-    const diagramWrapper = target.closest('.diagram-img-wrapper') || target.closest('[data-curriculum-diagram="true"]');
+    const diagramWrapper =
+      target.closest('.diagram-img-wrapper') || target.closest('[data-curriculum-diagram="true"]');
 
     const img =
       clickedImg ||
@@ -148,7 +153,8 @@ export default function AcademyShell({
   }, []);
 
   // Published courses synchronized with backend for real-time overview updates
-  const [livePublishedCourses, setLivePublishedCourses] = useState<any[]>(INITIAL_PUBLISHED_COURSES);
+  const [livePublishedCourses, setLivePublishedCourses] =
+    useState<any[]>(INITIAL_PUBLISHED_COURSES);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -187,7 +193,9 @@ export default function AcademyShell({
   // Load saved theme preference on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('intelligentqa_theme') || localStorage.getItem('intelligentqa_academy_theme');
+      const savedTheme =
+        localStorage.getItem('intelligentqa_theme') ||
+        localStorage.getItem('intelligentqa_academy_theme');
       if (savedTheme === 'dark' || savedTheme === 'light') {
         setTheme(savedTheme as any);
       } else {
@@ -210,7 +218,9 @@ export default function AcademyShell({
         root.classList.remove('dark');
         root.setAttribute('data-theme', 'light');
       }
-      window.dispatchEvent(new CustomEvent('intelligentqa_theme_changed', { detail: { theme: nextTheme } }));
+      window.dispatchEvent(
+        new CustomEvent('intelligentqa_theme_changed', { detail: { theme: nextTheme } })
+      );
     }
   };
 
@@ -232,7 +242,9 @@ export default function AcademyShell({
     if (!user?.id) return;
 
     try {
-      const res = await fetch(`/api/learning/progress?userId=${encodeURIComponent(user.id)}&summary=true`);
+      const res = await fetch(
+        `/api/learning/progress?userId=${encodeURIComponent(user.id)}&summary=true`
+      );
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.summary) {
@@ -451,7 +463,8 @@ export default function AcademyShell({
         slug: apiLessonData.lesson.slug,
         title: apiLessonData.lesson.title,
         moduleSlug: apiLessonData.module?.slug || 'learning-module',
-        moduleTitle: apiLessonData.module?.title || apiLessonData.course?.title || 'Learning Module',
+        moduleTitle:
+          apiLessonData.module?.title || apiLessonData.course?.title || 'Learning Module',
         estimatedTime: `${apiLessonData.lesson.estimatedReadingTime || apiLessonData.lesson.estimatedReadTime || 5} min read`,
         difficulty: (apiLessonData.course?.level || 'All Levels') as any,
         tags: [apiLessonData.course?.title || 'QA', 'Documentation'],
@@ -477,27 +490,34 @@ export default function AcademyShell({
     const trackId = selectedCourseId || apiLessonData?.course?.id || 'course-ai-qa-mastery';
     const lessonId = currentLesson.id || currentLesson.slug;
     return QADatabase.isLessonLocked(trackId, lessonId, false);
-  }, [currentUser, selectedCourseId, apiLessonData?.course?.id, currentLesson.id, currentLesson.slug]);
+  }, [
+    currentUser,
+    selectedCourseId,
+    apiLessonData?.course?.id,
+    currentLesson.id,
+    currentLesson.slug,
+  ]);
 
   // Resolve adjacent lessons for navigation footer
-  const { previousLesson, nextLesson } = apiLessonData?.previousLesson || apiLessonData?.nextLesson
-    ? {
-        previousLesson: apiLessonData.previousLesson
-          ? {
-              slug: apiLessonData.previousLesson.slug,
-              title: apiLessonData.previousLesson.title,
-              moduleTitle: apiLessonData.previousLesson.moduleTitle,
-            }
-          : undefined,
-        nextLesson: apiLessonData.nextLesson
-          ? {
-              slug: apiLessonData.nextLesson.slug,
-              title: apiLessonData.nextLesson.title,
-              moduleTitle: apiLessonData.nextLesson.moduleTitle,
-            }
-          : undefined,
-      }
-    : getAdjacentLessons(currentLesson.slug);
+  const { previousLesson, nextLesson } =
+    apiLessonData?.previousLesson || apiLessonData?.nextLesson
+      ? {
+          previousLesson: apiLessonData.previousLesson
+            ? {
+                slug: apiLessonData.previousLesson.slug,
+                title: apiLessonData.previousLesson.title,
+                moduleTitle: apiLessonData.previousLesson.moduleTitle,
+              }
+            : undefined,
+          nextLesson: apiLessonData.nextLesson
+            ? {
+                slug: apiLessonData.nextLesson.slug,
+                title: apiLessonData.nextLesson.title,
+                moduleTitle: apiLessonData.nextLesson.moduleTitle,
+              }
+            : undefined,
+        }
+      : getAdjacentLessons(currentLesson.slug);
 
   const handleSelectLesson = (slug: string) => {
     setActiveSlug(slug);
@@ -511,7 +531,10 @@ export default function AcademyShell({
 
   // Resolve active course for Course Overview mode
   const activeCourse = useMemo(() => {
-    const catalog = livePublishedCourses && livePublishedCourses.length > 0 ? livePublishedCourses : INITIAL_PUBLISHED_COURSES;
+    const catalog =
+      livePublishedCourses && livePublishedCourses.length > 0
+        ? livePublishedCourses
+        : INITIAL_PUBLISHED_COURSES;
     if (selectedCourseId) {
       const query = selectedCourseId.toLowerCase().trim();
 
@@ -564,16 +587,22 @@ export default function AcademyShell({
     const allLessons = (activeCourse?.modules || []).flatMap((m: any) =>
       (m.lessons || []).filter((l: any) => (l.status ? l.status === 'published' : !l.disabled))
     );
-    return allLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
+    return allLessons.filter(
+      (l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)
+    ).length;
   }, [activeCourse, completedLessonIds]);
 
-  const coursePercent = totalCourseLessons > 0 ? Math.round((completedInCourseCount / totalCourseLessons) * 100) : 0;
+  const coursePercent =
+    totalCourseLessons > 0 ? Math.round((completedInCourseCount / totalCourseLessons) * 100) : 0;
 
   // Calculate current module completion stats
   const moduleLessons = apiLessonData?.module?.lessons || [];
   const moduleTotalLessons = moduleLessons.length || 7;
-  const moduleCompletedCount = moduleLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
-  const modulePercent = moduleTotalLessons > 0 ? Math.round((moduleCompletedCount / moduleTotalLessons) * 100) : 0;
+  const moduleCompletedCount = moduleLessons.filter(
+    (l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)
+  ).length;
+  const modulePercent =
+    moduleTotalLessons > 0 ? Math.round((moduleCompletedCount / moduleTotalLessons) * 100) : 0;
 
   // Process HTML for performance: prioritize canonical tiptapJson, then standardData, then contentHtml
   const optimizedHtml = useMemo(() => {
@@ -599,15 +628,24 @@ export default function AcademyShell({
     html = html.replace(/^\s*<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '');
 
     // 2. Remove immediately following subtitle/summary paragraph (which duplicates LessonHeader's summary)
-    html = html.replace(/^\s*<p\b[^>]*>\s*(?:<span\b[^>]*>)?\s*<em\b[^>]*>[\s\S]*?<\/em>\s*(?:<\/span>)?\s*<\/p>\s*/i, '');
+    html = html.replace(
+      /^\s*<p\b[^>]*>\s*(?:<span\b[^>]*>)?\s*<em\b[^>]*>[\s\S]*?<\/em>\s*(?:<\/span>)?\s*<\/p>\s*/i,
+      ''
+    );
 
     // 3. Remove any legacy section headers/labels like "SECTION 2 · OBJECTIVES" or "Section 1 · Overview"
     html = html.replace(/<span[^>]*>\s*(?:section|SECTION)\s*\d+[^<]*<\/span>/gi, '');
     html = html.replace(/\b(?:SECTION|Section)\s*\d+\s*[·•-]\s*[^<\n]+/g, '');
 
     // 4. Strip out hardcoded washed-out text color classes that break normal (light) mode contrast
-    html = html.replace(/\btext-(?:white|slate-100|slate-200|slate-300|slate-400|neutral-100|neutral-200|neutral-300|neutral-400|zinc-100|zinc-200|zinc-300|zinc-400|gray-100|gray-200|gray-300|gray-400)\b/g, '');
-    html = html.replace(/\bstyle="[^"]*color:\s*(?:#ffffff|#fff|#cbd5e1|#d4d4d8|#64748B|#94a3b8|#e2e8f0|rgb\(255,\s*255,\s*255\)|rgb\(203,\s*213,\s*225\))[^"]*"/gi, '');
+    html = html.replace(
+      /\btext-(?:white|slate-100|slate-200|slate-300|slate-400|neutral-100|neutral-200|neutral-300|neutral-400|zinc-100|zinc-200|zinc-300|zinc-400|gray-100|gray-200|gray-300|gray-400)\b/g,
+      ''
+    );
+    html = html.replace(
+      /\bstyle="[^"]*color:\s*(?:#ffffff|#fff|#cbd5e1|#d4d4d8|#64748B|#94a3b8|#e2e8f0|rgb\(255,\s*255,\s*255\)|rgb\(203,\s*213,\s*225\))[^"]*"/gi,
+      ''
+    );
 
     // 5. Enhance curriculum diagrams with expand button, crystal clear rendering & zoom affordances
     html = html.replace(
@@ -655,7 +693,10 @@ export default function AcademyShell({
 
         const updatedOpenTag = openTag.includes('curriculum-diagram-card')
           ? openTag
-          : openTag.replace(/class="([^"]*)"/i, 'class="$1 curriculum-diagram-card cursor-zoom-in group"');
+          : openTag.replace(
+              /class="([^"]*)"/i,
+              'class="$1 curriculum-diagram-card cursor-zoom-in group"'
+            );
 
         return `${updatedOpenTag}${enhancedContent}${closeTag}`;
       }
@@ -749,7 +790,8 @@ export default function AcademyShell({
                     Lesson Not Found or Unpublished
                   </h2>
                   <p className="text-sm text-slate-600 dark:text-neutral-400 max-w-md mx-auto mb-6">
-                    The requested lesson slug does not exist or has not been published yet. Check your URL or return to the curriculum.
+                    The requested lesson slug does not exist or has not been published yet. Check
+                    your URL or return to the curriculum.
                   </p>
                   <button
                     onClick={() => handleSelectLesson('what-is-artificial-intelligence')}
@@ -810,7 +852,9 @@ export default function AcademyShell({
                           </h3>
                         </div>
                         <p className="text-xs text-slate-600 dark:text-neutral-300">
-                          Review all modules below. Create your free account in seconds to unlock full lessons, visual architecture diagrams, production code, and interactive practice labs.
+                          Review all modules below. Create your free account in seconds to unlock
+                          full lessons, visual architecture diagrams, production code, and
+                          interactive practice labs.
                         </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
@@ -832,20 +876,27 @@ export default function AcademyShell({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
                       <div>
                         <h3 className="text-base font-bold text-slate-900 dark:text-white mb-0.5">
-                          {completedInCourseCount > 0 ? 'Pick up where you left off' : 'Ready to start learning?'}
+                          {completedInCourseCount > 0
+                            ? 'Pick up where you left off'
+                            : 'Ready to start learning?'}
                         </h3>
                         <p className="text-xs text-slate-600 dark:text-neutral-400">
-                          Follow the structured curriculum below or jump straight into the first lesson.
+                          Follow the structured curriculum below or jump straight into the first
+                          lesson.
                         </p>
                       </div>
                       <button
                         onClick={() => {
-                          const firstLesson = activeCourse.modules[0]?.lessons[0]?.slug || 'what-is-artificial-intelligence';
+                          const firstLesson =
+                            activeCourse.modules[0]?.lessons[0]?.slug ||
+                            'what-is-artificial-intelligence';
                           handleSelectLesson(firstLesson);
                         }}
                         className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0"
                       >
-                        <span>{completedInCourseCount > 0 ? 'Continue Learning' : 'Start Course'}</span>
+                        <span>
+                          {completedInCourseCount > 0 ? 'Continue Learning' : 'Start Course'}
+                        </span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -873,8 +924,13 @@ export default function AcademyShell({
                           l.status ? l.status === 'published' : !l.disabled
                         );
                         if (modLessons.length === 0) return null;
-                        const modCompleted = modLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
-                        const modPercent = modLessons.length > 0 ? Math.round((modCompleted / modLessons.length) * 100) : 0;
+                        const modCompleted = modLessons.filter(
+                          (l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)
+                        ).length;
+                        const modPercent =
+                          modLessons.length > 0
+                            ? Math.round((modCompleted / modLessons.length) * 100)
+                            : 0;
 
                         return (
                           <div
@@ -910,7 +966,9 @@ export default function AcademyShell({
                             {/* Lesson List */}
                             <div className="divide-y divide-slate-100 dark:divide-neutral-800/60">
                               {modLessons.map((les: any, lIdx: number) => {
-                                const isDone = completedLessonIds.has(les.id) || completedLessonIds.has(les.slug);
+                                const isDone =
+                                  completedLessonIds.has(les.id) ||
+                                  completedLessonIds.has(les.slug);
                                 return (
                                   <button
                                     key={les.id || lIdx}
@@ -971,8 +1029,12 @@ export default function AcademyShell({
                             : 'bg-slate-100 dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                         }`}
                       >
-                        <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}`} />
-                        <span className="hidden md:inline">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+                        <Bookmark
+                          className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}`}
+                        />
+                        <span className="hidden md:inline">
+                          {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                        </span>
                       </button>
 
                       {/* Print Button */}
@@ -996,7 +1058,9 @@ export default function AcademyShell({
                             : 'bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-neutral-700 border border-slate-200 dark:border-neutral-700'
                         }`}
                       >
-                        <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
+                        <CheckCircle2
+                          className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`}
+                        />
                         <span>{isCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
                       </button>
                     </div>
@@ -1008,7 +1072,9 @@ export default function AcademyShell({
                     moduleTitle={currentLesson.moduleTitle}
                     courseTitle={apiLessonData?.course?.title}
                     estimatedTime={currentLesson.estimatedTime}
-                    lastUpdated={apiLessonData?.lesson?.updatedAt || apiLessonData?.lesson?.createdAt}
+                    lastUpdated={
+                      apiLessonData?.lesson?.updatedAt || apiLessonData?.lesson?.createdAt
+                    }
                     difficulty={currentLesson.difficulty}
                     summary={currentLesson.summary}
                   />
@@ -1019,7 +1085,7 @@ export default function AcademyShell({
                       <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20 shadow-xs">
                         <Lock className="w-8 h-8" />
                       </div>
-                      
+
                       <div className="max-w-xl mx-auto space-y-2.5">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                           <Sparkles className="w-3.5 h-3.5" />
@@ -1029,7 +1095,9 @@ export default function AcademyShell({
                           Unlock Full Lesson &amp; Architectural Diagrams
                         </h3>
                         <p className="text-sm text-slate-600 dark:text-neutral-300 leading-relaxed">
-                          Lesson 1 is available as an instant guest preview. To access full production code, deep architectural infographics, interactive exercises, and progress tracking, create your free account in under 30 seconds.
+                          Lesson 1 is available as an instant guest preview. To access full
+                          production code, deep architectural infographics, interactive exercises,
+                          and progress tracking, create your free account in under 30 seconds.
                         </p>
                       </div>
 
@@ -1066,9 +1134,8 @@ export default function AcademyShell({
                     <>
                       {/* ================= FULL LESSON CONTENT & DIAGRAMS (100% UNBLURRED) ================= */}
                       {/* Comprehensive Visual Infographic for What is an LLM? (Phase 8 Requirement) */}
-                      {(activeSlug === 'what-is-an-llm' || currentLesson.slug === 'what-is-an-llm') && (
-                        <LlmArchitectureInfographic />
-                      )}
+                      {(activeSlug === 'what-is-an-llm' ||
+                        currentLesson.slug === 'what-is-an-llm') && <LlmArchitectureInfographic />}
 
                       {/* Uniform Technical Documentation Content (Prose format across all courses with Embedded Diagrams) */}
                       {optimizedHtml && (
@@ -1099,7 +1166,9 @@ export default function AcademyShell({
                               Building Fresh in Uniform Format
                             </h3>
                             <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
-                              This lesson is being crafted fresh in our standardized interactive format with architectural diagrams, production implementation code, and enterprise best practices.
+                              This lesson is being crafted fresh in our standardized interactive
+                              format with architectural diagrams, production implementation code,
+                              and enterprise best practices.
                             </p>
                           </div>
                         </div>
@@ -1120,7 +1189,8 @@ export default function AcademyShell({
                           </h3>
                         </div>
                         <p className="text-xs text-slate-600 dark:text-neutral-300">
-                          Create your free account to bookmark lessons, track your completed modules, and unlock interactive practice labs.
+                          Create your free account to bookmark lessons, track your completed
+                          modules, and unlock interactive practice labs.
                         </p>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
@@ -1168,10 +1238,7 @@ export default function AcademyShell({
         </div>
 
         {/* Global Search Dialog Modal */}
-        <CourseSearch
-          isOpen={isSearchOpen}
-          onClose={() => setIsSearchOpen(false)}
-        />
+        <CourseSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
         {/* Full-Screen Crystal Clear Image & Diagram Lightbox Modal */}
         <ContentImageLightbox

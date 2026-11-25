@@ -87,7 +87,7 @@ export default function AiChatPanel({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  
+
   // In-session temporary memory for Gemini API Key (NEVER written to DB or disk)
   const [sessionApiKey, setSessionApiKey] = useState<string>('');
   const [showKeyDrawer, setShowKeyDrawer] = useState<boolean>(false);
@@ -100,7 +100,8 @@ export default function AiChatPanel({
   // Sync session or user key state (in-memory session prioritized, fallback to QADatabase memory)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = sessionStorage.getItem('intelligentqa_ai_session_key') || QADatabase.getUserGeminiKey();
+      const stored =
+        sessionStorage.getItem('intelligentqa_ai_session_key') || QADatabase.getUserGeminiKey();
       if (stored) {
         setSessionApiKey(stored);
       }
@@ -135,7 +136,9 @@ export default function AiChatPanel({
         setKeyInputVal('');
         setErrorMessage(null);
       } else {
-        setKeyNotice(data.error || data.message || 'Key verification failed. Please check the key.');
+        setKeyNotice(
+          data.error || data.message || 'Key verification failed. Please check the key.'
+        );
       }
     } catch (err: any) {
       setKeyNotice(err.message || 'Network error while verifying key.');
@@ -167,63 +170,72 @@ export default function AiChatPanel({
       label: 'Improve Existing Content',
       icon: Sparkles,
       desc: 'Analyze gaps, improve clarity, preserve correct content',
-      prompt: 'Analyze this lesson, identify technical gaps, and improve clarity and technical depth while preserving correct existing content.',
+      prompt:
+        'Analyze this lesson, identify technical gaps, and improve clarity and technical depth while preserving correct existing content.',
     },
     {
       id: 'expand_explanation',
       label: 'Expand Technical Explanation',
       icon: BookOpen,
       desc: 'Explain internal working mechanisms in greater detail',
-      prompt: 'Expand the technical explanation of this lesson in greater detail. Include internal working mechanisms and advanced architectural concepts.',
+      prompt:
+        'Expand the technical explanation of this lesson in greater detail. Include internal working mechanisms and advanced architectural concepts.',
     },
     {
       id: 'add_examples',
       label: 'Add Practical Examples',
       icon: Code,
       desc: 'Real-world QA scenarios & working code patterns',
-      prompt: 'Add real-world QA automation scenarios, practical implementation examples, and production-ready code patterns.',
+      prompt:
+        'Add real-world QA automation scenarios, practical implementation examples, and production-ready code patterns.',
     },
     {
       id: 'add_failures',
       label: 'Add Common Failures',
       icon: AlertCircle,
       desc: 'Root causes, real exceptions & debugging approaches',
-      prompt: 'Add common problems, real framework exceptions, possible root causes, debugging approaches, and prevention strategies.',
+      prompt:
+        'Add common problems, real framework exceptions, possible root causes, debugging approaches, and prevention strategies.',
     },
     {
       id: 'add_interview_questions',
       label: 'Add Interview Questions',
       icon: HelpCircle,
       desc: 'Beginner, Intermediate, Advanced & Architect scenarios',
-      prompt: 'Add realistic interview questions with detailed architectural answers categorized into Beginner, Intermediate, Advanced, and Architect-level scenarios.',
+      prompt:
+        'Add realistic interview questions with detailed architectural answers categorized into Beginner, Intermediate, Advanced, and Architect-level scenarios.',
     },
     {
       id: 'technical_review',
       label: 'Technical Review',
       icon: Search,
       desc: 'Audit for inaccuracies, omissions & recommendations',
-      prompt: 'Perform a comprehensive technical audit of this lesson. Identify inaccuracies, missing technical information, and duplicate explanations. Provide concrete recommendations without rewriting it entirely.',
+      prompt:
+        'Perform a comprehensive technical audit of this lesson. Identify inaccuracies, missing technical information, and duplicate explanations. Provide concrete recommendations without rewriting it entirely.',
     },
     {
       id: 'rewrite_selected',
       label: 'Rewrite Selected Content',
       icon: Wand2,
       desc: 'Improve highlighted editor text while preserving lesson',
-      prompt: 'Rewrite and improve the selected text snippet with greater technical clarity, preserving the rest of the lesson structure.',
+      prompt:
+        'Rewrite and improve the selected text snippet with greater technical clarity, preserving the rest of the lesson structure.',
     },
     {
       id: 'create_lesson',
       label: 'Create New Lesson',
       icon: Layers,
       desc: 'Generate complete 13-section standardized lesson',
-      prompt: 'Generate a complete, comprehensive lesson using the standardized 13-section structure for this topic.',
+      prompt:
+        'Generate a complete, comprehensive lesson using the standardized 13-section structure for this topic.',
     },
     {
       id: 'simplify_explanation',
       label: 'Simplify Explanation',
       icon: FileText,
       desc: 'Explain in beginner-friendly language without losing rigor',
-      prompt: 'Explain this difficult concept in clear, beginner-friendly language suitable for manual testers transitioning to SDET, while retaining all technically important details.',
+      prompt:
+        'Explain this difficult concept in clear, beginner-friendly language suitable for manual testers transitioning to SDET, while retaining all technically important details.',
     },
   ];
 
@@ -262,7 +274,7 @@ export default function AiChatPanel({
     ) {
       const defaultTopic =
         promptToSend.toLowerCase() === 'generate visual diagram' || !promptToSend.trim()
-          ? (context.currentLesson.title || context.module.name || context.course.name || '')
+          ? context.currentLesson.title || context.module.name || context.course.name || ''
           : promptToSend;
       onOpenDiagramStudio(defaultTopic);
       if (!customPrompt) setInputPrompt('');
@@ -295,7 +307,11 @@ export default function AiChatPanel({
       };
 
       // Retrieve configured Gemini API Key (session memory first, then database/storage fallback)
-      const activeKey = sessionApiKey || (typeof window !== 'undefined' ? (sessionStorage.getItem('intelligentqa_ai_session_key') || QADatabase.getUserGeminiKey()) : '');
+      const activeKey =
+        sessionApiKey ||
+        (typeof window !== 'undefined'
+          ? sessionStorage.getItem('intelligentqa_ai_session_key') || QADatabase.getUserGeminiKey()
+          : '');
 
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (activeKey) {
@@ -381,7 +397,9 @@ export default function AiChatPanel({
 
   return (
     <aside
-      style={panelState === 'normal' && width ? { width: `${width}px`, maxWidth: '85vw' } : undefined}
+      style={
+        panelState === 'normal' && width ? { width: `${width}px`, maxWidth: '85vw' } : undefined
+      }
       className={containerClass}
     >
       {/* 1. HEADER */}
@@ -392,7 +410,9 @@ export default function AiChatPanel({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">Enhance with AI</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">
+                Enhance with AI
+              </h3>
               <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
                 QA Architect
               </span>
@@ -410,7 +430,11 @@ export default function AiChatPanel({
               type="button"
               onClick={onToggleMaximize}
               className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              title={panelState === 'maximized' ? 'Restore standard width' : 'Maximize for deep reading view'}
+              title={
+                panelState === 'maximized'
+                  ? 'Restore standard width'
+                  : 'Maximize for deep reading view'
+              }
             >
               {panelState === 'maximized' ? (
                 <Minimize2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
@@ -463,7 +487,9 @@ export default function AiChatPanel({
                 <span>Specialized QA Technical Content Architect</span>
               </div>
               <p className="text-zinc-300 text-[11px] leading-relaxed">
-                I understand the context of <strong>&quot;{context.course.name}&quot;</strong> and your current lesson <strong>&quot;{context.currentLesson.title}&quot;</strong>. Select a quick action below or ask any technical curriculum enhancement question.
+                I understand the context of <strong>&quot;{context.course.name}&quot;</strong> and
+                your current lesson <strong>&quot;{context.currentLesson.title}&quot;</strong>.
+                Select a quick action below or ask any technical curriculum enhancement question.
               </p>
             </div>
 
@@ -536,7 +562,9 @@ export default function AiChatPanel({
                     <Sparkles className="w-3 h-3" />
                     {resp?.response_type?.replace(/_/g, ' ') || 'AI RESPONSE'}
                   </span>
-                  <span>{turn.modelUsed || 'Gemini'} • {turn.timestamp}</span>
+                  <span>
+                    {turn.modelUsed || 'Gemini'} • {turn.timestamp}
+                  </span>
                 </div>
 
                 {/* Summary */}
@@ -563,7 +591,9 @@ export default function AiChatPanel({
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="p-2.5 rounded-xl bg-[#181820] border border-[#272733] space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] text-zinc-300 font-medium">Technical completeness</span>
+                          <span className="text-[11px] text-zinc-300 font-medium">
+                            Technical completeness
+                          </span>
                           <span className="font-mono font-bold text-cyan-400">
                             {resp.review.metrics.completeness?.score ?? 0}/100
                           </span>
@@ -578,7 +608,9 @@ export default function AiChatPanel({
 
                       <div className="p-2.5 rounded-xl bg-[#181820] border border-[#272733] space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] text-zinc-300 font-medium">Practical depth</span>
+                          <span className="text-[11px] text-zinc-300 font-medium">
+                            Practical depth
+                          </span>
                           <span className="font-mono font-bold text-purple-400">
                             {resp.review.metrics.practicalDepth?.score ?? 0}/100
                           </span>
@@ -606,10 +638,10 @@ export default function AiChatPanel({
                                 rec.type === 'Good'
                                   ? 'bg-emerald-950/20 border-emerald-500/20 text-emerald-200'
                                   : rec.type === 'Missing'
-                                  ? 'bg-rose-950/20 border-rose-500/25 text-rose-200'
-                                  : rec.type === 'Warning'
-                                  ? 'bg-amber-950/20 border-amber-500/25 text-amber-200'
-                                  : 'bg-sky-950/20 border-sky-500/20 text-sky-200'
+                                    ? 'bg-rose-950/20 border-rose-500/25 text-rose-200'
+                                    : rec.type === 'Warning'
+                                      ? 'bg-amber-950/20 border-amber-500/25 text-amber-200'
+                                      : 'bg-sky-950/20 border-sky-500/20 text-sky-200'
                               }`}
                             >
                               <span
@@ -617,10 +649,10 @@ export default function AiChatPanel({
                                   rec.type === 'Good'
                                     ? 'bg-emerald-500/20 text-emerald-400'
                                     : rec.type === 'Missing'
-                                    ? 'bg-rose-500/20 text-rose-400'
-                                    : rec.type === 'Warning'
-                                    ? 'bg-amber-500/20 text-amber-400'
-                                    : 'bg-sky-500/20 text-sky-400'
+                                      ? 'bg-rose-500/20 text-rose-400'
+                                      : rec.type === 'Warning'
+                                        ? 'bg-amber-500/20 text-amber-400'
+                                        : 'bg-sky-500/20 text-sky-400'
                                 }`}
                               >
                                 {rec.type}
@@ -628,7 +660,9 @@ export default function AiChatPanel({
                               <div className="min-w-0 flex-1 leading-snug">
                                 <span className="font-bold text-white block">{rec.title}</span>
                                 {rec.detail && rec.detail !== rec.title && (
-                                  <span className="text-[10px] text-zinc-300 block">{rec.detail}</span>
+                                  <span className="text-[10px] text-zinc-300 block">
+                                    {rec.detail}
+                                  </span>
                                 )}
                               </div>
                             </div>
@@ -643,7 +677,8 @@ export default function AiChatPanel({
                 <div className="prose prose-invert prose-xs max-w-none text-zinc-200 leading-relaxed font-sans space-y-2">
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: htmlContent || `<p class="text-zinc-400 italic">No content generated.</p>`,
+                      __html:
+                        htmlContent || `<p class="text-zinc-400 italic">No content generated.</p>`,
                     }}
                   />
                 </div>
@@ -667,11 +702,17 @@ export default function AiChatPanel({
                 <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#27272A]">
                   <button
                     type="button"
-                    onClick={() => handleCopyText(resp?.generated_content || turn.rawText || '', turn.id)}
+                    onClick={() =>
+                      handleCopyText(resp?.generated_content || turn.rawText || '', turn.id)
+                    }
                     className="px-2.5 py-1.5 rounded-lg bg-[#202025] hover:bg-[#2A2A30] text-zinc-300 hover:text-white text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                     title="Copy full text"
                   >
-                    {copiedId === turn.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    {copiedId === turn.id ? (
+                      <Check className="w-3 h-3 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
                     <span>{copiedId === turn.id ? 'Copied' : 'Copy'}</span>
                   </button>
 
@@ -710,7 +751,11 @@ export default function AiChatPanel({
                   <button
                     type="button"
                     onClick={() => {
-                      if (window.confirm('Are you sure you want to replace the entire lesson content with this AI version? Existing content will be overwritten.')) {
+                      if (
+                        window.confirm(
+                          'Are you sure you want to replace the entire lesson content with this AI version? Existing content will be overwritten.'
+                        )
+                      ) {
                         onReplaceContent(htmlContent);
                       }
                     }}
@@ -743,9 +788,12 @@ export default function AiChatPanel({
                 <p className="text-[11px] text-rose-200/80 leading-relaxed">{errorMessage}</p>
               </div>
             </div>
-            {(errorMessage.includes('Gemini API Key') || errorMessage.includes('key is missing')) && (
+            {(errorMessage.includes('Gemini API Key') ||
+              errorMessage.includes('key is missing')) && (
               <div className="pt-2 border-t border-rose-500/20 flex items-center justify-between">
-                <span className="text-[10px] text-zinc-400">Temporary In-Memory Key (0% DB storage):</span>
+                <span className="text-[10px] text-zinc-400">
+                  Temporary In-Memory Key (0% DB storage):
+                </span>
                 <button
                   type="button"
                   onClick={() => setShowKeyDrawer(true)}
@@ -781,7 +829,8 @@ export default function AiChatPanel({
               </button>
             </div>
             <p className="text-[11px] text-zinc-400 leading-relaxed">
-              Never stored in any database. Held strictly in active browser memory for this session and discarded when tab closes.
+              Never stored in any database. Held strictly in active browser memory for this session
+              and discarded when tab closes.
             </p>
             <div className="flex items-center gap-1.5">
               <input
@@ -800,9 +849,7 @@ export default function AiChatPanel({
                 {keyTesting ? 'Verifying...' : 'Set Key'}
               </button>
             </div>
-            {keyNotice && (
-              <p className="text-[10px] text-amber-400">{keyNotice}</p>
-            )}
+            {keyNotice && <p className="text-[10px] text-amber-400">{keyNotice}</p>}
           </div>
         )}
 

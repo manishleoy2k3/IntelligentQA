@@ -33,11 +33,16 @@ export async function GET(req: NextRequest) {
       // Row-Level Security: strict owner scoping
       const userRecords = records.filter((p) => p.userId === userId);
       if (language && projectId) {
-        const matched = userRecords.find((p) => p.language === language && p.projectId === projectId);
+        const matched = userRecords.find(
+          (p) => p.language === language && p.projectId === projectId
+        );
         return NextResponse.json({ success: true, record: matched || null });
       }
       if (language) {
-        return NextResponse.json({ success: true, records: userRecords.filter((p) => p.language === language) });
+        return NextResponse.json({
+          success: true,
+          records: userRecords.filter((p) => p.language === language),
+        });
       }
       return NextResponse.json({ success: true, records: userRecords });
     }
@@ -80,7 +85,8 @@ export async function POST(req: NextRequest) {
         language,
         userAnswers: userAnswers || {},
         score: typeof score === 'number' ? score : 0,
-        totalAnswered: typeof totalAnswered === 'number' ? totalAnswered : Object.keys(userAnswers || {}).length,
+        totalAnswered:
+          typeof totalAnswered === 'number' ? totalAnswered : Object.keys(userAnswers || {}).length,
         updatedAt: now,
       };
       updatedList.push(newRecord);
@@ -95,7 +101,9 @@ export async function POST(req: NextRequest) {
       }
       const existing = serverUserProjects.get(userId) || [];
       const now = new Date().toISOString();
-      const updatedList = existing.filter((p) => !(p.userId === userId && p.language === language && p.projectId === projectId));
+      const updatedList = existing.filter(
+        (p) => !(p.userId === userId && p.language === language && p.projectId === projectId)
+      );
       const newRecord: UserCodingProjectRecord = {
         id: `uproj_${userId}_${language}_${projectId}`,
         userId,
@@ -131,7 +139,10 @@ export async function DELETE(req: NextRequest) {
     if (type === 'exercises') {
       const existing = serverUserExercises.get(userId) || [];
       if (language) {
-        serverUserExercises.set(userId, existing.filter((r) => !(r.userId === userId && r.language === language)));
+        serverUserExercises.set(
+          userId,
+          existing.filter((r) => !(r.userId === userId && r.language === language))
+        );
       } else {
         serverUserExercises.delete(userId);
       }
@@ -141,9 +152,17 @@ export async function DELETE(req: NextRequest) {
     if (type === 'project') {
       const existing = serverUserProjects.get(userId) || [];
       if (language && projectId) {
-        serverUserProjects.set(userId, existing.filter((p) => !(p.userId === userId && p.language === language && p.projectId === projectId)));
+        serverUserProjects.set(
+          userId,
+          existing.filter(
+            (p) => !(p.userId === userId && p.language === language && p.projectId === projectId)
+          )
+        );
       } else if (language) {
-        serverUserProjects.set(userId, existing.filter((p) => !(p.userId === userId && p.language === language)));
+        serverUserProjects.set(
+          userId,
+          existing.filter((p) => !(p.userId === userId && p.language === language))
+        );
       } else {
         serverUserProjects.delete(userId);
       }

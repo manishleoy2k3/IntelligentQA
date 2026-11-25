@@ -100,7 +100,11 @@ export default function DiagramCanvas({
 
   // Build React Flow Graph from Architecture Data & ELK
   const refreshLayout = useCallback(
-    async (data: ArchitectureDiagramData, dir: 'LR' | 'TB', themeName: ArchitectureDiagramTheme) => {
+    async (
+      data: ArchitectureDiagramData,
+      dir: 'LR' | 'TB',
+      themeName: ArchitectureDiagramTheme
+    ) => {
       try {
         const layoutDiagram = { ...data, direction: dir, theme: themeName };
         const layout = await calculateElkLayout(layoutDiagram);
@@ -249,7 +253,9 @@ export default function DiagramCanvas({
   // Delete Node Action
   const handleDeleteNode = (nodeId: string) => {
     const updatedNodes = diagramData.nodes.filter((n) => n.id !== nodeId);
-    const updatedEdges = diagramData.edges.filter((e) => e.source !== nodeId && e.target !== nodeId);
+    const updatedEdges = diagramData.edges.filter(
+      (e) => e.source !== nodeId && e.target !== nodeId
+    );
     const updated = { ...diagramData, nodes: updatedNodes, edges: updatedEdges };
     setDiagramData(updated);
     onDataChange?.(updated);
@@ -259,7 +265,10 @@ export default function DiagramCanvas({
   // Download SVG
   const handleDownloadSvg = async () => {
     const layout = await calculateElkLayout({ ...diagramData, direction, theme: selectedTheme });
-    const svg = generateArchitectureSvg({ ...diagramData, direction, theme: selectedTheme }, layout);
+    const svg = generateArchitectureSvg(
+      { ...diagramData, direction, theme: selectedTheme },
+      layout
+    );
     const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -272,7 +281,10 @@ export default function DiagramCanvas({
   // Download PNG (via Canvas rasterization)
   const handleDownloadPng = async () => {
     const layout = await calculateElkLayout({ ...diagramData, direction, theme: selectedTheme });
-    const svg = generateArchitectureSvg({ ...diagramData, direction, theme: selectedTheme }, layout);
+    const svg = generateArchitectureSvg(
+      { ...diagramData, direction, theme: selectedTheme },
+      layout
+    );
 
     const img = new Image();
     const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
@@ -305,7 +317,10 @@ export default function DiagramCanvas({
   // Copy SVG to clipboard
   const handleCopySvg = async () => {
     const layout = await calculateElkLayout({ ...diagramData, direction, theme: selectedTheme });
-    const svg = generateArchitectureSvg({ ...diagramData, direction, theme: selectedTheme }, layout);
+    const svg = generateArchitectureSvg(
+      { ...diagramData, direction, theme: selectedTheme },
+      layout
+    );
     await navigator.clipboard.writeText(svg);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -406,7 +421,11 @@ export default function DiagramCanvas({
             onClick={handleCopySvg}
             className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-neutral-800 hover:bg-slate-200 dark:hover:bg-neutral-700 text-slate-700 dark:text-neutral-200 border border-slate-200 dark:border-neutral-700 text-xs font-semibold transition cursor-pointer"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? (
+              <Check className="w-3.5 h-3.5 text-emerald-500" />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
             {copied ? 'Copied' : 'SVG'}
           </button>
 
@@ -487,7 +506,9 @@ export default function DiagramCanvas({
         <div className="absolute inset-0 z-30 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-md rounded-2xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 p-5 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-neutral-800">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Add Architecture Node</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Add Architecture Node
+              </h3>
               <button
                 type="button"
                 onClick={() => setShowAddNodeModal(false)}

@@ -189,4 +189,7 @@ Then [validation error and state preservation]
 \`\`\`
 `;
 
-export const REQUIREMENT_GENERATOR_SYSTEM_PROMPT = REQUIREMENT_GENERATOR_AGENT_MD.replace(/^---[\s\S]*?---\n/, '').trim();
+export const REQUIREMENT_GENERATOR_SYSTEM_PROMPT = REQUIREMENT_GENERATOR_AGENT_MD.replace(
+  /^---[\s\S]*?---\n/,
+  ''
+).trim();

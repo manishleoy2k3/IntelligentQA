@@ -45,8 +45,11 @@ export async function parseRequirementsFile(file: File): Promise<ParsedRequireme
 
   // Clean and sanitize the extracted text
   const cleanedText = sanitizeExtractedText(extractedText);
-  const lines = cleanedText.split('\n').filter(l => l.trim().length > 0);
-  const itemCount = Math.max(1, lines.filter(l => l.match(/^[-*#0-9]/) || l.includes(':')).length);
+  const lines = cleanedText.split('\n').filter((l) => l.trim().length > 0);
+  const itemCount = Math.max(
+    1,
+    lines.filter((l) => l.match(/^[-*#0-9]/) || l.includes(':')).length
+  );
 
   return {
     fileName,
@@ -64,8 +67,8 @@ export async function parseRequirementsFile(file: File): Promise<ParsedRequireme
 async function parseTextFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = e => resolve((e.target?.result as string) || '');
-    reader.onerror = e => reject(e);
+    reader.onload = (e) => resolve((e.target?.result as string) || '');
+    reader.onerror = (e) => reject(e);
     reader.readAsText(file, 'UTF-8');
   });
 }
@@ -106,7 +109,7 @@ async function parseExcelFile(file: File): Promise<string> {
   if (sharedStringsXml) {
     const stringMatches = sharedStringsXml.match(/<t[^>]*>([^<]+)<\/t>/gi);
     if (stringMatches && stringMatches.length > 0) {
-      const strings = stringMatches.map(m => m.replace(/<[^>]+>/g, '').trim()).filter(Boolean);
+      const strings = stringMatches.map((m) => m.replace(/<[^>]+>/g, '').trim()).filter(Boolean);
       return strings.join('\n');
     }
   }
@@ -183,7 +186,7 @@ async function parsePdfFile(file: File): Promise<string> {
         for (const m of tjArrayMatches) {
           const innerMatches = m.match(/\(([^)]+)\)/g);
           if (innerMatches) {
-            const combined = innerMatches.map(im => im.slice(1, -1)).join('');
+            const combined = innerMatches.map((im) => im.slice(1, -1)).join('');
             textChunks.push(cleanPdfString(combined));
           }
         }
@@ -202,16 +205,28 @@ async function parsePdfFile(file: File): Promise<string> {
 /**
  * Helper: Extract text from zip entry using DecompressionStream or raw scan
  */
-async function extractTextFromZip(buffer: ArrayBuffer, targetNames: string[]): Promise<string | null> {
+async function extractTextFromZip(
+  buffer: ArrayBuffer,
+  targetNames: string[]
+): Promise<string | null> {
   try {
     const bytes = new Uint8Array(buffer);
     let offset = 0;
 
     while (offset < bytes.length - 30) {
       // Check local file header signature: PK\x03\x04
-      if (bytes[offset] === 0x50 && bytes[offset + 1] === 0x4B && bytes[offset + 2] === 0x03 && bytes[offset + 3] === 0x04) {
+      if (
+        bytes[offset] === 0x50 &&
+        bytes[offset + 1] === 0x4b &&
+        bytes[offset + 2] === 0x03 &&
+        bytes[offset + 3] === 0x04
+      ) {
         const method = bytes[offset + 8] | (bytes[offset + 9] << 8);
-        const compSize = bytes[offset + 18] | (bytes[offset + 19] << 8) | (bytes[offset + 20] << 16) | (bytes[offset + 21] << 24);
+        const compSize =
+          bytes[offset + 18] |
+          (bytes[offset + 19] << 8) |
+          (bytes[offset + 20] << 16) |
+          (bytes[offset + 21] << 24);
         const nameLen = bytes[offset + 26] | (bytes[offset + 27] << 8);
         const extraLen = bytes[offset + 28] | (bytes[offset + 29] << 8);
 
@@ -221,7 +236,7 @@ async function extractTextFromZip(buffer: ArrayBuffer, targetNames: string[]): P
         const dataStart = offset + 30 + nameLen + extraLen;
         const dataEnd = dataStart + compSize;
 
-        if (targetNames.some(t => fileName.endsWith(t) || fileName === t)) {
+        if (targetNames.some((t) => fileName.endsWith(t) || fileName === t)) {
           const compData = bytes.slice(dataStart, dataEnd);
 
           if (method === 0) {
@@ -268,13 +283,17 @@ function extractXmlText(xml: string): string {
   const textMatches = withLineBreaks.match(/<(w:t|t|a:t)[^>]*>([\s\S]*?)<\/(w:t|t|a:t)>/g);
   if (textMatches) {
     return textMatches
-      .map(m => m.replace(/<[^>]+>/g, ''))
+      .map((m) => m.replace(/<[^>]+>/g, ''))
       .join(' ')
       .replace(/\s{2,}/g, '\n');
   }
 
   // General XML tag strip
-  return withLineBreaks.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  return withLineBreaks
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
 }
 
 function extractDocxRegexFallback(buffer: ArrayBuffer): string {
@@ -282,7 +301,10 @@ function extractDocxRegexFallback(buffer: ArrayBuffer): string {
   const raw = decoder.decode(buffer);
   const matches = raw.match(/<w:t[^>]*>([^<]+)<\/w:t>/g);
   if (matches && matches.length > 0) {
-    return matches.map(m => m.replace(/<[^>]+>/g, '').trim()).filter(Boolean).join('\n');
+    return matches
+      .map((m) => m.replace(/<[^>]+>/g, '').trim())
+      .filter(Boolean)
+      .join('\n');
   }
   return extractPrintableStrings(raw);
 }
@@ -292,7 +314,10 @@ function extractExcelRegexFallback(buffer: ArrayBuffer): string {
   const raw = decoder.decode(buffer);
   const matches = raw.match(/<t[^>]*>([^<]+)<\/t>/g);
   if (matches && matches.length > 0) {
-    return matches.map(m => m.replace(/<[^>]+>/g, '').trim()).filter(Boolean).join('\n');
+    return matches
+      .map((m) => m.replace(/<[^>]+>/g, '').trim())
+      .filter(Boolean)
+      .join('\n');
   }
   return extractPrintableStrings(raw);
 }
@@ -309,8 +334,8 @@ function extractPrintableStrings(raw: string): string {
   const matches = raw.match(/[A-Za-z0-9 ,.;:!?'"()\-_\n\r]{12,}/g);
   if (matches) {
     return matches
-      .map(m => m.trim())
-      .filter(m => !m.includes('Font') && !m.includes('Type') && !m.includes('/'))
+      .map((m) => m.trim())
+      .filter((m) => !m.includes('Font') && !m.includes('Type') && !m.includes('/'))
       .slice(0, 100)
       .join('\n');
   }

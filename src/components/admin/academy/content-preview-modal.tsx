@@ -153,7 +153,8 @@ export default function ContentPreviewModal({
                   <span>Technical Overview &amp; Learning Objectives</span>
                 </div>
                 <p className="text-blue-800 dark:text-blue-300">
-                  This technical guide covers foundational architecture, implementation patterns, and SDET best practices.
+                  This technical guide covers foundational architecture, implementation patterns,
+                  and SDET best practices.
                 </p>
               </div>
 
@@ -166,7 +167,8 @@ export default function ContentPreviewModal({
               ) : (
                 <div className="space-y-4 text-sm text-slate-700 dark:text-zinc-300">
                   <p>
-                    Document content has been parsed successfully. When published, this content will be fully rendered with high-fidelity formatting.
+                    Document content has been parsed successfully. When published, this content will
+                    be fully rendered with high-fidelity formatting.
                   </p>
                   <pre className="p-4 rounded-xl bg-zinc-900 text-emerald-400 font-mono text-xs overflow-x-auto border border-zinc-800">
                     <code>{`// Sample Verification Code Snippet\nimport { test, expect } from '@playwright/test';\n\ntest('verify autonomous agent workflow', async ({ page }) => {\n  await page.goto('/learning');\n  await expect(page.locator('h1')).toBeVisible();\n});`}</code>
@@ -190,15 +192,21 @@ export default function ContentPreviewModal({
 
                 <div className="grid grid-cols-3 gap-3 text-left py-2 border-y border-[#262626]">
                   <div className="p-2.5 rounded-lg bg-[#141414] border border-[#222]">
-                    <span className="text-[10px] text-zinc-500 font-mono block uppercase">File Format</span>
+                    <span className="text-[10px] text-zinc-500 font-mono block uppercase">
+                      File Format
+                    </span>
                     <span className="text-xs font-bold text-zinc-200 font-mono">OpenXML DOCX</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-[#141414] border border-[#222]">
-                    <span className="text-[10px] text-zinc-500 font-mono block uppercase">Status</span>
+                    <span className="text-[10px] text-zinc-500 font-mono block uppercase">
+                      Status
+                    </span>
                     <span className="text-xs font-bold text-emerald-400">Validated</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-[#141414] border border-[#222]">
-                    <span className="text-[10px] text-zinc-500 font-mono block uppercase">Storage</span>
+                    <span className="text-[10px] text-zinc-500 font-mono block uppercase">
+                      Storage
+                    </span>
                     <span className="text-xs font-bold text-purple-400">Preserved</span>
                   </div>
                 </div>
@@ -258,7 +266,8 @@ export default function ContentPreviewModal({
         {/* MODAL FOOTER ACTIONS */}
         <div className="px-6 py-4 border-t border-[#262626] flex items-center justify-between bg-[#181818] shrink-0">
           <div className="text-xs text-zinc-400">
-            Publish status: <span className="font-semibold text-zinc-200">{lesson.status || 'draft'}</span>
+            Publish status:{' '}
+            <span className="font-semibold text-zinc-200">{lesson.status || 'draft'}</span>
           </div>
 
           <div className="flex items-center gap-3">

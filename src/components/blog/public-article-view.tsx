@@ -241,9 +241,7 @@ export default function PublicArticleView({
 
         {/* Subtitle */}
         {article.subtitle && (
-          <p className="text-base sm:text-lg text-[#A1A1AA] leading-relaxed">
-            {article.subtitle}
-          </p>
+          <p className="text-base sm:text-lg text-[#A1A1AA] leading-relaxed">{article.subtitle}</p>
         )}
 
         {/* Author & Meta Row */}
@@ -265,7 +263,9 @@ export default function PublicArticleView({
             </div>
             <div>
               <div className="font-bold text-sm text-white">{article.createdBy.name}</div>
-              <div className="text-xs text-[#A1A1AA]">{article.createdBy.role || 'SDET & Test Architect'}</div>
+              <div className="text-xs text-[#A1A1AA]">
+                {article.createdBy.role || 'SDET & Test Architect'}
+              </div>
             </div>
           </div>
 
@@ -273,7 +273,12 @@ export default function PublicArticleView({
             <span className="flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-purple-400" />
               <span>
-                Updated on {new Date(article.updatedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                Updated on{' '}
+                {new Date(article.updatedDate).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
               </span>
             </span>
           </div>
@@ -393,7 +398,9 @@ export default function PublicArticleView({
               </div>
               <div className="space-y-1 text-center sm:text-left">
                 <div className="text-sm font-bold text-white">{article.createdBy.name}</div>
-                <div className="text-xs font-semibold text-purple-400">{article.createdBy.role || 'SDET Lead'}</div>
+                <div className="text-xs font-semibold text-purple-400">
+                  {article.createdBy.role || 'SDET Lead'}
+                </div>
                 <p className="text-xs text-[#A1A1AA] pt-1 leading-relaxed">
                   {article.createdBy.bio ||
                     'Author and test architect specializing in enterprise test automation frameworks, continuous testing, and resilient test design.'}
@@ -453,7 +460,10 @@ export default function PublicArticleView({
                   </span>
                 </div>
 
-                <nav aria-label="Table of Contents" className="space-y-1 max-h-[65vh] overflow-y-auto pr-1">
+                <nav
+                  aria-label="Table of Contents"
+                  className="space-y-1 max-h-[65vh] overflow-y-auto pr-1"
+                >
                   {toc.map((item) => {
                     const isActive = activeHeadingId === item.id;
                     return (
@@ -484,7 +494,8 @@ export default function PublicArticleView({
               </span>
               <h4 className="text-sm font-bold text-white">Master SDET Automation</h4>
               <p className="text-xs text-[#A1A1AA] leading-relaxed">
-                Practice in our real in-browser sandbox with instant test execution, zero setup, and AI mentor guidance.
+                Practice in our real in-browser sandbox with instant test execution, zero setup, and
+                AI mentor guidance.
               </p>
               <Link
                 href="/tracks"
@@ -518,17 +529,17 @@ function RenderPublicBlock({
         block.data.level === 1
           ? 'h1'
           : block.data.level === 2
-          ? 'h2'
-          : block.data.level === 3
-          ? 'h3'
-          : 'h4';
+            ? 'h2'
+            : block.data.level === 3
+              ? 'h3'
+              : 'h4';
 
       const baseClasses =
         block.data.level === 2
           ? 'text-2xl sm:text-3xl font-extrabold text-white mt-12 mb-4 pt-6 border-t border-[#1E1E22] scroll-mt-24'
           : block.data.level === 3
-          ? 'text-xl sm:text-2xl font-bold text-white mt-8 mb-3 scroll-mt-24'
-          : 'text-lg font-bold text-[#E4E4E7] mt-6 mb-2 scroll-mt-24';
+            ? 'text-xl sm:text-2xl font-bold text-white mt-8 mb-3 scroll-mt-24'
+            : 'text-lg font-bold text-[#E4E4E7] mt-6 mb-2 scroll-mt-24';
 
       return (
         <Tag id={block.data.anchor} className={baseClasses}>
@@ -597,7 +608,11 @@ function RenderPublicBlock({
             className="p-1.5 rounded-lg bg-[#18181B] hover:bg-[#27272A] text-xs text-[#A1A1AA] hover:text-white shrink-0 ml-3"
             title="Copy command"
           >
-            {isCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            {isCopied ? (
+              <Check className="w-4 h-4 text-emerald-400" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
           </button>
         </div>
       );
@@ -611,25 +626,31 @@ function RenderPublicBlock({
         block.data.alignment === 'left'
           ? 'text-left'
           : block.data.alignment === 'right'
-          ? 'text-right'
-          : 'text-center';
+            ? 'text-right'
+            : 'text-center';
 
       const sizeClass =
         block.data.size === 'small'
           ? 'max-w-md'
           : block.data.size === 'medium'
-          ? 'max-w-2xl'
-          : block.data.size === 'full'
-          ? 'w-full'
-          : 'max-w-4xl';
+            ? 'max-w-2xl'
+            : block.data.size === 'full'
+              ? 'w-full'
+              : 'max-w-4xl';
 
       return (
         <figure className={`my-8 ${alignClass}`}>
-          <div className={`rounded-2xl border border-[#27272A] overflow-hidden bg-[#09090B] shadow-2xl inline-block ${sizeClass} max-w-full`}>
+          <div
+            className={`rounded-2xl border border-[#27272A] overflow-hidden bg-[#09090B] shadow-2xl inline-block ${sizeClass} max-w-full`}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imgUrl}
-              alt={block.data.alt || block.data.caption || 'Technical screenshot or architecture diagram'}
+              alt={
+                block.data.alt ||
+                block.data.caption ||
+                'Technical screenshot or architecture diagram'
+              }
               className="max-h-[550px] w-full object-contain mx-auto"
               loading="lazy"
               onError={(e) => {
@@ -653,10 +674,10 @@ function RenderPublicBlock({
       const style = isWarn
         ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
         : isTip
-        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-        : isDanger
-        ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
-        : 'bg-sky-500/10 border-sky-500/30 text-sky-200';
+          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+          : isDanger
+            ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+            : 'bg-sky-500/10 border-sky-500/30 text-sky-200';
       return (
         <div className={`p-5 rounded-2xl border ${style} my-6 space-y-1.5 shadow-md`}>
           <div className="font-bold text-sm sm:text-base text-white flex items-center gap-2">
@@ -669,7 +690,9 @@ function RenderPublicBlock({
             )}
             <span>{block.data.title}</span>
           </div>
-          <p className="text-xs sm:text-sm text-[#D4D4D8] leading-relaxed pl-6">{block.data.message}</p>
+          <p className="text-xs sm:text-sm text-[#D4D4D8] leading-relaxed pl-6">
+            {block.data.message}
+          </p>
         </div>
       );
     }
@@ -723,7 +746,9 @@ function RenderPublicBlock({
                     </span>
                   )}
                 </div>
-                {st.summary && <p className="text-xs text-[#A1A1AA] pl-8 font-medium">{st.summary}</p>}
+                {st.summary && (
+                  <p className="text-xs text-[#A1A1AA] pl-8 font-medium">{st.summary}</p>
+                )}
                 <p className="text-xs sm:text-sm text-[#D4D4D8] pl-8 leading-relaxed">
                   {st.explanation}
                 </p>

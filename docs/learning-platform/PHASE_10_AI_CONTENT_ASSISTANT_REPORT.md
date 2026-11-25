@@ -3,7 +3,7 @@
 **Status:** Completed  
 **Technology:** Next.js 16 (App Router), Tiptap Engine, Google Gemini API, Tailwind CSS  
 **Target:** Admin Content Management Studio (Learning Academy)  
-**Date:** November 24, 2026  
+**Date:** November 24, 2026
 
 ---
 
@@ -14,6 +14,7 @@ Phase 10 implements an intelligent, specialized **AI Content Enhancement Assista
 Unlike a generic chatbot, this assistant operates with deep, context-aware grounding in the active course, module, lesson, curriculum hierarchy, target audience profiles, and standardized 13-section lesson structure. It is powered by a dedicated server-side system instruction: `QA_TECHNICAL_CONTENT_ARCHITECT`.
 
 The interface gives administrators full control:
+
 - The editor remains accessible side-by-side with the right-hand AI assistant panel.
 - Generated content is never published or inserted automatically.
 - Administrators can copy responses, insert additions at the cursor, replace selected text, compare versions in a side-by-side visual diff view, or replace the entire lesson only after explicit confirmation.
@@ -57,6 +58,7 @@ The AI architecture is structured with a provider-independent abstraction layer 
 ```
 
 ### Core Components Implemented:
+
 1. **`AIProvider` Interface & Types (`src/lib/ai/types.ts`)**:
    - `LessonContextPackage`: Standard contract packaging Course, Module, Current Lesson, Curriculum hierarchy, and Target Audience.
    - `AIStructuredResponse`: Structured contract identifying `response_type`, `summary`, `generated_content`, `diagrams` (Mermaid), `code_examples`, `technical_warnings`, `assumptions`, and `suggested_actions`.
@@ -81,8 +83,9 @@ The AI architecture is structured with a provider-independent abstraction layer 
 Location: `src/lib/ai/system-instructions.ts`
 
 The AI is governed by 10 strict technical rules:
+
 - **RULE 1 — Understand Before Generating**: Inspects existing explanations, missing technical concepts, and prevents repeating adjacent curriculum topics.
-- **RULE 2 — Technical Depth and Accuracy**: Explains *why*, *how it works internally*, *where*, *when to use/not use*, and limitations. Strictly forbids fake stats or invented API signatures.
+- **RULE 2 — Technical Depth and Accuracy**: Explains _why_, _how it works internally_, _where_, _when to use/not use_, and limitations. Strictly forbids fake stats or invented API signatures.
 - **RULE 3 — QA Engineering Perspective**: Directly connects concepts to practical QA engineering (e.g., Playwright fixture lifecycles, Selenium context switching, MCP client-server architecture).
 - **RULE 4 — Standardized Lesson Structure**: Formats content into the 13 canonical sections (Overview, Objectives, Concept Explanation, Architecture Diagram, Implementation, Code Examples, Real-world QA Scenarios, Common Problems & RCA, Best Practices, Comparisons, Interview Q&As, Summary, Further Learning).
 - **RULE 5 — Code Quality**: Production-ready, indented code with imports, dependencies, versions, and inline comments.
@@ -97,6 +100,7 @@ The AI is governed by 10 strict technical rules:
 ## 4. Predefined Shortcut Actions
 
 Above the input box in the right-side `AiChatPanel`, administrators have one-click access to 10 specialized actions:
+
 1. **Improve Existing Content**: Analyzes gaps, improves clarity, and enhances technical depth.
 2. **Expand Technical Explanation**: Explains internal mechanisms and architectural details.
 3. **Add Practical Examples**: Real-world QA automation scenarios and working code.
@@ -113,11 +117,13 @@ Above the input box in the right-side `AiChatPanel`, administrators have one-cli
 ## 5. UI Implementation & Visual Comparison Experience
 
 ### Layout
+
 - **Visual Lesson Editor**: Accessible at `src/components/editor/visual-lesson-editor.tsx`.
 - **Toolbar & Header Integration**: Prominent purple **"Enhance with AI"** button in both the header and the Tiptap toolbar.
 - **Side-by-Side Assistant Panel**: `AiChatPanel` opens on the right side (`w-[460px] lg:w-[500px]`), allowing administrators to read and edit the lesson simultaneously.
 
 ### Content Control & Safety
+
 - **Copy Text & Code**: One-click clipboard copy for full responses, code blocks, and Mermaid syntax.
 - **Insert into Editor**: Appends generated HTML directly at the user's cursor position.
 - **Replace Selection**: Swaps only the highlighted range when text is selected.
@@ -148,6 +154,7 @@ Above the input box in the right-side `AiChatPanel`, administrators have one-cli
 ## 7. Verification & Test Results
 
 All Phase 10 verification tests passed cleanly:
+
 ```
 ▶ Phase 10: AI Content Enhancement Assistant Verification
   ✔ 1. System Instruction: QA_TECHNICAL_CONTENT_ARCHITECT adheres to all 10 core architect rules (0.712ms)

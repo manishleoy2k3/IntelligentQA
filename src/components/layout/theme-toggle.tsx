@@ -30,9 +30,7 @@ export default function ThemeToggle({ showLabel = false, className = '' }: Theme
         <Moon className="w-4 h-4 text-slate-600 transition-transform hover:-rotate-12" />
       )}
       {showLabel && (
-        <span className="text-xs font-semibold">
-          {isDark ? 'Dark Theme' : 'Normal Theme'}
-        </span>
+        <span className="text-xs font-semibold">{isDark ? 'Dark Theme' : 'Normal Theme'}</span>
       )}
     </button>
   );

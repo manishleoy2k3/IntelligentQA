@@ -19,7 +19,10 @@ test('1. Sidebar Navigation: AI QA Agents is placed BELOW Interview Questions in
 });
 
 test('2. Course Overview: Guest preview banner and "Start Free Preview" button are removed from course sections', () => {
-  const trackOverviewPath = path.join(__dirname, '../src/components/tracks/track-overview-client.tsx');
+  const trackOverviewPath = path.join(
+    __dirname,
+    '../src/components/tracks/track-overview-client.tsx'
+  );
   const trackContent = fs.readFileSync(trackOverviewPath, 'utf8');
 
   // Verify guest preview callout and button are removed
@@ -42,8 +45,14 @@ test('2. Course Overview: Guest preview banner and "Start Free Preview" button a
 
   // Verify modern track progress and action are present
   assert.ok(trackContent.includes('Track Progress'), 'Track Progress section should be present');
-  assert.ok(trackContent.includes('percentCompleted'), 'Percent completed calculation should be present');
-  assert.ok(trackContent.includes('completedLessonIds'), 'Completed lesson tracking should be present');
+  assert.ok(
+    trackContent.includes('percentCompleted'),
+    'Percent completed calculation should be present'
+  );
+  assert.ok(
+    trackContent.includes('completedLessonIds'),
+    'Completed lesson tracking should be present'
+  );
 });
 
 test('3. Progress Tracking & Check: QADatabase, CodeEditorWorkspace, Dashboard, and Tracks update and persist completion', () => {
@@ -103,7 +112,7 @@ test('4. Dashboard Track Categories & AI for QA Course Refinements', () => {
   );
   assert.ok(
     dashboardContent.includes("track.id === 'ai-qa' ? 'AI Academy'") ||
-    dashboardContent.includes("track.id === 'ai-qa' ? 'AI for QA'"),
+      dashboardContent.includes("track.id === 'ai-qa' ? 'AI for QA'"),
     'Dashboard must display "AI Academy" or "AI for QA" category instead of "Step-by-Step"'
   );
   assert.ok(
@@ -119,7 +128,7 @@ test('4. Dashboard Track Categories & AI for QA Course Refinements', () => {
   const curriculumContent = fs.readFileSync(curriculumPath, 'utf8');
   assert.ok(
     curriculumContent.includes("title: 'AI Academy'") ||
-    curriculumContent.includes("title: 'AI for QA'"),
+      curriculumContent.includes("title: 'AI for QA'"),
     'Course title must be "AI Academy" or "AI for QA"'
   );
   assert.ok(
@@ -137,17 +146,16 @@ test('Add Guide button opens centered modal matching Gemini Key with Course Cate
     topNavContent.includes('setShowAddGuideModal(true)'),
     'Add Guide button in top nav triggers setShowAddGuideModal(true)'
   );
-  assert.ok(
-    topNavContent.includes('<AddGuideModal'),
-    'top-nav renders AddGuideModal'
-  );
+  assert.ok(topNavContent.includes('<AddGuideModal'), 'top-nav renders AddGuideModal');
 
   const modalPath = path.join(__dirname, '../src/components/interview/add-guide-modal.tsx');
   const modalContent = fs.readFileSync(modalPath, 'utf8');
 
   // Centering check: matches GeminiKeyModal, centered with min-h-screen my-auto, no pt-14
   assert.ok(
-    modalContent.includes('min-h-screen') && modalContent.includes('flex items-center justify-center') && modalContent.includes('my-auto'),
+    modalContent.includes('min-h-screen') &&
+      modalContent.includes('flex items-center justify-center') &&
+      modalContent.includes('my-auto'),
     'Modal is centered on the middle of the page using min-h-screen flex items-center justify-center and my-auto'
   );
   assert.ok(
@@ -157,20 +165,23 @@ test('Add Guide button opens centered modal matching Gemini Key with Course Cate
 
   // Extra field: Course Category
   assert.ok(
-    modalContent.includes('Course Category (Where this guide will be listed after Admin approval):'),
+    modalContent.includes(
+      'Course Category (Where this guide will be listed after Admin approval):'
+    ),
     'Modal contains explicit Course Category field specifying where the guide will be listed after Admin approval'
   );
   assert.ok(
     modalContent.includes('Selenium WebDriver + Java') &&
-    modalContent.includes('Playwright + TypeScript') &&
-    modalContent.includes('Rest Assured (API)') &&
-    (modalContent.includes('AI Academy') || modalContent.includes('AI for QA')),
+      modalContent.includes('Playwright + TypeScript') &&
+      modalContent.includes('Rest Assured (API)') &&
+      (modalContent.includes('AI Academy') || modalContent.includes('AI for QA')),
     'Course Category options support Selenium, Playwright, Rest Assured, and AI Academy'
   );
 
   // Import and Review Staging content inside the modal
   assert.ok(
-    modalContent.includes('Review Staging') || modalContent.includes('Imported Guides Pending Review'),
+    modalContent.includes('Review Staging') ||
+      modalContent.includes('Imported Guides Pending Review'),
     'Modal includes Staging & Review tab/section'
   );
   assert.ok(
@@ -178,7 +189,8 @@ test('Add Guide button opens centered modal matching Gemini Key with Course Cate
     'Modal runs automated duplicate check for staged guides'
   );
   assert.ok(
-    modalContent.includes('Download Excel (.XLSX)') && modalContent.includes('Download Word (.DOCX)'),
+    modalContent.includes('Download Excel (.XLSX)') &&
+      modalContent.includes('Download Word (.DOCX)'),
     'Modal provides direct Excel and Word template downloads'
   );
   assert.ok(
@@ -186,4 +198,3 @@ test('Add Guide button opens centered modal matching Gemini Key with Course Cate
     'Modal provides field specifications'
   );
 });
-

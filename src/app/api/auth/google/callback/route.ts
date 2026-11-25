@@ -51,7 +51,10 @@ async function handleGoogleAuth(req: NextRequest) {
     if (!tokenRes.ok || !tokenData.access_token) {
       console.error('Google token exchange error:', tokenData);
       const targetUrl = new URL('/auth/callback', req.url);
-      targetUrl.searchParams.set('error', tokenData.error_description || tokenData.error || 'token_exchange_failed');
+      targetUrl.searchParams.set(
+        'error',
+        tokenData.error_description || tokenData.error || 'token_exchange_failed'
+      );
       targetUrl.searchParams.set('redirect_to', state);
       return NextResponse.redirect(targetUrl);
     }

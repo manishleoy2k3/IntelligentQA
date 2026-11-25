@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
       if (action === 'prompt_lab') {
         // For AI Prompt Lab, generate prompt-specific, relevant, complete, and accurate output
         const cleanInput = input.trim();
-        const generatedOutput = generatePromptLabOutput(body.promptId || 'master-edge-case-matrix', cleanInput);
+        const generatedOutput = generatePromptLabOutput(
+          body.promptId || 'master-edge-case-matrix',
+          cleanInput
+        );
         return NextResponse.json({
           action,
           output: generatedOutput,
@@ -117,7 +120,10 @@ export async function POST(req: NextRequest) {
 
       if (action === 'prompt_lab') {
         const cleanInput = input.trim();
-        const generatedOutput = generatePromptLabOutput(body.promptId || 'master-edge-case-matrix', cleanInput);
+        const generatedOutput = generatePromptLabOutput(
+          body.promptId || 'master-edge-case-matrix',
+          cleanInput
+        );
         return NextResponse.json({
           action,
           output: generatedOutput,
@@ -192,14 +198,14 @@ Mode B: Pull Request / Code Quality Review (when user uploads files or asks for 
 
 Format Instructions: Output should be in plain text along with relevant code and structured bullet points. Do not experiment with speculative patterns or repeat explanations.`;
         } else if (action === 'prompt_lab') {
-          systemPrompt = body.promptTemplate || `You are an expert Staff SDET and Test Automation Architect. Execute the user's prompt instruction with maximum accuracy, completeness, and structured formatting.`;
+          systemPrompt =
+            body.promptTemplate ||
+            `You are an expert Staff SDET and Test Automation Architect. Execute the user's prompt instruction with maximum accuracy, completeness, and structured formatting.`;
         } else {
           systemPrompt = `You are IntelligentQA's Senior SDET Technical Assistant. Provide practical, modern automation guidance.`;
         }
 
-        const candidateModels = [
-          'gemini-3.8-flash',
-        ];
+        const candidateModels = ['gemini-3.8-flash'];
 
         for (const model of candidateModels) {
           const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${effectiveApiKey}`;
@@ -228,18 +234,20 @@ Format Instructions: Output should be in plain text along with relevant code and
               const data = await res.json();
               let generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
               if (generatedText) {
-        if (action === 'code_snippet') {
-          // If response contains a markdown code block, extract ONLY the inside of the code block
-          const codeBlockMatch = generatedText.match(/```(?:[a-zA-Z0-9_-]+)?\s*([\s\S]*?)```/);
-          if (codeBlockMatch) {
-            generatedText = codeBlockMatch[1].trim();
-          } else {
-            generatedText = generatedText
-              .replace(/^```[a-zA-Z0-9_-]*\n?/, '')
-              .replace(/\n?```\s*$/, '')
-              .trim();
-          }
-        }
+                if (action === 'code_snippet') {
+                  // If response contains a markdown code block, extract ONLY the inside of the code block
+                  const codeBlockMatch = generatedText.match(
+                    /```(?:[a-zA-Z0-9_-]+)?\s*([\s\S]*?)```/
+                  );
+                  if (codeBlockMatch) {
+                    generatedText = codeBlockMatch[1].trim();
+                  } else {
+                    generatedText = generatedText
+                      .replace(/^```[a-zA-Z0-9_-]*\n?/, '')
+                      .replace(/\n?```\s*$/, '')
+                      .trim();
+                  }
+                }
                 return NextResponse.json({
                   action,
                   output: generatedText,
@@ -280,7 +288,10 @@ Format Instructions: Output should be in plain text along with relevant code and
         generatedOutput = generateCodeSnippetOnly(cleanInput, techStack);
         break;
       case 'prompt_lab':
-        generatedOutput = generatePromptLabOutput(body.promptId || 'master-edge-case-matrix', cleanInput);
+        generatedOutput = generatePromptLabOutput(
+          body.promptId || 'master-edge-case-matrix',
+          cleanInput
+        );
         break;
       case 'chat':
       default:
@@ -302,14 +313,20 @@ Based on your input: "${cleanInput.slice(0, 100)}..."
     });
   } catch (err) {
     console.error('QA Agent error:', err);
-    return NextResponse.json({ error: 'Internal server error processing agent request' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error processing agent request' },
+      { status: 500 }
+    );
   }
 }
 
 // 1. Requirements Clarification / Generator
 function generateRequirementsClarification(input: string): string {
   // Extract clean title, skipping file metadata comments if present
-  const lines = input.split('\n').map(l => l.trim()).filter(Boolean);
+  const lines = input
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
   let summaryLine = '';
   for (const line of lines) {
     if (!line.startsWith('[Attached') && !line.startsWith('//') && !line.startsWith('/*')) {
@@ -323,18 +340,34 @@ function generateRequirementsClarification(input: string): string {
   summaryLine = summaryLine || 'Enterprise Feature Workflow';
   const cleanTitle = summaryLine.length > 60 ? summaryLine.slice(0, 57) + '...' : summaryLine;
 
-  const isPayment = /\b(transfer|payment|checkout|money|card|wallet|fund|funds|transaction|stripe|wire|ledger)\b/i.test(input);
-  const isAuth = !isPayment && /\b(login|signin|sign-in|authenticate|authentication|password|reset|forgot|mfa|2fa|otp|sso|token)\b/i.test(input);
+  const isPayment =
+    /\b(transfer|payment|checkout|money|card|wallet|fund|funds|transaction|stripe|wire|ledger)\b/i.test(
+      input
+    );
+  const isAuth =
+    !isPayment &&
+    /\b(login|signin|sign-in|authenticate|authentication|password|reset|forgot|mfa|2fa|otp|sso|token)\b/i.test(
+      input
+    );
   const isPasswordReset = isAuth && /\b(reset|forgot|email)\b/i.test(input);
-  const isConflict = /\b(both|conflict|contradict|simultaneously|either.*or|must.*cannot|always.*never)\b/i.test(input);
-  const isVagueQuick = /\b(quickly|fast|easily|seamlessly|simple)\b/i.test(input) && !/\b\d+\s*(ms|s|sec|seconds|minutes)\b/i.test(input);
+  const isConflict =
+    /\b(both|conflict|contradict|simultaneously|either.*or|must.*cannot|always.*never)\b/i.test(
+      input
+    );
+  const isVagueQuick =
+    /\b(quickly|fast|easily|seamlessly|simple)\b/i.test(input) &&
+    !/\b\d+\s*(ms|s|sec|seconds|minutes)\b/i.test(input);
 
-  const actor = isPayment ? 'Authenticated Account Holder' : isAuth ? 'Registered Customer / User' : 'End User / System Operator';
+  const actor = isPayment
+    ? 'Authenticated Account Holder'
+    : isAuth
+      ? 'Registered Customer / User'
+      : 'End User / System Operator';
   const preconditions = isPayment
     ? 'User is securely authenticated with active KYC status, valid balance, and verified 2FA device enrolled.'
     : isAuth
-    ? 'Active network connection, secure TLS endpoint, unauthenticated or semi-authenticated session state.'
-    : 'User has valid authenticated session and necessary Role-Based Access Control (RBAC) permissions.';
+      ? 'Active network connection, secure TLS endpoint, unauthenticated or semi-authenticated session state.'
+      : 'User has valid authenticated session and necessary Role-Based Access Control (RBAC) permissions.';
 
   return `# Enterprise Requirement Specification
 
@@ -475,7 +508,10 @@ Feature: ${cleanTitle} - Concurrency & Idempotency
 
 // 2. Test Case Matrix Generator
 function generateTestCaseMatrix(input: string): string {
-  const lines = input.split('\n').map(l => l.trim()).filter(Boolean);
+  const lines = input
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
   let summaryLine = '';
   for (const line of lines) {
     if (!line.startsWith('[Attached') && !line.startsWith('//') && !line.startsWith('/*')) {
@@ -489,13 +525,26 @@ function generateTestCaseMatrix(input: string): string {
   summaryLine = summaryLine || 'Core Application Feature';
   const cleanTitle = summaryLine.length > 60 ? summaryLine.slice(0, 57) + '...' : summaryLine;
 
-  const isApi = /\b(api|endpoint|http|get|post|put|patch|delete|status\s*code|json|schema|payload|rest|restful)\b/i.test(input);
+  const isApi =
+    /\b(api|endpoint|http|get|post|put|patch|delete|status\s*code|json|schema|payload|rest|restful)\b/i.test(
+      input
+    );
   const isPasswordReset = /\b(password|reset|forgot|email|token)\b/i.test(input);
-  const isPayment = /\b(transfer|payment|checkout|money|card|wallet|fund|transaction|wire|balance)\b/i.test(input);
-  const isGapAnalysis = /\b(gap|existing test|coverage gap|duplicate|review test|audit test)\b/i.test(input);
-  const isMultiRule = /\b(rule|discount|tier|premium|condition|if.*then|decision|policy)\b/i.test(input);
+  const isPayment =
+    /\b(transfer|payment|checkout|money|card|wallet|fund|transaction|wire|balance)\b/i.test(input);
+  const isGapAnalysis =
+    /\b(gap|existing test|coverage gap|duplicate|review test|audit test)\b/i.test(input);
+  const isMultiRule = /\b(rule|discount|tier|premium|condition|if.*then|decision|policy)\b/i.test(
+    input
+  );
 
-  const domain = isApi ? 'REST API Service' : isPasswordReset ? 'Authentication & Identity' : isPayment ? 'Financial Transactions' : 'Web & Platform Services';
+  const domain = isApi
+    ? 'REST API Service'
+    : isPasswordReset
+      ? 'Authentication & Identity'
+      : isPayment
+        ? 'Financial Transactions'
+        : 'Web & Platform Services';
 
   return `# Comprehensive QA Test Plan & Test Case Suite
 
@@ -594,14 +643,18 @@ function generateTestCaseMatrix(input: string): string {
 | **TC-010** | XSS Sanitization | Highly Suitable | Static security payload assertion in headless browser | Playwright TS |
 
 ## 9. Coverage Gaps & Gap Analysis
-${isGapAnalysis ? `### Gap Analysis on Existing Test Suite:
+${
+  isGapAnalysis
+    ? `### Gap Analysis on Existing Test Suite:
 - **Duplicate Detection**: Identified multiple redundant positive tests with identical verification criteria. Recommend merging into a single parameterized scenario outline.
 - **Missing Boundary Coverage**: Previous suite omitted tests for upper boundary threshold (Max+1) and token lifecycle expiry.
 - **Untested Risk Paths**: Concurrency / idempotency on double-clicks was unverified, presenting significant data duplication risk.
-- **Security Gaps**: Absence of rate-limiting (HTTP 429) and XSS sanitization checks.` : `- **Untested Areas / Open Requirements**: None identified for baseline scope. All specified requirements have at least one mapped P0/P1 test case.
+- **Security Gaps**: Absence of rate-limiting (HTTP 429) and XSS sanitization checks.`
+    : `- **Untested Areas / Open Requirements**: None identified for baseline scope. All specified requirements have at least one mapped P0/P1 test case.
 - **Missing Negative / Boundary Scenarios**: Edge conditions for network drop midway through transaction require local network throttling simulation.
 - **Identified Redundancies / Duplicate Tests**: Consolidated single-field validation checks into efficient boundary matrices to minimize CI execution time.
-- **Risk Mitigations**: High-risk financial/auth operations must gate all pull requests via automated P0 smoke tests.`}
+- **Risk Mitigations**: High-risk financial/auth operations must gate all pull requests via automated P0 smoke tests.`
+}
 
 ## 10. Assumptions and Clarifications
 - Pre-seeded test fixtures (accounts, valid auth tokens, test database) are available in non-production environments.
@@ -611,15 +664,30 @@ ${isGapAnalysis ? `### Gap Analysis on Existing Test Suite:
 
 // 3. Automation Code Generator
 function generateAutomationCode(input: string, techStack: string): string {
-  const isAppium = /\b(appium|mobile|android|ios|uiautomator|xcuitest|device)\b/i.test(input) || techStack.includes('appium');
+  const isAppium =
+    /\b(appium|mobile|android|ios|uiautomator|xcuitest|device)\b/i.test(input) ||
+    techStack.includes('appium');
   const isFrame = /\b(frame|iframe|switchto|defaultcontent)\b/i.test(input);
-  const isRestAssured = techStack === 'restassured' || (techStack !== 'playwright-ts' && (/\b(rest assured|restassured)\b/i.test(input) || (/\b(http|status code|endpoint|jsonpath)\b/i.test(input) && !isAppium)));
-  const isSelenium = techStack === 'selenium-java' || (techStack !== 'playwright-ts' && (/\b(selenium|webdriver|testng|junit)\b/i.test(input) && !isAppium && !isRestAssured));
-  const isExistingProject = /package\s+([a-zA-Z0-9_.]+);/.test(input) || /extends\s+([A-Za-z0-9_]+Base[A-Za-z0-9_]*)/i.test(input);
+  const isRestAssured =
+    techStack === 'restassured' ||
+    (techStack !== 'playwright-ts' &&
+      (/\b(rest assured|restassured)\b/i.test(input) ||
+        (/\b(http|status code|endpoint|jsonpath)\b/i.test(input) && !isAppium)));
+  const isSelenium =
+    techStack === 'selenium-java' ||
+    (techStack !== 'playwright-ts' &&
+      /\b(selenium|webdriver|testng|junit)\b/i.test(input) &&
+      !isAppium &&
+      !isRestAssured);
+  const isExistingProject =
+    /package\s+([a-zA-Z0-9_.]+);/.test(input) ||
+    /extends\s+([A-Za-z0-9_]+Base[A-Za-z0-9_]*)/i.test(input);
 
   // Extract existing package if present in input
   const packageMatch = input.match(/package\s+([a-zA-Z0-9_.]+);/);
-  const basePackage = packageMatch ? packageMatch[1].replace(/\.(tests|pages|base)$/, '') : 'com.enterprise.qa';
+  const basePackage = packageMatch
+    ? packageMatch[1].replace(/\.(tests|pages|base)$/, '')
+    : 'com.enterprise.qa';
   const baseClassMatch = input.match(/(?:extends|class)\s+([A-Za-z0-9_]+Base[A-Za-z0-9_]*)/i);
   const baseClassName = baseClassMatch ? baseClassMatch[1] : 'BaseTest';
 
@@ -911,20 +979,26 @@ public class ${isFrame ? 'FrameEditorPage' : 'UserProfilePage'} {
     private final WebDriverWait wait;
 
     // Resilient By Locators
-    ${isFrame ? `private final By editorIframe = By.cssSelector("iframe#mce_0_ifr, iframe[title='Rich Text Area']");
+    ${
+      isFrame
+        ? `private final By editorIframe = By.cssSelector("iframe#mce_0_ifr, iframe[title='Rich Text Area']");
     private final By editorBody = By.cssSelector("body#tinymce, [contenteditable='true']");
     private final By formatToolbarBtn = By.cssSelector("button[aria-label='Bold']");
-    private final By statusNotification = By.cssSelector("[role='status'], .notification-success");` : `private final By usernameField = By.cssSelector("input[name='username'], input[data-testid='username']");
+    private final By statusNotification = By.cssSelector("[role='status'], .notification-success");`
+        : `private final By usernameField = By.cssSelector("input[name='username'], input[data-testid='username']");
     private final By emailField = By.cssSelector("input[name='email'], input[data-testid='email']");
     private final By saveButton = By.xpath("//button[normalize-space()='Save Changes']");
-    private final By successAlert = By.cssSelector("[role='alert'], .toast-success");`}
+    private final By successAlert = By.cssSelector("[role='alert'], .toast-success");`
+    }
 
     public ${isFrame ? 'FrameEditorPage' : 'UserProfilePage'}(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    ${isFrame ? `/**
+    ${
+      isFrame
+        ? `/**
      * Switches into target iframe, enters text, and guarantees safe return to default content.
      */
     public void enterTextInIframe(String content) {
@@ -945,7 +1019,8 @@ public class ${isFrame ? 'FrameEditorPage' : 'UserProfilePage'} {
 
     public void clickToolbarBold() {
         wait.until(ExpectedConditions.elementToBeClickable(formatToolbarBtn)).click();
-    }` : `public void updateProfile(String username, String email) {
+    }`
+        : `public void updateProfile(String username, String email) {
         WebElement userEl = wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField));
         userEl.clear();
         userEl.sendKeys(username);
@@ -959,7 +1034,8 @@ public class ${isFrame ? 'FrameEditorPage' : 'UserProfilePage'} {
 
     public boolean isSuccessBannerDisplayed() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(successAlert)).isDisplayed();
-    }`}
+    }`
+    }
 }
 \`\`\`
 
@@ -977,12 +1053,16 @@ public class ${isFrame ? 'FrameEditorTest' : 'UserProfileTest'} extends ${baseCl
     @Test(description = "Verify safe frame switching, text entry, and return to default content")
     public void test${isFrame ? 'IframeInteraction' : 'ProfileUpdate'}() {
         driver.get("https://intelligentqa.io/sandbox/${isFrame ? 'tinymce-frame' : 'profile'}");
-        ${isFrame ? `FrameEditorPage editorPage = new FrameEditorPage(driver);
+        ${
+          isFrame
+            ? `FrameEditorPage editorPage = new FrameEditorPage(driver);
         editorPage.enterTextInIframe("Enterprise SDET Automation Inside Frame");
         editorPage.clickToolbarBold();
-        Assert.assertTrue(driver.getTitle().length() > 0, "Top-level DOM must remain accessible after returning to defaultContent.");` : `UserProfilePage profilePage = new UserProfilePage(driver);
+        Assert.assertTrue(driver.getTitle().length() > 0, "Top-level DOM must remain accessible after returning to defaultContent.");`
+            : `UserProfilePage profilePage = new UserProfilePage(driver);
         profilePage.updateProfile("EnterpriseSDET", "sdet@enterprise.qa");
-        Assert.assertTrue(profilePage.isSuccessBannerDisplayed(), "Success banner must display after valid profile update.");`}
+        Assert.assertTrue(profilePage.isSuccessBannerDisplayed(), "Success banner must display after valid profile update.");`
+        }
     }
 }
 \`\`\`
@@ -1379,7 +1459,10 @@ function reviewAutomationCode(input: string, techStack: string, options?: any): 
 
   // Mode Detection: REVIEW ONLY vs REVIEW AND FIX
   const upperInput = input.toUpperCase();
-  const isReviewOnly = options?.mode === 'review_only' || upperInput.includes('REVIEW ONLY') || upperInput.includes('MODE: REVIEW ONLY');
+  const isReviewOnly =
+    options?.mode === 'review_only' ||
+    upperInput.includes('REVIEW ONLY') ||
+    upperInput.includes('MODE: REVIEW ONLY');
   const reviewModeTitle = isReviewOnly ? 'REVIEW ONLY' : 'REVIEW AND FIX';
 
   // Helper to extract or state missing line numbers without inventing
@@ -1394,16 +1477,26 @@ function reviewAutomationCode(input: string, techStack: string, options?: any): 
 
   // Helper to mask secrets
   const maskSecret = (val: string): string => {
-    return val.replace(/(Bearer\s+)[A-Za-z0-9_\-\.]{10,}/gi, '$1[REDACTED_API_TOKEN_***]')
-              .replace(/(sk_[live|test]+_[A-Za-z0-9]{10,})/gi, '[REDACTED_API_KEY_***]')
-              .replace(/((?:api[_-]?token|api[_-]?key|secret|password|auth_token)\s*[:=]\s*['"])[^'"]{8,}(['"])/gi, '$1[REDACTED_SECRET_***]$2');
+    return val
+      .replace(/(Bearer\s+)[A-Za-z0-9_\-\.]{10,}/gi, '$1[REDACTED_API_TOKEN_***]')
+      .replace(/(sk_[live|test]+_[A-Za-z0-9]{10,})/gi, '[REDACTED_API_KEY_***]')
+      .replace(
+        /((?:api[_-]?token|api[_-]?key|secret|password|auth_token)\s*[:=]\s*['"])[^'"]{8,}(['"])/gi,
+        '$1[REDACTED_SECRET_***]$2'
+      );
   };
 
   // ----------------------------------------------------
   // SCENARIO 1: Stack Trace / Error Debugging (Mode A)
   // ----------------------------------------------------
-  if (isStackTrace && !input.includes('class ') && !input.includes('test(') && !input.includes('def test_')) {
-    const isStale = input.includes('StaleElementReferenceException') || input.includes('stale element');
+  if (
+    isStackTrace &&
+    !input.includes('class ') &&
+    !input.includes('test(') &&
+    !input.includes('def test_')
+  ) {
+    const isStale =
+      input.includes('StaleElementReferenceException') || input.includes('stale element');
     const isTimeout = input.includes('TimeoutError') || input.includes('Timeout');
     const lineInfo = extractLineNumber(input, 'StackTrace');
 
@@ -1419,16 +1512,16 @@ function reviewAutomationCode(input: string, techStack: string, options?: any): 
       isStale
         ? 'DOM node detached from live document (`StaleElementReferenceException`)'
         : isTimeout
-        ? 'Asynchronous state polling exceeded navigation/locator timeout (`TimeoutError`)'
-        : 'Runtime test execution exception encountered during browser/driver interaction'
+          ? 'Asynchronous state polling exceeded navigation/locator timeout (`TimeoutError`)'
+          : 'Runtime test execution exception encountered during browser/driver interaction'
     }
 - **File & Line**: ${lineInfo}
 - **Underlying Cause**: ${
       isStale
         ? 'A dynamic DOM rerender or AJAX re-fetch detached the previously located element before action execution.'
         : isTimeout
-        ? 'Target locator was not actionable (visible, stable, enabled) within the allotted timeout window.'
-        : 'DOM timing mismatch or unhandled asynchronous condition.'
+          ? 'Target locator was not actionable (visible, stable, enabled) within the allotted timeout window.'
+          : 'DOM timing mismatch or unhandled asynchronous condition.'
     }
 
 ---
@@ -1493,10 +1586,14 @@ test('resilient execution with auto-recovery and polling', async ({ page }) => {
   if (isMultiFile) {
     // Identify supplied files
     const suppliedFiles: string[] = [];
-    if (input.includes('BaseTest')) suppliedFiles.push('src/test/java/com/enterprise/qa/base/BaseTest.java');
-    if (input.includes('LoginPage') || input.includes('Page')) suppliedFiles.push('src/main/java/com/enterprise/qa/pages/LoginPage.java');
-    if (input.includes('LoginTest') || input.includes('Test')) suppliedFiles.push('src/test/java/com/enterprise/qa/tests/LoginTest.java');
-    if (suppliedFiles.length === 0) suppliedFiles.push('Supplied framework files (BaseTest, PageObject, TestSuite)');
+    if (input.includes('BaseTest'))
+      suppliedFiles.push('src/test/java/com/enterprise/qa/base/BaseTest.java');
+    if (input.includes('LoginPage') || input.includes('Page'))
+      suppliedFiles.push('src/main/java/com/enterprise/qa/pages/LoginPage.java');
+    if (input.includes('LoginTest') || input.includes('Test'))
+      suppliedFiles.push('src/test/java/com/enterprise/qa/tests/LoginTest.java');
+    if (suppliedFiles.length === 0)
+      suppliedFiles.push('Supplied framework files (BaseTest, PageObject, TestSuite)');
 
     // Explicitly identify uninspected files for strict traceability
     const uninspectedFiles = [
@@ -1516,9 +1613,9 @@ test('resilient execution with auto-recovery and polling', async ({ page }) => {
 
 ## 1. Executive Inspection Scope & Traceability
 - **Inspected Files**:
-${suppliedFiles.map(f => `  - \`${f}\``).join('\n')}
+${suppliedFiles.map((f) => `  - \`${f}\``).join('\n')}
 - **Explicitly Uninspected Files (Not Supplied in Upload)**:
-${uninspectedFiles.map(f => `  - \`${f}\``).join('\n')}
+${uninspectedFiles.map((f) => `  - \`${f}\``).join('\n')}
 *Notice: In accordance with SDET auditing standards, this review evaluates only the supplied source files and their direct architectural relationships. Uninspected configuration and runner files are not evaluated.*
 
 ---
@@ -1763,7 +1860,11 @@ public class LoginTest extends BaseTest {
     id: string;
     severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
     dimension: string;
-    classification: 'Actual defect' | 'Framework-specific best practice' | 'Optional improvement' | 'Context-dependent recommendation';
+    classification:
+      | 'Actual defect'
+      | 'Framework-specific best practice'
+      | 'Optional improvement'
+      | 'Context-dependent recommendation';
     fileLine: string;
     snippet: string;
     problem: string;
@@ -1775,7 +1876,8 @@ public class LoginTest extends BaseTest {
   }> = [];
 
   // Check 1: Hardcoded Secrets / Tokens (TEST 4)
-  const secretPattern = /(Bearer\s+[A-Za-z0-9_\-\.]{10,}|sk_[live|test]+_[A-Za-z0-9]{10,}|(?:api[_-]?token|secret[_-]?key|auth_token)\s*[:=]\s*['"][^'"]{6,}['"])/i;
+  const secretPattern =
+    /(Bearer\s+[A-Za-z0-9_\-\.]{10,}|sk_[live|test]+_[A-Za-z0-9]{10,}|(?:api[_-]?token|secret[_-]?key|auth_token)\s*[:=]\s*['"][^'"]{6,}['"])/i;
   if (secretPattern.test(input)) {
     const rawMatch = input.match(secretPattern)?.[0] || 'Bearer [token]';
     const masked = maskSecret(rawMatch);
@@ -1787,10 +1889,13 @@ public class LoginTest extends BaseTest {
       fileLine: extractLineNumber(input, 'SecurityAudit'),
       snippet: masked,
       problem: 'Hardcoded API secret token committed directly in source code.',
-      explanation: 'Embedding raw authentication tokens, JWTs, or API secrets in test files exposes sensitive credentials to repository history, CI build logs, pull requests, and unauthorized developers.',
-      impact: 'Critical security vulnerability: Credential leakage, unauthorized API access, potential data compromise, and compliance breach (SOC 2, ISO 27001, PCI-DSS).',
+      explanation:
+        'Embedding raw authentication tokens, JWTs, or API secrets in test files exposes sensitive credentials to repository history, CI build logs, pull requests, and unauthorized developers.',
+      impact:
+        'Critical security vulnerability: Credential leakage, unauthorized API access, potential data compromise, and compliance breach (SOC 2, ISO 27001, PCI-DSS).',
       rootCause: 'Static credential declaration instead of externalized runtime configuration.',
-      recommendation: 'Extract secrets to environment variables (e.g. process.env.API_TOKEN or System.getenv("API_TOKEN")) or a secure secrets vault (.env in .gitignore). NEVER commit raw credentials.',
+      recommendation:
+        'Extract secrets to environment variables (e.g. process.env.API_TOKEN or System.getenv("API_TOKEN")) or a secure secrets vault (.env in .gitignore). NEVER commit raw credentials.',
       correctedSnippet: techStack.includes('java')
         ? 'String apiToken = System.getenv("API_TOKEN"); // Injected securely via environment'
         : 'const apiToken = process.env.API_TOKEN; // Injected securely via environment',
@@ -1798,7 +1903,8 @@ public class LoginTest extends BaseTest {
   }
 
   // Check 2: Fixed Timeout / Unconditional Wait in Playwright or Selenium (TEST 1)
-  const waitTimeoutPattern = /(?:waitForTimeout\s*\(\s*(\d+)\s*\)|Thread\.sleep\s*\(\s*(\d+)\s*\)|time\.sleep\s*\(\s*(\d+)\s*\))/;
+  const waitTimeoutPattern =
+    /(?:waitForTimeout\s*\(\s*(\d+)\s*\)|Thread\.sleep\s*\(\s*(\d+)\s*\)|time\.sleep\s*\(\s*(\d+)\s*\))/;
   if (waitTimeoutPattern.test(input)) {
     const match = input.match(waitTimeoutPattern)?.[0] || 'waitForTimeout(5000)';
     findings.push({
@@ -1808,19 +1914,28 @@ public class LoginTest extends BaseTest {
       classification: 'Framework-specific best practice',
       fileLine: extractLineNumber(input, 'TimeoutAudit'),
       snippet: match,
-      problem: 'Unconditional fixed timeout sleep used where a declarative locator assertion is required.',
-      explanation: 'Hardcoded sleeps halt test execution unconditionally for a fixed duration regardless of DOM readiness. In CI environments with variable load, the fixed time may expire before hydration completes, causing flaky test failures. On fast machines, it introduces unnecessary test execution delays.',
-      impact: 'High test flakiness in CI pipelines, extended build times, and false failure alarms.',
+      problem:
+        'Unconditional fixed timeout sleep used where a declarative locator assertion is required.',
+      explanation:
+        'Hardcoded sleeps halt test execution unconditionally for a fixed duration regardless of DOM readiness. In CI environments with variable load, the fixed time may expire before hydration completes, causing flaky test failures. On fast machines, it introduces unnecessary test execution delays.',
+      impact:
+        'High test flakiness in CI pipelines, extended build times, and false failure alarms.',
       rootCause: 'Imperative sleep pattern instead of declarative web-first locator auto-waiting.',
-      recommendation: 'Replace unconditional timeout with Playwright web-first assertions like await expect(locator).toBeVisible({ timeout: ... }) which auto-poll the DOM state.',
-      correctedSnippet: techStack.includes('playwright') || input.includes('page.')
-        ? '// Replace fixed timeout with web-first auto-polling assertion\nconst submitBtn = page.getByRole("button", { name: "Confirm" });\nawait expect(submitBtn).toBeVisible({ timeout: 10000 });\nawait submitBtn.click();'
-        : '// Replace Thread.sleep with explicit WebDriverWait condition\nWebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\nWebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("confirm")));\nsubmitBtn.click();',
+      recommendation:
+        'Replace unconditional timeout with Playwright web-first assertions like await expect(locator).toBeVisible({ timeout: ... }) which auto-poll the DOM state.',
+      correctedSnippet:
+        techStack.includes('playwright') || input.includes('page.')
+          ? '// Replace fixed timeout with web-first auto-polling assertion\nconst submitBtn = page.getByRole("button", { name: "Confirm" });\nawait expect(submitBtn).toBeVisible({ timeout: 10000 });\nawait submitBtn.click();'
+          : '// Replace Thread.sleep with explicit WebDriverWait condition\nWebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));\nWebElement submitBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("confirm")));\nsubmitBtn.click();',
     });
   }
 
   // Check 3: Missing Driver Cleanup in Selenium Java (TEST 2)
-  const isSeleniumJava = (techStack.includes('selenium') || input.includes('WebDriver') || input.includes('ChromeDriver')) && (input.includes('java') || input.includes('public class') || input.includes('@Test'));
+  const isSeleniumJava =
+    (techStack.includes('selenium') ||
+      input.includes('WebDriver') ||
+      input.includes('ChromeDriver')) &&
+    (input.includes('java') || input.includes('public class') || input.includes('@Test'));
   const hasDriverQuit = input.includes('driver.quit()') || input.includes('quit();');
   if (isSeleniumJava && !hasDriverQuit) {
     findings.push({
@@ -1831,10 +1946,13 @@ public class LoginTest extends BaseTest {
       fileLine: extractLineNumber(input, 'SeleniumLifecycle'),
       snippet: 'public class ... { /* Missing driver.quit() in teardown hook */ }',
       problem: 'Missing WebDriver session cleanup (driver.quit()) in test lifecycle.',
-      explanation: 'Failing to invoke driver.quit() leaves the browser instance and WebDriver binary process (chromedriver.exe) running in memory after test execution. Calling driver.close() only closes the current browser window, not the parent driver daemon.',
-      impact: 'Operating system resource exhaustion on CI runners, zombie Chrome processes, socket exhaustion, and subsequent test failures with SessionNotCreatedException.',
+      explanation:
+        'Failing to invoke driver.quit() leaves the browser instance and WebDriver binary process (chromedriver.exe) running in memory after test execution. Calling driver.close() only closes the current browser window, not the parent driver daemon.',
+      impact:
+        'Operating system resource exhaustion on CI runners, zombie Chrome processes, socket exhaustion, and subsequent test failures with SessionNotCreatedException.',
       rootCause: 'Omission of guaranteed lifecycle teardown in @AfterMethod or try-finally block.',
-      recommendation: 'Implement @AfterMethod(alwaysRun = true) in TestNG (or @AfterEach in JUnit5) to ensure driver.quit() is always called, even if tests fail or throw unexpected exceptions.',
+      recommendation:
+        'Implement @AfterMethod(alwaysRun = true) in TestNG (or @AfterEach in JUnit5) to ensure driver.quit() is always called, even if tests fail or throw unexpected exceptions.',
       correctedSnippet: `@AfterMethod(alwaysRun = true)
 public void tearDown() {
     if (driver != null) {
@@ -1849,8 +1967,14 @@ public void tearDown() {
   }
 
   // Check 4: REST Assured Missing Response Assertions (TEST 3)
-  const isRestAssured = input.includes('given()') || input.includes('RestAssured') || input.includes('given().') || (techStack.includes('rest') && input.includes('when()'));
-  const hasResponseAssertion = input.includes('then()') && (input.includes('statusCode') || input.includes('assertThat()') || input.includes('body('));
+  const isRestAssured =
+    input.includes('given()') ||
+    input.includes('RestAssured') ||
+    input.includes('given().') ||
+    (techStack.includes('rest') && input.includes('when()'));
+  const hasResponseAssertion =
+    input.includes('then()') &&
+    (input.includes('statusCode') || input.includes('assertThat()') || input.includes('body('));
   if (isRestAssured && !hasResponseAssertion) {
     findings.push({
       id: '[FINDING-RA-001]',
@@ -1860,10 +1984,14 @@ public void tearDown() {
       fileLine: extractLineNumber(input, 'RestAssuredAudit'),
       snippet: input.slice(0, 250),
       problem: 'Missing HTTP status code and response payload assertions in REST Assured test.',
-      explanation: 'The test executes an HTTP request via given().when().post(...) but omits .then() validation. REST Assured will treat this test as PASSED as long as the network socket connects, even if the API responds with HTTP 400 Bad Request, 401 Unauthorized, or 500 Internal Server Error.',
-      impact: 'Severe false positive risk: Broken backend endpoints and API regressions pass silently through CI/CD pipelines undetected.',
-      rootCause: 'Incomplete test implementation terminating after request dispatch without asserting on response specifications.',
-      recommendation: 'Chain .then().statusCode(200) (or expected status), validate response body fields using Hamcrest matchers (equalTo, notNullValue), and assert response schema.',
+      explanation:
+        'The test executes an HTTP request via given().when().post(...) but omits .then() validation. REST Assured will treat this test as PASSED as long as the network socket connects, even if the API responds with HTTP 400 Bad Request, 401 Unauthorized, or 500 Internal Server Error.',
+      impact:
+        'Severe false positive risk: Broken backend endpoints and API regressions pass silently through CI/CD pipelines undetected.',
+      rootCause:
+        'Incomplete test implementation terminating after request dispatch without asserting on response specifications.',
+      recommendation:
+        'Chain .then().statusCode(200) (or expected status), validate response body fields using Hamcrest matchers (equalTo, notNullValue), and assert response schema.',
       correctedSnippet: `given()
     .spec(requestSpec)
     .body(payload)
@@ -1888,10 +2016,14 @@ public void tearDown() {
       fileLine: extractLineNumber(input, 'LocatorAudit'),
       snippet: input.match(/(\/html\/body\/[^\s'"]+)/)?.[0] || 'Absolute XPath',
       problem: 'Brittle absolute XPath locator used for element identification.',
-      explanation: 'Absolute XPaths depend strictly on the DOM hierarchy tree. Any minor UI layout adjustment or wrapper container added by frontend developers breaks the selector instantly.',
-      impact: 'Frequent test maintenance churn, fragile automation suites, and false test failures.',
-      rootCause: 'Using auto-generated browser devtools XPaths instead of resilient user-facing attributes.',
-      recommendation: 'Replace with semantic locators: page.getByRole(), getByLabel(), or stable data-testid attributes.',
+      explanation:
+        'Absolute XPaths depend strictly on the DOM hierarchy tree. Any minor UI layout adjustment or wrapper container added by frontend developers breaks the selector instantly.',
+      impact:
+        'Frequent test maintenance churn, fragile automation suites, and false test failures.',
+      rootCause:
+        'Using auto-generated browser devtools XPaths instead of resilient user-facing attributes.',
+      recommendation:
+        'Replace with semantic locators: page.getByRole(), getByLabel(), or stable data-testid attributes.',
       correctedSnippet: `// Use user-facing role locator rather than absolute XPath
 const submitBtn = page.getByRole('button', { name: 'Submit' });
 await submitBtn.click();`,
@@ -1908,7 +2040,8 @@ await submitBtn.click();`,
       fileLine: extractLineNumber(input, 'GeneralAudit'),
       snippet: input.slice(0, 150),
       problem: 'No critical defects found. Ensure assertions remain decoupled from Page Objects.',
-      explanation: 'Code exhibits clean structure and syntax. Continue following the Page Object Model separation and keep tests independent.',
+      explanation:
+        'Code exhibits clean structure and syntax. Continue following the Page Object Model separation and keep tests independent.',
       impact: 'Minor maintainability enhancement.',
       rootCause: 'General code hygiene review.',
       recommendation: 'Ensure all tests remain isolated with independent data generation.',
@@ -1917,10 +2050,10 @@ await submitBtn.click();`,
   }
 
   // Calculate severity counters
-  const criticalCount = findings.filter(f => f.severity === 'CRITICAL').length;
-  const highCount = findings.filter(f => f.severity === 'HIGH').length;
-  const mediumCount = findings.filter(f => f.severity === 'MEDIUM').length;
-  const lowCount = findings.filter(f => f.severity === 'LOW').length;
+  const criticalCount = findings.filter((f) => f.severity === 'CRITICAL').length;
+  const highCount = findings.filter((f) => f.severity === 'HIGH').length;
+  const mediumCount = findings.filter((f) => f.severity === 'MEDIUM').length;
+  const lowCount = findings.filter((f) => f.severity === 'LOW').length;
 
   // Build Output Report
   return `# AGENT 04 — Code Reviewer & Quality Audit Report
@@ -1946,7 +2079,7 @@ await submitBtn.click();`,
 |:---|:---:|:---|:---|:---|
 ${findings
   .map(
-    f =>
+    (f) =>
       `| **${f.id}** | **${f.severity}** | ${f.dimension} | ${f.classification} | ${f.problem} |`
   )
   .join('\n')}
@@ -1957,7 +2090,7 @@ ${findings
 
 ${findings
   .map(
-    f => `### ${f.id} ${f.problem}
+    (f) => `### ${f.id} ${f.problem}
 - **Finding ID**: \`${f.id}\`
 - **File and Line Number**: \`${f.fileLine}\`
 - **Code Snippet**:
@@ -1986,7 +2119,7 @@ ${
 *Review completed in **REVIEW ONLY** mode. To generate full refactored code files, switch to **REVIEW AND FIX** mode.*`
     : `## 4. Refactored Production Code Suite
 \`\`\`${techStack.includes('java') ? 'java' : 'typescript'}
-${findings.map(f => f.correctedSnippet).join('\n\n')}
+${findings.map((f) => f.correctedSnippet).join('\n\n')}
 \`\`\`
 
 - **Next Steps**:
@@ -1996,14 +2129,24 @@ ${findings.map(f => f.correctedSnippet).join('\n\n')}
 `;
 }
 
-
 // 5. Code Snippet Only Generator (Direct, Short, Clean - No Markdown Description)
 function generateCodeSnippetOnly(input: string, techStack: string): string {
   const lowerInput = input.toLowerCase();
 
   // SELENIUM (PYTHON)
-  if (techStack === 'selenium-python' || (techStack === 'python' && (lowerInput.includes('selenium') || lowerInput.includes('webdriver') || lowerInput.includes('basetest')))) {
-    if (lowerInput.includes('threadlocal') || lowerInput.includes('thread-local') || lowerInput.includes('parallel') || lowerInput.includes('xdist')) {
+  if (
+    techStack === 'selenium-python' ||
+    (techStack === 'python' &&
+      (lowerInput.includes('selenium') ||
+        lowerInput.includes('webdriver') ||
+        lowerInput.includes('basetest')))
+  ) {
+    if (
+      lowerInput.includes('threadlocal') ||
+      lowerInput.includes('thread-local') ||
+      lowerInput.includes('parallel') ||
+      lowerInput.includes('xdist')
+    ) {
       return `# Selenium WebDriver (Python) Thread-Safe Fixture for Parallel Execution (pytest-xdist)
 import pytest
 from selenium import webdriver
@@ -2021,7 +2164,13 @@ def driver():
     yield driver_instance
     driver_instance.quit()`;
     }
-    if (lowerInput.includes('listener') || lowerInput.includes('screenshot') || lowerInput.includes('hook') || lowerInput.includes('report') || lowerInput.includes('extent')) {
+    if (
+      lowerInput.includes('listener') ||
+      lowerInput.includes('screenshot') ||
+      lowerInput.includes('hook') ||
+      lowerInput.includes('report') ||
+      lowerInput.includes('extent')
+    ) {
       return `# pytest Failure Screenshot Hook (conftest.py)
 import pytest
 import os
@@ -2039,7 +2188,11 @@ def pytest_runtest_makereport(item, call):
             driver.save_screenshot(f"screenshots/{item.name}_{ts}.png")
             print(f"Captured failure screenshot: screenshots/{item.name}_{ts}.png")`;
     }
-    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || lowerInput.includes('fixture')) {
+    if (
+      lowerInput.includes('basetest') ||
+      lowerInput.includes('setup') ||
+      lowerInput.includes('fixture')
+    ) {
       return `# Selenium WebDriver (Python) BaseTest Fixture
 import pytest
 from selenium import webdriver
@@ -2053,7 +2206,11 @@ class BaseTest:
         if self.driver:
             self.driver.quit()`;
     }
-    if (lowerInput.includes('page object') || lowerInput.includes('pom') || lowerInput.includes('login')) {
+    if (
+      lowerInput.includes('page object') ||
+      lowerInput.includes('pom') ||
+      lowerInput.includes('login')
+    ) {
       return `# Selenium WebDriver (Python) Page Object
 from selenium.webdriver.common.by import By
 
@@ -2096,7 +2253,13 @@ assert alert.is_displayed(), "Verification alert should be visible"`;
   // SELENIUM (JAVA)
   if (techStack === 'selenium-java' || techStack === 'java') {
     // 1. Check for TestNG ITestListener / ExtentReports / Screenshot
-    if (lowerInput.includes('listener') || lowerInput.includes('itestlistener') || lowerInput.includes('extent') || (lowerInput.includes('screenshot') && (lowerInput.includes('fail') || lowerInput.includes('attach')))) {
+    if (
+      lowerInput.includes('listener') ||
+      lowerInput.includes('itestlistener') ||
+      lowerInput.includes('extent') ||
+      (lowerInput.includes('screenshot') &&
+        (lowerInput.includes('fail') || lowerInput.includes('attach')))
+    ) {
       return `// TestNG ITestListener with ExtentReports & Failure Screenshot Capture
 package com.intelligentqa.listeners;
 
@@ -2165,7 +2328,12 @@ public class RetryAnalyzer implements IRetryAnalyzer {
     }
 
     // 3. Check for ThreadLocal or Parallel execution request
-    if (lowerInput.includes('threadlocal') || lowerInput.includes('thread-local') || lowerInput.includes('parallel') || (lowerInput.includes('basetest') && lowerInput.includes('thread'))) {
+    if (
+      lowerInput.includes('threadlocal') ||
+      lowerInput.includes('thread-local') ||
+      lowerInput.includes('parallel') ||
+      (lowerInput.includes('basetest') && lowerInput.includes('thread'))
+    ) {
       return `// Selenium WebDriver (Java) BaseTest with ThreadLocal for Parallel TestNG Execution
 package com.intelligentqa.base;
 
@@ -2203,7 +2371,11 @@ public abstract class BaseTest {
     }
 
     // 4. BaseTest Setup
-    if (lowerInput.includes('basetest') || lowerInput.includes('setup') || (lowerInput.includes('testng') && lowerInput.includes('base'))) {
+    if (
+      lowerInput.includes('basetest') ||
+      lowerInput.includes('setup') ||
+      (lowerInput.includes('testng') && lowerInput.includes('base'))
+    ) {
       return `// Selenium WebDriver (Java) BaseTest with TestNG
 package com.intelligentqa.base;
 
@@ -2272,7 +2444,11 @@ public class LoginPage {
     }
 }`;
     }
-    if (lowerInput.includes('page object') || lowerInput.includes('pom') || lowerInput.includes('login')) {
+    if (
+      lowerInput.includes('page object') ||
+      lowerInput.includes('pom') ||
+      lowerInput.includes('login')
+    ) {
       return `// Selenium WebDriver (Java) Page Object
 package com.intelligentqa.pages;
 

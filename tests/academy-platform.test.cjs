@@ -12,8 +12,14 @@ test('Academy Platform: Core TypeScript type definitions exist and export requir
   assert.ok(content.includes('export interface AcademyCourse'), 'Must export AcademyCourse');
   assert.ok(content.includes('export interface AcademyModule'), 'Must export AcademyModule');
   assert.ok(content.includes('export interface AcademyLesson'), 'Must export AcademyLesson');
-  assert.ok(content.includes('export interface AcademyNavigationTreeCategory'), 'Must export AcademyNavigationTreeCategory');
-  assert.ok(content.includes('export interface AcademyReorderPayload'), 'Must export AcademyReorderPayload');
+  assert.ok(
+    content.includes('export interface AcademyNavigationTreeCategory'),
+    'Must export AcademyNavigationTreeCategory'
+  );
+  assert.ok(
+    content.includes('export interface AcademyReorderPayload'),
+    'Must export AcademyReorderPayload'
+  );
 });
 
 test('Academy Platform: Data store contains all 7 mandatory top-level categories and Git & CI/CD subcategories', () => {
@@ -28,7 +34,10 @@ test('Academy Platform: Data store contains all 7 mandatory top-level categories
   const slugs = categories.map((c) => c.slug);
 
   // 1. AI Academy / AI for QA
-  assert.ok(titles.includes('AI Academy') || titles.includes('AI for QA'), 'Must include AI Academy / AI for QA');
+  assert.ok(
+    titles.includes('AI Academy') || titles.includes('AI for QA'),
+    'Must include AI Academy / AI for QA'
+  );
   assert.ok(slugs.includes('ai-for-qa'), 'Must include ai-for-qa slug');
 
   // 2. Selenium
@@ -61,15 +70,27 @@ test('Academy Platform: Data store contains all 7 mandatory top-level categories
 
   const githubActions = categories.find((c) => c.slug === 'github-actions');
   assert.ok(githubActions, 'GitHub Actions subcategory must exist');
-  assert.strictEqual(githubActions.parentCategoryId, gitCategory.id, 'GitHub Actions must have git-cicd as parentCategoryId');
+  assert.strictEqual(
+    githubActions.parentCategoryId,
+    gitCategory.id,
+    'GitHub Actions must have git-cicd as parentCategoryId'
+  );
 
   const azureDevops = categories.find((c) => c.slug === 'azure-devops');
   assert.ok(azureDevops, 'Azure DevOps subcategory must exist');
-  assert.strictEqual(azureDevops.parentCategoryId, gitCategory.id, 'Azure DevOps must have git-cicd as parentCategoryId');
+  assert.strictEqual(
+    azureDevops.parentCategoryId,
+    gitCategory.id,
+    'Azure DevOps must have git-cicd as parentCategoryId'
+  );
 
   const jenkins = categories.find((c) => c.slug === 'jenkins');
   assert.ok(jenkins, 'Jenkins subcategory must exist');
-  assert.strictEqual(jenkins.parentCategoryId, gitCategory.id, 'Jenkins must have git-cicd as parentCategoryId');
+  assert.strictEqual(
+    jenkins.parentCategoryId,
+    gitCategory.id,
+    'Jenkins must have git-cicd as parentCategoryId'
+  );
 });
 
 test('Academy Platform: Pre-seeded courses and lessons exist for initial categories', () => {
@@ -86,7 +107,10 @@ test('Academy Platform: Pre-seeded courses and lessons exist for initial categor
   assert.ok(pwCourse.modules[0].lessons.length > 0, 'Module must have lessons');
 
   const firstLesson = pwCourse.modules[0].lessons[0];
-  assert.ok(firstLesson.title.includes('Playwright Architecture'), 'Lesson title must match expected topic');
+  assert.ok(
+    firstLesson.title.includes('Playwright Architecture'),
+    'Lesson title must match expected topic'
+  );
   assert.ok(firstLesson.contentHtml !== undefined, 'Lesson must contain content HTML field');
 });
 
@@ -156,10 +180,28 @@ test('Academy Platform: Database relational schema extension is appended in scri
   const schemaPath = path.join(process.cwd(), 'scripts/schema.sql');
   const schemaContent = fs.readFileSync(schemaPath, 'utf-8');
 
-  assert.ok(schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_categories'), 'Must include academy_categories table');
-  assert.ok(schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_courses'), 'Must include academy_courses table');
-  assert.ok(schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_modules'), 'Must include academy_modules table');
-  assert.ok(schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_lessons'), 'Must include academy_lessons table');
-  assert.ok(schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_document_sources'), 'Must include academy_document_sources table');
-  assert.ok(schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_media_attachments'), 'Must include academy_media_attachments table');
+  assert.ok(
+    schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_categories'),
+    'Must include academy_categories table'
+  );
+  assert.ok(
+    schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_courses'),
+    'Must include academy_courses table'
+  );
+  assert.ok(
+    schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_modules'),
+    'Must include academy_modules table'
+  );
+  assert.ok(
+    schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_lessons'),
+    'Must include academy_lessons table'
+  );
+  assert.ok(
+    schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_document_sources'),
+    'Must include academy_document_sources table'
+  );
+  assert.ok(
+    schemaContent.includes('CREATE TABLE IF NOT EXISTS academy_media_attachments'),
+    'Must include academy_media_attachments table'
+  );
 });

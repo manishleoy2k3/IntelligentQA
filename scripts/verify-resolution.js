@@ -1,6 +1,6 @@
 const path = require('path');
 const jiti = require('jiti')(__filename, {
-  alias: { '@': path.join(process.cwd(), 'src') }
+  alias: { '@': path.join(process.cwd(), 'src') },
 });
 const { INITIAL_PUBLISHED_COURSES } = jiti('../src/data/learning/initial-courses.ts');
 
@@ -39,8 +39,18 @@ function resolveCourse(selectedCourseId) {
   return INITIAL_PUBLISHED_COURSES[0];
 }
 
-const queries = ['course-cicd-concepts', 'cicd-concepts', 'ci-cd', 'cicd', 'ci-cd-concepts', 'course-git', 'course-github-actions', 'course-azure-devops', 'course-jenkins'];
-queries.forEach(q => {
+const queries = [
+  'course-cicd-concepts',
+  'cicd-concepts',
+  'ci-cd',
+  'cicd',
+  'ci-cd-concepts',
+  'course-git',
+  'course-github-actions',
+  'course-azure-devops',
+  'course-jenkins',
+];
+queries.forEach((q) => {
   const c = resolveCourse(q);
   console.log(`Query "${q}" -> ${c.title} (${c.id})`);
 });

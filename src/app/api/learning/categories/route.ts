@@ -50,11 +50,14 @@ export async function POST(req: NextRequest) {
       isActive: isActive !== undefined ? !!isActive : true,
     });
 
-    return NextResponse.json({
-      success: true,
-      data: created,
-      message: 'Category created successfully.',
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: created,
+        message: 'Category created successfully.',
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },

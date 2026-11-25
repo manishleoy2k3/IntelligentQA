@@ -10,36 +10,69 @@ test('Phase 2 DB Schema: scripts/schema.sql contains all required Academy entiti
   const schema = fs.readFileSync(schemaPath, 'utf-8');
 
   // Course entity
-  assert.ok(schema.includes('CREATE TABLE IF NOT EXISTS academy_courses'), 'Must include academy_courses');
+  assert.ok(
+    schema.includes('CREATE TABLE IF NOT EXISTS academy_courses'),
+    'Must include academy_courses'
+  );
   assert.ok(schema.includes('icon VARCHAR(64)'), 'Courses must have icon');
   assert.ok(schema.includes('thumbnail VARCHAR(512)'), 'Courses must have thumbnail');
   assert.ok(schema.includes('display_order INT'), 'Courses must have display_order');
   assert.ok(schema.includes('status VARCHAR(32)'), 'Courses must have status');
 
   // Module entity
-  assert.ok(schema.includes('CREATE TABLE IF NOT EXISTS academy_modules'), 'Must include academy_modules');
+  assert.ok(
+    schema.includes('CREATE TABLE IF NOT EXISTS academy_modules'),
+    'Must include academy_modules'
+  );
   assert.ok(schema.includes('course_id VARCHAR(64)'), 'Modules must reference course_id');
   assert.ok(schema.includes('display_order INT'), 'Modules must have display_order');
 
   // Lesson entity
-  assert.ok(schema.includes('CREATE TABLE IF NOT EXISTS academy_lessons'), 'Must include academy_lessons');
+  assert.ok(
+    schema.includes('CREATE TABLE IF NOT EXISTS academy_lessons'),
+    'Must include academy_lessons'
+  );
   assert.ok(schema.includes('module_id VARCHAR(64)'), 'Lessons must reference module_id');
   assert.ok(schema.includes('short_description TEXT'), 'Lessons must have short_description');
   assert.ok(schema.includes('content_type VARCHAR(32)'), 'Lessons must have content_type');
-  assert.ok(schema.includes('original_document_path VARCHAR(512)'), 'Lessons must have original_document_path');
-  assert.ok(schema.includes('rendered_html_path VARCHAR(512)'), 'Lessons must have rendered_html_path');
+  assert.ok(
+    schema.includes('original_document_path VARCHAR(512)'),
+    'Lessons must have original_document_path'
+  );
+  assert.ok(
+    schema.includes('rendered_html_path VARCHAR(512)'),
+    'Lessons must have rendered_html_path'
+  );
   assert.ok(schema.includes('pdf_path VARCHAR(512)'), 'Lessons must have pdf_path');
-  assert.ok(schema.includes('estimated_reading_time INT'), 'Lessons must have estimated_reading_time');
+  assert.ok(
+    schema.includes('estimated_reading_time INT'),
+    'Lessons must have estimated_reading_time'
+  );
 
   // Lesson Assets entity
-  assert.ok(schema.includes('CREATE TABLE IF NOT EXISTS academy_lesson_assets'), 'Must include academy_lesson_assets');
+  assert.ok(
+    schema.includes('CREATE TABLE IF NOT EXISTS academy_lesson_assets'),
+    'Must include academy_lesson_assets'
+  );
   assert.ok(schema.includes('asset_type VARCHAR(64)'), 'Lesson Assets must have asset_type');
-  assert.ok(schema.includes('original_filename VARCHAR(255)'), 'Lesson Assets must have original_filename');
+  assert.ok(
+    schema.includes('original_filename VARCHAR(255)'),
+    'Lesson Assets must have original_filename'
+  );
 
   // User Lesson Progress entity
-  assert.ok(schema.includes('CREATE TABLE IF NOT EXISTS user_lesson_progress'), 'Must include user_lesson_progress');
-  assert.ok(schema.includes('completion_status VARCHAR(32)'), 'User progress must track completion_status');
-  assert.ok(schema.includes('last_accessed_at TIMESTAMP'), 'User progress must track last_accessed_at');
+  assert.ok(
+    schema.includes('CREATE TABLE IF NOT EXISTS user_lesson_progress'),
+    'Must include user_lesson_progress'
+  );
+  assert.ok(
+    schema.includes('completion_status VARCHAR(32)'),
+    'User progress must track completion_status'
+  );
+  assert.ok(
+    schema.includes('last_accessed_at TIMESTAMP'),
+    'User progress must track last_accessed_at'
+  );
   assert.ok(schema.includes('completed_at TIMESTAMP'), 'User progress must track completed_at');
 });
 
@@ -49,8 +82,14 @@ test('Phase 2 Types: src/types/learning-platform.ts exports AcademyLessonAsset a
   assert.ok(fs.existsSync(typesPath), 'src/types/learning-platform.ts must exist');
   const types = fs.readFileSync(typesPath, 'utf-8');
 
-  assert.ok(types.includes('export interface AcademyLessonAsset'), 'Must export AcademyLessonAsset');
-  assert.ok(types.includes('export interface UserLessonProgress'), 'Must export UserLessonProgress');
+  assert.ok(
+    types.includes('export interface AcademyLessonAsset'),
+    'Must export AcademyLessonAsset'
+  );
+  assert.ok(
+    types.includes('export interface UserLessonProgress'),
+    'Must export UserLessonProgress'
+  );
   assert.ok(types.includes('export type AcademyPublishStatus'), 'Must export AcademyPublishStatus');
 });
 
@@ -90,17 +129,21 @@ test('Phase 2 Store: Course, Module, Lesson CRUD, Validation, and Public Visibil
   assert.strictEqual(course.slug, testCourseSlug);
 
   // Duplicate course slug must be rejected
-  assert.throws(() => {
-    academyStore.createCourse({
-      categoryId: 'cat-selenium',
-      title: 'Duplicate Slug Course',
-      slug: testCourseSlug,
-      level: 'Beginner',
-      sortOrder: 100,
-      status: 'published',
-      modules: [],
-    });
-  }, /already in use/i, 'Duplicate course slug must throw error');
+  assert.throws(
+    () => {
+      academyStore.createCourse({
+        categoryId: 'cat-selenium',
+        title: 'Duplicate Slug Course',
+        slug: testCourseSlug,
+        level: 'Beginner',
+        sortOrder: 100,
+        status: 'published',
+        modules: [],
+      });
+    },
+    /already in use/i,
+    'Duplicate course slug must throw error'
+  );
 
   // Public getCourse on draft must return undefined
   const publicDraftCourse = academyStore.getCourse(testCourseSlug);
@@ -123,14 +166,18 @@ test('Phase 2 Store: Course, Module, Lesson CRUD, Validation, and Public Visibil
   assert.ok(module && module.id, 'Module must be created');
 
   // Duplicate module slug in same course must be rejected
-  assert.throws(() => {
-    academyStore.createModule(course.id, {
-      title: 'Duplicate Module Slug',
-      slug: testModSlug,
-      sortOrder: 2,
-      status: 'published',
-    });
-  }, /already in use/i, 'Duplicate module slug must throw error');
+  assert.throws(
+    () => {
+      academyStore.createModule(course.id, {
+        title: 'Duplicate Module Slug',
+        slug: testModSlug,
+        sortOrder: 2,
+        status: 'published',
+      });
+    },
+    /already in use/i,
+    'Duplicate module slug must throw error'
+  );
 
   // D. Lesson Creation under Module
   const testLsnSlug = `test-lsn-${Date.now()}`;
@@ -147,15 +194,19 @@ test('Phase 2 Store: Course, Module, Lesson CRUD, Validation, and Public Visibil
   assert.ok(lesson && lesson.id, 'Lesson must be created');
 
   // Duplicate lesson slug in same module must be rejected
-  assert.throws(() => {
-    academyStore.createLesson(course.id, module.id, {
-      title: 'Duplicate Lesson Slug',
-      slug: testLsnSlug,
-      contentHtml: '<p>dup</p>',
-      sortOrder: 2,
-      status: 'published',
-    });
-  }, /already in use/i, 'Duplicate lesson slug must throw error');
+  assert.throws(
+    () => {
+      academyStore.createLesson(course.id, module.id, {
+        title: 'Duplicate Lesson Slug',
+        slug: testLsnSlug,
+        contentHtml: '<p>dup</p>',
+        sortOrder: 2,
+        status: 'published',
+      });
+    },
+    /already in use/i,
+    'Duplicate lesson slug must throw error'
+  );
 
   // E. Publishing and Unpublishing
   const pubSuccess = academyStore.setPublishStatus('course', course.id, 'published');
@@ -190,7 +241,10 @@ test('Phase 2 Store: Course, Module, Lesson CRUD, Validation, and Public Visibil
   assert.ok(asset && asset.id, 'Lesson asset must be saved');
 
   const assets = academyStore.getLessonAssets(lesson.id);
-  assert.ok(assets.some((a) => a.id === asset.id), 'Asset must be attached to lesson');
+  assert.ok(
+    assets.some((a) => a.id === asset.id),
+    'Asset must be attached to lesson'
+  );
 
   // Clean up: Safe deletion of test course (cascades to test module and lesson without touching other courses)
   const delSuccess = academyStore.deleteCourse(course.id);
@@ -236,10 +290,7 @@ test('Phase 2 APIs: All Public and Admin Learning Route files exist and enforce 
       code.includes('verifyAdminAccess'),
       `Admin route ${rel} must enforce verifyAdminAccess authorization`
     );
-    assert.ok(
-      code.includes('401'),
-      `Admin route ${rel} must return 401 on unauthorized access`
-    );
+    assert.ok(code.includes('401'), `Admin route ${rel} must return 401 on unauthorized access`);
   }
 });
 
@@ -252,7 +303,9 @@ test('Phase 2 API Handlers: Public vs Admin Permissions, Validation, and Progres
   });
   const { GET: getCoursesHandler } = jiti('../src/app/api/learning/courses/route.ts');
   const { POST: postAdminCourseHandler } = jiti('../src/app/api/admin/learning/courses/route.ts');
-  const { GET: getProgressHandler, POST: postProgressHandler } = jiti('../src/app/api/learning/progress/route.ts');
+  const { GET: getProgressHandler, POST: postProgressHandler } = jiti(
+    '../src/app/api/learning/progress/route.ts'
+  );
   const { POST: postPublishHandler } = jiti('../src/app/api/admin/learning/publish/route.ts');
 
   // Test 1: Public GET courses returns success
@@ -311,11 +364,12 @@ test('Phase 2 API Handlers: Public vs Admin Permissions, Validation, and Progres
   assert.strictEqual(setProgData.success, true);
   assert.strictEqual(setProgData.data.completionStatus, 'completed');
 
-  const getProgReq = new Request(`http://localhost:3000/api/learning/progress?userId=${testUser}&lessonId=${testLesson}`);
+  const getProgReq = new Request(
+    `http://localhost:3000/api/learning/progress?userId=${testUser}&lessonId=${testLesson}`
+  );
   const getProgRes = await getProgressHandler(getProgReq);
   assert.strictEqual(getProgRes.status, 200);
   const getProgData = await getProgRes.json();
   assert.strictEqual(getProgData.success, true);
   assert.strictEqual(getProgData.data[0].completionStatus, 'completed');
 });
-

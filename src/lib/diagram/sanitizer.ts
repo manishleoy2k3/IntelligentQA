@@ -40,8 +40,14 @@ export function sanitizeSvg(svgContent: string): string {
   });
 
   // 3. Remove javascript: or vbscript: or data:text/html references
-  clean = clean.replace(/href\s*=\s*["']\s*(javascript|vbscript|data:text\/html):[^"']*["']/gi, 'href="#"');
-  clean = clean.replace(/xlink:href\s*=\s*["']\s*(javascript|vbscript|data:text\/html):[^"']*["']/gi, 'xlink:href="#"');
+  clean = clean.replace(
+    /href\s*=\s*["']\s*(javascript|vbscript|data:text\/html):[^"']*["']/gi,
+    'href="#"'
+  );
+  clean = clean.replace(
+    /xlink:href\s*=\s*["']\s*(javascript|vbscript|data:text\/html):[^"']*["']/gi,
+    'xlink:href="#"'
+  );
 
   // 4. Remove all on* event handlers (e.g. onload, onerror, onclick)
   clean = clean.replace(/\s+on[a-z]+\s*=\s*["'][^"']*["']/gi, '');

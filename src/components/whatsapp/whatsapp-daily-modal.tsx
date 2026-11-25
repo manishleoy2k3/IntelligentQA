@@ -51,7 +51,7 @@ export default function WhatsAppDailyModal() {
 
       {isOpen && (
         <div
-          onClick={e => {
+          onClick={(e) => {
             if (e.target === e.currentTarget) handleClose();
           }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
@@ -81,7 +81,9 @@ export default function WhatsAppDailyModal() {
                     1 Real SDET Scenario Every Morning
                   </h3>
                   <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Receive 1 top technical interview question at 9:00 AM on WhatsApp. Reply with your answer or type <strong>&quot;Explain&quot;</strong> to get the full architecture breakdown at zero cost.
+                    Receive 1 top technical interview question at 9:00 AM on WhatsApp. Reply with
+                    your answer or type <strong>&quot;Explain&quot;</strong> to get the full
+                    architecture breakdown at zero cost.
                   </p>
                 </div>
 
@@ -94,7 +96,7 @@ export default function WhatsAppDailyModal() {
                     required
                     placeholder="+1 555 123 4567 or +91 98765 43210"
                     value={phone}
-                    onChange={e => setPhone(e.target.value)}
+                    onChange={(e) => setPhone(e.target.value)}
                     className="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-sm sm:text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
@@ -104,7 +106,10 @@ export default function WhatsAppDailyModal() {
                     <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
                     Zero-Cost Guarantee &amp; Privacy Shield
                   </div>
-                  <p>Operates under Meta Cloud API free tier (1,000 free conversations/month). Zero spam. Cancel anytime by replying STOP.</p>
+                  <p>
+                    Operates under Meta Cloud API free tier (1,000 free conversations/month). Zero
+                    spam. Cancel anytime by replying STOP.
+                  </p>
                 </div>
 
                 {/* Primary Action + Cancel Button */}
@@ -134,7 +139,8 @@ export default function WhatsAppDailyModal() {
                   Daily WhatsApp Coach Activated!
                 </h4>
                 <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-xs mx-auto leading-relaxed">
-                  You are all set to receive your first interview question tomorrow morning at 9:00 AM on <strong>{phone}</strong>.
+                  You are all set to receive your first interview question tomorrow morning at 9:00
+                  AM on <strong>{phone}</strong>.
                 </p>
                 <div className="pt-2">
                   <button

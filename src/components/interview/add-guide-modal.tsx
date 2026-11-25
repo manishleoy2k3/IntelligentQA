@@ -75,14 +75,19 @@ export default function AddGuideModal({
     defaultTrack === 'selenium-java'
       ? 'selenium'
       : defaultTrack === 'playwright-ts'
-      ? 'playwright'
-      : defaultTrack || 'selenium';
+        ? 'playwright'
+        : defaultTrack || 'selenium';
 
   const [selectedTrack, setSelectedTrack] = useState<string>(normalizedInitialTrack);
-  const [activeTab, setActiveTab] = useState<'staging' | 'import' | 'template' | 'manual'>('staging');
+  const [activeTab, setActiveTab] = useState<'staging' | 'import' | 'template' | 'manual'>(
+    'staging'
+  );
   const [stagedGuides, setStagedGuides] = useState<ConceptGuide[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [statusBanner, setStatusBanner] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [statusBanner, setStatusBanner] = useState<{
+    type: 'success' | 'error' | 'info';
+    message: string;
+  } | null>(null);
 
   // Manual Guide state
   const [title, setTitle] = useState('');
@@ -109,7 +114,9 @@ export default function AddGuideModal({
   const [editingGuide, setEditingGuide] = useState<ConceptGuide | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editCategory, setEditCategory] = useState('');
-  const [editLevel, setEditLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
+  const [editLevel, setEditLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>(
+    'Intermediate'
+  );
   const [editTrack, setEditTrack] = useState<string>('selenium');
   const [editSummary, setEditSummary] = useState('');
   const [editOverview, setEditOverview] = useState('');
@@ -160,7 +167,7 @@ export default function AddGuideModal({
   if (!isOpen) return null;
 
   const currentTrackMeta =
-    COURSE_TRACK_OPTIONS.find(t => t.id === selectedTrack) || COURSE_TRACK_OPTIONS[0];
+    COURSE_TRACK_OPTIONS.find((t) => t.id === selectedTrack) || COURSE_TRACK_OPTIONS[0];
 
   // ==========================================
   // STAGED GUIDES ACTIONS (Review, Edit, Delete, Submit)
@@ -177,7 +184,11 @@ export default function AddGuideModal({
     setEditCode(guide.codeSnippets?.[0]?.code || '');
     setEditCodeLang(
       guide.codeSnippets?.[0]?.language ||
-        (selectedTrack === 'playwright' ? 'typescript' : selectedTrack === 'ai-qa' ? 'python' : 'java')
+        (selectedTrack === 'playwright'
+          ? 'typescript'
+          : selectedTrack === 'ai-qa'
+            ? 'python'
+            : 'java')
     );
     setEditInterviewTips(guide.interviewTips || '');
   };
@@ -235,7 +246,10 @@ export default function AddGuideModal({
     const res = submitStagedGuidesForApproval(selectedTrack, [guideId]);
     setStagedGuides(getStagedGuides(selectedTrack));
     const submittedTitle = res.submitted[0]?.title || 'Guide';
-    showBanner('success', `📬 Guide "${submittedTitle}" submitted for Admin approval! It is now listed under Admin -> Guide Approvals.`);
+    showBanner(
+      'success',
+      `📬 Guide "${submittedTitle}" submitted for Admin approval! It is now listed under Admin -> Guide Approvals.`
+    );
     if (onSuccess) onSuccess(`Guide "${submittedTitle}" submitted for Admin approval!`);
   };
 
@@ -243,13 +257,16 @@ export default function AddGuideModal({
     if (stagedGuides.length === 0) return;
     const res = submitStagedGuidesForApproval(selectedTrack);
     setStagedGuides([]);
-    showBanner('success', `📬 Submitted ${res.count} guide(s) for Admin approval into ${currentTrackMeta.name}! Review and approve them in Admin -> Guide Approvals.`);
+    showBanner(
+      'success',
+      `📬 Submitted ${res.count} guide(s) for Admin approval into ${currentTrackMeta.name}! Review and approve them in Admin -> Guide Approvals.`
+    );
     if (onSuccess) onSuccess(`Submitted ${res.count} guide(s) for Admin approval!`);
   };
 
   const handleDirectPublish = (guideId?: string) => {
     // When Admin explicitly wants 1-click publishing: also log to moderation queue as approved
-    const toPublish = guideId ? stagedGuides.filter(g => g.id === guideId) : stagedGuides;
+    const toPublish = guideId ? stagedGuides.filter((g) => g.id === guideId) : stagedGuides;
     const u = QADatabase.getCurrentUser();
     for (const g of toPublish) {
       const mod = QADatabase.submitContentForReview({
@@ -269,7 +286,10 @@ export default function AddGuideModal({
     }
     const res = confirmAndSubmitStagedGuides(selectedTrack, guideId ? [guideId] : undefined);
     setStagedGuides(getStagedGuides(selectedTrack));
-    showBanner('success', `🎉 Published ${res.count} guide(s) directly to ${currentTrackMeta.name}!`);
+    showBanner(
+      'success',
+      `🎉 Published ${res.count} guide(s) directly to ${currentTrackMeta.name}!`
+    );
     if (onSuccess) onSuccess(`Published ${res.count} guide(s) to ${currentTrackMeta.name}!`);
   };
 
@@ -294,7 +314,10 @@ export default function AddGuideModal({
     try {
       const result = parseImportedGuides(text, selectedTrack, true, forceSingleGuide);
       if (result.error || !result.guides || result.guides.length === 0) {
-        showBanner('error', result.error || 'Could not find valid guides. Please verify your format.');
+        showBanner(
+          'error',
+          result.error || 'Could not find valid guides. Please verify your format.'
+        );
         setIsImporting(false);
         return;
       }
@@ -341,20 +364,26 @@ export default function AddGuideModal({
           e.target.value = '';
           return;
         } else {
-          showBanner('error', `Could not extract guide data from "${file.name}". Please ensure the Word/Excel document contains tables or text.`);
+          showBanner(
+            'error',
+            `Could not extract guide data from "${file.name}". Please ensure the Word/Excel document contains tables or text.`
+          );
           e.target.value = '';
           return;
         }
       } catch (err: any) {
         console.warn('Office ZIP extraction error:', err);
-        showBanner('error', `Failed to read "${file.name}": ${err?.message || 'Unsupported or corrupted format'}`);
+        showBanner(
+          'error',
+          `Failed to read "${file.name}": ${err?.message || 'Unsupported or corrupted format'}`
+        );
         e.target.value = '';
         return;
       }
     }
 
     const reader = new FileReader();
-    reader.onload = evt => {
+    reader.onload = (evt) => {
       const content = evt.target?.result as string;
       if (content) {
         setImportText(content);
@@ -402,7 +431,13 @@ export default function AddGuideModal({
         overview: overview.trim() || summary.trim(),
         architectureOrMechanism: mechanism.trim(),
         codeSnippets: codeSnippet.trim()
-          ? [{ language: codeLang, code: codeSnippet.trim(), caption: `${title.trim()} Implementation` }]
+          ? [
+              {
+                language: codeLang,
+                code: codeSnippet.trim(),
+                caption: `${title.trim()} Implementation`,
+              },
+            ]
           : [],
         interviewTips: interviewTips.trim(),
         isCustom: true,
@@ -423,12 +458,18 @@ export default function AddGuideModal({
           },
           contentPayload: newGuide,
         });
-        showBanner('success', `🎉 Guide "${newGuide.title}" submitted for Admin review under ${currentTrackMeta.name}!`);
+        showBanner(
+          'success',
+          `🎉 Guide "${newGuide.title}" submitted for Admin review under ${currentTrackMeta.name}!`
+        );
         if (onSuccess) onSuccess(`Guide "${newGuide.title}" submitted for Admin review!`);
       } else {
         saveStagedGuide(newGuide);
         setStagedGuides(getStagedGuides(selectedTrack));
-        showBanner('success', `✔ Guide "${newGuide.title}" added to staging for ${currentTrackMeta.name}.`);
+        showBanner(
+          'success',
+          `✔ Guide "${newGuide.title}" added to staging for ${currentTrackMeta.name}.`
+        );
         setActiveTab('staging');
       }
 
@@ -448,7 +489,7 @@ export default function AddGuideModal({
 
   return (
     <div
-      onClick={e => {
+      onClick={(e) => {
         if (e.target === e.currentTarget && !isSubmitting && !isImporting) onClose();
       }}
       className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center min-h-screen animate-in fade-in duration-200"
@@ -469,7 +510,8 @@ export default function AddGuideModal({
                 <span>Add &amp; Import Guide Management</span>
               </h3>
               <p className="text-xs text-zinc-400 mt-0.5">
-                Review staged guides, import JSON/CSV/Excel/Word files, or author new technical architecture guides
+                Review staged guides, import JSON/CSV/Excel/Word files, or author new technical
+                architecture guides
               </p>
             </div>
           </div>
@@ -491,8 +533,8 @@ export default function AddGuideModal({
               statusBanner.type === 'success'
                 ? 'bg-emerald-950/60 border border-emerald-500/40 text-emerald-200'
                 : statusBanner.type === 'error'
-                ? 'bg-rose-950/60 border border-rose-500/40 text-rose-200'
-                : 'bg-blue-950/60 border border-blue-500/40 text-blue-200'
+                  ? 'bg-rose-950/60 border border-rose-500/40 text-rose-200'
+                  : 'bg-blue-950/60 border border-blue-500/40 text-blue-200'
             }`}
           >
             {statusBanner.type === 'success' ? (
@@ -527,10 +569,10 @@ export default function AddGuideModal({
             <select
               id="course-category-select"
               value={selectedTrack}
-              onChange={e => handleTrackChange(e.target.value)}
+              onChange={(e) => handleTrackChange(e.target.value)}
               className="bg-[#0F0F0F] border border-[#3A3A3A] text-xs font-semibold text-white rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-purple-500 cursor-pointer shadow-xs min-w-[260px]"
             >
-              {COURSE_TRACK_OPTIONS.map(opt => (
+              {COURSE_TRACK_OPTIONS.map((opt) => (
                 <option key={opt.id} value={opt.id}>
                   {opt.name} ({opt.stage})
                 </option>
@@ -544,7 +586,9 @@ export default function AddGuideModal({
               {currentTrackMeta.name}
             </span>
             <span>•</span>
-            <span>Guides approved by Admin will automatically be listed under this course track.</span>
+            <span>
+              Guides approved by Admin will automatically be listed under this course track.
+            </span>
           </div>
         </div>
 
@@ -634,9 +678,7 @@ export default function AddGuideModal({
             {/* Header Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#262626]">
               <div className="flex items-center gap-2">
-                <h4 className="text-sm font-bold text-white">
-                  Imported Guides Pending Review
-                </h4>
+                <h4 className="text-sm font-bold text-white">Imported Guides Pending Review</h4>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30 font-mono">
                   {stagedGuides.length} Pending
                 </span>
@@ -691,7 +733,11 @@ export default function AddGuideModal({
                       title="Submit all staged guides to the Admin Approval queue in Admin Dashboard"
                     >
                       <Send className="w-4 h-4" />
-                      <span>{isAdmin ? `Submit for Admin Approval (${stagedGuides.length})` : `Submit for Approval (${stagedGuides.length})`}</span>
+                      <span>
+                        {isAdmin
+                          ? `Submit for Admin Approval (${stagedGuides.length})`
+                          : `Submit for Approval (${stagedGuides.length})`}
+                      </span>
                     </button>
 
                     {isAdmin && (
@@ -721,7 +767,9 @@ export default function AddGuideModal({
                     No Imported Guides Pending Review for {currentTrackMeta.name}
                   </h4>
                   <p className="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
-                    Your staging area is empty. Download the Excel (.XLSX) or Word (.DOCX) template below to prepare your concepts, or click <strong>Import Guides</strong> to upload and review.
+                    Your staging area is empty. Download the Excel (.XLSX) or Word (.DOCX) template
+                    below to prepare your concepts, or click <strong>Import Guides</strong> to
+                    upload and review.
                   </p>
                 </div>
                 <div className="flex items-center justify-center gap-3 pt-2">
@@ -746,7 +794,7 @@ export default function AddGuideModal({
             ) : (
               /* LIST OF STAGED GUIDES */
               <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
-                {stagedGuides.map(guide => {
+                {stagedGuides.map((guide) => {
                   const dupCheck = checkGuideDuplicate({
                     title: guide.title,
                     summary: guide.summary,
@@ -806,7 +854,9 @@ export default function AddGuideModal({
 
                             <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20 flex items-center gap-1">
                               <Clock className="w-3 h-3" />
-                              <span>{isAdmin ? 'Admin Review Required' : 'Awaiting Admin Approval'}</span>
+                              <span>
+                                {isAdmin ? 'Admin Review Required' : 'Awaiting Admin Approval'}
+                              </span>
                             </span>
                           </div>
 
@@ -840,7 +890,9 @@ export default function AddGuideModal({
                             title="Submit this guide for Admin approval (will appear under Admin -> Guide Approvals)"
                           >
                             <Send className="w-3.5 h-3.5" />
-                            <span>{isAdmin ? 'Submit for Admin Approval' : 'Submit for Approval'}</span>
+                            <span>
+                              {isAdmin ? 'Submit for Admin Approval' : 'Submit for Approval'}
+                            </span>
                           </button>
 
                           {isAdmin && (
@@ -873,7 +925,8 @@ export default function AddGuideModal({
                       {guide.codeSnippets?.[0] && (
                         <div className="bg-[#0D0D0D] rounded-xl p-3 border border-[#262626] font-mono text-[11px] text-zinc-300 overflow-x-auto max-h-28">
                           <div className="text-[10px] text-zinc-500 font-sans mb-1 uppercase font-bold">
-                            {guide.codeSnippets[0].language}: {guide.codeSnippets[0].caption || 'Code Preview'}
+                            {guide.codeSnippets[0].language}:{' '}
+                            {guide.codeSnippets[0].caption || 'Code Preview'}
                           </div>
                           <pre>
                             {guide.codeSnippets[0].code.slice(0, 260)}
@@ -904,12 +957,29 @@ export default function AddGuideModal({
                   <span>Mandatory Fields (Required for Submission):</span>
                 </div>
                 <ul className="list-disc list-inside text-zinc-400 space-y-1 text-[11px]">
-                  <li><strong className="text-zinc-200">title</strong>: Name of the architecture concept</li>
-                  <li><strong className="text-zinc-200">category</strong>: Domain or module group</li>
-                  <li><strong className="text-zinc-200">level</strong>: Beginner | Intermediate | Advanced</li>
-                  <li><strong className="text-zinc-200">summary</strong>: Concise 1-2 sentence definition</li>
-                  <li><strong className="text-zinc-200">overview</strong>: In-depth technical explanation</li>
-                  <li><strong className="text-zinc-200">codeSnippet &amp; codeLanguage</strong>: Complete code implementation</li>
+                  <li>
+                    <strong className="text-zinc-200">title</strong>: Name of the architecture
+                    concept
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">category</strong>: Domain or module group
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">level</strong>: Beginner | Intermediate |
+                    Advanced
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">summary</strong>: Concise 1-2 sentence
+                    definition
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">overview</strong>: In-depth technical
+                    explanation
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">codeSnippet &amp; codeLanguage</strong>:
+                    Complete code implementation
+                  </li>
                 </ul>
               </div>
 
@@ -919,10 +989,22 @@ export default function AddGuideModal({
                   <span>Optional Fields (For 1-Click Admin Approval):</span>
                 </div>
                 <ul className="list-disc list-inside text-zinc-400 space-y-1 text-[11px]">
-                  <li><strong className="text-zinc-200">architectureOrMechanism</strong>: Deep-dive into internal mechanics</li>
-                  <li><strong className="text-zinc-200">codeCaption</strong>: Descriptive label for code snippet</li>
-                  <li><strong className="text-zinc-200">bestPractices</strong>: Semicolon-separated recommendations</li>
-                  <li><strong className="text-zinc-200">interviewTips</strong>: SDET interview talking points</li>
+                  <li>
+                    <strong className="text-zinc-200">architectureOrMechanism</strong>: Deep-dive
+                    into internal mechanics
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">codeCaption</strong>: Descriptive label for
+                    code snippet
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">bestPractices</strong>: Semicolon-separated
+                    recommendations
+                  </li>
+                  <li>
+                    <strong className="text-zinc-200">interviewTips</strong>: SDET interview talking
+                    points
+                  </li>
                 </ul>
               </div>
             </div>
@@ -933,11 +1015,16 @@ export default function AddGuideModal({
         {/* INLINE EDIT FORM FOR STAGED GUIDE                         */}
         {/* ======================================================== */}
         {editingGuide && (
-          <form onSubmit={handleSaveEdit} className="space-y-4 bg-[#181818] border border-blue-500/40 rounded-2xl p-5">
+          <form
+            onSubmit={handleSaveEdit}
+            className="space-y-4 bg-[#181818] border border-blue-500/40 rounded-2xl p-5"
+          >
             <div className="flex items-center justify-between pb-2 border-b border-[#2A2A2A]">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-blue-400" />
-                <h4 className="text-sm font-bold text-white">Edit Staged Guide: {editingGuide.title}</h4>
+                <h4 className="text-sm font-bold text-white">
+                  Edit Staged Guide: {editingGuide.title}
+                </h4>
               </div>
               <button
                 type="button"
@@ -953,10 +1040,10 @@ export default function AddGuideModal({
                 <label className="text-xs font-bold text-zinc-300">Target Track / Category</label>
                 <select
                   value={editTrack}
-                  onChange={e => setEditTrack(e.target.value)}
+                  onChange={(e) => setEditTrack(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
                 >
-                  {COURSE_TRACK_OPTIONS.map(opt => (
+                  {COURSE_TRACK_OPTIONS.map((opt) => (
                     <option key={opt.id} value={opt.id}>
                       {opt.name} ({opt.stage})
                     </option>
@@ -969,7 +1056,7 @@ export default function AddGuideModal({
                   type="text"
                   required
                   value={editTitle}
-                  onChange={e => setEditTitle(e.target.value)}
+                  onChange={(e) => setEditTitle(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
                 />
               </div>
@@ -981,7 +1068,7 @@ export default function AddGuideModal({
                 <input
                   type="text"
                   value={editCategory}
-                  onChange={e => setEditCategory(e.target.value)}
+                  onChange={(e) => setEditCategory(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
                 />
               </div>
@@ -989,7 +1076,7 @@ export default function AddGuideModal({
                 <label className="text-xs font-bold text-zinc-300">Level</label>
                 <select
                   value={editLevel}
-                  onChange={e => setEditLevel(e.target.value as any)}
+                  onChange={(e) => setEditLevel(e.target.value as any)}
                   className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white"
                 >
                   <option value="Beginner">Beginner</option>
@@ -1005,13 +1092,15 @@ export default function AddGuideModal({
                 rows={2}
                 required
                 value={editSummary}
-                onChange={e => setEditSummary(e.target.value)}
+                onChange={(e) => setEditSummary(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] text-xs text-white resize-none"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-zinc-300">Full Overview &amp; Explanation</label>
+              <label className="text-xs font-bold text-zinc-300">
+                Full Overview &amp; Explanation
+              </label>
               <FormattedOverviewEditor
                 value={editOverview}
                 onChange={setEditOverview}
@@ -1025,7 +1114,7 @@ export default function AddGuideModal({
               <textarea
                 rows={3}
                 value={editCode}
-                onChange={e => setEditCode(e.target.value)}
+                onChange={(e) => setEditCode(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl bg-[#0F0F0F] border border-[#333] font-mono text-xs text-emerald-400 resize-none"
               />
             </div>
@@ -1083,7 +1172,7 @@ export default function AddGuideModal({
               <textarea
                 rows={5}
                 value={importText}
-                onChange={e => setImportText(e.target.value)}
+                onChange={(e) => setImportText(e.target.value)}
                 placeholder='Paste JSON array [{"title": "...", "category": "...", "summary": "..."}] or copy/pasted rows from Excel/Word'
                 className="w-full bg-[#0F0F0F] border border-[#2B2B2B] rounded-xl p-3 text-xs text-white font-mono placeholder-zinc-600 focus:outline-none focus:border-purple-400 resize-none"
               />
@@ -1133,7 +1222,8 @@ export default function AddGuideModal({
                     Download Pre-Formatted Concept Guide Templates
                   </h4>
                   <p className="text-xs text-zinc-400 mt-0.5">
-                    Pre-filled with authentic samples for {currentTrackMeta.name} and clear mandatory &amp; optional field markers.
+                    Pre-filled with authentic samples for {currentTrackMeta.name} and clear
+                    mandatory &amp; optional field markers.
                   </p>
                 </div>
 
@@ -1237,14 +1327,16 @@ export default function AddGuideModal({
           <form onSubmit={handleManualSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-zinc-300 flex items-center justify-between">
-                <span>Concept Title <span className="text-purple-400">*</span></span>
+                <span>
+                  Concept Title <span className="text-purple-400">*</span>
+                </span>
                 <span className="text-[10px] text-zinc-500 font-normal">Mandatory</span>
               </label>
               <input
                 type="text"
                 required
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Dynamic Locators &amp; Resilience in Single Page Apps"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400"
               />
@@ -1256,7 +1348,7 @@ export default function AddGuideModal({
                 <input
                   type="text"
                   value={category}
-                  onChange={e => setCategory(e.target.value)}
+                  onChange={(e) => setCategory(e.target.value)}
                   placeholder="e.g. Synchronization, POM, Network"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400"
                 />
@@ -1266,7 +1358,7 @@ export default function AddGuideModal({
                 <label className="text-xs font-bold text-zinc-300">Difficulty Level</label>
                 <select
                   value={level}
-                  onChange={e => setLevel(e.target.value as any)}
+                  onChange={(e) => setLevel(e.target.value as any)}
                   className="w-full px-3 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white focus:outline-none focus:border-purple-400 cursor-pointer"
                 >
                   <option value="Beginner">Beginner</option>
@@ -1278,21 +1370,25 @@ export default function AddGuideModal({
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-zinc-300 flex items-center justify-between">
-                <span>Summary (1-2 sentences) <span className="text-purple-400">*</span></span>
+                <span>
+                  Summary (1-2 sentences) <span className="text-purple-400">*</span>
+                </span>
                 <span className="text-[10px] text-zinc-500 font-normal">Mandatory</span>
               </label>
               <textarea
                 required
                 rows={2}
                 value={summary}
-                onChange={e => setSummary(e.target.value)}
+                onChange={(e) => setSummary(e.target.value)}
                 placeholder="Concise overview explaining why this concept matters..."
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400 resize-none"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-zinc-300">Full Overview &amp; Explanation</label>
+              <label className="text-xs font-bold text-zinc-300">
+                Full Overview &amp; Explanation
+              </label>
               <FormattedOverviewEditor
                 value={overview}
                 onChange={setOverview}
@@ -1302,11 +1398,13 @@ export default function AddGuideModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-zinc-300">Underlying Mechanism / Architecture</label>
+              <label className="text-xs font-bold text-zinc-300">
+                Underlying Mechanism / Architecture
+              </label>
               <textarea
                 rows={2}
                 value={mechanism}
-                onChange={e => setMechanism(e.target.value)}
+                onChange={(e) => setMechanism(e.target.value)}
                 placeholder="How it works under the hood (e.g. CDP, protocol, event loop)..."
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400 resize-none"
               />
@@ -1317,7 +1415,7 @@ export default function AddGuideModal({
                 <label className="text-xs font-bold text-zinc-300">Language</label>
                 <select
                   value={codeLang}
-                  onChange={e => setCodeLang(e.target.value)}
+                  onChange={(e) => setCodeLang(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white focus:outline-none focus:border-purple-400 cursor-pointer"
                 >
                   <option value="java">Java</option>
@@ -1332,7 +1430,7 @@ export default function AddGuideModal({
                 <textarea
                   rows={3}
                   value={codeSnippet}
-                  onChange={e => setCodeSnippet(e.target.value)}
+                  onChange={(e) => setCodeSnippet(e.target.value)}
                   placeholder="// Illustrative test snippet or design pattern"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] font-mono text-xs text-emerald-400 placeholder-zinc-600 focus:outline-none focus:border-purple-400 resize-none"
                 />
@@ -1340,11 +1438,13 @@ export default function AddGuideModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-zinc-300">SDET Interview Tips &amp; Tradeoffs</label>
+              <label className="text-xs font-bold text-zinc-300">
+                SDET Interview Tips &amp; Tradeoffs
+              </label>
               <input
                 type="text"
                 value={interviewTips}
-                onChange={e => setInterviewTips(e.target.value)}
+                onChange={(e) => setInterviewTips(e.target.value)}
                 placeholder="e.g. Always explain synchronization alternatives in Selenium vs Playwright."
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#0F0F0F] border border-[#2B2B2B] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400"
               />
@@ -1368,8 +1468,8 @@ export default function AddGuideModal({
                   {isSubmitting
                     ? 'Submitting...'
                     : isAdmin
-                    ? 'Add to Staging'
-                    : 'Submit for Admin Approval'}
+                      ? 'Add to Staging'
+                      : 'Submit for Admin Approval'}
                 </span>
               </button>
             </div>

@@ -96,7 +96,9 @@ export function areOutputsEqual(actual?: string, expected?: string): boolean {
 
       const a2D = parseLenient2D(aClean);
       const e2D = eClean.startsWith('[[')
-        ? (Array.isArray(JSON.parse(eClean)) ? JSON.parse(eClean) : parseLenient2D(eClean))
+        ? Array.isArray(JSON.parse(eClean))
+          ? JSON.parse(eClean)
+          : parseLenient2D(eClean)
         : null;
 
       if (a2D && e2D && a2D.length === e2D.length) {
@@ -156,7 +158,9 @@ export function detectFunctionName(code: string, lang: SupportedLang): string | 
   } else if (lang === 'javascript' || lang === 'typescript') {
     const m = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/);
     if (m && m[1] !== 'main') return m[1];
-    const m2 = code.match(/(?:const|let|var)\s+([a-zA-Z0-9_]+)\s*=\s*(?:\([^)]*\)|[a-zA-Z0-9_]+)\s*=>/);
+    const m2 = code.match(
+      /(?:const|let|var)\s+([a-zA-Z0-9_]+)\s*=\s*(?:\([^)]*\)|[a-zA-Z0-9_]+)\s*=>/
+    );
     if (m2) return m2[1];
   } else if (lang === 'csharp') {
     const m = code.match(/public\s+static\s+[a-zA-Z0-9_<>[\]]+\s+([a-zA-Z0-9_]+)\s*\(/);
@@ -169,8 +173,12 @@ function serializeJavaArg(arg: any): string {
   if (Array.isArray(arg)) {
     if (arg.length === 0) return 'new int[]{}';
     if (typeof arg[0] === 'number') return 'new int[]{' + arg.join(', ') + '}';
-    if (typeof arg[0] === 'string') return 'new String[]{' + arg.map((s) => JSON.stringify(s)).join(', ') + '}';
-    if (Array.isArray(arg[0])) return 'new int[][]{' + arg.map((sub) => 'new int[]{' + sub.join(', ') + '}').join(', ') + '}';
+    if (typeof arg[0] === 'string')
+      return 'new String[]{' + arg.map((s) => JSON.stringify(s)).join(', ') + '}';
+    if (Array.isArray(arg[0]))
+      return (
+        'new int[][]{' + arg.map((sub) => 'new int[]{' + sub.join(', ') + '}').join(', ') + '}'
+      );
     return 'new Object[]{' + arg.map(serializeJavaArg).join(', ') + '}';
   }
   if (typeof arg === 'string') return JSON.stringify(arg);
@@ -183,7 +191,8 @@ function serializeCSharpArg(arg: any): string {
   if (Array.isArray(arg)) {
     if (arg.length === 0) return 'new int[]{}';
     if (typeof arg[0] === 'number') return 'new int[]{' + arg.join(', ') + '}';
-    if (typeof arg[0] === 'string') return 'new string[]{' + arg.map((s) => JSON.stringify(s)).join(', ') + '}';
+    if (typeof arg[0] === 'string')
+      return 'new string[]{' + arg.map((s) => JSON.stringify(s)).join(', ') + '}';
     return 'new object[]{' + arg.map(serializeCSharpArg).join(', ') + '}';
   }
   if (typeof arg === 'string') return JSON.stringify(arg);
@@ -234,7 +243,10 @@ if __name__ == '__main__':
 
   // 2. JAVASCRIPT & TYPESCRIPT
   if (lang === 'javascript' || lang === 'typescript') {
-    let cleanCode = userCode.replace(/console\.log\([^)]*\);?\s*(\/\/[^\n]*)?$/gm, '// [stripped template log]');
+    let cleanCode = userCode.replace(
+      /console\.log\([^)]*\);?\s*(\/\/[^\n]*)?$/gm,
+      '// [stripped template log]'
+    );
     const casesData = testCases.map((tc, idx) => ({
       id: idx,
       args: extractArgsFromInput(tc.input),

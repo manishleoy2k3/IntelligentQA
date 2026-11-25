@@ -13,7 +13,10 @@ const { validateDocxFile, processDocxDocument } = jiti('../src/lib/docx-engine.t
 const { academyStore } = jiti('../src/lib/academy-store.ts');
 const { POST: uploadDocHandler } = jiti('../src/app/api/admin/learning/documents/upload/route.ts');
 
-const FIDELITY_DOCX_PATH = path.join(process.cwd(), 'public/uploads/learning/docs/fidelity_test_suite_v4.docx');
+const FIDELITY_DOCX_PATH = path.join(
+  process.cwd(),
+  'public/uploads/learning/docs/fidelity_test_suite_v4.docx'
+);
 
 // 1. File Validation & Security Engine
 test('Phase 4 Security & Validation: Rejects invalid signatures, bad extensions, and oversized files', () => {
@@ -70,7 +73,10 @@ test('Phase 4 Fidelity Engine: Preserves Headings, Lists, Tables, Code Blocks, H
   );
 
   // 3. Special characters & symbols
-  assert.ok(html.includes('&lt;tag&gt;') && html.includes('&quot;quotes&quot;'), 'Special characters encoded safely');
+  assert.ok(
+    html.includes('&lt;tag&gt;') && html.includes('&quot;quotes&quot;'),
+    'Special characters encoded safely'
+  );
   assert.ok(html.includes('© 2026'), 'Must preserve copyright symbol');
   assert.ok(html.includes('λ lambda'), 'Must preserve unicode lambda');
   assert.ok(html.includes('✓ checkmark'), 'Must preserve checkmark');
@@ -78,31 +84,56 @@ test('Phase 4 Fidelity Engine: Preserves Headings, Lists, Tables, Code Blocks, H
   // 4. Nested and Numbered Lists
   assert.ok(html.includes('<ul') && html.includes('</ul>'), 'Must generate unordered bullet lists');
   assert.ok(html.includes('Root Bullet Item: Quality Engineering Foundations'), 'Root bullet text');
-  assert.ok(html.includes('Nested Bullet Level 1: Deterministic Element Locators'), 'Nested bullet text');
+  assert.ok(
+    html.includes('Nested Bullet Level 1: Deterministic Element Locators'),
+    'Nested bullet text'
+  );
   assert.ok(html.includes('<ol class="list-decimal'), 'Must generate ordered list tag');
-  assert.ok(html.includes('Initialize Test Driver and Browser Context'), 'Numbered list step 1 content preserved');
+  assert.ok(
+    html.includes('Initialize Test Driver and Browser Context'),
+    'Numbered list step 1 content preserved'
+  );
 
   // 5. Tables
   assert.ok(html.includes('<table') && html.includes('</table>'), 'Must generate HTML table');
   assert.ok(html.includes('<th') || html.includes('Capability'), 'Table header preserved');
-  assert.ok(html.includes('Headings &amp; Structure') || html.includes('Headings & Structure'), 'Table cell 1');
+  assert.ok(
+    html.includes('Headings &amp; Structure') || html.includes('Headings & Structure'),
+    'Table cell 1'
+  );
   assert.ok(html.includes('100% Semantic Match'), 'Table cell 2');
 
   // 6. Image Extraction & Preservation
   assert.strictEqual(result.extractedImages.length, 2, 'Must extract both embedded PNG images');
-  assert.ok(html.includes('<figure') && html.includes('<img src="/uploads/learning/images/'), 'Image tag embedded in HTML');
-  assert.ok(html.includes('Figure 1') || html.includes('QE Architecture Diagram'), 'Image caption preserved');
+  assert.ok(
+    html.includes('<figure') && html.includes('<img src="/uploads/learning/images/'),
+    'Image tag embedded in HTML'
+  );
+  assert.ok(
+    html.includes('Figure 1') || html.includes('QE Architecture Diagram'),
+    'Image caption preserved'
+  );
 
   // Verify extracted image files actually exist on disk
   for (const img of result.extractedImages) {
-    assert.ok(fs.existsSync(img.storage_path), `Extracted image file must exist on disk: ${img.storage_path}`);
+    assert.ok(
+      fs.existsSync(img.storage_path),
+      `Extracted image file must exist on disk: ${img.storage_path}`
+    );
     assert.ok(fs.statSync(img.storage_path).size > 0, 'Extracted image must not be empty');
   }
 
   // 7. Code Blocks & Copy Button
   assert.ok(html.includes('<pre') && html.includes('<code'), 'Must render preformatted code block');
-  assert.ok(html.includes('SeleniumEnterpriseTest') || html.includes('ChromeDriver'), 'Java code text preserved');
-  assert.ok(html.includes('import { test, expect } from &#x27;@playwright/test&#x27;') || html.includes('@playwright/test'), 'TypeScript code text preserved');
+  assert.ok(
+    html.includes('SeleniumEnterpriseTest') || html.includes('ChromeDriver'),
+    'Java code text preserved'
+  );
+  assert.ok(
+    html.includes('import { test, expect } from &#x27;@playwright/test&#x27;') ||
+      html.includes('@playwright/test'),
+    'TypeScript code text preserved'
+  );
   assert.ok(html.includes('Copy Code'), 'Must render interactive Copy Code button');
   assert.ok(!html.includes('<script>'), 'Must never execute or include raw scripts');
 
@@ -119,7 +150,10 @@ test('Phase 4 Fidelity Engine: Preserves Headings, Lists, Tables, Code Blocks, H
   const printDiskPath = path.join(process.cwd(), 'public', result.pdfPath);
   assert.ok(fs.existsSync(printDiskPath), 'Printable HTML file must exist on disk');
   const printContent = fs.readFileSync(printDiskPath, 'utf-8');
-  assert.ok(printContent.includes('@page') && printContent.includes('@media print'), 'Printable layout contains CSS paged media rules');
+  assert.ok(
+    printContent.includes('@page') && printContent.includes('@media print'),
+    'Printable layout contains CSS paged media rules'
+  );
 });
 
 // 3. Document Upload API Integration & Automated Reprocessing
@@ -192,9 +226,18 @@ test('Phase 4 API Integration: Multipart DOCX upload parses, extracts assets, an
   const updatedLesson = academyStore.getLesson(lesson.slug, { includeDrafts: true });
   assert.ok(updatedLesson && updatedLesson.lesson);
   assert.ok(updatedLesson.lesson.contentHtml.length > 500, 'Lesson must contain rendered HTML');
-  assert.ok(updatedLesson.lesson.contentHtml.includes('Autonomous Quality Engineering Architecture'), 'Lesson contains converted headings');
-  assert.ok(updatedLesson.lesson.originalDocxPath.includes('.docx'), 'Lesson links to original DOCX');
-  assert.ok(updatedLesson.lesson.pdfPath.includes('_print.html'), 'Lesson links to printable PDF layout');
+  assert.ok(
+    updatedLesson.lesson.contentHtml.includes('Autonomous Quality Engineering Architecture'),
+    'Lesson contains converted headings'
+  );
+  assert.ok(
+    updatedLesson.lesson.originalDocxPath.includes('.docx'),
+    'Lesson links to original DOCX'
+  );
+  assert.ok(
+    updatedLesson.lesson.pdfPath.includes('_print.html'),
+    'Lesson links to printable PDF layout'
+  );
 
   // 4. Verify Reprocessing on replacement: upload again with fresh request
   const reprocessFormData = new FormData();

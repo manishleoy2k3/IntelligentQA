@@ -21,18 +21,24 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
         reply: kb.formatCrispChatAnswer(matches[0]),
         source: 'searchQAKnowledge',
         topic: matches[0].topic,
-        category: matches[0].category
+        category: matches[0].category,
       };
     }
     return {
       reply: kb.synthesizeDynamicAnswer(query),
-      source: 'synthesizeDynamicAnswer'
+      source: 'synthesizeDynamicAnswer',
     };
   }
 
   // Helper to assert four pillars: Correctness, Completeness, Relevance, Next Step
-  function assertFourPillars(result, { forbiddenInCode = ['Thread.sleep'], relevantTerms = [] } = {}) {
-    assert.ok(result.reply && result.reply.length > 50, 'Response must be non-empty and substantial');
+  function assertFourPillars(
+    result,
+    { forbiddenInCode = ['Thread.sleep'], relevantTerms = [] } = {}
+  ) {
+    assert.ok(
+      result.reply && result.reply.length > 50,
+      'Response must be non-empty and substantial'
+    );
 
     // 1. Correctness: Code snippets must NOT use forbidden anti-patterns
     if (result.reply.includes('```')) {
@@ -51,7 +57,11 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
     // 2. Completeness: Code blocks must be properly closed and balanced
     if (result.reply.includes('```')) {
       const fenceCount = (result.reply.match(/```/g) || []).length;
-      assert.strictEqual(fenceCount % 2, 0, 'Completeness violation: Code fences must be properly opened and closed');
+      assert.strictEqual(
+        fenceCount % 2,
+        0,
+        'Completeness violation: Code fences must be properly opened and closed'
+      );
     }
 
     // 3. Relevance: Should contain expected domain keywords
@@ -65,7 +75,10 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
 
     // 4. Actionable Next Step Suggestion
     const hasNextStep = /next step for qa|👉 \*?next step/i.test(result.reply);
-    assert.ok(hasNextStep, 'Completeness violation: Response MUST provide an actionable Next Step suggestion for QA');
+    assert.ok(
+      hasNextStep,
+      'Completeness violation: Response MUST provide an actionable Next Step suggestion for QA'
+    );
   }
 
   describe('Category 1: Exception Triage & Execution Debugging', () => {
@@ -74,79 +87,99 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.source, 'searchQAKnowledge');
       assertFourPillars(res, {
         relevantTerms: ['stale', 'dom', 'fluentwait'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
     it('diagnoses ElementClickInterceptedException with overlay synchronization', () => {
-      const res = queryMentor('org.openqa.selenium.ElementClickInterceptedException: element click intercepted by spinner overlay');
+      const res = queryMentor(
+        'org.openqa.selenium.ElementClickInterceptedException: element click intercepted by spinner overlay'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
-        relevantTerms: ['ElementClickInterceptedException', 'spinner', 'invisibilityOfElementLocated'],
-        forbiddenInCode: ['Thread.sleep']
+        relevantTerms: [
+          'ElementClickInterceptedException',
+          'spinner',
+          'invisibilityOfElementLocated',
+        ],
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
     it('diagnoses Playwright Timeout 30000ms waiting for locator', () => {
-      const res = queryMentor('Error: page.click: Test timeout of 30000ms exceeded waiting for locator');
+      const res = queryMentor(
+        'Error: page.click: Test timeout of 30000ms exceeded waiting for locator'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
         relevantTerms: ['Playwright', 'locator', 'timeout', 'Trace'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
     it('diagnoses Selenium NoSuchElementException and distinguishes dynamic IDs & iFrames', () => {
-      const res = queryMentor('org.openqa.selenium.NoSuchElementException: Unable to locate element with id "submit-order"');
+      const res = queryMentor(
+        'org.openqa.selenium.NoSuchElementException: Unable to locate element with id "submit-order"'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
         relevantTerms: ['NoSuchElementException', 'WebDriverWait', 'iframe'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
     it('diagnoses Selenium NoSuchSessionException and highlights ThreadLocal isolation', () => {
-      const res = queryMentor('org.openqa.selenium.NoSuchSessionException: Session ID is null. Using WebDriver after calling quit()?');
+      const res = queryMentor(
+        'org.openqa.selenium.NoSuchSessionException: Session ID is null. Using WebDriver after calling quit()?'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
         relevantTerms: ['NoSuchSessionException', 'ThreadLocal', 'quit()'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
     it('diagnoses Playwright TargetClosedError caused by missing await or crash', () => {
-      const res = queryMentor('Playwright TargetClosedError: Target page, context or browser has been closed');
+      const res = queryMentor(
+        'Playwright TargetClosedError: Target page, context or browser has been closed'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
         relevantTerms: ['TargetClosedError', 'await', 'Trace Viewer'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
     it('diagnoses UnhandledPromiseRejection and undefined property access in async test suites', () => {
-      const res = queryMentor('TypeError: Cannot read properties of undefined (reading "email") in UnhandledPromiseRejection');
+      const res = queryMentor(
+        'TypeError: Cannot read properties of undefined (reading "email") in UnhandledPromiseRejection'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
         relevantTerms: ['UnhandledPromiseRejection', 'Undefined', 'Optional chaining'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
     it('diagnoses REST Assured SSLHandshakeException and suggests relaxedHTTPSValidation', () => {
-      const res = queryMentor('javax.net.ssl.SSLHandshakeException: PKIX path building failed in REST Assured');
+      const res = queryMentor(
+        'javax.net.ssl.SSLHandshakeException: PKIX path building failed in REST Assured'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
         relevantTerms: ['SSLHandshake', 'relaxedHTTPSValidation', 'REST Assured'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
     it('diagnoses REST Assured UnrecognizedPropertyException and suggests @JsonIgnoreProperties', () => {
-      const res = queryMentor('com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field "role"');
+      const res = queryMentor(
+        'com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field "role"'
+      );
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
         relevantTerms: ['JsonIgnoreProperties', 'POJO', 'Jackson'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
@@ -154,8 +187,12 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       const res = queryMentor('catatonit: failed to exec pid1: No such file or directory');
       assert.strictEqual(res.source, 'diagnoseCodeError');
       assertFourPillars(res, {
-        relevantTerms: ['environment/sandbox infrastructure notice', 'NOT an issue with your code', 'Run Code'],
-        forbiddenInCode: []
+        relevantTerms: [
+          'environment/sandbox infrastructure notice',
+          'NOT an issue with your code',
+          'Run Code',
+        ],
+        forbiddenInCode: [],
       });
     });
   });
@@ -167,7 +204,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Playwright iFrames & Nested Frames Handling');
       assertFourPillars(res, {
         relevantTerms: ['frameLocator', 'iframe', 'Playwright'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
@@ -177,7 +214,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'ThreadLocal WebDriver for Parallel TestNG Execution');
       assertFourPillars(res, {
         relevantTerms: ['ThreadLocal', 'parallel', 'remove()', 'DriverFactory'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
@@ -187,7 +224,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'driver.close() vs driver.quit() & Session Management');
       assertFourPillars(res, {
         relevantTerms: ['driver.close()', 'driver.quit()', 'session', 'chromedriver'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
@@ -197,7 +234,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Dynamic Web Tables & Advanced XPath Axes');
       assertFourPillars(res, {
         relevantTerms: ['following-sibling', 'table', 'XPath', 'getByRole'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
@@ -207,7 +244,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'File Upload Automation (Playwright & Selenium)');
       assertFourPillars(res, {
         relevantTerms: ['setInputFiles', 'input[type="file"]', 'sendKeys'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
@@ -217,7 +254,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Handling Multiple Windows, Tabs, and Popups');
       assertFourPillars(res, {
         relevantTerms: ['waitForEvent', 'page', 'tabs'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
@@ -227,24 +264,28 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Dynamic Dropdowns and Auto-Suggest Inputs');
       assertFourPillars(res, {
         relevantTerms: ['selectOption', 'combobox', 'option'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
 
     it('generates a complete, non-truncated Playwright Page Object Model template with TypeScript for framework setup', () => {
-      const userPrompt = 'I want to create Playwright framework for my web application. can you help me with the basic template of Page Object Model using typescript language';
+      const userPrompt =
+        'I want to create Playwright framework for my web application. can you help me with the basic template of Page Object Model using typescript language';
       const res = queryMentor(userPrompt);
       assert.strictEqual(res.source, 'searchQAKnowledge');
-      assert.strictEqual(res.topic, 'Playwright Page Object Model (POM) TypeScript Framework Template');
+      assert.strictEqual(
+        res.topic,
+        'Playwright Page Object Model (POM) TypeScript Framework Template'
+      );
       assertFourPillars(res, {
         relevantTerms: [
           'LoginPage',
           'login.spec.ts',
           'getByLabel',
           'getByRole',
-          'playwright.config.ts'
+          'playwright.config.ts',
         ],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
 
       // Assert complete code structure
@@ -254,19 +295,14 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
     });
 
     it('generates a complete, non-truncated Selenium Java POM template when requested', () => {
-      const userPrompt = 'I want to create a Selenium framework for my web application. Can you help me with the basic template of Page Object Model using Java?';
+      const userPrompt =
+        'I want to create a Selenium framework for my web application. Can you help me with the basic template of Page Object Model using Java?';
       const res = queryMentor(userPrompt);
       assert.strictEqual(res.source, 'searchQAKnowledge');
       assert.strictEqual(res.topic, 'Selenium Java Page Object Model (POM) Framework Template');
       assertFourPillars(res, {
-        relevantTerms: [
-          'LoginPage',
-          'LoginTest',
-          'WebDriverWait',
-          'TestNG',
-          'DriverFactory'
-        ],
-        forbiddenInCode: ['Thread.sleep']
+        relevantTerms: ['LoginPage', 'LoginTest', 'WebDriverWait', 'TestNG', 'DriverFactory'],
+        forbiddenInCode: ['Thread.sleep'],
       });
 
       assert.ok(res.reply.includes('public class LoginPage'), 'Must include LoginPage.java');
@@ -280,12 +316,8 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.source, 'searchQAKnowledge');
       assert.strictEqual(res.topic, 'Cypress Web Automation Framework Template');
       assertFourPillars(res, {
-        relevantTerms: [
-          'LoginPage.js',
-          'login.cy.js',
-          'cypress.config.js'
-        ],
-        forbiddenInCode: []
+        relevantTerms: ['LoginPage.js', 'login.cy.js', 'cypress.config.js'],
+        forbiddenInCode: [],
       });
 
       assert.ok(res.reply.includes('class LoginPage'), 'Must include LoginPage class');
@@ -293,18 +325,14 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
     });
 
     it('generates a complete, non-truncated Appium Mobile Java framework template when requested', () => {
-      const userPrompt = 'Can you help me with an Appium mobile automation framework template in Java?';
+      const userPrompt =
+        'Can you help me with an Appium mobile automation framework template in Java?';
       const res = queryMentor(userPrompt);
       assert.strictEqual(res.source, 'searchQAKnowledge');
       assert.strictEqual(res.topic, 'Appium Mobile Automation Framework Template (Java & TestNG)');
       assertFourPillars(res, {
-        relevantTerms: [
-          'LoginScreen.java',
-          'LoginScreenTest.java',
-          'AppiumBy',
-          'accessibilityId'
-        ],
-        forbiddenInCode: []
+        relevantTerms: ['LoginScreen.java', 'LoginScreenTest.java', 'AppiumBy', 'accessibilityId'],
+        forbiddenInCode: [],
       });
 
       assert.ok(res.reply.includes('public class LoginScreen'), 'Must include LoginScreen');
@@ -312,10 +340,14 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
     });
 
     it('generates a complete, non-truncated BDD Cucumber framework template with feature files, step definitions, and test runner', () => {
-      const userPrompt = 'I want to create a BDD Cucumber framework for my web application. Can you help me with the basic template of feature files, step definitions, and test runner?';
+      const userPrompt =
+        'I want to create a BDD Cucumber framework for my web application. Can you help me with the basic template of feature files, step definitions, and test runner?';
       const res = queryMentor(userPrompt);
       assert.strictEqual(res.source, 'searchQAKnowledge');
-      assert.strictEqual(res.topic, 'BDD Cucumber Automation Framework Template (Gherkin, Step Definitions & Test Runner)');
+      assert.strictEqual(
+        res.topic,
+        'BDD Cucumber Automation Framework Template (Gherkin, Step Definitions & Test Runner)'
+      );
       assertFourPillars(res, {
         relevantTerms: [
           'Feature:',
@@ -325,12 +357,15 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
           'Then',
           'LoginSteps.java',
           'TestRunner.java',
-          '@CucumberOptions'
+          '@CucumberOptions',
         ],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
 
-      assert.ok(res.reply.includes('Scenario Outline:'), 'Must include Scenario Outline with Examples');
+      assert.ok(
+        res.reply.includes('Scenario Outline:'),
+        'Must include Scenario Outline with Examples'
+      );
       assert.ok(res.reply.includes('public class LoginSteps'), 'Must include LoginSteps class');
       assert.ok(res.reply.includes('public class TestRunner'), 'Must include TestRunner class');
       assert.ok(res.reply.includes('@CucumberOptions'), 'Must include @CucumberOptions annotation');
@@ -342,7 +377,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Playwright Auto-Waiting Architecture');
       assertFourPillars(res, {
         relevantTerms: ['Actionability', 'Visible', 'Stable', 'Receives Events'],
-        forbiddenInCode: ['Thread.sleep']
+        forbiddenInCode: ['Thread.sleep'],
       });
     });
   });
@@ -354,7 +389,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'REST Assured Bearer Token & OAuth2 Authentication');
       assertFourPillars(res, {
         relevantTerms: ['RequestSpecBuilder', 'Bearer', 'Authorization'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
@@ -364,12 +399,13 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'REST Assured POJO & JSON Schema');
       assertFourPillars(res, {
         relevantTerms: ['JsonSchema', 'Jackson', 'POJO', 'Serialization'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
     it('generates a complete, non-truncated REST Assured API framework template when requested', () => {
-      const userPrompt = 'I want to create a REST Assured API framework. Can you help me with the basic template?';
+      const userPrompt =
+        'I want to create a REST Assured API framework. Can you help me with the basic template?';
       const res = queryMentor(userPrompt);
       assert.strictEqual(res.source, 'searchQAKnowledge');
       assert.strictEqual(res.topic, 'REST Assured API Automation Framework Template');
@@ -379,9 +415,9 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
           'UserApiTests.java',
           'RequestSpecBuilder',
           'ResponseSpecBuilder',
-          'user-schema.json'
+          'user-schema.json',
         ],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
 
       assert.ok(res.reply.includes('public class RequestSpecs'), 'Must include RequestSpecs class');
@@ -397,7 +433,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Model Context Protocol (MCP) in QA Automation');
       assertFourPillars(res, {
         relevantTerms: ['MCP', 'Model Context Protocol', 'Agent', 'DOM'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
@@ -407,7 +443,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Self-Healing Locator Algorithms');
       assertFourPillars(res, {
         relevantTerms: ['fingerprint', 'confidence', 'heuristic', 'self-healing'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
   });
@@ -419,7 +455,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Can I become an SDET with zero coding knowledge?');
       assertFourPillars(res, {
         relevantTerms: ['senior SDET', 'ground zero', 'superpower'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
@@ -429,7 +465,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'How long does it take to switch from Manual QA to an SDET?');
       assertFourPillars(res, {
         relevantTerms: ['12 to 16 weeks', 'Weeks 1–4', 'Playwright'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
@@ -439,7 +475,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Test Pyramid, Shift-Left Testing & Agile QA Strategy');
       assertFourPillars(res, {
         relevantTerms: ['Test Pyramid', 'Shift-Left', 'Unit', 'API'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
@@ -449,7 +485,7 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Event-Driven & Apache Kafka Stream Testing');
       assertFourPillars(res, {
         relevantTerms: ['Kafka', 'Producer', 'Consumer', 'schema', 'Awaitility'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
@@ -459,16 +495,18 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
       assert.strictEqual(res.topic, 'Performance & Load Testing with k6 & JMeter');
       assertFourPillars(res, {
         relevantTerms: ['Performance', 'k6', 'threshold', 'p(95)'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
 
     it('synthesizes dynamic guidance for novel, unindexed testing topics (e.g. GraphQL Federation)', () => {
-      const res = queryMentor('What advice do you have for an SDET evaluating GraphQL federation subgraphs?');
+      const res = queryMentor(
+        'What advice do you have for an SDET evaluating GraphQL federation subgraphs?'
+      );
       assert.strictEqual(res.source, 'synthesizeDynamicAnswer');
       assertFourPillars(res, {
         relevantTerms: ['GraphQL', 'SDET', 'Next Step'],
-        forbiddenInCode: []
+        forbiddenInCode: [],
       });
     });
   });
@@ -503,7 +541,8 @@ describe('SDET AI Mentor: Comprehensive Unit & Adversarial Test Suite', () => {
         'maxOutputTokens must NOT be throttled to 512 tokens'
       );
       assert.ok(
-        qaChatContent.includes('maxOutputTokens: 4096') || qaChatContent.includes('maxOutputTokens: 8192'),
+        qaChatContent.includes('maxOutputTokens: 4096') ||
+          qaChatContent.includes('maxOutputTokens: 8192'),
         'maxOutputTokens must be at least 4096 to accommodate complete framework templates'
       );
     });

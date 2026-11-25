@@ -57,7 +57,11 @@ describe('Coding Library Solutions & Group Anagrams Verification', () => {
     const res = await POST(req);
     const data = JSON.parse(await res.text());
 
-    assert.strictEqual(data.success, true, 'Java code executed successfully without runtime/compile errors');
+    assert.strictEqual(
+      data.success,
+      true,
+      'Java code executed successfully without runtime/compile errors'
+    );
     const parsed = parseTestResults(data.stdout || '', testCases);
     assert.strictEqual(parsed.allPassed, true, 'Group Anagrams test cases passed Accepted verdict');
     assert.strictEqual(parsed.results[0].passed, true);
@@ -140,7 +144,10 @@ describe('Coding Library Solutions & Group Anagrams Verification', () => {
         const actual = fn(...args);
         const actualStr = typeof actual === 'object' ? JSON.stringify(actual) : String(actual);
         const ok = areOutputsEqual(actualStr, ex.output);
-        assert.ok(ok, `Problem ${p.id} Example ${i + 1} passed: Actual=${actualStr}, Expected=${ex.output}`);
+        assert.ok(
+          ok,
+          `Problem ${p.id} Example ${i + 1} passed: Actual=${actualStr}, Expected=${ex.output}`
+        );
       }
     }
   });

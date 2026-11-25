@@ -1,6 +1,6 @@
 /**
  * Phase 10: AI Content Enhancement Assistant Verification Test Suite
- * 
+ *
  * Tests:
  * 1. AI Provider abstraction & GeminiProvider initialization.
  * 2. Dedicated QA_TECHNICAL_CONTENT_ARCHITECT system instruction presence and rules.
@@ -30,10 +30,13 @@ const { GeminiProvider } = jiti('../src/lib/ai/gemini-provider.ts');
 const { markdownToTiptapHtml } = jiti('../src/lib/ai/markdown-converter.ts');
 
 describe('Phase 10: AI Content Enhancement Assistant Verification', () => {
-
   it('1. System Instruction: QA_TECHNICAL_CONTENT_ARCHITECT adheres to all 10 core architect rules', () => {
     assert.ok(QA_TECHNICAL_CONTENT_ARCHITECT, 'System instruction must be defined');
-    assert.match(QA_TECHNICAL_CONTENT_ARCHITECT, /QA Technical Content Architect/, 'Must declare role');
+    assert.match(
+      QA_TECHNICAL_CONTENT_ARCHITECT,
+      /QA Technical Content Architect/,
+      'Must declare role'
+    );
     assert.match(QA_TECHNICAL_CONTENT_ARCHITECT, /RULE 1 — UNDERSTAND BEFORE GENERATING/);
     assert.match(QA_TECHNICAL_CONTENT_ARCHITECT, /RULE 2 — TECHNICAL DEPTH AND ACCURACY/);
     assert.match(QA_TECHNICAL_CONTENT_ARCHITECT, /RULE 3 — QA ENGINEERING PERSPECTIVE/);
@@ -81,7 +84,10 @@ describe('Phase 10: AI Content Enhancement Assistant Verification', () => {
     assert.ok(built.includes('Module Name: LLM Fundamentals'), 'Must include module name');
     assert.ok(built.includes('Lesson Title: What is an LLM?'), 'Must include lesson title');
     assert.ok(built.includes('SELECTED CONTENT IN EDITOR'), 'Must include selected text highlight');
-    assert.ok(built.includes('Target Audience Profiles: Beginner QA Engineers, SDETs, Test Architects'), 'Must include audience');
+    assert.ok(
+      built.includes('Target Audience Profiles: Beginner QA Engineers, SDETs, Test Architects'),
+      'Must include audience'
+    );
     assert.ok(built.includes('Transformer architecture details.'), 'Must include content');
   });
 
@@ -141,12 +147,27 @@ const attention = (q: Matrix, k: Matrix, v: Matrix) => softmax(q.matmul(k.t())).
   });
 
   it('5. UI Component Verification: VisualLessonEditor includes Enhance with AI toolbar and header buttons', () => {
-    const editorFile = fs.readFileSync(path.join(process.cwd(), 'src/components/editor/visual-lesson-editor.tsx'), 'utf8');
-    const toolbarFile = fs.readFileSync(path.join(process.cwd(), 'src/components/editor/editor-toolbar.tsx'), 'utf8');
-    const chatPanelFile = fs.readFileSync(path.join(process.cwd(), 'src/components/editor/ai-chat-panel.tsx'), 'utf8');
-    const modalFile = fs.readFileSync(path.join(process.cwd(), 'src/components/editor/content-comparison-modal.tsx'), 'utf8');
+    const editorFile = fs.readFileSync(
+      path.join(process.cwd(), 'src/components/editor/visual-lesson-editor.tsx'),
+      'utf8'
+    );
+    const toolbarFile = fs.readFileSync(
+      path.join(process.cwd(), 'src/components/editor/editor-toolbar.tsx'),
+      'utf8'
+    );
+    const chatPanelFile = fs.readFileSync(
+      path.join(process.cwd(), 'src/components/editor/ai-chat-panel.tsx'),
+      'utf8'
+    );
+    const modalFile = fs.readFileSync(
+      path.join(process.cwd(), 'src/components/editor/content-comparison-modal.tsx'),
+      'utf8'
+    );
 
-    assert.ok(editorFile.includes('Enhance with AI'), 'VisualLessonEditor has Enhance with AI button');
+    assert.ok(
+      editorFile.includes('Enhance with AI'),
+      'VisualLessonEditor has Enhance with AI button'
+    );
     assert.ok(toolbarFile.includes('Enhance with AI'), 'EditorToolbar has Enhance with AI button');
     assert.ok(editorFile.includes('<AiChatPanel'), 'AiChatPanel integrated into layout');
     assert.ok(editorFile.includes('<ContentComparisonModal'), 'ContentComparisonModal integrated');
@@ -157,7 +178,10 @@ const attention = (q: Matrix, k: Matrix, v: Matrix) => softmax(q.matmul(k.t())).
     assert.ok(chatPanelFile.includes('add_examples'), 'Action 3: add_examples');
     assert.ok(chatPanelFile.includes('add_diagram'), 'Action 4: add_diagram');
     assert.ok(chatPanelFile.includes('add_failures'), 'Action 5: add_failures');
-    assert.ok(chatPanelFile.includes('add_interview_questions'), 'Action 6: add_interview_questions');
+    assert.ok(
+      chatPanelFile.includes('add_interview_questions'),
+      'Action 6: add_interview_questions'
+    );
     assert.ok(chatPanelFile.includes('technical_review'), 'Action 7: technical_review');
     assert.ok(chatPanelFile.includes('rewrite_selected'), 'Action 8: rewrite_selected');
     assert.ok(chatPanelFile.includes('create_lesson'), 'Action 9: create_lesson');
@@ -165,17 +189,22 @@ const attention = (q: Matrix, k: Matrix, v: Matrix) => softmax(q.matmul(k.t())).
 
     // Verify Compare Modal has dual sides
     assert.ok(modalFile.includes('Original Content'), 'Comparison modal shows Original Content');
-    assert.ok(modalFile.includes('AI Enhanced Version'), 'Comparison modal shows AI Enhanced Version');
+    assert.ok(
+      modalFile.includes('AI Enhanced Version'),
+      'Comparison modal shows AI Enhanced Version'
+    );
     assert.ok(modalFile.includes('Accept AI Version'), 'Comparison modal allows accept');
     assert.ok(modalFile.includes('Keep Original'), 'Comparison modal allows keep original');
   });
 
   it('6. API Route Verification: Rate limiting, context validation, and error contract', () => {
-    const routeFile = fs.readFileSync(path.join(process.cwd(), 'src/app/api/admin/learning/ai-enhance/route.ts'), 'utf8');
+    const routeFile = fs.readFileSync(
+      path.join(process.cwd(), 'src/app/api/admin/learning/ai-enhance/route.ts'),
+      'utf8'
+    );
     assert.ok(routeFile.includes('checkRateLimit'), 'Rate limiting implemented');
     assert.ok(routeFile.includes('Lesson context package'), 'Context validation enforced');
     assert.ok(routeFile.includes('AIFactory.getProvider'), 'Uses AI Provider factory');
     assert.ok(routeFile.includes('effectiveApiKey'), 'Keys handled securely on server');
   });
-
 });

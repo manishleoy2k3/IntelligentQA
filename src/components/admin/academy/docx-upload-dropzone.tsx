@@ -86,16 +86,21 @@ export default function DocxUploadDropzone({
       const headerBytes = new Uint8Array(await file.slice(0, 4).arrayBuffer());
       if (ext === '.docx') {
         // Zip magic bytes: 0x50 0x4B 0x03 0x04
-        const isZip = headerBytes[0] === 0x50 && headerBytes[1] === 0x4B;
+        const isZip = headerBytes[0] === 0x50 && headerBytes[1] === 0x4b;
         if (!isZip) {
           return {
             valid: false,
-            error: 'Document appears corrupted or is not a valid Microsoft Word OpenXML (.docx) package.',
+            error:
+              'Document appears corrupted or is not a valid Microsoft Word OpenXML (.docx) package.',
           };
         }
       } else if (ext === '.pdf') {
         // PDF magic bytes: %PDF
-        const isPdf = headerBytes[0] === 0x25 && headerBytes[1] === 0x50 && headerBytes[2] === 0x44 && headerBytes[3] === 0x46;
+        const isPdf =
+          headerBytes[0] === 0x25 &&
+          headerBytes[1] === 0x50 &&
+          headerBytes[2] === 0x44 &&
+          headerBytes[3] === 0x46;
         if (!isPdf) {
           return {
             valid: false,
@@ -240,10 +245,13 @@ export default function DocxUploadDropzone({
             </div>
             <div className="truncate">
               <h5 className="text-xs font-semibold text-emerald-300 truncate">
-                {uploadedInfo ? uploadedInfo.originalFilename : currentDocumentPath?.split('/').pop()}
+                {uploadedInfo
+                  ? uploadedInfo.originalFilename
+                  : currentDocumentPath?.split('/').pop()}
               </h5>
               <p className="text-[10px] text-zinc-400">
-                {uploadedInfo ? formatFileSize(uploadedInfo.fileSizeBytes) : 'Preserved Document'} • Ready for Preview &amp; Publishing
+                {uploadedInfo ? formatFileSize(uploadedInfo.fileSizeBytes) : 'Preserved Document'} •
+                Ready for Preview &amp; Publishing
               </p>
               {uploadedInfo?.metadata && (
                 <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
@@ -332,7 +340,8 @@ export default function DocxUploadDropzone({
                   Click to upload or drag &amp; drop Microsoft Word document
                 </p>
                 <p className="text-[11px] text-zinc-400 mt-0.5">
-                  Supports <span className="font-mono text-emerald-400">.docx</span> up to {formatFileSize(maxSizeBytes)}
+                  Supports <span className="font-mono text-emerald-400">.docx</span> up to{' '}
+                  {formatFileSize(maxSizeBytes)}
                 </p>
               </div>
             </div>

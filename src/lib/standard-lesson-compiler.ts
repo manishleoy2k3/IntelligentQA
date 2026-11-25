@@ -33,7 +33,7 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     html += `
 <h2 id="1-learning-objectives" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">1. Learning Objectives</h2>
 <ul class="list-disc pl-6 space-y-1.5 my-3 text-slate-900 dark:text-slate-100">
-  ${data.learningObjectives.map(o => `<li class="leading-relaxed">${escapeHtml(o)}</li>`).join('\n  ')}
+  ${data.learningObjectives.map((o) => `<li class="leading-relaxed">${escapeHtml(o)}</li>`).join('\n  ')}
 </ul>
 `;
   }
@@ -78,14 +78,17 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
 <h2 id="2-detailed-concept-explanation" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">2. Detailed Concept Explanation</h2>
 `;
     if (Array.isArray(data.conceptExplanation.theory)) {
-      data.conceptExplanation.theory.forEach(t => {
+      data.conceptExplanation.theory.forEach((t) => {
         html += `<p class="my-3 leading-relaxed text-slate-900 dark:text-slate-100">${escapeHtml(t)}</p>\n`;
       });
     }
     if (data.conceptExplanation.practicalUnderstanding) {
       html += `<p class="my-3 leading-relaxed text-slate-900 dark:text-slate-100"><span style="color: #047857;"><strong>Core Principle: </strong></span>${escapeHtml(data.conceptExplanation.practicalUnderstanding)}</p>\n`;
     }
-    if (Array.isArray(data.conceptExplanation.terminology) && data.conceptExplanation.terminology.length > 0) {
+    if (
+      Array.isArray(data.conceptExplanation.terminology) &&
+      data.conceptExplanation.terminology.length > 0
+    ) {
       html += `
 <div class="overflow-x-auto my-6 rounded-xl border border-slate-200 dark:border-neutral-800">
   <table class="w-full text-left border-collapse text-xs bg-slate-50/50 dark:bg-neutral-950/60">
@@ -96,7 +99,7 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
       </tr>
     </thead>
     <tbody class="divide-y divide-slate-200 dark:divide-neutral-800">
-      ${data.conceptExplanation.terminology.map(t => `<tr><td class="px-4 py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">${escapeHtml(t.term)}</td><td class="px-4 py-3 text-slate-800 dark:text-slate-200 leading-relaxed">${escapeHtml(t.definition)}</td></tr>`).join('\n      ')}
+      ${data.conceptExplanation.terminology.map((t) => `<tr><td class="px-4 py-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">${escapeHtml(t.term)}</td><td class="px-4 py-3 text-slate-800 dark:text-slate-200 leading-relaxed">${escapeHtml(t.definition)}</td></tr>`).join('\n      ')}
     </tbody>
   </table>
 </div>
@@ -114,13 +117,17 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     }
     html += `
 <ol class="list-decimal pl-6 space-y-2 my-3 text-slate-900 dark:text-slate-100">
-  ${data.howItWorks.steps.map(s => `<li class="leading-relaxed"><strong>${escapeHtml(s.title)}:</strong> ${escapeHtml(s.description)}</li>`).join('\n  ')}
+  ${data.howItWorks.steps.map((s) => `<li class="leading-relaxed"><strong>${escapeHtml(s.title)}:</strong> ${escapeHtml(s.description)}</li>`).join('\n  ')}
 </ol>
 `;
   }
 
   // 5. Step-by-Step Implementation Guide
-  if (data.practicalImplementation && Array.isArray(data.practicalImplementation.steps) && data.practicalImplementation.steps.length > 0) {
+  if (
+    data.practicalImplementation &&
+    Array.isArray(data.practicalImplementation.steps) &&
+    data.practicalImplementation.steps.length > 0
+  ) {
     html += `
 <h2 id="4-step-by-step-implementation-guide" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">4. Step-by-Step Implementation Guide</h2>
 `;
@@ -129,14 +136,16 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     }
     html += `
 <ol class="list-decimal pl-6 space-y-2 my-3 text-slate-900 dark:text-slate-100">
-  ${data.practicalImplementation.steps.map((st: any) => {
-    if (typeof st === 'string') {
-      return `<li class="leading-relaxed">${escapeHtml(st)}</li>`;
-    }
-    const label = st.title || st.action || '';
-    const details = st.details || '';
-    return `<li class="leading-relaxed">${label ? `<strong>${escapeHtml(label)}:</strong> ` : ''}${escapeHtml(details)}</li>`;
-  }).join('\n  ')}
+  ${data.practicalImplementation.steps
+    .map((st: any) => {
+      if (typeof st === 'string') {
+        return `<li class="leading-relaxed">${escapeHtml(st)}</li>`;
+      }
+      const label = st.title || st.action || '';
+      const details = st.details || '';
+      return `<li class="leading-relaxed">${label ? `<strong>${escapeHtml(label)}:</strong> ` : ''}${escapeHtml(details)}</li>`;
+    })
+    .join('\n  ')}
 </ol>
 `;
   }
@@ -146,7 +155,7 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     html += `
 <h2 id="5-production-implementation-code" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">5. Production Implementation Code</h2>
 `;
-    data.codeExamples.forEach(codeItem => {
+    data.codeExamples.forEach((codeItem) => {
       const headerTitle = codeItem.filename || codeItem.title || 'Code Example';
       const lang = codeItem.language || 'text';
       html += `
@@ -166,7 +175,7 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     html += `
 <h2 id="6-real-world-qa-use-cases" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">6. Real-World QA Use Cases</h2>
 <ul class="list-disc pl-6 space-y-2 my-3 text-slate-900 dark:text-slate-100">
-  ${data.qaUseCases.map(u => `<li class="leading-relaxed"><strong>${escapeHtml(u.title)}:</strong> ${escapeHtml(u.scenario)} — <em>${escapeHtml(u.enterpriseApplication)}</em></li>`).join('\n  ')}
+  ${data.qaUseCases.map((u) => `<li class="leading-relaxed"><strong>${escapeHtml(u.title)}:</strong> ${escapeHtml(u.scenario)} — <em>${escapeHtml(u.enterpriseApplication)}</em></li>`).join('\n  ')}
 </ul>
 `;
   }
@@ -176,17 +185,23 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     html += `
 <h2 id="7-common-pitfalls-and-mitigation-strategies" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">7. Common Pitfalls and Mitigation Strategies</h2>
 <div class="space-y-4 my-4">
-  ${data.commonProblems.map(p => {
-    const steps = Array.isArray(p.troubleshooting) ? p.troubleshooting : Array.isArray(p.troubleshootingSteps) ? p.troubleshootingSteps : [];
-    return `
+  ${data.commonProblems
+    .map((p) => {
+      const steps = Array.isArray(p.troubleshooting)
+        ? p.troubleshooting
+        : Array.isArray(p.troubleshootingSteps)
+          ? p.troubleshootingSteps
+          : [];
+      return `
     <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2">
       <p class="font-bold font-mono text-red-600 dark:text-red-400">⚠️ Error: ${escapeHtml(p.error)}</p>
       <p class="text-slate-900 dark:text-slate-100"><strong>Root Cause:</strong> ${escapeHtml(p.rootCause)}</p>
-      ${steps.length > 0 ? `<ul class="list-disc pl-5 space-y-1 text-slate-800 dark:text-slate-200">${steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : ''}
+      ${steps.length > 0 ? `<ul class="list-disc pl-5 space-y-1 text-slate-800 dark:text-slate-200">${steps.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : ''}
       ${p.codeFix ? `<pre class="p-3 rounded-lg bg-neutral-900 text-[#81FF89] font-mono text-[11px] overflow-x-auto my-2"><code>${escapeHtml(p.codeFix)}</code></pre>` : ''}
     </div>
     `;
-  }).join('\n  ')}
+    })
+    .join('\n  ')}
 </div>
 `;
   }
@@ -196,7 +211,7 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     html += `
 <h2 id="8-enterprise-best-practices" class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3 tracking-tight">8. Enterprise Best Practices</h2>
 <ul class="list-disc pl-6 space-y-2 my-3 text-slate-900 dark:text-slate-100">
-  ${data.bestPractices.map(bp => `<li class="leading-relaxed"><strong>${escapeHtml(bp.title)} (${escapeHtml(bp.category)}):</strong> ${escapeHtml(bp.recommendation)}</li>`).join('\n  ')}
+  ${data.bestPractices.map((bp) => `<li class="leading-relaxed"><strong>${escapeHtml(bp.title)} (${escapeHtml(bp.category)}):</strong> ${escapeHtml(bp.recommendation)}</li>`).join('\n  ')}
 </ul>
 `;
   }
@@ -209,7 +224,7 @@ export function generateStandardLessonHtml(data: StandardLessonTemplateData): st
     if (Array.isArray(data.summary.takeaways) && data.summary.takeaways.length > 0) {
       html += `
 <ul class="list-disc pl-6 space-y-1.5 my-3 text-slate-900 dark:text-slate-100">
-  ${data.summary.takeaways.map(t => `<li class="leading-relaxed">${escapeHtml(t)}</li>`).join('\n  ')}
+  ${data.summary.takeaways.map((t) => `<li class="leading-relaxed">${escapeHtml(t)}</li>`).join('\n  ')}
 </ul>
 `;
     }

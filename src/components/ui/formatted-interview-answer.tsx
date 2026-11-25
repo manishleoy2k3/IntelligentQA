@@ -90,7 +90,9 @@ export default function FormattedInterviewAnswer({
               className="relative p-3.5 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs sm:text-sm overflow-x-auto text-emerald-300 shadow-inner my-2"
             >
               <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80 text-xs text-slate-400">
-                <span className="font-semibold uppercase tracking-wider">{block.language || 'code'}</span>
+                <span className="font-semibold uppercase tracking-wider">
+                  {block.language || 'code'}
+                </span>
                 <button
                   type="button"
                   onClick={() => handleCopy(block.content)}
@@ -127,7 +129,10 @@ export default function FormattedInterviewAnswer({
               const headingMatch = line.match(/^(\s*#{1,4})\s+(.*)$/);
               if (headingMatch) {
                 return (
-                  <h4 key={`line-${lIdx}`} className="font-extrabold text-white text-sm sm:text-base pt-2.5 pb-1 border-b border-slate-800/60 flex items-center gap-2">
+                  <h4
+                    key={`line-${lIdx}`}
+                    className="font-extrabold text-white text-sm sm:text-base pt-2.5 pb-1 border-b border-slate-800/60 flex items-center gap-2"
+                  >
                     <span className="w-1.5 h-3.5 bg-purple-500 rounded-full inline-block shrink-0" />
                     <span>{renderInlineFormatted(headingMatch[2], `h-${lIdx}`)}</span>
                   </h4>
@@ -138,19 +143,28 @@ export default function FormattedInterviewAnswer({
               if (trimmed.startsWith('>')) {
                 const quoteContent = line.replace(/^\s*>\s*/, '');
                 return (
-                  <div key={`line-${lIdx}`} className="pl-3 py-1 my-1 border-l-2 border-purple-500 bg-purple-950/20 text-purple-200 text-xs italic rounded-r">
+                  <div
+                    key={`line-${lIdx}`}
+                    className="pl-3 py-1 my-1 border-l-2 border-purple-500 bg-purple-950/20 text-purple-200 text-xs italic rounded-r"
+                  >
                     {renderInlineFormatted(quoteContent, `q-${lIdx}`)}
                   </div>
                 );
               }
 
               // Bullet line: • , - , *
-              if (trimmed.startsWith('• ') || trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+              if (
+                trimmed.startsWith('• ') ||
+                trimmed.startsWith('- ') ||
+                trimmed.startsWith('* ')
+              ) {
                 const bulletContent = line.replace(/^\s*[•\-\*]\s*/, '');
                 return (
                   <div key={`line-${lIdx}`} className="flex items-start gap-2 pl-2">
                     <span className="text-emerald-500 font-bold shrink-0 mt-0.5">•</span>
-                    <span className="flex-1">{renderInlineFormatted(bulletContent, `b-${lIdx}`)}</span>
+                    <span className="flex-1">
+                      {renderInlineFormatted(bulletContent, `b-${lIdx}`)}
+                    </span>
                   </div>
                 );
               }
@@ -163,7 +177,9 @@ export default function FormattedInterviewAnswer({
                     <span className="font-mono font-bold text-sky-400 shrink-0 text-xs mt-0.5">
                       {numMatch[1].trim()}
                     </span>
-                    <span className="flex-1">{renderInlineFormatted(numMatch[2], `n-${lIdx}`)}</span>
+                    <span className="flex-1">
+                      {renderInlineFormatted(numMatch[2], `n-${lIdx}`)}
+                    </span>
                   </div>
                 );
               }

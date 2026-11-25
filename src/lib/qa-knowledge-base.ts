@@ -26,9 +26,16 @@ export const QA_KNOWLEDGE_BASE: QAKnowledgeEntry[] = [
     id: 'stale-element-ref',
     topic: 'StaleElementReferenceException',
     category: 'selenium',
-    keywords: ['stale', 'staleelementreferenceexception', 'stale element', 'selenium exception', 'dom update'],
+    keywords: [
+      'stale',
+      'staleelementreferenceexception',
+      'stale element',
+      'selenium exception',
+      'dom update',
+    ],
     question: 'How do you handle StaleElementReferenceException in Selenium WebDriver?',
-    shortAnswer: 'StaleElementReferenceException occurs when an element referenced in code is no longer attached to the current DOM (e.g., page refresh, AJAX update, DOM re-rendering). Resolve it using FluentWait with ignorance of the exception, re-querying the locator immediately before interaction, or using PageFactory / custom dynamic proxies.',
+    shortAnswer:
+      'StaleElementReferenceException occurs when an element referenced in code is no longer attached to the current DOM (e.g., page refresh, AJAX update, DOM re-rendering). Resolve it using FluentWait with ignorance of the exception, re-querying the locator immediately before interaction, or using PageFactory / custom dynamic proxies.',
     detailedAnswer: `### Root Cause
 When Selenium locates an element (\`WebElement element = driver.findElement(...)\`), it assigns an internal ID. If the DOM rerenders via React, Vue, or an AJAX update, the original element node is detached and garbage-collected in the browser, even if the new element has identical attributes. Calling any method on that old reference triggers \`StaleElementReferenceException\`.
 
@@ -64,19 +71,20 @@ public void clickWithRetry(By locator, int maxAttempts) {
       playwright: `// Playwright avoids stale element issues entirely through auto-waiting locators
 const submitBtn = page.getByRole('button', { name: 'Submit Order' });
 // Playwright automatically re-queries the DOM right before clicking:
-await submitBtn.click();`
+await submitBtn.click();`,
     },
     bestPractices: [
       'Store "By" locators rather than caching WebElements in Page Objects',
       'Use WebDriverWait with ExpectedConditions.refreshed(...)',
-      'Leverage Playwright in modern greenfield projects to eliminate stale element issues by design'
+      'Leverage Playwright in modern greenfield projects to eliminate stale element issues by design',
     ],
     antiPatterns: [
       'Inserting Thread.sleep(5000) hoping the DOM settles',
       'Caching WebElements in static class variables',
-      'Ignoring StaleElementReferenceException with an empty catch block without re-locating'
+      'Ignoring StaleElementReferenceException with an empty catch block without re-locating',
     ],
-    interviewTips: 'In interviews, clearly state both the root cause (DOM node detached/re-rendered) and contrast Selenium with Playwright’s auto-locating model to demonstrate architectural depth.'
+    interviewTips:
+      'In interviews, clearly state both the root cause (DOM node detached/re-rendered) and contrast Selenium with Playwright’s auto-locating model to demonstrate architectural depth.',
   },
 
   // 2. Playwright Auto-waiting vs Explicit Waits
@@ -84,9 +92,17 @@ await submitBtn.click();`
     id: 'playwright-autowaiting-vs-explicit',
     topic: 'Playwright Auto-Waiting Architecture',
     category: 'playwright',
-    keywords: ['auto-waiting', 'auto wait', 'explicit wait', 'implicit wait', 'thread sleep', 'playwright vs selenium'],
+    keywords: [
+      'auto-waiting',
+      'auto wait',
+      'explicit wait',
+      'implicit wait',
+      'thread sleep',
+      'playwright vs selenium',
+    ],
     question: 'How does Playwright auto-waiting work compared to Selenium explicit waits?',
-    shortAnswer: 'Playwright performs automatic actionability checks (Attached, Visible, Stable, Receives Events, Enabled, Editable) before every action (click, fill, check). Unlike Selenium where testers must manually write WebDriverWait or risk flakiness, Playwright waits up to the action timeout automatically.',
+    shortAnswer:
+      'Playwright performs automatic actionability checks (Attached, Visible, Stable, Receives Events, Enabled, Editable) before every action (click, fill, check). Unlike Selenium where testers must manually write WebDriverWait or risk flakiness, Playwright waits up to the action timeout automatically.',
     detailedAnswer: `### Playwright Actionability Matrix
 Before executing \`locator.click()\`, Playwright automatically checks:
 1. **Attached**: Element is attached to the DOM.
@@ -110,19 +126,20 @@ WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.id("confi
 btn.click();
 
 WebElement status = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("order-status")));
-Assert.assertTrue(status.getText().contains("Order Confirmed"));`
+Assert.assertTrue(status.getText().contains("Order Confirmed"));`,
     },
     bestPractices: [
       'Rely on Playwright built-in actionability checks instead of adding arbitrary delays',
       'Use web-first assertions like expect(locator).toBeVisible() which automatically retry',
-      'Set global action timeouts in playwright.config.ts (e.g. 10000ms)'
+      'Set global action timeouts in playwright.config.ts (e.g. 10000ms)',
     ],
     antiPatterns: [
       'Using page.waitForTimeout(5000) or Thread.sleep()',
       'Using non-retrying assertions like expect(await locator.isVisible()).toBe(true)',
-      'Mixing Selenium implicit waits and explicit waits (leads to unpredictable timeouts)'
+      'Mixing Selenium implicit waits and explicit waits (leads to unpredictable timeouts)',
     ],
-    interviewTips: 'Emphasize that web-first assertions poll the DOM until the condition is met, whereas standard Jest/Chai assertions check only once and fail immediately.'
+    interviewTips:
+      'Emphasize that web-first assertions poll the DOM until the condition is met, whereas standard Jest/Chai assertions check only once and fail immediately.',
   },
 
   // 3. Shadow DOM Traversal
@@ -130,9 +147,18 @@ Assert.assertTrue(status.getText().contains("Order Confirmed"));`
     id: 'shadow-dom-traversal',
     topic: 'Shadow DOM Automation',
     category: 'playwright',
-    keywords: ['shadow dom', 'shadow root', 'web components', 'nested shadow', 'open shadow', 'closed shadow'],
-    question: 'How do you locate and interact with elements inside open and closed Shadow DOM in Playwright and Selenium?',
-    shortAnswer: 'Playwright pierces open Shadow DOM automatically without special syntax. In Selenium WebDriver 4, you must use WebElement.getShadowRoot() or JavaScriptExecutor for open roots; closed Shadow roots cannot be pierced via standard DOM APIs in either tool without developer cooperation or CDP hook.',
+    keywords: [
+      'shadow dom',
+      'shadow root',
+      'web components',
+      'nested shadow',
+      'open shadow',
+      'closed shadow',
+    ],
+    question:
+      'How do you locate and interact with elements inside open and closed Shadow DOM in Playwright and Selenium?',
+    shortAnswer:
+      'Playwright pierces open Shadow DOM automatically without special syntax. In Selenium WebDriver 4, you must use WebElement.getShadowRoot() or JavaScriptExecutor for open roots; closed Shadow roots cannot be pierced via standard DOM APIs in either tool without developer cooperation or CDP hook.',
     detailedAnswer: `### Playwright Built-in Piercing
 Playwright locators (\`page.locator()\`, \`page.getByRole()\`, CSS selectors) penetrate all **open** Shadow roots natively.
 Example: \`page.locator('custom-user-card input.email')\` pierces through \`<custom-user-card>\`'s shadow root seamlessly.
@@ -150,18 +176,19 @@ await page.getByRole('button', { name: 'Save Profile' }).click();`,
 WebElement host = driver.findElement(By.cssSelector("user-profile-widget"));
 SearchContext shadowRoot = host.getShadowRoot();
 WebElement input = shadowRoot.findElement(By.cssSelector("input[type='email']"));
-input.sendKeys("sdet@company.com");`
+input.sendKeys("sdet@company.com");`,
     },
     bestPractices: [
       'Use Playwright for modern Web Component / Shadow DOM heavy applications (Salesforce, Lit, Polymer)',
       'Use CSS selectors when querying Selenium 4 SearchContext',
-      'Encapsulate shadow hosts in dedicated Page Objects'
+      'Encapsulate shadow hosts in dedicated Page Objects',
     ],
     antiPatterns: [
       'Attempting to use standard XPath inside Selenium getShadowRoot() (throws unsupported operation)',
-      'Assuming closed shadow roots can be automated without application modifications'
+      'Assuming closed shadow roots can be automated without application modifications',
     ],
-    interviewTips: 'Clarify upfront whether the Shadow DOM is "open" or "closed". Mention that standard XPath does not pierce shadow boundaries, but Playwright CSS engines do.'
+    interviewTips:
+      'Clarify upfront whether the Shadow DOM is "open" or "closed". Mention that standard XPath does not pierce shadow boundaries, but Playwright CSS engines do.',
   },
 
   // 4. Page Object Model (POM) vs PageFactory
@@ -170,8 +197,10 @@ input.sendKeys("sdet@company.com");`
     topic: 'POM vs PageFactory Architecture',
     category: 'framework',
     keywords: ['pom', 'page object model', 'pagefactory', 'framework design', 'findby'],
-    question: 'What is the Page Object Model (POM), and why is Selenium PageFactory widely deprecated in modern frameworks?',
-    shortAnswer: 'POM is a design pattern separating page locators and interaction logic from test assertions. PageFactory used @FindBy annotations and lazy proxies, but suffered from frequent StaleElementReferenceExceptions, poor support for dynamic locators, and lack of ThreadLocal safety in parallel runs. Modern frameworks prefer pure POM with By locators (Selenium) or Locator fixtures (Playwright).',
+    question:
+      'What is the Page Object Model (POM), and why is Selenium PageFactory widely deprecated in modern frameworks?',
+    shortAnswer:
+      'POM is a design pattern separating page locators and interaction logic from test assertions. PageFactory used @FindBy annotations and lazy proxies, but suffered from frequent StaleElementReferenceExceptions, poor support for dynamic locators, and lack of ThreadLocal safety in parallel runs. Modern frameworks prefer pure POM with By locators (Selenium) or Locator fixtures (Playwright).',
     detailedAnswer: `### Why PageFactory fell out of favor:
 1. **Stale Proxies**: PageFactory caches elements unless configured with \`@CacheLookup\`. Dynamic single-page applications cause frequent \`StaleElementReferenceException\` when proxies attempt to reuse expired handles.
 2. **No Dynamic Locators**: \`@FindBy(xpath = "//div[@id='user-" + id + "']")\` is syntactically invalid because annotation attributes must be compile-time constants.
@@ -218,19 +247,20 @@ public class LoginPage {
         driver.findElement(passwordField).sendKeys(pass);
         wait.until(ExpectedConditions.elementToBeClickable(loginBtn)).click();
     }
-}`
+}`,
     },
     bestPractices: [
       'Keep assertions inside test files, keep actions and locators inside Page Objects',
       'Return new Page Objects from navigation actions (e.g. login() returns DashboardPage)',
-      'Use strong TypeScript typing for method parameters'
+      'Use strong TypeScript typing for method parameters',
     ],
     antiPatterns: [
       'Putting expect() or Assert.assertEquals() directly inside Page Object methods',
       'Exposing raw WebElements as public variables',
-      'Creating monolithic page objects exceeding 500 lines'
+      'Creating monolithic page objects exceeding 500 lines',
     ],
-    interviewTips: 'State: "Page Objects should represent the services offered by the page UI, not the underlying HTML structure. Assertions belong in the test layer for clean SRP (Single Responsibility Principle)."'
+    interviewTips:
+      'State: "Page Objects should represent the services offered by the page UI, not the underlying HTML structure. Assertions belong in the test layer for clean SRP (Single Responsibility Principle)."',
   },
 
   // 5. REST Assured POJO & Schema Validation
@@ -238,9 +268,19 @@ public class LoginPage {
     id: 'rest-assured-pojo-schema',
     topic: 'REST Assured POJO & JSON Schema',
     category: 'api',
-    keywords: ['rest assured', 'pojo', 'json schema', 'jackson', 'serialization', 'deserialization', 'api automation'],
-    question: 'How do you perform POJO Serialization/Deserialization and JSON Schema validation in REST Assured?',
-    shortAnswer: 'Use Jackson or Gson to serialize Java objects into JSON request bodies (Serialization) and parse JSON responses into typed Java objects (Deserialization). Combine with rest-assured JsonSchemaValidator.matchesJsonSchemaInClasspath() to verify the API response contract.',
+    keywords: [
+      'rest assured',
+      'pojo',
+      'json schema',
+      'jackson',
+      'serialization',
+      'deserialization',
+      'api automation',
+    ],
+    question:
+      'How do you perform POJO Serialization/Deserialization and JSON Schema validation in REST Assured?',
+    shortAnswer:
+      'Use Jackson or Gson to serialize Java objects into JSON request bodies (Serialization) and parse JSON responses into typed Java objects (Deserialization). Combine with rest-assured JsonSchemaValidator.matchesJsonSchemaInClasspath() to verify the API response contract.',
     detailedAnswer: `### POJO Serialization Flow
 1. Define a POJO (Plain Old Java Object) or Lombok \`@Builder\` / \`@Data\` class matching the API payload.
 2. Pass the object directly into \`.body(userRequest)\`. REST Assured uses Jackson Databind to serialize it.
@@ -269,19 +309,20 @@ CreateUserResponse res = given()
     .as(CreateUserResponse.class);
 
 assertThat(res.getId()).isNotNull();
-assertThat(res.getRole()).isEqualTo("Senior SDET");`
+assertThat(res.getRole()).isEqualTo("Senior SDET");`,
     },
     bestPractices: [
       'Use Lombok @Builder to make test data creation readable and maintainable',
       'Validate JSON Schema before asserting individual field values',
-      'Use RequestSpecBuilder to centralize Base URI, Headers, and Authentication'
+      'Use RequestSpecBuilder to centralize Base URI, Headers, and Authentication',
     ],
     antiPatterns: [
       'Hardcoding massive JSON strings as multiline strings in test code',
       'Only asserting HTTP status code without validating payload body structure',
-      'Ignoring Jackson ignore unknown properties annotation during version updates'
+      'Ignoring Jackson ignore unknown properties annotation during version updates',
     ],
-    interviewTips: 'Mention how schema validation catches breaking API contract changes before UI regression suites even begin executing in CI/CD.'
+    interviewTips:
+      'Mention how schema validation catches breaking API contract changes before UI regression suites even begin executing in CI/CD.',
   },
 
   // 6. Playwright API Testing & Auth Storage State
@@ -289,9 +330,18 @@ assertThat(res.getRole()).isEqualTo("Senior SDET");`
     id: 'playwright-api-storage-state',
     topic: 'Playwright API & Storage State Hybrid Testing',
     category: 'api',
-    keywords: ['playwright api', 'storage state', 'storagestate.json', 'hybrid testing', 'api request context', 'fast login'],
-    question: 'How do you use Playwright API testing and reuse authentication state across UI tests?',
-    shortAnswer: 'Playwright provides built-in request fixtures (APIRequestContext) for lightning-fast REST calls without launching a browser. Use global setup to log in once via API or UI, save cookies and localStorage to storageState.json, and supply it to all UI test workers to bypass repeated login steps.',
+    keywords: [
+      'playwright api',
+      'storage state',
+      'storagestate.json',
+      'hybrid testing',
+      'api request context',
+      'fast login',
+    ],
+    question:
+      'How do you use Playwright API testing and reuse authentication state across UI tests?',
+    shortAnswer:
+      'Playwright provides built-in request fixtures (APIRequestContext) for lightning-fast REST calls without launching a browser. Use global setup to log in once via API or UI, save cookies and localStorage to storageState.json, and supply it to all UI test workers to bypass repeated login steps.',
     detailedAnswer: `### The 10x Speedup of Storage State
 In enterprise test suites with 500+ tests, executing UI login (\`fill username\`, \`fill password\`, \`click submit\`, wait for 2FA) in \`beforeEach\` wastes hours of CI time.
 Instead:
@@ -320,18 +370,19 @@ test('verify newly created user in UI', async ({ request, page }) => {
 
   await page.goto('/users');
   await expect(page.getByTestId(\`user-row-\${id}\`)).toContainText('Sara Miller');
-});`
+});`,
     },
     bestPractices: [
       'Seed test prerequisites via API calls before running the UI scenario under test',
       'Clean up test data via API in test.afterAll()',
-      'Use Playwright project dependencies in playwright.config.ts to execute auth setup first'
+      'Use Playwright project dependencies in playwright.config.ts to execute auth setup first',
     ],
     antiPatterns: [
       'Going through the full UI login form in every single test case',
-      'Hardcoding static IDs that clash during parallel worker execution'
+      'Hardcoding static IDs that clash during parallel worker execution',
     ],
-    interviewTips: 'Highlight the distinction between "Testing the Login Flow" (which only needs 2-3 dedicated UI tests) vs "Testing features that require logged-in state" (which should ALWAYS use storageState).'
+    interviewTips:
+      'Highlight the distinction between "Testing the Login Flow" (which only needs 2-3 dedicated UI tests) vs "Testing features that require logged-in state" (which should ALWAYS use storageState).',
   },
 
   // 7. Testing AI & LLM Applications (LLM-as-a-Judge)
@@ -339,9 +390,19 @@ test('verify newly created user in UI', async ({ request, page }) => {
     id: 'testing-ai-llm-applications',
     topic: 'Testing AI & LLM Applications (LLM-as-a-Judge)',
     category: 'ai-qa',
-    keywords: ['llm testing', 'testing ai', 'prompt injection', 'hallucination', 'llm-as-a-judge', 'cosine similarity', 'semantic assertions'],
-    question: 'How do you test AI and LLM-powered applications where outputs are non-deterministic?',
-    shortAnswer: 'Traditional exact-match assertions fail on LLMs. Instead, apply: 1) Semantic evaluation using Embeddings and Cosine Similarity (threshold > 0.85); 2) LLM-as-a-Judge using an independent evaluation model with a strict scoring rubric; 3) Deterministic schema/JSON format validation; and 4) Adversarial red-teaming for Prompt Injections and Hallucinations.',
+    keywords: [
+      'llm testing',
+      'testing ai',
+      'prompt injection',
+      'hallucination',
+      'llm-as-a-judge',
+      'cosine similarity',
+      'semantic assertions',
+    ],
+    question:
+      'How do you test AI and LLM-powered applications where outputs are non-deterministic?',
+    shortAnswer:
+      'Traditional exact-match assertions fail on LLMs. Instead, apply: 1) Semantic evaluation using Embeddings and Cosine Similarity (threshold > 0.85); 2) LLM-as-a-Judge using an independent evaluation model with a strict scoring rubric; 3) Deterministic schema/JSON format validation; and 4) Adversarial red-teaming for Prompt Injections and Hallucinations.',
     detailedAnswer: `### The Non-Deterministic Assertion Problem
 When testing \`aiChatbot.generateSummary()\`, the exact words differ on every invocation. \`expect(output).toBe("...")\` is fundamentally flawed.
 
@@ -379,18 +440,19 @@ test('verify AI customer support responds accurately and safely', async ({ page 
     expectedCriteria: 'Must state 30-day money-back guarantee with zero cancellation fees.'
   });
   expect(judgeScore.passed).toBe(true);
-});`
+});`,
     },
     bestPractices: [
       'Maintain an evaluation test dataset (Golden Dataset) of 100+ prompt-response pairs',
       'Test for prompt injection, jailbreaking, and PII leakage in automated pipelines',
-      'Set low model temperature (0.0 - 0.2) in testing environments to improve determinism'
+      'Set low model temperature (0.0 - 0.2) in testing environments to improve determinism',
     ],
     antiPatterns: [
       'Using exact string equality like expect(text).toBe(...) on raw LLM responses',
-      'Neglecting latency and cost/token consumption assertions'
+      'Neglecting latency and cost/token consumption assertions',
     ],
-    interviewTips: 'This is the most cutting-edge topic in 2026 SDET interviews. Mention Golden Datasets, LLM-as-a-Judge, and RAG evaluation frameworks (e.g. Ragas: Faithfulness, Answer Relevance).'
+    interviewTips:
+      'This is the most cutting-edge topic in 2026 SDET interviews. Mention Golden Datasets, LLM-as-a-Judge, and RAG evaluation frameworks (e.g. Ragas: Faithfulness, Answer Relevance).',
   },
 
   // 8. Self-Healing Locators
@@ -398,9 +460,17 @@ test('verify AI customer support responds accurately and safely', async ({ page 
     id: 'self-healing-locators',
     topic: 'Self-Healing Locator Algorithms',
     category: 'ai-qa',
-    keywords: ['self-healing', 'self healing', 'resilient locators', 'heuristic', 'flakiness', 'ai locators'],
+    keywords: [
+      'self-healing',
+      'self healing',
+      'resilient locators',
+      'heuristic',
+      'flakiness',
+      'ai locators',
+    ],
     question: 'How do Self-Healing test automation frameworks work under the hood?',
-    shortAnswer: 'Self-healing frameworks capture a rich multi-attribute fingerprint of target elements during test authoring (tag, text, class, role, parent tree, siblings, bounding box). When the primary locator fails due to UI updates, an AI or heuristic scoring algorithm compares the current DOM against the fingerprint, finds the highest-scoring candidate (e.g. >85% confidence), performs the action, and logs a self-heal event.',
+    shortAnswer:
+      'Self-healing frameworks capture a rich multi-attribute fingerprint of target elements during test authoring (tag, text, class, role, parent tree, siblings, bounding box). When the primary locator fails due to UI updates, an AI or heuristic scoring algorithm compares the current DOM against the fingerprint, finds the highest-scoring candidate (e.g. >85% confidence), performs the action, and logs a self-heal event.',
     detailedAnswer: `### Anatomy of an Element Fingerprint
 When an element is registered:
 - \`tag\`: \`button\`
@@ -453,18 +523,19 @@ export async function resilientClick(page: Page, primarySelector: string, finger
       throw error; // Genuine bug or total redesign
     }
   }
-}`
+}`,
     },
     bestPractices: [
       'Always log self-healing events as warnings so developers fix the source code',
       'Never allow self-healing to mask true application bugs where an element was intentionally removed',
-      'Favor accessible locators (getByRole, getByLabel) which rarely need self-healing in the first place'
+      'Favor accessible locators (getByRole, getByLabel) which rarely need self-healing in the first place',
     ],
     antiPatterns: [
       'Silently healing without notifying the engineering team',
-      'Accepting candidates with low confidence scores (<75%) which risk clicking the wrong element'
+      'Accepting candidates with low confidence scores (<75%) which risk clicking the wrong element',
     ],
-    interviewTips: 'Emphasize that self-healing is a safety net, not an excuse to write fragile XPaths like /html/body/div[3]/span.'
+    interviewTips:
+      'Emphasize that self-healing is a safety net, not an excuse to write fragile XPaths like /html/body/div[3]/span.',
   },
 
   // 9. Pre-Signup FAQ: Zero Coding to SDET
@@ -472,9 +543,17 @@ export async function resilientClick(page: Page, primarySelector: string, finger
     id: 'faq-zero-coding-to-sdet',
     topic: 'Can I become an SDET with zero coding knowledge?',
     category: 'career-faq',
-    keywords: ['zero coding', 'no coding experience', 'manual tester to sdet', 'can i learn automation', 'transition to automation'],
-    question: 'Can a manual tester with zero programming background learn automation and become an SDET?',
-    shortAnswer: 'Yes, 100%. Every senior SDET started somewhere. IntelligentQA is designed specifically for this transition: we start from ground zero (variables, loops, async/await) and directly map every manual test step ("click button, check text") to clean automation code in Playwright and Selenium.',
+    keywords: [
+      'zero coding',
+      'no coding experience',
+      'manual tester to sdet',
+      'can i learn automation',
+      'transition to automation',
+    ],
+    question:
+      'Can a manual tester with zero programming background learn automation and become an SDET?',
+    shortAnswer:
+      'Yes, 100%. Every senior SDET started somewhere. IntelligentQA is designed specifically for this transition: we start from ground zero (variables, loops, async/await) and directly map every manual test step ("click button, check text") to clean automation code in Playwright and Selenium.',
     detailedAnswer: `### The Scratch-to-SDET Roadmap:
 1. **Week 1-2: Programming Foundations**: Variables, conditions, functions, and arrays in TypeScript or Java.
 2. **Week 3-4: DOM & Modern Locators**: How browsers work, inspect elements, accessible locators (\`getByRole\`, \`getByText\`).
@@ -487,13 +566,14 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     bestPractices: [
       'Focus on one primary language first (TypeScript + Playwright is currently the fastest learning curve)',
       'Type out code instead of copy-pasting to build muscle memory',
-      'Practice in the built-in IntelligentQA sandbox daily to build a portfolio'
+      'Practice in the built-in IntelligentQA sandbox daily to build a portfolio',
     ],
     antiPatterns: [
       'Trying to learn Java, Python, and TypeScript all at the same time',
-      'Only reading theory or watching tutorials without typing actual code'
+      'Only reading theory or watching tutorials without typing actual code',
     ],
-    interviewTips: 'Frame your manual QA background as a superpower: you already have domain sense, exploratory testing skills, and user empathy, which pure coders often lack.'
+    interviewTips:
+      'Frame your manual QA background as a superpower: you already have domain sense, exploratory testing skills, and user empathy, which pure coders often lack.',
   },
 
   // 10. Pre-Signup FAQ: Playwright vs Selenium in 2026
@@ -501,9 +581,16 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-playwright-vs-selenium-2026',
     topic: 'Playwright vs Selenium in 2026',
     category: 'career-faq',
-    keywords: ['playwright vs selenium', 'which is better', 'playwright market share', 'selenium jobs', '2026 trends'],
+    keywords: [
+      'playwright vs selenium',
+      'which is better',
+      'playwright market share',
+      'selenium jobs',
+      '2026 trends',
+    ],
     question: 'Playwright vs Selenium in 2026: Which technology should I learn first?',
-    shortAnswer: 'For new learners and greenfield projects, Playwright + TypeScript is the clear #1 choice due to native auto-waiting, fast execution, Trace Viewer, and modern syntax. However, enterprise banks and healthcare organizations still have massive Selenium + Java codebases. Mastering Playwright first gives you rapid momentum, after which learning Selenium is straightforward.',
+    shortAnswer:
+      'For new learners and greenfield projects, Playwright + TypeScript is the clear #1 choice due to native auto-waiting, fast execution, Trace Viewer, and modern syntax. However, enterprise banks and healthcare organizations still have massive Selenium + Java codebases. Mastering Playwright first gives you rapid momentum, after which learning Selenium is straightforward.',
     detailedAnswer: `### Feature Comparison
 
 | Feature | Playwright | Selenium WebDriver |
@@ -520,13 +607,14 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
 - If your company currently uses Java/TestNG: **Pick the Selenium + Java track**.`,
     bestPractices: [
       'Understand core automation principles (POM, synchronization, assertions) which apply to both',
-      'Use Playwright for new microservices and dynamic Single Page Apps (React/Next/Vue)'
+      'Use Playwright for new microservices and dynamic Single Page Apps (React/Next/Vue)',
     ],
     antiPatterns: [
       'Believing Selenium is obsolete—it remains heavily used in enterprise enterprise architectures',
-      'Picking a framework based on hype without checking your target market job listings'
+      'Picking a framework based on hype without checking your target market job listings',
     ],
-    interviewTips: 'Articulate that you are a test automation architect who chooses the right tool for the job: Playwright for modern SPAs and fast CI feedback; Selenium for cross-browser legacy grid setups.'
+    interviewTips:
+      'Articulate that you are a test automation architect who chooses the right tool for the job: Playwright for modern SPAs and fast CI feedback; Selenium for cross-browser legacy grid setups.',
   },
 
   // 11. Pre-Signup FAQ: Will AI Replace QA Jobs?
@@ -536,7 +624,8 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     category: 'career-faq',
     keywords: ['replace qa', 'will ai replace manual testers', 'future of qa', 'ai taking qa jobs'],
     question: 'Will Artificial Intelligence replace QA Engineers and manual testers?',
-    shortAnswer: 'AI will not replace QA engineers, but QA engineers who harness AI will replace those who do not. AI automates repetitive boilerplate, generates boundary test data, and triages logs, freeing QA professionals to focus on exploratory testing, architecture, security, and testing AI systems themselves.',
+    shortAnswer:
+      'AI will not replace QA engineers, but QA engineers who harness AI will replace those who do not. AI automates repetitive boilerplate, generates boundary test data, and triages logs, freeing QA professionals to focus on exploratory testing, architecture, security, and testing AI systems themselves.',
     detailedAnswer: `### What AI Does Exceptionally Well:
 - Drafting 50 initial positive/negative test cases in 10 seconds.
 - Scaffolding Page Object Model classes from HTML snippets.
@@ -550,13 +639,14 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
 - **Testing AI Systems Themselves**: Evaluating whether LLMs are hallucinating, leaking PII, or vulnerable to injection attacks.`,
     bestPractices: [
       'Learn how to direct AI tools like agents, copilots, and test synthesizers',
-      'Position yourself as an AI-Augmented SDET rather than a mechanical button clicker'
+      'Position yourself as an AI-Augmented SDET rather than a mechanical button clicker',
     ],
     antiPatterns: [
       'Resisting AI tools out of fear or ignoring generative AI prompts',
-      'Blindly trusting AI-generated code without architectural review'
+      'Blindly trusting AI-generated code without architectural review',
     ],
-    interviewTips: 'Emphasize your ability to lead AI-driven quality engineering: refining requirements with AI, generating automated test matrices, and running automated security tests against LLM features.'
+    interviewTips:
+      'Emphasize your ability to lead AI-driven quality engineering: refining requirements with AI, generating automated test matrices, and running automated security tests against LLM features.',
   },
 
   // 12. FAQ: Timeline & Study Plan to become an SDET
@@ -564,9 +654,20 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-timeline-study-plan',
     topic: 'How long does it take to switch from Manual QA to an SDET?',
     category: 'career-faq',
-    keywords: ['how long', 'timeline', 'how many months', 'duration', 'study plan', 'roadmap', 'schedule', 'timeframe', 'how fast'],
+    keywords: [
+      'how long',
+      'timeline',
+      'how many months',
+      'duration',
+      'study plan',
+      'roadmap',
+      'schedule',
+      'timeframe',
+      'how fast',
+    ],
     question: 'How long does it take to switch from Manual QA to an SDET?',
-    shortAnswer: 'With 45–60 minutes of focused daily hands-on practice, transitioning from Manual QA to an SDET takes 12 to 16 weeks (3–4 months).',
+    shortAnswer:
+      'With 45–60 minutes of focused daily hands-on practice, transitioning from Manual QA to an SDET takes 12 to 16 weeks (3–4 months).',
     detailedAnswer: `### The 12-Week Scratch-to-SDET Roadmap:
 - **Weeks 1–4**: Programming fundamentals (TypeScript or Java) + DOM inspection + CSS/Role locators.
 - **Weeks 5–8**: Core test automation (Playwright/Selenium), web-first assertions, and Page Object Model (POM).
@@ -574,13 +675,14 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
 - **Weeks 11–12**: GitHub Actions CI/CD pipelines, parallel test execution, and interview grill prep.`,
     bestPractices: [
       'Dedicate 45 minutes every day rather than cramming 6 hours on Sunday',
-      'Write real code in the sandbox rather than just watching video tutorials'
+      'Write real code in the sandbox rather than just watching video tutorials',
     ],
     antiPatterns: [
       'Trying to learn 3 programming languages at once',
-      'Spending months on theoretical OOPs without writing test scripts'
+      'Spending months on theoretical OOPs without writing test scripts',
     ],
-    interviewTips: 'Interviewers look for practical automation problem-solving, not theoretical memorization.'
+    interviewTips:
+      'Interviewers look for practical automation problem-solving, not theoretical memorization.',
   },
 
   // 13. FAQ: Which Language to Pick First
@@ -588,22 +690,32 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-which-language-to-pick',
     topic: 'Which programming language should a manual tester learn first?',
     category: 'career-faq',
-    keywords: ['which language', 'python vs java', 'typescript vs python', 'python vs javascript', 'best language for qa', 'what language to learn'],
-    question: 'Which programming language should a manual tester learn first? Python vs TypeScript vs Java',
-    shortAnswer: 'For 2026, **TypeScript with Playwright** is the top recommendation for manual testers. It offers the fastest learning curve, zero-config browser binaries, and highest modern startup demand. Choose **Java** if your target employers are enterprise banks with existing TestNG/Selenium suites, or **Python** if your team uses Pytest or AI/ML pipelines.',
+    keywords: [
+      'which language',
+      'python vs java',
+      'typescript vs python',
+      'python vs javascript',
+      'best language for qa',
+      'what language to learn',
+    ],
+    question:
+      'Which programming language should a manual tester learn first? Python vs TypeScript vs Java',
+    shortAnswer:
+      'For 2026, **TypeScript with Playwright** is the top recommendation for manual testers. It offers the fastest learning curve, zero-config browser binaries, and highest modern startup demand. Choose **Java** if your target employers are enterprise banks with existing TestNG/Selenium suites, or **Python** if your team uses Pytest or AI/ML pipelines.',
     detailedAnswer: `### Language Comparison for QA:
 - **TypeScript (Recommended #1)**: Used with Playwright. Fast, clean syntax, auto-completion in VS Code, and dominates modern web engineering.
 - **Java**: Massive enterprise banking installed base. High job volume, but requires verbose OOPs boilerplate.
 - **Python**: Great readability, but fewer enterprise web automation openings compared to Playwright TS and Java Selenium in corporate markets.`,
     bestPractices: [
       'Pick ONE language and stick with it until you can build a framework from scratch',
-      'Master variables, async/await, arrays, and functions before diving into complex design patterns'
+      'Master variables, async/await, arrays, and functions before diving into complex design patterns',
     ],
     antiPatterns: [
       'Switching between Java and Python every two weeks',
-      'Believing you need to be a full-stack developer to write automation'
+      'Believing you need to be a full-stack developer to write automation',
     ],
-    interviewTips: 'Companies care that you can write clean, resilient test scripts in at least one modern language.'
+    interviewTips:
+      'Companies care that you can write clean, resilient test scripts in at least one modern language.',
   },
 
   // 14. FAQ: Cypress vs Playwright in 2026
@@ -613,7 +725,8 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     category: 'career-faq',
     keywords: ['cypress', 'cypress vs playwright', 'playwright vs cypress', 'is cypress dead'],
     question: 'Cypress vs Playwright in 2026: Why are teams migrating to Playwright?',
-    shortAnswer: 'Playwright has become the industry standard over Cypress due to native multi-tab/multi-window support, open Shadow DOM and iframe piercing, fast WebSocket CDP architecture, built-in API testing, and zero paid dashboard paywalls.',
+    shortAnswer:
+      'Playwright has become the industry standard over Cypress due to native multi-tab/multi-window support, open Shadow DOM and iframe piercing, fast WebSocket CDP architecture, built-in API testing, and zero paid dashboard paywalls.',
     detailedAnswer: `### Key Advantages of Playwright:
 1. **Multi-Tab & Window Support**: Cypress cannot natively handle multiple browser tabs; Playwright handles them seamlessly.
 2. **Speed & Parallel Execution**: Playwright executes workers across independent browser contexts in parallel with zero test cross-contamination.
@@ -621,12 +734,13 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
 4. **All Browsers**: Native Chromium, Firefox, and WebKit (Safari engine) on Linux, Mac, and Windows.`,
     bestPractices: [
       'Start greenfield automation projects with Playwright',
-      'Use Playwright built-in request fixtures for hybrid API + UI tests'
+      'Use Playwright built-in request fixtures for hybrid API + UI tests',
     ],
     antiPatterns: [
-      'Relying on Cypress plugins for basic browser capabilities like multi-domain or tab testing'
+      'Relying on Cypress plugins for basic browser capabilities like multi-domain or tab testing',
     ],
-    interviewTips: 'In interviews, cite Playwright multi-context isolation and Trace Viewer as major architectural advantages.'
+    interviewTips:
+      'In interviews, cite Playwright multi-context isolation and Trace Viewer as major architectural advantages.',
   },
 
   // 15. FAQ: LeetCode & DSA for QA
@@ -634,9 +748,19 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-leetcode-dsa-qa',
     topic: 'Do I need LeetCode / DSA algorithms for SDET interviews?',
     category: 'career-faq',
-    keywords: ['leetcode', 'dsa', 'data structures', 'algorithms', 'coding round', 'hard coding', 'do i need leetcode'],
-    question: 'Do I need to solve complex LeetCode / Data Structures & Algorithms for SDET interviews?',
-    shortAnswer: 'No! 95% of SDET interviews do NOT ask Hard/Medium LeetCode questions (like dynamic programming, binary trees, or graphs). Instead, they test: 1) String manipulation (palindrome, reverse string, character counts); 2) Array filtering and hash maps; and 3) Practical automation challenges like scraping dynamic tables or writing a Page Object.',
+    keywords: [
+      'leetcode',
+      'dsa',
+      'data structures',
+      'algorithms',
+      'coding round',
+      'hard coding',
+      'do i need leetcode',
+    ],
+    question:
+      'Do I need to solve complex LeetCode / Data Structures & Algorithms for SDET interviews?',
+    shortAnswer:
+      'No! 95% of SDET interviews do NOT ask Hard/Medium LeetCode questions (like dynamic programming, binary trees, or graphs). Instead, they test: 1) String manipulation (palindrome, reverse string, character counts); 2) Array filtering and hash maps; and 3) Practical automation challenges like scraping dynamic tables or writing a Page Object.',
     detailedAnswer: `### What SDET Coding Rounds Actually Test:
 1. **String Manipulation**: Reverse string while preserving spaces, count character frequencies, check anagrams.
 2. **Collections & HashMaps**: Find duplicates in an array, group elements, two-sum problem.
@@ -644,13 +768,14 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
 4. **Framework Architecture**: Explain POM, how you manage test data, and how you eliminate flakiness.`,
     bestPractices: [
       'Practice 15–20 common string and array problems instead of hundreds of LeetCode hards',
-      'Focus on clean, readable code with descriptive variable names rather than hyper-optimized one-liners'
+      'Focus on clean, readable code with descriptive variable names rather than hyper-optimized one-liners',
     ],
     antiPatterns: [
       'Spending 6 months grinding binary search trees while neglecting framework design and locators',
-      'Panicking over algorithmic math that is never used in real QA automation'
+      'Panicking over algorithmic math that is never used in real QA automation',
     ],
-    interviewTips: 'Always talk through your approach out loud: "I will use a HashMap here with O(N) time complexity to store character frequencies."'
+    interviewTips:
+      'Always talk through your approach out loud: "I will use a HashMap here with O(N) time complexity to store character frequencies."',
   },
 
   // 16. FAQ: Manual QA vs SDET Difference
@@ -658,21 +783,30 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-sdet-vs-qa-difference',
     topic: 'What is the exact difference between a Manual QA and an SDET?',
     category: 'career-faq',
-    keywords: ['difference', 'sdet vs qa', 'qa vs sdet', 'what is an sdet', 'role difference', 'sdet responsibilities'],
+    keywords: [
+      'difference',
+      'sdet vs qa',
+      'qa vs sdet',
+      'what is an sdet',
+      'role difference',
+      'sdet responsibilities',
+    ],
     question: 'What is the exact difference between a Manual QA Engineer and an SDET?',
-    shortAnswer: 'A Manual QA verifies software through the browser/app UI as an end user. An SDET (Software Development Engineer in Test) is a software engineer who writes code to test code—designing scalable automation frameworks, API contract suites, CI/CD gates, and AI-driven quality tools.',
+    shortAnswer:
+      'A Manual QA verifies software through the browser/app UI as an end user. An SDET (Software Development Engineer in Test) is a software engineer who writes code to test code—designing scalable automation frameworks, API contract suites, CI/CD gates, and AI-driven quality tools.',
     detailedAnswer: `### Core Differences:
 - **Manual QA**: Focuses on manual exploratory testing, writing Jira test cases, verifying acceptance criteria, and reporting bugs.
 - **Automation Engineer**: Automates manual test cases into scripts (often using existing frameworks).
 - **SDET**: Builds the test automation framework from scratch, sets up Dockerized CI/CD test runners, conducts API and performance verification, and leads quality architecture.`,
     bestPractices: [
       'Transition from writing test steps to writing modular automation code',
-      'Leverage your manual domain acumen: you know *what* to test, now learn *how code tests it*'
+      'Leverage your manual domain acumen: you know *what* to test, now learn *how code tests it*',
     ],
     antiPatterns: [
-      'Viewing manual QA as inferior: domain intuition is essential to designing meaningful automated tests'
+      'Viewing manual QA as inferior: domain intuition is essential to designing meaningful automated tests',
     ],
-    interviewTips: 'Emphasize that an SDET prevents defects from reaching production through automated shift-left testing rather than catching them at the end.'
+    interviewTips:
+      'Emphasize that an SDET prevents defects from reaching production through automated shift-left testing rather than catching them at the end.',
   },
 
   // 17. FAQ: Salary Expectations
@@ -680,20 +814,30 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-salary-expectations',
     topic: 'What salary increase can a manual tester expect when becoming an SDET?',
     category: 'career-faq',
-    keywords: ['salary', 'pay', 'compensation', 'hike', 'package', 'how much money', 'earning potential'],
+    keywords: [
+      'salary',
+      'pay',
+      'compensation',
+      'hike',
+      'package',
+      'how much money',
+      'earning potential',
+    ],
     question: 'What salary increase can a manual tester expect when switching to an SDET role?',
-    shortAnswer: 'Switching from Manual QA to an SDET role typically delivers a 50% to 100%+ salary increase. In the US, Manual QA compensation averages $65k–$85k, while SDET roles command $115k–$165k+. In India, Manual QA packages of 4–8 LPA jump to 12–25+ LPA for skilled SDETs mastering Playwright and API testing.',
+    shortAnswer:
+      'Switching from Manual QA to an SDET role typically delivers a 50% to 100%+ salary increase. In the US, Manual QA compensation averages $65k–$85k, while SDET roles command $115k–$165k+. In India, Manual QA packages of 4–8 LPA jump to 12–25+ LPA for skilled SDETs mastering Playwright and API testing.',
     detailedAnswer: `### Why the Compensation Premium is High:
 1. **Scarcity of True SDETs**: Many candidates know only basic record-and-playback or shallow Selenium scripts. True SDETs who understand framework design and CI/CD are in high demand.
 2. **Engineering Parity**: SDETs are compensated on the same engineering salary bands as Software Development Engineers (SDEs) at top tier tech firms.`,
     bestPractices: [
       'Showcase framework architecture and CI/CD pipelines in your portfolio to target top-of-band offers',
-      'Negotiate based on the cost savings of automated regression suites'
+      'Negotiate based on the cost savings of automated regression suites',
     ],
     antiPatterns: [
-      'Under-selling your manual experience: combined manual domain intuition + automation is rare and valuable'
+      'Under-selling your manual experience: combined manual domain intuition + automation is rare and valuable',
     ],
-    interviewTips: 'Highlight how your automation reduced regression execution time from 3 days to 20 minutes in CI.'
+    interviewTips:
+      'Highlight how your automation reduced regression execution time from 3 days to 20 minutes in CI.',
   },
 
   // 18. FAQ: API Testing vs UI Testing
@@ -701,21 +845,29 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-api-vs-ui-testing',
     topic: 'What is API testing and why is it so important for SDETs?',
     category: 'api',
-    keywords: ['api testing', 'api vs ui', 'why api testing', 'rest api', 'postman to automation', 'microservices'],
-    question: 'What is API testing and why should every manual tester prioritize it over UI testing?',
-    shortAnswer: 'API testing validates backend HTTP endpoints (JSON payloads, status codes, business logic) directly. It is 100x faster than UI testing (milliseconds vs seconds) and has zero DOM flakiness. Modern test pyramids place 70% of automated tests at the API level and only 20–30% at the UI level.',
+    keywords: [
+      'api testing',
+      'api vs ui',
+      'why api testing',
+      'rest api',
+      'postman to automation',
+      'microservices',
+    ],
+    question:
+      'What is API testing and why should every manual tester prioritize it over UI testing?',
+    shortAnswer:
+      'API testing validates backend HTTP endpoints (JSON payloads, status codes, business logic) directly. It is 100x faster than UI testing (milliseconds vs seconds) and has zero DOM flakiness. Modern test pyramids place 70% of automated tests at the API level and only 20–30% at the UI level.',
     detailedAnswer: `### Why API Testing is the SDET Superpower:
 1. **Speed**: An API test takes 20ms; a browser test takes 3000ms. Running 500 API tests takes 10 seconds; 500 UI tests takes 25 minutes.
 2. **Zero Flakiness**: No CSS selector changes, no AJAX spinners, and no click interception.
 3. **Shift Left**: You can test backend APIs before the frontend UI is even designed.`,
     bestPractices: [
       'Use Postman for exploratory API discovery, then automate using REST Assured (Java) or Playwright API (TypeScript)',
-      'Seed test data via API requests before launching UI browser tests'
+      'Seed test data via API requests before launching UI browser tests',
     ],
-    antiPatterns: [
-      'Testing every business rule through the browser UI login form'
-    ],
-    interviewTips: 'Cite the Hybrid Testing pattern: create test data via API POST in 50ms, then verify its rendering on the UI in 1 test.'
+    antiPatterns: ['Testing every business rule through the browser UI login form'],
+    interviewTips:
+      'Cite the Hybrid Testing pattern: create test data via API POST in 50ms, then verify its rendering on the UI in 1 test.',
   },
 
   // 19. FAQ: Resume and Portfolio without Automation Experience
@@ -723,22 +875,33 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-resume-portfolio',
     topic: 'How do I build an SDET portfolio and resume without prior automation experience?',
     category: 'career-faq',
-    keywords: ['resume', 'portfolio', 'cv', 'experience', 'no experience', 'how to show experience', 'github project'],
-    question: 'How do I build an SDET resume and portfolio if I only have manual testing on my job title?',
-    shortAnswer: 'Show, don’t tell: 1) Build an open-source GitHub repository with a complete Playwright or Selenium Page Object Model framework; 2) Add a GitHub Actions CI badge showing tests passing on every pull request; 3) Frame your current role as "QA Engineer (Manual & Automated)" highlighting internal scripts or API collections you built.',
+    keywords: [
+      'resume',
+      'portfolio',
+      'cv',
+      'experience',
+      'no experience',
+      'how to show experience',
+      'github project',
+    ],
+    question:
+      'How do I build an SDET resume and portfolio if I only have manual testing on my job title?',
+    shortAnswer:
+      'Show, don’t tell: 1) Build an open-source GitHub repository with a complete Playwright or Selenium Page Object Model framework; 2) Add a GitHub Actions CI badge showing tests passing on every pull request; 3) Frame your current role as "QA Engineer (Manual & Automated)" highlighting internal scripts or API collections you built.',
     detailedAnswer: `### The 3 High-Impact Portfolio Assets:
 1. **Production-Ready Framework Repo**: A clean GitHub repo containing POM, custom fixtures, cross-browser config, and HTML reports.
 2. **CI/CD Pipeline Badge**: A green "Passing" build badge from GitHub Actions demonstrating you understand continuous delivery.
 3. **Quantifiable Resume Bullet Points**: e.g., "Automated 80+ critical path smoke and regression tests using Playwright & TypeScript, reducing release verification time from 4 hours to 12 minutes."`,
     bestPractices: [
       'Include your GitHub repository link at the top of your resume and LinkedIn profile',
-      'Write a comprehensive README with architecture diagrams and instructions on running tests'
+      'Write a comprehensive README with architecture diagrams and instructions on running tests',
     ],
     antiPatterns: [
       'Listing 20 technologies on your resume if you have never written code in them',
-      'Forking someone else\'s tutorial repo without understanding the code'
+      "Forking someone else's tutorial repo without understanding the code",
     ],
-    interviewTips: 'Offer to walk the interviewer through your GitHub framework repository on a shared screen.'
+    interviewTips:
+      'Offer to walk the interviewer through your GitHub framework repository on a shared screen.',
   },
 
   // 20. FAQ: CI/CD & GitHub Actions for QA
@@ -746,21 +909,31 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'faq-cicd-github-actions',
     topic: 'What is CI/CD and why do interviewers ask about GitHub Actions or Jenkins?',
     category: 'framework',
-    keywords: ['ci/cd', 'cicd', 'github actions', 'jenkins', 'pipeline', 'continuous integration', 'docker'],
+    keywords: [
+      'ci/cd',
+      'cicd',
+      'github actions',
+      'jenkins',
+      'pipeline',
+      'continuous integration',
+      'docker',
+    ],
     question: 'What is CI/CD and why do QA interviewers ask about GitHub Actions or Jenkins?',
-    shortAnswer: 'CI/CD (Continuous Integration / Continuous Deployment) automatically executes your automated tests on every code pull request or scheduled nightly build. Interviewers ask about it to verify that your tests can run autonomously in headless cloud environments (without human intervention) to guard production releases.',
+    shortAnswer:
+      'CI/CD (Continuous Integration / Continuous Deployment) automatically executes your automated tests on every code pull request or scheduled nightly build. Interviewers ask about it to verify that your tests can run autonomously in headless cloud environments (without human intervention) to guard production releases.',
     detailedAnswer: `### The QA CI/CD Lifecycle:
 1. Developer pushes code to a feature branch.
 2. GitHub Actions spins up an Ubuntu runner, installs browsers, and executes \`npx playwright test\`.
 3. If all tests pass, the PR can be merged; if any test fails, deployment is blocked and Trace Viewer artifacts are uploaded automatically.`,
     bestPractices: [
       'Configure test sharding across multiple parallel machines to keep CI runs under 10 minutes',
-      'Upload HTML reports and Trace Viewer zip files as CI workflow artifacts on failure'
+      'Upload HTML reports and Trace Viewer zip files as CI workflow artifacts on failure',
     ],
     antiPatterns: [
-      'Writing tests that only run on your local machine and fail in headless Linux containers'
+      'Writing tests that only run on your local machine and fail in headless Linux containers',
     ],
-    interviewTips: 'Explain how you set retries to 1 in CI (retries: process.env.CI ? 1 : 0) and use sharding to scale parallel workers.'
+    interviewTips:
+      'Explain how you set retries to 1 in CI (retries: process.env.CI ? 1 : 0) and use sharding to scale parallel workers.',
   },
 
   // 21. ThreadLocal WebDriver Parallel Execution
@@ -768,9 +941,18 @@ With 45-60 minutes of daily hands-on practice, most manual QA professionals tran
     id: 'threadlocal-webdriver',
     topic: 'ThreadLocal WebDriver for Parallel TestNG Execution',
     category: 'selenium',
-    keywords: ['threadlocal', 'parallel execution', 'testng parallel', 'threadlocal webdriver', 'concurrency', 'multithreading', 'driver factory'],
+    keywords: [
+      'threadlocal',
+      'parallel execution',
+      'testng parallel',
+      'threadlocal webdriver',
+      'concurrency',
+      'multithreading',
+      'driver factory',
+    ],
     question: 'How do you configure ThreadLocal WebDriver for parallel execution in TestNG?',
-    shortAnswer: 'To run Selenium tests in parallel without driver instance collisions, wrap the WebDriver instance inside a java.lang.ThreadLocal container. Each worker thread receives its own isolated browser session, preventing race conditions, state bleed, and session hijacking.',
+    shortAnswer:
+      'To run Selenium tests in parallel without driver instance collisions, wrap the WebDriver instance inside a java.lang.ThreadLocal container. Each worker thread receives its own isolated browser session, preventing race conditions, state bleed, and session hijacking.',
     detailedAnswer: `### ThreadLocal Driver Architecture:
 In multi-threaded execution (e.g. TestNG parallel="methods" thread-count="4"), a static \`WebDriver driver\` reference is shared across threads, causing tests to hijack each other's browser windows. Wrapping it in \`ThreadLocal<WebDriver>\` creates an isolated memory slot per OS thread.
 
@@ -800,18 +982,19 @@ In multi-threaded execution (e.g. TestNG parallel="methods" thread-count="4"), a
             tlDriver.remove(); // Essential: prevents memory leaks in thread pools
         }
     }
-}`
+}`,
     },
     bestPractices: [
       'Always invoke tlDriver.remove() in @AfterMethod to avoid memory leaks in reusable worker threads',
       'Never declare WebDriver as a shared public static variable across test classes',
-      'Set parallel="methods" and thread-count="4" in testng.xml for thread-safe test execution'
+      'Set parallel="methods" and thread-count="4" in testng.xml for thread-safe test execution',
     ],
     antiPatterns: [
       'Using a static non-ThreadLocal WebDriver in parallel execution runs',
-      'Calling tlDriver.get().quit() without calling tlDriver.remove()'
+      'Calling tlDriver.get().quit() without calling tlDriver.remove()',
     ],
-    interviewTips: 'Highlighting tlDriver.remove() to avoid thread pool memory leaks immediately distinguishes senior SDETs from junior automation testers in technical interviews.'
+    interviewTips:
+      'Highlighting tlDriver.remove() to avoid thread pool memory leaks immediately distinguishes senior SDETs from junior automation testers in technical interviews.',
   },
 
   // 22. Playwright iFrames and FrameLocator
@@ -821,7 +1004,8 @@ In multi-threaded execution (e.g. TestNG parallel="methods" thread-count="4"), a
     category: 'playwright',
     keywords: ['iframe', 'frame', 'framelocator', 'nested iframe', 'frameset', 'switchto frame'],
     question: 'How do you handle iframes and nested frames in Playwright vs Selenium?',
-    shortAnswer: 'In Playwright, use page.frameLocator(selector) to target elements inside an iframe directly without manual context switching. Unlike Selenium which requires driver.switchTo().frame() and driver.switchTo().defaultContent(), Playwright frame locators compose naturally, auto-wait, and never require switching back.',
+    shortAnswer:
+      'In Playwright, use page.frameLocator(selector) to target elements inside an iframe directly without manual context switching. Unlike Selenium which requires driver.switchTo().frame() and driver.switchTo().defaultContent(), Playwright frame locators compose naturally, auto-wait, and never require switching back.',
     detailedAnswer: `### Playwright vs Selenium Frame Architecture
 In Selenium:
 Testers must manually call \`driver.switchTo().frame("frameName")\`, interact with the element, and remember to call \`driver.switchTo().defaultContent()\`. Forgetting to switch back is the #1 cause of NoSuchElementException in subsequent steps.
@@ -841,18 +1025,19 @@ await nestedInput.fill('Secure Data');`,
 driver.switchTo().frame("payment-frame");
 driver.findElement(By.id("cardNumber")).sendKeys("424242424242");
 driver.findElement(By.id("payBtn")).click();
-driver.switchTo().defaultContent(); // Required, or subsequent actions fail!`
+driver.switchTo().defaultContent(); // Required, or subsequent actions fail!`,
     },
     bestPractices: [
       'Use frameLocator with role or id locators for stable frame access',
       'Chain frameLocator calls for nested iframes without context-switching boilerplate',
-      'Never use manual sleeps to wait for iframe loads—Playwright auto-waits for frame readiness'
+      'Never use manual sleeps to wait for iframe loads—Playwright auto-waits for frame readiness',
     ],
     antiPatterns: [
       'Switching context manually in Playwright (not needed)',
-      'Forgetting driver.switchTo().defaultContent() in Selenium'
+      'Forgetting driver.switchTo().defaultContent() in Selenium',
     ],
-    interviewTips: 'Emphasize that Playwright frameLocator is lazy and auto-waits for the frame to attach, eliminating iframe race conditions.'
+    interviewTips:
+      'Emphasize that Playwright frameLocator is lazy and auto-waits for the frame to attach, eliminating iframe race conditions.',
   },
 
   // 23. Selenium driver.close() vs driver.quit()
@@ -860,9 +1045,17 @@ driver.switchTo().defaultContent(); // Required, or subsequent actions fail!`
     id: 'driver-close-vs-quit',
     topic: 'driver.close() vs driver.quit() & Session Management',
     category: 'selenium',
-    keywords: ['close vs quit', 'driver.close', 'driver.quit', 'nosuchsessionexception', 'session id is null', 'close vs quit difference'],
+    keywords: [
+      'close vs quit',
+      'driver.close',
+      'driver.quit',
+      'nosuchsessionexception',
+      'session id is null',
+      'close vs quit difference',
+    ],
     question: 'What is the exact difference between driver.close() and driver.quit() in Selenium?',
-    shortAnswer: 'driver.close() closes only the currently focused browser window or tab, leaving the WebDriver session and driver executable active. driver.quit() terminates all open browser windows, stops the WebDriver executable process (e.g. chromedriver), and destroys the session ID (setting it to null).',
+    shortAnswer:
+      'driver.close() closes only the currently focused browser window or tab, leaving the WebDriver session and driver executable active. driver.quit() terminates all open browser windows, stops the WebDriver executable process (e.g. chromedriver), and destroys the session ID (setting it to null).',
     detailedAnswer: `### Technical Breakdown:
 • \`driver.close()\`: Sends DELETE /session/{id}/window. If 3 tabs are open, only the active tab closes. If the last window closes, the driver process may linger.
 • \`driver.quit()\`: Sends DELETE /session/{id}. Kills the browser daemon process, clears temporary user profile directories, and invalidates the session ID. Any subsequent driver call throws \`NoSuchSessionException: Session ID is null\`.`,
@@ -883,18 +1076,19 @@ public void tearDown() {
     if (driver != null) {
         driver.quit(); // Shuts down chromedriver process & session
     }
-}`
+}`,
     },
     bestPractices: [
       'Always call driver.quit() in @AfterMethod or @AfterClass inside a try-finally block',
       'Use driver.close() only when cleaning up secondary popups/tabs during a multi-window test',
-      'Never attempt to call driver methods after driver.quit() without re-initializing'
+      'Never attempt to call driver methods after driver.quit() without re-initializing',
     ],
     antiPatterns: [
       'Calling driver.close() at the end of a test suite instead of driver.quit(), causing orphaned zombie chromedriver processes on CI agents',
-      'Calling driver.findElement() after driver.quit() has been invoked'
+      'Calling driver.findElement() after driver.quit() has been invoked',
     ],
-    interviewTips: 'Mentioning that failing to call driver.quit() creates zombie chromedriver processes that eat RAM on CI/CD agents proves hands-on production infrastructure experience.'
+    interviewTips:
+      'Mentioning that failing to call driver.quit() creates zombie chromedriver processes that eat RAM on CI/CD agents proves hands-on production infrastructure experience.',
   },
 
   // 24. Dynamic Web Tables and XPath Axes
@@ -902,9 +1096,19 @@ public void tearDown() {
     id: 'dynamic-web-tables-xpath',
     topic: 'Dynamic Web Tables & Advanced XPath Axes',
     category: 'selenium',
-    keywords: ['web table', 'dynamic table', 'table', 'xpath axes', 'following-sibling', 'ancestor', 'preceding-sibling', 'dynamic xpath'],
+    keywords: [
+      'web table',
+      'dynamic table',
+      'table',
+      'xpath axes',
+      'following-sibling',
+      'ancestor',
+      'preceding-sibling',
+      'dynamic xpath',
+    ],
     question: 'How do you automate dynamic web tables with XPath axes in Selenium and Playwright?',
-    shortAnswer: 'In dynamic web tables where rows reorder or paginate, locate a unique anchor text cell (e.g. Customer Email or Order ID) and traverse relative to it using XPath axes (following-sibling::, parent::, ancestor::) in Selenium, or row-scoped locators (page.getByRole("row")) in Playwright.',
+    shortAnswer:
+      'In dynamic web tables where rows reorder or paginate, locate a unique anchor text cell (e.g. Customer Email or Order ID) and traverse relative to it using XPath axes (following-sibling::, parent::, ancestor::) in Selenium, or row-scoped locators (page.getByRole("row")) in Playwright.',
     detailedAnswer: `### Dealing with Dynamic Web Tables:
 Hardcoding row indices (\`//table//tr[3]/td[4]\`) causes brittle failures when sorting, filtering, or new rows shift order.
 
@@ -925,18 +1129,19 @@ deleteBtn.click();`,
       playwright: `// Playwright: User-centric row scoping without raw XPath
 const orderRow = page.getByRole('row', { name: /ORD-987/ });
 await orderRow.getByRole('button', { name: 'Delete' }).click();
-await expect(orderRow).toHaveCount(0); // Verify row deleted`
+await expect(orderRow).toHaveCount(0); // Verify row deleted`,
     },
     bestPractices: [
       'Anchor to unique, stable business identifiers (Order ID, Email, SKU) rather than row numbers',
       'Use Playwright getByRole("row", { name: ... }) for clean accessible table queries',
-      'Use following-sibling:: and ancestor:: when working with legacy Selenium DOM structures'
+      'Use following-sibling:: and ancestor:: when working with legacy Selenium DOM structures',
     ],
     antiPatterns: [
       'Using hardcoded absolute XPaths like /html/body/div[2]/table/tbody/tr[4]/td[2]',
-      'Iterating through all rows in a loop when a single relative XPath can target the row directly'
+      'Iterating through all rows in a loop when a single relative XPath can target the row directly',
     ],
-    interviewTips: 'Interviewers ask web table questions to test whether you write brittle indexed XPaths or robust relative relational locators using XPath axes.'
+    interviewTips:
+      'Interviewers ask web table questions to test whether you write brittle indexed XPaths or robust relative relational locators using XPath axes.',
   },
 
   // 25. File Upload Automation in Playwright and Selenium
@@ -944,9 +1149,17 @@ await expect(orderRow).toHaveCount(0); // Verify row deleted`
     id: 'file-upload-automation',
     topic: 'File Upload Automation (Playwright & Selenium)',
     category: 'playwright',
-    keywords: ['file upload', 'upload file', 'setinputfiles', 'sendkeys upload', 'filechooser', 'upload test'],
+    keywords: [
+      'file upload',
+      'upload file',
+      'setinputfiles',
+      'sendkeys upload',
+      'filechooser',
+      'upload test',
+    ],
     question: 'How do you automate file uploads in Playwright and Selenium?',
-    shortAnswer: 'In Playwright, use locator.setInputFiles("path/to/file.pdf") or handle custom modal pickers with page.waitForEvent("filechooser"). In Selenium, pass the absolute file path directly using element.sendKeys(file.getAbsolutePath()) to the <input type="file"> element without clicking the button.',
+    shortAnswer:
+      'In Playwright, use locator.setInputFiles("path/to/file.pdf") or handle custom modal pickers with page.waitForEvent("filechooser"). In Selenium, pass the absolute file path directly using element.sendKeys(file.getAbsolutePath()) to the <input type="file"> element without clicking the button.',
     detailedAnswer: `### The Golden Rule of File Upload Automation:
 Never click the "Upload" button if clicking it opens the native OS file explorer dialog (Windows Explorer / macOS Finder), because Selenium and Playwright cannot control native OS desktop windows!
 
@@ -967,18 +1180,19 @@ await fileChooser.setFiles('fixtures/sample.pdf');`,
       selenium: `// Selenium: Send absolute file path directly to input[type='file']
 File uploadFile = new File("src/test/resources/sample.pdf");
 WebElement fileInput = driver.findElement(By.cssSelector("input[type='file']"));
-fileInput.sendKeys(uploadFile.getAbsolutePath());`
+fileInput.sendKeys(uploadFile.getAbsolutePath());`,
     },
     bestPractices: [
       'Always pass absolute file paths to avoid working-directory discrepancies in CI/CD containers',
       'Target input[type="file"] directly to bypass native OS file picker dialogs',
-      'Use Playwright waitForEvent("filechooser") for modern custom UI upload widgets'
+      'Use Playwright waitForEvent("filechooser") for modern custom UI upload widgets',
     ],
     antiPatterns: [
       'Clicking a file upload button and trying to use Robot class or AutoIT to interact with OS dialogs',
-      'Using hardcoded local Windows paths like C:\\Users\\Name\\Desktop in cross-platform test suites'
+      'Using hardcoded local Windows paths like C:\\Users\\Name\\Desktop in cross-platform test suites',
     ],
-    interviewTips: 'Emphasize that targeting the file input directly avoids fragile OS-dependent tools like AutoIT or Java Robot class, keeping test runs 100% cloud & container compatible.'
+    interviewTips:
+      'Emphasize that targeting the file input directly avoids fragile OS-dependent tools like AutoIT or Java Robot class, keeping test runs 100% cloud & container compatible.',
   },
 
   // 26. REST Assured Bearer Token & OAuth2 Authentication
@@ -986,9 +1200,18 @@ fileInput.sendKeys(uploadFile.getAbsolutePath());`
     id: 'rest-assured-bearer-auth',
     topic: 'REST Assured Bearer Token & OAuth2 Authentication',
     category: 'api',
-    keywords: ['bearer token', 'oauth2', 'jwt', 'authorization header', 'requestspecbuilder', 'api auth', 'rest assured token'],
+    keywords: [
+      'bearer token',
+      'oauth2',
+      'jwt',
+      'authorization header',
+      'requestspecbuilder',
+      'api auth',
+      'rest assured token',
+    ],
     question: 'How do you handle Bearer Token and OAuth2 authentication in REST Assured?',
-    shortAnswer: 'Configure authentication centrally in a reusable RequestSpecification using RequestSpecBuilder.addHeader("Authorization", "Bearer " + token) or given().auth().oauth2(token). Reusing this spec across all test classes ensures tokens are injected consistently without repetitive boilerplate.',
+    shortAnswer:
+      'Configure authentication centrally in a reusable RequestSpecification using RequestSpecBuilder.addHeader("Authorization", "Bearer " + token) or given().auth().oauth2(token). Reusing this spec across all test classes ensures tokens are injected consistently without repetitive boilerplate.',
     detailedAnswer: `### Centralized API Authentication Architecture:
 1. **Token Retrieval**: Obtain a JWT/OAuth2 token in a \`@BeforeClass\` or \`AuthManager\` utility.
 2. **RequestSpecBuilder**: Inject the bearer token into a base specification.
@@ -1021,18 +1244,19 @@ fileInput.sendKeys(uploadFile.getAbsolutePath());`
             .body("status", equalTo("ACTIVE"))
             .body("email", endsWith("@intelligentqa.io"));
     }
-}`
+}`,
     },
     bestPractices: [
       'Encapsulate token generation and refresh logic in a singleton AuthManager class',
       'Use RequestSpecBuilder to enforce common auth headers and base URIs across test suites',
-      'Never log sensitive bearer tokens or passwords in test reporting logs'
+      'Never log sensitive bearer tokens or passwords in test reporting logs',
     ],
     antiPatterns: [
       'Hardcoding JWT tokens with fixed expiration dates directly in test annotations',
-      'Manually repeating given().header("Authorization", "Bearer ...") in every single test method'
+      'Manually repeating given().header("Authorization", "Bearer ...") in every single test method',
     ],
-    interviewTips: 'Explain how RequestSpecBuilder eliminates code duplication and how you cache auth tokens in a singleton to avoid hammering the authentication server before every single test.'
+    interviewTips:
+      'Explain how RequestSpecBuilder eliminates code duplication and how you cache auth tokens in a singleton to avoid hammering the authentication server before every single test.',
   },
 
   // 27. Model Context Protocol (MCP) in QA Automation
@@ -1040,9 +1264,18 @@ fileInput.sendKeys(uploadFile.getAbsolutePath());`
     id: 'mcp-qa-automation',
     topic: 'Model Context Protocol (MCP) in QA Automation',
     category: 'ai-qa',
-    keywords: ['mcp', 'model context protocol', 'ai agents in qa', 'mcp server', 'agentic testing', 'ai test automation'],
-    question: 'What is the Model Context Protocol (MCP) and how does it transform QA test automation?',
-    shortAnswer: 'Model Context Protocol (MCP) is an open standard that connects AI agents securely to local test runners, browser automation tools (Playwright CDP), Jira, and CI/CD logs. Instead of humans copying logs and DOM trees into chat prompts, MCP gives AI agents standardized tools to inspect live DOM states, execute test scripts, triage stack traces, and generate pull requests autonomously.',
+    keywords: [
+      'mcp',
+      'model context protocol',
+      'ai agents in qa',
+      'mcp server',
+      'agentic testing',
+      'ai test automation',
+    ],
+    question:
+      'What is the Model Context Protocol (MCP) and how does it transform QA test automation?',
+    shortAnswer:
+      'Model Context Protocol (MCP) is an open standard that connects AI agents securely to local test runners, browser automation tools (Playwright CDP), Jira, and CI/CD logs. Instead of humans copying logs and DOM trees into chat prompts, MCP gives AI agents standardized tools to inspect live DOM states, execute test scripts, triage stack traces, and generate pull requests autonomously.',
     detailedAnswer: `### The MCP Architecture for SDETs:
 • **Traditional AI**: Prompting an LLM in a web chat requires manually pasting code snippets, DOM trees, and error logs.
 • **Agentic MCP**: The AI agent acts as a client connected to MCP servers:
@@ -1060,18 +1293,19 @@ const locator = page.getByRole('button', { name: 'Confirm Purchase' });
 await locator.click();
 
 // 4. On test failure, agent queries CI MCP server to inspect server logs:
-const failureLogs = await mcpLogging.getPodLogs({ pod: 'checkout-service', since: '5m' });`
+const failureLogs = await mcpLogging.getPodLogs({ pod: 'checkout-service', since: '5m' });`,
     },
     bestPractices: [
       'Always keep a human SDET in the loop to review and approve agent PR submissions',
       'Use MCP accessibility tools (roles, accessible names) rather than fragile CSS selectors',
-      'Run agentic test generation inside secure, isolated sandboxes'
+      'Run agentic test generation inside secure, isolated sandboxes',
     ],
     antiPatterns: [
       'Allowing autonomous AI agents to deploy tests directly to production pipelines without code review',
-      'Feeding uncurated, massive DOM HTML blobs to LLMs instead of token-efficient accessibility trees'
+      'Feeding uncurated, massive DOM HTML blobs to LLMs instead of token-efficient accessibility trees',
     ],
-    interviewTips: 'Explaining how MCP standardizes tool calling for browser drivers, CI logs, and test runners positions you as a forward-thinking, Next-Gen SDET Architect.'
+    interviewTips:
+      'Explaining how MCP standardizes tool calling for browser drivers, CI logs, and test runners positions you as a forward-thinking, Next-Gen SDET Architect.',
   },
 
   // 28. Test Pyramid, Shift-Left Testing & Agile QA Strategy
@@ -1079,9 +1313,20 @@ const failureLogs = await mcpLogging.getPodLogs({ pod: 'checkout-service', since
     id: 'test-pyramid-shift-left',
     topic: 'Test Pyramid, Shift-Left Testing & Agile QA Strategy',
     category: 'framework',
-    keywords: ['test pyramid', 'shift left', 'shift-left', 'agile qa', 'test strategy', 'test plan vs strategy', 'qa process', 'pyramid'],
-    question: 'What is Shift-Left testing and how does the Test Pyramid guide enterprise QA strategy?',
-    shortAnswer: 'Shift-Left testing involves moving testing activities earlier into the software lifecycle (unit tests, contract tests, static code analysis) before code reaches QA environments. The Test Pyramid guides this by recommending 70% Unit tests, 20% API/Integration tests, and 10% End-to-End UI tests, ensuring rapid feedback and minimal maintenance costs.',
+    keywords: [
+      'test pyramid',
+      'shift left',
+      'shift-left',
+      'agile qa',
+      'test strategy',
+      'test plan vs strategy',
+      'qa process',
+      'pyramid',
+    ],
+    question:
+      'What is Shift-Left testing and how does the Test Pyramid guide enterprise QA strategy?',
+    shortAnswer:
+      'Shift-Left testing involves moving testing activities earlier into the software lifecycle (unit tests, contract tests, static code analysis) before code reaches QA environments. The Test Pyramid guides this by recommending 70% Unit tests, 20% API/Integration tests, and 10% End-to-End UI tests, ensuring rapid feedback and minimal maintenance costs.',
     detailedAnswer: `### The Test Pyramid Allocation:
 1. **Unit Layer (~70%)**: Fast (milliseconds), isolated, executed on every developer commit. Catches algorithmic and branch bugs.
 2. **API / Service Layer (~20%)**: Fast (10-50ms), validates schemas, business rules, and microservice contracts without browser rendering overhead.
@@ -1092,13 +1337,14 @@ When teams have 70% UI tests and 10% Unit tests, test suites become slow (hours 
     bestPractices: [
       'Shift-Left by participating in 3 Amigos / Sprint Planning to define Acceptance Criteria and test matrices upfront',
       'Push test verification down to the lowest feasible layer (API over UI, Unit over API)',
-      'Reserve End-to-End browser automation strictly for critical revenue-generating flows (Checkout, Sign In, Onboarding)'
+      'Reserve End-to-End browser automation strictly for critical revenue-generating flows (Checkout, Sign In, Onboarding)',
     ],
     antiPatterns: [
       'Automating every single edge case and validation error via UI browser tests (The Inverted Cone)',
-      'Beginning QA test design only after developers have completely finished coding'
+      'Beginning QA test design only after developers have completely finished coding',
     ],
-    interviewTips: 'Emphasize that high test suite flakiness and slow CI pipelines almost always stem from an inverted test pyramid where teams over-automate through UI browsers instead of API contracts.'
+    interviewTips:
+      'Emphasize that high test suite flakiness and slow CI pipelines almost always stem from an inverted test pyramid where teams over-automate through UI browsers instead of API contracts.',
   },
 
   // 29. Handling Multiple Windows, Tabs, and Popups
@@ -1106,9 +1352,18 @@ When teams have 70% UI tests and 10% Unit tests, test suites become slow (hours 
     id: 'multiple-tabs-popups',
     topic: 'Handling Multiple Windows, Tabs, and Popups',
     category: 'playwright',
-    keywords: ['multiple tabs', 'new tab', 'popup', 'window handle', 'switch window', 'page.waitforevent', 'tabs'],
+    keywords: [
+      'multiple tabs',
+      'new tab',
+      'popup',
+      'window handle',
+      'switch window',
+      'page.waitforevent',
+      'tabs',
+    ],
     question: 'How do you handle multiple browser tabs and popups in Playwright and Selenium?',
-    shortAnswer: 'In Playwright, use context.waitForEvent("page") while triggering the popup action, returning a new Page instance with zero window handle switching. In Selenium, use driver.getWindowHandles(), iterate through the set, and switch using driver.switchTo().window(targetHandle).',
+    shortAnswer:
+      'In Playwright, use context.waitForEvent("page") while triggering the popup action, returning a new Page instance with zero window handle switching. In Selenium, use driver.getWindowHandles(), iterate through the set, and switch using driver.switchTo().window(targetHandle).',
     detailedAnswer: `### Playwright Multi-Page Architecture:
 Playwright treats multiple tabs as separate \`Page\` objects belonging to the same \`BrowserContext\`. You can interact with both tabs simultaneously without switching focus back and forth.
 
@@ -1139,18 +1394,19 @@ for (String windowHandle : driver.getWindowHandles()) {
 // Now on new window:
 System.out.println("Popup title: " + driver.getTitle());
 driver.close(); // Close popup
-driver.switchTo().window(originalWindow); // Switch back to original`
+driver.switchTo().window(originalWindow); // Switch back to original`,
     },
     bestPractices: [
       'In Playwright, use Promise.all with context.waitForEvent("page") to avoid missing the popup open event',
       'In Selenium, always preserve the originalWindow handle so you can switch back reliably',
-      'Close auxiliary popup tabs as soon as their verification is finished to release browser memory'
+      'Close auxiliary popup tabs as soon as their verification is finished to release browser memory',
     ],
     antiPatterns: [
       'In Playwright, calling page.click() and then waiting for event afterwards (race condition: event may have already fired)',
-      'Forgetting to switch back to originalWindow in Selenium'
+      'Forgetting to switch back to originalWindow in Selenium',
     ],
-    interviewTips: 'Highlight that Playwright allows interacting with multiple pages concurrently in the same test without switching focus, whereas Selenium requires explicit thread context switching.'
+    interviewTips:
+      'Highlight that Playwright allows interacting with multiple pages concurrently in the same test without switching focus, whereas Selenium requires explicit thread context switching.',
   },
 
   // 30. Handling Dynamic Dropdowns and Auto-Suggest Inputs
@@ -1158,9 +1414,17 @@ driver.switchTo().window(originalWindow); // Switch back to original`
     id: 'dynamic-dropdowns-suggest',
     topic: 'Dynamic Dropdowns and Auto-Suggest Inputs',
     category: 'playwright',
-    keywords: ['dynamic dropdown', 'auto suggest', 'autocomplete', 'select option', 'dropdown', 'combobox'],
+    keywords: [
+      'dynamic dropdown',
+      'auto suggest',
+      'autocomplete',
+      'select option',
+      'dropdown',
+      'combobox',
+    ],
     question: 'How do you automate dynamic auto-suggest dropdowns in Playwright and Selenium?',
-    shortAnswer: 'For standard HTML <select> tags, use page.selectOption(value) or Selenium new Select(element).selectByVisibleText(). For modern custom SPAs (React/Vue/Angular custom <div> or <ul> dropdowns), type into the input, wait for the suggestion panel to render, and click the item matching your accessible text or role.',
+    shortAnswer:
+      'For standard HTML <select> tags, use page.selectOption(value) or Selenium new Select(element).selectByVisibleText(). For modern custom SPAs (React/Vue/Angular custom <div> or <ul> dropdowns), type into the input, wait for the suggestion panel to render, and click the item matching your accessible text or role.',
     detailedAnswer: `### Two Types of Dropdowns:
 1. **Native HTML \`<select>\` Dropdowns**:
    • Playwright: \`await page.getByLabel('Country').selectOption('IN');\`
@@ -1186,18 +1450,19 @@ WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 WebElement suggestion = wait.until(ExpectedConditions.visibilityOfElementLocated(
     By.xpath("//ul[@role='listbox']//li[contains(text(), 'John F. Kennedy')]")
 ));
-suggestion.click();`
+suggestion.click();`,
     },
     bestPractices: [
       'Check if the element is a native <select> before attempting to use Select class in Selenium',
       'Use Playwright getByRole("option", { name: ... }) for accessible, reliable option selection',
-      'Never use fixed Thread.sleep() while waiting for autocomplete results to populate from backend APIs'
+      'Never use fixed Thread.sleep() while waiting for autocomplete results to populate from backend APIs',
     ],
     antiPatterns: [
       'Trying to use Selenium Select class on custom <div> or <ul> elements (throws UnexpectedTagNameException)',
-      'Clicking before the suggestion panel has finished animating or rendering'
+      'Clicking before the suggestion panel has finished animating or rendering',
     ],
-    interviewTips: 'Distinguishing between native <select> elements and custom SPA <div> dropdowns demonstrates practical frontend test automation experience.'
+    interviewTips:
+      'Distinguishing between native <select> elements and custom SPA <div> dropdowns demonstrates practical frontend test automation experience.',
   },
 
   // 31. Performance & Load Testing with k6 & JMeter
@@ -1205,9 +1470,21 @@ suggestion.click();`
     id: 'performance-k6-jmeter',
     topic: 'Performance & Load Testing with k6 & JMeter',
     category: 'framework',
-    keywords: ['k6', 'jmeter', 'load test', 'performance testing', 'stress testing', 'sla', 'response time', 'p95', 'load testing'],
-    question: 'How do you implement performance and load testing with k6 or JMeter in SDET pipelines?',
-    shortAnswer: 'Modern SDETs write performance tests as code using k6 (JavaScript/TypeScript) or JMeter. k6 runs in the same CI/CD repositories as Playwright, asserting strict non-functional SLAs (such as 95th percentile latency p(95) < 500ms and 0% error rate under load).',
+    keywords: [
+      'k6',
+      'jmeter',
+      'load test',
+      'performance testing',
+      'stress testing',
+      'sla',
+      'response time',
+      'p95',
+      'load testing',
+    ],
+    question:
+      'How do you implement performance and load testing with k6 or JMeter in SDET pipelines?',
+    shortAnswer:
+      'Modern SDETs write performance tests as code using k6 (JavaScript/TypeScript) or JMeter. k6 runs in the same CI/CD repositories as Playwright, asserting strict non-functional SLAs (such as 95th percentile latency p(95) < 500ms and 0% error rate under load).',
     detailedAnswer: `### Why k6 for Modern SDETs:
 1. **Tests as Code**: Written in JavaScript/TypeScript directly in your automation repository alongside Playwright.
 2. **Shift-Left Performance**: Developers and SDETs can run local load tests on feature branches before merging.
@@ -1229,18 +1506,19 @@ export default function () {
   const res = http.get('https://api.intelligentqa.io/api/v1/health');
   check(res, { 'status is 200': (r) => r.status === 200 });
   sleep(1);
-}`
+}`,
     },
     bestPractices: [
       'Define clear Non-Functional Requirements (NFRs) like p(95) latency and error thresholds',
       'Integrate performance smoke tests into CI pull request pipelines to prevent latency regressions',
-      'Test in isolated staging environments with production-like data volumes'
+      'Test in isolated staging environments with production-like data volumes',
     ],
     antiPatterns: [
       'Running full-scale stress tests against production environments without scheduled maintenance windows',
-      'Ignoring 95th and 99th percentile latencies and relying only on average response times'
+      'Ignoring 95th and 99th percentile latencies and relying only on average response times',
     ],
-    interviewTips: 'Emphasize that average response times hide latency spikes; senior SDETs always measure p(95) and p(99) percentiles.'
+    interviewTips:
+      'Emphasize that average response times hide latency spikes; senior SDETs always measure p(95) and p(99) percentiles.',
   },
 
   // 32. Event-Driven & Apache Kafka Stream Testing
@@ -1248,9 +1526,20 @@ export default function () {
     id: 'kafka-stream-testing',
     topic: 'Event-Driven & Apache Kafka Stream Testing',
     category: 'framework',
-    keywords: ['kafka', 'rabbit', 'rabbitmq', 'stream testing', 'event-driven', 'queue', 'pubsub', 'consumer', 'producer'],
+    keywords: [
+      'kafka',
+      'rabbit',
+      'rabbitmq',
+      'stream testing',
+      'event-driven',
+      'queue',
+      'pubsub',
+      'consumer',
+      'producer',
+    ],
     question: 'How do SDETs test event-driven architectures with Apache Kafka or RabbitMQ?',
-    shortAnswer: 'To test event-driven systems using Apache Kafka, SDETs verify: 1) Producer schema compliance (Avro/JSON schemas); 2) Consumer idempotency (handling duplicate messages without duplicate records); and 3) End-to-end asynchronous workflows using polling libraries like Awaitility to assert that publishing an event results in the expected database or downstream queue state.',
+    shortAnswer:
+      'To test event-driven systems using Apache Kafka, SDETs verify: 1) Producer schema compliance (Avro/JSON schemas); 2) Consumer idempotency (handling duplicate messages without duplicate records); and 3) End-to-end asynchronous workflows using polling libraries like Awaitility to assert that publishing an event results in the expected database or downstream queue state.',
     detailedAnswer: `### 3 Core Pillars of Kafka Automation:
 1. **Schema Registry Validation**: Assert that messages conform to strict Avro, Protobuf, or JSON schema definitions.
 2. **Consumer Idempotency**: Intentionally publish identical message keys twice and assert that downstream records are created only once.
@@ -1268,18 +1557,19 @@ Awaitility.await()
         OrderEntity order = orderRepository.findByOrderId(orderId);
         assertNotNull(order);
         assertEquals("PROCESSED", order.getStatus());
-    });`
+    });`,
     },
     bestPractices: [
       'Use Awaitility for dynamic asynchronous polling instead of arbitrary sleeps',
       'Verify consumer idempotency by publishing duplicate events and verifying no double-processing',
-      'Use embedded Kafka (EmbeddedKafkaRule / Testcontainers) in automated CI pipelines'
+      'Use embedded Kafka (EmbeddedKafkaRule / Testcontainers) in automated CI pipelines',
     ],
     antiPatterns: [
       'Inserting Thread.sleep(5000) waiting for asynchronous Kafka consumer processing',
-      'Testing consumers without verifying DLQ (Dead Letter Queue) failure handling'
+      'Testing consumers without verifying DLQ (Dead Letter Queue) failure handling',
     ],
-    interviewTips: 'Explaining consumer idempotency and using Awaitility for asynchronous assertions demonstrates advanced enterprise backend SDET maturity.'
+    interviewTips:
+      'Explaining consumer idempotency and using Awaitility for asynchronous assertions demonstrates advanced enterprise backend SDET maturity.',
   },
 
   // 33. Playwright TypeScript Page Object Model (POM) Framework Template
@@ -1296,10 +1586,12 @@ Awaitility.await()
       'playwright basic template',
       'page object model template',
       'playwright framework',
-      'pom typescript'
+      'pom typescript',
     ],
-    question: 'Can you provide a basic template of Page Object Model (POM) in Playwright using TypeScript?',
-    shortAnswer: 'A production-grade Playwright TypeScript Page Object Model framework decouples element locators and page actions into dedicated Page classes under pages/, keeps assertions in tests/ using web-first expect(), and manages global timeouts and browser execution in playwright.config.ts.',
+    question:
+      'Can you provide a basic template of Page Object Model (POM) in Playwright using TypeScript?',
+    shortAnswer:
+      'A production-grade Playwright TypeScript Page Object Model framework decouples element locators and page actions into dedicated Page classes under pages/, keeps assertions in tests/ using web-first expect(), and manages global timeouts and browser execution in playwright.config.ts.',
     detailedAnswer: `### 📁 Enterprise Framework Directory Structure:
 \`\`\`
 my-playwright-project/
@@ -1369,19 +1661,20 @@ test.describe('Authentication Feature', () => {
     await expect(loginPage.errorMessage).toBeVisible();
     await expect(loginPage.errorMessage).toContainText('Invalid username or password');
   });
-});`
+});`,
     },
     bestPractices: [
       'Never put assertions (expect()) inside Page Object methods; keep assertions in tests/*.spec.ts for clean Single Responsibility',
       'Use user-facing accessible locators (page.getByRole(), page.getByLabel()) rather than brittle CSS or XPath',
       'Initialize locators directly inside the constructor without await—Playwright locators are inherently lazy and auto-retrying',
-      'Configure trace: "on-first-retry" in playwright.config.ts to capture zip traces for CI debugging'
+      'Configure trace: "on-first-retry" in playwright.config.ts to capture zip traces for CI debugging',
     ],
     antiPatterns: [
       'Calling await this.page.locator() inside the constructor',
-      'Hardcoding arbitrary page.waitForTimeout(5000) inside Page Object methods'
+      'Hardcoding arbitrary page.waitForTimeout(5000) inside Page Object methods',
     ],
-    interviewTips: 'Explain that Playwright locators are lazy pointers that auto-wait upon action execution, meaning Page Objects in Playwright do not suffer from Selenium PageFactory StaleElementReferenceExceptions.'
+    interviewTips:
+      'Explain that Playwright locators are lazy pointers that auto-wait upon action execution, meaning Page Objects in Playwright do not suffer from Selenium PageFactory StaleElementReferenceExceptions.',
   },
 
   // 34. Selenium Java Page Object Model (POM) Framework Template
@@ -1396,10 +1689,11 @@ test.describe('Authentication Feature', () => {
       'selenium java template',
       'selenium pom java',
       'selenium template',
-      'selenium framework'
+      'selenium framework',
     ],
     question: 'Can you provide a basic template of Page Object Model (POM) in Selenium using Java?',
-    shortAnswer: 'A production-ready Selenium Java POM framework separates page locators (By objects) and user interaction methods into dedicated Page classes under src/main/java/pages, isolates WebDriver instances using ThreadLocal inside DriverFactory, and executes TestNG test classes under src/test/java/tests.',
+    shortAnswer:
+      'A production-ready Selenium Java POM framework separates page locators (By objects) and user interaction methods into dedicated Page classes under src/main/java/pages, isolates WebDriver instances using ThreadLocal inside DriverFactory, and executes TestNG test classes under src/test/java/tests.',
     detailedAnswer: `### 📁 Enterprise Selenium Java Maven/TestNG Structure:
 \`\`\`
 selenium-java-framework/
@@ -1491,18 +1785,19 @@ public class LoginTest extends BaseTest {
         String error = loginPage.getErrorMessage();
         Assert.assertTrue(error.contains("Invalid username or password"), "Error alert should be displayed");
     }
-}`
+}`,
     },
     bestPractices: [
       'Encapsulate By locators rather than caching WebElements to prevent StaleElementReferenceException',
       'Use ThreadLocal<WebDriver> inside DriverFactory to enable thread-safe parallel test runs in TestNG',
-      'Never put hardcoded Thread.sleep() inside Page Objects; always use explicit WebDriverWait'
+      'Never put hardcoded Thread.sleep() inside Page Objects; always use explicit WebDriverWait',
     ],
     antiPatterns: [
       'Using deprecated PageFactory @FindBy with dynamic SPA applications',
-      'Putting TestNG Assertions directly inside Page Object methods'
+      'Putting TestNG Assertions directly inside Page Object methods',
     ],
-    interviewTips: 'Explain how storing By locators instead of WebElements ensures Selenium dynamically queries the DOM right at the moment of interaction, completely avoiding StaleElementReferenceExceptions.'
+    interviewTips:
+      'Explain how storing By locators instead of WebElements ensures Selenium dynamically queries the DOM right at the moment of interaction, completely avoiding StaleElementReferenceExceptions.',
   },
 
   // 35. REST Assured API Automation Framework Template
@@ -1518,10 +1813,12 @@ public class LoginTest extends BaseTest {
       'api framework setup',
       'rest assured java',
       'api framework template',
-      'api template'
+      'api template',
     ],
-    question: 'Can you provide a basic template of REST Assured API test automation framework in Java?',
-    shortAnswer: 'A production-grade REST Assured Java framework centralizes reusable HTTP specifications (Base URI, JWT Auth headers, JSON logging) in RequestSpecBuilder, models request and response payloads as typed Java POJOs using Jackson, and executes schema-validated Given-When-Then tests via TestNG.',
+    question:
+      'Can you provide a basic template of REST Assured API test automation framework in Java?',
+    shortAnswer:
+      'A production-grade REST Assured Java framework centralizes reusable HTTP specifications (Base URI, JWT Auth headers, JSON logging) in RequestSpecBuilder, models request and response payloads as typed Java POJOs using Jackson, and executes schema-validated Given-When-Then tests via TestNG.',
     detailedAnswer: `### 📁 Enterprise REST Assured Project Layout:
 \`\`\`
 restassured-api-framework/
@@ -1606,18 +1903,19 @@ public class UserApiTests extends BaseApiTest {
         Assert.assertNotNull(createdUser.getId(), "Generated user ID should not be null");
         Assert.assertEquals(createdUser.getEmail(), "jane@intelligentqa.io");
     }
-}`
+}`,
     },
     bestPractices: [
       'Define RequestSpecBuilder centrally to avoid hardcoding base URIs and auth tokens across test classes',
       'Use Jackson POJO serialization instead of raw string JSON or HashMaps for type safety',
-      'Validate JSON schemas in regression pipelines to catch breaking backend API contract drift'
+      'Validate JSON schemas in regression pipelines to catch breaking backend API contract drift',
     ],
     antiPatterns: [
       'Hardcoding Authorization headers repetitively in every single given() call',
-      'Writing tests that assert 200 OK without verifying response body payloads'
+      'Writing tests that assert 200 OK without verifying response body payloads',
     ],
-    interviewTips: 'Emphasize that using RequestSpecBuilder and ResponseSpecBuilder decouples HTTP configuration from test logic, making the suite maintainable across dev, QA, and staging environments.'
+    interviewTips:
+      'Emphasize that using RequestSpecBuilder and ResponseSpecBuilder decouples HTTP configuration from test logic, making the suite maintainable across dev, QA, and staging environments.',
   },
 
   // 36. Appium Mobile Automation Framework Template
@@ -1632,10 +1930,11 @@ public class UserApiTests extends BaseApiTest {
       'appium java',
       'mobile automation template',
       'appium pom',
-      'mobile framework'
+      'mobile framework',
     ],
     question: 'Can you provide a basic template of Appium mobile automation framework in Java?',
-    shortAnswer: 'A modern Appium 2.x Java mobile automation framework configures driver options via UiAutomator2Options (Android) or XCUITestOptions (iOS), encapsulates screen elements using AppiumBy in Page Objects, and executes tests across emulators, simulators, or physical devices using TestNG.',
+    shortAnswer:
+      'A modern Appium 2.x Java mobile automation framework configures driver options via UiAutomator2Options (Android) or XCUITestOptions (iOS), encapsulates screen elements using AppiumBy in Page Objects, and executes tests across emulators, simulators, or physical devices using TestNG.',
     detailedAnswer: `### 📁 Enterprise Appium 2.x Framework Layout:
 \`\`\`
 appium-mobile-framework/
@@ -1707,18 +2006,19 @@ public class LoginScreenTest extends BaseMobileTest {
 
         Assert.assertTrue(loginScreen.isDashboardDisplayed(), "Dashboard should be visible after login");
     }
-}`
+}`,
     },
     bestPractices: [
       'Prioritize AppiumBy.accessibilityId() for both Android and iOS over platform-specific XPaths',
       'Migrate to Appium 2.x with decoupled drivers (appium driver install uiautomator2)',
-      'Use explicit WebDriverWait instead of hardcoded Thread.sleep for mobile animation stability'
+      'Use explicit WebDriverWait instead of hardcoded Thread.sleep for mobile animation stability',
     ],
     antiPatterns: [
       'Using absolute XML XPaths like //android.widget.FrameLayout[1]/android.widget.LinearLayout[2]',
-      'Hardcoding local emulator device names in test files instead of configuration properties'
+      'Hardcoding local emulator device names in test files instead of configuration properties',
     ],
-    interviewTips: 'Highlight that accessibilityId is the gold standard for mobile automation because it works seamlessly across both Android and iOS with high speed and zero OS-dependent brittleness.'
+    interviewTips:
+      'Highlight that accessibilityId is the gold standard for mobile automation because it works seamlessly across both Android and iOS with high speed and zero OS-dependent brittleness.',
   },
 
   // 37. Cypress Web Automation Framework Template
@@ -1731,10 +2031,12 @@ public class LoginScreenTest extends BaseMobileTest {
       'cypress template',
       'cypress pom',
       'cypress page object model',
-      'cypress framework template'
+      'cypress framework template',
     ],
-    question: 'Can you provide a basic template of Cypress automation framework using Page Object Model?',
-    shortAnswer: 'A modern Cypress Page Object Model framework encapsulates DOM elements using cy.get() inside Page classes under cypress/pages/, structures test specs under cypress/e2e/, and configures base URLs, timeouts, and video recording inside cypress.config.js.',
+    question:
+      'Can you provide a basic template of Cypress automation framework using Page Object Model?',
+    shortAnswer:
+      'A modern Cypress Page Object Model framework encapsulates DOM elements using cy.get() inside Page classes under cypress/pages/, structures test specs under cypress/e2e/, and configures base URLs, timeouts, and video recording inside cypress.config.js.',
     detailedAnswer: `### 📁 Enterprise Cypress Project Layout:
 \`\`\`
 cypress-framework/
@@ -1794,18 +2096,19 @@ describe('Authentication Flow', () => {
       .should('be.visible')
       .and('contain', 'Invalid username or password');
   });
-});`
+});`,
     },
     bestPractices: [
       'Use data-cy or data-testid attributes for stable locators',
       'Leverage Cypress built-in auto-retry assertions (should, and) instead of manual waits',
-      'Export singleton page instances (export default new LoginPage()) for clean test imports'
+      'Export singleton page instances (export default new LoginPage()) for clean test imports',
     ],
     antiPatterns: [
       'Using cy.wait(5000) instead of waiting on network aliases (cy.wait("@loginApi"))',
-      'Storing Cypress chained values in local const variables (Cypress commands are asynchronous)'
+      'Storing Cypress chained values in local const variables (Cypress commands are asynchronous)',
     ],
-    interviewTips: 'Explain that Cypress commands are queued and execute asynchronously, which is why Cypress tests use chaining and built-in auto-retry assertions rather than async/await.'
+    interviewTips:
+      'Explain that Cypress commands are queued and execute asynchronously, which is why Cypress tests use chaining and built-in auto-retry assertions rather than async/await.',
   },
 
   // 38. BDD Cucumber Automation Framework Template
@@ -1825,10 +2128,12 @@ describe('Authentication Flow', () => {
       'cucumber java',
       'cucumber bdd',
       'cucumber template',
-      'cucumber options'
+      'cucumber options',
     ],
-    question: 'Can you provide a basic template of BDD Cucumber automation framework with feature files, step definitions, and test runner?',
-    shortAnswer: 'A production-ready BDD Cucumber framework structures tests into three core layers: 1) Business-readable Gherkin feature files (.feature) under src/test/resources/features; 2) Step definition classes mapping Given/When/Then steps to Page Objects under stepdefinitions/; and 3) A Cucumber Test Runner class with @CucumberOptions configuring plugins, tags, and parallel execution.',
+    question:
+      'Can you provide a basic template of BDD Cucumber automation framework with feature files, step definitions, and test runner?',
+    shortAnswer:
+      'A production-ready BDD Cucumber framework structures tests into three core layers: 1) Business-readable Gherkin feature files (.feature) under src/test/resources/features; 2) Step definition classes mapping Given/When/Then steps to Page Objects under stepdefinitions/; and 3) A Cucumber Test Runner class with @CucumberOptions configuring plugins, tags, and parallel execution.',
     detailedAnswer: `### 📁 Enterprise BDD Cucumber Project Layout:
 \`\`\`
 cucumber-bdd-framework/
@@ -1938,21 +2243,22 @@ public class TestRunner extends AbstractTestNGCucumberTests {
     public Object[][] scenarios() {
         return super.scenarios();
     }
-}`
+}`,
     },
     bestPractices: [
       'Keep Step Definitions thin: never put raw driver.findElement() or complex logic in steps—delegate to Page Objects',
       'Use Scenario Outline with Examples tables for data-driven testing instead of duplicating scenarios',
       'Capture and attach screenshots inside Cucumber @After hooks on failure using scenario.attach(bytes, "image/png", name)',
-      'Tag scenarios (@smoke, @regression, @p0) to run targeted subsets in CI/CD pipelines'
+      'Tag scenarios (@smoke, @regression, @p0) to run targeted subsets in CI/CD pipelines',
     ],
     antiPatterns: [
       'Writing procedural scripts disguised as Gherkin: "When I click button with xpath //button[@id=\'x\']"',
       'Instantiating separate non-ThreadLocal WebDrivers inside Step Definition classes',
-      'Putting test assertions directly inside Page Object methods instead of Step Definitions'
+      'Putting test assertions directly inside Page Object methods instead of Step Definitions',
     ],
-    interviewTips: 'Emphasize that BDD Cucumber is primarily a collaboration tool between the Three Amigos (Product Owner, Developer, QA) to eliminate requirement ambiguity, NOT just an automated script runner.'
-  }
+    interviewTips:
+      'Emphasize that BDD Cucumber is primarily a collaboration tool between the Three Amigos (Product Owner, Developer, QA) to eliminate requirement ambiguity, NOT just an automated script runner.',
+  },
 ];
 
 // Enterprise Knowledge Entries for Agent 05 Principal SDET & Architect Mentorship
@@ -1970,10 +2276,11 @@ export const ENTERPRISE_SDET_KNOWLEDGE: QAKnowledgeEntry[] = [
       'playwright monorepo',
       'enterprise playwright',
       'multi-app framework',
-      'multi-team automation'
+      'multi-team automation',
     ],
     question: 'How do you design a unified Playwright framework for 50 squads and 20 applications?',
-    shortAnswer: 'Design a federated monorepo (e.g. Nx / Turborepo / pnpm workspaces) with shared core libraries (@org/playwright-core), domain-specific Page Object libraries, decentralized test ownership across squad directories, containerized parallel execution sharding in CI/CD, and centralized telemetry/governance.',
+    shortAnswer:
+      'Design a federated monorepo (e.g. Nx / Turborepo / pnpm workspaces) with shared core libraries (@org/playwright-core), domain-specific Page Object libraries, decentralized test ownership across squad directories, containerized parallel execution sharding in CI/CD, and centralized telemetry/governance.',
     detailedAnswer: `### 🏛️ Architectural Blueprint: Federated Monorepo for 50 Squads & 20 Apps
 
 #### 1. Repository & Workspace Topology:
@@ -2032,20 +2339,21 @@ export const test = base.extend<EnterpriseFixtures>({
   },
 });
 
-export { expect };`
+export { expect };`,
     },
     bestPractices: [
       'Enforce CODEOWNERS for core packages so framework changes require Architect review',
       'Use Nx/Turborepo affected commands to only run tests for modified packages/apps',
       'Distribute execution using native Playwright sharding (--shard=x/y) with merged blob reports',
-      'Pre-generate auth states via API calls or storageState to avoid UI login bottlenecks'
+      'Pre-generate auth states via API calls or storageState to avoid UI login bottlenecks',
     ],
     antiPatterns: [
       'Creating one massive sequential test suite that all 50 squads must wait for',
       'Allowing squads to fork or copy-paste base driver initialization code',
-      'Executing 20 application suites on every single commit regardless of diffs'
+      'Executing 20 application suites on every single commit regardless of diffs',
     ],
-    interviewTips: 'Emphasize federated ownership (core platform team vs feature squad ownership), affected-test CI execution, and Playwright blob reporting to demonstrate Staff/Principal level architecture.'
+    interviewTips:
+      'Emphasize federated ownership (core platform team vs feature squad ownership), affected-test CI execution, and Playwright blob reporting to demonstrate Staff/Principal level architecture.',
   },
 
   // 38. 90-Day Flaky Test Remediation Roadmap (Test 2)
@@ -2061,10 +2369,11 @@ export { expect };`
       '90 days',
       'flaky test roadmap',
       'quarantine',
-      'test flakiness'
+      'test flakiness',
     ],
     question: 'We have 4,000 flaky tests. How do we reduce flakiness over 90 days?',
-    shortAnswer: 'Execute a disciplined 3-phase, 90-day turnaround: Phase 1 (Days 1–15): Stop the bleeding with quarantine quality gates and metrics. Phase 2 (Days 16–60): Systematic root-cause classification and squad-level burndown. Phase 3 (Days 61–90): Preventive framework hardening, deterministic test data, and CI guardrails.',
+    shortAnswer:
+      'Execute a disciplined 3-phase, 90-day turnaround: Phase 1 (Days 1–15): Stop the bleeding with quarantine quality gates and metrics. Phase 2 (Days 16–60): Systematic root-cause classification and squad-level burndown. Phase 3 (Days 61–90): Preventive framework hardening, deterministic test data, and CI guardrails.',
     detailedAnswer: `### 📉 90-Day Enterprise Flaky Test Elimination Roadmap
 
 #### Executive Reality:
@@ -2126,20 +2435,21 @@ for (let i = 1; i <= REPEAT_COUNT; i++) {
     console.error(\`❌ Flakiness detected on iteration \${i}! PR blocked.\`);
     process.exit(1);
   }
-}`
+}`,
     },
     bestPractices: [
       'Quarantine immediately: Never let flaky tests block engineers on main PR pipelines',
       'Enforce 50-run consecutive green streak before releasing tests from quarantine',
       'Use UUIDs and isolated DB transactions to eliminate test pollution and shared state',
-      'Track Flakiness Index weekly at QA CoE and Engineering Leadership level'
+      'Track Flakiness Index weekly at QA CoE and Engineering Leadership level',
     ],
     antiPatterns: [
       'Increasing global timeouts from 30s to 120s (masks the latency problem and inflates CI cost)',
       'Adding retry: 3 without investigating root causes (turns flaky tests into permanent technical debt)',
-      'Treating flakiness as purely a QA problem rather than a shared engineering quality crisis'
+      'Treating flakiness as purely a QA problem rather than a shared engineering quality crisis',
     ],
-    interviewTips: 'Structure your answer around the 3 phases: Triage & Quarantine, Root-Cause Classification & Squad Burndown, and Automated CI Guardrails to demonstrate strategic quality leadership.'
+    interviewTips:
+      'Structure your answer around the 3 phases: Triage & Quarantine, Root-Cause Classification & Squad Burndown, and Automated CI Guardrails to demonstrate strategic quality leadership.',
   },
 
   // 39. Introducing AI Agents into an Existing QA CoE (Test 3)
@@ -2155,10 +2465,11 @@ for (let i = 1; i <= REPEAT_COUNT; i++) {
       'mcp',
       'model context protocol',
       'agentic workflows',
-      'ai in qa'
+      'ai in qa',
     ],
     question: 'How should we introduce AI agents into an existing QA CoE?',
-    shortAnswer: 'Adopt a phased Enterprise Agentic Rollout: Start with high-yield, low-risk use cases (test triage, synthetic data, selector healing), integrate secure Model Context Protocol (MCP) and RAG architecture with human-in-the-loop review, enforce data privacy guardrails, and track concrete ROI metrics (MTTD, test maintenance hours, sprint velocity).',
+    shortAnswer:
+      'Adopt a phased Enterprise Agentic Rollout: Start with high-yield, low-risk use cases (test triage, synthetic data, selector healing), integrate secure Model Context Protocol (MCP) and RAG architecture with human-in-the-loop review, enforce data privacy guardrails, and track concrete ROI metrics (MTTD, test maintenance hours, sprint velocity).',
     detailedAnswer: `### 🤖 Enterprise Strategy: Integrating AI Agents into a QA CoE
 
 #### 1. High-Yield Enterprise Use Cases (Start Narrow, Expand by Value):
@@ -2202,20 +2513,21 @@ server.tool('inspect-dom-element', { selector: { type: 'string' } }, async ({ se
   await browser.close();
 
   return { content: [{ type: 'text', text: JSON.stringify({ selector, isVisible, count }) }] };
-});`
+});`,
     },
     bestPractices: [
       'Enforce Human-in-the-Loop (HITL): Agents create draft PRs, humans approve them',
       'Use Model Context Protocol (MCP) to standardize tool connections across browsers, Git, and CI/CD',
       'Index internal Page Objects in RAG so agents generate code matching company standards',
-      'Establish enterprise security guardrails with zero data retention'
+      'Establish enterprise security guardrails with zero data retention',
     ],
     antiPatterns: [
       'Allowing autonomous agents to execute unreviewed write/delete operations in staging or prod',
       'Feeding full production databases containing customer PII into LLM prompts',
-      'Deploying agents without concrete baseline metrics (triage duration, maintenance hours)'
+      'Deploying agents without concrete baseline metrics (triage duration, maintenance hours)',
     ],
-    interviewTips: 'Emphasize architectural guardrails: RAG for repo awareness, MCP for deterministic tool invocation, HITL governance, and hard metrics (MTTD reduction).'
+    interviewTips:
+      'Emphasize architectural guardrails: RAG for repo awareness, MCP for deterministic tool invocation, HITL governance, and hard metrics (MTTD reduction).',
   },
 
   // 40. Selenium vs Playwright for New Automation Framework (Test 4)
@@ -2229,10 +2541,11 @@ server.tool('inspect-dom-element', { selector: { type: 'string' } }, async ({ se
       'choose selenium or playwright',
       'playwright vs selenium',
       'automation tool comparison',
-      'new automation framework'
+      'new automation framework',
     ],
     question: 'Should we use Selenium or Playwright for a new automation framework?',
-    shortAnswer: 'There is no universal one-size-fits-all answer; evaluate based on architectural context. For modern SPAs, fast CI/CD pipelines, and teams comfortable with TypeScript/Python, Playwright is superior due to auto-waiting, network mocking, and multi-tab isolation. For legacy Java enterprise stacks, real Safari/IE compatibility, or established Selenium Grid grids, Selenium 4 remains appropriate.',
+    shortAnswer:
+      'There is no universal one-size-fits-all answer; evaluate based on architectural context. For modern SPAs, fast CI/CD pipelines, and teams comfortable with TypeScript/Python, Playwright is superior due to auto-waiting, network mocking, and multi-tab isolation. For legacy Java enterprise stacks, real Safari/IE compatibility, or established Selenium Grid grids, Selenium 4 remains appropriate.',
     detailedAnswer: `### ⚖️ Technical Decision Matrix: Selenium 4 vs Playwright
 
 #### Architecture Under the Hood:
@@ -2282,19 +2595,20 @@ await page.route('**/api/v1/profile', async route => {
 
 await page.goto('/profile');
 // Auto-waits for element to be visible, enabled, and receive pointer events
-await page.getByRole('button', { name: 'Save Changes' }).click();`
+await page.getByRole('button', { name: 'Save Changes' }).click();`,
     },
     bestPractices: [
       'Choose Playwright for modern greenfield SPAs to eliminate timing flakiness and enable fast parallel sharding',
       'Choose Selenium if organizational constraints mandate Java-only skills and existing Selenium Grid infrastructure',
-      'Avoid hybrid Frankenstein frameworks that wrap both tools unless executing an active migration'
+      'Avoid hybrid Frankenstein frameworks that wrap both tools unless executing an active migration',
     ],
     antiPatterns: [
       'Defaulting to Selenium purely out of habit without considering developer velocity and CI runtime',
       'Rewriting 20,000 working Selenium tests to Playwright without clear business justification or ROI',
-      'Choosing Playwright but writing Selenium-style code (e.g. hardcoding waitForTimeout or manual sleeps)'
+      'Choosing Playwright but writing Selenium-style code (e.g. hardcoding waitForTimeout or manual sleeps)',
     ],
-    interviewTips: 'Articulate the architectural differences (WebSocket CDP connection vs W3C HTTP Wire protocol) and frame the decision around organizational context, team skill set, and CI/CD velocity.'
+    interviewTips:
+      'Articulate the architectural differences (WebSocket CDP connection vs W3C HTTP Wire protocol) and frame the decision around organizational context, team skill set, and CI/CD velocity.',
   },
 
   // 41. Enterprise Test Governance & Quality Gates (Test 5)
@@ -2309,10 +2623,11 @@ await page.getByRole('button', { name: 'Save Changes' }).click();`
       'quality gates',
       'release governance',
       'qa metrics',
-      'defect leakage'
+      'defect leakage',
     ],
     question: 'Explain how to design enterprise test governance.',
-    shortAnswer: 'Enterprise test governance establishes federated quality ownership across squads, standardized engineering standards, automated CI/CD quality gates, data-driven quality metrics (DDP, Escape Rate, Flakiness Index), and a risk-based release approval framework.',
+    shortAnswer:
+      'Enterprise test governance establishes federated quality ownership across squads, standardized engineering standards, automated CI/CD quality gates, data-driven quality metrics (DDP, Escape Rate, Flakiness Index), and a risk-based release approval framework.',
     detailedAnswer: `### 🏛️ Enterprise Test Governance & Release Quality Operating Model
 
 #### 1. Governance Operating Model & Ownership Structure:
@@ -2373,21 +2688,22 @@ if (passRate < 99.0 || flakinessRate > 1.0 || summary.failed > 0) {
   process.exit(1);
 }
 
-console.log('✅ Enterprise Quality Gate Passed! Proceeding to deployment.');`
+console.log('✅ Enterprise Quality Gate Passed! Proceeding to deployment.');`,
     },
     bestPractices: [
       'Implement Hub-and-Spoke federated ownership so quality is built into feature squads',
       'Automate quality gates directly into CI/CD pipelines instead of manual checklist sign-offs',
       'Track Defect Detection Percentage (DDP) and Flakiness Index as primary quality KPIs',
-      'Automate release readiness dashboards aggregating test, security, and APM telemetry'
+      'Automate release readiness dashboards aggregating test, security, and APM telemetry',
     ],
     antiPatterns: [
       'Manual "QA sign-off" approval bottlenecks that delay agile deployment cadence',
       'Measuring quality purely by count of automated test cases written rather than DDP or escape rate',
-      'Treating test flakiness as acceptable and allowing broken pipelines to be bypassed'
+      'Treating test flakiness as acceptable and allowing broken pipelines to be bypassed',
     ],
-    interviewTips: 'Emphasize the Hub-and-Spoke operating model, objective mathematical metrics (DDP, Escape Rate), automated CI/CD quality gates, and risk-based release governance.'
-  }
+    interviewTips:
+      'Emphasize the Hub-and-Spoke operating model, objective mathematical metrics (DDP, Escape Rate), automated CI/CD quality gates, and risk-based release governance.',
+  },
 ];
 
 // Combine all entries
@@ -2413,7 +2729,12 @@ export function getNextStepSuggestion(category?: string, topic?: string): string
   if (c === 'ai-qa' || t.includes('agent') || t.includes('ai') || t.includes('mcp')) {
     return `👉 **Next Step for QA:** Experiment with autonomous QA workflows in our QA Agents Workspace at \`/qa-agents\`, or practice technical interview grilling at \`/interview-griller\`.`;
   }
-  if (c === 'career-faq' || t.includes('salary') || t.includes('timeline') || t.includes('zero coding')) {
+  if (
+    c === 'career-faq' ||
+    t.includes('salary') ||
+    t.includes('timeline') ||
+    t.includes('zero coding')
+  ) {
     return `👉 **Next Step for QA:** Take our 1-Click Diagnostic Assessment at \`/assessment\` to get your personalized SDET roadmap, or practice questions in our 800+ Question Bank at \`/interview-questions\`.`;
   }
   return `👉 **Next Step for QA:** Try applying this concept in our Coding Sandbox (\`/sandbox/code\`) or ask our dedicated QA Agents (\`/qa-agents\`) to generate boilerplate code for you.`;
@@ -2430,7 +2751,7 @@ export function formatCrispChatAnswer(entry: QAKnowledgeEntry): string {
   // Add key bullet points
   if (entry.bestPractices && entry.bestPractices.length > 0) {
     output += `**Key Practical Guidance:**\n`;
-    entry.bestPractices.slice(0, 4).forEach(bp => {
+    entry.bestPractices.slice(0, 4).forEach((bp) => {
       output += `• ${bp}\n`;
     });
     output += '\n';
@@ -2519,7 +2840,7 @@ print("Hello World")
   // 3. Python: SyntaxError (Invalid syntax / unexpected EOF / missing colon)
   if (
     q.includes('invalid syntax') ||
-    q.includes('expected \':\'') ||
+    q.includes("expected ':'") ||
     q.includes('unexpected eof while parsing') ||
     (q.includes('syntaxerror') && !q.includes('eol'))
   ) {
@@ -2588,7 +2909,8 @@ for i in range(3):
     q.includes('unhandledpromiserejection') ||
     q.includes('cannot read properties of undefined') ||
     q.includes('cannot read property') ||
-    (q.includes('typeerror') && (q.includes('undefined') || q.includes('null') || q.includes('promise')))
+    (q.includes('typeerror') &&
+      (q.includes('undefined') || q.includes('null') || q.includes('promise')))
   ) {
     return `### ⚡ JS/TS Debugging: UnhandledPromiseRejection / Undefined Property
 
@@ -2702,7 +3024,10 @@ if (driver == null) {
   }
 
   // 11. Selenium: ElementClickInterceptedException
-  if (q.includes('elementclickinterceptedexception') || (q.includes('element click') && q.includes('intercepted'))) {
+  if (
+    q.includes('elementclickinterceptedexception') ||
+    (q.includes('element click') && q.includes('intercepted'))
+  ) {
     return `### 🧭 Selenium Debugging: ElementClickInterceptedException
 
 **Diagnosis**: The target element is present in the DOM, but another element (sticky header, loading spinner, modal backdrop, or toast) is overlaying it at the click coordinates.
@@ -2726,7 +3051,10 @@ btn.click();
   }
 
   // 12. Playwright: Timeout 30000ms exceeded waiting for locator
-  if (q.includes('timeout 30000ms exceeded') || (q.includes('waiting for locator') && q.includes('timeout'))) {
+  if (
+    q.includes('timeout 30000ms exceeded') ||
+    (q.includes('waiting for locator') && q.includes('timeout'))
+  ) {
     return `### 🎭 Playwright Debugging: Timeout 30000ms Exceeded Waiting for Locator
 
 **Diagnosis**: Playwright could not find an element matching your locator within the timeout period, or the element failed an actionability check (Visible, Enabled, Stable).
@@ -2747,7 +3075,11 @@ await page.getByRole('button', { name: 'Submit Order' }).click();
   }
 
   // 13. REST Assured: Connection Refused / SSL Handshake Exception
-  if (q.includes('connection refused') || q.includes('sslhandshakeexception') || q.includes('pkix path building failed')) {
+  if (
+    q.includes('connection refused') ||
+    q.includes('sslhandshakeexception') ||
+    q.includes('pkix path building failed')
+  ) {
     return `### 🌐 REST Assured Debugging: SSLHandshake / Connection Refused
 
 **Diagnosis**: Either the target API service is not running on the specified host/port, or the test environment rejected an untrusted/self-signed SSL certificate.
@@ -2771,7 +3103,11 @@ given()
   }
 
   // 14. REST Assured: UnrecognizedPropertyException / JSON Deserialization Error
-  if (q.includes('unrecognizedpropertyexception') || q.includes('cannot deserialize') || q.includes('jsonmappingexception')) {
+  if (
+    q.includes('unrecognizedpropertyexception') ||
+    q.includes('cannot deserialize') ||
+    q.includes('jsonmappingexception')
+  ) {
     return `### 🌐 REST Assured Debugging: JSON Deserialization / UnrecognizedPropertyException
 
 **Diagnosis**: The API response JSON payload contains fields that are not defined in your Java POJO class.
@@ -2800,7 +3136,8 @@ UserResponseDto user = given()
   // 15. Selenium: NoSuchElementException
   if (
     q.includes('nosuchelementexception') ||
-    (q.includes('no such element') && (q.includes('unable to locate') || q.includes('selenium') || q.includes('driver')))
+    (q.includes('no such element') &&
+      (q.includes('unable to locate') || q.includes('selenium') || q.includes('driver')))
   ) {
     return `### 🧭 Selenium Debugging: NoSuchElementException
 
@@ -2911,7 +3248,9 @@ const email = data?.user?.email ?? 'default@test.com'; // Optional chaining & nu
   // 19. AssertionError: expected vs actual mismatch
   if (
     q.includes('assertionerror') ||
-    (q.includes('expected') && q.includes('actual') && (q.includes('received') || q.includes('to be') || q.includes('to equal')))
+    (q.includes('expected') &&
+      q.includes('actual') &&
+      (q.includes('received') || q.includes('to be') || q.includes('to equal')))
   ) {
     return `### 🧪 Test Automation Debugging: AssertionError (Expected vs Actual Mismatch)
 
@@ -2964,7 +3303,12 @@ export function synthesizeDynamicAnswer(query: string): string {
   const q = query.toLowerCase();
 
   // 1. Language queries
-  if (q.includes('python') || q.includes('javascript') || q.includes('typescript') || q.includes('java')) {
+  if (
+    q.includes('python') ||
+    q.includes('javascript') ||
+    q.includes('typescript') ||
+    q.includes('java')
+  ) {
     return `For modern web test automation in 2026, **TypeScript + Playwright** is the #1 recommended combination.
 
 • **Why TypeScript**: It offers built-in auto-completion, clean async/await execution, and is the native language of Playwright.
@@ -2975,7 +3319,14 @@ export function synthesizeDynamicAnswer(query: string): string {
   }
 
   // 2. Timeline and study questions
-  if (q.includes('how long') || q.includes('time') || q.includes('months') || q.includes('weeks') || q.includes('schedule') || q.includes('roadmap')) {
+  if (
+    q.includes('how long') ||
+    q.includes('time') ||
+    q.includes('months') ||
+    q.includes('weeks') ||
+    q.includes('schedule') ||
+    q.includes('roadmap')
+  ) {
     return `A manual tester dedicating **45–60 minutes daily** can realistically transition into an SDET role in **12 to 16 weeks (3–4 months)**.
 
 • **Month 1**: Core programming syntax (variables, loops, async/await) + DOM inspection.
@@ -2987,7 +3338,14 @@ export function synthesizeDynamicAnswer(query: string): string {
   }
 
   // 3. Coding fear / 0 coding background
-  if (q.includes('0 coding') || q.includes('no coding') || q.includes('non-technical') || q.includes('fear') || q.includes('beginner') || q.includes('can i')) {
+  if (
+    q.includes('0 coding') ||
+    q.includes('no coding') ||
+    q.includes('non-technical') ||
+    q.includes('fear') ||
+    q.includes('beginner') ||
+    q.includes('can i')
+  ) {
     return `You can absolutely learn test automation with **zero prior coding background**. Every senior SDET started exactly where you are today.
 
 • **Test Automation is Not Rocket Science**: You do not need complex algorithms or calculus. You only need basic logic: find element &rarr; perform action (click/fill) &rarr; assert outcome.
@@ -2998,7 +3356,13 @@ export function synthesizeDynamicAnswer(query: string): string {
   }
 
   // 4. API Testing
-  if (q.includes('api') || q.includes('postman') || q.includes('rest') || q.includes('json') || q.includes('endpoints')) {
+  if (
+    q.includes('api') ||
+    q.includes('postman') ||
+    q.includes('rest') ||
+    q.includes('json') ||
+    q.includes('endpoints')
+  ) {
     return `API testing is the single highest-ROI skill for a Manual Tester transitioning to an SDET.
 
 • **100x Faster than UI**: API tests run in 10–50ms without waiting for browser rendering or CSS animations.
@@ -3009,7 +3373,14 @@ export function synthesizeDynamicAnswer(query: string): string {
   }
 
   // 5. Salary & Career
-  if (q.includes('salary') || q.includes('hike') || q.includes('pay') || q.includes('compensation') || q.includes('career') || q.includes('growth')) {
+  if (
+    q.includes('salary') ||
+    q.includes('hike') ||
+    q.includes('pay') ||
+    q.includes('compensation') ||
+    q.includes('career') ||
+    q.includes('growth')
+  ) {
     return `Transitioning from Manual QA to an SDET typically increases compensation by **50% to 100%+**.
 
 • **Market Demand**: True SDETs who design CI/CD frameworks and write clean code command engineering-tier salary bands.
@@ -3021,7 +3392,14 @@ export function synthesizeDynamicAnswer(query: string): string {
   }
 
   // 6. Automation Framework Setup & Architecture
-  if (q.includes('framework') || q.includes('pom') || q.includes('page object') || q.includes('architecture') || q.includes('scaffold') || q.includes('setup')) {
+  if (
+    q.includes('framework') ||
+    q.includes('pom') ||
+    q.includes('page object') ||
+    q.includes('architecture') ||
+    q.includes('scaffold') ||
+    q.includes('setup')
+  ) {
     return `### 🏗️ Enterprise SDET Automation Framework Architecture
 
 A production-ready test automation framework consists of 5 modular layers:
@@ -3036,7 +3414,13 @@ A production-ready test automation framework consists of 5 modular layers:
   }
 
   // 7. Event-Driven & Kafka Streams Testing
-  if (q.includes('kafka') || q.includes('rabbit') || q.includes('queue') || q.includes('event-driven') || q.includes('pubsub')) {
+  if (
+    q.includes('kafka') ||
+    q.includes('rabbit') ||
+    q.includes('queue') ||
+    q.includes('event-driven') ||
+    q.includes('pubsub')
+  ) {
     return `### 📨 Event-Driven & Kafka Stream Testing for SDETs
 
 When testing event-driven architectures (Apache Kafka, RabbitMQ):
@@ -3048,7 +3432,12 @@ When testing event-driven architectures (Apache Kafka, RabbitMQ):
   }
 
   // 8. Performance & Load Testing
-  if (q.includes('load test') || q.includes('performance') || q.includes('jmeter') || q.includes('k6')) {
+  if (
+    q.includes('load test') ||
+    q.includes('performance') ||
+    q.includes('jmeter') ||
+    q.includes('k6')
+  ) {
     return `### ⚡ Performance & Load Testing Strategy for SDETs
 
 Modern SDETs leverage **k6 (JavaScript/TypeScript)** or **JMeter**:
@@ -3075,24 +3464,70 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
   if (!cleanQuery) return QA_KNOWLEDGE_BASE.slice(0, 5);
 
   const STOP_WORDS = new Set([
-    'how', 'to', 'in', 'the', 'a', 'an', 'is', 'what', 'do', 'does', 'did',
-    'i', 'you', 'my', 'can', 'should', 'why', 'who', 'with', 'and', 'or',
-    'of', 'for', 'on', 'at', 'by', 'from', 'about', 'as', 'into', 'like',
-    'through', 'after', 'over', 'between', 'out', 'against', 'during',
-    'without', 'before', 'under', 'around', 'among', 'test', 'tests', 'testing',
-    'sdet', 'qa', 'engineer', 'automated', 'automation'
+    'how',
+    'to',
+    'in',
+    'the',
+    'a',
+    'an',
+    'is',
+    'what',
+    'do',
+    'does',
+    'did',
+    'i',
+    'you',
+    'my',
+    'can',
+    'should',
+    'why',
+    'who',
+    'with',
+    'and',
+    'or',
+    'of',
+    'for',
+    'on',
+    'at',
+    'by',
+    'from',
+    'about',
+    'as',
+    'into',
+    'like',
+    'through',
+    'after',
+    'over',
+    'between',
+    'out',
+    'against',
+    'during',
+    'without',
+    'before',
+    'under',
+    'around',
+    'among',
+    'test',
+    'tests',
+    'testing',
+    'sdet',
+    'qa',
+    'engineer',
+    'automated',
+    'automation',
   ]);
 
   const allTerms = cleanQuery.split(/[\s,?.!-]+/).filter(Boolean);
-  const meaningfulTerms = allTerms.filter(t => !STOP_WORDS.has(t) && t.length >= 3);
-  const searchTerms = meaningfulTerms.length > 0 ? meaningfulTerms : allTerms.filter(t => t.length >= 3);
+  const meaningfulTerms = allTerms.filter((t) => !STOP_WORDS.has(t) && t.length >= 3);
+  const searchTerms =
+    meaningfulTerms.length > 0 ? meaningfulTerms : allTerms.filter((t) => t.length >= 3);
 
-  const scored = QA_KNOWLEDGE_BASE.map(entry => {
+  const scored = QA_KNOWLEDGE_BASE.map((entry) => {
     let score = 0;
     const titleMatch = entry.topic.toLowerCase();
     const questionMatch = entry.question.toLowerCase();
     const shortAnswerMatch = entry.shortAnswer.toLowerCase();
-    const keywords = entry.keywords.map(k => k.toLowerCase());
+    const keywords = entry.keywords.map((k) => k.toLowerCase());
 
     // 1. Direct multi-word keyword match in query (strongest signal)
     for (const kw of keywords) {
@@ -3109,15 +3544,22 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
     // 3. Meaningful term matches
     for (const term of searchTerms) {
       if (titleMatch.includes(term)) score += 30;
-      if (keywords.some(k => k.includes(term))) score += 25;
+      if (keywords.some((k) => k.includes(term))) score += 25;
       if (questionMatch.includes(term)) score += 20;
       if (shortAnswerMatch.includes(term)) score += 5;
     }
 
     // Technology and framework affinity adjustments:
     // If user asks for Selenium or Java, prioritize Selenium and penalize Playwright
-    if (cleanQuery.includes('selenium') || (cleanQuery.includes('java') && !cleanQuery.includes('javascript'))) {
-      if (entry.category === 'selenium' || titleMatch.includes('selenium') || titleMatch.includes('java')) {
+    if (
+      cleanQuery.includes('selenium') ||
+      (cleanQuery.includes('java') && !cleanQuery.includes('javascript'))
+    ) {
+      if (
+        entry.category === 'selenium' ||
+        titleMatch.includes('selenium') ||
+        titleMatch.includes('java')
+      ) {
         score += 40;
       } else if (entry.category === 'playwright' || titleMatch.includes('playwright')) {
         score -= 50;
@@ -3134,8 +3576,16 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
     }
 
     // If user asks for REST Assured or API framework, prioritize API entries
-    if (cleanQuery.includes('rest assured') || cleanQuery.includes('api framework') || cleanQuery.includes('api automation')) {
-      if (entry.category === 'api' || titleMatch.includes('rest assured') || titleMatch.includes('api')) {
+    if (
+      cleanQuery.includes('rest assured') ||
+      cleanQuery.includes('api framework') ||
+      cleanQuery.includes('api automation')
+    ) {
+      if (
+        entry.category === 'api' ||
+        titleMatch.includes('rest assured') ||
+        titleMatch.includes('api')
+      ) {
         score += 50;
       } else if (entry.category === 'playwright' || entry.category === 'selenium') {
         score -= 30;
@@ -3144,7 +3594,7 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
 
     // If user asks for Appium or Mobile automation, prioritize Appium entries
     if (cleanQuery.includes('appium') || cleanQuery.includes('mobile')) {
-      if (titleMatch.includes('appium') || keywords.some(k => k.includes('appium'))) {
+      if (titleMatch.includes('appium') || keywords.some((k) => k.includes('appium'))) {
         score += 70;
       } else {
         score -= 40;
@@ -3153,7 +3603,7 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
 
     // If user asks for Cypress, prioritize Cypress entries
     if (cleanQuery.includes('cypress')) {
-      if (titleMatch.includes('cypress') || keywords.some(k => k.includes('cypress'))) {
+      if (titleMatch.includes('cypress') || keywords.some((k) => k.includes('cypress'))) {
         score += 70;
       } else {
         score -= 40;
@@ -3161,8 +3611,16 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
     }
 
     // If user asks for Cucumber or BDD, prioritize Cucumber BDD template
-    if (cleanQuery.includes('cucumber') || cleanQuery.includes('bdd') || cleanQuery.includes('gherkin')) {
-      if (entry.id === 'bdd-cucumber-framework-template' || titleMatch.includes('cucumber') || titleMatch.includes('bdd')) {
+    if (
+      cleanQuery.includes('cucumber') ||
+      cleanQuery.includes('bdd') ||
+      cleanQuery.includes('gherkin')
+    ) {
+      if (
+        entry.id === 'bdd-cucumber-framework-template' ||
+        titleMatch.includes('cucumber') ||
+        titleMatch.includes('bdd')
+      ) {
         score += 80;
       } else {
         score -= 40;
@@ -3174,9 +3632,9 @@ export function searchQAKnowledge(query: string): QAKnowledgeEntry[] {
 
   // Relevance filter: Require a minimum threshold score (>= 30) so we never return false positives
   return scored
-    .filter(item => item.score >= 30)
+    .filter((item) => item.score >= 30)
     .sort((a, b) => b.score - a.score)
-    .map(item => item.entry);
+    .map((item) => item.entry);
 }
 
 export function getCuratedInterviewQuestions(): InterviewQuestionItem[] {

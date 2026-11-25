@@ -3,7 +3,7 @@ import { DEFAULT_CODING_PROBLEMS } from '@/lib/coding-problems';
 import ProblemSolverClient from './problem-solver-client';
 
 export function generateStaticParams() {
-  return DEFAULT_CODING_PROBLEMS.map(p => ({
+  return DEFAULT_CODING_PROBLEMS.map((p) => ({
     problemId: p.id,
   }));
 }

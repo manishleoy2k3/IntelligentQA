@@ -27,22 +27,27 @@ export async function POST(req: NextRequest) {
         title,
         slug,
         description: description || '',
-        displayOrder: typeof displayOrder === 'number' ? displayOrder : (typeof sortOrder === 'number' ? sortOrder : 0),
+        displayOrder:
+          typeof displayOrder === 'number'
+            ? displayOrder
+            : typeof sortOrder === 'number'
+              ? sortOrder
+              : 0,
         sortOrder: typeof sortOrder === 'number' ? sortOrder : 0,
         status: status || 'published',
         lessons: [],
       });
 
-      return NextResponse.json({
-        success: true,
-        data: created,
-        message: 'Module created successfully.',
-      }, { status: 201 });
-    } catch (valErr: any) {
       return NextResponse.json(
-        { success: false, error: valErr.message },
-        { status: 400 }
+        {
+          success: true,
+          data: created,
+          message: 'Module created successfully.',
+        },
+        { status: 201 }
       );
+    } catch (valErr: any) {
+      return NextResponse.json({ success: false, error: valErr.message }, { status: 400 });
     }
   } catch (error: any) {
     return NextResponse.json(

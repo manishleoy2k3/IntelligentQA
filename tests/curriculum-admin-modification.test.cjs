@@ -84,12 +84,20 @@ test('Admin Modification: Admin page populates productionCodeExample and saves t
 });
 
 test('Admin Modification: Track overview client component exists and reacts to updates', () => {
-  const trackOverviewPath = path.join(process.cwd(), 'src/components/tracks/track-overview-client.tsx');
-  assert.strictEqual(fs.existsSync(trackOverviewPath), true, 'track-overview-client.tsx must exist');
+  const trackOverviewPath = path.join(
+    process.cwd(),
+    'src/components/tracks/track-overview-client.tsx'
+  );
+  assert.strictEqual(
+    fs.existsSync(trackOverviewPath),
+    true,
+    'track-overview-client.tsx must exist'
+  );
 
   const content = fs.readFileSync(trackOverviewPath, 'utf-8');
   assert.strictEqual(
-    content.includes('intelligentqa_curriculum_updated') && content.includes('QADatabase.getTrackById'),
+    content.includes('intelligentqa_curriculum_updated') &&
+      content.includes('QADatabase.getTrackById'),
     true,
     'Track overview client must react to intelligentqa_curriculum_updated and query QADatabase.getTrackById'
   );
@@ -102,8 +110,8 @@ test('AI for QA Removal: Left navigation has no course content listed under AI f
   // Verify AI for QA in sidebar is renamed to AI Academy with no course content/lessons listed under it
   assert.strictEqual(
     sidebarContent.includes("id: 'ai-qa'") &&
-    sidebarContent.includes("displayTitle: 'AI Academy'") &&
-    sidebarContent.includes('lessons: []'),
+      sidebarContent.includes("displayTitle: 'AI Academy'") &&
+      sidebarContent.includes('lessons: []'),
     true,
     'Sidebar must rename ai-qa track to AI Academy and have empty lessons array'
   );
@@ -114,7 +122,10 @@ test('AI for QA Removal: Left navigation has no course content listed under AI f
   );
 
   // Verify Guide and Tracks client keeps ai-qa page clean with no content
-  const guideClientPath = path.join(process.cwd(), 'src/app/guides/[trackId]/guide-catalog-client.tsx');
+  const guideClientPath = path.join(
+    process.cwd(),
+    'src/app/guides/[trackId]/guide-catalog-client.tsx'
+  );
   const guideContent = fs.readFileSync(guideClientPath, 'utf-8');
   assert.strictEqual(
     guideContent.includes("activeTrack === 'ai-qa'"),

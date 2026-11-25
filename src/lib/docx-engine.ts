@@ -91,7 +91,8 @@ export function validateDocxFile(buffer: Buffer, originalFilename: string): Docx
   ) {
     return {
       valid: false,
-      error: 'File signature verification failed: Corrupted or non-standard DOCX container (missing PK zip signature).',
+      error:
+        'File signature verification failed: Corrupted or non-standard DOCX container (missing PK zip signature).',
       fileSizeBytes,
       sha256,
     };
