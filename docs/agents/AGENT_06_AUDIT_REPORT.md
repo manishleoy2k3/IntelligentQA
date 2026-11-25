@@ -39,16 +39,16 @@ The IntelligentQA platform contains a primary knowledge base of **800 curated QA
 
 ### Knowledge Base Verification Matrix
 
-| Verification Dimension | Status | Audit Findings & Architecture |
-| :--- | :--- | :--- |
-| **Storage Structure** | **Verified** | Questions are stored as strongly typed `InterviewQuestionItem` objects in partitioned TypeScript modules under `src/lib/interview-bank/`. |
-| **Indexing Mechanism** | **Verified** | Indexed via `ALL_INTERVIEW_QUESTIONS` and `INTERVIEW_KNOWLEDGE_BASE`. Dynamically unified in `getAllInterviewQuestions()` with support for custom community and user questions in `QADatabase`. |
-| **Categories Available** | **Verified** | 8 primary engineering domains (`Selenium & Playwright Automation`, `Manual QA Processes`, `API Testing & Automation`, `Mobile Automation (Appium)`, `Mobile Manual Testing`, `CI/CD Pipelines`, `Reporting`, `Coding & DSA`). |
-| **Experience Levels** | **Verified** | Granular tiers supported: `0–2 years`, `2–5 years`, `5–8 years`, `8–12 years`, `12–15 years`, `15+ years`, backed by numeric `minYears` and `maxYears` range validation. |
-| **Difficulty Levels** | **Verified** | Full difficulty spectrum: `Beginner`, `Intermediate`, `Advanced`, `Expert`, and `Architect` with backward-compatible normalization to `Easy`, `Medium`, `Hard`. |
-| **Framework Tags** | **Verified** | Explicit `technology` tags (`Playwright`, `Selenium`, `REST Assured`, `Appium`, `Java`, `TypeScript`, `Python`, `Cypress`, `GitHub Actions`, `AI & LLM`, `Performance & Security`, `Framework Design`). |
+| Verification Dimension     | Status       | Audit Findings & Architecture                                                                                                                                                                                                                                                        |
+| :------------------------- | :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Storage Structure**      | **Verified** | Questions are stored as strongly typed `InterviewQuestionItem` objects in partitioned TypeScript modules under `src/lib/interview-bank/`.                                                                                                                                            |
+| **Indexing Mechanism**     | **Verified** | Indexed via `ALL_INTERVIEW_QUESTIONS` and `INTERVIEW_KNOWLEDGE_BASE`. Dynamically unified in `getAllInterviewQuestions()` with support for custom community and user questions in `QADatabase`.                                                                                      |
+| **Categories Available**   | **Verified** | 8 primary engineering domains (`Selenium & Playwright Automation`, `Manual QA Processes`, `API Testing & Automation`, `Mobile Automation (Appium)`, `Mobile Manual Testing`, `CI/CD Pipelines`, `Reporting`, `Coding & DSA`).                                                        |
+| **Experience Levels**      | **Verified** | Granular tiers supported: `0–2 years`, `2–5 years`, `5–8 years`, `8–12 years`, `12–15 years`, `15+ years`, backed by numeric `minYears` and `maxYears` range validation.                                                                                                             |
+| **Difficulty Levels**      | **Verified** | Full difficulty spectrum: `Beginner`, `Intermediate`, `Advanced`, `Expert`, and `Architect` with backward-compatible normalization to `Easy`, `Medium`, `Hard`.                                                                                                                      |
+| **Framework Tags**         | **Verified** | Explicit `technology` tags (`Playwright`, `Selenium`, `REST Assured`, `Appium`, `Java`, `TypeScript`, `Python`, `Cypress`, `GitHub Actions`, `AI & LLM`, `Performance & Security`, `Framework Design`).                                                                              |
 | **Answers & Explanations** | **Verified** | Every question contains a multi-part `answerSummary`: (1) Conceptual Breakdown in Plain English, (2) Deep-Dive Technical Explanation, (3) Step-by-Step Practical Application Guide, and (4) Key Terminology, alongside runnable `codeSnippet`, `bestPractice`, and `pitfallToAvoid`. |
-| **Retrieval Accuracy** | **Verified** | Filtered by `getQuestionsByLevelAndDifficulty()` with priority given to direct technology matches and candidate skills, preserving question IDs (`q-pw-001`, `arch-sel-1`, `kb-api-01`, etc.) without cross-category pollution. |
+| **Retrieval Accuracy**     | **Verified** | Filtered by `getQuestionsByLevelAndDifficulty()` with priority given to direct technology matches and candidate skills, preserving question IDs (`q-pw-001`, `arch-sel-1`, `kb-api-01`, etc.) without cross-category pollution.                                                      |
 
 ---
 
@@ -57,6 +57,7 @@ The IntelligentQA platform contains a primary knowledge base of **800 curated QA
 Agent 06 allows candidates to tailor their interview loop without forcing them to select every option:
 
 ### Experience Tiers
+
 - **0–2 years**: Entry-Level QA / Junior SDET (Testing fundamentals, basic locator strategy, test design)
 - **2–5 years**: Mid-Level SDET (Framework components, synchronization, API Given-When-Then, assertions)
 - **5–8 years**: Senior SDET / Automation Lead (Resilient architecture, POM, network mocking, test isolation)
@@ -65,6 +66,7 @@ Agent 06 allows candidates to tailor their interview loop without forcing them t
 - **15+ years**: Enterprise Test Architect & QA Leadership (50-squad scaling, CoE governance, AI test agents)
 
 ### Difficulty Modes
+
 - **Beginner**: Conceptual clarity, definitions, core syntax
 - **Intermediate**: Practical code implementation, synchronization, error handling
 - **Advanced**: Concurrency, race conditions, network virtualization, failure isolation
@@ -72,12 +74,14 @@ Agent 06 allows candidates to tailor their interview loop without forcing them t
 - **Architect**: Enterprise systems design, cost optimization, quality gates, defect escape reduction
 
 ### 20 Supported Interview Categories & Technologies
-1. **Manual Testing** | 2. **Selenium** | 3. **Playwright** | 4. **Rest Assured** | 5. **Appium**  
-6. **Java** | 7. **TypeScript** | 8. **Python** | 9. **API Testing** | 10. **CI/CD**  
-11. **Git** | 12. **GitHub Actions** | 13. **Performance Testing** | 14. **JMeter** | 15. **APM**  
-16. **AI for QA** | 17. **LLM** | 18. **MCP (Model Context Protocol)** | 19. **RAG** | 20. **Test Architecture & QA Leadership**
+
+1. **Manual Testing** | 2. **Selenium** | 3. **Playwright** | 4. **Rest Assured** | 5. **Appium**
+2. **Java** | 7. **TypeScript** | 8. **Python** | 9. **API Testing** | 10. **CI/CD**
+3. **Git** | 12. **GitHub Actions** | 13. **Performance Testing** | 14. **JMeter** | 15. **APM**
+4. **AI for QA** | 17. **LLM** | 18. **MCP (Model Context Protocol)** | 19. **RAG** | 20. **Test Architecture & QA Leadership**
 
 ### Selection Modes Supported
+
 - **Specific Technology**: Focus solely on one chosen tool (e.g., Pure Playwright or Pure Selenium).
 - **Multiple Technologies**: Multi-select stack (e.g., `Playwright + TypeScript + REST Assured + GitHub Actions`).
 - **Complete QA Interview**: Comprehensive balanced round sampling across UI, API, Manual, Mobile, CI/CD, and Coding.
@@ -117,23 +121,29 @@ Agent 06 implements a strict **Dual-Sourcing Architecture** that preserves trans
 Agent 06 follows the strict discipline of a real technical panel:
 
 ### 1. One Question at a Time
+
 Agent 06 never dumps an entire questionnaire at once. It presents Question 1, yields the turn, and waits for the candidate's response.
 
 ### 2. Never Reveal the Expected Answer Prematurely
+
 Agent 06 evaluates the candidate's actual answer before revealing model answers or grading criteria. During follow-up probing turns, the model answer remains concealed so the candidate must demonstrate organic competence.
 
 ### 3. Vague Answer Challenge
+
 If a candidate submits a high-level, textbook, or vague definition, Agent 06 immediately challenges the answer with an authentic follow-up probe:
-- **Question**: *"How does Playwright handle browser contexts?"*
-- **Candidate Vague Answer**: *"Browser contexts provide separate sessions."*
-- **Agent 06 Probing Challenge**:  
-  > *"How would you use browser contexts to run multiple users in parallel without sharing authentication state?"*
+
+- **Question**: _"How does Playwright handle browser contexts?"_
+- **Candidate Vague Answer**: _"Browser contexts provide separate sessions."_
+- **Agent 06 Probing Challenge**:
+  > _"How would you use browser contexts to run multiple users in parallel without sharing authentication state?"_
 
 ### 4. Dynamic Difficulty Adjustment
+
 - **Candidate Performs Well (Score ≥ 75%)**: Agent 06 increases complexity, advancing to architecture scenarios, distributed execution, concurrency race conditions, and design trade-offs.
 - **Candidate Struggles (Score < 50% or Anti-Patterns)**: Agent 06 adapts the next turn to a simpler fundamental follow-up, isolating missing core principles (e.g., proper event-driven waits vs static sleeps) rather than repeatedly hammering unrelated complex problems.
 
 ### 5. 6-Dimension Scoring Rubric
+
 Every candidate submission is evaluated against six standardized dimensions scored from 1 to 5:
 
 ```
@@ -146,7 +156,9 @@ Every candidate submission is evaluated against six standardized dimensions scor
 ```
 
 ### 6. 5-Point Evidence-Based Turn Feedback
+
 Agent 06 generates:
+
 1. **What Was Correct**: Specific engineering points and concepts validated in the candidate's response.
 2. **What Was Missing**: Omitted architectural patterns, error boundaries, or criteria from the gold standard.
 3. **What Was Incorrect**: Explicit anti-patterns (e.g. `Thread.sleep()`, absolute XPaths, unawaited promises).
@@ -184,15 +196,15 @@ For all scenario questions, Agent 06 requires the candidate to analyze trade-off
 
 Agent 06 preserves full conversation and session state across turns:
 
-| Action | API Route | Description & State Behavior |
-| :--- | :--- | :--- |
-| **Start Interview** | `action: 'start'` | Initializes session, calibrates questions based on role, experience, and tech stack, and presents Question 1. |
-| **Pause Interview** | `action: 'pause'` | Freezes total and per-answer running timers, persists current turn state, sets status to `paused`. |
-| **Resume Interview** | `action: 'resume'` | Unfreezes timers, re-activates active turn, presents current question without losing previous answers. |
-| **Skip Question** | `action: 'skip'` | Records turn as skipped (Score: 0), logs reason, and advances to the next question. |
-| **Repeat Question** | `action: 'repeat'` | Re-delivers the current question with highlighted architectural focus and clarification. |
-| **Request Hint** | `action: 'hint'` | Delivers conceptual clues without revealing the complete answer. |
-| **End Interview** | `action: 'end'` | Concludes session early on demand, calculating talent scorecard across completed turns. |
+| Action               | API Route          | Description & State Behavior                                                                                  |
+| :------------------- | :----------------- | :------------------------------------------------------------------------------------------------------------ |
+| **Start Interview**  | `action: 'start'`  | Initializes session, calibrates questions based on role, experience, and tech stack, and presents Question 1. |
+| **Pause Interview**  | `action: 'pause'`  | Freezes total and per-answer running timers, persists current turn state, sets status to `paused`.            |
+| **Resume Interview** | `action: 'resume'` | Unfreezes timers, re-activates active turn, presents current question without losing previous answers.        |
+| **Skip Question**    | `action: 'skip'`   | Records turn as skipped (Score: 0), logs reason, and advances to the next question.                           |
+| **Repeat Question**  | `action: 'repeat'` | Re-delivers the current question with highlighted architectural focus and clarification.                      |
+| **Request Hint**     | `action: 'hint'`   | Delivers conceptual clues without revealing the complete answer.                                              |
+| **End Interview**    | `action: 'end'`    | Concludes session early on demand, calculating talent scorecard across completed turns.                       |
 
 ---
 
@@ -218,7 +230,7 @@ At the conclusion of the interview, Agent 06 synthesizes the complete loop into 
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-> **Mandatory Disclaimer Enforced**: *"These are simulated interview assessments conducted by Agent 06 for skill gap identification and technical training, not actual hiring decisions."*
+> **Mandatory Disclaimer Enforced**: _"These are simulated interview assessments conducted by Agent 06 for skill gap identification and technical training, not actual hiring decisions."_
 
 ---
 
@@ -245,32 +257,39 @@ TOTAL SUITE PASS RATE: 56/56 PASSING (0 FAILING) ACROSS ALL 7 INTERVIEW SUITES
 ### Detailed Benchmark Results
 
 #### TEST 1: Playwright Interview (5–8 Years, Advanced)
+
 - **Result**: **PASSED**.
 - Selected authentic Playwright questions (`q-pw-001`, `q-pw-065`, etc.). Presented Question 1 one at a time. Verified that candidate answer addressing browser contexts, readonly POM locators, and `page.route()` received a high Technical Accuracy score (5/5) with adaptive follow-up.
 
 #### TEST 2: Selenium Java Interview (2–5 Years, Intermediate)
+
 - **Result**: **PASSED**.
 - Delivered Selenium and Java fundamentals (`q-sel-002`, `q-api-040` concurrency in Java threads, etc.) calibrated for mid-level engineers with complete answer summaries and code snippets.
 
 #### TEST 3: Test Architect Interview (15+ Years, Architect)
+
 - **Result**: **PASSED**.
 - Retrieved senior enterprise scenarios (`arch-fw-1`, `fmi-qa-flaky-01`, `arch-sel-1`), verifying governance, 50-squad scaling, KEDA autoscaling, and flaky quarantine.
 
 #### TEST 4: Incomplete Answer Challenge
+
 - **Result**: **PASSED**.
-- Candidate submitted vague answer: *"Browser contexts provide separate sessions."*
-- Agent 06 flagged verdict as `Partially Correct`, identified missing parallel multi-user isolation concepts, and immediately probed: *"How would you use browser contexts to run multiple users in parallel without sharing authentication state?"* without revealing the expected answer.
+- Candidate submitted vague answer: _"Browser contexts provide separate sessions."_
+- Agent 06 flagged verdict as `Partially Correct`, identified missing parallel multi-user isolation concepts, and immediately probed: _"How would you use browser contexts to run multiple users in parallel without sharing authentication state?"_ without revealing the expected answer.
 
 #### TEST 5: Incorrect Technical Answer Handling
+
 - **Result**: **PASSED**.
-- Candidate submitted anti-pattern: *"I just put Thread.sleep(5000) before clicking the button."*
+- Candidate submitted anti-pattern: _"I just put Thread.sleep(5000) before clicking the button."_
 - Agent 06 penalized the score (25/100, Technical Accuracy: 2/5), identified static wait flakiness risk in `whatWasIncorrect`, and explained the correct concept (`WebDriverWait` polling event loop).
 
 #### TEST 6: Internal Knowledge Base Preservation
+
 - **Result**: **PASSED**.
 - Verified all questions originated from `INTERVIEW_KNOWLEDGE_BASE` with `source: 'internal_knowledge_base'`, preserving authentic question IDs without hallucination.
 
 #### TEST 7: Internet Research Transparency
+
 - **Result**: **PASSED**.
 - When web search is requested without API keys, `QAInterviewResearcher` reports offline status transparently and falls back to `ai_generated` or `internal_knowledge_base` without fabricating fake URLs or claiming scraped question authority.
 

@@ -1,4 +1,5 @@
 # AGENT 04 — Code Reviewer Intelligence Audit & Enhancement Report
+
 **Role**: Principal Software Engineer, Test Automation Architect and Senior Code Reviewer  
 **Platform**: IntelligentQA Enterprise Learning Academy & Autonomous SDET Suite  
 **Agent ID**: `agent-4-review` (`CodeReviewerAndDebugger` / `Agent 4`)  
@@ -18,6 +19,7 @@ Agent 04 has been upgraded from a basic regex-based flakiness detector into an i
 ## 1. Supported Input Sources & Context Ingestion
 
 Agent 04 supports the complete spectrum of enterprise input sources:
+
 1. **Code Pasted into Chat / Workspace**: Snippets, single test methods, or entire classes.
 2. **Individual Uploaded Files**: `.ts`, `.spec.ts`, `.java`, `.py`, `.cs`, `.json`, `.xml`, `.yml`.
 3. **Multiple Uploaded Files**: Co-dependent test classes, BaseTest fixtures, Page Objects, and configuration files.
@@ -28,7 +30,9 @@ Agent 04 supports the complete spectrum of enterprise input sources:
 8. **User-Provided Review Instructions**: Explicit guidance requesting specific audits (e.g. security audit, flakiness triage, parallel safety check).
 
 ### Strict Traceability & Inspection Honesty Rule
+
 Agent 04 strictly follows the **Traceability & Honesty Mandate**:
+
 - It inspects actual uploaded source files and traces cross-file dependencies (e.g. BaseTest driver setup vs. Page Object method execution).
 - **It NEVER pretends to have reviewed an entire repository when only a subset of files was supplied.**
 - Whenever reviewing partial frameworks or uploaded subsets, Agent 04 **explicitly enumerates all files NOT inspected** (e.g., `pom.xml`, `testng.xml`, test data files, CI/CD pipeline definitions).
@@ -39,12 +43,12 @@ Agent 04 strictly follows the **Traceability & Honesty Mandate**:
 
 Agent 04 provides native, framework-specific code reviews across all major enterprise automation stacks:
 
-| Automation Domain | Primary Framework | Supported Languages & Runtimes |
-|:---|:---|:---|
-| **Modern Web** | **Playwright** | TypeScript (recommended default), JavaScript, Java, Python, C# (.NET) |
-| **Enterprise Web** | **Selenium WebDriver 4** | Java (TestNG / JUnit 5), Python (pytest), C# (NUnit / xUnit) |
-| **API Automation** | **REST Assured** | Java (TestNG / JUnit 5 + Hamcrest / AssertJ) |
-| **Mobile Automation** | **Appium 2.x** | Java (`AndroidDriver`, `IOSDriver`), Python, JavaScript/TypeScript, C# |
+| Automation Domain     | Primary Framework        | Supported Languages & Runtimes                                         |
+| :-------------------- | :----------------------- | :--------------------------------------------------------------------- |
+| **Modern Web**        | **Playwright**           | TypeScript (recommended default), JavaScript, Java, Python, C# (.NET)  |
+| **Enterprise Web**    | **Selenium WebDriver 4** | Java (TestNG / JUnit 5), Python (pytest), C# (NUnit / xUnit)           |
+| **API Automation**    | **REST Assured**         | Java (TestNG / JUnit 5 + Hamcrest / AssertJ)                           |
+| **Mobile Automation** | **Appium 2.x**           | Java (`AndroidDriver`, `IOSDriver`), Python, JavaScript/TypeScript, C# |
 
 ---
 
@@ -86,27 +90,33 @@ Every review performed by Agent 04 is evaluated systematically across seven core
 ## 4. Severity Classification & Finding Schema
 
 ### A. Severity Levels
+
 Every audit finding is classified into one of four standardized severity tiers:
+
 - **CRITICAL**: Security vulnerability (exposed secrets, unmasked API tokens) or major functional failure (assertions that never execute, tests that falsely pass/fail unconditionally).
 - **HIGH**: Significant reliability or architectural defect (race conditions, missing driver cleanup causing zombie memory leaks, static drivers breaking parallel runs, hardcoded sleeps masking timing defects).
 - **MEDIUM**: Maintainability, performance or quality concern (assertions inside Page Objects, code duplication, missing response schema validations, absolute XPaths).
 - **LOW**: Style, readability, or minor improvement (naming convention deviation, missing Javadoc/TSDoc comments, minor formatting).
 
 ### B. Defect Categorization & Objective Distinction
+
 Agent 04 does not flag a problem merely because a coding pattern differs from personal preference. It strictly categorizes every finding as one of:
+
 1. **Actual Defect**: A demonstrably broken functional flow, memory leak, or concurrency crash.
 2. **Framework-Specific Best Practice**: An established idiom (e.g. Playwright web-first assertions over `waitForTimeout`).
 3. **Optional Improvement**: A clean-code enhancement that improves readability without affecting execution.
 4. **Context-Dependent Recommendation**: An architectural suggestion contingent on scale (e.g. migrating from class-level fixtures to suite-level runners).
 
 ### C. Mandatory Finding Schema
+
 Every finding reported by Agent 04 strictly implements the following 9-point schema:
 
 ```markdown
 ### [FINDING-ID] Finding Title
+
 - **Finding ID**: Unique identifier (e.g. [FINDING-PW-001], [FINDING-SEL-001])
 - **File and Line Number**: File path and line number where available.
-  *MANDATORY RULE*: Never invent line numbers. If not in input, explicitly state:
+  _MANDATORY RULE_: Never invent line numbers. If not in input, explicitly state:
   "Line number not provided in input snippet".
 - **Code Snippet**: Exact excerpt highlighting the defect (with secrets masked).
 - **Problem**: Concise description of the issue.
@@ -123,6 +133,7 @@ Every finding reported by Agent 04 strictly implements the following 9-point sch
 ## 5. Dual Operating Modes
 
 Agent 04 supports two operational modes:
+
 1. **REVIEW ONLY**:
    - Analyzes source files or snippets.
    - Outputs the Executive Summary, Findings Matrix, Detailed Finding Breakdowns, and Prevention Checklist.
@@ -143,16 +154,18 @@ The enhanced Agent 04 intelligence engine was subjected to all five mandated ben
 ### BENCHMARK TEST 1: Playwright Code with Fixed Timeout vs. Locator Assertion
 
 #### Submitted Code Input:
+
 ```typescript
-test("checkout order workflow", async ({ page }) => {
-  await page.goto("/checkout");
-  await page.click("#checkout");
+test('checkout order workflow', async ({ page }) => {
+  await page.goto('/checkout');
+  await page.click('#checkout');
   await page.waitForTimeout(5000); // Fixed timeout sleep
-  await page.click("#confirm");
+  await page.click('#confirm');
 });
 ```
 
 #### Agent 04 Review Findings:
+
 - **Finding ID**: `[FINDING-PW-001]`
 - **File and Line Number**: Line number not provided in input snippet
 - **Code Snippet**:
@@ -167,12 +180,13 @@ test("checkout order workflow", async ({ page }) => {
 - **Recommended Fix**: Replace `await page.waitForTimeout(5000)` with Playwright's auto-retrying web-first assertion: `await expect(page.getByRole('button', { name: 'Confirm' })).toBeVisible({ timeout: 10000 });`.
 
 #### Drop-In Corrected Code:
+
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test("checkout order workflow", async ({ page }) => {
-  await page.goto("/checkout");
-  
+test('checkout order workflow', async ({ page }) => {
+  await page.goto('/checkout');
+
   // Resilient role locator with auto-waiting click
   const checkoutBtn = page.getByRole('button', { name: 'Checkout' });
   await checkoutBtn.click();
@@ -191,6 +205,7 @@ test("checkout order workflow", async ({ page }) => {
 ### BENCHMARK TEST 2: Selenium Java Code with Missing Driver Cleanup
 
 #### Submitted Code Input:
+
 ```java
 package com.enterprise.qa;
 
@@ -209,6 +224,7 @@ public class UserLoginTest {
 ```
 
 #### Agent 04 Review Findings:
+
 - **Finding ID**: `[FINDING-SEL-001]`
 - **File and Line Number**: Line number not provided in input snippet
 - **Code Snippet**:
@@ -223,6 +239,7 @@ public class UserLoginTest {
 - **Recommended Fix**: Implement an `@AfterMethod(alwaysRun = true)` hook in TestNG (or `@AfterEach` in JUnit 5) with a null check to ensure `driver.quit()` is invoked under all termination conditions.
 
 #### Drop-In Corrected Code:
+
 ```java
 package com.enterprise.qa;
 
@@ -270,6 +287,7 @@ public class UserLoginTest {
 ### BENCHMARK TEST 3: REST Assured Code with Missing Response Assertions
 
 #### Submitted Code Input:
+
 ```java
 package com.enterprise.qa.api;
 
@@ -291,6 +309,7 @@ public class AuthApiTest {
 ```
 
 #### Agent 04 Review Findings:
+
 - **Finding ID**: `[FINDING-RA-001]`
 - **File and Line Number**: Line number not provided in input snippet
 - **Code Snippet**:
@@ -305,6 +324,7 @@ public class AuthApiTest {
 - **Recommended Fix**: Chain `.then().statusCode(200)` (or expected status), validate response body fields using Hamcrest matchers (`equalTo`, `notNullValue`), and assert JSON schema compliance.
 
 #### Drop-In Corrected Code:
+
 ```java
 package com.enterprise.qa.api;
 
@@ -339,12 +359,13 @@ public class AuthApiTest {
 ### BENCHMARK TEST 4: File Containing Hardcoded API Token (Secret Protection)
 
 #### Submitted Code Input:
-```javascript
-describe("Payments Gateway API Tests", () => {
-  const API_KEY = "Bearer sk_live_9a8b7c6d5e4f3a2b1c0d_prod_secret_token";
 
-  it("should retrieve billing invoice", async () => {
-    const res = await axios.get("https://api.gateway.io/v1/invoices", {
+```javascript
+describe('Payments Gateway API Tests', () => {
+  const API_KEY = 'Bearer sk_live_9a8b7c6d5e4f3a2b1c0d_prod_secret_token';
+
+  it('should retrieve billing invoice', async () => {
+    const res = await axios.get('https://api.gateway.io/v1/invoices', {
       headers: { Authorization: API_KEY },
     });
     expect(res.status).toBe(200);
@@ -353,13 +374,14 @@ describe("Payments Gateway API Tests", () => {
 ```
 
 #### Agent 04 Review Findings:
+
 - **Finding ID**: `[FINDING-SEC-001]`
 - **File and Line Number**: Line number not provided in input snippet
 - **Code Snippet**:
   ```javascript
-  const API_KEY = "Bearer [REDACTED_API_TOKEN_***]";
+  const API_KEY = 'Bearer [REDACTED_API_TOKEN_***]';
   ```
-  *(Notice: The raw secret `sk_live_...` has been masked by Agent 04's Secret Protection Protocol)*
+  _(Notice: The raw secret `sk_live_...` has been masked by Agent 04's Secret Protection Protocol)_
 - **Problem**: Hardcoded production/staging API token committed directly in test source code.
 - **Technical Explanation**: Embedding raw authentication credentials, JWTs, or private API keys directly in test code exposes secrets to version control repositories (git commit history), continuous integration build logs, developer laptops, and third-party dependency scanners. Once committed, credentials must be considered permanently compromised.
 - **Impact**: **Critical Security Vulnerability**. Unauthorized API access, potential data exfiltration, spoofing of authorized payment entities, compliance violation (SOC 2, ISO 27001, PCI-DSS Requirement 6.4), and mandatory immediate credential revocation.
@@ -368,24 +390,25 @@ describe("Payments Gateway API Tests", () => {
 - **Recommended Fix**: Extract secrets into system environment variables (`process.env.API_KEY` or `System.getenv("API_KEY")`) or a secure `.env` file that is strictly included in `.gitignore`. **NEVER commit raw secrets to source repositories.**
 
 #### Drop-In Corrected Code:
+
 ```javascript
 // Secure test implementation with runtime environment variable injection
-describe("Payments Gateway API Tests", () => {
+describe('Payments Gateway API Tests', () => {
   // Read token from environment variable; fail fast if missing
   const API_KEY = process.env.PAYMENT_GATEWAY_API_KEY;
 
   beforeAll(() => {
     if (!API_KEY) {
-      throw new Error("CRITICAL: PAYMENT_GATEWAY_API_KEY environment variable is not configured.");
+      throw new Error('CRITICAL: PAYMENT_GATEWAY_API_KEY environment variable is not configured.');
     }
   });
 
-  it("should retrieve billing invoice", async () => {
-    const res = await axios.get("https://api.gateway.io/v1/invoices", {
+  it('should retrieve billing invoice', async () => {
+    const res = await axios.get('https://api.gateway.io/v1/invoices', {
       headers: { Authorization: `Bearer ${API_KEY}` },
     });
     expect(res.status).toBe(200);
-    expect(res.data).toHaveProperty("invoices");
+    expect(res.data).toHaveProperty('invoices');
   });
 });
 ```
@@ -395,6 +418,7 @@ describe("Payments Gateway API Tests", () => {
 ### BENCHMARK TEST 5: Uploaded Multi-File Framework Project
 
 #### Submitted Project Files:
+
 1. `src/test/java/com/enterprise/qa/base/BaseTest.java` (Static `WebDriver driver`, missing `@AfterMethod`)
 2. `src/main/java/com/enterprise/qa/pages/LoginPage.java` (Contains `Assert.assertTrue` inside Page Object)
 3. `src/test/java/com/enterprise/qa/tests/LoginTest.java` (`extends BaseTest`)
@@ -402,6 +426,7 @@ describe("Payments Gateway API Tests", () => {
 #### Agent 04 Multi-File Architectural Review:
 
 ##### 1. Executive Inspection Scope & Traceability
+
 - **Inspected Files**:
   - `src/test/java/com/enterprise/qa/base/BaseTest.java`
   - `src/main/java/com/enterprise/qa/pages/LoginPage.java`
@@ -415,15 +440,16 @@ describe("Payments Gateway API Tests", () => {
 
 ##### 2. Cross-File Findings Matrix
 
-| Finding ID | Severity | Dimension | Classification | Target File | Problem Summary |
-|:---|:---:|:---|:---|:---|:---|
-| **[FINDING-ARCH-001]** | **HIGH** | B. Reliability / C. Architecture | Actual defect | `BaseTest.java` | Static `WebDriver` shared across threads breaks parallel execution |
-| **[FINDING-ARCH-002]** | **MEDIUM** | C. Architecture | Framework-specific best practice | `LoginPage.java` | Assertions placed inside Page Object violates POM separation |
-| **[FINDING-ARCH-003]** | **HIGH** | C. Architecture / Lifecycle | Actual defect | `BaseTest.java` | Missing guaranteed driver teardown causing zombie browser leaks |
+| Finding ID             |  Severity  | Dimension                        | Classification                   | Target File      | Problem Summary                                                    |
+| :--------------------- | :--------: | :------------------------------- | :------------------------------- | :--------------- | :----------------------------------------------------------------- |
+| **[FINDING-ARCH-001]** |  **HIGH**  | B. Reliability / C. Architecture | Actual defect                    | `BaseTest.java`  | Static `WebDriver` shared across threads breaks parallel execution |
+| **[FINDING-ARCH-002]** | **MEDIUM** | C. Architecture                  | Framework-specific best practice | `LoginPage.java` | Assertions placed inside Page Object violates POM separation       |
+| **[FINDING-ARCH-003]** |  **HIGH**  | C. Architecture / Lifecycle      | Actual defect                    | `BaseTest.java`  | Missing guaranteed driver teardown causing zombie browser leaks    |
 
 ##### 3. Detailed Finding Analyses
 
 ###### [FINDING-ARCH-001] Static WebDriver Variable Causes Race Conditions in Parallel Execution
+
 - **Finding ID**: `[FINDING-ARCH-001]`
 - **File & Line**: `src/test/java/com/enterprise/qa/base/BaseTest.java` (Line number not provided in input snippet)
 - **Problem**: `public static WebDriver driver;` creates a shared singleton instance across concurrent threads.
@@ -433,6 +459,7 @@ describe("Payments Gateway API Tests", () => {
 - **Recommended Fix**: Encapsulate the `WebDriver` instance inside a `ThreadLocal<WebDriver>` with static getter, setter, and unload methods.
 
 ###### [FINDING-ARCH-002] Assertions Inside Page Object Violate Page Object Model Separation
+
 - **Finding ID**: `[FINDING-ARCH-002]`
 - **File & Line**: `src/main/java/com/enterprise/qa/pages/LoginPage.java` (Line number not provided in input snippet)
 - **Problem**: Hard assertions (`Assert.assertTrue(driver.findElement(...).isDisplayed())`) are embedded directly inside Page Object methods.
@@ -442,6 +469,7 @@ describe("Payments Gateway API Tests", () => {
 - **Recommended Fix**: Refactor Page Object methods to return element state or navigate to subsequent Page Objects, moving assertions into the `@Test` methods in `LoginTest.java`.
 
 ###### [FINDING-ARCH-003] Missing Guaranteed Teardown and Cleanup in BaseTest Lifecycle
+
 - **Finding ID**: `[FINDING-ARCH-003]`
 - **File & Line**: `src/test/java/com/enterprise/qa/base/BaseTest.java` (Line number not provided in input snippet)
 - **Problem**: No `@AfterMethod` lifecycle hook to terminate the browser driver session.
@@ -453,6 +481,7 @@ describe("Payments Gateway API Tests", () => {
 ##### 4. Refactored Multi-File Production Code Suite
 
 ###### Refactored `src/test/java/com/enterprise/qa/base/BaseTest.java`:
+
 ```java
 package com.enterprise.qa.base;
 
@@ -502,6 +531,7 @@ public abstract class BaseTest {
 ```
 
 ###### Refactored `src/main/java/com/enterprise/qa/pages/LoginPage.java`:
+
 ```java
 package com.enterprise.qa.pages;
 
@@ -553,6 +583,7 @@ public class LoginPage {
 ```
 
 ###### Refactored `src/test/java/com/enterprise/qa/tests/LoginTest.java`:
+
 ```java
 package com.enterprise.qa.tests;
 
@@ -573,7 +604,7 @@ public class LoginTest extends BaseTest {
                  .clickSubmit();
 
         // Assertions strictly belong in the Test class
-        Assert.assertTrue(loginPage.isDashboardDisplayed(), 
+        Assert.assertTrue(loginPage.isDashboardDisplayed(),
             "Dashboard should be displayed following successful credentials submission");
     }
 }
@@ -603,6 +634,7 @@ Testing: Line Number Rule - No Invented Line Numbers... ✅ PASSED
 ```
 
 Additionally, all existing test suites across the platform were re-verified with zero regressions:
+
 - `tests/code-reviewer-debugger-agent.test.cjs`: **3/3 PASSED**
 - `tests/agent-1-requirement-generator.test.cjs`: **5/5 PASSED**
 - `tests/agent-2-test-case-generator.test.cjs`: **6/6 PASSED**

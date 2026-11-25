@@ -51,6 +51,7 @@ This document is the authoritative implementation specification. Follow `AGENTS-
 The application enforces a **100% strict, permanent separation** between the Enterprise SDET Platform and the independent Coding Tutorial Platform (`/kids`). Both platforms function as completely independent sites with independent navigation, dedicated views, independent target audiences, and zero cross-switching.
 
 ### Rules of Separation:
+
 1. **SIGNED-IN SDET USERS EXPERIENCE ZERO KIDS / TUTORIAL CLUTTER**:
    - Whoever signs up or logs into the IntelligentQA site is routed directly to `/dashboard` and can access all SDET features (Tracks, Sandboxes, QA Agents Suite, Interview Question Bank, Interview Griller) without any link, banner, or menu item of Kids programming.
    - All SDET sidebars, top headers, and profile menus are 100% focused on SDET automation.
@@ -71,22 +72,24 @@ The application enforces a **100% strict, permanent separation** between the Ent
 ## 1. TECH STACK & BRAND DESIGN SYSTEM
 
 ### Technology Stack
+
 - **Framework**: Next.js 16 (App Router, React 19, TypeScript), Tailwind CSS, shadcn/ui, Lucide Icons, Framer Motion.
 - **Code Editor & Syntax Highlighting**: Lightweight PrismJS/Shiki syntax-highlighted editor with synchronized scrolling, real-time line numbering, and execution error highlights.
 - **Database, Auth & Storage**: InsForge PostgreSQL with Row-Level Security (RLS), AscentWealth-style Email OTP verification (`/api/db/user-data`), and official Google OAuth 2.0 Account Chooser & Consent screen (`accounts.google.com`).
 - **Compiler & Execution Engine**:
-  - *Tier 1 (Local)*: Native Node.js (`node -e`), Python 3 (`python3 -c`), and JDK (`javac` & `java`).
-  - *Tier 2 (TypeScript)*: Next.js SWC JIT transform (`@swc/wasm` or native build swc).
-  - *Tier 3 (Cloud Mirrors)*: Piston API, Wandbox (`cpython-head`), Judge0, and Glot with dynamic Java class extraction (`Main.java`).
-  - *Tier 4 (AI Fallback)*: Gemini Flash Lite execution evaluation.
-  - *Tier 5 (In-Process VM)*: Zero-dependency sandboxed V8 execution for Python (`simulatePythonInProcess`) and Java (`simulateJavaInProcess`) ensuring 100% Vercel serverless resiliency.
+  - _Tier 1 (Local)_: Native Node.js (`node -e`), Python 3 (`python3 -c`), and JDK (`javac` & `java`).
+  - _Tier 2 (TypeScript)_: Next.js SWC JIT transform (`@swc/wasm` or native build swc).
+  - _Tier 3 (Cloud Mirrors)_: Piston API, Wandbox (`cpython-head`), Judge0, and Glot with dynamic Java class extraction (`Main.java`).
+  - _Tier 4 (AI Fallback)_: Gemini Flash Lite execution evaluation.
+  - _Tier 5 (In-Process VM)_: Zero-dependency sandboxed V8 execution for Python (`simulatePythonInProcess`) and Java (`simulateJavaInProcess`) ensuring 100% Vercel serverless resiliency.
 - **AI Dual-Engine Architecture**:
-  - *Cloud LLM*: Google Gemini Flash Lite (`gemini-flash-lite-latest`, `gemini-2.5-flash`) via Google AI Studio API for interactive interview grilling, code reviews, test case generation, and error debugging.
-  - *Local Deterministic Engine*: Zero-latency fallback in `src/lib/qa-knowledge-base.ts` covering 50+ SDET interview scenarios, locator strategies, architecture diagrams, and syntax snippets.
+  - _Cloud LLM_: Google Gemini Flash Lite (`gemini-flash-lite-latest`, `gemini-2.5-flash`) via Google AI Studio API for interactive interview grilling, code reviews, test case generation, and error debugging.
+  - _Local Deterministic Engine_: Zero-latency fallback in `src/lib/qa-knowledge-base.ts` covering 50+ SDET interview scenarios, locator strategies, architecture diagrams, and syntax snippets.
 - **Messaging & Notifications**: Meta WhatsApp Cloud API (`/api/whatsapp/webhook`) for daily interview challenge delivery, streak reminders, and quick concept digests.
 - **Hosting Targets**: Vercel (Hobby Free Tier) and InsForge Managed Backend.
 
 ### Contemporary QA Brand Logo & Visual Identity
+
 - **Logo Concept**: The IntelligentQA brand mark is a geometric fusion of three core elements:
   1. **The Verification Checkmark (`✔`)**: Represents software quality, passing test suites, and trusted release validation.
   2. **The Code Syntax Brackets (`{ }` / `< >`)**: Represents the transition into software engineering, test automation code, and robust framework design.
@@ -127,6 +130,7 @@ IntelligentQA Learning Platform
 ---
 
 ### Track 1: Playwright + TypeScript (Modern Web SDET)
+
 - TypeScript Fundamentals for Testers: Types, interfaces, async/await, promises, and error handling.
 - Core Playwright Architecture: BrowserContext isolation, Page lifecycle, and WebSocket CDP connection.
 - Locators & Web-First Assertions: Strict mode locators, auto-waiting, `expect(locator).toBeVisible()`, and custom wait conditions.
@@ -134,19 +138,23 @@ IntelligentQA Learning Platform
 - Production Framework Design: Page Object Model (POM), component fixtures, custom workers, cross-browser matrices, CI/CD GitHub Actions, and HTML/Allure report generation.
 
 ### Track 2: Selenium WebDriver + Java (Enterprise SDET)
+
 - Core Java for Automation: Variables, arrays, collections (`List`, `Set`, `Map`), OOP pillars (Inheritance, Polymorphism, Encapsulation, Abstraction), and exception handling.
 - WebDriver Architecture: W3C WebDriver Protocol, ChromeDriver/GeckoDriver communication, and session management.
 - Dynamic Synchronization: Thread.sleep anti-patterns, Implicit vs Explicit waits, FluentWait, and ExpectedConditions.
 - Enterprise Framework Architecture: PageFactory, hybrid keyword/data-driven frameworks (Apache POI Excel), TestNG lifecycle annotations, thread-safe parallel execution with `ThreadLocal<WebDriver>`, and ExtentReports.
 
 ### Track 3: API Testing & Automation (REST Assured & Playwright API)
+
 - HTTP & REST Principles: Methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`), headers, cookies, status codes, query & path params.
 - REST Assured Framework: Given-When-Then syntax, request/response specifications, authentication (Basic, Bearer, OAuth2), and JSONPath assertions.
 - Serialization & Deserialization: Jackson/Gson POJOs, Builder pattern (Lombok), dynamic payload generation, and JSON schema validation.
 - Playwright API Testing: Built-in `request` fixture, cookie synchronization with UI tests, and auth session state reusability (`storageState`).
 
 ### Track 4: AI in QA & Testing AI Applications (The Next-Gen SDET)
+
 Dedicated 8-step curriculum designed specifically for manual testers transitioning to AI-augmented quality engineering:
+
 1. Step 0: Demystifying AI in QA (Mental model shift from manual clicker to AI orchestrator).
 2. Step 1: QA Prompt Engineering Mastery (Few-shot prompting, system role constraints, persona framing).
 3. Step 2: AI Synthetic Test Data Generation (Generating HIPAA, GDPR, and edge-case boundary data).
@@ -157,6 +165,7 @@ Dedicated 8-step curriculum designed specifically for manual testers transitioni
 8. Step 7: Autonomous Agentic QA Workflows (Multi-agent loops: requirements → test cases → automated suites → self-review).
 
 ### Track 5: QA Interview Mastery & Coding Griller
+
 - Top 500+ categorized SDET interview questions across Automation, Frameworks, Architecture, and Scenario-based problems.
 - Interactive AI Interview Griller (`/interview-griller`) with real-time percentage scoring and technical grading rubrics.
 - In-depth SDET design problems (e.g. designing enterprise testing infrastructure, handling flaky tests, test data management).
@@ -164,6 +173,7 @@ Dedicated 8-step curriculum designed specifically for manual testers transitioni
 ---
 
 ### Core Programming & Kids Learning Studio (`/kids`)
+
 Designed for beginners and kids (ages 10-18+), providing complete, standardized programming lessons matching industry curriculum guidelines (W3Schools/MDN):
 
 1. **Python Track (30 Lessons)**:
@@ -181,9 +191,9 @@ Designed for beginners and kids (ages 10-18+), providing complete, standardized 
    - Sequential numbering: 1 to 29.
 4. **Kids & Beginner Game Studio (`/kids?view=projects`)**:
    - 9 complete, playable starter projects:
-     - *Python*: Secret Number Guesser, Rock Paper Scissors Championship, Dungeon Quest Text RPG, Hangman Mystery Word.
-     - *JavaScript*: Classic 2D Snake Arcade, Retro Pong Arcade, Memory Card Matching Puzzle.
-     - *Java*: Monster Arena RPG Combat, ATM Banking & Vault Simulator.
+     - _Python_: Secret Number Guesser, Rock Paper Scissors Championship, Dungeon Quest Text RPG, Hangman Mystery Word.
+     - _JavaScript_: Classic 2D Snake Arcade, Retro Pong Arcade, Memory Card Matching Puzzle.
+     - _Java_: Monster Arena RPG Combat, ATM Banking & Vault Simulator.
    - Features: Code editor with Tab indentation, live run execution with standard output terminal, download script button, and database save/reset persistence.
 
 ---
@@ -193,7 +203,9 @@ Designed for beginners and kids (ages 10-18+), providing complete, standardized 
 To ensure genuine hands-on learning without requiring external installations, the platform includes dedicated interactive sandboxes built directly into the site:
 
 ### Lab A: The Web Automation Playground (`/sandbox/web`)
+
 A dedicated suite of live, dynamic web pages designed specifically to test edge cases:
+
 - **Dynamic Elements**: Button appearing after random 2–5 second delays; spinner overlay blocking clicks.
 - **Shadow DOM**: Native and open Shadow Roots containing nested input fields and buttons.
 - **Nested Iframes**: Multi-tiered parent-child iframes requiring frame switching.
@@ -204,7 +216,9 @@ A dedicated suite of live, dynamic web pages designed specifically to test edge 
 - **Infinite Scroll & Virtualized Lists**: Lazy-loaded items triggering network calls upon scrolling.
 
 ### Lab B: The Mock API Server (`/api/sandbox/v1/*`)
+
 A real, working mock RESTful backend for API automation practice:
+
 - `POST /api/sandbox/v1/auth/login`: Accepts credentials, returns JWT Bearer token or 401 Unauthorized.
 - `GET /api/sandbox/v1/users`: Supports query parameters (`?page=1&limit=10&role=sdet`), pagination headers, and sorting.
 - `POST /api/sandbox/v1/users`: Validates request body schema, returns 201 Created or 400 Bad Request with validation errors.
@@ -214,13 +228,15 @@ A real, working mock RESTful backend for API automation practice:
 - `GET /api/sandbox/v1/status/:code`: Returns requested HTTP status code (`400`, `404`, `500`) to test negative paths.
 
 ### Lab C: Multi-Tier Zero-Cost Online Compilers (`/sandbox/code`)
+
 An in-browser multi-language compilation and execution environment supporting **Python**, **JavaScript**, **TypeScript**, and **Java**:
+
 - **Multi-Tier Execution Engine** (`/api/sandbox/compiler`):
-  1. *Local Subprocess*: Executes local `python3`, `node`, or `javac`/`java` when binaries exist.
-  2. *TypeScript In-Process*: Compiles TypeScript to JavaScript via Next.js SWC transform without spawn overhead.
-  3. *Cloud Compiler Mirrors*: Piston API, Wandbox (`cpython-head`), Judge0, and Glot.
-  4. *Gemini AI Compiler*: AI-simulated execution for rapid syntax checking.
-  5. *In-Process V8 Sandboxes*: Isolated VM transpilation for Python and Java guaranteeing 100% execution capability on serverless platforms (Vercel).
+  1. _Local Subprocess_: Executes local `python3`, `node`, or `javac`/`java` when binaries exist.
+  2. _TypeScript In-Process_: Compiles TypeScript to JavaScript via Next.js SWC transform without spawn overhead.
+  3. _Cloud Compiler Mirrors_: Piston API, Wandbox (`cpython-head`), Judge0, and Glot.
+  4. _Gemini AI Compiler_: AI-simulated execution for rapid syntax checking.
+  5. _In-Process V8 Sandboxes_: Isolated VM transpilation for Python and Java guaranteeing 100% execution capability on serverless platforms (Vercel).
 - **IDE Features**:
   - Resizable 2-column layout: Code Editor on left, Console Output on right.
   - Horizontally resizable split divider with persistent drag handles.
@@ -229,13 +245,15 @@ An in-browser multi-language compilation and execution environment supporting **
   - Keyboard shortcut: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to run code instantly.
 
 ### Lab D: Coding Problem Library & In-App Solver (`/sandbox/code/problems`, `/sandbox/code/problems/[problemId]`)
+
 Curated LeetCode-style SDET coding library with 22+ challenges:
+
 - **Difficulty Distribution**: 16 Easy, 2 Medium, 4 Hard problems.
 - **Hard Problems Added**:
-  1. *Trapping Rain Water* (`trapping-rain-water` - Arrays & Two Pointers - Hard)
-  2. *Minimum Window Substring* (`minimum-window-substring` - Strings & Sliding Window - Hard)
-  3. *Sliding Window Maximum* (`sliding-window-maximum` - Arrays & Monotonic Deque - Hard)
-  4. *Largest Rectangle in Histogram* (`largest-rectangle-histogram` - Stacks & Monotonic Stack - Hard)
+  1. _Trapping Rain Water_ (`trapping-rain-water` - Arrays & Two Pointers - Hard)
+  2. _Minimum Window Substring_ (`minimum-window-substring` - Strings & Sliding Window - Hard)
+  3. _Sliding Window Maximum_ (`sliding-window-maximum` - Arrays & Monotonic Deque - Hard)
+  4. _Largest Rectangle in Histogram_ (`largest-rectangle-histogram` - Stacks & Monotonic Stack - Hard)
 - **Multi-Language Solutions**: Every problem provides starter templates and working test suites in Java, Python, TypeScript, JavaScript, and C#.
 - **Features**:
   - Filter by category (Arrays, Strings, Stacks, Kids Coding) and difficulty (All, Easy, Medium, Hard).
@@ -245,6 +263,7 @@ Curated LeetCode-style SDET coding library with 22+ challenges:
   - Instant "Load Solution" toggle to study optimal approaches.
 
 ### Lab E: Dedicated Hands-On Concept Guides (`/guides/[trackId]`)
+
 - Guided walkthroughs for Selenium, Playwright, and API Testing with importable practice templates and step-by-step automated verification.
 
 ---
@@ -328,6 +347,7 @@ CREATE POLICY "Users can only manage own programming progress" ON user_programmi
 ```
 
 ### AscentWealth-Style Unified Authentication Flow
+
 - **Email OTP Authentication**:
   - `POST /api/db/user-data` (Action: `request_otp`): Generates a secure 6-digit OTP code sent to user email.
   - `POST /api/db/user-data` (Action: `verify_otp`): Verifies OTP token within 5-minute validity window.
@@ -349,13 +369,15 @@ CREATE POLICY "Users can only manage own programming progress" ON user_programmi
 ## 5. CORE MODULES & USER FLOWS
 
 ### Module A: Technology Selection & Diagnostic Skill Assessment
-- **Landing on `/`**: Modern, crisp developer aesthetics with a bold headline: *"Transform from Manual QA to High-Paid SDET & AI Test Engineer"*.
+
+- **Landing on `/`**: Modern, crisp developer aesthetics with a bold headline: _"Transform from Manual QA to High-Paid SDET & AI Test Engineer"_.
 - **1-Click Diagnostic Assessment (`/assessment`)**:
   - 5-minute quick test evaluating: Manual Testing Fundamentals, Core Programming Logic, Locator Concepts, and API basics.
-  - Recommends tailored starting track: (e.g. *"Start with Playwright + TypeScript Track"*).
+  - Recommends tailored starting track: (e.g. _"Start with Playwright + TypeScript Track"_).
 - **Track Switcher**: Sticky pill bar allowing seamless toggling between Playwright, Selenium, API Testing, AI in QA, and Interview Griller.
 
 ### Module B: Interactive Split-Screen Learning Workspace (`/tracks/[trackId]/[lessonId]`)
+
 - **Left Panel (Interactive Guide)**:
   - Concept explanation in plain English tailored for manual testers.
   - Side-by-side comparison: **"How You Did It Manually"** vs **"How Code Does It"**.
@@ -367,23 +389,28 @@ CREATE POLICY "Users can only manage own programming progress" ON user_programmi
   - Progress auto-persists to InsForge PostgreSQL database.
 
 ### Module C: Dedicated Practice Labs & Online Compilers (`/sandbox/*`)
+
 - Web Automation Playground (`/sandbox/web`): Live dynamic DOM scenarios.
 - Mock API Server (`/sandbox/api`): Interactive REST endpoints with response inspector.
 - Online Compilers (`/sandbox/code`): Live Python, JS, TS, and Java execution with resizable panes.
 - Coding Problem Library (`/sandbox/code/problems`): 22+ LeetCode/SDET algorithmic challenges with in-app solver.
 
 ### Module D: AI Interview Griller & Coding Simulator (`/interview-griller`)
+
 - User selects Difficulty (Junior SDET, Mid-Level SDET, Senior SDET, Test Architect) and Topic.
 - AI Interviewer asks one challenging question at a time and probes candidate responses.
 - Generates a final percentage scorecard with Technical, Architectural, and Communication grades.
 
 ### Module E: Public & In-App "Ask AI" SDET Mentor
+
 - Header access for pre-signup career guidance and in-app code debugging.
 - Built-in error diagnosis (`diagnoseCodeError`) detects error types, inspects stack traces, pinpointing exact failing lines and offering validated solutions.
 - Suggested chips/FAQs removed from UI for a clean, distraction-free debugging experience.
 
 ### Module F: Dedicated In-App "QA Agents" Suite (`/qa-agents`)
+
 Located inside the authenticated user navigation, this section provides 5 specialized autonomous/interactive agents:
+
 1. **Requirements & User Story Clarifier Agent**:
    - Ingests raw business requirements, PRDs, or Jira user stories.
    - Flags missing negative paths, ambiguous acceptance criteria, and edge cases.
@@ -420,30 +447,39 @@ Located inside the authenticated user navigation, this section provides 5 specia
 ## 7. MANDATORY REQUIREMENTS & ACCEPTANCE CRITERIA
 
 #### 1. Zero Paid Dependencies
+
 Operates 100% on free tiers (Gemini Flash Lite, PostgreSQL RLS, open-source compiler mirrors, V8 VM sandboxes).
 
 #### 2. Dual-Engine AI Architecture
+
 Cloud Gemini API with instant deterministic local fallback (`src/lib/qa-knowledge-base.ts`).
 
 #### 3. High-Security Multi-Tenant Database
+
 All user data, progress, code, and submissions stored in PostgreSQL with strict RLS isolation. No reliance on un-scoped client localStorage.
 
 #### 4. AscentWealth Authentication
+
 Email OTP verification + official Google OAuth 2.0 Account Selection & Consent flow. Zero mock email accounts.
 
 #### 5. Multi-Tier Online Compilers
+
 Full code execution for Python, JavaScript, TypeScript, and Java with 0 cloud dependencies using in-process V8 sandboxes.
 
 #### 6. Coding Problem Library with Hard Challenges
+
 22+ problems including Trapping Rain Water, Minimum Window Substring, Sliding Window Maximum, and Largest Rectangle in Histogram with full multi-language solutions.
 
 #### 7. Standardized Programming Tracks & Kids Studio
+
 Python (30 lessons), JavaScript (27 lessons), Java (29 lessons) with unified "Intro, Get Started & Syntax" opening and 9 playable game projects.
 
 #### 8. AI Code Debugging
+
 Ask AI includes `diagnoseCodeError` with stack trace analysis and line-by-line fix suggestions.
 
 #### 9. Absolute Independence of SDET & Kids Coding Platforms
+
 Zero cross-switching allowed at any point. Both platforms operate with completely independent navigation, layouts, and route boundaries.
 
 ---

@@ -55,10 +55,10 @@ For every substantial technical inquiry, Agent 05 strictly follows the **10-Step
 
 1. **Understand the Problem**: Dissect the user's specific context, constraints, and operational environment.
 2. **Identify Experience Level**:
-   - *Beginner / Manual QA*: Connects automation abstractions to manual testing intuition with empathy and gradual roadmaps.
-   - *Mid-Level SDET*: Focuses on clean code, idiomatic design patterns, synchronization, and debugging.
-   - *Senior SDET / Test Architect*: Bypasses basic definitions; focuses immediately on architecture, scalability, maintainability, reliability, and trade-offs.
-   - *QA Manager*: Addresses ROI, resource allocation, team topologies, DDP metrics, and release governance.
+   - _Beginner / Manual QA_: Connects automation abstractions to manual testing intuition with empathy and gradual roadmaps.
+   - _Mid-Level SDET_: Focuses on clean code, idiomatic design patterns, synchronization, and debugging.
+   - _Senior SDET / Test Architect_: Bypasses basic definitions; focuses immediately on architecture, scalability, maintainability, reliability, and trade-offs.
+   - _QA Manager_: Addresses ROI, resource allocation, team topologies, DDP metrics, and release governance.
 3. **Explain the Core Concept**: Provide an unambiguous definition and architectural rationale.
 4. **Explain Internal Mechanics Under the Hood**: Contrast protocols and runtimes (e.g., WebSocket CDP event loops vs. W3C HTTP Wire round-trips, DOM mutation observers, thread memory boundaries).
 5. **Real-World Enterprise Implementation**: Present battle-tested configurations used in production.
@@ -93,6 +93,7 @@ The following five enterprise architecture scenarios were executed, evaluated, a
 ### TEST 1: Unified Playwright Framework for 50 Squads and 20 Applications
 
 #### 1. Architectural Blueprint & Monorepo Topology
+
 To scale test automation across 50 autonomous squads without creating a centralized deployment bottleneck, we implement a **Federated Monorepo Architecture** using modern workspace tooling (`pnpm workspaces` or `Nx / Turborepo`):
 
 ```
@@ -124,6 +125,7 @@ enterprise-playwright-repo/
 ```
 
 #### 2. Federated Ownership Matrix
+
 - **Core Quality Architecture Platform (Central Hub)**:
   - Owns `packages/core-playwright` and `packages/ui-components`.
   - Maintains runner infrastructure, Docker base images, CI/CD reusable workflow templates, and auth state generators.
@@ -134,6 +136,7 @@ enterprise-playwright-repo/
   - Zero cross-squad pull request dependencies.
 
 #### 3. High-Throughput CI/CD Execution & Parallel Sharding
+
 - **Intelligent Affected Filtering**: Using `nx affected --target=test` or Git commit diff path filtering, PR pipelines execute tests **only** for the application(s) impacted by the changeset.
 - **Native Ephemeral Sharding**: For regression runs, execution is split across ephemeral Kubernetes runners or GitHub Actions matrix nodes:
   ```bash
@@ -148,17 +151,20 @@ enterprise-playwright-repo/
   ```
 
 #### 4. Shared Authentication & State Management
+
 - Eliminates the anti-pattern of logging in through the UI before every test.
 - The `AuthManager` pre-mints authenticated browser `storageState` JSON files via API for designated persona roles (`ADMIN`, `CUSTOMER_TIER1`, `AUDITOR`) with 4-hour caching. Tests launch with pre-authenticated cookies/local storage injected in under 5 milliseconds.
 
 #### 5. Architectural Scalability Trade-Offs
-- *Monorepo Trade-Off*: Monorepo guarantees zero version drift of shared test fixtures across all 50 squads. However, it requires strict CI caching, disciplined branch hygiene, and robust CODEOWNERS protection to prevent unreviewed changes to shared packages.
+
+- _Monorepo Trade-Off_: Monorepo guarantees zero version drift of shared test fixtures across all 50 squads. However, it requires strict CI caching, disciplined branch hygiene, and robust CODEOWNERS protection to prevent unreviewed changes to shared packages.
 
 ---
 
 ### TEST 2: 90-Day Remediation Strategy for 4,000 Flaky Tests
 
 #### 1. Executive Diagnostic Assessment
+
 A test suite with 4,000 flaky tests has **zero trust**. Developers ignore CI red signals, adopt a "click re-run until it passes" culture, and defect escape rates surge. Flakiness cannot be resolved by raising timeouts or adding `retry: 3`. It must be treated as an engineering reliability crisis.
 
 #### 2. Phased 90-Day Action Roadmap
@@ -189,20 +195,22 @@ flowchart TD
 ```
 
 #### 3. The 4 Root-Cause Classifications
+
 1. **Synchronization & DOM Timing (45%)**:
-   - *Cause*: Hardcoded `Thread.sleep()`, race conditions with React/Vue hydration, and premature element inspection.
-   - *Remediation*: Replace all manual waits with web-first auto-retrying assertions (`expect(locator).toBeVisible()`).
+   - _Cause_: Hardcoded `Thread.sleep()`, race conditions with React/Vue hydration, and premature element inspection.
+   - _Remediation_: Replace all manual waits with web-first auto-retrying assertions (`expect(locator).toBeVisible()`).
 2. **Shared State & Test Pollution (30%)**:
-   - *Cause*: Tests sharing database records (e.g. modifying the same user ID or hardcoded email `test@org.com`), causing collisions during parallel runs.
-   - *Remediation*: Generate dynamic UUIDs for all test entities and wrap database operations in transactional rollback hooks or isolated schemas.
+   - _Cause_: Tests sharing database records (e.g. modifying the same user ID or hardcoded email `test@org.com`), causing collisions during parallel runs.
+   - _Remediation_: Generate dynamic UUIDs for all test entities and wrap database operations in transactional rollback hooks or isolated schemas.
 3. **External Dependencies & Environment Flakiness (15%)**:
-   - *Cause*: Flaky 3rd-party payment gateways, external auth servers, or unstable shared staging environments.
-   - *Remediation*: Mock non-core external dependencies using WireMock, Mountebank, or Playwright `page.route()`.
+   - _Cause_: Flaky 3rd-party payment gateways, external auth servers, or unstable shared staging environments.
+   - _Remediation_: Mock non-core external dependencies using WireMock, Mountebank, or Playwright `page.route()`.
 4. **Obsolete & Duplicate Tests (10%)**:
-   - *Cause*: Legacy UI tests verifying trivial edge cases better suited for unit/integration tests.
-   - *Remediation*: Ruthlessly delete low-yield UI tests and push coverage down to API and component layers.
+   - _Cause_: Legacy UI tests verifying trivial edge cases better suited for unit/integration tests.
+   - _Remediation_: Ruthlessly delete low-yield UI tests and push coverage down to API and component layers.
 
 #### 4. Automated CI Guardrails & Graduation Criteria
+
 - **Strict Quarantine Graduation**: A quarantined test is forbidden from re-entering the blocking PR pipeline until it demonstrates **50 consecutive green runs** in scheduled nightly stress pipelines.
 - **Pre-Merge Stress Verification**: Any new or edited test in a PR must pass a 10x parallel repeat check before the PR can be merged:
   ```bash
@@ -214,6 +222,7 @@ flowchart TD
 ### TEST 3: Introducing AI Agents into an Existing QA CoE
 
 #### 1. High-Yield Enterprise Use Cases (Risk-Tolerant Rollout)
+
 We introduce AI agents into the QA CoE using a phased value-risk framework:
 
 ```
@@ -264,11 +273,13 @@ flowchart LR
   - The agent calls `Git MCP` to stage changes and open isolated branches.
 
 #### 3. Security, Privacy & Human-in-the-Loop (HITL) Guardrails
+
 - **Zero Data Retention (ZDR)**: Enterprise agreements ensure no code, prompts, or test payloads are retained or used for model training.
 - **PII Scrubbing**: Prompts and logs are sanitized via local pre-processors before reaching model endpoints.
 - **Mandatory Human-in-the-Loop Approval**: AI agents are **strictly prohibited** from merging code directly to `main` or deploying releases. All agent modifications are submitted as draft Pull Requests requiring human SDET review.
 
 #### 4. ROI Metrics
+
 - **Mean Time to Triage (MTTD)**: Reduced from an average of 45 minutes to < 4 minutes per failed CI build.
 - **Framework Scaffolding Velocity**: Time to author end-to-end regression specs reduced by 60%.
 - **Defect Detection Percentage (DDP)**: Maintained above 95% across sprint releases.
@@ -281,24 +292,26 @@ Rather than issuing an unsupported or dogmatic recommendation, Agent 05 provides
 
 #### 1. Fundamental Architectural Comparison
 
-| Architectural Vector | Playwright | Selenium WebDriver 4 |
-|:---|:---|:---|
-| **Underlying Protocol** | Bi-directional **WebSocket** connection directly into browser engine internals | **W3C HTTP/REST** Wire Protocol round-trips to separate drivers + CDP BiDi |
-| **Execution Speed** | 🚀 Blazing fast; in-process event dispatching | Moderate; network round-trip overhead per action |
-| **Synchronization** | Native **Actionability Matrix** (Attached, Visible, Stable, Receives Events, Enabled) | Manual explicit waits via `WebDriverWait` / `FluentWait` |
-| **Network Mocking** | Native first-class (`page.route()`, intercept, modify, abort) | Partial; requires complex CDP session configuration |
-| **Process Isolation** | Microsecond `BrowserContext` isolation (cookies, storage) | Heavyweight separate browser processes |
-| **Multi-Tab / iFrames** | Automatic event listening (`page.frameLocator`, `waitForEvent`) | Manual handle tracking and context switching |
-| **Native Safari Engine**| Apple WebKit engine build | Real Safari browser on macOS via `safaridriver` |
-| **Enterprise Footprint**| Dominant in modern web / TS / Python stacks | Dominant in legacy banking / Java / Grid enterprise stacks |
+| Architectural Vector     | Playwright                                                                            | Selenium WebDriver 4                                                       |
+| :----------------------- | :------------------------------------------------------------------------------------ | :------------------------------------------------------------------------- |
+| **Underlying Protocol**  | Bi-directional **WebSocket** connection directly into browser engine internals        | **W3C HTTP/REST** Wire Protocol round-trips to separate drivers + CDP BiDi |
+| **Execution Speed**      | 🚀 Blazing fast; in-process event dispatching                                         | Moderate; network round-trip overhead per action                           |
+| **Synchronization**      | Native **Actionability Matrix** (Attached, Visible, Stable, Receives Events, Enabled) | Manual explicit waits via `WebDriverWait` / `FluentWait`                   |
+| **Network Mocking**      | Native first-class (`page.route()`, intercept, modify, abort)                         | Partial; requires complex CDP session configuration                        |
+| **Process Isolation**    | Microsecond `BrowserContext` isolation (cookies, storage)                             | Heavyweight separate browser processes                                     |
+| **Multi-Tab / iFrames**  | Automatic event listening (`page.frameLocator`, `waitForEvent`)                       | Manual handle tracking and context switching                               |
+| **Native Safari Engine** | Apple WebKit engine build                                                             | Real Safari browser on macOS via `safaridriver`                            |
+| **Enterprise Footprint** | Dominant in modern web / TS / Python stacks                                           | Dominant in legacy banking / Java / Grid enterprise stacks                 |
 
 #### 2. When to Choose Playwright
+
 1. **Modern SPAs**: Applications built on Next.js, React, Angular, or Vue with heavy asynchronous rendering.
 2. **Unified Full-Stack Development**: Engineering organizations where developers and SDETs share TypeScript/JavaScript tooling.
 3. **High CI Parallelism**: Teams looking to cut CI cloud costs through native test sharding and microsecond browser context reuse.
 4. **Heavy API Interception**: Workflows requiring backend stubbing, auth state mocking, or network latency injection.
 
 #### 3. When to Choose Selenium WebDriver 4
+
 1. **Established Enterprise Java Codebases**: Organizations with 100,000+ existing Java/TestNG tests and custom infrastructure that would cost millions to rewrite.
 2. **Strict Real Safari Compatibility**: Regulated banking or healthcare applications requiring compliance verification on physical macOS Safari instances.
 3. **Established Cloud Grid Investments**: Long-term contracts with legacy enterprise Selenium Grids or vendor grids without WebSocket reverse proxy support.
@@ -309,6 +322,7 @@ Rather than issuing an unsupported or dogmatic recommendation, Agent 05 provides
 ### TEST 5: Enterprise Test Governance & Release Quality Gates
 
 #### 1. Operating Model: Federated Hub-and-Spoke
+
 - **The Hub (Quality Architecture & CoE)**: Sets organization-wide standards, designs reusable CI/CD pipeline actions, manages test runner infrastructure, enforces security compliance, and monitors organization-wide KPIs.
 - **The Spokes (Embedded SDETs in Squads)**: Owns sprint test planning, local test data generation, sprint automation authoring, and defect management.
 - **Shared Responsibility Mandate**: Developers own unit and component integration tests; SDETs own framework architecture, contract testing, and end-to-end risk verification.
@@ -352,18 +366,20 @@ Rather than issuing an unsupported or dogmatic recommendation, Agent 05 provides
 ```
 
 #### 3. Core Enterprise Quality Metrics & Mathematical Formulations
+
 1. **Defect Detection Percentage (DDP)**:
    $$\text{DDP} = \frac{\text{Defects Discovered in QA}}{\text{Defects Discovered in QA} + \text{Defects Escaped to Production}} \times 100\%$$
-   *Enterprise Target: $\ge 95\%$*.
+   _Enterprise Target: $\ge 95\%$_.
 2. **Defect Escape Rate**:
    $$\text{Escape Rate} = \frac{\text{Defects Escaped to Production}}{\text{Total Defects Discovered}} \times 100\%$$
-   *Enterprise Target: $< 5\%$*.
+   _Enterprise Target: $< 5\%$_.
 3. **Flakiness Index**:
    $$\text{Flakiness Index} = \frac{\text{Runs requiring retry} + \text{Inconsistent runs}}{\text{Total pipeline executions}} \times 100\%$$
-   *Enterprise Target: $< 1\%$ across all squads*.
+   _Enterprise Target: $< 1\%$ across all squads_.
 4. **Mean Time to Detect (MTTD) & Mean Time to Recover (MTTR)**.
 
 #### 4. Automated Release Governance
+
 Eliminates manual, bureaucratic sign-off emails. A unified **Release Readiness Dashboard** continuously aggregates Jira release version status, automated pipeline gate results, SonarQube code quality, and Datadog synthetic health into an automated Green/Red release verdict.
 
 ---
@@ -378,6 +394,7 @@ node --test tests/agent-05-mentor-benchmarks.test.cjs && node --test tests/sdet-
 ```
 
 ### Execution Log Summary:
+
 ```
 ▶ Agent 05: Principal SDET & Architecture Mentor - 5 Benchmark Tests
   ✔ TEST 1: Successfully architects a unified Playwright framework for 50 squads and 20 applications (1.32ms)
