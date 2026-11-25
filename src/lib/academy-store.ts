@@ -478,210 +478,95 @@ export const DEFAULT_ACADEMY_COURSES: AcademyCourse[] = [
     ],
   },
   {
-    id: 'course-github-actions',
-    categoryId: 'cat-github-actions',
-    slug: 'github-actions-for-qa',
-    title: 'GitHub Actions: CI/CD Pipelines for QA Automation',
-    subtitle: 'Automated Test Matrix, Artifact Uploads & PR Gates',
-    description: 'Design robust CI/CD workflows for executing Playwright, Selenium, and API tests on every pull request with rich HTML reports.',
-    level: 'Beginner',
-    estimatedHours: 14,
-    sortOrder: 1,
-    status: 'published',
-    createdAt: '2026-11-23T00:00:00.000Z',
-    updatedAt: '2026-11-23T00:00:00.000Z',
+    id: "course-cicd-concepts",
+    categoryId: "cat-git-cicd",
+    slug: "cicd-concepts",
+    title: "CI/CD Concepts",
+    subtitle: "Git Version Control, GitHub Actions, Azure DevOps & Declarative Jenkins Pipelines",
+    description: "Master modern Continuous Integration, automated quality gating, and Continuous Delivery for QA automation: Git branching models, GitHub Actions matrix runners, Azure DevOps quality release gates, and distributed Jenkins container pipelines.",
+    level: 'All Levels',
+    estimatedHours: 46,
+    sortOrder: 7,
+    status: "published",
+    createdAt: "2026-11-23T00:00:00.000Z",
+    updatedAt: "2026-11-23T00:00:00.000Z",
     modules: [
       {
-        id: 'mod-gha-1',
-        courseId: 'course-github-actions',
-        slug: 'workflow-scaffolding-and-triggers',
-        title: 'Module 1: Workflow Triggers & Parallel Execution',
-        description: 'Set up YAML workflows triggered on pull_request and push with multi-OS test matrices.',
+        id: "mod-cicd-1-git",
+        courseId: "course-cicd-concepts",
+        slug: "git-version-control",
+        title: "Module 1: Git & Version Control for QA",
+        description: "Git fundamentals, commit DAG architecture, branching models (Trunk-Based, GitFlow), conflict resolution, and PR review quality gates.",
         sortOrder: 1,
-        status: 'published',
-        createdAt: '2026-11-23T00:00:00.000Z',
-        updatedAt: '2026-11-23T00:00:00.000Z',
+        status: "published",
+        createdAt: "2026-11-23T00:00:00.000Z",
+        updatedAt: "2026-11-23T00:00:00.000Z",
         lessons: [
           {
-            id: 'les-gha-1-1',
-            moduleId: 'mod-gha-1',
-            courseId: 'course-github-actions',
-            slug: 'pr-test-gate-workflow',
-            title: '1.1 Building a PR Quality Gate Workflow',
-            summary: 'Create a GitHub Actions workflow that executes tests, caches dependencies, and uploads HTML test artifacts.',
-            contentHtml: `
-              <h2>Creating Your First QA Workflow</h2>
-              <p>GitHub Actions uses YAML files located in the <code>.github/workflows/</code> directory. A standard automated testing pipeline triggers on pull requests to ensure code changes meet quality benchmarks before merging.</p>
-            `,
-            wordCount: 270,
-            estimatedReadTime: 3,
-            sortOrder: 1,
-            status: 'published',
-            publishedAt: '2026-11-23T00:00:00.000Z',
-            createdAt: '2026-11-23T00:00:00.000Z',
-            updatedAt: '2026-11-23T00:00:00.000Z',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'course-azure-devops',
-    categoryId: 'cat-azure-devops',
-    slug: 'azure-devops-test-pipelines',
-    title: 'Azure DevOps Pipelines for SDETs',
-    subtitle: 'YAML Pipelines, Test Plan Sync, and Release Gates',
-    description: 'Learn how to build enterprise testing pipelines in Azure DevOps: agent pools, published test results, and quality release approvals.',
-    level: 'Intermediate',
-    estimatedHours: 16,
-    sortOrder: 2,
-    status: 'published',
-    createdAt: '2026-11-23T00:00:00.000Z',
-    updatedAt: '2026-11-23T00:00:00.000Z',
-    modules: [
-      {
-        id: 'mod-ado-1',
-        courseId: 'course-azure-devops',
-        slug: 'azure-pipeline-foundations',
-        title: 'Module 1: Multi-Stage Pipelines & Test Publishing',
-        description: 'Configure azure-pipelines.yml and publish JUnit / NUnit test results to Azure Test Plans.',
-        sortOrder: 1,
-        status: 'published',
-        createdAt: '2026-11-23T00:00:00.000Z',
-        updatedAt: '2026-11-23T00:00:00.000Z',
-        lessons: [
-          {
-            id: 'les-ado-1-1',
-            moduleId: 'mod-ado-1',
-            courseId: 'course-azure-devops',
-            slug: 'publishing-test-results-in-ado',
-            title: '1.1 PublishTestResults@2 Task & Reporting',
-            summary: 'Integrate automated test runs directly with the Azure DevOps Test Runs dashboard.',
-            contentHtml: `
-              <h2>Publishing Test Results in Azure DevOps</h2>
-              <p>Azure DevOps provides native visualization for test runs using the <code>PublishTestResults@2</code> task. When tests finish running, this task parses the output XML and displays pass/fail trends, error messages, and stack traces.</p>
-            `,
-            wordCount: 230,
-            estimatedReadTime: 2,
-            sortOrder: 1,
-            status: 'published',
-            publishedAt: '2026-11-23T00:00:00.000Z',
-            createdAt: '2026-11-23T00:00:00.000Z',
-            updatedAt: '2026-11-23T00:00:00.000Z',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'course-jenkins',
-    categoryId: 'cat-jenkins',
-    slug: 'declarative-jenkins-pipelines',
-    title: 'Declarative Jenkins Pipelines for QA Automation',
-    subtitle: 'Distributed Test Execution & Allure Report Dashboard',
-    description: 'Master Declarative Jenkinsfiles, Dockerized agent containers, parallel test stage execution, and Slack notification integration.',
-    level: 'Advanced',
-    estimatedHours: 18,
-    sortOrder: 3,
-    status: 'published',
-    createdAt: '2026-11-23T00:00:00.000Z',
-    updatedAt: '2026-11-23T00:00:00.000Z',
-    modules: [
-      {
-        id: 'mod-jen-1',
-        courseId: 'course-jenkins',
-        slug: 'declarative-jenkinsfile-mastery',
-        title: 'Module 1: Declarative Syntax & Parallel Stages',
-        description: 'Construct Jenkins pipelines with stages, post blocks, and parallel browser execution.',
-        sortOrder: 1,
-        status: 'published',
-        createdAt: '2026-11-23T00:00:00.000Z',
-        updatedAt: '2026-11-23T00:00:00.000Z',
-        lessons: [
-          {
-            id: 'les-jen-1-1',
-            moduleId: 'mod-jen-1',
-            courseId: 'course-jenkins',
-            slug: 'declarative-syntax-essentials',
-            title: '1.1 Declarative Jenkinsfile Structure for QA',
-            summary: 'Write resilient, maintainable Jenkins pipelines using agent, stages, and post-execution hooks.',
-            contentHtml: `
-              <h2>Declarative Pipeline Syntax</h2>
-              <p>Declarative Pipeline is the recommended syntax for Jenkins. It provides strict structure, easy-to-read syntax, and built-in post hooks for test archiving.</p>
-            `,
-            wordCount: 210,
-            estimatedReadTime: 2,
-            sortOrder: 1,
-            status: 'published',
-            publishedAt: '2026-11-23T00:00:00.000Z',
-            createdAt: '2026-11-23T00:00:00.000Z',
-            updatedAt: '2026-11-23T00:00:00.000Z',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'course-git',
-    categoryId: 'cat-git-cicd',
-    slug: 'git-for-qa-engineers',
-    title: 'Git Version Control for QA Engineers',
-    subtitle: 'Commits, Branches, Rebasing & Pull Request Gate Architecture',
-    description: 'Master Git essentials, branching strategies, merge conflict resolution, and quality gate workflows for test automation repositories.',
-    level: 'Beginner',
-    estimatedHours: 8,
-    sortOrder: 1,
-    status: 'published',
-    createdAt: '2026-11-23T00:00:00.000Z',
-    updatedAt: '2026-11-23T00:00:00.000Z',
-    modules: [
-      {
-        id: 'mod-git-1',
-        courseId: 'course-git',
-        slug: 'git-essentials-qa',
-        title: 'Git Foundations & Repositories',
-        description: 'Repository structure, commits, staging, ignore patterns, and remote synchronization.',
-        sortOrder: 1,
-        status: 'published',
-        createdAt: '2026-11-23T00:00:00.000Z',
-        updatedAt: '2026-11-23T00:00:00.000Z',
-        lessons: [
-          {
-            id: 'les-git-foundations',
-            moduleId: 'mod-git-1',
-            courseId: 'course-git',
-            slug: 'git-foundations-for-qa',
-            title: '1.1 Git Essentials: Commits, Remotes & .gitignore for Test Frameworks',
-            summary: 'Initialize local repositories, stage test scripts, configure .gitignore for allure/playwright artifacts, and synchronize with remote origins.',
-            contentHtml: '<h2>Git Essentials for QA Engineers</h2><p>Modern test automation frameworks require strict version control discipline. Test engineers must track test scripts, configuration files, and test fixtures while strictly ignoring generated artifacts like screenshots, videos, and Allure test reports.</p>',
-            wordCount: 350,
+            id: "les-git-1-1-what-is-git",
+            moduleId: "mod-cicd-1-git",
+            courseId: "course-cicd-concepts",
+            slug: "what-is-git",
+            title: "What is Git?",
+            summary: "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
+            contentHtml: "<h2>What is Git?</h2><p>Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.</p>",
+            wordCount: 300,
             estimatedReadTime: 4,
             sortOrder: 1,
-            status: 'published',
-            publishedAt: '2026-11-23T00:00:00.000Z',
-            createdAt: '2026-11-23T00:00:00.000Z',
-            updatedAt: '2026-11-23T00:00:00.000Z',
-          },
-          {
-            id: 'les-git-branching-pr',
-            moduleId: 'mod-git-1',
-            courseId: 'course-git',
-            slug: 'git-branching-and-pr-gates',
-            title: '1.2 Branching Strategies, Rebase & Pull Request Reviews',
-            summary: 'Implement trunk-based development, feature branch isolation, interactive rebasing, and automated PR quality check criteria.',
-            contentHtml: '<h2>Branching Strategies for Test Automation</h2><p>In high-velocity CI/CD environments, trunk-based branching with short-lived feature branches ensures automated tests are merged without massive merge conflicts.</p>',
-            wordCount: 420,
-            estimatedReadTime: 5,
-            sortOrder: 2,
-            status: 'published',
-            publishedAt: '2026-11-23T00:00:00.000Z',
-            createdAt: '2026-11-23T00:00:00.000Z',
-            updatedAt: '2026-11-23T00:00:00.000Z',
-          },
-        ],
-      },
-    ],
+            status: "published",
+            publishedAt: "2026-11-23T00:00:00.000Z",
+            createdAt: "2026-11-23T00:00:00.000Z",
+            updatedAt: "2026-11-23T00:00:00.000Z",
+          }
+        ]
+      }
+    ]
   },
+  {
+    id: "course-apm-performance",
+    categoryId: "cat-apm-perf",
+    slug: "apm-and-performance-testing",
+    title: "APM & Enterprise Performance Testing",
+    subtitle: "Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM",
+    description: "Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.",
+    level: 'All Levels',
+    estimatedHours: 30,
+    sortOrder: 8,
+    status: "published",
+    createdAt: "2026-11-23T00:00:00.000Z",
+    updatedAt: "2026-11-23T00:00:00.000Z",
+    modules: [
+      {
+        id: "mod-apm-performance-1",
+        courseId: "course-apm-performance",
+        slug: "performance-testing-fundamentals",
+        title: "Module 1: Performance Testing Fundamentals",
+        description: "Core metrics (latency, throughput, percentiles p95/p99), load test types, and capacity planning.",
+        sortOrder: 1,
+        status: "published",
+        createdAt: "2026-11-23T00:00:00.000Z",
+        updatedAt: "2026-11-23T00:00:00.000Z",
+        lessons: [
+          {
+            id: "les-apm-perf-1-1-what-is-performance-testing",
+            moduleId: "mod-apm-performance-1",
+            courseId: "course-apm-performance",
+            slug: "what-is-performance-testing",
+            title: "What is Performance Testing?",
+            summary: "Comprehensive guide to software performance testing, metrics, and quality goals.",
+            contentHtml: "<h2>What is Performance Testing?</h2><p>Comprehensive guide to software performance testing, metrics, and quality goals.</p>",
+            wordCount: 300,
+            estimatedReadTime: 4,
+            sortOrder: 1,
+            status: "published",
+            publishedAt: "2026-11-23T00:00:00.000Z",
+            createdAt: "2026-11-23T00:00:00.000Z",
+            updatedAt: "2026-11-23T00:00:00.000Z",
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 export class AcademyStore {
@@ -1055,7 +940,24 @@ export class AcademyStore {
   }
 
   public getCourse(idOrSlug: string, options?: { includeDrafts?: boolean }): AcademyCourse | undefined {
+    const aliasMap: Record<string, string> = {
+      'course-git': 'course-cicd-concepts',
+      'git-for-qa-engineers': 'course-cicd-concepts',
+      'course-github-actions': 'course-cicd-concepts',
+      'github-actions-for-qa': 'course-cicd-concepts',
+      'github-actions-qa-automation': 'course-cicd-concepts',
+      'course-azure-devops': 'course-cicd-concepts',
+      'azure-devops-test-pipelines': 'course-cicd-concepts',
+      'course-jenkins': 'course-cicd-concepts',
+      'declarative-jenkins-pipelines': 'course-cicd-concepts',
+      'course-mobile-testing': 'course-appium',
+      'mobile-testing-fundamentals': 'course-appium',
+    };
+    const resolvedId = aliasMap[idOrSlug] || idOrSlug;
+
     const raw = (
+      this.courses.get(resolvedId) ||
+      Array.from(this.courses.values()).find((c) => c.slug === resolvedId) ||
       this.courses.get(idOrSlug) ||
       Array.from(this.courses.values()).find((c) => c.slug === idOrSlug)
     );
@@ -1306,7 +1208,7 @@ export class AcademyStore {
         if (lesson) {
           if (!options?.includeDrafts) {
             if (lesson.status !== 'published' || mod.status !== 'published' || course.status !== 'published') {
-              return undefined;
+              continue;
             }
           }
           // Attach assets
@@ -1563,8 +1465,16 @@ export class AcademyStore {
     if (!res) return undefined;
 
     const { lesson, course, module } = res;
-    const category = this.categories.get(course.categoryId);
-    if (!category) return undefined;
+    const category = this.categories.get(course.categoryId) || {
+      id: course.categoryId || 'cat-general',
+      slug: 'academy',
+      title: 'Academy',
+      description: 'Test Automation Academy',
+      sortOrder: 1,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
     // Breadcrumbs resolution
     const breadcrumbs: BreadcrumbItem[] = [

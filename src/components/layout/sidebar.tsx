@@ -119,7 +119,7 @@ function getCourseMeta(course: any) {
       hours: `${course.estimatedHours || 26}h`,
     };
   }
-  if (slug.includes('cicd') || title.includes('ci/cd') || id.includes('cicd')) {
+  if (id === 'course-cicd-concepts' || slug === 'cicd-concepts' || title.toLowerCase() === 'ci/cd concepts') {
     return {
       displayTitle: 'CI/CD Concepts',
       tag: 'CI/CD',
@@ -519,30 +519,14 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
     // Sort courses strictly by sortOrder configured by Admin
     const sortedCourses = [...validCourses].sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
 
-    // Check if unified master CI/CD course exists
-    const hasUnifiedCicd = sortedCourses.some(
-      (c) => c.id === 'course-cicd-concepts' || c.slug === 'cicd-concepts' || (c.title || '').toLowerCase() === 'ci/cd concepts'
-    );
-
     const seenTrackIds = new Set<string>();
-    const seenNormalizedTitles = new Set<string>();
 
     sortedCourses.forEach((c) => {
-      // If unified master CI/CD Concepts exists, suppress legacy fragment courses so they don't produce duplicates
-      if (hasUnifiedCicd && ['course-git', 'course-github-actions', 'course-azure-devops', 'course-jenkins'].includes(c.id)) {
-        return;
-      }
-
-      const meta = getCourseMeta(c);
-      const normalizedTitle = (meta.displayTitle || c.title).trim().toLowerCase();
-
-      // Deduplicate by course id and normalized title
-      if (seenTrackIds.has(c.id) || seenNormalizedTitles.has(normalizedTitle)) {
+      if (seenTrackIds.has(c.id)) {
         return;
       }
 
       seenTrackIds.add(c.id);
-      seenNormalizedTitles.add(normalizedTitle);
       tracks.push(buildTrack(c));
     });
 

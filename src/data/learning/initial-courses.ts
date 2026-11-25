@@ -31,7 +31,7 @@ export interface AcademyClientCourse {
   modules: AcademyClientModule[];
 }
 
-export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
+export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] =  [
   {
     "id": "course-ai-qa-mastery",
     "slug": "ai-for-qa-mastery",
@@ -509,7 +509,9 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
           }
         ]
       }
-    ]
+    ],
+    "sortOrder": 1,
+    "status": "published"
   },
   {
     "id": "course-playwright-mastery",
@@ -691,7 +693,9 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
           }
         ]
       }
-    ]
+    ],
+    "sortOrder": 2,
+    "status": "published"
   },
   {
     "id": "course-selenium-mastery",
@@ -855,7 +859,9 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
           }
         ]
       }
-    ]
+    ],
+    "sortOrder": 3,
+    "status": "published"
   },
   {
     "id": "course-rest-assured",
@@ -983,7 +989,9 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
           }
         ]
       }
-    ]
+    ],
+    "sortOrder": 4,
+    "status": "published"
   },
   {
     "id": "course-api-testing",
@@ -1048,72 +1056,9 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
           }
         ]
       }
-    ]
-  },
-  {
-    "id": "course-mobile-testing",
-    "slug": "mobile-testing-fundamentals",
-    "title": "Mobile Testing Fundamentals",
-    "subtitle": "Native, Hybrid, Web Apps & Device Matrix Testing",
-    "description": "Master foundational mobile testing methodologies, real device vs emulator matrices, mobile touch gestures, and ADB/Xcode debugging.",
-    "level": "Beginner",
-    "estimatedHours": 12,
-    "modules": [
-      {
-        "id": "mod-mob-1",
-        "courseId": "course-mobile-testing",
-        "slug": "mobile-testing-architecture",
-        "title": "Module 1: Mobile App Architecture & Platforms",
-        "description": "Native, Hybrid, and Mobile Web application testing architectures and platform differences.",
-        "lessons": [
-          {
-            "id": "les-mobile-testing-foundations",
-            "moduleId": "mod-mob-1",
-            "courseId": "course-mobile-testing",
-            "slug": "mobile-testing-fundamentals",
-            "title": "1.1 Mobile Testing Fundamentals: Native, Hybrid & Mobile Web Apps",
-            "summary": "Architectural differences between Native (Kotlin/Swift), Hybrid (Flutter/React Native), and Web apps.",
-            "estimatedReadingTime": 5
-          },
-          {
-            "id": "les-mobile-device-matrix",
-            "moduleId": "mod-mob-1",
-            "courseId": "course-mobile-testing",
-            "slug": "device-matrix-emulators-simulators",
-            "title": "1.2 Device Matrix, Emulators, Simulators & Cloud Device Farms",
-            "summary": "Real devices vs Android Emulators vs iOS Simulators, screen fragmentation, and cloud execution farms.",
-            "estimatedReadingTime": 6
-          }
-        ]
-      },
-      {
-        "id": "mod-mob-2",
-        "courseId": "course-mobile-testing",
-        "slug": "mobile-gestures-and-debugging",
-        "title": "Module 2: Touch Gestures & Performance Debugging",
-        "description": "Multi-touch gesture validation, interruptions, ADB profiling, and crash log analysis.",
-        "lessons": [
-          {
-            "id": "les-mobile-gestures-ux",
-            "moduleId": "mod-mob-2",
-            "courseId": "course-mobile-testing",
-            "slug": "mobile-touch-actions-gestures-testing",
-            "title": "1.3 Mobile Touch Actions, Gestures & Interruption Testing",
-            "summary": "Verifying taps, multi-touch pinch/zoom, swipes, incoming calls, network switches, and battery throttling.",
-            "estimatedReadingTime": 5
-          },
-          {
-            "id": "les-mobile-debugging-logs",
-            "moduleId": "mod-mob-2",
-            "courseId": "course-mobile-testing",
-            "slug": "mobile-logs-adb-instruments-debugging",
-            "title": "1.4 Mobile Performance, Memory Leaks, ADB & Xcode Instruments",
-            "summary": "Extracting ADB logcat, iOS crash logs, memory footprints, network profiling, and battery consumption.",
-            "estimatedReadingTime": 6
-          }
-        ]
-      }
-    ]
+    ],
+    "sortOrder": 5,
+    "status": "published"
   },
   {
     "id": "course-appium",
@@ -1178,1396 +1123,1168 @@ export const INITIAL_PUBLISHED_COURSES: AcademyClientCourse[] = [
           }
         ]
       }
-    ]
+    ],
+    "sortOrder": 6,
+    "status": "published"
   },
   {
-    "id": "course-github-actions",
-    "slug": "github-actions-for-qa",
-    "title": "GitHub Actions: CI/CD Pipelines for QA Automation",
-    "subtitle": "Automated Test Matrix, Artifact Uploads & PR Gates",
-    "description": "Design robust CI/CD workflows for executing Playwright, Selenium, and API tests on every pull request with rich HTML reports.",
-    "level": "Beginner",
-    "estimatedHours": 14,
+    "id": "course-cicd-concepts",
+    "slug": "cicd-concepts",
+    "title": "CI/CD Concepts",
+    "subtitle": "Git Version Control, GitHub Actions, Azure DevOps & Declarative Jenkins Pipelines",
+    "description": "Master modern Continuous Integration, automated quality gating, and Continuous Delivery for QA automation: Git branching models, GitHub Actions matrix runners, Azure DevOps quality release gates, and distributed Jenkins container pipelines.",
+    "level": "Comprehensive",
+    "estimatedHours": 46,
     "modules": [
       {
-        "id": "mod-gha-1",
-        "courseId": "course-github-actions",
-        "slug": "github-actions-workflows-triggers",
-        "title": "Module 1: Workflow Triggers & Parallel Execution",
-        "description": "Build enterprise CI pipelines that trigger on PRs and run tests concurrently.",
+        "id": "mod-cicd-1-git",
+        "courseId": "course-cicd-concepts",
+        "slug": "git-version-control",
+        "title": "Module 1: Git & Version Control for QA",
+        "description": "Git fundamentals, commit DAG architecture, branching models (Trunk-Based, GitFlow), conflict resolution, and PR review quality gates.",
         "lessons": [
           {
-            "id": "les-pr-test-gate-workflow",
-            "moduleId": "mod-gha-1",
-            "courseId": "course-github-actions",
-            "slug": "pr-test-gate-workflow",
-            "title": "1.1 Building a PR Quality Gate Workflow",
-            "summary": "Trigger fast smoke tests on PRs to block broken merges before they hit main.",
-            "estimatedReadingTime": 8
+            "id": "les-git-1-1-what-is-git",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "what-is-git",
+            "title": "What is Git?",
+            "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
+            "estimatedReadingTime": 7
           },
           {
-            "id": "les-matrix-sharding-execution",
-            "moduleId": "mod-gha-1",
-            "courseId": "course-github-actions",
-            "slug": "matrix-sharding-execution",
-            "title": "1.2 Matrix Builds & Playwright Sharding",
-            "summary": "Slash regression test time from 45 minutes to 5 minutes using 8-way matrix shards.",
-            "estimatedReadingTime": 8
+            "id": "les-git-1-2-version-control-concepts",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "version-control-concepts",
+            "title": "Version Control Concepts",
+            "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-1-3-git-architecture",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "git-architecture",
+            "title": "Git Architecture",
+            "summary": "Git architecture is structured as a Directed Acyclic Graph (DAG) of content-addressable objects: Blobs (file contents), Trees (directories), Commits (snapshots with metadata), and Annotated Tags.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-1-4-git-vs-centralized-vcs",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "git-vs-centralized-vcs",
+            "title": "Git vs Centralized VCS",
+            "summary": "Git vs Centralized VCS is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-1-5-git-configuration",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "git-configuration",
+            "title": "Git Configuration",
+            "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-1-6-core-git-commands",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "core-git-commands",
+            "title": "Core Git Commands",
+            "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-2-1-branching-strategies-gitflow-tru",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "branching-strategies-gitflow-trunk-based",
+            "title": "Branching Strategies (GitFlow, Trunk-Based)",
+            "summary": "Git branching creates isolated lines of development, allowing engineers to develop and test new features without destabilizing the main branch.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-2-2-creating-and-switching-branches",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "creating-and-switching-branches",
+            "title": "Creating and Switching Branches",
+            "summary": "Git branching creates isolated lines of development, allowing engineers to develop and test new features without destabilizing the main branch.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-2-3-merging-and-merge-conflicts",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "merging-and-merge-conflicts",
+            "title": "Merging and Merge Conflicts",
+            "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-2-4-rebasing-vs-merging",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "rebasing-vs-merging",
+            "title": "Rebasing vs Merging",
+            "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-2-5-stashing-and-cherry-picking",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "stashing-and-cherry-picking",
+            "title": "Stashing and Cherry-Picking",
+            "summary": "Stashing and Cherry-Picking is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-3-1-remote-repositories",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "remote-repositories",
+            "title": "Remote Repositories",
+            "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-3-2-push-pull-and-fetch",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "push-pull-and-fetch",
+            "title": "Push Pull and Fetch",
+            "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-3-3-pull-requests-and-code-review",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "pull-requests-and-code-review",
+            "title": "Pull Requests and Code Review",
+            "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-3-4-forking-workflow",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "forking-workflow",
+            "title": "Forking Workflow",
+            "summary": "Forking Workflow is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-3-5-handling-merge-conflicts-in-prs",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "handling-merge-conflicts-in-prs",
+            "title": "Handling Merge Conflicts in PRs",
+            "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-4-1-what-is-cicd",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "what-is-cicd",
+            "title": "What is CI/CD?",
+            "summary": "What is CI/CD? is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-4-2-continuous-integration-vs-contin",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "continuous-integration-vs-continuous-delivery-vs-continuous-deployment",
+            "title": "Continuous Integration vs Continuous Delivery vs Continuous Deployment",
+            "summary": "CI/CD (Continuous Integration and Continuous Delivery/Deployment) is the automated practice of integrating code changes into a shared repository and automatically deploying verified artifacts to environments.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-4-3-why-cicd-is-essential-for-qa",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "why-cicd-is-essential-for-qa",
+            "title": "Why CI/CD is Essential for QA",
+            "summary": "CI/CD (Continuous Integration and Continuous Delivery/Deployment) is the automated practice of integrating code changes into a shared repository and automatically deploying verified artifacts to environments.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-4-4-automated-quality-gates",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "automated-quality-gates",
+            "title": "Automated Quality Gates",
+            "summary": "Automated Quality Gates is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-4-5-test-automation-in-cicd",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "test-automation-in-cicd",
+            "title": "Test Automation in CI/CD",
+            "summary": "Test Automation in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-5-1-pipeline-architecture",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "pipeline-architecture",
+            "title": "Pipeline Architecture",
+            "summary": "Git architecture is structured as a Directed Acyclic Graph (DAG) of content-addressable objects: Blobs (file contents), Trees (directories), Commits (snapshots with metadata), and Annotated Tags.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-5-2-pipeline-stages-build-test-deplo",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "pipeline-stages-build-test-deploy",
+            "title": "Pipeline Stages (Build, Test, Deploy)",
+            "summary": "Pipeline Stages (Build, Test, Deploy) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-5-3-triggers-and-events",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "triggers-and-events",
+            "title": "Triggers and Events",
+            "summary": "Triggers and Events is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-5-4-environment-management",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "environment-management",
+            "title": "Environment Management",
+            "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-5-5-artifact-management",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "artifact-management",
+            "title": "Artifact Management",
+            "summary": "Artifact Management is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-5-6-test-reporting-in-cicd",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "test-reporting-in-cicd",
+            "title": "Test Reporting in CI/CD",
+            "summary": "Test Reporting in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-6-1-smoke-tests-in-cicd",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "smoke-tests-in-cicd",
+            "title": "Smoke Tests in CI/CD",
+            "summary": "Smoke Tests in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-6-2-regression-pipeline-design",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "regression-pipeline-design",
+            "title": "Regression Pipeline Design",
+            "summary": "Regression Pipeline Design is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-6-3-parallel-test-execution-in-pipel",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "parallel-test-execution-in-pipelines",
+            "title": "Parallel Test Execution in Pipelines",
+            "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-6-4-handling-test-flakiness-in-ci",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "handling-test-flakiness-in-ci",
+            "title": "Handling Test Flakiness in CI",
+            "summary": "Handling Test Flakiness in CI is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-6-5-test-failure-notifications-and-a",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "test-failure-notifications-and-alerts",
+            "title": "Test Failure Notifications and Alerts",
+            "summary": "Test Failure Notifications and Alerts is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-6-6-quality-metrics-and-dashboards",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "quality-metrics-and-dashboards",
+            "title": "Quality Metrics and Dashboards",
+            "summary": "Quality Metrics and Dashboards is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-7-1-branch-protection-rules",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "branch-protection-rules",
+            "title": "Branch Protection Rules",
+            "summary": "Branch Protection Rules is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-7-2-pipeline-security-and-secrets",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "pipeline-security-and-secrets",
+            "title": "Pipeline Security and Secrets",
+            "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-7-3-cost-optimization-for-ci-runners",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "cost-optimization-for-ci-runners",
+            "title": "Cost Optimization for CI Runners",
+            "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-git-7-4-shift-left-testing-strategy",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "shift-left-testing-strategy",
+            "title": "Shift-Left Testing Strategy",
+            "summary": "Shift-Left Testing Strategy is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-git-7-5-rollback-strategies",
+            "moduleId": "mod-cicd-1-git",
+            "courseId": "course-cicd-concepts",
+            "slug": "rollback-strategies",
+            "title": "Rollback Strategies",
+            "summary": "Rollback Strategies is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
           }
         ]
       },
       {
-        "id": "mod-gha-2",
-        "courseId": "course-github-actions",
-        "slug": "secrets-artifacts-reporting",
-        "title": "Module 2: Secrets, Artifacts & Test Reporting",
-        "description": "Secure credentials, publish JUnit reports, and deploy interactive Allure test dashboards.",
+        "id": "mod-cicd-2-github-actions",
+        "courseId": "course-cicd-concepts",
+        "slug": "github-actions-pipelines",
+        "title": "Module 2: GitHub Actions CI/CD Pipelines",
+        "description": "Workflow triggers, job matrices, parallel test sharding, artifact caching, headless browser configurations, and custom composite actions.",
         "lessons": [
           {
-            "id": "les-github-secrets-env-management",
-            "moduleId": "mod-gha-2",
-            "courseId": "course-github-actions",
-            "slug": "github-secrets-env-management",
-            "title": "2.1 Secrets Management & Dynamic Environment Variables",
-            "summary": "Inject staging passwords and API keys without leaking plain-text credentials in logs.",
-            "estimatedReadingTime": 8
+            "id": "les-github-actions-1-1-what-is-github-actions",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "what-is-github-actions",
+            "title": "What is GitHub Actions?",
+            "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
+            "estimatedReadingTime": 7
           },
           {
-            "id": "les-test-artifacts-allure-deployments",
-            "moduleId": "mod-gha-2",
-            "courseId": "course-github-actions",
-            "slug": "test-artifacts-allure-deployments",
-            "title": "2.2 Test Artifacts & Allure Report Deployments",
-            "summary": "Archive failure screenshots, video recordings, and auto-deploy HTML test reports to GitHub Pages.",
-            "estimatedReadingTime": 8
+            "id": "les-github-actions-1-2-core-components-workflows-events",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "core-components-workflows-events-jobs-steps-actions-runners",
+            "title": "Core Components (Workflows, Events, Jobs, Steps, Actions, Runners)",
+            "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-1-3-github-actions-vs-jenkins",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "github-actions-vs-jenkins",
+            "title": "GitHub Actions vs Jenkins",
+            "summary": "GitHub Actions vs Jenkins is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-1-4-workflow-file-syntax-yaml",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "workflow-file-syntax-yaml",
+            "title": "Workflow File Syntax (YAML)",
+            "summary": "Workflow File Syntax (YAML) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-2-1-workflow-triggers-push-pull-requ",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "workflow-triggers-push-pull-request-schedule-workflow-dispatch",
+            "title": "Workflow Triggers (push, pull_request, schedule, workflow_dispatch)",
+            "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-2-2-job-configuration",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "job-configuration",
+            "title": "Job Configuration",
+            "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-2-3-step-execution",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "step-execution",
+            "title": "Step Execution",
+            "summary": "Step Execution is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-2-4-dependencies-between-jobs-needs",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "dependencies-between-jobs-needs",
+            "title": "Dependencies Between Jobs (needs)",
+            "summary": "Dependencies Between Jobs (needs) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-2-5-conditional-execution-if",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "conditional-execution-if",
+            "title": "Conditional Execution (if)",
+            "summary": "Conditional Execution (if) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-3-1-github-hosted-runners",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "github-hosted-runners",
+            "title": "GitHub-Hosted Runners",
+            "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-3-2-self-hosted-runners",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "self-hosted-runners",
+            "title": "Self-Hosted Runners",
+            "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-3-3-matrix-strategy-parallel-testing",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "matrix-strategy-parallel-testing-across-osbrowser",
+            "title": "Matrix Strategy (Parallel Testing Across OS/Browser)",
+            "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-3-4-environment-variables-and-secret",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "environment-variables-and-secrets",
+            "title": "Environment Variables and Secrets",
+            "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-3-5-managing-artifacts-and-caches",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "managing-artifacts-and-caches",
+            "title": "Managing Artifacts and Caches",
+            "summary": "Managing Artifacts and Caches is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-4-1-running-selenium-in-github-actio",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "running-selenium-in-github-actions",
+            "title": "Running Selenium in GitHub Actions",
+            "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-4-2-running-playwright-in-github-act",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "running-playwright-in-github-actions",
+            "title": "Running Playwright in GitHub Actions",
+            "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-4-3-running-api-tests-newmanrest-ass",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "running-api-tests-newmanrest-assured",
+            "title": "Running API Tests (Newman/Rest Assured)",
+            "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-4-4-headless-browser-configuration",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "headless-browser-configuration",
+            "title": "Headless Browser Configuration",
+            "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-4-5-publishing-test-reports-allure-h",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "publishing-test-reports-allure-html",
+            "title": "Publishing Test Reports (Allure, HTML)",
+            "summary": "Publishing Test Reports (Allure, HTML) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-5-1-using-marketplace-actions",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "using-marketplace-actions",
+            "title": "Using Marketplace Actions",
+            "summary": "Custom and composite actions encapsulate reusable multi-step automation logic into versioned, shareable modules across multiple repositories.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-5-2-creating-custom-composite-action",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "creating-custom-composite-actions",
+            "title": "Creating Custom Composite Actions",
+            "summary": "Custom and composite actions encapsulate reusable multi-step automation logic into versioned, shareable modules across multiple repositories.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-5-3-creating-javascript-actions",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "creating-javascript-actions",
+            "title": "Creating JavaScript Actions",
+            "summary": "Creating JavaScript Actions is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-5-4-creating-docker-container-action",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "creating-docker-container-actions",
+            "title": "Creating Docker Container Actions",
+            "summary": "Creating Docker Container Actions is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-5-5-sharing-actions-across-repositor",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "sharing-actions-across-repositories",
+            "title": "Sharing Actions Across Repositories",
+            "summary": "Sharing Actions Across Repositories is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-6-1-secrets-and-environment-protecti",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "secrets-and-environment-protection",
+            "title": "Secrets and Environment Protection",
+            "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
+            "estimatedReadingTime": 7
+          },
+          {
+            "id": "les-github-actions-6-2-concurrency-and-cancellation",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "concurrency-and-cancellation",
+            "title": "Concurrency and Cancellation",
+            "summary": "Reusable workflows (workflow_call) allow teams to define centralized CI/CD pipelines that can be invoked by multiple downstream repositories with parameterized inputs.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-6-3-reusable-workflows",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "reusable-workflows",
+            "title": "Reusable Workflows",
+            "summary": "Reusable workflows (workflow_call) allow teams to define centralized CI/CD pipelines that can be invoked by multiple downstream repositories with parameterized inputs.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-6-4-dynamic-matrix-builds",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "dynamic-matrix-builds",
+            "title": "Dynamic Matrix Builds",
+            "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-6-5-notifications-slack-email",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "notifications-slack-email",
+            "title": "Notifications (Slack, Email)",
+            "summary": "Notifications (Slack, Email) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-github-actions-6-6-enterprise-best-practices",
+            "moduleId": "mod-cicd-2-github-actions",
+            "courseId": "course-cicd-concepts",
+            "slug": "enterprise-best-practices",
+            "title": "Enterprise Best Practices",
+            "summary": "Enterprise Best Practices is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
+            "estimatedReadingTime": 6
           }
         ]
-      }
-    ]
-  },
-  {
-    "id": "course-azure-devops",
-    "slug": "azure-devops-test-pipelines",
-    "title": "Azure DevOps Pipelines for SDETs",
-    "subtitle": "YAML Pipelines, Test Plan Sync, and Release Gates",
-    "description": "Learn how to build enterprise testing pipelines in Azure DevOps: agent pools, published test results, and quality release approvals.",
-    "level": "Intermediate",
-    "estimatedHours": 16,
-    "modules": [
+      },
       {
-        "id": "mod-ado-1",
-        "courseId": "course-azure-devops",
-        "slug": "multi-stage-ado-yaml",
-        "title": "Module 1: Multi-Stage YAML Pipelines & Publishing",
-        "description": "Create multi-stage Azure DevOps YAML pipelines with PublishTestResults tasks.",
+        "id": "mod-cicd-3-azure-devops",
+        "courseId": "course-cicd-concepts",
+        "slug": "azure-devops-pipelines",
+        "title": "Module 3: Azure DevOps Pipelines for SDETs",
+        "description": "Multi-stage YAML pipelines, PublishTestResults@2 task, self-hosted vs Microsoft agent pools, Azure Test Plans traceability, and automated quality gates.",
         "lessons": [
           {
             "id": "les-publishing-test-results-in-ado",
-            "moduleId": "mod-ado-1",
-            "courseId": "course-azure-devops",
+            "moduleId": "mod-cicd-3-azure-devops",
+            "courseId": "course-cicd-concepts",
             "slug": "publishing-test-results-in-ado",
             "title": "1.1 PublishTestResults@2 Task & Reporting",
-            "summary": "Ingest JUnit XML results directly into Azure DevOps Analytics and track flaky test metrics.",
-            "estimatedReadingTime": 8
+            "summary": "PublishTestResults@2 is a core Azure DevOps pipeline task that parses JUnit, NUnit, VSTest, or xUnit XML report files generated by test automation runners and publishes them directly into the Azure Test Analytics engine.",
+            "estimatedReadingTime": 9
           },
           {
             "id": "les-azure-pipelines-agent-pools",
-            "moduleId": "mod-ado-1",
-            "courseId": "course-azure-devops",
+            "moduleId": "mod-cicd-3-azure-devops",
+            "courseId": "course-cicd-concepts",
             "slug": "azure-pipelines-agent-pools",
             "title": "1.2 Self-Hosted vs Microsoft-Hosted Build Agents",
-            "summary": "Optimize execution costs and hardware performance by configuring self-hosted Linux agents.",
+            "summary": "Azure Pipelines agent pools are execution compute resources that run your pipeline jobs. SDETs must choose between Microsoft-hosted agents (ephemeral, cloud-managed VMs) and Self-hosted agents (dedicated physical or virtual machines in your own network).",
             "estimatedReadingTime": 8
-          }
-        ]
-      },
-      {
-        "id": "mod-ado-2",
-        "courseId": "course-azure-devops",
-        "slug": "ado-test-plans-and-gates",
-        "title": "Module 2: Azure Test Plans & Quality Release Gates",
-        "description": "Link automated tests to Azure Test Cases and enforce pre-deployment quality gates.",
-        "lessons": [
+          },
           {
             "id": "les-azure-test-plans-automation-link",
-            "moduleId": "mod-ado-2",
-            "courseId": "course-azure-devops",
+            "moduleId": "mod-cicd-3-azure-devops",
+            "courseId": "course-cicd-concepts",
             "slug": "azure-test-plans-automation-link",
             "title": "2.1 Azure Test Plans Automated Test Association",
-            "summary": "Associate automated test methods with Manual Test Case IDs for real-time requirement traceability.",
+            "summary": "Azure Test Plans Automated Test Association is the mechanism for linking automated test methods (in Java, C#, TypeScript, Python) to work item Test Cases in Azure Test Plans.",
             "estimatedReadingTime": 8
           },
           {
             "id": "les-ado-release-pipeline-gates",
-            "moduleId": "mod-ado-2",
-            "courseId": "course-azure-devops",
+            "moduleId": "mod-cicd-3-azure-devops",
+            "courseId": "course-cicd-concepts",
             "slug": "ado-release-pipeline-gates",
             "title": "2.2 Automated Release Gates & Quality Metrics",
-            "summary": "Halt CD deployments to production when automated regression pass rates drop below 98%.",
-            "estimatedReadingTime": 8
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "course-jenkins",
-    "slug": "declarative-jenkins-pipelines",
-    "title": "Declarative Jenkins Pipelines for QA Automation",
-    "subtitle": "Distributed Test Execution & Allure Report Dashboard",
-    "description": "Master Declarative Jenkinsfiles, Dockerized agent containers, parallel test stage execution, and Slack notification integration.",
-    "level": "Advanced",
-    "estimatedHours": 18,
-    "modules": [
-      {
-        "id": "mod-jen-1",
-        "courseId": "course-jenkins",
-        "slug": "declarative-jenkinsfile-structure",
-        "title": "Module 1: Declarative Jenkinsfile Structure",
-        "description": "Master Declarative pipeline syntax, agent stages, and parameterized builds.",
-        "lessons": [
-          {
-            "id": "les-declarative-syntax-essentials",
-            "moduleId": "mod-jen-1",
-            "courseId": "course-jenkins",
-            "slug": "declarative-syntax-essentials",
-            "title": "1.1 Declarative Jenkinsfile Structure for QA",
-            "summary": "Structure enterprise Jenkins pipelines with clean stages, parameters, and post-actions.",
-            "estimatedReadingTime": 8
-          },
-          {
-            "id": "les-multibranch-webhook-triggers",
-            "moduleId": "mod-jen-1",
-            "courseId": "course-jenkins",
-            "slug": "multibranch-webhook-triggers",
-            "title": "1.2 Multi-Branch Pipelines & Webhook Triggers",
-            "summary": "Automatically scan Git branches, trigger PR verification builds, and post commit statuses.",
+            "summary": "Automated Release Gates in Azure DevOps are pre-deployment and post-deployment quality checks that evaluate automated test metrics, pass rates, and system health before allowing code to deploy to staging or production environments.",
             "estimatedReadingTime": 8
           }
         ]
       },
       {
-        "id": "mod-jen-2",
-        "courseId": "course-jenkins",
-        "slug": "parallel-stages-and-reporting",
-        "title": "Module 2: Parallel Stages & Slack Notifications",
-        "description": "Scale tests across multiple Docker nodes and broadcast test summaries to Slack.",
+        "id": "mod-cicd-4-jenkins",
+        "courseId": "course-cicd-concepts",
+        "slug": "declarative-jenkins-pipelines",
+        "title": "Module 4: Declarative Jenkins Pipelines for QA Automation",
+        "description": "Declarative Jenkinsfile structure, multibranch webhook triggers, parallel test execution on Docker agents, HTML test reporting, and Slack alerts.",
         "lessons": [
           {
+            "id": "les-declarative-syntax-essentials",
+            "moduleId": "mod-cicd-4-jenkins",
+            "courseId": "course-cicd-concepts",
+            "slug": "declarative-syntax-essentials",
+            "title": "1.1 Declarative Jenkinsfile Structure for QA",
+            "summary": "Declarative Pipeline is the modern, standardized syntax for writing Jenkinsfiles in Jenkins. It provides a structured, opinionated syntax (pipeline { agent ... stages ... post ... }) that replaces fragile legacy Scripted Groovy pipelines.",
+            "estimatedReadingTime": 8
+          },
+          {
+            "id": "les-multibranch-webhook-triggers",
+            "moduleId": "mod-cicd-4-jenkins",
+            "courseId": "course-cicd-concepts",
+            "slug": "multibranch-webhook-triggers",
+            "title": "1.2 Multi-Branch Pipelines & Webhook Triggers",
+            "summary": "Multibranch Pipeline is a Jenkins project type that automatically discovers branches and pull requests in your Git repository, creating separate child pipelines for each branch that contains a Jenkinsfile.",
+            "estimatedReadingTime": 7
+          },
+          {
             "id": "les-parallel-stages-docker-agents",
-            "moduleId": "mod-jen-2",
-            "courseId": "course-jenkins",
+            "moduleId": "mod-cicd-4-jenkins",
+            "courseId": "course-cicd-concepts",
             "slug": "parallel-stages-docker-agents",
             "title": "2.1 Parallel Test Execution on Docker Agents",
-            "summary": "Run UI tests and API tests concurrently on isolated containerized nodes.",
-            "estimatedReadingTime": 8
+            "summary": "Parallel test execution on Docker agents is the enterprise architecture of distributing test suites across multiple concurrent Docker containers running on Jenkins agents.",
+            "estimatedReadingTime": 7
           },
           {
             "id": "les-jenkins-html-reporting-slack",
-            "moduleId": "mod-jen-2",
-            "courseId": "course-jenkins",
+            "moduleId": "mod-cicd-4-jenkins",
+            "courseId": "course-cicd-concepts",
             "slug": "jenkins-html-reporting-slack",
             "title": "2.2 Automated HTML Reports & Slack Notifications",
-            "summary": "Publish HTML test reports and send formatted Slack alerts with pass/fail counts.",
+            "summary": "Automated HTML Reporting and Slack Notifications is the pipeline stage responsible for publishing interactive test reports (Playwright HTML, Allure, ExtentReports) and dispatching actionable, rich alert notifications to QA and development communication channels.",
             "estimatedReadingTime": 8
           }
         ]
       }
-    ]
+    ],
+    "sortOrder": 7,
+    "status": "published"
   },
   {
-    "id": "course-git",
-    "slug": "git-for-qa-engineers",
-    "title": "Git Version Control for QA Engineers",
-    "subtitle": "Commits, Branches, Rebasing & Pull Request Gate Architecture",
-    "description": "Master Git essentials, branching strategies, merge conflict resolution, and quality gate workflows for test automation repositories.",
-    "level": "Beginner",
-    "estimatedHours": 8,
+    "id": "course-apm-performance",
+    "slug": "apm-and-performance-testing",
+    "title": "APM & Enterprise Performance Testing",
+    "subtitle": "Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM",
+    "description": "Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.",
+    "level": "Comprehensive",
+    "estimatedHours": 30,
     "modules": [
       {
-        "id": "mod-git-1",
-        "courseId": "course-git",
-        "slug": "git-essentials-qa",
-        "title": "Git Foundations & Repositories",
-        "description": "Repository structure, commits, staging, ignore patterns, and remote synchronization.",
+        "id": "mod-apm-performance-1",
+        "courseId": "course-apm-performance",
+        "slug": "performance-testing-fundamentals",
+        "title": "Module 1: Performance Testing Fundamentals",
+        "description": "Load, stress, endurance, and spike testing, response time metrics, throughput, latency, and SLAs/SLOs.",
         "lessons": [
           {
-            "id": "les-git-foundations",
-            "moduleId": "mod-git-1",
-            "courseId": "course-git",
-            "slug": "git-foundations-for-qa",
-            "title": "1.1 Git Essentials: Commits, Remotes & .gitignore for Test Frameworks",
-            "summary": "Initialize local repositories, stage test scripts, configure .gitignore for allure/playwright artifacts, and synchronize with remote origins.",
-            "estimatedReadingTime": 4
+            "id": "les-apm-performance-1-1-what-is-performance-testing",
+            "moduleId": "mod-apm-performance-1",
+            "courseId": "course-apm-performance",
+            "slug": "what-is-performance-testing",
+            "title": "What is Performance Testing?",
+            "summary": "Master What is Performance Testing? in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
           },
           {
-            "id": "les-git-branching-pr",
-            "moduleId": "mod-git-1",
-            "courseId": "course-git",
-            "slug": "git-branching-and-pr-gates",
-            "title": "1.2 Branching Strategies, Rebase & Pull Request Reviews",
-            "summary": "Implement trunk-based development, feature branch isolation, interactive rebasing, and automated PR quality check criteria.",
-            "estimatedReadingTime": 5
+            "id": "les-apm-performance-1-2-types-of-performance-testing-loa",
+            "moduleId": "mod-apm-performance-1",
+            "courseId": "course-apm-performance",
+            "slug": "types-of-performance-testing-load-stress-endurance-spike-volume",
+            "title": "Types of Performance Testing (Load, Stress, Endurance, Spike, Volume)",
+            "summary": "Master Types of Performance Testing (Load, Stress, Endurance, Spike, Volume) in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-1-3-key-metrics-response-time-throug",
+            "moduleId": "mod-apm-performance-1",
+            "courseId": "course-apm-performance",
+            "slug": "key-metrics-response-time-throughput-error-rate-latency",
+            "title": "Key Metrics (Response Time, Throughput, Error Rate, Latency)",
+            "summary": "Master Key Metrics (Response Time, Throughput, Error Rate, Latency) in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-1-4-performance-testing-lifecycle",
+            "moduleId": "mod-apm-performance-1",
+            "courseId": "course-apm-performance",
+            "slug": "performance-testing-lifecycle",
+            "title": "Performance Testing Lifecycle",
+            "summary": "Master Performance Testing Lifecycle in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-1-5-sla-slo-and-sli",
+            "moduleId": "mod-apm-performance-1",
+            "courseId": "course-apm-performance",
+            "slug": "sla-slo-and-sli",
+            "title": "SLA SLO and SLI",
+            "summary": "Master SLA SLO and SLI in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      },
+      {
+        "id": "mod-apm-performance-2",
+        "courseId": "course-apm-performance",
+        "slug": "performance-testing-with-jmeter",
+        "title": "Module 2: Performance Testing with JMeter",
+        "description": "Apache JMeter architecture, Thread Groups, samplers, timers, listeners, parameterization, and distributed load.",
+        "lessons": [
+          {
+            "id": "les-apm-performance-2-1-introduction-to-apache-jmeter",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "introduction-to-apache-jmeter",
+            "title": "Introduction to Apache JMeter",
+            "summary": "Master Introduction to Apache JMeter in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-2-2-jmeter-architecture",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "jmeter-architecture",
+            "title": "JMeter Architecture",
+            "summary": "Master JMeter Architecture in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-2-3-thread-groups-and-virtual-users",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "thread-groups-and-virtual-users",
+            "title": "Thread Groups and Virtual Users",
+            "summary": "Master Thread Groups and Virtual Users in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-2-4-samplers-timers-and-listeners",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "samplers-timers-and-listeners",
+            "title": "Samplers, Timers and Listeners",
+            "summary": "Master Samplers, Timers and Listeners in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-2-5-assertions",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "assertions",
+            "title": "Assertions",
+            "summary": "Master Assertions in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-2-6-parameterization-and-data-driven",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "parameterization-and-data-driven-testing",
+            "title": "Parameterization and Data-Driven Testing",
+            "summary": "Master Parameterization and Data-Driven Testing in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-2-7-correlation-and-regular-expressi",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "correlation-and-regular-expressions",
+            "title": "Correlation and Regular Expressions",
+            "summary": "Master Correlation and Regular Expressions in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-2-8-distributed-testing-with-jmeter",
+            "moduleId": "mod-apm-performance-2",
+            "courseId": "course-apm-performance",
+            "slug": "distributed-testing-with-jmeter",
+            "title": "Distributed Testing with JMeter",
+            "summary": "Master Distributed Testing with JMeter in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      },
+      {
+        "id": "mod-apm-performance-3",
+        "courseId": "course-apm-performance",
+        "slug": "modern-performance-testing-k6-gatling",
+        "title": "Module 3: Modern Performance Testing (k6 / Gatling)",
+        "description": "Scripting performance in JavaScript with Grafana k6, virtual user ramp-ups, thresholds, and InfluxDB/Grafana.",
+        "lessons": [
+          {
+            "id": "les-apm-performance-3-1-introduction-to-k6",
+            "moduleId": "mod-apm-performance-3",
+            "courseId": "course-apm-performance",
+            "slug": "introduction-to-k6",
+            "title": "Introduction to k6",
+            "summary": "Master Introduction to k6 in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-3-2-scripting-performance-tests-in-j",
+            "moduleId": "mod-apm-performance-3",
+            "courseId": "course-apm-performance",
+            "slug": "scripting-performance-tests-in-javascript",
+            "title": "Scripting Performance Tests in JavaScript",
+            "summary": "Master Scripting Performance Tests in JavaScript in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-3-3-virtual-users-and-thresholds",
+            "moduleId": "mod-apm-performance-3",
+            "courseId": "course-apm-performance",
+            "slug": "virtual-users-and-thresholds",
+            "title": "Virtual Users and Thresholds",
+            "summary": "Master Virtual Users and Thresholds in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-3-4-k6-cloud-and-influxdbgrafana-int",
+            "moduleId": "mod-apm-performance-3",
+            "courseId": "course-apm-performance",
+            "slug": "k6-cloud-and-influxdbgrafana-integration",
+            "title": "k6 Cloud and InfluxDB/Grafana Integration",
+            "summary": "Master k6 Cloud and InfluxDB/Grafana Integration in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-3-5-k6-vs-jmeter",
+            "moduleId": "mod-apm-performance-3",
+            "courseId": "course-apm-performance",
+            "slug": "k6-vs-jmeter",
+            "title": "k6 vs JMeter",
+            "summary": "Master k6 vs JMeter in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-3-6-gatling-overview",
+            "moduleId": "mod-apm-performance-3",
+            "courseId": "course-apm-performance",
+            "slug": "gatling-overview",
+            "title": "Gatling Overview",
+            "summary": "Master Gatling Overview in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      },
+      {
+        "id": "mod-apm-performance-4",
+        "courseId": "course-apm-performance",
+        "slug": "application-performance-monitoring-apm-concepts",
+        "title": "Module 4: Application Performance Monitoring (APM) Concepts",
+        "description": "The three pillars of observability (metrics, logs, traces), distributed tracing, and APM platforms.",
+        "lessons": [
+          {
+            "id": "les-apm-performance-4-1-what-is-apm",
+            "moduleId": "mod-apm-performance-4",
+            "courseId": "course-apm-performance",
+            "slug": "what-is-apm",
+            "title": "What is APM?",
+            "summary": "Master What is APM? in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-4-2-key-apm-pillars-metrics-logs-tra",
+            "moduleId": "mod-apm-performance-4",
+            "courseId": "course-apm-performance",
+            "slug": "key-apm-pillars-metrics-logs-traces",
+            "title": "Key APM Pillars (Metrics, Logs, Traces)",
+            "summary": "Master Key APM Pillars (Metrics, Logs, Traces) in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-4-3-understanding-distributed-tracin",
+            "moduleId": "mod-apm-performance-4",
+            "courseId": "course-apm-performance",
+            "slug": "understanding-distributed-tracing",
+            "title": "Understanding Distributed Tracing",
+            "summary": "Master Understanding Distributed Tracing in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-4-4-apm-tools-landscape-datadog-dyna",
+            "moduleId": "mod-apm-performance-4",
+            "courseId": "course-apm-performance",
+            "slug": "apm-tools-landscape-datadog-dynatrace-new-relic-opentelemetry",
+            "title": "APM Tools Landscape (Datadog, Dynatrace, New Relic, OpenTelemetry)",
+            "summary": "Master APM Tools Landscape (Datadog, Dynatrace, New Relic, OpenTelemetry) in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-4-5-why-qa-engineers-need-apm-knowle",
+            "moduleId": "mod-apm-performance-4",
+            "courseId": "course-apm-performance",
+            "slug": "why-qa-engineers-need-apm-knowledge",
+            "title": "Why QA Engineers Need APM Knowledge",
+            "summary": "Master Why QA Engineers Need APM Knowledge in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      },
+      {
+        "id": "mod-apm-performance-5",
+        "courseId": "course-apm-performance",
+        "slug": "monitoring-metrics-and-diagnostics",
+        "title": "Module 5: Monitoring Metrics and Diagnostics",
+        "description": "Analyzing CPU, memory, garbage collection pauses, thread contention, and slow SQL query bottlenecks.",
+        "lessons": [
+          {
+            "id": "les-apm-performance-5-1-cpu-and-memory-utilization",
+            "moduleId": "mod-apm-performance-5",
+            "courseId": "course-apm-performance",
+            "slug": "cpu-and-memory-utilization",
+            "title": "CPU and Memory Utilization",
+            "summary": "Master CPU and Memory Utilization in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-5-2-garbage-collection-analysis",
+            "moduleId": "mod-apm-performance-5",
+            "courseId": "course-apm-performance",
+            "slug": "garbage-collection-analysis",
+            "title": "Garbage Collection Analysis",
+            "summary": "Master Garbage Collection Analysis in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-5-3-thread-contention-and-deadlocks",
+            "moduleId": "mod-apm-performance-5",
+            "courseId": "course-apm-performance",
+            "slug": "thread-contention-and-deadlocks",
+            "title": "Thread Contention and Deadlocks",
+            "summary": "Master Thread Contention and Deadlocks in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-5-4-database-query-performance-and-s",
+            "moduleId": "mod-apm-performance-5",
+            "courseId": "course-apm-performance",
+            "slug": "database-query-performance-and-slow-queries",
+            "title": "Database Query Performance and Slow Queries",
+            "summary": "Master Database Query Performance and Slow Queries in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-5-5-network-latency-and-bottlenecks",
+            "moduleId": "mod-apm-performance-5",
+            "courseId": "course-apm-performance",
+            "slug": "network-latency-and-bottlenecks",
+            "title": "Network Latency and Bottlenecks",
+            "summary": "Master Network Latency and Bottlenecks in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      },
+      {
+        "id": "mod-apm-performance-6",
+        "courseId": "course-apm-performance",
+        "slug": "performance-engineering-in-cicd",
+        "title": "Module 6: Performance Engineering in CI/CD",
+        "description": "Shift-Left performance testing, automated threshold quality gates in CI/CD, and regression detection.",
+        "lessons": [
+          {
+            "id": "les-apm-performance-6-1-shift-left-performance-testing",
+            "moduleId": "mod-apm-performance-6",
+            "courseId": "course-apm-performance",
+            "slug": "shift-left-performance-testing",
+            "title": "Shift-Left Performance Testing",
+            "summary": "Master Shift-Left Performance Testing in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-6-2-automated-performance-gates-in-p",
+            "moduleId": "mod-apm-performance-6",
+            "courseId": "course-apm-performance",
+            "slug": "automated-performance-gates-in-pipelines",
+            "title": "Automated Performance Gates in Pipelines",
+            "summary": "Master Automated Performance Gates in Pipelines in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-6-3-baseline-comparison-and-regressi",
+            "moduleId": "mod-apm-performance-6",
+            "courseId": "course-apm-performance",
+            "slug": "baseline-comparison-and-regression-detection",
+            "title": "Baseline Comparison and Regression Detection",
+            "summary": "Master Baseline Comparison and Regression Detection in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-6-4-continuous-profiling",
+            "moduleId": "mod-apm-performance-6",
+            "courseId": "course-apm-performance",
+            "slug": "continuous-profiling",
+            "title": "Continuous Profiling",
+            "summary": "Master Continuous Profiling in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-6-5-alerting-and-anomaly-detection",
+            "moduleId": "mod-apm-performance-6",
+            "courseId": "course-apm-performance",
+            "slug": "alerting-and-anomaly-detection",
+            "title": "Alerting and Anomaly Detection",
+            "summary": "Master Alerting and Anomaly Detection in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          }
+        ]
+      },
+      {
+        "id": "mod-apm-performance-7",
+        "courseId": "course-apm-performance",
+        "slug": "enterprise-performance-best-practices",
+        "title": "Module 7: Enterprise Performance Best Practices",
+        "description": "Production-like test environments, bottleneck troubleshooting methodology, capacity planning, and scalability.",
+        "lessons": [
+          {
+            "id": "les-apm-performance-7-1-performance-test-strategy-design",
+            "moduleId": "mod-apm-performance-7",
+            "courseId": "course-apm-performance",
+            "slug": "performance-test-strategy-design",
+            "title": "Performance Test Strategy Design",
+            "summary": "Master Performance Test Strategy Design in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-7-2-production-like-environment-sizi",
+            "moduleId": "mod-apm-performance-7",
+            "courseId": "course-apm-performance",
+            "slug": "production-like-environment-sizing",
+            "title": "Production-Like Environment Sizing",
+            "summary": "Master Production-Like Environment Sizing in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-7-3-performance-troubleshooting-meth",
+            "moduleId": "mod-apm-performance-7",
+            "courseId": "course-apm-performance",
+            "slug": "performance-troubleshooting-methodology",
+            "title": "Performance Troubleshooting Methodology",
+            "summary": "Master Performance Troubleshooting Methodology in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-7-4-capacity-planning",
+            "moduleId": "mod-apm-performance-7",
+            "courseId": "course-apm-performance",
+            "slug": "capacity-planning",
+            "title": "Capacity Planning",
+            "summary": "Master Capacity Planning in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
+          },
+          {
+            "id": "les-apm-performance-7-5-scalability-architecture-analysi",
+            "moduleId": "mod-apm-performance-7",
+            "courseId": "course-apm-performance",
+            "slug": "scalability-architecture-analysis",
+            "title": "Scalability Architecture Analysis",
+            "summary": "Master Scalability Architecture Analysis in enterprise software quality engineering and automated testing architectures.",
+            "estimatedReadingTime": 6
           }
         ]
       }
-    ]
+    ],
+    "sortOrder": 8,
+    "status": "published"
   }
-,
-{
-  "id": "course-apm-performance",
-  "slug": "apm-and-performance-testing",
-  "title": "APM & Enterprise Performance Testing",
-  "subtitle": "Apache JMeter, k6 Load Scripting, Distributed Tracing, and Datadog/Dynatrace APM",
-  "description": "Comprehensive performance engineering and monitoring: JMeter distributed loads, modern k6 virtual user scripting, SLAs/SLOs, and Application Performance Monitoring (APM) with OpenTelemetry and Datadog.",
-  "level": "Comprehensive",
-  "estimatedHours": 30,
-  "modules": [
-    {
-      "id": "mod-apm-performance-1",
-      "courseId": "course-apm-performance",
-      "slug": "performance-testing-fundamentals",
-      "title": "Module 1: Performance Testing Fundamentals",
-      "description": "Load, stress, endurance, and spike testing, response time metrics, throughput, latency, and SLAs/SLOs.",
-      "lessons": [
-        {
-          "id": "les-apm-performance-1-1-what-is-performance-testing",
-          "moduleId": "mod-apm-performance-1",
-          "courseId": "course-apm-performance",
-          "slug": "what-is-performance-testing",
-          "title": "What is Performance Testing?",
-          "summary": "Master What is Performance Testing? in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-1-2-types-of-performance-testing-loa",
-          "moduleId": "mod-apm-performance-1",
-          "courseId": "course-apm-performance",
-          "slug": "types-of-performance-testing-load-stress-endurance-spike-volume",
-          "title": "Types of Performance Testing (Load, Stress, Endurance, Spike, Volume)",
-          "summary": "Master Types of Performance Testing (Load, Stress, Endurance, Spike, Volume) in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-1-3-key-metrics-response-time-throug",
-          "moduleId": "mod-apm-performance-1",
-          "courseId": "course-apm-performance",
-          "slug": "key-metrics-response-time-throughput-error-rate-latency",
-          "title": "Key Metrics (Response Time, Throughput, Error Rate, Latency)",
-          "summary": "Master Key Metrics (Response Time, Throughput, Error Rate, Latency) in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-1-4-performance-testing-lifecycle",
-          "moduleId": "mod-apm-performance-1",
-          "courseId": "course-apm-performance",
-          "slug": "performance-testing-lifecycle",
-          "title": "Performance Testing Lifecycle",
-          "summary": "Master Performance Testing Lifecycle in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-1-5-sla-slo-and-sli",
-          "moduleId": "mod-apm-performance-1",
-          "courseId": "course-apm-performance",
-          "slug": "sla-slo-and-sli",
-          "title": "SLA SLO and SLI",
-          "summary": "Master SLA SLO and SLI in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-apm-performance-2",
-      "courseId": "course-apm-performance",
-      "slug": "performance-testing-with-jmeter",
-      "title": "Module 2: Performance Testing with JMeter",
-      "description": "Apache JMeter architecture, Thread Groups, samplers, timers, listeners, parameterization, and distributed load.",
-      "lessons": [
-        {
-          "id": "les-apm-performance-2-1-introduction-to-apache-jmeter",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "introduction-to-apache-jmeter",
-          "title": "Introduction to Apache JMeter",
-          "summary": "Master Introduction to Apache JMeter in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-2-2-jmeter-architecture",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "jmeter-architecture",
-          "title": "JMeter Architecture",
-          "summary": "Master JMeter Architecture in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-2-3-thread-groups-and-virtual-users",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "thread-groups-and-virtual-users",
-          "title": "Thread Groups and Virtual Users",
-          "summary": "Master Thread Groups and Virtual Users in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-2-4-samplers-timers-and-listeners",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "samplers-timers-and-listeners",
-          "title": "Samplers, Timers and Listeners",
-          "summary": "Master Samplers, Timers and Listeners in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-2-5-assertions",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "assertions",
-          "title": "Assertions",
-          "summary": "Master Assertions in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-2-6-parameterization-and-data-driven",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "parameterization-and-data-driven-testing",
-          "title": "Parameterization and Data-Driven Testing",
-          "summary": "Master Parameterization and Data-Driven Testing in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-2-7-correlation-and-regular-expressi",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "correlation-and-regular-expressions",
-          "title": "Correlation and Regular Expressions",
-          "summary": "Master Correlation and Regular Expressions in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-2-8-distributed-testing-with-jmeter",
-          "moduleId": "mod-apm-performance-2",
-          "courseId": "course-apm-performance",
-          "slug": "distributed-testing-with-jmeter",
-          "title": "Distributed Testing with JMeter",
-          "summary": "Master Distributed Testing with JMeter in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-apm-performance-3",
-      "courseId": "course-apm-performance",
-      "slug": "modern-performance-testing-k6-gatling",
-      "title": "Module 3: Modern Performance Testing (k6 / Gatling)",
-      "description": "Scripting performance in JavaScript with Grafana k6, virtual user ramp-ups, thresholds, and InfluxDB/Grafana.",
-      "lessons": [
-        {
-          "id": "les-apm-performance-3-1-introduction-to-k6",
-          "moduleId": "mod-apm-performance-3",
-          "courseId": "course-apm-performance",
-          "slug": "introduction-to-k6",
-          "title": "Introduction to k6",
-          "summary": "Master Introduction to k6 in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-3-2-scripting-performance-tests-in-j",
-          "moduleId": "mod-apm-performance-3",
-          "courseId": "course-apm-performance",
-          "slug": "scripting-performance-tests-in-javascript",
-          "title": "Scripting Performance Tests in JavaScript",
-          "summary": "Master Scripting Performance Tests in JavaScript in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-3-3-virtual-users-and-thresholds",
-          "moduleId": "mod-apm-performance-3",
-          "courseId": "course-apm-performance",
-          "slug": "virtual-users-and-thresholds",
-          "title": "Virtual Users and Thresholds",
-          "summary": "Master Virtual Users and Thresholds in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-3-4-k6-cloud-and-influxdbgrafana-int",
-          "moduleId": "mod-apm-performance-3",
-          "courseId": "course-apm-performance",
-          "slug": "k6-cloud-and-influxdbgrafana-integration",
-          "title": "k6 Cloud and InfluxDB/Grafana Integration",
-          "summary": "Master k6 Cloud and InfluxDB/Grafana Integration in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-3-5-k6-vs-jmeter",
-          "moduleId": "mod-apm-performance-3",
-          "courseId": "course-apm-performance",
-          "slug": "k6-vs-jmeter",
-          "title": "k6 vs JMeter",
-          "summary": "Master k6 vs JMeter in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-3-6-gatling-overview",
-          "moduleId": "mod-apm-performance-3",
-          "courseId": "course-apm-performance",
-          "slug": "gatling-overview",
-          "title": "Gatling Overview",
-          "summary": "Master Gatling Overview in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-apm-performance-4",
-      "courseId": "course-apm-performance",
-      "slug": "application-performance-monitoring-apm-concepts",
-      "title": "Module 4: Application Performance Monitoring (APM) Concepts",
-      "description": "The three pillars of observability (metrics, logs, traces), distributed tracing, and APM platforms.",
-      "lessons": [
-        {
-          "id": "les-apm-performance-4-1-what-is-apm",
-          "moduleId": "mod-apm-performance-4",
-          "courseId": "course-apm-performance",
-          "slug": "what-is-apm",
-          "title": "What is APM?",
-          "summary": "Master What is APM? in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-4-2-key-apm-pillars-metrics-logs-tra",
-          "moduleId": "mod-apm-performance-4",
-          "courseId": "course-apm-performance",
-          "slug": "key-apm-pillars-metrics-logs-traces",
-          "title": "Key APM Pillars (Metrics, Logs, Traces)",
-          "summary": "Master Key APM Pillars (Metrics, Logs, Traces) in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-4-3-understanding-distributed-tracin",
-          "moduleId": "mod-apm-performance-4",
-          "courseId": "course-apm-performance",
-          "slug": "understanding-distributed-tracing",
-          "title": "Understanding Distributed Tracing",
-          "summary": "Master Understanding Distributed Tracing in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-4-4-apm-tools-landscape-datadog-dyna",
-          "moduleId": "mod-apm-performance-4",
-          "courseId": "course-apm-performance",
-          "slug": "apm-tools-landscape-datadog-dynatrace-new-relic-opentelemetry",
-          "title": "APM Tools Landscape (Datadog, Dynatrace, New Relic, OpenTelemetry)",
-          "summary": "Master APM Tools Landscape (Datadog, Dynatrace, New Relic, OpenTelemetry) in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-4-5-why-qa-engineers-need-apm-knowle",
-          "moduleId": "mod-apm-performance-4",
-          "courseId": "course-apm-performance",
-          "slug": "why-qa-engineers-need-apm-knowledge",
-          "title": "Why QA Engineers Need APM Knowledge",
-          "summary": "Master Why QA Engineers Need APM Knowledge in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-apm-performance-5",
-      "courseId": "course-apm-performance",
-      "slug": "monitoring-metrics-and-diagnostics",
-      "title": "Module 5: Monitoring Metrics and Diagnostics",
-      "description": "Analyzing CPU, memory, garbage collection pauses, thread contention, and slow SQL query bottlenecks.",
-      "lessons": [
-        {
-          "id": "les-apm-performance-5-1-cpu-and-memory-utilization",
-          "moduleId": "mod-apm-performance-5",
-          "courseId": "course-apm-performance",
-          "slug": "cpu-and-memory-utilization",
-          "title": "CPU and Memory Utilization",
-          "summary": "Master CPU and Memory Utilization in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-5-2-garbage-collection-analysis",
-          "moduleId": "mod-apm-performance-5",
-          "courseId": "course-apm-performance",
-          "slug": "garbage-collection-analysis",
-          "title": "Garbage Collection Analysis",
-          "summary": "Master Garbage Collection Analysis in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-5-3-thread-contention-and-deadlocks",
-          "moduleId": "mod-apm-performance-5",
-          "courseId": "course-apm-performance",
-          "slug": "thread-contention-and-deadlocks",
-          "title": "Thread Contention and Deadlocks",
-          "summary": "Master Thread Contention and Deadlocks in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-5-4-database-query-performance-and-s",
-          "moduleId": "mod-apm-performance-5",
-          "courseId": "course-apm-performance",
-          "slug": "database-query-performance-and-slow-queries",
-          "title": "Database Query Performance and Slow Queries",
-          "summary": "Master Database Query Performance and Slow Queries in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-5-5-network-latency-and-bottlenecks",
-          "moduleId": "mod-apm-performance-5",
-          "courseId": "course-apm-performance",
-          "slug": "network-latency-and-bottlenecks",
-          "title": "Network Latency and Bottlenecks",
-          "summary": "Master Network Latency and Bottlenecks in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-apm-performance-6",
-      "courseId": "course-apm-performance",
-      "slug": "performance-engineering-in-cicd",
-      "title": "Module 6: Performance Engineering in CI/CD",
-      "description": "Shift-Left performance testing, automated threshold quality gates in CI/CD, and regression detection.",
-      "lessons": [
-        {
-          "id": "les-apm-performance-6-1-shift-left-performance-testing",
-          "moduleId": "mod-apm-performance-6",
-          "courseId": "course-apm-performance",
-          "slug": "shift-left-performance-testing",
-          "title": "Shift-Left Performance Testing",
-          "summary": "Master Shift-Left Performance Testing in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-6-2-automated-performance-gates-in-p",
-          "moduleId": "mod-apm-performance-6",
-          "courseId": "course-apm-performance",
-          "slug": "automated-performance-gates-in-pipelines",
-          "title": "Automated Performance Gates in Pipelines",
-          "summary": "Master Automated Performance Gates in Pipelines in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-6-3-baseline-comparison-and-regressi",
-          "moduleId": "mod-apm-performance-6",
-          "courseId": "course-apm-performance",
-          "slug": "baseline-comparison-and-regression-detection",
-          "title": "Baseline Comparison and Regression Detection",
-          "summary": "Master Baseline Comparison and Regression Detection in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-6-4-continuous-profiling",
-          "moduleId": "mod-apm-performance-6",
-          "courseId": "course-apm-performance",
-          "slug": "continuous-profiling",
-          "title": "Continuous Profiling",
-          "summary": "Master Continuous Profiling in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-6-5-alerting-and-anomaly-detection",
-          "moduleId": "mod-apm-performance-6",
-          "courseId": "course-apm-performance",
-          "slug": "alerting-and-anomaly-detection",
-          "title": "Alerting and Anomaly Detection",
-          "summary": "Master Alerting and Anomaly Detection in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-apm-performance-7",
-      "courseId": "course-apm-performance",
-      "slug": "enterprise-performance-best-practices",
-      "title": "Module 7: Enterprise Performance Best Practices",
-      "description": "Production-like test environments, bottleneck troubleshooting methodology, capacity planning, and scalability.",
-      "lessons": [
-        {
-          "id": "les-apm-performance-7-1-performance-test-strategy-design",
-          "moduleId": "mod-apm-performance-7",
-          "courseId": "course-apm-performance",
-          "slug": "performance-test-strategy-design",
-          "title": "Performance Test Strategy Design",
-          "summary": "Master Performance Test Strategy Design in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-7-2-production-like-environment-sizi",
-          "moduleId": "mod-apm-performance-7",
-          "courseId": "course-apm-performance",
-          "slug": "production-like-environment-sizing",
-          "title": "Production-Like Environment Sizing",
-          "summary": "Master Production-Like Environment Sizing in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-7-3-performance-troubleshooting-meth",
-          "moduleId": "mod-apm-performance-7",
-          "courseId": "course-apm-performance",
-          "slug": "performance-troubleshooting-methodology",
-          "title": "Performance Troubleshooting Methodology",
-          "summary": "Master Performance Troubleshooting Methodology in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-7-4-capacity-planning",
-          "moduleId": "mod-apm-performance-7",
-          "courseId": "course-apm-performance",
-          "slug": "capacity-planning",
-          "title": "Capacity Planning",
-          "summary": "Master Capacity Planning in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-apm-performance-7-5-scalability-architecture-analysi",
-          "moduleId": "mod-apm-performance-7",
-          "courseId": "course-apm-performance",
-          "slug": "scalability-architecture-analysis",
-          "title": "Scalability Architecture Analysis",
-          "summary": "Master Scalability Architecture Analysis in enterprise software quality engineering and automated testing architectures.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    }
-  ]
-},
-  {
-  "id": "course-cicd-concepts",
-  "slug": "cicd-concepts",
-  "title": "CI/CD Concepts",
-  "subtitle": "Git Version Control, GitHub Actions, Azure DevOps & Declarative Jenkins Pipelines",
-  "description": "Master modern Continuous Integration, automated quality gating, and Continuous Delivery for QA automation: Git branching models, GitHub Actions matrix runners, Azure DevOps quality release gates, and distributed Jenkins container pipelines.",
-  "level": "Comprehensive",
-  "estimatedHours": 46,
-  "modules": [
-    {
-      "id": "mod-cicd-1-git",
-      "courseId": "course-cicd-concepts",
-      "slug": "git-version-control",
-      "title": "Module 1: Git & Version Control for QA",
-      "description": "Git fundamentals, commit DAG architecture, branching models (Trunk-Based, GitFlow), conflict resolution, and PR review quality gates.",
-      "lessons": [
-        {
-          "id": "les-git-1-1-what-is-git",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "what-is-git",
-          "title": "What is Git?",
-          "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-1-2-version-control-concepts",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "version-control-concepts",
-          "title": "Version Control Concepts",
-          "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-1-3-git-architecture",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "git-architecture",
-          "title": "Git Architecture",
-          "summary": "Git architecture is structured as a Directed Acyclic Graph (DAG) of content-addressable objects: Blobs (file contents), Trees (directories), Commits (snapshots with metadata), and Annotated Tags.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-1-4-git-vs-centralized-vcs",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "git-vs-centralized-vcs",
-          "title": "Git vs Centralized VCS",
-          "summary": "Git vs Centralized VCS is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-1-5-git-configuration",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "git-configuration",
-          "title": "Git Configuration",
-          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-1-6-core-git-commands",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "core-git-commands",
-          "title": "Core Git Commands",
-          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-2-1-branching-strategies-gitflow-tru",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "branching-strategies-gitflow-trunk-based",
-          "title": "Branching Strategies (GitFlow, Trunk-Based)",
-          "summary": "Git branching creates isolated lines of development, allowing engineers to develop and test new features without destabilizing the main branch.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-2-2-creating-and-switching-branches",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "creating-and-switching-branches",
-          "title": "Creating and Switching Branches",
-          "summary": "Git branching creates isolated lines of development, allowing engineers to develop and test new features without destabilizing the main branch.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-2-3-merging-and-merge-conflicts",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "merging-and-merge-conflicts",
-          "title": "Merging and Merge Conflicts",
-          "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-2-4-rebasing-vs-merging",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "rebasing-vs-merging",
-          "title": "Rebasing vs Merging",
-          "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-2-5-stashing-and-cherry-picking",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "stashing-and-cherry-picking",
-          "title": "Stashing and Cherry-Picking",
-          "summary": "Stashing and Cherry-Picking is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-3-1-remote-repositories",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "remote-repositories",
-          "title": "Remote Repositories",
-          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-3-2-push-pull-and-fetch",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "push-pull-and-fetch",
-          "title": "Push Pull and Fetch",
-          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-3-3-pull-requests-and-code-review",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "pull-requests-and-code-review",
-          "title": "Pull Requests and Code Review",
-          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-3-4-forking-workflow",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "forking-workflow",
-          "title": "Forking Workflow",
-          "summary": "Forking Workflow is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-3-5-handling-merge-conflicts-in-prs",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "handling-merge-conflicts-in-prs",
-          "title": "Handling Merge Conflicts in PRs",
-          "summary": "Merging integrates changes from one branch into another, while rebasing reapplies commits on top of a new base tip, creating a linear history.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-4-1-what-is-cicd",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "what-is-cicd",
-          "title": "What is CI/CD?",
-          "summary": "What is CI/CD? is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-4-2-continuous-integration-vs-contin",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "continuous-integration-vs-continuous-delivery-vs-continuous-deployment",
-          "title": "Continuous Integration vs Continuous Delivery vs Continuous Deployment",
-          "summary": "CI/CD (Continuous Integration and Continuous Delivery/Deployment) is the automated practice of integrating code changes into a shared repository and automatically deploying verified artifacts to environments.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-4-3-why-cicd-is-essential-for-qa",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "why-cicd-is-essential-for-qa",
-          "title": "Why CI/CD is Essential for QA",
-          "summary": "CI/CD (Continuous Integration and Continuous Delivery/Deployment) is the automated practice of integrating code changes into a shared repository and automatically deploying verified artifacts to environments.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-4-4-automated-quality-gates",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "automated-quality-gates",
-          "title": "Automated Quality Gates",
-          "summary": "Automated Quality Gates is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-4-5-test-automation-in-cicd",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "test-automation-in-cicd",
-          "title": "Test Automation in CI/CD",
-          "summary": "Test Automation in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-5-1-pipeline-architecture",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "pipeline-architecture",
-          "title": "Pipeline Architecture",
-          "summary": "Git architecture is structured as a Directed Acyclic Graph (DAG) of content-addressable objects: Blobs (file contents), Trees (directories), Commits (snapshots with metadata), and Annotated Tags.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-5-2-pipeline-stages-build-test-deplo",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "pipeline-stages-build-test-deploy",
-          "title": "Pipeline Stages (Build, Test, Deploy)",
-          "summary": "Pipeline Stages (Build, Test, Deploy) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-5-3-triggers-and-events",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "triggers-and-events",
-          "title": "Triggers and Events",
-          "summary": "Triggers and Events is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-5-4-environment-management",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "environment-management",
-          "title": "Environment Management",
-          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-5-5-artifact-management",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "artifact-management",
-          "title": "Artifact Management",
-          "summary": "Artifact Management is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-5-6-test-reporting-in-cicd",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "test-reporting-in-cicd",
-          "title": "Test Reporting in CI/CD",
-          "summary": "Test Reporting in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-6-1-smoke-tests-in-cicd",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "smoke-tests-in-cicd",
-          "title": "Smoke Tests in CI/CD",
-          "summary": "Smoke Tests in CI/CD is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-6-2-regression-pipeline-design",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "regression-pipeline-design",
-          "title": "Regression Pipeline Design",
-          "summary": "Regression Pipeline Design is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-6-3-parallel-test-execution-in-pipel",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "parallel-test-execution-in-pipelines",
-          "title": "Parallel Test Execution in Pipelines",
-          "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-6-4-handling-test-flakiness-in-ci",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "handling-test-flakiness-in-ci",
-          "title": "Handling Test Flakiness in CI",
-          "summary": "Handling Test Flakiness in CI is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-6-5-test-failure-notifications-and-a",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "test-failure-notifications-and-alerts",
-          "title": "Test Failure Notifications and Alerts",
-          "summary": "Test Failure Notifications and Alerts is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-6-6-quality-metrics-and-dashboards",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "quality-metrics-and-dashboards",
-          "title": "Quality Metrics and Dashboards",
-          "summary": "Quality Metrics and Dashboards is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-7-1-branch-protection-rules",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "branch-protection-rules",
-          "title": "Branch Protection Rules",
-          "summary": "Branch Protection Rules is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-7-2-pipeline-security-and-secrets",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "pipeline-security-and-secrets",
-          "title": "Pipeline Security and Secrets",
-          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-7-3-cost-optimization-for-ci-runners",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "cost-optimization-for-ci-runners",
-          "title": "Cost Optimization for CI Runners",
-          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-git-7-4-shift-left-testing-strategy",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "shift-left-testing-strategy",
-          "title": "Shift-Left Testing Strategy",
-          "summary": "Shift-Left Testing Strategy is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-git-7-5-rollback-strategies",
-          "moduleId": "mod-cicd-1-git",
-          "courseId": "course-cicd-concepts",
-          "slug": "rollback-strategies",
-          "title": "Rollback Strategies",
-          "summary": "Rollback Strategies is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-cicd-2-github-actions",
-      "courseId": "course-cicd-concepts",
-      "slug": "github-actions-pipelines",
-      "title": "Module 2: GitHub Actions CI/CD Pipelines",
-      "description": "Workflow triggers, job matrices, parallel test sharding, artifact caching, headless browser configurations, and custom composite actions.",
-      "lessons": [
-        {
-          "id": "les-github-actions-1-1-what-is-github-actions",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "what-is-github-actions",
-          "title": "What is GitHub Actions?",
-          "summary": "Git is a distributed version control system (DVCS) that tracks changes in source code and test automation frameworks over time, enabling multiple SDETs and developers to collaborate concurrently.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-1-2-core-components-workflows-events",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "core-components-workflows-events-jobs-steps-actions-runners",
-          "title": "Core Components (Workflows, Events, Jobs, Steps, Actions, Runners)",
-          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-1-3-github-actions-vs-jenkins",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "github-actions-vs-jenkins",
-          "title": "GitHub Actions vs Jenkins",
-          "summary": "GitHub Actions vs Jenkins is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-1-4-workflow-file-syntax-yaml",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "workflow-file-syntax-yaml",
-          "title": "Workflow File Syntax (YAML)",
-          "summary": "Workflow File Syntax (YAML) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-2-1-workflow-triggers-push-pull-requ",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "workflow-triggers-push-pull-request-schedule-workflow-dispatch",
-          "title": "Workflow Triggers (push, pull_request, schedule, workflow_dispatch)",
-          "summary": "Pull Requests (PRs) and remote collaboration workflows facilitate peer code review, automated CI quality checks, and shared repository governance.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-2-2-job-configuration",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "job-configuration",
-          "title": "Job Configuration",
-          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-2-3-step-execution",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "step-execution",
-          "title": "Step Execution",
-          "summary": "Step Execution is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-2-4-dependencies-between-jobs-needs",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "dependencies-between-jobs-needs",
-          "title": "Dependencies Between Jobs (needs)",
-          "summary": "Dependencies Between Jobs (needs) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-2-5-conditional-execution-if",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "conditional-execution-if",
-          "title": "Conditional Execution (if)",
-          "summary": "Conditional Execution (if) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-3-1-github-hosted-runners",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "github-hosted-runners",
-          "title": "GitHub-Hosted Runners",
-          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-3-2-self-hosted-runners",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "self-hosted-runners",
-          "title": "Self-Hosted Runners",
-          "summary": "Runners are the compute instances (virtual machines or containers) that execute the steps defined in your CI/CD workflows.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-3-3-matrix-strategy-parallel-testing",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "matrix-strategy-parallel-testing-across-osbrowser",
-          "title": "Matrix Strategy (Parallel Testing Across OS/Browser)",
-          "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-3-4-environment-variables-and-secret",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "environment-variables-and-secrets",
-          "title": "Environment Variables and Secrets",
-          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-3-5-managing-artifacts-and-caches",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "managing-artifacts-and-caches",
-          "title": "Managing Artifacts and Caches",
-          "summary": "Managing Artifacts and Caches is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-4-1-running-selenium-in-github-actio",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "running-selenium-in-github-actions",
-          "title": "Running Selenium in GitHub Actions",
-          "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-4-2-running-playwright-in-github-act",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "running-playwright-in-github-actions",
-          "title": "Running Playwright in GitHub Actions",
-          "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-4-3-running-api-tests-newmanrest-ass",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "running-api-tests-newmanrest-assured",
-          "title": "Running API Tests (Newman/Rest Assured)",
-          "summary": "Automated test execution in GitHub Actions involves configuring headless browser drivers, dependencies, test execution commands, and result archiving in workflow files.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-4-4-headless-browser-configuration",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "headless-browser-configuration",
-          "title": "Headless Browser Configuration",
-          "summary": "Core Git commands form the daily CLI toolkit for test automation engineers: staging changes, creating atomic commits, inspecting diffs, and viewing history.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-4-5-publishing-test-reports-allure-h",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "publishing-test-reports-allure-html",
-          "title": "Publishing Test Reports (Allure, HTML)",
-          "summary": "Publishing Test Reports (Allure, HTML) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-5-1-using-marketplace-actions",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "using-marketplace-actions",
-          "title": "Using Marketplace Actions",
-          "summary": "Custom and composite actions encapsulate reusable multi-step automation logic into versioned, shareable modules across multiple repositories.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-5-2-creating-custom-composite-action",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "creating-custom-composite-actions",
-          "title": "Creating Custom Composite Actions",
-          "summary": "Custom and composite actions encapsulate reusable multi-step automation logic into versioned, shareable modules across multiple repositories.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-5-3-creating-javascript-actions",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "creating-javascript-actions",
-          "title": "Creating JavaScript Actions",
-          "summary": "Creating JavaScript Actions is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-5-4-creating-docker-container-action",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "creating-docker-container-actions",
-          "title": "Creating Docker Container Actions",
-          "summary": "Creating Docker Container Actions is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-5-5-sharing-actions-across-repositor",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "sharing-actions-across-repositories",
-          "title": "Sharing Actions Across Repositories",
-          "summary": "Sharing Actions Across Repositories is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-6-1-secrets-and-environment-protecti",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "secrets-and-environment-protection",
-          "title": "Secrets and Environment Protection",
-          "summary": "Pipeline security and secrets management ensures sensitive credentials (API tokens, database passwords, private keys) are injected securely without being exposed in logs or code.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-github-actions-6-2-concurrency-and-cancellation",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "concurrency-and-cancellation",
-          "title": "Concurrency and Cancellation",
-          "summary": "Reusable workflows (workflow_call) allow teams to define centralized CI/CD pipelines that can be invoked by multiple downstream repositories with parameterized inputs.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-6-3-reusable-workflows",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "reusable-workflows",
-          "title": "Reusable Workflows",
-          "summary": "Reusable workflows (workflow_call) allow teams to define centralized CI/CD pipelines that can be invoked by multiple downstream repositories with parameterized inputs.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-6-4-dynamic-matrix-builds",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "dynamic-matrix-builds",
-          "title": "Dynamic Matrix Builds",
-          "summary": "Matrix strategies execute test jobs concurrently across combinations of variables (e.g., Operating Systems, Node/Java versions, and Browser engines).",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-6-5-notifications-slack-email",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "notifications-slack-email",
-          "title": "Notifications (Slack, Email)",
-          "summary": "Notifications (Slack, Email) is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        },
-        {
-          "id": "les-github-actions-6-6-enterprise-best-practices",
-          "moduleId": "mod-cicd-2-github-actions",
-          "courseId": "course-cicd-concepts",
-          "slug": "enterprise-best-practices",
-          "title": "Enterprise Best Practices",
-          "summary": "Enterprise Best Practices is a key architectural capability in modern continuous testing, version control, and CI/CD automation pipelines.",
-          "estimatedReadingTime": 6
-        }
-      ]
-    },
-    {
-      "id": "mod-cicd-3-azure-devops",
-      "courseId": "course-cicd-concepts",
-      "slug": "azure-devops-pipelines",
-      "title": "Module 3: Azure DevOps Pipelines for SDETs",
-      "description": "Multi-stage YAML pipelines, PublishTestResults@2 task, self-hosted vs Microsoft agent pools, Azure Test Plans traceability, and automated quality gates.",
-      "lessons": [
-        {
-          "id": "les-publishing-test-results-in-ado",
-          "moduleId": "mod-cicd-3-azure-devops",
-          "courseId": "course-cicd-concepts",
-          "slug": "publishing-test-results-in-ado",
-          "title": "1.1 PublishTestResults@2 Task & Reporting",
-          "summary": "PublishTestResults@2 is a core Azure DevOps pipeline task that parses JUnit, NUnit, VSTest, or xUnit XML report files generated by test automation runners and publishes them directly into the Azure Test Analytics engine.",
-          "estimatedReadingTime": 9
-        },
-        {
-          "id": "les-azure-pipelines-agent-pools",
-          "moduleId": "mod-cicd-3-azure-devops",
-          "courseId": "course-cicd-concepts",
-          "slug": "azure-pipelines-agent-pools",
-          "title": "1.2 Self-Hosted vs Microsoft-Hosted Build Agents",
-          "summary": "Azure Pipelines agent pools are execution compute resources that run your pipeline jobs. SDETs must choose between Microsoft-hosted agents (ephemeral, cloud-managed VMs) and Self-hosted agents (dedicated physical or virtual machines in your own network).",
-          "estimatedReadingTime": 8
-        },
-        {
-          "id": "les-azure-test-plans-automation-link",
-          "moduleId": "mod-cicd-3-azure-devops",
-          "courseId": "course-cicd-concepts",
-          "slug": "azure-test-plans-automation-link",
-          "title": "2.1 Azure Test Plans Automated Test Association",
-          "summary": "Azure Test Plans Automated Test Association is the mechanism for linking automated test methods (in Java, C#, TypeScript, Python) to work item Test Cases in Azure Test Plans.",
-          "estimatedReadingTime": 8
-        },
-        {
-          "id": "les-ado-release-pipeline-gates",
-          "moduleId": "mod-cicd-3-azure-devops",
-          "courseId": "course-cicd-concepts",
-          "slug": "ado-release-pipeline-gates",
-          "title": "2.2 Automated Release Gates & Quality Metrics",
-          "summary": "Automated Release Gates in Azure DevOps are pre-deployment and post-deployment quality checks that evaluate automated test metrics, pass rates, and system health before allowing code to deploy to staging or production environments.",
-          "estimatedReadingTime": 8
-        }
-      ]
-    },
-    {
-      "id": "mod-cicd-4-jenkins",
-      "courseId": "course-cicd-concepts",
-      "slug": "declarative-jenkins-pipelines",
-      "title": "Module 4: Declarative Jenkins Pipelines for QA Automation",
-      "description": "Declarative Jenkinsfile structure, multibranch webhook triggers, parallel test execution on Docker agents, HTML test reporting, and Slack alerts.",
-      "lessons": [
-        {
-          "id": "les-declarative-syntax-essentials",
-          "moduleId": "mod-cicd-4-jenkins",
-          "courseId": "course-cicd-concepts",
-          "slug": "declarative-syntax-essentials",
-          "title": "1.1 Declarative Jenkinsfile Structure for QA",
-          "summary": "Declarative Pipeline is the modern, standardized syntax for writing Jenkinsfiles in Jenkins. It provides a structured, opinionated syntax (pipeline { agent ... stages ... post ... }) that replaces fragile legacy Scripted Groovy pipelines.",
-          "estimatedReadingTime": 8
-        },
-        {
-          "id": "les-multibranch-webhook-triggers",
-          "moduleId": "mod-cicd-4-jenkins",
-          "courseId": "course-cicd-concepts",
-          "slug": "multibranch-webhook-triggers",
-          "title": "1.2 Multi-Branch Pipelines & Webhook Triggers",
-          "summary": "Multibranch Pipeline is a Jenkins project type that automatically discovers branches and pull requests in your Git repository, creating separate child pipelines for each branch that contains a Jenkinsfile.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-parallel-stages-docker-agents",
-          "moduleId": "mod-cicd-4-jenkins",
-          "courseId": "course-cicd-concepts",
-          "slug": "parallel-stages-docker-agents",
-          "title": "2.1 Parallel Test Execution on Docker Agents",
-          "summary": "Parallel test execution on Docker agents is the enterprise architecture of distributing test suites across multiple concurrent Docker containers running on Jenkins agents.",
-          "estimatedReadingTime": 7
-        },
-        {
-          "id": "les-jenkins-html-reporting-slack",
-          "moduleId": "mod-cicd-4-jenkins",
-          "courseId": "course-cicd-concepts",
-          "slug": "jenkins-html-reporting-slack",
-          "title": "2.2 Automated HTML Reports & Slack Notifications",
-          "summary": "Automated HTML Reporting and Slack Notifications is the pipeline stage responsible for publishing interactive test reports (Playwright HTML, Allure, ExtentReports) and dispatching actionable, rich alert notifications to QA and development communication channels.",
-          "estimatedReadingTime": 8
-        }
-      ]
-    }
-  ]
-}
 ];

@@ -2107,7 +2107,8 @@ export function getTrackById(id: string): Track | undefined {
     try {
       const fs = require('node:fs');
       const path = require('node:path');
-      const storeFile = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+      const tmpFile = path.join('/tmp', 'curriculum-data-store.json');
+      const storeFile = fs.existsSync(tmpFile) ? tmpFile : path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
       if (fs.existsSync(storeFile)) {
         const data = JSON.parse(fs.readFileSync(storeFile, 'utf-8'));
         if (Array.isArray(data.tracks)) {
@@ -2133,7 +2134,8 @@ export function getAllLessons(): Lesson[] {
     try {
       const fs = require('node:fs');
       const path = require('node:path');
-      const storeFile = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+      const tmpFile = path.join('/tmp', 'curriculum-data-store.json');
+      const storeFile = fs.existsSync(tmpFile) ? tmpFile : path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
       if (fs.existsSync(storeFile)) {
         const data = JSON.parse(fs.readFileSync(storeFile, 'utf-8'));
         if (Array.isArray(data.tracks)) {

@@ -67,12 +67,14 @@ export default function CourseSidebar({
       id: mod.id || mod.slug,
       title: mod.title,
       description: mod.description || '',
-      lessons: (mod.lessons || []).map((l: any) => ({
-        id: l.id || l.slug,
-        slug: l.slug || l.id,
-        title: l.title,
-        tags: l.tags || [],
-      })),
+      lessons: (mod.lessons || [])
+        .filter((l: any) => (l.status ? l.status === 'published' : !l.disabled))
+        .map((l: any) => ({
+          id: l.id || l.slug,
+          slug: l.slug || l.id,
+          title: l.title,
+          tags: l.tags || [],
+        })),
     }));
 
     if (!filterQuery.trim()) return normalized;

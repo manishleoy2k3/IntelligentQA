@@ -13,6 +13,7 @@ import {
 } from '@/types/cms';
 
 const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+const TMP_DATA_FILE = path.join('/tmp', 'curriculum-data-store.json');
 
 import { calculateReadingTime, generateTableOfContents } from './cms-engine.js';
 
@@ -610,8 +611,9 @@ class CMSDataStore {
 
   private loadFromDisk() {
     try {
-      if (fs.existsSync(DATA_FILE)) {
-        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+      const targetFile = fs.existsSync(TMP_DATA_FILE) ? TMP_DATA_FILE : fs.existsSync(DATA_FILE) ? DATA_FILE : null;
+      if (targetFile) {
+        const raw = fs.readFileSync(targetFile, 'utf-8');
         const data = JSON.parse(raw);
         if (Array.isArray(data.articles) && data.articles.length > 0) {
           this.articles.clear();
@@ -650,9 +652,14 @@ class CMSDataStore {
   private saveToDisk() {
     try {
       let existingData: Record<string, any> = {};
-      if (fs.existsSync(DATA_FILE)) {
-        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
-        existingData = JSON.parse(raw);
+      if (fs.existsSync(TMP_DATA_FILE)) {
+        try {
+          existingData = JSON.parse(fs.readFileSync(TMP_DATA_FILE, 'utf-8'));
+        } catch {}
+      } else if (fs.existsSync(DATA_FILE)) {
+        try {
+          existingData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+        } catch {}
       }
       existingData.articles = Array.from(this.articles.values());
       existingData.categories = Array.from(this.categories.values());
@@ -660,7 +667,16 @@ class CMSDataStore {
       existingData.media = Array.from(this.media.values());
       existingData.cmsAuditLogs = this.auditLogs.slice(-100); // keep recent 100
 
-      fs.writeFileSync(DATA_FILE, JSON.stringify(existingData, null, 2), 'utf-8');
+      const payloadStr = JSON.stringify(existingData, null, 2);
+      try {
+        fs.writeFileSync(DATA_FILE, payloadStr, 'utf-8');
+      } catch {
+        try {
+          fs.writeFileSync(TMP_DATA_FILE, payloadStr, 'utf-8');
+        } catch (tmpErr) {
+          console.warn('Failed to write CMS data to /tmp fallback:', tmpErr);
+        }
+      }
     } catch (e) {
       console.error('Failed to persist CMS data to disk:', e);
     }

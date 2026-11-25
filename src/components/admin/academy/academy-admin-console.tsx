@@ -392,6 +392,9 @@ export default function AcademyAdminConsole({ onNotify }: AcademyAdminConsolePro
     const [moved] = reordered.splice(index, 1);
     reordered.splice(targetIndex, 0, moved);
 
+    // Instant optimistic update
+    setCourses(reordered);
+
     try {
       const res = await fetch('/api/admin/learning/reorder', {
         method: 'POST',

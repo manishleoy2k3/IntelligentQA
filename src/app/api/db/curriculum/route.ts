@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json');
+const TMP_DATA_FILE = path.join('/tmp', 'curriculum-data-store.json');
 
 // Persistent storage that survives server restarts and syncs across all user sessions
 let serverTracks: Track[] = JSON.parse(JSON.stringify(QA_TRACKS));
@@ -15,8 +16,9 @@ let serverCodingProblems: CodingProblem[] = JSON.parse(JSON.stringify(DEFAULT_CO
 
 function loadFromDisk() {
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+    const targetFile = fs.existsSync(TMP_DATA_FILE) ? TMP_DATA_FILE : fs.existsSync(DATA_FILE) ? DATA_FILE : null;
+    if (targetFile) {
+      const raw = fs.readFileSync(targetFile, 'utf-8');
       const data = JSON.parse(raw);
       if (Array.isArray(data.tracks) && data.tracks.length > 0) {
         serverTracks = data.tracks;
@@ -35,12 +37,33 @@ function loadFromDisk() {
 
 function saveToDisk() {
   try {
-    const payload = {
-      tracks: serverTracks,
-      lessonDocs: serverLessonDocs,
-      codingProblems: serverCodingProblems,
-    };
-    fs.writeFileSync(DATA_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+    let existingData: Record<string, any> = {};
+    if (fs.existsSync(TMP_DATA_FILE)) {
+      try {
+        existingData = JSON.parse(fs.readFileSync(TMP_DATA_FILE, 'utf-8'));
+      } catch {}
+    } else if (fs.existsSync(DATA_FILE)) {
+      try {
+        existingData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+      } catch {}
+    }
+
+    existingData.tracks = serverTracks;
+    existingData.lessonDocs = serverLessonDocs;
+    existingData.codingProblems = serverCodingProblems;
+
+    const payloadStr = JSON.stringify(existingData, null, 2);
+
+    try {
+      fs.writeFileSync(DATA_FILE, payloadStr, 'utf-8');
+    } catch {
+      // Fallback for read-only environments (e.g. AWS Lambda / Vercel /var/task)
+      try {
+        fs.writeFileSync(TMP_DATA_FILE, payloadStr, 'utf-8');
+      } catch (err) {
+        console.warn('Failed to write curriculum to /tmp fallback:', err);
+      }
+    }
   } catch (e) {
     console.error('Failed to save curriculum to disk', e);
   }
