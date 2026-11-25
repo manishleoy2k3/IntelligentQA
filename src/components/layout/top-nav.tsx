@@ -26,13 +26,22 @@ import {
   Key,
   HelpCircle,
   BookPlus,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
+import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 
 interface TopNavProps {
   onToggleMobileSidebar?: () => void;
+  isSidebarCollapsed?: boolean;
+  onToggleDesktopSidebar?: () => void;
 }
 
-export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
+export default function TopNav({
+  onToggleMobileSidebar,
+  isSidebarCollapsed = false,
+  onToggleDesktopSidebar,
+}: TopNavProps) {
   const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -174,8 +183,9 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
 
   return (
     <header className="w-full h-16 bg-white/95 dark:bg-[#141414]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#262626] text-slate-900 dark:text-white px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans transition-colors">
-      {/* Left: Mobile Sidebar Toggle */}
-      <div className="flex items-center gap-3">
+      {/* Left: Mobile Sidebar Toggle & Desktop Collapse/Expand Toggle */}
+      <div className="flex items-center gap-2.5">
+        {/* Mobile Sidebar Toggle */}
         <button
           type="button"
           onClick={onToggleMobileSidebar}
@@ -184,6 +194,32 @@ export default function TopNav({ onToggleMobileSidebar }: TopNavProps) {
         >
           <Menu className="w-5 h-5" />
         </button>
+
+        {/* Desktop Sidebar Toggle */}
+        {onToggleDesktopSidebar && (
+          <button
+            type="button"
+            onClick={onToggleDesktopSidebar}
+            className="hidden md:flex items-center justify-center p-2 rounded-lg text-slate-600 dark:text-[#A1A1AA] hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-[#262626]"
+            title={isSidebarCollapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
+            aria-label="Toggle Sidebar"
+          >
+            {isSidebarCollapsed ? (
+              <PanelLeftOpen className="w-5 h-5 text-emerald-500" />
+            ) : (
+              <PanelLeftClose className="w-5 h-5" />
+            )}
+          </button>
+        )}
+
+        {/* Brand Logo in TopNav when sidebar is collapsed on desktop */}
+        {isSidebarCollapsed && (
+          <div className="hidden md:flex items-center ml-1 animate-in fade-in duration-200">
+            <Link href="/dashboard" className="flex items-center gap-2 focus:outline-none">
+              <QABrandLogo size={28} showText={true} showZeroCostBadge={false} />
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Right Corner: Action Controls, Notifications and Profiles */}

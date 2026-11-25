@@ -13,15 +13,23 @@ import {
   ShieldCheck,
   X,
   GraduationCap,
+  PanelLeftClose,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
   onPreviewStudent?: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export default function AdminSidebar({ mobileOpen = false, onCloseMobile }: AdminSidebarProps) {
+export default function AdminSidebar({
+  mobileOpen = false,
+  onCloseMobile,
+  isCollapsed = false,
+  onToggleCollapse,
+}: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentSection = searchParams.get('section') || 'overview';
@@ -91,15 +99,28 @@ export default function AdminSidebar({ mobileOpen = false, onCloseMobile }: Admi
             <p className="text-[11px] text-[#A1A1AA]">Content &amp; Platform Console</p>
           </div>
         </div>
-        {onCloseMobile && (
-          <button
-            type="button"
-            onClick={onCloseMobile}
-            className="md:hidden p-1.5 rounded-lg text-[#A1A1AA] hover:text-white hover:bg-[#222222]"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
+        <div className="flex items-center gap-1">
+          {onToggleCollapse && (
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              className="hidden md:flex p-1.5 rounded-lg text-[#A1A1AA] hover:text-white hover:bg-[#222222] transition-colors cursor-pointer"
+              title="Collapse sidebar (Ctrl+B)"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="w-5 h-5" />
+            </button>
+          )}
+          {onCloseMobile && (
+            <button
+              type="button"
+              onClick={onCloseMobile}
+              className="md:hidden p-1.5 rounded-lg text-[#A1A1AA] hover:text-white hover:bg-[#222222]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Navigation Links */}
@@ -143,8 +164,19 @@ export default function AdminSidebar({ mobileOpen = false, onCloseMobile }: Admi
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col shrink-0 min-h-screen sticky top-0 h-screen">
-        {sidebarContent}
+      <aside
+        style={{
+          width: isCollapsed ? 0 : '16rem',
+          minWidth: isCollapsed ? 0 : undefined,
+          opacity: isCollapsed ? 0 : 1,
+          pointerEvents: isCollapsed ? 'none' : 'auto',
+          visibility: isCollapsed ? 'hidden' : 'visible',
+        }}
+        className={`hidden md:flex flex-col shrink-0 min-h-screen sticky top-0 h-screen overflow-hidden transition-all duration-200 ease-in-out ${
+          isCollapsed ? 'border-none' : ''
+        }`}
+      >
+        <div className="w-64 h-full shrink-0 overflow-hidden">{sidebarContent}</div>
       </aside>
 
       {/* Mobile Drawer */}

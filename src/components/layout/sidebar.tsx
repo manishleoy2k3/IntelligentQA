@@ -51,6 +51,8 @@ import {
   Workflow,
   Cpu,
   Layers,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { INITIAL_PUBLISHED_COURSES, AcademyClientCourse } from '@/data/learning/initial-courses';
 
@@ -210,9 +212,16 @@ function getSidebarModuleIcon(modTitle: string, trackId: string) {
 interface SidebarProps {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
+export default function Sidebar({
+  mobileOpen = false,
+  onCloseMobile,
+  isCollapsed = false,
+  onToggleCollapse,
+}: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -723,16 +732,33 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           <QABrandLogo size={32} showText={true} showZeroCostBadge={false} />
         </Link>
 
-        {/* Mobile close button */}
-        {onCloseMobile && (
-          <button
-            type="button"
-            onClick={onCloseMobile}
-            className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-950 dark:text-[#A1A1AA] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
+        {/* Action buttons: Mobile close & Desktop collapse */}
+        <div className="flex items-center gap-1">
+          {/* Desktop collapse button */}
+          {onToggleCollapse && (
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              className="hidden md:flex p-1.5 rounded-lg text-slate-500 hover:text-slate-950 dark:text-[#A1A1AA] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors cursor-pointer"
+              title="Collapse sidebar (Ctrl+B)"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* Mobile close button */}
+          {onCloseMobile && (
+            <button
+              type="button"
+              onClick={onCloseMobile}
+              className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-950 dark:text-[#A1A1AA] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors cursor-pointer"
+              aria-label="Close sidebar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* SEARCH BOX ON TOP OF LEFT NAVIGATION PANEL */}
@@ -1447,22 +1473,34 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
   return (
     <>
-      {/* DESKTOP SIDEBAR: Resizable on Right border */}
+      {/* DESKTOP SIDEBAR: Resizable on Right border & Collapsible */}
       <aside
-        style={{ width: `${sidebarWidth}px` }}
-        className="hidden md:flex min-h-screen shrink-0 sticky top-0 h-screen overflow-hidden z-20 relative select-none"
+        style={{
+          width: isCollapsed ? 0 : `${sidebarWidth}px`,
+          minWidth: isCollapsed ? 0 : undefined,
+          opacity: isCollapsed ? 0 : 1,
+          pointerEvents: isCollapsed ? 'none' : 'auto',
+          visibility: isCollapsed ? 'hidden' : 'visible',
+        }}
+        className={`hidden md:flex min-h-screen shrink-0 sticky top-0 h-screen overflow-hidden z-20 relative select-none transition-all duration-200 ease-in-out ${
+          isCollapsed ? 'border-none' : ''
+        }`}
       >
-        <div className="w-full h-full overflow-hidden">{sidebarContent}</div>
+        <div style={{ width: `${sidebarWidth}px` }} className="h-full overflow-hidden shrink-0">
+          {sidebarContent}
+        </div>
 
         {/* Draggable resize handle on right border */}
-        <div
-          onMouseDown={handleSidebarResizeStart}
-          onDoubleClick={() => setSidebarWidth(260)}
-          className={`absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:w-2 hover:bg-emerald-500/80 transition-all z-30 ${
-            isSidebarResizing ? 'w-2 bg-emerald-500 shadow-md' : 'bg-transparent'
-          }`}
-          title="Drag to resize sidebar width (Double click to reset)"
-        />
+        {!isCollapsed && (
+          <div
+            onMouseDown={handleSidebarResizeStart}
+            onDoubleClick={() => setSidebarWidth(260)}
+            className={`absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:w-2 hover:bg-emerald-500/80 transition-all z-30 ${
+              isSidebarResizing ? 'w-2 bg-emerald-500 shadow-md' : 'bg-transparent'
+            }`}
+            title="Drag to resize sidebar width (Double click to reset)"
+          />
+        )}
       </aside>
 
       {/* MOBILE DRAWER: Off-canvas overlay on mobile screens */}

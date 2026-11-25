@@ -16,11 +16,15 @@ import {
   UserCheck,
   Layers,
   Settings,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 
 interface AdminTopNavProps {
   onToggleMobileSidebar: () => void;
   onPreviewStudent?: () => void;
+  isSidebarCollapsed?: boolean;
+  onToggleDesktopSidebar?: () => void;
 }
 
 const SECTION_TITLES: Record<string, string> = {
@@ -33,7 +37,12 @@ const SECTION_TITLES: Record<string, string> = {
   team: 'Access Control & Administrator Team',
 };
 
-export default function AdminTopNav({ onToggleMobileSidebar, onPreviewStudent }: AdminTopNavProps) {
+export default function AdminTopNav({
+  onToggleMobileSidebar,
+  onPreviewStudent,
+  isSidebarCollapsed = false,
+  onToggleDesktopSidebar,
+}: AdminTopNavProps) {
   const searchParams = useSearchParams();
   const currentSection = searchParams?.get('section') || 'overview';
   const sectionTitle = SECTION_TITLES[currentSection] || 'Administration Dashboard';
@@ -86,7 +95,7 @@ export default function AdminTopNav({ onToggleMobileSidebar, onPreviewStudent }:
 
   return (
     <header className="w-full h-16 bg-[#141414]/95 backdrop-blur-md border-b border-[#262626] px-4 sm:px-6 flex items-center justify-between shrink-0 select-none z-20 font-sans">
-      {/* Left: Mobile Toggle & Breadcrumbs */}
+      {/* Left: Mobile Toggle, Desktop Toggle & Breadcrumbs */}
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -96,6 +105,23 @@ export default function AdminTopNav({ onToggleMobileSidebar, onPreviewStudent }:
         >
           <Menu className="w-5 h-5" />
         </button>
+
+        {/* Desktop Sidebar Toggle */}
+        {onToggleDesktopSidebar && (
+          <button
+            type="button"
+            onClick={onToggleDesktopSidebar}
+            className="hidden md:flex items-center justify-center p-2 rounded-lg text-[#A1A1AA] hover:text-white hover:bg-[#1E1E1E] transition-colors cursor-pointer border border-transparent hover:border-[#262626]"
+            title={isSidebarCollapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
+            aria-label="Toggle Sidebar"
+          >
+            {isSidebarCollapsed ? (
+              <PanelLeftOpen className="w-5 h-5 text-purple-400" />
+            ) : (
+              <PanelLeftClose className="w-5 h-5" />
+            )}
+          </button>
+        )}
 
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">

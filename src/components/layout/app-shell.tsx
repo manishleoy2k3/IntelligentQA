@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { QADatabase } from '@/lib/qa-db';
@@ -17,8 +17,57 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [previewStudent, setPreviewStudent] = useState<boolean>(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
+  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('intelligentqa_sidebar_collapsed') === 'true';
+    }
+    return false;
+  });
   const pathname = usePathname();
   const router = useRouter();
+
+  const toggleDesktopSidebar = useCallback(() => {
+    setDesktopSidebarCollapsed((prev) => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('intelligentqa_sidebar_collapsed', String(next));
+        window.dispatchEvent(
+          new CustomEvent('intelligentqa_sidebar_collapsed_changed', {
+            detail: { collapsed: next },
+          })
+        );
+      }
+      return next;
+    });
+  }, []);
+
+  // Keyboard shortcut: Cmd+B (Mac) or Ctrl+B (Windows/Linux) to toggle sidebar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isEditing =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable ||
+          target.getAttribute('role') === 'textbox');
+      if (!isEditing && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleDesktopSidebar();
+      }
+    };
+
+    const handleExternalToggle = () => {
+      toggleDesktopSidebar();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('intelligentqa_toggle_sidebar', handleExternalToggle);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('intelligentqa_toggle_sidebar', handleExternalToggle);
+    };
+  }, [toggleDesktopSidebar]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -61,9 +110,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   if (isGuestExploringAcademy && !isAuthRoute) {
     return (
       <div className="min-h-screen flex bg-slate-50 dark:bg-[#111111] text-slate-900 dark:text-[#FFFFFF] transition-colors duration-150">
-        <Sidebar mobileOpen={mobileSidebarOpen} onCloseMobile={() => setMobileSidebarOpen(false)} />
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onCloseMobile={() => setMobileSidebarOpen(false)}
+          isCollapsed={desktopSidebarCollapsed}
+          onToggleCollapse={toggleDesktopSidebar}
+        />
         <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-slate-50 dark:bg-[#111111]">
-          <TopNav onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)} />
+          <TopNav
+            onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+            isSidebarCollapsed={desktopSidebarCollapsed}
+            onToggleDesktopSidebar={toggleDesktopSidebar}
+          />
           <div className="md:hidden">
             <Header onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)} />
           </div>
@@ -107,10 +165,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <Sidebar
               mobileOpen={mobileSidebarOpen}
               onCloseMobile={() => setMobileSidebarOpen(false)}
+              isCollapsed={desktopSidebarCollapsed}
+              onToggleCollapse={toggleDesktopSidebar}
             />
 
             <div className="flex-1 min-w-0 flex flex-col min-h-[calc(100vh-40px)] bg-slate-50 dark:bg-[#111111]">
-              <TopNav onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)} />
+              <TopNav
+                onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+                isSidebarCollapsed={desktopSidebarCollapsed}
+                onToggleDesktopSidebar={toggleDesktopSidebar}
+              />
               <main className="flex-1 flex flex-col">{children}</main>
             </div>
           </div>
@@ -126,6 +190,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           mobileOpen={mobileSidebarOpen}
           onCloseMobile={() => setMobileSidebarOpen(false)}
           onPreviewStudent={() => setPreviewStudent(true)}
+          isCollapsed={desktopSidebarCollapsed}
+          onToggleCollapse={toggleDesktopSidebar}
         />
 
         {/* Main Admin Content Area */}
@@ -133,6 +199,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <AdminTopNav
             onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}
             onPreviewStudent={() => setPreviewStudent(true)}
+            isSidebarCollapsed={desktopSidebarCollapsed}
+            onToggleDesktopSidebar={toggleDesktopSidebar}
           />
           <main className="flex-1 flex flex-col">{children}</main>
         </div>
@@ -147,12 +215,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex bg-slate-50 dark:bg-[#111111] text-slate-900 dark:text-[#FFFFFF] transition-colors duration-150">
         {/* Side Left Navigation */}
-        <Sidebar mobileOpen={mobileSidebarOpen} onCloseMobile={() => setMobileSidebarOpen(false)} />
+        <Sidebar
+          mobileOpen={mobileSidebarOpen}
+          onCloseMobile={() => setMobileSidebarOpen(false)}
+          isCollapsed={desktopSidebarCollapsed}
+          onToggleCollapse={toggleDesktopSidebar}
+        />
 
         {/* Main Content Area */}
         <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-slate-50 dark:bg-[#111111]">
           {/* Top Right Navigation: Ask AI, Notifications, and Profiles */}
-          <TopNav onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)} />
+          <TopNav
+            onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+            isSidebarCollapsed={desktopSidebarCollapsed}
+            onToggleDesktopSidebar={toggleDesktopSidebar}
+          />
           <div className="md:hidden">
             <Header onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)} />
           </div>
