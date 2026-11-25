@@ -33,7 +33,7 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     num: '1',
     tabName: '1. Requirement Analyzer',
     title: 'Requirement Analyzer',
-    badgeText: 'Autonomous SDET Suite • Agent 1',
+    badgeText: '',
     description:
       'Analyze existing requirements and identify ambiguities, inconsistencies, missing clarity and undefined expectations across 7 core ambiguity categories.',
     defaultPrompt:

@@ -176,14 +176,12 @@ test('Requirement 5: Target: playwright-ts is strictly hidden on Requirement and
     'Target display is conditioned only on code and audit tabs'
   );
   assert.ok(
-    workspaceFile.includes(
-      'Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD'
-    ),
-    'Requirement Generator displays Gherkin BDD format instead of Target'
+    !workspaceFile.includes('Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD'),
+    'Output: Gherkin BDD is removed as requested'
   );
   assert.ok(
     workspaceFile.includes(
-      'Output: <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">QA Test Matrix'
+      'QA Test Matrix'
     ),
     'Test Case Generator displays QA Test Matrix instead of Target'
   );

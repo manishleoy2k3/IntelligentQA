@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import {
   FileText,
@@ -34,6 +34,7 @@ import {
   FileCode,
   Folder,
   ArrowRight,
+  GripVertical,
 } from 'lucide-react';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
@@ -88,7 +89,7 @@ export const AGENT_CONFIGS: Record<
     num: '1',
     tabName: '1. Requirement Analyzer',
     title: 'Requirement Analyzer',
-    badgeText: 'Autonomous SDET Suite • Agent 1',
+    badgeText: '',
     description:
       'Analyze existing requirements and identify ambiguities, inconsistencies, missing clarity and undefined expectations across 7 core ambiguity categories.',
     icon: FileText,
@@ -184,6 +185,53 @@ export default function QAAgentsWorkspace() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [geminiKey, setGeminiKey] = useState<string>('');
   const [aiPref, setAiPref] = useState<'enabled' | 'opted_out' | 'unset'>('unset');
+
+  // Resizable layout state for Requirement Analyzer
+  const [reqSplitPercent, setReqSplitPercent] = useState<number>(50);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isLg, setIsLg] = useState<boolean>(true);
+  const splitContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    setIsLg(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsLg(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const handleResizePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!splitContainerRef.current) return;
+      const rect = splitContainerRef.current.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const clientX = e.clientX;
+      const offset = clientX - rect.left;
+      const percent = (offset / rect.width) * 100;
+      // Clamp between 20% and 80% so both panels remain usable
+      setReqSplitPercent(Math.max(20, Math.min(80, percent)));
+    };
+
+    const handlePointerUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [isDragging]);
 
   // Handoff Workflows (from code_reviewer_debugger_agent.md)
   const handleHandoffToAutomation = () => {
@@ -500,10 +548,12 @@ export default function QAAgentsWorkspace() {
       {/* Header - Dynamically customized to the chosen QA Agent */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400 mb-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
-            {currentAgent.badgeText}
-          </div>
+          {currentAgent.badgeText ? (
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400 mb-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              {currentAgent.badgeText}
+            </div>
+          ) : null}
           <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <AgentIcon className={`w-7 h-7 ${currentAgent.color}`} />
             {currentAgent.title}
@@ -529,7 +579,7 @@ export default function QAAgentsWorkspace() {
           )}
         </div>
 
-        {/* Right Controls: Gemini Key status & Tech Stack (Only on code/audit tabs) */}
+        {/* Right Controls: Tech Stack (Only on code/audit tabs) & Spec View */}
         <div className="flex items-center gap-3 flex-wrap">
           {activeTab === 'code_review' && (
             <button
@@ -542,19 +592,6 @@ export default function QAAgentsWorkspace() {
               <span>View Agent</span>
             </button>
           )}
-
-          <button
-            onClick={() => setShowKeyModal(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-              geminiKey
-                ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
-                : 'bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300'
-            }`}
-            title="Configure your personal free Google AI Studio key"
-          >
-            <Key className="w-3.5 h-3.5" />
-            <span>{geminiKey ? 'Gemini 2.0 Key Active' : 'Configure Gemini Key'}</span>
-          </button>
 
           {/* Tech Stack Selector: STRICTLY visible only for Automation Generator and Code Auditor */}
           {(activeTab === 'automation_code' || activeTab === 'code_review') && (
@@ -660,9 +697,27 @@ export default function QAAgentsWorkspace() {
 
       {/* Main Workspace Area */}
       {activeTab !== 'chat' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div
+          ref={activeTab === 'requirements' ? splitContainerRef : undefined}
+          className={
+            activeTab === 'requirements'
+              ? `flex flex-col lg:flex-row items-stretch gap-6 lg:gap-0 relative ${
+                  isDragging ? 'select-none cursor-col-resize' : ''
+                }`
+              : 'grid grid-cols-1 lg:grid-cols-2 gap-6'
+          }
+        >
           {/* LEFT COLUMN: Tailored Input Prompt, File Import, & Triggers */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between">
+          <div
+            style={
+              activeTab === 'requirements' && isLg
+                ? { width: `calc(${reqSplitPercent}% - 8px)` }
+                : undefined
+            }
+            className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between ${
+              activeTab === 'requirements' && isLg ? 'shrink-0 min-w-[280px]' : ''
+            }`}
+          >
             <div className="space-y-3.5">
               {/* Header Label: Strict target visibility */}
               <div className="flex items-center justify-between">
@@ -670,7 +725,7 @@ export default function QAAgentsWorkspace() {
                   {activeTab === 'requirements' && (
                     <>
                       <FileText className="w-4 h-4 text-cyan-500" />
-                      <span>Requirements Specification &amp; Analysis</span>
+                      <span>Requirements Analysis</span>
                     </>
                   )}
                   {activeTab === 'test_cases' && (
@@ -700,14 +755,7 @@ export default function QAAgentsWorkspace() {
                       Target:{' '}
                       <strong className="text-emerald-600 font-semibold">{techStack}</strong>
                     </span>
-                  ) : activeTab === 'requirements' ? (
-                    <span className="text-[11px] text-slate-400">
-                      Output:{' '}
-                      <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">
-                        Gherkin BDD &amp; Ambiguity Analysis
-                      </strong>
-                    </span>
-                  ) : (
+                  ) : activeTab === 'requirements' ? null : (
                     <span className="text-[11px] text-slate-400">
                       Output:{' '}
                       <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -1239,7 +1287,7 @@ export default function QAAgentsWorkspace() {
             {/* Action Trigger Button */}
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <span className="text-xs text-slate-400">
-                {geminiKey ? '● Real-time Gemini Flash' : '● AI Disabled (Key Required)'}
+                {!geminiKey ? '● AI Disabled (Key Required)' : ''}
               </span>
               <button
                 onClick={handleGenerate}
@@ -1279,8 +1327,43 @@ export default function QAAgentsWorkspace() {
             </div>
           </div>
 
+          {/* Resizer Divider Bar (Only on Requirement Analyzer on desktop) */}
+          {activeTab === 'requirements' && (
+            <div
+              onPointerDown={handleResizePointerDown}
+              onDoubleClick={() => setReqSplitPercent(50)}
+              className="hidden lg:flex w-4 -mx-1 group items-center justify-center cursor-col-resize z-10 shrink-0 select-none py-4"
+              title="Drag to resize panels (Double-click to reset to 50/50)"
+            >
+              <div
+                className={`w-1.5 h-full min-h-[300px] rounded-full transition-all flex items-center justify-center ${
+                  isDragging
+                    ? 'bg-cyan-500 shadow-md ring-2 ring-cyan-400/50'
+                    : 'bg-slate-200 dark:bg-slate-700/80 group-hover:bg-cyan-400 group-hover:w-2'
+                }`}
+              >
+                <GripVertical
+                  className={`w-3.5 h-3.5 transition-colors ${
+                    isDragging
+                      ? 'text-white'
+                      : 'text-slate-400 dark:text-slate-500 group-hover:text-cyan-900 dark:group-hover:text-cyan-100'
+                  }`}
+                />
+              </div>
+            </div>
+          )}
+
           {/* RIGHT COLUMN: Tailored Output Artifact with Excel Export */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between">
+          <div
+            style={
+              activeTab === 'requirements' && isLg
+                ? { width: `calc(${100 - reqSplitPercent}% - 8px)` }
+                : undefined
+            }
+            className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between ${
+              activeTab === 'requirements' && isLg ? 'flex-1 min-w-[320px]' : ''
+            }`}
+          >
             <div className="space-y-3 flex-1">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
@@ -1296,6 +1379,46 @@ export default function QAAgentsWorkspace() {
                   {usedEngine && (
                     <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
                       via {usedEngine}
+                    </span>
+                  )}
+                  {activeTab === 'requirements' && isLg && (
+                    <span className="hidden xl:inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] text-slate-500 ml-1">
+                      <button
+                        type="button"
+                        onClick={() => setReqSplitPercent(35)}
+                        className={`px-1.5 py-0.5 rounded font-medium transition cursor-pointer ${
+                          reqSplitPercent === 35
+                            ? 'bg-cyan-600 text-white shadow-xs'
+                            : 'hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                        title="Wide Ambiguity Analysis View (35% Requirements / 65% Analysis)"
+                      >
+                        35:65
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReqSplitPercent(50)}
+                        className={`px-1.5 py-0.5 rounded font-medium transition cursor-pointer ${
+                          reqSplitPercent === 50
+                            ? 'bg-cyan-600 text-white shadow-xs'
+                            : 'hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                        title="Balanced View (50% Requirements / 50% Analysis)"
+                      >
+                        50:50
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReqSplitPercent(65)}
+                        className={`px-1.5 py-0.5 rounded font-medium transition cursor-pointer ${
+                          reqSplitPercent === 65
+                            ? 'bg-cyan-600 text-white shadow-xs'
+                            : 'hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                        title="Wide Requirements View (65% Requirements / 35% Analysis)"
+                      >
+                        65:35
+                      </button>
                     </span>
                   )}
                 </label>
