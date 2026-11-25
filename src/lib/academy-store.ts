@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { generateStandardLessonHtml } from './standard-lesson-compiler';
+import { isSupabaseConfigured } from './supabase/env';
+import { getSupabaseAdminClient } from './supabase/admin';
 import {
   AcademyPublishStatus,
   AcademyCategory,
@@ -871,14 +873,65 @@ export class AcademyStore {
         } catch (tmpErr) {
           console.warn('[AcademyStore] Failed to write to /tmp fallback:', tmpErr);
         }
-        // In-memory state in AcademyStore is updated and valid
-        return;
       }
+
+      // Synchronize with Supabase PostgreSQL if configured
+      this.syncToSupabaseAsync(existingData);
     } catch (e: any) {
       console.warn(
         '[AcademyStore] Non-fatal error persisting Academy data to disk:',
         e?.message || e
       );
+    }
+  }
+
+  private syncToSupabaseAsync(data: Record<string, any>): void {
+    if (!isSupabaseConfigured()) return;
+    try {
+      const supabase = getSupabaseAdminClient();
+      if (!supabase) return;
+      Promise.resolve().then(async () => {
+        try {
+          if (Array.isArray(data.academyCategories) && data.academyCategories.length > 0) {
+            await supabase.from('categories').upsert(
+              data.academyCategories.map((c: any) => ({
+                id: c.id,
+                slug: c.slug,
+                title: c.title,
+                description: c.description || null,
+                icon: c.icon || 'BookOpen',
+                sort_order: c.sortOrder || 0,
+                parent_category_id: c.parentCategoryId || null,
+                is_active: c.isActive !== false,
+              })),
+              { onConflict: 'id' }
+            );
+          }
+          if (Array.isArray(data.academyCourses) && data.academyCourses.length > 0) {
+            await supabase.from('courses').upsert(
+              data.academyCourses.map((c: any) => ({
+                id: c.id,
+                category_id: c.categoryId,
+                slug: c.slug,
+                title: c.title,
+                subtitle: c.subtitle || null,
+                description: c.description || null,
+                icon: c.icon || null,
+                thumbnail: c.thumbnail || null,
+                level: c.level || 'All Levels',
+                estimated_hours: c.estimatedHours || 10,
+                sort_order: c.sortOrder || 0,
+                status: c.status || 'published',
+              })),
+              { onConflict: 'id' }
+            );
+          }
+        } catch (syncErr: any) {
+          console.warn('[AcademyStore] Supabase async sync notice:', syncErr?.message);
+        }
+      });
+    } catch {
+      // ignore
     }
   }
 

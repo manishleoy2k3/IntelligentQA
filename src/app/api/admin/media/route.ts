@@ -4,6 +4,7 @@ import path from 'path';
 import { cmsStore } from '@/lib/cms-store';
 import { validateImageUpload, verifyAdminAccess } from '@/lib/cms-security';
 import { CMSMediaItem } from '@/types/cms';
+import { uploadAsset } from '@/lib/supabase/storage';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'public/uploads');
 
@@ -80,11 +81,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    // Save to disk
-    const targetPath = path.join(UPLOAD_DIR, filename);
-    fs.writeFileSync(targetPath, fileBuffer);
-
-    const relativeUrl = `/uploads/${filename}`;
+    // Upload to Supabase Storage (with local disk fallback)
+    const uploadResult = await uploadAsset(filename, fileBuffer, mimeType);
+    const relativeUrl = uploadResult.url;
     const mediaItem: CMSMediaItem = {
       id: `med-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       filename,

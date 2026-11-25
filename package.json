@@ -21,6 +21,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
     "@tiptap/extension-character-count": "^3.35.0",
     "@tiptap/extension-code-block-lowlight": "^3.35.0",
     "@tiptap/extension-highlight": "^3.35.0",
@@ -42,6 +43,7 @@
     "elkjs": "^0.12.1",
     "firebase": "^13.4.0",
     "highlight.js": "^11.12.0",
+    "jose": "^6.2.18",
     "lowlight": "^3.3.0",
     "lucide-react": "^1.73.0",
     "next": "^16.4.6",

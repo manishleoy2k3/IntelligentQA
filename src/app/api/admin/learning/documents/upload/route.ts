@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { academyStore } from '@/lib/academy-store';
 import { verifyAdminAccess } from '@/lib/cms-security';
 import { validateDocxFile, processDocxDocument } from '@/lib/docx-engine';
+import { uploadAsset } from '@/lib/supabase/storage';
 
 const DOCS_DIR = path.join(process.cwd(), 'public/uploads/learning/docs');
 const MEDIA_DIR = path.join(process.cwd(), 'public/uploads/learning/media');
@@ -65,9 +66,19 @@ export async function POST(req: NextRequest) {
     const isDocxOrPdf = ext === '.docx' || ext === '.doc' || ext === '.pdf';
     const targetDir = isDocxOrPdf ? DOCS_DIR : MEDIA_DIR;
     const filePath = path.join(targetDir, storedFilename);
-    const publicUrl = `/uploads/learning/${isDocxOrPdf ? 'docs' : 'media'}/${storedFilename}`;
+    const subFolder = isDocxOrPdf ? 'learning/docs' : 'learning/media';
+    const uploadResult = await uploadAsset(
+      `${subFolder}/${storedFilename}`,
+      buffer,
+      file.type || 'application/octet-stream'
+    );
+    const publicUrl = uploadResult.url;
 
-    fs.writeFileSync(filePath, buffer);
+    try {
+      fs.writeFileSync(filePath, buffer);
+    } catch {
+      // ignore if read-only filesystem on Lambda
+    }
 
     if (isDocxOrPdf) {
       const docSourceId = `doc-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;

@@ -1,0 +1,44 @@
+import { z } from 'zod';
+
+const SupabaseEnvSchema = z.object({
+  url: z.string().url(),
+  anonKey: z.string().min(1),
+  serviceRoleKey: z.string().min(1).optional(),
+});
+
+export interface SupabaseConfig {
+  url: string;
+  anonKey: string;
+  serviceRoleKey?: string;
+}
+
+export function getSupabaseConfig(): SupabaseConfig | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !anonKey) {
+    return null;
+  }
+
+  const result = SupabaseEnvSchema.safeParse({ url, anonKey, serviceRoleKey });
+  if (!result.success) {
+    console.warn('Invalid Supabase configuration:', result.error.format());
+    return null;
+  }
+
+  return {
+    url,
+    anonKey,
+    serviceRoleKey,
+  };
+}
+
+export function isSupabaseConfigured(): boolean {
+  return getSupabaseConfig() !== null;
+}
+
+export function isSupabaseAdminConfigured(): boolean {
+  const config = getSupabaseConfig();
+  return Boolean(config && config.serviceRoleKey);
+}
