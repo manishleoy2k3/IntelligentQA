@@ -4,6 +4,7 @@ import { REQUIREMENT_GENERATOR_SYSTEM_PROMPT } from '@/data/agents/requirement-g
 import { TEST_CASE_GENERATOR_SYSTEM_PROMPT } from '@/data/agents/test-case-generator-agent';
 import { AUTOMATION_CODE_GENERATOR_SYSTEM_PROMPT } from '@/data/agents/automation-code-generator-agent';
 import { CODE_REVIEWER_DEBUGGER_SYSTEM_PROMPT } from '@/data/agents/code-reviewer-debugger-agent';
+import { validateAndCorrectTestCasesMarkdown } from '@/lib/excel-export';
 
 export async function POST(req: NextRequest) {
   try {
@@ -61,9 +62,10 @@ export async function POST(req: NextRequest) {
       if (action === 'test_cases') {
         const cleanInput = input.trim();
         const generatedOutput = generateTestCaseMatrix(cleanInput);
+        const validatedOutput = validateAndCorrectTestCasesMarkdown(generatedOutput);
         return NextResponse.json({
           action,
-          output: generatedOutput,
+          output: validatedOutput,
           techStack,
           isLiveAI: false,
           engine: 'deterministic-agent-engine',
@@ -248,6 +250,9 @@ Format Instructions: Output should be in plain text along with relevant code and
                       .trim();
                   }
                 }
+                if (action === 'test_cases') {
+                  generatedText = validateAndCorrectTestCasesMarkdown(generatedText);
+                }
                 return NextResponse.json({
                   action,
                   output: generatedText,
@@ -277,6 +282,7 @@ Format Instructions: Output should be in plain text along with relevant code and
         break;
       case 'test_cases':
         generatedOutput = generateTestCaseMatrix(cleanInput);
+        generatedOutput = validateAndCorrectTestCasesMarkdown(generatedOutput);
         break;
       case 'automation_code':
         generatedOutput = generateAutomationCode(cleanInput, techStack);
@@ -992,18 +998,109 @@ function generateTestCaseMatrix(input: string): string {
 | **TS-006** | Verify downstream timeout and resilient rollback when microservices fail | Fault Tolerance | Fault Injection | Integration |
 
 ## 4. Detailed Test Cases
-| TC ID | Req ID | Test Case Title | Objective | Preconditions | Test Data | Execution Steps | Expected Result | Priority | Test Type | Automation Suitability | Dependencies | Tags |
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| **TC-001** | REQ-001 | Verify successful happy path execution with valid inputs | Confirm standard successful operation | User is authenticated with active permissions | Valid representative input payload | 1. Navigate to target module<br>2. Supply valid parameters<br>3. Submit request | HTTP 200/201, success notification renders, state is persisted | Critical (P0) | Functional | Highly Suitable | None | #smoke, #p0 |
-| **TC-002** | REQ-002 | Verify client and server rejection on empty mandatory fields | Prevent empty or null mutations | Form or API endpoint accessible | Empty string / null fields | 1. Omit required fields<br>2. Submit request | Blocked with HTTP 400/422, inline accessible error displays | Critical (P0) | Negative | Highly Suitable | TC-001 | #regression |
-| **TC-003** | REQ-002 | Verify validation error for malformed input syntax | Validate field format adherence (e.g. email/URL) | Module accessible | Malformed input: "user.invalid_format" | 1. Enter malformed syntax<br>2. Trigger validation | "Please enter a valid format" error, no mutation occurs | High (P1) | Negative | Highly Suitable | None | #regression |
-| **TC-004** | REQ-003 | Verify exact maximum boundary value acceptance | Confirm maximum allowed boundary | Module accessible | Max boundary limit (e.g. exactly 255 chars / $50,000) | 1. Input maximum allowable threshold<br>2. Submit | Successfully accepted without truncation or arithmetic overflow | High (P1) | BVA | Highly Suitable | TC-001 | #bva |
-| **TC-005** | REQ-003 | Verify rejection when input exceeds maximum boundary by 1 | Prevent overflow and limit breaches | Module accessible | Boundary + 1 (e.g. 256 chars / $50,000.01) | 1. Input boundary + 1<br>2. Submit | Rejected with specific error indicating exceeded threshold | High (P1) | BVA | Highly Suitable | TC-004 | #bva |
-| **TC-006** | REQ-004 | Verify token expiration and single-use invalidation | Enforce security token lifecycle | Token has been generated or expired | Expired token / reused token | 1. Use expired security token<br>2. Attempt operation | Rejected with HTTP 401/403: "Token expired or invalid" | Critical (P0) | Security | Suitable | None | #security |
-| **TC-007** | REQ-004 | Verify brute-force rate limiting enforcement | Mitigate automated abuse & credential stuffing | Endpoint accessible | 6 consecutive rapid attempts from same client IP | 1. Dispatch 6 requests in <10s<br>2. Observe 6th request | HTTP 429 Too Many Requests with \`Retry-After\` header | High (P1) | Security | Highly Suitable | None | #security |
-| **TC-008** | REQ-005 | Verify rapid double-click idempotency handling | Prevent duplicate transaction creation | Form is populated with valid data | Identical payload with same Idempotency-Key | 1. Submit action twice within 200ms<br>2. Inspect database | Button enters disabled state, exactly 1 persistent record created | High (P1) | Concurrency | Suitable | TC-001 | #concurrency |
-| **TC-009** | REQ-005 | Verify graceful handling of downstream gateway timeout | Verify rollback safety on 504 | Downstream stub delays response > 8000ms | Standard valid payload | 1. Trigger action<br>2. Downstream service times out | "Service temporarily unavailable. Please retry" shown, no orphan data | Medium (P2) | Integration | Suitable | TC-001 | #resilience |
-| **TC-010** | REQ-006 | Verify XSS script sanitization in free-text fields | Block cross-site scripting execution | Module accessible | \`<script>alert('xss')</script>\` | 1. Input script payload<br>2. Submit and view rendered output | Script is HTML-escaped/sanitized, does not execute in DOM | Critical (P0) | Security | Highly Suitable | None | #security |
+| Test case No. | Test Case Description | Pre-Conditions | Risk (High, Medium, Low) | Step Number | Test Step Description | Input Test Data | Expected Result |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+${
+  isPasswordReset
+    ? `| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered; Login page loaded | High | 1 | Navigate to application login URL | N/A | Login page loaded with Email, Password fields and Sign In button |
+| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered; Login page loaded | High | 2 | Enter registered email address into Email field | user.qa@example.com | Email is accepted without syntax or formatting errors |
+| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered; Login page loaded | High | 3 | Enter corresponding valid password into Password field | SecureP@ssw0rd! | Password input is visually masked with bullet asterisks |
+| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered; Login page loaded | High | 4 | Click the "Sign In" button | N/A | Authentication succeeds, session token issued, redirected to Dashboard |
+| TC_002 | Verify login rejection when password field is left empty | Login page loaded | High | 1 | Enter registered email address into Email field | user.qa@example.com | Email is populated in input field |
+| TC_002 | Verify login rejection when password field is left empty | Login page loaded | High | 2 | Leave Password input field empty | N/A | Password field remains blank |
+| TC_002 | Verify login rejection when password field is left empty | Login page loaded | High | 3 | Click the "Sign In" button | N/A | Submission blocked with inline error: "Password is required" |
+| TC_003 | Verify validation rejection on malformed email format | Login page loaded | Medium | 1 | Enter malformed email syntax into Email field | invalid_user@@domain | Malformed string entered |
+| TC_003 | Verify validation rejection on malformed email format | Login page loaded | Medium | 2 | Enter valid password into Password field | SecureP@ssw0rd! | Password entered in masked format |
+| TC_003 | Verify validation rejection on malformed email format | Login page loaded | Medium | 3 | Click the "Sign In" button | N/A | Blocked with field validation error: "Please enter a valid email address" |
+| TC_004 | Verify authentication failure on incorrect credentials | User account is registered; Login page loaded | High | 1 | Enter registered email address into Email field | user.qa@example.com | Email accepted |
+| TC_004 | Verify authentication failure on incorrect credentials | User account is registered; Login page loaded | High | 2 | Enter incorrect password into Password field | WrongPass999# | Password entered in masked format |
+| TC_004 | Verify authentication failure on incorrect credentials | User account is registered; Login page loaded | High | 3 | Click the "Sign In" button | N/A | HTTP 401 response; user-friendly error: "Invalid email or password" displayed |
+| TC_005 | Verify password maximum length boundary acceptance (128 characters) | User account registered; Login page loaded | Medium | 1 | Enter registered email into Email field | user.qa@example.com | Email accepted |
+| TC_005 | Verify password maximum length boundary acceptance (128 characters) | User account registered; Login page loaded | Medium | 2 | Enter password of exactly 128 characters | Exactly 128 characters | Password accepted without truncation or input blocking |
+| TC_005 | Verify password maximum length boundary acceptance (128 characters) | User account registered; Login page loaded | Medium | 3 | Click the "Sign In" button | N/A | Password verified without memory overflow or application error |
+| TC_006 | Verify rejection when password exceeds maximum allowed length (129 characters) | Login page loaded | Medium | 1 | Enter registered email into Email field | user.qa@example.com | Email accepted |
+| TC_006 | Verify rejection when password exceeds maximum allowed length (129 characters) | Login page loaded | Medium | 2 | Enter password with 129 characters (boundary + 1) | 129 characters string | Rejection indicator displayed: "Password cannot exceed 128 characters" |
+| TC_006 | Verify rejection when password exceeds maximum allowed length (129 characters) | Login page loaded | Medium | 3 | Click the "Sign In" button | N/A | Submission blocked; form does not dispatch payload |
+| TC_007 | Verify account lockout and rate limiting after consecutive failed login attempts | User account is registered; Login page loaded | High | 1 | Submit 5 consecutive failed login attempts within 10 seconds | Invalid passwords | System registers 5 authentication failures |
+| TC_007 | Verify account lockout and rate limiting after consecutive failed login attempts | User account is registered; Login page loaded | High | 2 | Attempt 6th login with valid credentials | user.qa@example.com / SecureP@ssw0rd! | HTTP 429 Too Many Requests; "Account temporarily locked. Retry in 15 minutes" |
+| TC_007 | Verify account lockout and rate limiting after consecutive failed login attempts | User account is registered; Login page loaded | High | 3 | Inspect security audit telemetry | N/A | Security incident logged with client IP, timestamp, and failure counter |
+| TC_008 | Verify security password masking and secure input attributes | Login page loaded | Low | 1 | Type characters into password input field | SecretPassword123 | Characters visually obscured as bullet dots |
+| TC_008 | Verify security password masking and secure input attributes | Login page loaded | Low | 2 | Inspect DOM element attributes via browser inspector | N/A | Input type attribute is strictly "password", autocomplete adheres to security standard |`
+    : isPayment
+      ? `| TC_001 | Verify successful funds transfer with valid parameters and 2FA verification | User is authenticated with active balance ($15,000); Transfer module loaded | High | 1 | Select originating account and enter verified beneficiary account | Beneficiary: ACC-987654 | Beneficiary details validated and account name resolved |
+| TC_001 | Verify successful funds transfer with valid parameters and 2FA verification | User is authenticated with active balance ($15,000); Transfer module loaded | High | 2 | Enter transfer amount within daily allowable limits | Amount: $500.00 | Transfer fee and new balance preview calculated accurately |
+| TC_001 | Verify successful funds transfer with valid parameters and 2FA verification | User is authenticated with active balance ($15,000); Transfer module loaded | High | 3 | Enter valid 6-digit 2FA OTP verification code | OTP: 123456 | OTP accepted and submit button enabled |
+| TC_001 | Verify successful funds transfer with valid parameters and 2FA verification | User is authenticated with active balance ($15,000); Transfer module loaded | High | 4 | Click "Confirm Transfer" button | N/A | Transaction confirmed with unique reference ID; balance updated to $14,500 |
+| TC_002 | Verify transfer rejection when transaction amount exceeds available balance | User is authenticated with balance of $500.00 | High | 1 | Select originating account and beneficiary | ACC-987654 | Accounts resolved |
+| TC_002 | Verify transfer rejection when transaction amount exceeds available balance | User is authenticated with balance of $500.00 | High | 2 | Enter transfer amount exceeding available balance | Amount: $1,200.00 | Inline balance validation error displayed |
+| TC_002 | Verify transfer rejection when transaction amount exceeds available balance | User is authenticated with balance of $500.00 | High | 3 | Attempt to click "Confirm Transfer" | N/A | Action blocked; error message: "Insufficient funds for transfer" |
+| TC_003 | Verify transfer acceptance at exact maximum daily transaction limit ($10,000.00) | User has $20,000 balance and $0 spent against daily limit | High | 1 | Select originating account and beneficiary | ACC-987654 | Accounts resolved |
+| TC_003 | Verify transfer acceptance at exact maximum daily transaction limit ($10,000.00) | User has $20,000 balance and $0 spent against daily limit | High | 2 | Enter exact daily limit transfer amount | Amount: $10,000.00 | System allows entry without limit warning |
+| TC_003 | Verify transfer acceptance at exact maximum daily transaction limit ($10,000.00) | User has $20,000 balance and $0 spent against daily limit | High | 3 | Supply valid 2FA token | OTP: 123456 | Token verified |
+| TC_003 | Verify transfer acceptance at exact maximum daily transaction limit ($10,000.00) | User has $20,000 balance and $0 spent against daily limit | High | 4 | Submit transaction | N/A | Transaction succeeds; remaining daily transfer limit updated to $0.00 |
+| TC_004 | Verify transfer rejection when amount exceeds daily limit by $0.01 ($10,000.01) | User has $20,000 balance and $0 spent against daily limit | High | 1 | Select originating account and beneficiary | ACC-987654 | Accounts resolved |
+| TC_004 | Verify transfer rejection when amount exceeds daily limit by $0.01 ($10,000.01) | User has $20,000 balance and $0 spent against daily limit | High | 2 | Enter transfer amount exceeding daily limit by one cent | Amount: $10,000.01 | Limit indicator flags transaction |
+| TC_004 | Verify transfer rejection when amount exceeds daily limit by $0.01 ($10,000.01) | User has $20,000 balance and $0 spent against daily limit | High | 3 | Click "Continue" to proceed | N/A | Transfer blocked with error: "Amount exceeds maximum daily limit of $10,000.00" |
+| TC_005 | Verify transfer acceptance at minimum allowable transaction threshold ($0.01) | User has active account balance | Medium | 1 | Select originating account and beneficiary | ACC-987654 | Accounts resolved |
+| TC_005 | Verify transfer acceptance at minimum allowable transaction threshold ($0.01) | User has active account balance | Medium | 2 | Enter minimum allowed transaction amount | Amount: $0.01 | Minimum threshold accepted |
+| TC_005 | Verify transfer acceptance at minimum allowable transaction threshold ($0.01) | User has active account balance | Medium | 3 | Confirm transfer with 2FA | OTP: 123456 | Transfer processed successfully with confirmation receipt |
+| TC_006 | Verify idempotency enforcement and duplicate prevention on rapid double submission | Valid transfer details entered and 2FA verified | High | 1 | Double-click "Confirm Transfer" button within 150ms | Amount: $250.00 | Button immediately enters disabled state with loading indicator |
+| TC_006 | Verify idempotency enforcement and duplicate prevention on rapid double submission | Valid transfer details entered and 2FA verified | High | 2 | Inspect HTTP request headers | Idempotency-Key: IDEMP-uuid-001 | Header verified; subsequent duplicate packet ignored by server |
+| TC_006 | Verify idempotency enforcement and duplicate prevention on rapid double submission | Valid transfer details entered and 2FA verified | High | 3 | Query backend ledger database | N/A | Exactly 1 debit transaction record created; account debited exactly $250.00 |
+| TC_007 | Verify downstream gateway timeout handling and non-destructive transaction rollback | Transfer initiated with valid parameters | High | 1 | Trigger transfer while downstream payment switch delays response > 8000ms | Amount: $100.00 | Gateway timeout threshold reached |
+| TC_007 | Verify downstream gateway timeout handling and non-destructive transaction rollback | Transfer initiated with valid parameters | High | 2 | Observe UI error handling and status banner | N/A | User shown: "Transaction pending confirmation. Your funds have not been debited" |
+| TC_007 | Verify downstream gateway timeout handling and non-destructive transaction rollback | Transfer initiated with valid parameters | High | 3 | Verify ledger and account state after 30 seconds | N/A | No orphan debit created; account balance remains unchanged |
+| TC_008 | Verify unauthorized transfer rejection when 2FA verification code is omitted | User account authenticated; transfer form completed | High | 1 | Fill valid transfer amount and recipient details | Amount: $300.00 | Form populated |
+| TC_008 | Verify unauthorized transfer rejection when 2FA verification code is omitted | User account authenticated; transfer form completed | High | 2 | Leave 2FA OTP verification field blank | N/A | OTP field remains empty |
+| TC_008 | Verify unauthorized transfer rejection when 2FA verification code is omitted | User account authenticated; transfer form completed | High | 3 | Attempt to dispatch submission payload | N/A | Blocked with HTTP 403 Forbidden: "Two-factor verification required" |`
+      : isApi
+        ? `| TC_001 | Verify successful resource creation via POST endpoint with valid JSON payload | Endpoint accessible with valid bearer token | High | 1 | Configure request headers including Content-Type and Authorization | Authorization: Bearer eyJhbGciOi... | Headers set to application/json and valid Bearer auth |
+| TC_001 | Verify successful resource creation via POST endpoint with valid JSON payload | Endpoint accessible with valid bearer token | High | 2 | Construct request body with all mandatory and optional fields | JSON: {"name": "QA Entity", "status": "active"} | Payload adheres to OpenAPI JSON schema specification |
+| TC_001 | Verify successful resource creation via POST endpoint with valid JSON payload | Endpoint accessible with valid bearer token | High | 3 | Dispatch HTTP POST request to endpoint | N/A | HTTP 201 Created; response JSON contains auto-generated id and timestamps |
+| TC_002 | Verify request rejection with HTTP 401 when Authorization header is omitted | API endpoint online | High | 1 | Construct valid JSON request body | JSON: {"name": "Unauthorized Test"} | Payload formatted |
+| TC_002 | Verify request rejection with HTTP 401 when Authorization header is omitted | API endpoint online | High | 2 | Dispatch POST request without Authorization header | N/A | HTTP 401 Unauthorized; response body returns: "Missing or invalid auth token" |
+| TC_003 | Verify request rejection with HTTP 400 when JSON payload contains malformed syntax | Valid authorization token available | Medium | 1 | Construct payload with broken JSON syntax (trailing comma, unclosed bracket) | JSON: {"name": "Broken",} | Malformed string prepared |
+| TC_003 | Verify request rejection with HTTP 400 when JSON payload contains malformed syntax | Valid authorization token available | Medium | 2 | Dispatch POST request | N/A | HTTP 400 Bad Request; parser error returned; zero database mutation occurs |
+| TC_004 | Verify payload acceptance at exact maximum allowed string length threshold | Valid authorization token available | Medium | 1 | Populate string field with exactly 255 characters | String of length 255 | Field length reaches upper boundary |
+| TC_004 | Verify payload acceptance at exact maximum allowed string length threshold | Valid authorization token available | Medium | 2 | Dispatch POST request | N/A | HTTP 201 Created returned |
+| TC_004 | Verify payload acceptance at exact maximum allowed string length threshold | Valid authorization token available | Medium | 3 | Query GET endpoint to inspect persisted entity | N/A | Persisted string matches exact 255 characters without truncation |
+| TC_005 | Verify request rejection with HTTP 422 when string field exceeds maximum length limit | Valid authorization token available | Medium | 1 | Populate string field with 256 characters (boundary + 1) | String of length 256 | Input exceeds upper boundary limit |
+| TC_005 | Verify request rejection with HTTP 422 when string field exceeds maximum length limit | Valid authorization token available | Medium | 2 | Dispatch POST request | N/A | HTTP 422 Unprocessable Entity; error details state "Max length is 255 chars" |
+| TC_005 | Verify request rejection with HTTP 422 when string field exceeds maximum length limit | Valid authorization token available | Medium | 3 | Verify database records | N/A | Record is not created in database |
+| TC_006 | Verify rate limiting enforcement with HTTP 429 on excessive request frequency | Valid client credentials | High | 1 | Dispatch 60 requests in < 5 seconds from identical client token | Valid requests loop | System registers rapid consecutive calls |
+| TC_006 | Verify rate limiting enforcement with HTTP 429 on excessive request frequency | Valid client credentials | High | 2 | Observe response on 61st request | N/A | HTTP 429 Too Many Requests returned |
+| TC_006 | Verify rate limiting enforcement with HTTP 429 on excessive request frequency | Valid client credentials | High | 3 | Inspect response headers | N/A | "Retry-After: 60" header present and correctly populated |
+| TC_007 | Verify input sanitization against SQL injection and script vectors in request parameters | API endpoint online | High | 1 | Supply SQL injection payload in query filter parameter | Query: ?filter=' OR '1'='1 | Parameter dispatched |
+| TC_007 | Verify input sanitization against SQL injection and script vectors in request parameters | API endpoint online | High | 2 | Dispatch GET request | N/A | HTTP 400 or parameterized query treats input as literal; no full table leak |
+| TC_008 | Verify graceful gateway timeout handling with HTTP 504 and retry header when downstream service fails | API endpoint with downstream dependency | Medium | 1 | Stub downstream microservice to delay response by 9000ms | Request with valid payload | Upstream gateway waits up to timeout threshold (8000ms) |
+| TC_008 | Verify graceful gateway timeout handling with HTTP 504 and retry header when downstream service fails | API endpoint with downstream dependency | Medium | 2 | Observe client response | N/A | HTTP 504 Gateway Timeout returned with structured JSON error format |
+| TC_008 | Verify graceful gateway timeout handling with HTTP 504 and retry header when downstream service fails | API endpoint with downstream dependency | Medium | 3 | Check circuit breaker status | N/A | Circuit breaker records failure without cascading system failure |`
+        : `| TC_001 | Verify successful happy path workflow execution with all valid parameters | User is authenticated with active permissions; Target feature loaded | High | 1 | Navigate to the target module workflow page | N/A | Module loads successfully with all form controls and action triggers enabled |
+| TC_001 | Verify successful happy path workflow execution with all valid parameters | User is authenticated with active permissions; Target feature loaded | High | 2 | Supply complete and valid representative input parameters | Valid representative data set | Inputs accepted without field validation warnings |
+| TC_001 | Verify successful happy path workflow execution with all valid parameters | User is authenticated with active permissions; Target feature loaded | High | 3 | Review entered data and click Submit Action button | N/A | Progress indicator renders; request dispatched to backend service |
+| TC_001 | Verify successful happy path workflow execution with all valid parameters | User is authenticated with active permissions; Target feature loaded | High | 4 | Observe system confirmation and persistent state update | N/A | Success notification displayed; record is persisted and visible in audit history |
+| TC_002 | Verify client and server rejection when required mandatory fields are omitted | Target module accessible | High | 1 | Clear or omit all mandatory input fields | Empty string / null | Form controls display empty values |
+| TC_002 | Verify client and server rejection when required mandatory fields are omitted | Target module accessible | High | 2 | Click the Submit Action button | N/A | Form submission is blocked at client layer |
+| TC_002 | Verify client and server rejection when required mandatory fields are omitted | Target module accessible | High | 3 | Inspect field-level validation feedback | N/A | Accessible inline error messages render next to each omitted mandatory field |
+| TC_003 | Verify field-level validation error display on malformed input data formats | Target module accessible | Medium | 1 | Enter malformed syntax into formatted fields (e.g. invalid email or date) | "user_invalid_pattern#@" | Characters entered |
+| TC_003 | Verify field-level validation error display on malformed input data formats | Target module accessible | Medium | 2 | Trigger blur event by moving focus to next element | N/A | Real-time format validation executes |
+| TC_003 | Verify field-level validation error display on malformed input data formats | Target module accessible | Medium | 3 | Inspect validation warning | N/A | Descriptive error: "Please enter a valid format adhering to guidelines" displayed |
+| TC_004 | Verify system behavior and acceptance at exact minimum allowable boundary values | Target module accessible | Medium | 1 | Enter minimum allowable numeric or character length threshold | Min boundary (e.g. 1 char / $0.01) | Value entered |
+| TC_004 | Verify system behavior and acceptance at exact minimum allowable boundary values | Target module accessible | Medium | 2 | Click Submit Action button | N/A | Client accepts boundary threshold without error |
+| TC_004 | Verify system behavior and acceptance at exact minimum allowable boundary values | Target module accessible | Medium | 3 | Verify persistence in backend service | N/A | Record created successfully with exact minimum value |
+| TC_005 | Verify system behavior and rejection when input exceeds allowable upper boundary limits | Target module accessible | Medium | 1 | Enter value exceeding maximum allowable boundary limit by 1 | Upper boundary + 1 (e.g. 256 chars / $50,000.01) | Threshold breached |
+| TC_005 | Verify system behavior and rejection when input exceeds allowable upper boundary limits | Target module accessible | Medium | 2 | Attempt submission | N/A | Submission rejected with specific error: "Value exceeds maximum allowable limit" |
+| TC_005 | Verify system behavior and rejection when input exceeds allowable upper boundary limits | Target module accessible | Medium | 3 | Check backend database | N/A | No database record created or updated |
+| TC_006 | Verify idempotency and debouncing during rapid repeated user submissions | Target form populated with valid parameters | High | 1 | Click Submit button twice rapidly within 200ms | Valid input payload | Button enters disabled loading state on first click |
+| TC_006 | Verify idempotency and debouncing during rapid repeated user submissions | Target form populated with valid parameters | High | 2 | Observe network inspector request logs | Idempotency token attached | Second click is debounced or recognized as duplicate by idempotency key |
+| TC_006 | Verify idempotency and debouncing during rapid repeated user submissions | Target form populated with valid parameters | High | 3 | Query backend data store | N/A | Exactly one single transaction/entity record is created |
+| TC_007 | Verify security protection and input sanitization against injection payloads | Target module accessible | High | 1 | Input script payload into free-text input field | <script>alert('xss')</script> | Payload entered in text box |
+| TC_007 | Verify security protection and input sanitization against injection payloads | Target module accessible | High | 2 | Submit form and navigate to rendered view | N/A | Data is stored and retrieved |
+| TC_007 | Verify security protection and input sanitization against injection payloads | Target module accessible | High | 3 | Inspect DOM rendering of the text | N/A | Payload is HTML-escaped/sanitized; no script execution occurs in browser DOM |
+| TC_008 | Verify graceful degradation and rollback when dependent service encounters timeout | Target module accessible; downstream dependency simulated | High | 1 | Initiate workflow while downstream microservice is stalled (> 8000ms) | Standard valid parameters | System awaits response until timeout threshold |
+| TC_008 | Verify graceful degradation and rollback when dependent service encounters timeout | Target module accessible; downstream dependency simulated | High | 2 | Observe error presentation | N/A | Graceful user notice: "Service temporarily unavailable. Please retry" rendered |
+| TC_008 | Verify graceful degradation and rollback when dependent service encounters timeout | Target module accessible; downstream dependency simulated | High | 3 | Inspect database state | N/A | Clean rollback performed; no orphan or partially committed data remains |`
+}
 
 ## 5. Realistic Test Data Strategy
 | Data Category | Parameter / Field | Sample Test Value | Purpose / Validation Target |
@@ -1019,34 +1116,32 @@ function generateTestCaseMatrix(input: string): string {
 ## 6. Risk and Priority Matrix
 | Priority Level | Criteria & Risk Rationale | Recommended Execution Window | Test Cases |
 |:---|:---|:---|:---|
-| **Critical (P0)** | Blocks primary business revenue, exposes security vulnerabilities, or causes silent data corruption. High probability + high impact. | Commit / Pull Request Gate (Smoke suite < 5 mins) | TC-001, TC-002, TC-006, TC-010 |
-| **High (P1)** | Essential user journey, regulatory compliance, data boundary limits, and rate-limiting enforcement. | Nightly Regression Pipeline | TC-003, TC-004, TC-005, TC-007, TC-008 |
-| **Medium (P2)** | Third-party microservice degradation, transient network recovery, and secondary operational workflows. | Full Sprint / Release Candidate Regression | TC-009 |
-| **Low (P3)** | Localization formatting, minor cosmetic alignment, and rare manual administrative overrides. | Ad-hoc / Exploratory Cycles | - |
+| **Critical (P0)** | Blocks primary business revenue, exposes security vulnerabilities, or causes silent data corruption. High probability + high impact. | Commit / Pull Request Gate (Smoke suite < 5 mins) | TC_001, TC_002, TC_006, TC_007 |
+| **High (P1)** | Essential user journey, regulatory compliance, data boundary limits, and rate-limiting enforcement. | Nightly Regression Pipeline | TC_003, TC_004, TC_005, TC_008 |
+| **Medium (P2)** | Third-party microservice degradation, transient network recovery, and secondary operational workflows. | Full Sprint / Release Candidate Regression | TC_003, TC_004, TC_005 |
+| **Low (P3)** | Localization formatting, minor cosmetic alignment, and rare manual administrative overrides. | Ad-hoc / Exploratory Cycles | TC_008 |
 
 ## 7. Requirements Traceability Matrix (RTM)
 | Requirement ID | Requirement Summary | Mapped Test Case IDs | Coverage Status | Coverage Gaps / Notes |
 |:---|:---|:---|:---|:---|
-| **REQ-001** | Feature UI / API initiation and happy path | TC-001 | Covered | 100% functional happy path coverage |
-| **REQ-002** | Mandatory field and syntax validation | TC-002, TC-003 | Covered | Both empty and malformed paths validated |
-| **REQ-003** | Boundary condition enforcement | TC-004, TC-005 | Covered | Exact boundary and boundary+1 validated |
-| **REQ-004** | Security authentication and rate limiting | TC-006, TC-007 | Covered | Single-use token and brute-force 429 validated |
-| **REQ-005** | Idempotency and downstream resilience | TC-008, TC-009 | Covered | Rapid multi-click and gateway timeout validated |
-| **REQ-006** | XSS sanitization & data integrity | TC-010 | Covered | DOM injection sanitization verified |
+| **REQ-001** | Feature UI / API initiation and happy path | TC_001 | Covered | 100% functional happy path coverage |
+| **REQ-002** | Mandatory field and syntax validation | TC_002, TC_003 | Covered | Both empty and malformed paths validated |
+| **REQ-003** | Boundary condition enforcement | TC_004, TC_005 | Covered | Exact boundary and boundary+1 validated |
+| **REQ-004** | Security authentication and rate limiting | TC_006, TC_007 | Covered | Security validation and rate limiting verified |
+| **REQ-005** | Idempotency and downstream resilience | TC_006, TC_008 | Covered | Concurrency and timeout rollback validated |
+| **REQ-006** | XSS sanitization & data integrity | TC_007 | Covered | DOM injection sanitization verified |
 
 ## 8. Automation Suitability Matrix
 | Test Case ID | Test Case Title | Automation Classification | Rationale | Recommended Tool / Framework |
 |:---|:---|:---|:---|:---|
-| **TC-001** | Happy Path Execution | Highly Suitable | Deterministic assertions, critical smoke test, runs on every PR commit | Playwright TS / REST Assured |
-| **TC-002** | Empty Field Validation | Highly Suitable | Rapid client/server verification, zero external dependencies | Playwright TS / REST Assured |
-| **TC-003** | Malformed Syntax Validation | Highly Suitable | High regression frequency, stable regex pattern matching | Playwright TS / REST Assured |
-| **TC-004** | Max Boundary Acceptance | Highly Suitable | Algorithmic input, deterministic persistence check | Playwright TS / REST Assured |
-| **TC-005** | Exceeding Boundary Rejection | Highly Suitable | Deterministic error status, high repeatability | Playwright TS / REST Assured |
-| **TC-006** | Token Expiration & Replay | Suitable | Requires test fixture setup for expired token state | REST Assured / Supertest |
-| **TC-007** | Rate Limiting (429) | Highly Suitable | Headless HTTP loop; fast execution without browser overhead | REST Assured / k6 |
-| **TC-008** | Idempotency / Double Submit | Suitable | Requires concurrent dispatch or rapid UI button click simulation | Playwright TS |
-| **TC-009** | Gateway Timeout / Fallback | Suitable | Requires network stubbing (\`page.route()\` or WireMock 504) | Playwright TS / WireMock |
-| **TC-010** | XSS Sanitization | Highly Suitable | Static security payload assertion in headless browser | Playwright TS |
+| **TC_001** | Happy Path Execution | Highly Suitable | Deterministic assertions, critical smoke test, runs on every PR commit | Playwright TS / REST Assured |
+| **TC_002** | Empty Field Validation | Highly Suitable | Rapid client/server verification, zero external dependencies | Playwright TS / REST Assured |
+| **TC_003** | Malformed Syntax Validation | Highly Suitable | High regression frequency, stable regex pattern matching | Playwright TS / REST Assured |
+| **TC_004** | Max Boundary Acceptance | Highly Suitable | Algorithmic input, deterministic persistence check | Playwright TS / REST Assured |
+| **TC_005** | Exceeding Boundary Rejection | Highly Suitable | Deterministic error status, high repeatability | Playwright TS / REST Assured |
+| **TC_006** | Concurrency & Idempotency | Suitable | Requires concurrent dispatch or rapid button click simulation | Playwright TS |
+| **TC_007** | Security & Rate Limiting | Highly Suitable | Headless HTTP loop; fast execution without browser overhead | REST Assured / k6 |
+| **TC_008** | Downstream Gateway Timeout | Suitable | Requires network stubbing (\`page.route()\` or WireMock 504) | Playwright TS / WireMock |
 
 ## 9. Coverage Gaps & Gap Analysis
 ${

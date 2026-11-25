@@ -43,6 +43,7 @@ import {
   exportRequirementsToExcel,
   exportTestMatrixToExcel,
   parseAmbiguityTableToRows,
+  parseTestCaseTableToRows,
   generateExcelWorkbookXml,
 } from '@/lib/excel-export';
 import { parseRequirementsFile, ParsedRequirementFile } from '@/lib/file-parser';
@@ -157,6 +158,7 @@ export default function QAAgentsWorkspace() {
   const [isParsingFile, setIsParsingFile] = useState<boolean>(false);
   const [fileParseError, setFileParseError] = useState<string>('');
   const [reqViewMode, setReqViewMode] = useState<'table' | 'raw'>('table');
+  const [tcViewMode, setTcViewMode] = useState<'table' | 'raw'>('table');
 
   // Coverage filters for Test Case Generator
   const [coverageFilters, setCoverageFilters] = useState({
@@ -591,10 +593,14 @@ export default function QAAgentsWorkspace() {
         content: outputResult,
       };
     } else if (activeTab === 'test_cases') {
+      const tcRows = parseTestCaseTableToRows(outputResult);
       jsonPayload = {
         agent: 'Test Case Generator',
         tab: activeTab,
         timestamp: new Date().toISOString(),
+        totalTestCases: new Set(tcRows.map((r) => r.testCaseNo)).size,
+        totalSteps: tcRows.length,
+        testCases: tcRows,
         content: outputResult,
       };
     } else {
@@ -1596,6 +1602,35 @@ export default function QAAgentsWorkspace() {
                         </div>
                       )}
 
+                    {/* View Switcher for Test Cases */}
+                    {activeTab === 'test_cases' &&
+                      parseTestCaseTableToRows(outputResult).length > 0 && (
+                        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                          <button
+                            type="button"
+                            onClick={() => setTcViewMode('table')}
+                            className={`px-2 py-0.5 rounded text-[11px] font-semibold transition cursor-pointer ${
+                              tcViewMode === 'table'
+                                ? 'bg-emerald-600 text-white shadow-xs'
+                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                            }`}
+                          >
+                            Table View
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setTcViewMode('raw')}
+                            className={`px-2 py-0.5 rounded text-[11px] font-semibold transition cursor-pointer ${
+                              tcViewMode === 'raw'
+                                ? 'bg-emerald-600 text-white shadow-xs'
+                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                            }`}
+                          >
+                            Markdown
+                          </button>
+                        </div>
+                      )}
+
                     {/* Unified COPY Dropdown across all QA Agents */}
                     <div className="relative inline-block text-left" ref={copyDropdownRef}>
                       <button
@@ -1844,6 +1879,160 @@ export default function QAAgentsWorkspace() {
                           </div>
                         </div>
                       )}
+                    </div>
+                  ) : activeTab === 'test_cases' &&
+                    tcViewMode === 'table' &&
+                    parseTestCaseTableToRows(outputResult).length > 0 ? (
+                    <div className="space-y-4 font-sans not-italic text-left">
+                      {/* Structured 8-Column Test Cases Matrix */}
+                      {(() => {
+                        const tcRows = parseTestCaseTableToRows(outputResult);
+                        const uniqueTcs = new Set(tcRows.map((r) => r.testCaseNo));
+                        const highCount = tcRows.filter(
+                          (r) => r.risk.toLowerCase() === 'high'
+                        ).length;
+                        const medCount = tcRows.filter(
+                          (r) => r.risk.toLowerCase() === 'medium'
+                        ).length;
+                        const lowCount = tcRows.filter(
+                          (r) => r.risk.toLowerCase() === 'low'
+                        ).length;
+
+                        return (
+                          <>
+                            {/* Summary Metrics Banner */}
+                            <div className="flex items-center justify-between flex-wrap gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs">
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <span className="text-slate-300 font-semibold">
+                                  Test Cases:{' '}
+                                  <strong className="text-emerald-400 font-mono text-sm">
+                                    {uniqueTcs.size}
+                                  </strong>
+                                </span>
+                                <span className="text-slate-500">|</span>
+                                <span className="text-slate-300 font-semibold">
+                                  Executable Steps:{' '}
+                                  <strong className="text-cyan-400 font-mono text-sm">
+                                    {tcRows.length}
+                                  </strong>
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-rose-500/20 text-rose-400 border-rose-500/40">
+                                  {highCount} High Risk Steps
+                                </span>
+                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-amber-500/20 text-amber-400 border-amber-500/40">
+                                  {medCount} Med Risk
+                                </span>
+                                {lowCount > 0 && (
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+                                    {lowCount} Low Risk
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Structured 8-Column Table with Horizontal Scroll Support */}
+                            <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 shadow-inner">
+                              <table className="w-full text-left text-xs border-collapse min-w-[1080px]">
+                                <thead>
+                                  <tr className="border-b border-slate-800 bg-slate-900 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
+                                    <th className="py-2.5 px-3 min-w-[100px]">Test case No.</th>
+                                    <th className="py-2.5 px-3 min-w-[210px]">
+                                      Test Case Description
+                                    </th>
+                                    <th className="py-2.5 px-3 min-w-[170px]">Pre-Conditions</th>
+                                    <th className="py-2.5 px-3 min-w-[120px]">
+                                      Risk (High, Medium, Low)
+                                    </th>
+                                    <th className="py-2.5 px-3 w-16 text-center">Step Number</th>
+                                    <th className="py-2.5 px-3 min-w-[240px]">
+                                      Test Step Description
+                                    </th>
+                                    <th className="py-2.5 px-3 min-w-[150px]">Input Test Data</th>
+                                    <th className="py-2.5 px-3 min-w-[240px]">Expected Result</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800/80">
+                                  {tcRows.map((row, idx) => (
+                                    <tr
+                                      key={idx}
+                                      className="hover:bg-slate-800/40 transition-colors"
+                                    >
+                                      <td className="py-2.5 px-3 font-mono font-bold text-emerald-400 text-[11px] whitespace-nowrap">
+                                        {row.testCaseNo}
+                                      </td>
+                                      <td className="py-2.5 px-3 font-medium text-slate-100 leading-snug">
+                                        {row.testCaseDescription}
+                                      </td>
+                                      <td className="py-2.5 px-3 text-slate-300 text-[11px]">
+                                        {row.preConditions}
+                                      </td>
+                                      <td className="py-2.5 px-3">
+                                        <span
+                                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                                            row.risk.toLowerCase() === 'high'
+                                              ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
+                                              : row.risk.toLowerCase() === 'medium'
+                                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                                                : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                                          }`}
+                                        >
+                                          {row.risk}
+                                        </span>
+                                      </td>
+                                      <td className="py-2.5 px-3 text-center font-mono font-bold text-slate-300 text-[11px]">
+                                        {row.stepNumber}
+                                      </td>
+                                      <td className="py-2.5 px-3 text-slate-200 leading-relaxed text-[11px] whitespace-pre-wrap">
+                                        {row.testStepDescription}
+                                      </td>
+                                      <td className="py-2.5 px-3">
+                                        <span className="font-mono text-[11px] text-cyan-300 bg-cyan-950/40 border border-cyan-800/60 px-2 py-0.5 rounded inline-block whitespace-pre-wrap">
+                                          {row.inputTestData}
+                                        </span>
+                                      </td>
+                                      <td className="py-2.5 px-3 text-slate-200 leading-relaxed text-[11px] whitespace-pre-wrap">
+                                        {row.expectedResult}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+
+                            {/* Strategy Summary if present */}
+                            {outputResult.includes('## 1. Test Strategy Summary') && (
+                              <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-2 text-xs">
+                                <div className="font-bold text-emerald-400 uppercase tracking-wider text-[11px]">
+                                  Test Strategy &amp; Techniques
+                                </div>
+                                <div className="text-slate-300 text-[11px] leading-relaxed whitespace-pre-wrap font-sans">
+                                  {outputResult
+                                    .split('## 1. Test Strategy Summary')[1]
+                                    ?.split('## 2. Scope of Testing')[0]
+                                    ?.trim()}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* RTM if present */}
+                            {outputResult.includes('## 7. Requirements Traceability Matrix') && (
+                              <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-2 text-xs">
+                                <div className="font-bold text-indigo-400 uppercase tracking-wider text-[11px]">
+                                  Requirements Traceability Matrix (RTM)
+                                </div>
+                                <div className="text-slate-300 text-[11px] leading-relaxed whitespace-pre-wrap font-sans">
+                                  {outputResult
+                                    .split('## 7. Requirements Traceability Matrix (RTM)')[1]
+                                    ?.split('## 8. Automation Suitability Matrix')[0]
+                                    ?.trim()}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   ) : (
                     <div className="whitespace-pre-wrap">{outputResult}</div>

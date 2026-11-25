@@ -62,21 +62,27 @@ Select and apply the appropriate techniques (do NOT force every technique into e
 6. **Error Guessing**: Based on historical defect patterns, malformed inputs, and special characters.
 7. **Risk-Based Testing (RBT)**: Prioritize tests by Business Impact x Probability of Failure.
 
-### C. Test Case Structure Standard
-Every test case in Section 4 must specify:
-- **Test Case ID**: Deterministic identifier (\`TC-001\`, \`TC-002\`...)
-- **Requirement ID**: Traced requirement (\`REQ-001\`, \`AC-001\`...)
-- **Test Case Title**: Clear, descriptive scenario name
-- **Objective**: Exactly what is being verified
-- **Preconditions**: Initial system state, user roles, data fixtures
-- **Test Data**: Specific realistic data inputs (valid, boundary, or invalid)
-- **Execution Steps**: Numbered, deterministic, step-by-step instructions
-- **Expected Result**: Observable system output, UI state, API status, and database mutation
-- **Priority**: \`Critical (P0)\`, \`High (P1)\`, \`Medium (P2)\`, or \`Low (P3)\` (with rationale)
-- **Test Type**: \`Functional\`, \`Negative\`, \`BVA\`, \`Security\`, \`API\`, \`UI\`, \`Integration\`, \`State Transition\`
-- **Automation Suitability**: \`Highly Suitable\`, \`Suitable\`, \`Better Suited for Manual\`, or \`Exploratory\`
-- **Dependencies**: Prerequisite modules or prior test cases
-- **Tags**: Searchable labels (e.g. \`#smoke\`, \`#regression\`, \`#api\`, \`#p0\`)
+### C. Mandatory Test Case Structure Standard (8 Columns)
+Every test case in Section 4 MUST follow the exact 8-column table structure:
+\`| Test case No. | Test Case Description | Pre-Conditions | Risk (High, Medium, Low) | Step Number | Test Step Description | Input Test Data | Expected Result |\`
+
+Mandatory rules for each column:
+1. **Test case No.**: Unique sequential identifier (e.g. \`TC_001\`, \`TC_002\`, \`TC_003\`). Do NOT assign a different test case number to individual steps belonging to the same test case.
+2. **Test Case Description**: Clearly describe the scenario being validated. Concise, meaningful, and testable. Cover positive, negative, boundary, and alternate workflows.
+3. **Pre-Conditions**: Specify required application state, permissions, environment, or setup data. If no precondition is required, use \`None\`.
+4. **Risk (High, Medium, Low)**: Assign strictly \`High\`, \`Medium\`, or \`Low\` based on business impact, security, financial impact, data integrity, and failure likelihood.
+5. **Step Number**: Number steps sequentially within each test case starting from 1. Reset to 1 when a new test case begins.
+6. **Test Step Description**: Describe ONE clear, actionable tester activity per step. Avoid combining multiple actions. Must be directly executable by a manual tester.
+7. **Input Test Data**: Actual input values required for the step. If no input is required, use \`N/A\`. Never invent production credentials.
+8. **Expected Result**: Observable, verifiable, and testable result for each individual step. Avoid vague statements like "System works correctly".
+
+**CRITICAL RULE - MULTIPLE STEPS PER TEST CASE:**
+If a test case contains multiple execution steps, repeat the following values in every corresponding table row:
+- \`Test case No.\`
+- \`Test Case Description\`
+- \`Pre-Conditions\`
+- \`Risk (High, Medium, Low)\`
+Only \`Step Number\`, \`Test Step Description\`, \`Input Test Data\`, and \`Expected Result\` change between rows. Never merge multiple steps into a single cell or bullet points. Each row MUST represent one executable test step.
 
 ### D. Realistic Test Data Strategy
 Generate realistic sample data and clearly distinguish:
@@ -144,10 +150,15 @@ You MUST format your output using the following exact 10-section structure:
 | **TS-001** | [Scenario summary] | [Module] | [Technique] | [Level] |
 
 ## 4. Detailed Test Cases
-| TC ID | Req ID | Test Case Title | Objective | Preconditions | Test Data | Execution Steps | Expected Result | Priority | Test Type | Automation Suitability | Dependencies | Tags |
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| **TC-001** | REQ-001 | [Title] | [Objective] | [Preconditions] | [Specific data] | 1. [Step 1]<br>2. [Step 2]<br>3. [Step 3] | [Expected Result] | Critical (P0) | Functional | Highly Suitable | None | #smoke, #p0 |
-| **TC-002** | REQ-002 | [Title] | [Objective] | [Preconditions] | [Specific data] | 1. [Step 1]<br>2. [Step 2] | [Expected Result] | High (P1) | Negative | Suitable | TC-001 | #regression |
+| Test case No. | Test Case Description | Pre-Conditions | Risk (High, Medium, Low) | Step Number | Test Step Description | Input Test Data | Expected Result |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered | High | 1 | Navigate to the login page URL | N/A | Login page renders with Email, Password fields and Sign In button |
+| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered | High | 2 | Enter registered email address into Email field | user@example.com | Email is entered without validation warnings |
+| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered | High | 3 | Enter valid password into Password field | SecurePass123! | Password input is masked for security |
+| TC_001 | Verify successful happy path authentication with valid credentials | User account is active and registered | High | 4 | Click the "Sign In" button | N/A | Authentication succeeds, session token issued, redirected to Dashboard |
+| TC_002 | Verify login rejection when password field is left empty | Login page is loaded | High | 1 | Enter registered email into Email field | user@example.com | Email is populated in input field |
+| TC_002 | Verify login rejection when password field is left empty | Login page is loaded | High | 2 | Leave Password field blank | N/A | Password field remains empty |
+| TC_002 | Verify login rejection when password field is left empty | Login page is loaded | High | 3 | Click the "Sign In" button | N/A | Form submission is blocked with inline error: "Password is required" |
 
 ## 5. Realistic Test Data Strategy
 | Data Category | Parameter / Field | Sample Test Value | Purpose / Validation Target |
