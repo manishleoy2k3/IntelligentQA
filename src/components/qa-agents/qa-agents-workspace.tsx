@@ -35,6 +35,7 @@ import {
   Folder,
   ArrowRight,
   GripVertical,
+  ChevronDown,
 } from 'lucide-react';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
@@ -42,6 +43,7 @@ import {
   exportRequirementsToExcel,
   exportTestMatrixToExcel,
   parseAmbiguityTableToRows,
+  generateExcelWorkbookXml,
 } from '@/lib/excel-export';
 import { parseRequirementsFile, ParsedRequirementFile } from '@/lib/file-parser';
 import {
@@ -99,7 +101,7 @@ export const AGENT_CONFIGS: Record<
     num: '2',
     tabName: '2. Test Case Generator',
     title: 'Test Case Generator',
-    badgeText: 'Autonomous SDET Suite • Agent 2',
+    badgeText: '',
     description:
       'Synthesize positive, negative, security, and edge-case test matrices with priority and preconditions from requirements or imported Word (.docx), Excel (.xlsx), and PDF documents.',
     icon: ListChecks,
@@ -109,7 +111,7 @@ export const AGENT_CONFIGS: Record<
     num: '3',
     tabName: '3. Automation Generator',
     title: 'Automation Code Generator',
-    badgeText: 'Autonomous SDET Suite • Agent 3',
+    badgeText: '',
     description:
       'Scaffold modular, production-ready Page Object Model code with resilient locators, assertions, and test scripts in Playwright, Selenium Java, or REST Assured.',
     icon: Code2,
@@ -119,7 +121,7 @@ export const AGENT_CONFIGS: Record<
     num: '4',
     tabName: '4. Code Reviewer & Debugger',
     title: 'QA Code Reviewer & Debugger Agent',
-    badgeText: 'Staff SDET & Architect • Agent 4',
+    badgeText: '',
     description:
       'Expert SDET Code Reviewer and Root-Cause Debugger for Selenium, Playwright, Rest Assured and Appium. Analyzes stack traces, fixes flaky tests, optimizes locators, and enforces clean code standards.',
     icon: ShieldCheck,
@@ -129,7 +131,7 @@ export const AGENT_CONFIGS: Record<
     num: '5',
     tabName: '5. Senior SDET Mentor Chat',
     title: 'Senior SDET Mentor Chat',
-    badgeText: 'Autonomous SDET Suite • Agent 5',
+    badgeText: '',
     description:
       'Interactive technical coaching with an expert SDET mentor on framework architecture, CI/CD pipelines, flakiness triage, and interview mastery.',
     icon: MessageSquare,
@@ -510,6 +512,20 @@ export default function QAAgentsWorkspace() {
     }
   };
 
+  // Save Dropdown state
+  const [showSaveDropdown, setShowSaveDropdown] = useState<boolean>(false);
+  const saveDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (saveDropdownRef.current && !saveDropdownRef.current.contains(e.target as Node)) {
+        setShowSaveDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const copyToClipboard = () => {
     if (!outputResult) return;
     navigator.clipboard.writeText(outputResult);
@@ -525,6 +541,76 @@ export default function QAAgentsWorkspace() {
     a.href = url;
     a.download = `intelligentqa-${activeTab}-${Date.now()}.md`;
     a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportExcel = () => {
+    if (!outputResult) return;
+    if (activeTab === 'requirements') {
+      exportRequirementsToExcel(outputResult);
+      return;
+    }
+    if (activeTab === 'test_cases') {
+      exportTestMatrixToExcel(outputResult);
+      return;
+    }
+    // Generic line/table exporter for automation code & code review
+    const lines = outputResult.split('\n');
+    const headers = ['Line #', 'Code / Analysis Content'];
+    const dataRows = lines.map((l, idx) => [String(idx + 1), l]);
+    const xml = generateExcelWorkbookXml(
+      AGENT_CONFIGS[activeTab]?.title || 'Export',
+      headers,
+      dataRows
+    );
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `intelligentqa-${activeTab}-${Date.now()}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportJson = () => {
+    if (!outputResult) return;
+    let jsonPayload: any;
+    if (activeTab === 'requirements') {
+      const tableRows = parseAmbiguityTableToRows(outputResult);
+      jsonPayload = {
+        agent: 'Requirement Analyzer',
+        tab: activeTab,
+        timestamp: new Date().toISOString(),
+        ambiguityItems: tableRows,
+        content: outputResult,
+      };
+    } else if (activeTab === 'test_cases') {
+      jsonPayload = {
+        agent: 'Test Case Generator',
+        tab: activeTab,
+        timestamp: new Date().toISOString(),
+        content: outputResult,
+      };
+    } else {
+      jsonPayload = {
+        agent: AGENT_CONFIGS[activeTab]?.title || activeTab,
+        tab: activeTab,
+        techStack:
+          activeTab === 'automation_code' || activeTab === 'code_review' ? techStack : undefined,
+        timestamp: new Date().toISOString(),
+        content: outputResult,
+      };
+    }
+    const blob = new Blob([JSON.stringify(jsonPayload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `intelligentqa-${activeTab}-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
@@ -698,24 +784,16 @@ export default function QAAgentsWorkspace() {
       {/* Main Workspace Area */}
       {activeTab !== 'chat' ? (
         <div
-          ref={activeTab === 'requirements' ? splitContainerRef : undefined}
-          className={
-            activeTab === 'requirements'
-              ? `flex flex-col lg:flex-row items-stretch gap-6 lg:gap-0 relative ${
-                  isDragging ? 'select-none cursor-col-resize' : ''
-                }`
-              : 'grid grid-cols-1 lg:grid-cols-2 gap-6'
-          }
+          ref={splitContainerRef}
+          className={`flex flex-col lg:flex-row items-stretch gap-6 lg:gap-0 relative ${
+            isDragging ? 'select-none cursor-col-resize' : ''
+          }`}
         >
           {/* LEFT COLUMN: Tailored Input Prompt, File Import, & Triggers */}
           <div
-            style={
-              activeTab === 'requirements' && isLg
-                ? { width: `calc(${reqSplitPercent}% - 8px)` }
-                : undefined
-            }
+            style={isLg ? { width: `calc(${reqSplitPercent}% - 8px)` } : undefined}
             className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between ${
-              activeTab === 'requirements' && isLg ? 'shrink-0 min-w-[280px]' : ''
+              isLg ? 'shrink-0 min-w-[280px]' : ''
             }`}
           >
             <div className="space-y-3.5">
@@ -731,7 +809,7 @@ export default function QAAgentsWorkspace() {
                   {activeTab === 'test_cases' && (
                     <>
                       <ListChecks className="w-4 h-4 text-emerald-500" />
-                      <span>Requirements Specification &amp; Import</span>
+                      <span>Import Requirements</span>
                     </>
                   )}
                   {activeTab === 'automation_code' && (
@@ -755,14 +833,7 @@ export default function QAAgentsWorkspace() {
                       Target:{' '}
                       <strong className="text-emerald-600 font-semibold">{techStack}</strong>
                     </span>
-                  ) : activeTab === 'requirements' ? null : (
-                    <span className="text-[11px] text-slate-400">
-                      Output:{' '}
-                      <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                        QA Test Matrix
-                      </strong>
-                    </span>
-                  )}
+                  ) : null}
 
                   {/* Mode Selector for Code Reviewer Agent */}
                   {activeTab === 'code_review' && (
@@ -1327,41 +1398,35 @@ export default function QAAgentsWorkspace() {
             </div>
           </div>
 
-          {/* Resizer Divider Bar (Only on Requirement Analyzer on desktop) */}
-          {activeTab === 'requirements' && (
-            <div
-              onPointerDown={handleResizePointerDown}
-              onDoubleClick={() => setReqSplitPercent(50)}
-              className="hidden lg:flex w-4 -mx-1 group items-center justify-center cursor-col-resize z-10 shrink-0 select-none py-4"
-              title="Drag to resize panels (Double-click to reset to 50/50)"
-            >
-              <div
-                className={`w-1.5 h-full min-h-[300px] rounded-full transition-all flex items-center justify-center ${
-                  isDragging
-                    ? 'bg-cyan-500 shadow-md ring-2 ring-cyan-400/50'
-                    : 'bg-slate-200 dark:bg-slate-700/80 group-hover:bg-cyan-400 group-hover:w-2'
-                }`}
-              >
-                <GripVertical
-                  className={`w-3.5 h-3.5 transition-colors ${
-                    isDragging
-                      ? 'text-white'
-                      : 'text-slate-400 dark:text-slate-500 group-hover:text-cyan-900 dark:group-hover:text-cyan-100'
-                  }`}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* RIGHT COLUMN: Tailored Output Artifact with Excel Export */}
+          {/* Resizer Divider Bar (Across all QA Agent pages on desktop) */}
           <div
-            style={
-              activeTab === 'requirements' && isLg
-                ? { width: `calc(${100 - reqSplitPercent}% - 8px)` }
-                : undefined
-            }
+            onPointerDown={handleResizePointerDown}
+            onDoubleClick={() => setReqSplitPercent(50)}
+            className="hidden lg:flex w-4 -mx-1 group items-center justify-center cursor-col-resize z-10 shrink-0 select-none py-4"
+            title="Drag to resize panels (Double-click to reset to 50/50)"
+          >
+            <div
+              className={`w-1.5 h-full min-h-[300px] rounded-full transition-all flex items-center justify-center ${
+                isDragging
+                  ? 'bg-cyan-500 shadow-md ring-2 ring-cyan-400/50'
+                  : 'bg-slate-200 dark:bg-slate-700/80 group-hover:bg-cyan-400 group-hover:w-2'
+              }`}
+            >
+              <GripVertical
+                className={`w-3.5 h-3.5 transition-colors ${
+                  isDragging
+                    ? 'text-white'
+                    : 'text-slate-400 dark:text-slate-500 group-hover:text-cyan-900 dark:group-hover:text-cyan-100'
+                }`}
+              />
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Tailored Output Artifact with Unified Save */}
+          <div
+            style={isLg ? { width: `calc(${100 - reqSplitPercent}% - 8px)` } : undefined}
             className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between ${
-              activeTab === 'requirements' && isLg ? 'flex-1 min-w-[320px]' : ''
+              isLg ? 'flex-1 min-w-[320px]' : ''
             }`}
           >
             <div className="space-y-3 flex-1">
@@ -1371,17 +1436,12 @@ export default function QAAgentsWorkspace() {
                     {activeTab === 'requirements'
                       ? 'Requirement Ambiguity Analysis'
                       : activeTab === 'test_cases'
-                        ? 'Synthesized QA Test Matrix'
+                        ? 'Test case Generated'
                         : activeTab === 'automation_code'
                           ? 'Scaffolded Automation Code'
                           : 'Quality Audit & Refactoring Report'}
                   </span>
-                  {usedEngine && (
-                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                      via {usedEngine}
-                    </span>
-                  )}
-                  {activeTab === 'requirements' && isLg && (
+                  {isLg && (
                     <span className="hidden xl:inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] text-slate-500 ml-1">
                       <button
                         type="button"
@@ -1391,7 +1451,7 @@ export default function QAAgentsWorkspace() {
                             ? 'bg-cyan-600 text-white shadow-xs'
                             : 'hover:text-slate-900 dark:hover:text-white'
                         }`}
-                        title="Wide Ambiguity Analysis View (35% Requirements / 65% Analysis)"
+                        title="Wide Output View (35% Left / 65% Output)"
                       >
                         35:65
                       </button>
@@ -1403,7 +1463,7 @@ export default function QAAgentsWorkspace() {
                             ? 'bg-cyan-600 text-white shadow-xs'
                             : 'hover:text-slate-900 dark:hover:text-white'
                         }`}
-                        title="Balanced View (50% Requirements / 50% Analysis)"
+                        title="Balanced View (50% Left / 50% Output)"
                       >
                         50:50
                       </button>
@@ -1415,7 +1475,7 @@ export default function QAAgentsWorkspace() {
                             ? 'bg-cyan-600 text-white shadow-xs'
                             : 'hover:text-slate-900 dark:hover:text-white'
                         }`}
-                        title="Wide Requirements View (65% Requirements / 35% Analysis)"
+                        title="Wide Input View (65% Left / 35% Output)"
                       >
                         65:35
                       </button>
@@ -1454,52 +1514,81 @@ export default function QAAgentsWorkspace() {
                         </div>
                       )}
 
-                    {/* Copy button */}
-                    <button
-                      onClick={copyToClipboard}
-                      className="p-1.5 px-2.5 text-slate-600 dark:text-slate-300 hover:text-emerald-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
-                      title="Copy to clipboard"
-                    >
-                      {copied ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-500" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
+                    {/* Unified SAVE Dropdown across all QA Agents */}
+                    <div className="relative inline-block text-left" ref={saveDropdownRef}>
+                      <button
+                        type="button"
+                        onClick={() => setShowSaveDropdown((prev) => !prev)}
+                        className="p-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs flex items-center gap-1.5 transition-colors font-bold cursor-pointer shadow-xs"
+                        title="Save or Export output"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>SAVE</span>
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                            showSaveDropdown ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {showSaveDropdown && (
+                        <div className="absolute right-0 mt-1.5 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-40 animate-in fade-in zoom-in-95">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              copyToClipboard();
+                              setShowSaveDropdown(false);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer transition-colors"
+                          >
+                            {copied ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            )}
+                            <span className="font-medium">{copied ? 'Copied!' : 'Copy'}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleExportExcel();
+                              setShowSaveDropdown(false);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer transition-colors"
+                            title="Export in Excel (.xlsx)"
+                          >
+                            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            <span className="font-medium">As Excel (.xlsx)</span>
+                            <span className="sr-only">Export in Excel</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              downloadMarkdown();
+                              setShowSaveDropdown(false);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer transition-colors"
+                          >
+                            <FileCode className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                            <span className="font-medium">As Markdown (.md)</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleExportJson();
+                              setShowSaveDropdown(false);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            <span className="font-medium">As JSON (.json)</span>
+                          </button>
+                        </div>
                       )}
-                      <span className="text-[11px] font-medium">{copied ? 'Copied' : 'Copy'}</span>
-                    </button>
-
-                    {/* EXCEL EXPORT (Req 3): Primary export option for Requirements & Test Cases */}
-                    {activeTab === 'requirements' && (
-                      <button
-                        onClick={() => exportRequirementsToExcel(outputResult)}
-                        className="p-1.5 px-2.5 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-800 rounded-lg hover:bg-cyan-100 dark:hover:bg-cyan-900/60 text-xs flex items-center gap-1.5 transition-colors font-semibold cursor-pointer shadow-sm"
-                        title="Export ambiguity analysis into an Excel spreadsheet (.xls / .xlsx)"
-                      >
-                        <FileSpreadsheet className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-                        <span className="text-[11px]">Export in Excel</span>
-                      </button>
-                    )}
-
-                    {activeTab === 'test_cases' && (
-                      <button
-                        onClick={() => exportTestMatrixToExcel(outputResult)}
-                        className="p-1.5 px-2.5 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs flex items-center gap-1.5 transition-colors font-semibold cursor-pointer shadow-sm"
-                        title="Export synthesized test matrix into an Excel spreadsheet (.xls / .xlsx)"
-                      >
-                        <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                        <span className="text-[11px]">Export in Excel</span>
-                      </button>
-                    )}
-
-                    {/* Secondary Markdown export */}
-                    <button
-                      onClick={downloadMarkdown}
-                      className="p-1.5 px-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
-                      title="Download raw Markdown (.md)"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span className="text-[11px]">.md</span>
-                    </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1626,7 +1715,7 @@ export default function QAAgentsWorkspace() {
                       {activeTab === 'requirements'
                         ? 'Ambiguity analysis table, summary, and clarification questions will appear here after clicking Analyze Requirements.'
                         : activeTab === 'test_cases'
-                          ? 'Synthesized QA Test Matrix will appear here after clicking Generate Test Cases.'
+                          ? 'Test case Generated will appear here after clicking Generate Test Cases.'
                           : activeTab === 'automation_code'
                             ? 'Scaffolded Page Object Model code will appear here.'
                             : 'Code quality score and refactored script will appear here.'}

@@ -49,7 +49,7 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     num: '2',
     tabName: '2. Test Case Generator',
     title: 'Test Case Generator',
-    badgeText: 'Autonomous SDET Suite • Agent 2',
+    badgeText: '',
     description:
       'Transform user stories, BDD specifications, API schemas, or PRDs into structured, risk-prioritized, and executable test cases with formal RTM and automation suitability analysis.',
     defaultPrompt:
@@ -65,7 +65,7 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     num: '3',
     tabName: '3. Automation Generator',
     title: 'Automation Code Generator',
-    badgeText: 'Autonomous SDET Suite • Agent 3',
+    badgeText: '',
     description:
       'Scaffold production-grade, maintainable Page Object Model (POM) automation code across Playwright, Selenium, REST Assured, and Appium with 10 mandatory sections and zero Thread.sleep().',
     defaultPrompt:
@@ -81,7 +81,7 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     num: '4',
     tabName: '4. Code Auditor & Flakiness Review',
     title: 'Code Reviewer & Quality Auditor',
-    badgeText: 'Autonomous SDET Suite • Agent 4',
+    badgeText: '',
     description:
       'Principal SDET Code Reviewer & Architect. Audits Selenium, Playwright, REST Assured, and Appium code for defects, flakiness, security vulnerabilities, and architectural integrity in Review Only or Review & Fix mode.',
     defaultPrompt:
@@ -97,7 +97,7 @@ export const DEFAULT_AGENT_CONFIGS: AgentConfigItem[] = [
     num: '5',
     tabName: '5. Senior SDET Mentor Chat',
     title: 'Senior SDET Mentor Chat',
-    badgeText: 'Autonomous SDET Suite • Agent 5',
+    badgeText: '',
     description:
       'Principal SDET & Automation Architect Mentor. Provides battle-tested engineering guidance across Playwright, Selenium, REST Assured, Appium, CI/CD, Flakiness Triage, AI/MCP, and Enterprise QA Governance.',
     defaultPrompt:

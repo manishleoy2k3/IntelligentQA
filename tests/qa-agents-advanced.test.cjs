@@ -180,9 +180,7 @@ test('Requirement 5: Target: playwright-ts is strictly hidden on Requirement and
     'Output: Gherkin BDD is removed as requested'
   );
   assert.ok(
-    workspaceFile.includes(
-      'QA Test Matrix'
-    ),
-    'Test Case Generator displays QA Test Matrix instead of Target'
+    !workspaceFile.includes('Output:'),
+    'Output indicators are removed on Requirement and Test Case generator'
   );
 });
