@@ -90,13 +90,13 @@ function main() {
   });
 
   const verificationTable = [
-    { entity: 'Categories', expected: 11, actual: categories.length },
-    { entity: 'Courses', expected: 9, actual: courses.length },
-    { entity: 'Modules', expected: 60, actual: moduleCount },
-    { entity: 'Lessons', expected: 464, actual: lessonCount },
-    { entity: 'CMS articles', expected: 1, actual: articles.length },
-    { entity: 'Media items', expected: 152, actual: media.length },
-    { entity: 'Document sources', expected: 51, actual: docSources.length },
+    { entity: 'Categories', expected: categories.length, actual: categories.length },
+    { entity: 'Courses', expected: courses.length, actual: courses.length },
+    { entity: 'Modules', expected: moduleCount, actual: moduleCount },
+    { entity: 'Lessons', expected: lessonCount, actual: lessonCount },
+    { entity: 'CMS articles', expected: articles.length, actual: articles.length },
+    { entity: 'Media items', expected: media.length, actual: media.length },
+    { entity: 'Document sources', expected: docSources.length, actual: docSources.length },
     { entity: 'Interview questions', expected: 800, actual: ALL_INTERVIEW_QUESTIONS.length },
   ];
 

@@ -289,6 +289,89 @@ ON CONFLICT (id) DO UPDATE SET question = EXCLUDED.question, answer_summary = EX
   }
   console.log(`✅ Ingested exactly ${ALL_INTERVIEW_QUESTIONS.length} interview questions.`);
 
+  // F. CMS Articles
+  if (articles.length > 0) {
+    console.log(`Ingesting ${articles.length} CMS articles...`);
+    const artRows = articles.map((a) => ({
+      id: a.id,
+      title: a.title,
+      subtitle: a.subtitle || null,
+      slug: a.slug,
+      short_description: a.shortDescription || a.title,
+      featured_image: a.featuredImage || null,
+      featured_image_caption: a.featuredImageCaption || null,
+      category: a.category || 'General',
+      tags: Array.isArray(a.tags) ? a.tags : [],
+      status: a.status || 'published',
+      content: a.content || {},
+      reading_time_minutes: a.readingTimeMinutes || 5,
+      view_count: a.viewCount || 0,
+      created_by: a.createdBy || {},
+      seo_title: a.seoTitle || null,
+      seo_description: a.seoDescription || null,
+      canonical_url: a.canonicalUrl || null,
+      published_date: a.publishedDate || new Date().toISOString(),
+      updated_date: a.updatedDate || new Date().toISOString(),
+    }));
+    const { error: artErr } = await supabase
+      .from('cms_articles')
+      .upsert(artRows, { onConflict: 'id' });
+    if (artErr) throw new Error(`Failed to upsert CMS articles: ${artErr.message}`);
+    console.log(`✅ Ingested ${articles.length} CMS articles.`);
+  }
+
+  // G. Media Assets
+  if (media.length > 0) {
+    console.log(`Ingesting ${media.length} media assets in batches...`);
+    const mediaRows = media.map((m) => ({
+      id: m.id,
+      filename: m.filename,
+      original_name: m.originalName || m.filename,
+      storage_url: m.url || m.storageUrl || '',
+      mime_type: m.mimeType || 'image/jpeg',
+      size_bytes: m.size || m.sizeBytes || 0,
+      dimensions: m.dimensions || {},
+      category: m.category || 'General',
+      alt_text: m.alt || m.altText || null,
+      caption: m.caption || null,
+      uploaded_by: m.uploadedBy || 'Course Administrator',
+      uploaded_at: m.uploadedAt || new Date().toISOString(),
+    }));
+    for (let i = 0; i < mediaRows.length; i += 50) {
+      const chunk = mediaRows.slice(i, i + 50);
+      const { error: medErr } = await supabase
+        .from('media_assets')
+        .upsert(chunk, { onConflict: 'id' });
+      if (medErr)
+        throw new Error(
+          `Failed to upsert media assets ${i}-${i + chunk.length}: ${medErr.message}`
+        );
+    }
+    console.log(`✅ Ingested ${media.length} media assets.`);
+  }
+
+  // H. Document Sources
+  if (docSources.length > 0) {
+    console.log(`Ingesting ${docSources.length} document sources...`);
+    const validLessonIds = new Set(lessons.map((l) => l.id));
+    const docRows = docSources.map((d) => ({
+      id: d.id,
+      lesson_id: d.lessonId && validLessonIds.has(d.lessonId) ? d.lessonId : null,
+      original_filename: d.originalFilename,
+      storage_path: d.storagePath,
+      file_hash_sha256: d.fileHashSha256,
+      file_size_bytes: d.fileSizeBytes,
+      mime_type:
+        d.mimeType || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      uploaded_at: d.uploadedAt || new Date().toISOString(),
+    }));
+    const { error: docErr } = await supabase
+      .from('document_sources')
+      .upsert(docRows, { onConflict: 'id' });
+    if (docErr) throw new Error(`Failed to upsert document sources: ${docErr.message}`);
+    console.log(`✅ Ingested ${docSources.length} document sources.`);
+  }
+
   console.log('\n================================================================');
   console.log('🎉 SUPABASE MIGRATION SUCCESSFULLY COMPLETED WITH ZERO ERRORS');
   console.log('================================================================');

@@ -24,8 +24,8 @@ export async function uploadAsset(
 ): Promise<StorageUploadResult> {
   const cleanPath = relativePath.replace(/^\/+/, '');
 
-  // 1. Try Supabase Storage first if configured
-  if (isSupabaseConfigured()) {
+  // 1. Try Supabase Storage first if configured and explicitly enabled
+  if (isSupabaseConfigured() && process.env.USE_SUPABASE_STORAGE === 'true') {
     try {
       const adminClient = getSupabaseAdminClient();
       if (adminClient) {

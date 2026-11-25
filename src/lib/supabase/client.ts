@@ -11,7 +11,7 @@ export function getSupabaseClient(): SupabaseClient | null {
   if (browserClient) return browserClient;
 
   const config = getSupabaseConfig();
-  if (!config) {
+  if (!config || !config.anonKey) {
     return null;
   }
 

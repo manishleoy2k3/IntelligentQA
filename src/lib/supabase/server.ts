@@ -7,7 +7,7 @@ import { getSupabaseConfig } from './env';
  */
 export function getSupabaseServerClient(): SupabaseClient | null {
   const config = getSupabaseConfig();
-  if (!config) {
+  if (!config || !config.anonKey) {
     return null;
   }
 
