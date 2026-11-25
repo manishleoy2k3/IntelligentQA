@@ -488,6 +488,8 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           id: l.id || l.slug,
           slug: l.slug || l.id,
           title: l.title,
+          status: l.status || 'published',
+          disabled: Boolean(l.disabled || l.status === 'draft' || l.status === 'archived'),
           summary: l.summary || l.shortDescription || '',
           estimatedReadingTime: l.estimatedReadingTime || 5,
           durationMinutes: (l.estimatedReadingTime || 5) * 2,
@@ -824,7 +826,11 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                             className="flex items-center gap-1 text-[10px] font-mono font-bold text-slate-700 dark:text-neutral-200 group-hover:text-slate-950 dark:group-hover:text-white px-2 py-0.5 rounded bg-slate-200/90 dark:bg-neutral-800 border border-slate-300/70 dark:border-neutral-700 transition-colors ml-1 shrink-0 cursor-pointer"
                             title={isExpanded ? `Collapse ${track.displayTitle} lessons` : `Expand ${track.displayTitle} lessons`}
                           >
-                            <span>{track.lessons.length} Lessons</span>
+                            <span>
+                              {isAdmin
+                                ? track.lessons.length
+                                : track.lessons.filter((l: any) => !l.disabled && (l.status ? l.status === 'published' : true)).length} Lessons
+                            </span>
                             <ChevronDown
                               className={`w-3.5 h-3.5 text-slate-500 dark:text-neutral-400 transition-transform duration-200 ${
                                 isExpanded ? 'rotate-180' : ''
@@ -848,7 +854,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
                               const isModOpen = isModuleOpen(modId);
                               const displayedLessons = isAdmin
                                 ? mod.lessons || []
-                                : (mod.lessons || []).filter((l: any) => !l.disabled);
+                                : (mod.lessons || []).filter((l: any) => !l.disabled && (l.status ? l.status === 'published' : true));
 
                               if (displayedLessons.length === 0) return null;
 

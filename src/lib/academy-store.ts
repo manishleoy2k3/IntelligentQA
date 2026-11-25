@@ -880,6 +880,7 @@ export class AcademyStore {
 
   private saveToDisk() {
     try {
+      this.searchIndexCache = null;
       let existingData: Record<string, any> = {};
       if (fs.existsSync(TMP_DATA_FILE)) {
         try {
@@ -1364,50 +1365,59 @@ export class AcademyStore {
     lessonId: string,
     updates: Partial<AcademyLesson>
   ): AcademyLesson | undefined {
+    let lastUpdated: AcademyLesson | undefined;
     for (const course of this.courses.values()) {
       if (!course.modules) continue;
       for (const mod of course.modules) {
         if (!mod.lessons) continue;
-        const idx = mod.lessons.findIndex((l) => l.id === lessonId);
-        if (idx !== -1) {
-          if (updates.slug && updates.slug !== mod.lessons[idx].slug) {
-            if (!this.isLessonSlugUnique(mod.id, updates.slug, lessonId)) {
-              throw new Error(`Lesson slug "${updates.slug}" is already in use in module ${mod.title}.`);
+        for (let idx = 0; idx < mod.lessons.length; idx++) {
+          if (mod.lessons[idx].id === lessonId || mod.lessons[idx].slug === lessonId) {
+            if (updates.slug && updates.slug !== mod.lessons[idx].slug) {
+              if (!this.isLessonSlugUnique(mod.id, updates.slug, lessonId)) {
+                throw new Error(`Lesson slug "${updates.slug}" is already in use in module ${mod.title}.`);
+              }
             }
-          }
 
-          const updated: AcademyLesson = {
-            ...mod.lessons[idx],
-            ...updates,
-            id: mod.lessons[idx].id,
-            updatedAt: new Date().toISOString(),
-          };
-          mod.lessons[idx] = updated;
-          mod.updatedAt = new Date().toISOString();
-          course.updatedAt = new Date().toISOString();
-          this.saveToDisk();
-          return updated;
+            const updated: AcademyLesson = {
+              ...mod.lessons[idx],
+              ...updates,
+              id: mod.lessons[idx].id,
+              updatedAt: new Date().toISOString(),
+            };
+            mod.lessons[idx] = updated;
+            mod.updatedAt = new Date().toISOString();
+            course.updatedAt = new Date().toISOString();
+            lastUpdated = updated;
+          }
         }
       }
+    }
+    if (lastUpdated) {
+      this.saveToDisk();
+      return lastUpdated;
     }
     return undefined;
   }
 
   public deleteLesson(lessonIdOrCourseId: string, moduleId?: string, lessonId?: string): boolean {
     const targetId = lessonId || lessonIdOrCourseId;
+    let found = false;
     for (const course of this.courses.values()) {
       if (!course.modules) continue;
       for (const mod of course.modules) {
         if (!mod.lessons) continue;
         const initLen = mod.lessons.length;
-        mod.lessons = mod.lessons.filter((l) => l.id !== targetId);
+        mod.lessons = mod.lessons.filter((l) => l.id !== targetId && l.slug !== targetId);
         if (mod.lessons.length !== initLen) {
           mod.updatedAt = new Date().toISOString();
           course.updatedAt = new Date().toISOString();
-          this.saveToDisk();
-          return true;
+          found = true;
         }
       }
+    }
+    if (found) {
+      this.saveToDisk();
+      return true;
     }
     return false;
   }
@@ -2228,36 +2238,48 @@ export class AcademyStore {
     }
 
     if (entityType === 'module') {
+      let found = false;
       for (const course of this.courses.values()) {
-        const mod = course.modules?.find((m) => m.id === id);
-        if (mod) {
-          mod.status = status;
-          mod.updatedAt = new Date().toISOString();
-          course.updatedAt = new Date().toISOString();
-          this.saveToDisk();
-          return true;
+        if (!course.modules) continue;
+        for (const mod of course.modules) {
+          if (mod.id === id || mod.slug === id) {
+            mod.status = status;
+            mod.updatedAt = new Date().toISOString();
+            course.updatedAt = new Date().toISOString();
+            found = true;
+          }
         }
+      }
+      if (found) {
+        this.saveToDisk();
+        return true;
       }
       return false;
     }
 
     if (entityType === 'lesson') {
+      let found = false;
       for (const course of this.courses.values()) {
         if (!course.modules) continue;
         for (const mod of course.modules) {
-          const lsn = mod.lessons?.find((l) => l.id === id);
-          if (lsn) {
-            lsn.status = status;
-            lsn.updatedAt = new Date().toISOString();
-            if (status === 'published' && !lsn.publishedAt) {
-              lsn.publishedAt = new Date().toISOString();
+          if (!mod.lessons) continue;
+          for (const lsn of mod.lessons) {
+            if (lsn.id === id || lsn.slug === id) {
+              lsn.status = status;
+              lsn.updatedAt = new Date().toISOString();
+              if (status === 'published' && !lsn.publishedAt) {
+                lsn.publishedAt = new Date().toISOString();
+              }
+              mod.updatedAt = new Date().toISOString();
+              course.updatedAt = new Date().toISOString();
+              found = true;
             }
-            mod.updatedAt = new Date().toISOString();
-            course.updatedAt = new Date().toISOString();
-            this.saveToDisk();
-            return true;
           }
         }
+      }
+      if (found) {
+        this.saveToDisk();
+        return true;
       }
       return false;
     }

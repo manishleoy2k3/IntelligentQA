@@ -147,6 +147,29 @@ export default function AcademyShell({
     }
   }, []);
 
+  // Published courses synchronized with backend for real-time overview updates
+  const [livePublishedCourses, setLivePublishedCourses] = useState<any[]>(INITIAL_PUBLISHED_COURSES);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch('/api/learning/courses');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            setLivePublishedCourses(json.data);
+          }
+        }
+      } catch {}
+    };
+
+    fetchCourses();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('intelligentqa_curriculum_updated', fetchCourses);
+      return () => window.removeEventListener('intelligentqa_curriculum_updated', fetchCourses);
+    }
+  }, []);
+
   // Sync with props when URL or course selection changes
   useEffect(() => {
     if (isOverview !== undefined) {
@@ -488,6 +511,7 @@ export default function AcademyShell({
 
   // Resolve active course for Course Overview mode
   const activeCourse = useMemo(() => {
+    const catalog = livePublishedCourses && livePublishedCourses.length > 0 ? livePublishedCourses : INITIAL_PUBLISHED_COURSES;
     if (selectedCourseId) {
       const query = selectedCourseId.toLowerCase().trim();
 
@@ -501,14 +525,14 @@ export default function AcademyShell({
         query.includes('cicd') ||
         query.includes('ci-cd')
       ) {
-        const cicdMatch = INITIAL_PUBLISHED_COURSES.find(
-          (c) => c.id === 'course-cicd-concepts' || c.slug === 'cicd-concepts'
+        const cicdMatch = catalog.find(
+          (c: any) => c.id === 'course-cicd-concepts' || c.slug === 'cicd-concepts'
         );
         if (cicdMatch) return cicdMatch;
       }
 
-      const match = INITIAL_PUBLISHED_COURSES.find(
-        (c) =>
+      const match = catalog.find(
+        (c: any) =>
           c.id.toLowerCase() === query ||
           c.slug.toLowerCase() === query ||
           c.title.toLowerCase().includes(query) ||
@@ -522,15 +546,24 @@ export default function AcademyShell({
     if (apiLessonData?.course) {
       return apiLessonData.course;
     }
-    return INITIAL_PUBLISHED_COURSES[0]; // AI Academy default
-  }, [selectedCourseId, apiLessonData?.course]);
+    return catalog[0] || INITIAL_PUBLISHED_COURSES[0]; // AI Academy default
+  }, [selectedCourseId, apiLessonData?.course, livePublishedCourses]);
 
   const totalCourseLessons = useMemo(() => {
-    return (activeCourse?.modules || []).reduce((acc: number, m: any) => acc + (m.lessons?.length || 0), 0) || 46;
+    return (
+      (activeCourse?.modules || []).reduce((acc: number, m: any) => {
+        const pubLessons = (m.lessons || []).filter((l: any) =>
+          l.status ? l.status === 'published' : !l.disabled
+        );
+        return acc + pubLessons.length;
+      }, 0) || 0
+    );
   }, [activeCourse]);
 
   const completedInCourseCount = useMemo(() => {
-    const allLessons = (activeCourse?.modules || []).flatMap((m: any) => m.lessons || []);
+    const allLessons = (activeCourse?.modules || []).flatMap((m: any) =>
+      (m.lessons || []).filter((l: any) => (l.status ? l.status === 'published' : !l.disabled))
+    );
     return allLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
   }, [activeCourse, completedLessonIds]);
 
@@ -836,7 +869,10 @@ export default function AcademyShell({
 
                     <div className="space-y-4">
                       {activeCourse.modules.map((mod: any, mIdx: number) => {
-                        const modLessons = mod.lessons || [];
+                        const modLessons = (mod.lessons || []).filter((l: any) =>
+                          l.status ? l.status === 'published' : !l.disabled
+                        );
+                        if (modLessons.length === 0) return null;
                         const modCompleted = modLessons.filter((l: any) => completedLessonIds.has(l.id) || completedLessonIds.has(l.slug)).length;
                         const modPercent = modLessons.length > 0 ? Math.round((modCompleted / modLessons.length) * 100) : 0;
 

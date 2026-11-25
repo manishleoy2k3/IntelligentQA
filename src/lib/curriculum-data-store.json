@@ -84097,7 +84097,7 @@
               "estimatedReadTime": 7,
               "estimatedReadingTime": 7,
               "sortOrder": 2,
-              "status": "published",
+              "status": "draft",
               "publishedAt": "2026-11-23T00:00:00.000Z",
               "createdAt": "2026-11-23T00:00:00.000Z",
               "updatedAt": "2026-11-23T00:00:00.000Z"
@@ -105503,7 +105503,7 @@
               "estimatedReadTime": 7,
               "estimatedReadingTime": 7,
               "sortOrder": 2,
-              "status": "published",
+              "status": "draft",
               "publishedAt": "2026-11-23T00:00:00.000Z",
               "createdAt": "2026-11-23T00:00:00.000Z",
               "updatedAt": "2026-11-23T00:00:00.000Z"
