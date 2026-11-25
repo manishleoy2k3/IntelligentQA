@@ -141,3 +141,68 @@ test('Requirement 7: Unified SAVE dropdown with Copy, As Excel(.xlsx), As Markdo
   assert.ok(workspaceFile.includes('handleExportExcel'), 'Has handleExportExcel handler');
   assert.ok(workspaceFile.includes('handleExportJson'), 'Has handleExportJson handler');
 });
+
+test('Requirement 8: Dedicated COPY dropdown with As Markdown(.md) and As JSON(.json)', () => {
+  const workspaceFile = fs.readFileSync(
+    path.join(__dirname, '../src/components/qa-agents/qa-agents-workspace.tsx'),
+    'utf8'
+  );
+
+  // COPY dropdown button exists
+  assert.ok(
+    workspaceFile.includes('<span>{copied ? \'COPIED!\' : \'COPY\'}</span>'),
+    'COPY button exists in workspace'
+  );
+  assert.ok(workspaceFile.includes('showCopyDropdown'), 'Has showCopyDropdown state');
+  assert.ok(workspaceFile.includes('copyDropdownRef'), 'Has copyDropdownRef');
+
+  // Copy handlers
+  assert.ok(workspaceFile.includes('copyAsMarkdown'), 'Has copyAsMarkdown handler');
+  assert.ok(workspaceFile.includes('copyAsJson'), 'Has copyAsJson handler');
+
+  // Options rendered in COPY dropdown
+  assert.ok(
+    workspaceFile.includes('title="Copy output as Markdown"'),
+    'Has Copy as Markdown action button'
+  );
+  assert.ok(
+    workspaceFile.includes('title="Copy output as JSON"'),
+    'Has Copy as JSON action button'
+  );
+});
+
+test('Requirement 9: Cancel option left to Generate button on All QA Agents', () => {
+  const workspaceFile = fs.readFileSync(
+    path.join(__dirname, '../src/components/qa-agents/qa-agents-workspace.tsx'),
+    'utf8'
+  );
+
+  // Cancel button for QA Generation agents
+  assert.ok(workspaceFile.includes('handleCancel'), 'Has handleCancel handler');
+  assert.ok(workspaceFile.includes('abortControllerRef'), 'Has abortControllerRef for cancelling requests');
+  assert.ok(
+    workspaceFile.includes('title="Cancel generation or clear input"'),
+    'Has Cancel button for QA Generation agents'
+  );
+
+  // Cancel button is placed immediately before handleGenerate button in the DOM
+  const cancelBtnIdx = workspaceFile.indexOf('onClick={handleCancel}');
+  const generateBtnIdx = workspaceFile.indexOf('onClick={handleGenerate}');
+  assert.ok(cancelBtnIdx !== -1, 'Cancel button exists');
+  assert.ok(generateBtnIdx !== -1, 'Generate button exists');
+  assert.ok(
+    cancelBtnIdx < generateBtnIdx,
+    'Cancel button is situated directly to the left of Generate button'
+  );
+
+  // Cancel button for Mentor Chat
+  assert.ok(workspaceFile.includes('handleCancelChat'), 'Has handleCancelChat handler');
+  const cancelChatBtnIdx = workspaceFile.indexOf('onClick={handleCancelChat}');
+  const sendChatBtnIdx = workspaceFile.indexOf('onClick={handleSendChat}');
+  assert.ok(cancelChatBtnIdx !== -1, 'Mentor chat cancel button exists');
+  assert.ok(sendChatBtnIdx !== -1, 'Mentor chat send button exists');
+  assert.ok(
+    cancelChatBtnIdx < sendChatBtnIdx,
+    'Mentor chat cancel button is situated directly to the left of Send button'
+  );
+});

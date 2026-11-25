@@ -403,6 +403,9 @@ export default function QAAgentsWorkspace() {
   ]);
   const [chatInput, setChatInput] = useState('');
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const chatAbortControllerRef = useRef<AbortController | null>(null);
+
   const handleGenerate = async () => {
     if (!inputPrompt.trim()) return;
 
@@ -414,6 +417,8 @@ export default function QAAgentsWorkspace() {
       return;
     }
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setIsGenerating(true);
     setOutputResult('');
     setSavedSuccess(false);
@@ -433,6 +438,7 @@ export default function QAAgentsWorkspace() {
       const res = await fetch('/api/ai/qa-agent', {
         method: 'POST',
         headers,
+        signal: controller.signal,
         body: JSON.stringify({
           action: activeTab,
           input: fullInput,
@@ -463,11 +469,15 @@ export default function QAAgentsWorkspace() {
         });
         setSavedSuccess(true);
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        return;
+      }
       console.error('Generation failed:', err);
       setOutputResult('Error generating agent response. Please check your network or try again.');
     } finally {
       setIsGenerating(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -476,6 +486,8 @@ export default function QAAgentsWorkspace() {
     const userMsg = chatInput.trim();
     setChatMessages((prev) => [...prev, { role: 'user', text: userMsg }]);
     setChatInput('');
+    const controller = new AbortController();
+    chatAbortControllerRef.current = controller;
     setIsGenerating(true);
 
     try {
@@ -492,6 +504,7 @@ export default function QAAgentsWorkspace() {
       const res = await fetch('/api/ai/qa-chat', {
         method: 'POST',
         headers,
+        signal: controller.signal,
         body: JSON.stringify({
           message: fullChatMessage,
           apiKey: geminiKey,
@@ -502,13 +515,45 @@ export default function QAAgentsWorkspace() {
         ...prev,
         { role: 'assistant', text: data.reply || 'Advisory response received.' },
       ]);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        return;
+      }
       setChatMessages((prev) => [
         ...prev,
         { role: 'assistant', text: 'Sorry, unable to contact the SDET AI service right now.' },
       ]);
     } finally {
       setIsGenerating(false);
+      chatAbortControllerRef.current = null;
+    }
+  };
+
+  // Cancel Handler for all QA Generation Agents
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    if (isGenerating) {
+      setIsGenerating(false);
+    } else {
+      setInputPrompt('');
+      setImportedFile(null);
+      setFileParseError('');
+    }
+  };
+
+  // Cancel Handler for SDET Mentor Chat
+  const handleCancelChat = () => {
+    if (chatAbortControllerRef.current) {
+      chatAbortControllerRef.current.abort();
+      chatAbortControllerRef.current = null;
+    }
+    if (isGenerating) {
+      setIsGenerating(false);
+    } else {
+      setChatInput('');
     }
   };
 
@@ -516,19 +561,70 @@ export default function QAAgentsWorkspace() {
   const [showSaveDropdown, setShowSaveDropdown] = useState<boolean>(false);
   const saveDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Copy Dropdown state
+  const [showCopyDropdown, setShowCopyDropdown] = useState<boolean>(false);
+  const copyDropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (saveDropdownRef.current && !saveDropdownRef.current.contains(e.target as Node)) {
         setShowSaveDropdown(false);
+      }
+      if (copyDropdownRef.current && !copyDropdownRef.current.contains(e.target as Node)) {
+        setShowCopyDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const getJsonPayload = () => {
+    if (!outputResult) return null;
+    let jsonPayload: any;
+    if (activeTab === 'requirements') {
+      const tableRows = parseAmbiguityTableToRows(outputResult);
+      jsonPayload = {
+        agent: 'Requirement Analyzer',
+        tab: activeTab,
+        timestamp: new Date().toISOString(),
+        ambiguityItems: tableRows,
+        content: outputResult,
+      };
+    } else if (activeTab === 'test_cases') {
+      jsonPayload = {
+        agent: 'Test Case Generator',
+        tab: activeTab,
+        timestamp: new Date().toISOString(),
+        content: outputResult,
+      };
+    } else {
+      jsonPayload = {
+        agent: AGENT_CONFIGS[activeTab]?.title || activeTab,
+        tab: activeTab,
+        techStack:
+          activeTab === 'automation_code' || activeTab === 'code_review' ? techStack : undefined,
+        timestamp: new Date().toISOString(),
+        content: outputResult,
+      };
+    }
+    return jsonPayload;
+  };
+
   const copyToClipboard = () => {
     if (!outputResult) return;
     navigator.clipboard.writeText(outputResult);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyAsMarkdown = () => {
+    copyToClipboard();
+  };
+
+  const copyAsJson = () => {
+    const payload = getJsonPayload();
+    if (!payload) return;
+    navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -575,34 +671,8 @@ export default function QAAgentsWorkspace() {
   };
 
   const handleExportJson = () => {
-    if (!outputResult) return;
-    let jsonPayload: any;
-    if (activeTab === 'requirements') {
-      const tableRows = parseAmbiguityTableToRows(outputResult);
-      jsonPayload = {
-        agent: 'Requirement Analyzer',
-        tab: activeTab,
-        timestamp: new Date().toISOString(),
-        ambiguityItems: tableRows,
-        content: outputResult,
-      };
-    } else if (activeTab === 'test_cases') {
-      jsonPayload = {
-        agent: 'Test Case Generator',
-        tab: activeTab,
-        timestamp: new Date().toISOString(),
-        content: outputResult,
-      };
-    } else {
-      jsonPayload = {
-        agent: AGENT_CONFIGS[activeTab]?.title || activeTab,
-        tab: activeTab,
-        techStack:
-          activeTab === 'automation_code' || activeTab === 'code_review' ? techStack : undefined,
-        timestamp: new Date().toISOString(),
-        content: outputResult,
-      };
-    }
+    const jsonPayload = getJsonPayload();
+    if (!jsonPayload) return;
     const blob = new Blob([JSON.stringify(jsonPayload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1356,45 +1426,57 @@ export default function QAAgentsWorkspace() {
             </div>
 
             {/* Action Trigger Button */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
               <span className="text-xs text-slate-400">
                 {!geminiKey ? '● AI Disabled (Key Required)' : ''}
               </span>
-              <button
-                onClick={handleGenerate}
-                disabled={!geminiKey || isGenerating || !inputPrompt.trim()}
-                className="py-3 px-6 bg-gradient-to-r from-emerald-600 to-indigo-600 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
-              >
-                {!geminiKey ? (
-                  <>
-                    <Lock className="w-4 h-4" />
-                    Gemini Key Required (Disabled)
-                  </>
-                ) : isGenerating ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    {activeTab === 'requirements'
-                      ? 'Analyzing Requirements...' /* 'Generating Requirements...' */
-                      : activeTab === 'test_cases'
-                        ? 'Generating Test Cases...'
-                        : activeTab === 'automation_code'
-                          ? 'Generating Code...'
-                          : 'Auditing Code...'}
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    {/* Rename button specifically for Requirement Generator (Req 2) and Test Case Generator (Req 4) */}
-                    {activeTab === 'requirements'
-                      ? 'Analyze Requirements' /* 'Generate Requirements' */
-                      : activeTab === 'test_cases'
-                        ? 'Generate Test Cases'
-                        : activeTab === 'automation_code'
-                          ? 'Generate Automation Code'
-                          : 'Audit & Refactor Code'}
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  disabled={!isGenerating && !inputPrompt.trim() && !importedFile}
+                  className="py-3 px-5 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-sm transition-all shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Cancel generation or clear input"
+                >
+                  <X className="w-4 h-4" />
+                  <span>Cancel</span>
+                </button>
+                <button
+                  onClick={handleGenerate}
+                  disabled={!geminiKey || isGenerating || !inputPrompt.trim()}
+                  className="py-3 px-6 bg-gradient-to-r from-emerald-600 to-indigo-600 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                >
+                  {!geminiKey ? (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      Gemini Key Required (Disabled)
+                    </>
+                  ) : isGenerating ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      {activeTab === 'requirements'
+                        ? 'Analyzing Requirements...' /* 'Generating Requirements...' */
+                        : activeTab === 'test_cases'
+                          ? 'Generating Test Cases...'
+                          : activeTab === 'automation_code'
+                            ? 'Generating Code...'
+                            : 'Auditing Code...'}
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      {/* Rename button specifically for Requirement Generator (Req 2) and Test Case Generator (Req 4) */}
+                      {activeTab === 'requirements'
+                        ? 'Analyze Requirements' /* 'Generate Requirements' */
+                        : activeTab === 'test_cases'
+                          ? 'Generate Test Cases'
+                          : activeTab === 'automation_code'
+                            ? 'Generate Automation Code'
+                            : 'Audit & Refactor Code'}
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1514,11 +1596,69 @@ export default function QAAgentsWorkspace() {
                         </div>
                       )}
 
+                    {/* Unified COPY Dropdown across all QA Agents */}
+                    <div className="relative inline-block text-left" ref={copyDropdownRef}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowCopyDropdown((prev) => !prev);
+                          setShowSaveDropdown(false);
+                        }}
+                        className="p-1.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-lg text-xs flex items-center gap-1.5 transition-colors font-bold cursor-pointer shadow-xs"
+                        title="Copy output"
+                      >
+                        {copied ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                        )}
+                        <span>{copied ? 'COPIED!' : 'COPY'}</span>
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                            showCopyDropdown ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {showCopyDropdown && (
+                        <div className="absolute right-0 mt-1.5 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-40 animate-in fade-in zoom-in-95">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              copyAsMarkdown();
+                              setShowCopyDropdown(false);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer transition-colors"
+                            title="Copy output as Markdown"
+                          >
+                            <FileCode className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                            <span className="font-medium">As Markdown (.md)</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              copyAsJson();
+                              setShowCopyDropdown(false);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer transition-colors"
+                            title="Copy output as JSON"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            <span className="font-medium">As JSON (.json)</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Unified SAVE Dropdown across all QA Agents */}
                     <div className="relative inline-block text-left" ref={saveDropdownRef}>
                       <button
                         type="button"
-                        onClick={() => setShowSaveDropdown((prev) => !prev)}
+                        onClick={() => {
+                          setShowSaveDropdown((prev) => !prev);
+                          setShowCopyDropdown(false);
+                        }}
                         className="p-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs flex items-center gap-1.5 transition-colors font-bold cursor-pointer shadow-xs"
                         title="Save or Export output"
                       >
@@ -1880,6 +2020,16 @@ export default function QAAgentsWorkspace() {
                 }
                 className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               />
+              <button
+                type="button"
+                onClick={handleCancelChat}
+                disabled={!isGenerating && !chatInput.trim()}
+                className="py-3 px-4 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                title="Cancel chat message"
+              >
+                <X className="w-4 h-4" />
+                <span>Cancel</span>
+              </button>
               <button
                 onClick={handleSendChat}
                 disabled={!geminiKey || isGenerating || !chatInput.trim()}
