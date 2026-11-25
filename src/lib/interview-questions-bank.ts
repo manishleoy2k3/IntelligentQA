@@ -166,7 +166,12 @@ export function getQuestionsByLevelAndDifficulty(criteria: SampleQuestionCriteri
   if (criteria.role) {
     const roleLower = criteria.role.toLowerCase();
     if (roleLower.includes('architect')) {
-      const archMatch = candidates.filter(q => q.difficulty === 'Architect' || (q.topic && q.topic.toLowerCase().includes('architect')) || (q.category && q.category.toLowerCase().includes('reporting') || q.category.toLowerCase().includes('ci/cd')));
+      const archMatch = candidates.filter(
+        q =>
+          q.difficulty === 'Architect' ||
+          (q.topic && q.topic.toLowerCase().includes('architect')) ||
+          (q.category && (q.category.toLowerCase().includes('reporting') || q.category.toLowerCase().includes('ci/cd')))
+      );
       if (archMatch.length >= requestedCount) candidates = archMatch;
     } else if (roleLower.includes('manual') || roleLower === 'qa engineer') {
       const manualMatch = candidates.filter(q => q.category === 'Manual QA Processes' || q.category === 'API Testing & Automation');
