@@ -1,0 +1,177 @@
+<svg width="1360" height="765" viewBox="0 0 1360 765" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="cardAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.06" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1360" height="765" fill="#f8fafc" />
+
+  <!-- Top Executive Header Banner -->
+  <rect width="1360" height="110" fill="url(#headerGrad)" />
+  <rect x="0" y="107" width="1360" height="3" fill="url(#cardAccent)" />
+
+  <text x="50" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="24" font-weight="800" fill="#ffffff" letter-spacing="-0.5">Large Language Models (LLM) — Neural Architecture &amp; Inference Pipeline</text>
+  <text x="50" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#94a3b8">Comprehensive Technical Breakdown for QA Automation Engineers and SDETs • QA Technical Learning Academy</text>
+
+  <!-- Badge in Header -->
+  <rect x="1110" y="32" width="200" height="34" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <circle cx="1128" cy="49" r="5" fill="#10b981" />
+  <text x="1142" y="53" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">CORE AI ARCHITECTURE</text>
+
+  <!-- 4 Main Sequential Technical Cards -->
+  <!-- CARD 1: Training Data & Tokenization -->
+  <g transform="translate(50, 135)" filter="url(#shadow)">
+    <rect width="290" height="495" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <path d="M 0 14 Q 0 0 14 0 L 276 0 Q 290 0 290 14 L 290 56 L 0 56 Z" fill="#3b82f6" />
+    <rect x="16" y="16" width="60" height="22" rx="4" fill="#1d4ed8" />
+    <text x="24" y="31" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" fill="#ffffff">PHASE 01</text>
+    <text x="86" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#ffffff">Ingestion &amp; Tokens</text>
+
+    <!-- Content -->
+    <text x="20" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">1. Massive Pre-Training Corpus</text>
+    <text x="20" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Web crawl, open source code, docs</text>
+    <text x="20" y="123" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• 10T to 15T tokens deduplicated</text>
+
+    <text x="20" y="155" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">2. Subword Tokenization (BPE)</text>
+    <text x="20" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Text mapped to vocabulary IDs</text>
+    <text x="20" y="193" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Vocabulary size: 32K – 128K tokens</text>
+
+    <!-- Visual Box -->
+    <rect x="18" y="220" width="254" height="110" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="28" y="242" font-family="Monaco, 'Courier New', monospace" font-size="10" font-weight="600" fill="#2563eb">Raw Text:</text>
+    <text x="28" y="260" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#0f172a">&quot;assert response.status == 200&quot;</text>
+    <text x="28" y="285" font-family="Monaco, 'Courier New', monospace" font-size="10" font-weight="600" fill="#10b981">Token IDs:</text>
+    <text x="28" y="303" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#0f172a">[1849, 9382, 14, 4391, 281]</text>
+
+    <!-- QA Takeaway -->
+    <rect x="18" y="350" width="254" height="125" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" />
+    <text x="28" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#1d4ed8">SDET / QA Implication:</text>
+    <text x="28" y="394" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#1e3a8a">• Prompt token limits directly bound</text>
+    <text x="28" y="412" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#1e3a8a">  test suite memory context.</text>
+    <text x="28" y="432" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#1e3a8a">• Token pricing scales per request.</text>
+    <text x="28" y="452" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#1e3a8a">• Unrecognized tokens increase latency.</text>
+  </g>
+
+  <!-- CARD 2: Embeddings & Transformer Layers -->
+  <g transform="translate(370, 135)" filter="url(#shadow)">
+    <rect width="290" height="495" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <path d="M 0 14 Q 0 0 14 0 L 276 0 Q 290 0 290 14 L 290 56 L 0 56 Z" fill="#6366f1" />
+    <rect x="16" y="16" width="60" height="22" rx="4" fill="#4338ca" />
+    <text x="24" y="31" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" fill="#ffffff">PHASE 02</text>
+    <text x="86" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#ffffff">Dense Embeddings</text>
+
+    <!-- Content -->
+    <text x="20" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">1. High-Dimensional Vectors</text>
+    <text x="20" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Each token projected to d=4096 / d=8192</text>
+    <text x="20" y="123" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Encodes semantic meaning &amp; syntax</text>
+
+    <text x="20" y="155" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">2. Positional Encoding (RoPE)</text>
+    <text x="20" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Injects word order information</text>
+    <text x="20" y="193" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Critical for code execution order</text>
+
+    <!-- Visual Box -->
+    <rect x="18" y="220" width="254" height="110" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="28" y="242" font-family="Monaco, 'Courier New', monospace" font-size="10" font-weight="600" fill="#6366f1">Embedding Space (d=4096):</text>
+    <text x="28" y="265" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#334155">[+0.842, -0.194, +0.651, ...]</text>
+    <text x="28" y="288" font-family="Monaco, 'Courier New', monospace" font-size="10" font-weight="600" fill="#059669">Cosine Similarity:</text>
+    <text x="28" y="306" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#334155">sim(&quot;click&quot;, &quot;tap&quot;) = 0.932</text>
+
+    <!-- QA Takeaway -->
+    <rect x="18" y="350" width="254" height="125" rx="8" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1" />
+    <text x="28" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#4338ca">SDET / QA Implication:</text>
+    <text x="28" y="394" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#312e81">• Vector embeddings power RAG for</text>
+    <text x="28" y="412" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#312e81">  matching bug tickets &amp; test failures.</text>
+    <text x="28" y="432" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#312e81">• Self-healing locators use semantic</text>
+    <text x="28" y="452" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#312e81">  similarity to recover altered DOM elements.</text>
+  </g>
+
+  <!-- CARD 3: Multi-Head Self-Attention -->
+  <g transform="translate(690, 135)" filter="url(#shadow)">
+    <rect width="290" height="495" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <path d="M 0 14 Q 0 0 14 0 L 276 0 Q 290 0 290 14 L 290 56 L 0 56 Z" fill="#0d9488" />
+    <rect x="16" y="16" width="60" height="22" rx="4" fill="#0f766e" />
+    <text x="24" y="31" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" fill="#ffffff">PHASE 03</text>
+    <text x="86" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#ffffff">Self-Attention</text>
+
+    <!-- Content -->
+    <text x="20" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">1. Scaled Dot-Product</text>
+    <text x="20" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Attention(Q, K, V) = softmax(QK^T / √d)V</text>
+    <text x="20" y="123" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Computes cross-token relevance</text>
+
+    <text x="20" y="155" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">2. Multi-Head Parallelism</text>
+    <text x="20" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• 32 to 128 attention heads in parallel</text>
+    <text x="20" y="193" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Discovers dependencies across code blocks</text>
+
+    <!-- Visual Box -->
+    <rect x="18" y="220" width="254" height="110" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="28" y="242" font-family="Monaco, 'Courier New', monospace" font-size="10" font-weight="600" fill="#0f766e">Attention Formula:</text>
+    <text x="28" y="265" font-family="Monaco, 'Courier New', monospace" font-size="11" font-weight="700" fill="#0f172a">softmax( (Q · K^T) / √d_k ) · V</text>
+    <text x="28" y="288" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#64748b">Q = Query, K = Key, V = Value</text>
+    <text x="28" y="306" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#059669">Context Span: 128K – 1M Tokens</text>
+
+    <!-- QA Takeaway -->
+    <rect x="18" y="350" width="254" height="125" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1" />
+    <text x="28" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#0f766e">SDET / QA Implication:</text>
+    <text x="28" y="394" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#134e4a">• KV Cache accelerates continuous</text>
+    <text x="28" y="412" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#134e4a">  agentic test step generation.</text>
+    <text x="28" y="432" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#134e4a">• Long-context degradation (lost-in-the-</text>
+    <text x="28" y="452" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#134e4a">  middle) requires targeted assertions.</text>
+  </g>
+
+  <!-- CARD 4: Next-Token Prediction & Output -->
+  <g transform="translate(1010, 135)" filter="url(#shadow)">
+    <rect width="290" height="495" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <path d="M 0 14 Q 0 0 14 0 L 276 0 Q 290 0 290 14 L 290 56 L 0 56 Z" fill="#8b5cf6" />
+    <rect x="16" y="16" width="60" height="22" rx="4" fill="#6d28d9" />
+    <text x="24" y="31" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" fill="#ffffff">PHASE 04</text>
+    <text x="86" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#ffffff">Prediction Loop</text>
+
+    <!-- Content -->
+    <text x="20" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">1. Softmax Distribution</text>
+    <text x="20" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Probability scored over entire vocab</text>
+    <text x="20" y="123" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Temperature controls determinism</text>
+
+    <text x="20" y="155" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#1e293b">2. Autoregressive Sampling</text>
+    <text x="20" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Output token fed back as next input</text>
+    <text x="20" y="193" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">• Stops on &lt;|endoftext|&gt; or max tokens</text>
+
+    <!-- Visual Box -->
+    <rect x="18" y="220" width="254" height="110" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="28" y="242" font-family="Monaco, 'Courier New', monospace" font-size="10" font-weight="600" fill="#8b5cf6">Candidate Probabilities:</text>
+    <text x="28" y="262" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#0f172a">&quot;expect&quot;  [88.4%] ■■■■■■■■</text>
+    <text x="28" y="280" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#64748b">&quot;verify&quot;  [ 8.2%] ■</text>
+    <text x="28" y="298" font-family="Monaco, 'Courier New', monospace" font-size="10" fill="#64748b">&quot;assert&quot;  [ 2.1%] </text>
+    <text x="28" y="316" font-family="Monaco, 'Courier New', monospace" font-size="9" fill="#059669">Selected: &quot;expect&quot; (temp=0.1)</text>
+
+    <!-- QA Takeaway -->
+    <rect x="18" y="350" width="254" height="125" rx="8" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1" />
+    <text x="28" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#6d28d9">SDET / QA Implication:</text>
+    <text x="28" y="394" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#4c1d95">• Temperature = 0 enforces reproducible</text>
+    <text x="28" y="412" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#4c1d95">  deterministic automated test runs.</text>
+    <text x="28" y="432" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#4c1d95">• Zod JSON schema validation prevents</text>
+    <text x="28" y="452" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#4c1d95">  structural hallucination in API tests.</text>
+  </g>
+
+  <!-- Connectors Between Cards -->
+  <g stroke="#94a3b8" stroke-width="2" fill="none">
+    <path d="M 340 380 L 368 380" marker-end="url(#arrow)" />
+    <path d="M 660 380 L 688 380" marker-end="url(#arrow)" />
+    <path d="M 980 380 L 1008 380" marker-end="url(#arrow)" />
+  </g>
+
+  <!-- Bottom QA Summary Footer Bar -->
+  <rect x="50" y="650" width="1250" height="75" rx="12" fill="#1e293b" />
+  <text x="75" y="682" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#38bdf8">SDET AUTOMATION RULEBOOK:</text>
+  <text x="75" y="705" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#cbd5e1">1. Set temperature &lt; 0.2 for test generation • 2. Validate all structured outputs with strict Zod schemas • 3. Truncate context to eliminate Lost-in-the-Middle noise.</text>
+  <text x="1140" y="695" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="600" fill="#94a3b8">IntelligentQA • Verified 2026</text>
+</svg>

@@ -1,0 +1,80 @@
+<svg width="1360" height="765" viewBox="0 0 1360 765" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+  </defs>
+  <rect width="1360" height="765" fill="#f8fafc" />
+  <rect width="1360" height="110" fill="url(#headerGrad)" />
+  <rect x="0" y="107" width="1360" height="3" fill="#06b6d4" />
+  <text x="50" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="800" fill="#ffffff">Tokenization Mechanics — From Raw Code to Vector Embeddings</text>
+  <text x="50" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#94a3b8">Subword Segmentation &amp; Vocabulary Indexing for QA Engineers</text>
+
+  <!-- Step 1: Raw String -->
+  <g transform="translate(60, 150)">
+    <rect width="270" height="470" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect width="270" height="44" rx="12" fill="#0284c7" />
+    <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#ffffff">01. RAW INPUT STRING</text>
+    <text x="20" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#0f172a">Continuous Character Stream</text>
+    <text x="20" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Raw Unicode bytes or UTF-8 code points entering the model.</text>
+    <rect x="15" y="130" width="240" height="90" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
+    <text x="25" y="155" font-family="Monaco, monospace" font-size="11" fill="#0369a1">&quot;WebDriver driver =&quot;</text>
+    <text x="25" y="180" font-family="Monaco, monospace" font-size="11" fill="#0369a1">&quot;new ChromeDriver();&quot;</text>
+    <text x="20" y="250" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#0f172a">Challenge:</text>
+    <text x="20" y="270" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Neural networks cannot process raw strings; characters must be transformed into discrete integers.</text>
+  </g>
+
+  <!-- Step 2: BPE Subwords -->
+  <g transform="translate(370, 150)">
+    <rect width="270" height="470" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect width="270" height="44" rx="12" fill="#2563eb" />
+    <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#ffffff">02. BPE SUBWORDS</text>
+    <text x="20" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#0f172a">Byte-Pair Encoding Merge</text>
+    <text x="20" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Splits rare words, preserves common keywords intact.</text>
+    <rect x="15" y="130" width="240" height="150" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
+    <rect x="25" y="145" width="90" height="26" rx="4" fill="#dbeafe" stroke="#93c5fd" />
+    <text x="35" y="162" font-family="Monaco, monospace" font-size="10" font-weight="700" fill="#1e40af">Web</text>
+    <rect x="125" y="145" width="90" height="26" rx="4" fill="#dbeafe" stroke="#93c5fd" />
+    <text x="135" y="162" font-family="Monaco, monospace" font-size="10" font-weight="700" fill="#1e40af">Driver</text>
+    <rect x="25" y="180" width="90" height="26" rx="4" fill="#dbeafe" stroke="#93c5fd" />
+    <text x="35" y="197" font-family="Monaco, monospace" font-size="10" font-weight="700" fill="#1e40af">Chrome</text>
+    <rect x="125" y="180" width="90" height="26" rx="4" fill="#dbeafe" stroke="#93c5fd" />
+    <text x="135" y="197" font-family="Monaco, monospace" font-size="10" font-weight="700" fill="#1e40af">Driver()</text>
+  </g>
+
+  <!-- Step 3: Vocabulary IDs -->
+  <g transform="translate(680, 150)">
+    <rect width="270" height="470" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect width="270" height="44" rx="12" fill="#7c3aed" />
+    <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#ffffff">03. VOCABULARY IDS</text>
+    <text x="20" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#0f172a">Integer Lookup Table</text>
+    <text x="20" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Fixed dictionary mapping subwords to unique integers.</text>
+    <rect x="15" y="130" width="240" height="150" rx="6" fill="#f5f3ff" stroke="#ddd6fe" />
+    <text x="25" y="155" font-family="Monaco, monospace" font-size="10" fill="#4c1d95">&quot;Web&quot;    -&gt; ID: 1249</text>
+    <text x="25" y="180" font-family="Monaco, monospace" font-size="10" fill="#4c1d95">&quot;Driver&quot; -&gt; ID: 8492</text>
+    <text x="25" y="205" font-family="Monaco, monospace" font-size="10" fill="#4c1d95">&quot;Chrome&quot; -&gt; ID: 4182</text>
+    <text x="25" y="230" font-family="Monaco, monospace" font-size="10" fill="#4c1d95">&quot;Driver&quot; -&gt; ID: 8492</text>
+    <text x="25" y="255" font-family="Monaco, monospace" font-size="10" fill="#4c1d95">&quot;()&quot;     -&gt; ID: 94</text>
+  </g>
+
+  <!-- Step 4: Vector Embeddings -->
+  <g transform="translate(990, 150)">
+    <rect width="270" height="470" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect width="270" height="44" rx="12" fill="#059669" />
+    <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#ffffff">04. DENSE EMBEDDINGS</text>
+    <text x="20" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#0f172a">Continuous Vector Space</text>
+    <text x="20" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Each ID points to high-dimensional weights matrix (d=4096).</text>
+    <rect x="15" y="130" width="240" height="150" rx="6" fill="#ecfdf5" stroke="#a7f3d0" />
+    <text x="25" y="155" font-family="Monaco, monospace" font-size="9" fill="#065f46">v[1249] = [0.81, -0.42, 0.19...]</text>
+    <text x="25" y="180" font-family="Monaco, monospace" font-size="9" fill="#065f46">v[8492] = [0.12, 0.94, -0.73...]</text>
+    <text x="25" y="210" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#047857">Position Encoding Added:</text>
+    <text x="25" y="230" font-family="Monaco, monospace" font-size="9" fill="#065f46">Final = Embedding + RoPE(pos)</text>
+  </g>
+
+  <rect x="50" y="650" width="1260" height="65" rx="10" fill="#1e293b" />
+  <text x="75" y="688" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#cbd5e1">
+    <tspan font-weight="700" fill="#38bdf8">SDET KEY TAKEAWAY: </tspan>
+    Whitespace, punctuation, and code indentation generate distinct tokens. Always sanitize unnecessary whitespace to prevent token budget waste.
+  </text>
+</svg>
