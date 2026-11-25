@@ -26,7 +26,9 @@ export const CourseSchema = z.object({
   description: z.string().optional().nullable(),
   icon: z.string().optional().nullable(),
   thumbnail: z.string().optional().nullable(),
-  level: z.enum(['Beginner', 'Intermediate', 'Advanced', 'All Levels']).default('All Levels'),
+  level: z
+    .enum(['Beginner', 'Intermediate', 'Advanced', 'All Levels', 'Comprehensive'])
+    .default('All Levels'),
   estimated_hours: z.number().int().default(10),
   sort_order: z.number().int().default(0),
   status: z.enum(['draft', 'published', 'archived']).default('published'),

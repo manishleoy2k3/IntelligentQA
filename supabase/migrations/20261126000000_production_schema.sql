@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS courses (
     icon VARCHAR(64),
     thumbnail TEXT,
     level VARCHAR(32) NOT NULL DEFAULT 'All Levels' 
-        CHECK (level IN ('Beginner', 'Intermediate', 'Advanced', 'All Levels')),
+        CHECK (level IN ('Beginner', 'Intermediate', 'Advanced', 'All Levels', 'Comprehensive')),
     estimated_hours INT DEFAULT 10,
     sort_order INT DEFAULT 0,
     status VARCHAR(32) NOT NULL DEFAULT 'published' 
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS course_lessons (
     published_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT uq_course_lesson_slug UNIQUE (course_id, slug)
+    CONSTRAINT uq_course_lesson_slug UNIQUE (module_id, slug)
 );
 
 CREATE INDEX IF NOT EXISTS idx_lessons_module_sort ON course_lessons(module_id, sort_order);
@@ -382,3 +382,15 @@ CREATE POLICY "Public can view published interview questions" ON interview_quest
 CREATE POLICY "Public can view published articles" ON cms_articles FOR SELECT USING (status = 'published');
 CREATE POLICY "Public can view media" ON media_assets FOR SELECT USING (true);
 CREATE POLICY "Public can match active chunks" ON knowledge_chunks FOR SELECT USING (is_active = true);
+
+-- 18. ROLE PRIVILEGES (PostgREST Permissions)
+GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO postgres, service_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO postgres, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO anon, authenticated;

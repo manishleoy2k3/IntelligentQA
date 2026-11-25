@@ -1,5 +1,17 @@
 import { z } from 'zod';
 
+// Ensure WebSocket support in Node.js < 22 environments where Supabase Realtime client initializes
+if (typeof window === 'undefined' && typeof globalThis.WebSocket === 'undefined') {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    globalThis.WebSocket = require('ws');
+  } catch {
+    // fallback dummy class if ws package is unavailable
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    globalThis.WebSocket = class DummyWebSocket {} as any;
+  }
+}
+
 const SupabaseEnvSchema = z.object({
   url: z.string().url(),
   anonKey: z.string().min(1),
