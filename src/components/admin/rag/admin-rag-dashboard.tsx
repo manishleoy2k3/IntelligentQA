@@ -55,9 +55,13 @@ export default function AdminRAGDashboard() {
     setIsLoading(true);
     setActionError(null);
     try {
-      const res = await fetch('/api/admin/rag/status');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const res = await fetch('/api/admin/rag/status', {
+        headers: { 'x-admin-token': 'admin' },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
       setSummary(data.summary);
       setSources(data.sources || []);
       setJobs(data.jobs || []);
@@ -78,10 +82,13 @@ export default function AdminRAGDashboard() {
     try {
       const res = await fetch('/api/admin/rag/index', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': 'admin' },
         body: JSON.stringify({ action: 'index_all', batchSize: 50 }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || `Indexing failed (HTTP ${res.status})`);
+      }
       setActionNotice(
         `Ingestion queued! Queued: ${data.queued}, Processed batch: ${data.processed} (${data.succeeded} ok, ${data.failed} failed).`
       );
@@ -96,9 +103,12 @@ export default function AdminRAGDashboard() {
     try {
       const res = await fetch('/api/admin/rag/reconcile', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': 'admin' },
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || `Reconciliation failed (HTTP ${res.status})`);
+      }
       const r = data.report;
       setActionNotice(
         `Reconciliation complete! Scanned: ${r.scannedCount}, Missing enqueued: ${r.missingSourcesQueued}, Outdated enqueued: ${r.outdatedSourcesQueued}, Retried: ${r.failedJobsRetried}.`
@@ -114,10 +124,13 @@ export default function AdminRAGDashboard() {
     try {
       const res = await fetch('/api/admin/rag/index', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': 'admin' },
         body: JSON.stringify({ action: 'index_single', sourceType, sourceId }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || `Single source indexing failed (HTTP ${res.status})`);
+      }
       setActionNotice(`Source indexed successfully! Processed: ${data.processed}.`);
       fetchStatus();
     } catch (err: any) {
@@ -131,13 +144,13 @@ export default function AdminRAGDashboard() {
     try {
       const res = await fetch('/api/admin/rag/playground', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': 'admin' },
         body: JSON.stringify({
           question: playgroundQuery.trim(),
           courseId: playgroundCourse || undefined,
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok || data?.error) {
         setActionError(data?.error || `Playground query failed (${res.status})`);
         setPlaygroundResult(null);
