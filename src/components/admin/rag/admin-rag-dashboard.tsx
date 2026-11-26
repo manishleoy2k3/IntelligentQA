@@ -138,6 +138,12 @@ export default function AdminRAGDashboard() {
         }),
       });
       const data = await res.json();
+      if (!res.ok || data?.error) {
+        setActionError(data?.error || `Playground query failed (${res.status})`);
+        setPlaygroundResult(null);
+        return;
+      }
+      setActionError(null);
       setPlaygroundResult(data);
     } catch (err: any) {
       console.error('Playground query error:', err);
@@ -613,10 +619,10 @@ export default function AdminRAGDashboard() {
               {/* Retrieved Chunks Audit */}
               <div className="space-y-3">
                 <h4 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
-                  Retrieved Knowledge Chunks ({playgroundResult.retrievedCount} matches):
+                  Retrieved Knowledge Chunks ({playgroundResult.retrievedCount ?? 0} matches):
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {playgroundResult.chunks.map((chk: any, idx: number) => (
+                  {(playgroundResult.chunks ?? []).map((chk: any, idx: number) => (
                     <div
                       key={chk.chunkId || idx}
                       className="p-4 rounded-xl bg-[#161618] border border-[#27272A] space-y-2 text-xs"
