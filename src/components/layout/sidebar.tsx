@@ -732,21 +732,8 @@ export default function Sidebar({
           <QABrandLogo size={32} showText={true} showZeroCostBadge={false} />
         </Link>
 
-        {/* Action buttons: Mobile close & Desktop collapse */}
+        {/* Action buttons: Mobile close */}
         <div className="flex items-center gap-1">
-          {/* Desktop collapse button */}
-          {onToggleCollapse && (
-            <button
-              type="button"
-              onClick={onToggleCollapse}
-              className="hidden md:flex p-1.5 rounded-lg text-slate-500 hover:text-slate-950 dark:text-[#A1A1AA] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E1E1E] transition-colors cursor-pointer"
-              title="Collapse sidebar (Ctrl+B)"
-              aria-label="Collapse sidebar"
-            >
-              <PanelLeftClose className="w-5 h-5" />
-            </button>
-          )}
-
           {/* Mobile close button */}
           {onCloseMobile && (
             <button

@@ -118,12 +118,6 @@ export default function LearningDashboard({ userId, className = '' }: LearningDa
       {/* 1. Header Banner & Free QA Community Guarantee */}
       <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-cyan-950 border border-emerald-500/30 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              100% Free QA Community Platform
-            </span>
-          </div>
           <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
             <span>Learning Academy Dashboard</span>
           </h2>

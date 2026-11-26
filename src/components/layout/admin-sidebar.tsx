@@ -108,17 +108,6 @@ export default function AdminSidebar({
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {onToggleCollapse && (
-            <button
-              type="button"
-              onClick={onToggleCollapse}
-              className="hidden md:flex p-1.5 rounded-lg text-[#A1A1AA] hover:text-white hover:bg-[#222222] transition-colors cursor-pointer"
-              title="Collapse sidebar (Ctrl+B)"
-              aria-label="Collapse sidebar"
-            >
-              <PanelLeftClose className="w-5 h-5" />
-            </button>
-          )}
           {onCloseMobile && (
             <button
               type="button"

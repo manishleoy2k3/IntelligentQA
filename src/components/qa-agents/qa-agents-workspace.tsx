@@ -907,7 +907,7 @@ export default function QAAgentsWorkspace() {
                   {activeTab === 'requirements' && (
                     <>
                       <FileText className="w-4 h-4 text-cyan-500" />
-                      <span>Requirements Analysis</span>
+                      <span>Requirements</span>
                     </>
                   )}
                   {activeTab === 'test_cases' && (
