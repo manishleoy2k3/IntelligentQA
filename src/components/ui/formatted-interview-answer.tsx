@@ -42,7 +42,10 @@ export default function FormattedInterviewAnswer({
       }
       if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
         return (
-          <strong key={`${keyPrefix}-bold-${idx}`} className="font-bold text-white dark:text-white">
+          <strong
+            key={`${keyPrefix}-bold-${idx}`}
+            className="font-bold text-slate-900 dark:text-white"
+          >
             {part.slice(2, -2)}
           </strong>
         );
@@ -131,7 +134,7 @@ export default function FormattedInterviewAnswer({
                 return (
                   <h4
                     key={`line-${lIdx}`}
-                    className="font-extrabold text-white text-sm sm:text-base pt-2.5 pb-1 border-b border-slate-800/60 flex items-center gap-2"
+                    className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base pt-2.5 pb-1 border-b border-slate-200 dark:border-slate-800/60 flex items-center gap-2"
                   >
                     <span className="w-1.5 h-3.5 bg-purple-500 rounded-full inline-block shrink-0" />
                     <span>{renderInlineFormatted(headingMatch[2], `h-${lIdx}`)}</span>
@@ -145,7 +148,7 @@ export default function FormattedInterviewAnswer({
                 return (
                   <div
                     key={`line-${lIdx}`}
-                    className="pl-3 py-1 my-1 border-l-2 border-purple-500 bg-purple-950/20 text-purple-200 text-xs italic rounded-r"
+                    className="pl-3 py-1 my-1 border-l-2 border-purple-500 bg-purple-50 dark:bg-purple-950/20 text-purple-900 dark:text-purple-200 text-xs italic rounded-r"
                   >
                     {renderInlineFormatted(quoteContent, `q-${lIdx}`)}
                   </div>
