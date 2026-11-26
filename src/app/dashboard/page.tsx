@@ -29,6 +29,7 @@ import { QA_TRACKS } from '@/lib/qa-curriculum';
 import AuthGuard from '@/components/auth/auth-guard';
 import ProfileModal from '@/components/profile/profile-modal';
 import LearningDashboard from '@/components/learning/learning-dashboard';
+import { INITIAL_PUBLISHED_COURSES, AcademyClientCourse } from '@/data/learning/initial-courses';
 import { exportRequirementsToExcel, exportTestMatrixToExcel } from '@/lib/excel-export';
 
 export default function UserDashboardPage() {
@@ -39,6 +40,29 @@ export default function UserDashboardPage() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedArtifact, setSelectedArtifact] = useState<QAGeneratedArtifact | null>(null);
   const [copiedArtifact, setCopiedArtifact] = useState(false);
+  const [academyCourses, setAcademyCourses] =
+    useState<AcademyClientCourse[]>(INITIAL_PUBLISHED_COURSES);
+
+  useEffect(() => {
+    const fetchPublishedCourses = async () => {
+      try {
+        const res = await fetch('/api/learning/courses');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            setAcademyCourses(json.data);
+          }
+        }
+      } catch {
+        // preserve pre-seeded fallback
+      }
+    };
+    fetchPublishedCourses();
+    window.addEventListener('intelligentqa_curriculum_updated', fetchPublishedCourses);
+    return () => {
+      window.removeEventListener('intelligentqa_curriculum_updated', fetchPublishedCourses);
+    };
+  }, []);
 
   useEffect(() => {
     const user = QADatabase.getCurrentUser() || DEMO_USER;
@@ -260,54 +284,47 @@ export default function UserDashboardPage() {
               Your Track Progress
             </h2>
             <Link
-              href="/tracks"
+              href="/learning"
               className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
             >
-              View All 4 Tracks →
+              View All {academyCourses.length} Tracks →
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {QA_TRACKS.map((track) => {
-              const completedInTrack = progress.filter(
-                (p) => p.trackId === track.id && p.status === 'completed'
+            {academyCourses.map((course, idx) => {
+              const completedInCourse = progress.filter(
+                (p) =>
+                  (p.trackId === course.id || p.trackId === course.slug) && p.status === 'completed'
               ).length;
-              const pct = Math.min(Math.round((completedInTrack / track.totalLessons) * 100), 100);
+              const totalLessons =
+                course.modules?.reduce((sum, m) => sum + (m.lessons?.length || 0), 0) || 1;
+              const pct = Math.min(Math.round((completedInCourse / totalLessons) * 100), 100);
 
               return (
                 <div
-                  key={track.id}
+                  key={course.id}
                   className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <span
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${track.badgeColor}`}
-                    >
-                      {track.id === 'api-testing'
-                        ? 'Rest Assured (API)'
-                        : track.id === 'ai-qa'
-                          ? 'AI Academy'
-                          : track.title.split(' ')[0]}
+                    <span className="px-2.5 py-1 rounded-lg text-xs font-bold border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60">
+                      {course.level || 'Academy'}
                     </span>
                     <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      {completedInTrack === 0 ? 'Not Started' : `${pct}%`}
+                      {completedInCourse === 0 ? 'Not Started' : `${pct}%`}
                     </span>
                   </div>
 
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-0.5">
-                      {track.id === 'selenium-java'
-                        ? 'Stage 1 · Core Foundation'
-                        : track.id === 'playwright-ts'
-                          ? 'Stage 2 · Modern Web Testing'
-                          : track.id === 'api-testing'
-                            ? 'Stage 3 · API Automation'
-                            : 'Stage 4 · AI Augmentation'}
+                      Track {idx + 1} · {course.level || 'Course'}
                     </div>
                     <h3 className="font-bold text-slate-900 dark:text-white text-lg sm:text-xl leading-snug">
-                      {track.title}
+                      {course.title}
                     </h3>
-                    <p className="text-sm text-slate-500 mt-1 line-clamp-2">{track.tagline}</p>
+                    <p className="text-sm text-slate-500 mt-1 line-clamp-2">
+                      {course.description || course.subtitle}
+                    </p>
                   </div>
 
                   <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -319,17 +336,17 @@ export default function UserDashboardPage() {
 
                   <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-sm">
                     <span className="text-slate-500">
-                      {completedInTrack === 0
+                      {completedInCourse === 0
                         ? 'Not Started'
-                        : `${completedInTrack} / ${track.totalLessons} Lessons`}
+                        : `${completedInCourse} / ${totalLessons} Lessons`}
                     </span>
                     <Link
-                      href={track.id === 'ai-qa' ? '/learning' : `/tracks/${track.id}`}
+                      href={`/learning/${course.slug}`}
                       className="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5"
                     >
-                      {completedInTrack === 0
+                      {completedInCourse === 0
                         ? 'Start Course'
-                        : completedInTrack >= track.totalLessons
+                        : completedInCourse >= totalLessons
                           ? 'Review Course'
                           : 'Resume Course'}
                       <ArrowRight className="w-4 h-4" />
