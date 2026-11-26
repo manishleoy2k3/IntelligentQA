@@ -14,7 +14,6 @@ import {
   CICD_REPORTING_QUESTIONS,
   CODING_DSA_QUESTIONS,
 } from './interview-bank';
-import { syncContentChange } from './rag/sync';
 
 export type {
   InterviewQuestionItem,
@@ -403,8 +402,16 @@ export function saveInterviewQuestion(question: InterviewQuestionItem): Intervie
     }
   }
 
-  // Trigger RAG Content Synchronization
-  syncContentChange('interview_question', itemToSave.id, 'upsert', 'published');
+  // Trigger RAG Content Synchronization (server-side only)
+  if (typeof window === 'undefined') {
+    import('./rag/sync')
+      .then(({ syncContentChange }) => {
+        syncContentChange('interview_question', itemToSave.id, 'upsert', 'published');
+      })
+      .catch((err) => {
+        console.error('Failed to sync interview question to RAG', err);
+      });
+  }
 
   return itemToSave;
 }
@@ -429,8 +436,16 @@ export function deleteInterviewQuestion(id: string): void {
     }
   }
 
-  // Trigger RAG Content Synchronization
-  syncContentChange('interview_question', id, 'delete');
+  // Trigger RAG Content Synchronization (server-side only)
+  if (typeof window === 'undefined') {
+    import('./rag/sync')
+      .then(({ syncContentChange }) => {
+        syncContentChange('interview_question', id, 'delete');
+      })
+      .catch((err) => {
+        console.error('Failed to sync interview question deletion to RAG', err);
+      });
+  }
 }
 
 export function getAllInterviewQuestions(): InterviewQuestionItem[] {
