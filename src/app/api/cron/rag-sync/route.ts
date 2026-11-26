@@ -9,7 +9,7 @@ import { ragIndexer } from '@/lib/rag/indexer';
  * Configured in vercel.json:
  * {
  *   "crons": [
- *     { "path": "/api/cron/rag-sync", "schedule": "0 * * * *" }
+ *     { "path": "/api/cron/rag-sync", "schedule": "0 0 * * *" }
  *   ]
  * }
  */
