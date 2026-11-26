@@ -6,6 +6,132 @@ import { isSupabaseConfigured } from '../supabase/env';
 import { academyStore } from '../academy-store';
 import { getAllInterviewQuestions } from '../interview-questions-bank';
 
+export type QueryIntent = 'question_bank_discovery' | 'general_qa';
+
+const DISCOVERY_PATTERNS = [
+  /\b(do we have|is there|are there|do you have|show me|find|give me|list)\b.*\b(interview\s*questions?|questions?)\b/i,
+  /\b(interview\s*questions?)\b.*\b(on|about|for|related to)\b/i,
+];
+
+const QUERY_STOP_WORDS = new Set([
+  'what',
+  'when',
+  'where',
+  'which',
+  'that',
+  'this',
+  'with',
+  'from',
+  'have',
+  'does',
+  'your',
+  'there',
+  'about',
+  'related',
+  'show',
+  'find',
+  'give',
+  'list',
+  'some',
+  'interview',
+  'question',
+  'questions',
+  'apache',
+  'testing',
+  'please',
+  'tell',
+]);
+
+export function detectQueryIntent(query: string): QueryIntent {
+  const q = query.trim();
+  if (DISCOVERY_PATTERNS.some((re) => re.test(q))) {
+    return 'question_bank_discovery';
+  }
+  return 'general_qa';
+}
+
+export function extractSearchTerms(query: string): string[] {
+  const normalized = query
+    .toLowerCase()
+    .replace(/\bapache\s+jmeter\b/g, 'jmeter')
+    .replace(/\bperformance\s+testing\b/g, 'performance');
+
+  const rawTokens = normalized.split(/[^a-z0-9+.#-]+/).filter(Boolean);
+  const terms = rawTokens.filter((t) => t.length >= 2 && !QUERY_STOP_WORDS.has(t));
+  return Array.from(new Set(terms));
+}
+
+export function searchInterviewQuestionsLexical(query: string, topK = 8): RetrievedChunk[] {
+  const terms = extractSearchTerms(query);
+  if (terms.length === 0) return [];
+
+  const questions = getAllInterviewQuestions();
+  const matched: RetrievedChunk[] = [];
+
+  for (const q of questions) {
+    const titleLower = q.question.toLowerCase();
+    const topicLower = (q.topic || '').toLowerCase();
+    const techLower = (q.technology || '').toLowerCase();
+    const catLower = (q.category || '').toLowerCase();
+    const answerLower = (q.answerSummary || '').toLowerCase();
+
+    let hits = 0;
+    let titleOrTopicHits = 0;
+    for (const t of terms) {
+      const inTitleOrTopic =
+        titleLower.includes(t) ||
+        topicLower.includes(t) ||
+        techLower.includes(t) ||
+        catLower.includes(t);
+      const inAnswer = answerLower.includes(t);
+      if (inTitleOrTopic || inAnswer) {
+        hits++;
+        if (inTitleOrTopic) titleOrTopicHits++;
+      }
+    }
+
+    if (hits > 0) {
+      const score = Math.min(0.45 + titleOrTopicHits * 0.2 + hits * 0.08, 0.95);
+      matched.push({
+        chunk: {
+          id: `iq-lexical-${q.id}`,
+          sourceType: 'interview_question',
+          sourceId: q.id,
+          sourceTitle: q.question,
+          courseId: null,
+          moduleId: null,
+          lessonId: null,
+          category: q.category || 'Interview Question',
+          topic: q.topic || null,
+          contentVersion: 1,
+          contentHash: '',
+          chunkIndex: 0,
+          chunkContent: `Question: ${q.question}\n\nAnswer: ${q.answerSummary || ''}`,
+          tokenCount: Math.ceil((q.question.length + (q.answerSummary || '').length) / 4),
+          embedding: [],
+          embeddingModel: 'lexical-hybrid',
+          embeddingVersion: 'v1',
+          publicationStatus: 'published',
+          isActive: true,
+          metadata: {
+            category: q.category,
+            topic: q.topic,
+            technology: q.technology,
+            difficulty: q.difficulty,
+          },
+          indexedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        similarity: Number(score.toFixed(4)),
+      });
+    }
+  }
+
+  matched.sort((a, b) => b.similarity - a.similarity);
+  return matched.slice(0, topK);
+}
+
 export class RAGRetriever {
   private embeddingProvider: IEmbeddingProvider;
 

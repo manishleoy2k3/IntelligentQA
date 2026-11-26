@@ -629,6 +629,41 @@ export default function AdminRAGDashboard() {
                 </div>
               </div>
 
+              {/* Admin Retrieval Diagnostics */}
+              {playgroundResult.diagnostics && (
+                <div className="p-4 rounded-xl bg-[#111113] border border-[#27272A] space-y-2 text-xs font-mono">
+                  <div className="font-bold text-neutral-300 uppercase tracking-wider">
+                    Retrieval Diagnostics
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-neutral-400">
+                    <div>
+                      Intent:{' '}
+                      <span className="text-emerald-400">
+                        {playgroundResult.diagnostics.detectedIntent}
+                      </span>
+                    </div>
+                    <div>
+                      Lexical Matches:{' '}
+                      <span className="text-white">
+                        {playgroundResult.diagnostics.lexicalResultsCount}
+                      </span>
+                    </div>
+                    <div>
+                      Vector Matches:{' '}
+                      <span className="text-white">
+                        {playgroundResult.diagnostics.vectorResultsCount}
+                      </span>
+                    </div>
+                    <div>
+                      Citations:{' '}
+                      <span className="text-white">
+                        {playgroundResult.diagnostics.citations?.length ?? 0}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Retrieved Chunks Audit */}
               <div className="space-y-3">
                 <h4 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">

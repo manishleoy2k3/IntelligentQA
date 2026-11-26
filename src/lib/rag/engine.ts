@@ -1,5 +1,5 @@
 import { RAGAnswerResult, Citation, RetrievalFilter } from './types';
-import { ragRetriever } from './retrieval';
+import { ragRetriever, detectQueryIntent, searchInterviewQuestionsLexical } from './retrieval';
 import { ragCache } from './cache';
 import { LLMProviderFactory, ILanguageModelProvider } from './llm-provider';
 import { ragStorage } from './storage';
@@ -35,18 +35,33 @@ export class RAGEngine {
       }
     }
 
-    // 2. Perform pgvector & Semantic Retrieval
+    // 2. Detect intent & perform hybrid retrieval
+    const intent = detectQueryIntent(question);
     const filter: RetrievalFilter = {
       courseId,
       category,
       minSimilarity: 0.22,
-      topK: 5,
+      topK: 6,
     };
 
     const retrievedItems = await ragRetriever.retrieve(question, filter);
+    let finalItems = [...retrievedItems];
 
-    // If courseId was specified but yielded fewer than 2 chunks, also search globally with lower threshold
-    let finalItems = retrievedItems;
+    // For question-bank discovery queries, always merge direct lexical matches from canonical interview questions
+    if (intent === 'question_bank_discovery') {
+      const lexicalMatches = searchInterviewQuestionsLexical(question, 8);
+      const seenSourceIds = new Set(
+        finalItems.map((r) => `${r.chunk.sourceType}:${r.chunk.sourceId}`)
+      );
+      for (const lm of lexicalMatches) {
+        const key = `${lm.chunk.sourceType}:${lm.chunk.sourceId}`;
+        if (!seenSourceIds.has(key)) {
+          finalItems.unshift(lm);
+          seenSourceIds.add(key);
+        }
+      }
+      finalItems = finalItems.slice(0, 8);
+    }
     if (courseId && retrievedItems.length < 2) {
       const globalItems = await ragRetriever.retrieve(question, {
         minSimilarity: 0.22,
@@ -69,7 +84,7 @@ export class RAGEngine {
     );
 
     // 3. Check for Insufficient Knowledge Base evidence
-    const hasSufficientEvidence = finalItems.length > 0 && finalItems[0].similarity >= 0.35;
+    const hasSufficientEvidence = finalItems.length > 0 && finalItems[0].similarity >= 0.22;
 
     if (!hasSufficientEvidence) {
       const emptyResult: RAGAnswerResult = {

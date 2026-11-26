@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ragRetriever } from '@/lib/rag/retrieval';
+import {
+  ragRetriever,
+  detectQueryIntent,
+  searchInterviewQuestionsLexical,
+} from '@/lib/rag/retrieval';
 import { ragEngine } from '@/lib/rag/engine';
 import { ragStorage } from '@/lib/rag/storage';
 import { verifyAdminAccess } from '@/lib/cms-security';
@@ -20,6 +24,9 @@ export async function POST(req: NextRequest) {
     if (!question || typeof question !== 'string') {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 });
     }
+
+    const detectedIntent = detectQueryIntent(question);
+    const lexicalResults = searchInterviewQuestionsLexical(question, topK);
 
     // 1. Run raw retrieval
     const retrieved = await ragRetriever.retrieve(question, {
@@ -62,6 +69,15 @@ export async function POST(req: NextRequest) {
       retrievedCount: detailedChunks.length,
       chunks: detailedChunks,
       answerResult,
+      diagnostics: {
+        originalQuery: question,
+        detectedIntent,
+        sourcesSearched: ['interview_question_bank', 'vector_index'],
+        lexicalResultsCount: lexicalResults.length,
+        vectorResultsCount: retrieved.length,
+        appliedFilters: { courseId: courseId || null, minSimilarity, topK },
+        citations: answerResult.citations,
+      },
     });
   } catch (err: any) {
     console.error('[API /api/admin/rag/playground] Error:', err);
