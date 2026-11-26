@@ -121,13 +121,14 @@ export class GeminiEmbeddingProvider implements IEmbeddingProvider {
     }
 
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${this.apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${this.apiKey}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'models/text-embedding-004',
+          model: 'models/gemini-embedding-001',
           content: { parts: [{ text: text.slice(0, 8000) }] },
+          outputDimensionality: 768,
         }),
       });
 
@@ -206,7 +207,7 @@ export class EmbeddingProviderFactory {
     const isLive = Boolean(key && key.startsWith('AIza') && key.length === 39);
     return {
       name: isLive ? 'Gemini' : 'MockDeterministic',
-      model: isLive ? 'text-embedding-004' : 'mock-text-embedding-768',
+      model: isLive ? 'gemini-embedding-001' : 'mock-text-embedding-768',
       dimensions: 768,
       version: 'v1',
       isProductionLive: isLive,
