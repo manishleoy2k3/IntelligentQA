@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { question, courseId, minSimilarity = 0.35, topK = 6 } = body;
+    const { question, courseId, minSimilarity = 0.2, topK = 6 } = body;
 
     if (!question || typeof question !== 'string') {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 });

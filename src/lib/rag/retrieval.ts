@@ -4,6 +4,7 @@ import { ragStorage } from './storage';
 import { getSupabaseAdminClient } from '../supabase/admin';
 import { isSupabaseConfigured } from '../supabase/env';
 import { academyStore } from '../academy-store';
+import { getAllInterviewQuestions } from '../interview-questions-bank';
 
 export class RAGRetriever {
   private embeddingProvider: IEmbeddingProvider;
@@ -183,6 +184,55 @@ export class RAGRetriever {
         seenSources.set(srcKey, count + 1);
       }
       if (deduplicated.length >= topK) break;
+    }
+
+    // 4. Keyword fallback over Interview Questions if vector search returned 0 matches
+    if (
+      deduplicated.length === 0 &&
+      queryTokens.length > 0 &&
+      (!filter.sourceType || filter.sourceType === 'interview_question')
+    ) {
+      const questions = getAllInterviewQuestions();
+      const matched: RetrievedChunk[] = [];
+      for (const q of questions) {
+        const answerText = q.answerSummary || '';
+        const haystack =
+          `${q.question} ${answerText} ${q.topic || ''} ${q.category || ''} ${q.technology || ''}`.toLowerCase();
+        const hits = queryTokens.filter((t) => haystack.includes(t)).length;
+        if (hits > 0) {
+          const score = Math.min(0.45 + hits * 0.1, 0.85);
+          matched.push({
+            chunk: {
+              id: `iq-fallback-${q.id}`,
+              sourceType: 'interview_question',
+              sourceId: q.id,
+              sourceTitle: q.question,
+              courseId: null,
+              moduleId: null,
+              lessonId: null,
+              category: q.category || 'Interview Question',
+              topic: q.topic || null,
+              contentVersion: 1,
+              contentHash: '',
+              chunkIndex: 0,
+              chunkContent: `Question: ${q.question}\n\nAnswer: ${answerText}`,
+              tokenCount: Math.ceil((q.question.length + answerText.length) / 4),
+              embedding: queryVector,
+              embeddingModel: 'keyword-fallback',
+              embeddingVersion: 'v1',
+              publicationStatus: 'published',
+              isActive: true,
+              metadata: { category: q.category, topic: q.topic, difficulty: q.difficulty },
+              indexedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            similarity: Number(score.toFixed(4)),
+          });
+        }
+      }
+      matched.sort((a, b) => b.similarity - a.similarity);
+      return matched.slice(0, topK);
     }
 
     return deduplicated;
