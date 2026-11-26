@@ -3,6 +3,7 @@ import path from 'path';
 import { generateStandardLessonHtml } from './standard-lesson-compiler';
 import { isSupabaseConfigured } from './supabase/env';
 import { getSupabaseAdminClient } from './supabase/admin';
+import { syncContentChange } from './rag/sync';
 import {
   AcademyPublishStatus,
   AcademyCategory,
@@ -1124,6 +1125,7 @@ export class AcademyStore {
     };
     this.courses.set(id, course);
     this.saveToDisk();
+    syncContentChange('course', course.id, 'upsert', course.status);
     return course;
   }
 
@@ -1146,6 +1148,7 @@ export class AcademyStore {
 
     this.courses.set(id, updated);
     this.saveToDisk();
+    syncContentChange('course', updated.id, 'upsert', updated.status);
     return updated;
   }
 
@@ -1153,6 +1156,7 @@ export class AcademyStore {
     if (!this.courses.has(id)) return false;
     this.courses.delete(id);
     this.saveToDisk();
+    syncContentChange('course', id, 'delete');
     return true;
   }
 
@@ -1241,6 +1245,7 @@ export class AcademyStore {
     course.modules.push(newModule);
     course.updatedAt = now;
     this.saveToDisk();
+    syncContentChange('module', newModule.id, 'upsert', newModule.status);
     return newModule;
   }
 
@@ -1274,6 +1279,7 @@ export class AcademyStore {
     course.modules[modIndex] = updated;
     course.updatedAt = new Date().toISOString();
     this.saveToDisk();
+    syncContentChange('module', updated.id, 'upsert', updated.status);
     return updated;
   }
 
@@ -1287,6 +1293,7 @@ export class AcademyStore {
 
     course.updatedAt = new Date().toISOString();
     this.saveToDisk();
+    syncContentChange('module', moduleId, 'delete');
     return true;
   }
 
@@ -1418,6 +1425,7 @@ export class AcademyStore {
     mod.updatedAt = now;
     course.updatedAt = now;
     this.saveToDisk();
+    syncContentChange('lesson', newLesson.id, 'upsert', newLesson.status);
     return newLesson;
   }
 
@@ -1456,6 +1464,7 @@ export class AcademyStore {
     }
     if (lastUpdated) {
       this.saveToDisk();
+      syncContentChange('lesson', lastUpdated.id, 'upsert', lastUpdated.status);
       return lastUpdated;
     }
     return undefined;
@@ -1479,6 +1488,7 @@ export class AcademyStore {
     }
     if (found) {
       this.saveToDisk();
+      syncContentChange('lesson', targetId, 'delete');
       return true;
     }
     return false;
@@ -1852,6 +1862,10 @@ export class AcademyStore {
 
   public getDocumentSource(id: string): AcademyDocumentSource | undefined {
     return this.docSources.get(id);
+  }
+
+  public getDocumentSources(): AcademyDocumentSource[] {
+    return Array.from(this.docSources.values());
   }
 
   public saveMediaAttachment(media: AcademyMediaAttachment): void {
@@ -2351,6 +2365,7 @@ export class AcademyStore {
       course.status = status;
       course.updatedAt = new Date().toISOString();
       this.saveToDisk();
+      syncContentChange('course', id, status === 'published' ? 'upsert' : 'unpublish', status);
       return true;
     }
 
@@ -2369,6 +2384,7 @@ export class AcademyStore {
       }
       if (found) {
         this.saveToDisk();
+        syncContentChange('module', id, status === 'published' ? 'upsert' : 'unpublish', status);
         return true;
       }
       return false;
@@ -2376,6 +2392,7 @@ export class AcademyStore {
 
     if (entityType === 'lesson') {
       let found = false;
+      let targetLessonId = id;
       for (const course of this.courses.values()) {
         if (!course.modules) continue;
         for (const mod of course.modules) {
@@ -2389,6 +2406,7 @@ export class AcademyStore {
               }
               mod.updatedAt = new Date().toISOString();
               course.updatedAt = new Date().toISOString();
+              targetLessonId = lsn.id;
               found = true;
             }
           }
@@ -2396,6 +2414,12 @@ export class AcademyStore {
       }
       if (found) {
         this.saveToDisk();
+        syncContentChange(
+          'lesson',
+          targetLessonId,
+          status === 'published' ? 'upsert' : 'unpublish',
+          status
+        );
         return true;
       }
       return false;

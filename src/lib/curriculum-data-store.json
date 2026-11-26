@@ -3332,7 +3332,7 @@
       "sortOrder": 2,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-25T19:55:20.517Z",
+      "updatedAt": "2026-11-26T04:44:50.037Z",
       "modules": [
         {
           "id": "mod-playwright-mastery-1",
@@ -3343,7 +3343,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-24T09:34:24.529Z",
+          "updatedAt": "2026-11-26T04:44:50.037Z",
           "lessons": [
             {
               "id": "les-playwright-mastery-1-1-playwright-architecture-browser-",
@@ -3351,10 +3351,10 @@
               "courseId": "course-playwright-mastery",
               "slug": "playwright-architecture-browser-contexts",
               "title": "Playwright Architecture & Browser Contexts",
-              "summary": "Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.",
+              "summary": "Turn 2 fresh updated context: Multi-context browser partitioning.",
               "shortDescription": "Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.",
               "contentType": "html",
-              "contentHtml": "<div class=\"standard-lesson-container\">\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">It eliminates test flakiness by design through built-in actionability checks, isolated browser contexts, and bidirectional WebSocket communication.</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><span style=\"color: #047857;\"><strong>Testing Application: </strong></span>Enterprise web automation, single-page application (React, Angular, Vue) validation, API testing, and visual regression suites.</p>\n\n<h2 id=\"1-learning-objectives\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">1. Learning Objectives</h2>\n<ul class=\"list-disc pl-6 space-y-1.5 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\">Master the core architecture: Browser -&gt; BrowserContext -&gt; Page.</li>\n  <li class=\"leading-relaxed\">Understand how Playwright auto-waiting performs 5-point actionability checks.</li>\n  <li class=\"leading-relaxed\">Implement multi-role, locator-first queries recommended by modern testing standards.</li>\n  <li class=\"leading-relaxed\">Leverage Playwright Trace Viewer to debug failures with zero guesswork.</li>\n</ul>\n\n<h2 id=\"2-detailed-concept-explanation\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">2. Detailed Concept Explanation</h2>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">Unlike Selenium HTTP request-response polling, Playwright establishes a persistent &lt;strong&gt;bidirectional WebSocket connection&lt;/strong&gt; with the browser engine (Chromium, WebKit, Firefox).</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">This direct communication enables instantaneous event listening (network requests, console logs, DOM mutations) and built-in auto-waiting: before clicking an element, Playwright automatically ensures it is attached, visible, stable, enabled, and receiving pointer events.</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><span style=\"color: #047857;\"><strong>Core Principle: </strong></span>SDETs test multi-user scenarios (e.g. buyer and seller interacting simultaneously) in a single test script by launching two lightweight BrowserContexts in parallel.</p>\n\n<div class=\"overflow-x-auto my-6 rounded-xl border border-slate-200 dark:border-neutral-800\">\n  <table class=\"w-full text-left border-collapse text-xs bg-slate-50/50 dark:bg-neutral-950/60\">\n    <thead>\n      <tr class=\"border-b border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-neutral-900\">\n        <th class=\"px-4 py-3 text-left font-bold text-slate-900 dark:\">Terminology</th>\n        <th class=\"px-4 py-3 text-left font-bold text-slate-900 dark:\">Definition</th>\n      </tr>\n    </thead>\n    <tbody class=\"divide-y divide-slate-200 dark:divide-neutral-800\">\n      <tr><td class=\"px-4 py-3 font-semibold text-slate-900 dark: whitespace-nowrap\">BrowserContext</td><td class=\"px-4 py-3 text-slate-800 dark: leading-relaxed\">An isolated incognito-like session with independent cookies, cache, and localStorage that boots in milliseconds.</td></tr>\n      <tr><td class=\"px-4 py-3 font-semibold text-slate-900 dark: whitespace-nowrap\">Actionability Checks</td><td class=\"px-4 py-3 text-slate-800 dark: leading-relaxed\">Automatic verification that an element is visible, stable, enabled, and interactable before dispatching actions.</td></tr>\n      <tr><td class=\"px-4 py-3 font-semibold text-slate-900 dark: whitespace-nowrap\">Trace Viewer</td><td class=\"px-4 py-3 text-slate-800 dark: leading-relaxed\">A deep GUI inspector capturing DOM snapshots, action timelines, network watermarks, and console logs per test.</td></tr>\n    </tbody>\n  </table>\n</div>\n\n<h2 id=\"3-architecture-and-execution-mechanics\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">3. Architecture &amp; Execution Mechanics</h2>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">Commands send JSON-RPC messages over a persistent WebSocket; the browser engine returns instantaneous promises upon DOM actionability.</p>\n\n<ol class=\"list-decimal pl-6 space-y-2 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\"><strong>Context Creation:</strong> Browser boots once; each test receives a brand new BrowserContext in &lt;10ms.</li>\n  <li class=\"leading-relaxed\"><strong>Actionability Verification:</strong> Playwright verifies element is attached, visible, stable (no animation), enabled, and un-obscured.</li>\n  <li class=\"leading-relaxed\"><strong>Atomic Execution:</strong> Action dispatches natively into browser event loop.</li>\n  <li class=\"leading-relaxed\"><strong>Automatic Trace Recording:</strong> Snapshots captured before and after each action for instant post-mortem analysis.</li>\n</ol>\n\n<h2 id=\"5-production-implementation-code\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">5. Production Implementation Code</h2>\n\n<p class=\"text-xs font-mono font-bold text-slate-500 dark: mt-4 mb-2\">e2e-enterprise.spec.ts (typescript)</p>\n<div class=\"my-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-[#0d1117] overflow-hidden text-xs font-mono\">\n  <pre class=\"p-4 text-[#81FF89] overflow-x-auto leading-relaxed\"><code class=\"language-typescript\">import { test, expect } from &#039;@playwright/test&#039;;\n\ntest.describe(&#039;Enterprise Playwright Order Flow&#039;, () =&gt; {\n  test(&#039;completes checkout with network mocking and state verification&#039;, async ({ page }) =&gt; {\n    // 1. Mock external payment gateway\n    await page.route(&#039;**/api/v1/payments&#039;, async (route) =&gt; {\n      await route.fulfill({\n        status: 200,\n        contentType: &#039;application/json&#039;,\n        body: JSON.stringify({ status: &#039;APPROVED&#039;, transactionId: &#039;TXN-9988-OK&#039; }),\n      });\n    });\n\n    // 2. Navigate and leverage locator-first queries\n    await page.goto(&#039;/catalog&#039;);\n    await page.getByRole(&#039;button&#039;, { name: &#039;Add to Cart&#039; }).first().click();\n    \n    // 3. Auto-waiting handles modal opening without arbitrary sleeps\n    await page.getByRole(&#039;link&#039;, { name: &#039;Cart&#039; }).click();\n    await page.getByRole(&#039;button&#039;, { name: &#039;Confirm Purchase&#039; }).click();\n\n    // 4. Web-first assertion auto-retries until condition succeeds\n    await expect(page.getByTestId(&#039;confirmation-banner&#039;)).toHaveText(/Order #.*Placed Successfully/);\n  });\n});</code></pre>\n</div>\n<p class=\"text-xs text-slate-600 dark: my-2 leading-relaxed\">Features network route interception, getByRole locators, auto-waiting actions, and web-first regex assertions.</p>\n\n<h2 id=\"6-real-world-qa-use-cases\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">6. Real-World QA Use Cases</h2>\n<ul class=\"list-disc pl-6 space-y-2 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\"><strong>Parallel Matrix CI Pipeline:</strong> Running 300 tests across Chromium, Firefox, and WebKit on 8 parallel workers in under 3 minutes. — <em>GitHub Actions matrix workflow with sharding (--shard=1/4) and automated Allure + Trace Viewer artifact publishing.</em></li>\n</ul>\n\n<h2 id=\"7-common-pitfalls-and-mitigation-strategies\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">7. Common Pitfalls and Mitigation Strategies</h2>\n<div class=\"space-y-4 my-4\">\n  \n    <div class=\"p-4 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2\">\n      <p class=\"font-bold font-mono text-red-600 dark:text-red-400\">⚠️ Error: Error: strict mode violation: locator(&quot;button&quot;) resolved to 3 elements</p>\n      <p class=\"text-slate-900 dark:\"><strong>Root Cause:</strong> Locator query matched multiple elements on page; Playwright enforces strictness to prevent accidental interaction.</p>\n      <ul class=\"list-disc pl-5 space-y-1 text-slate-800 dark:\"><li>Narrow locator using role, accessible name, or text filter: page.getByRole(&quot;button&quot;, { name: &quot;Submit&quot; }).</li><li>Use .first(), .last(), or .nth(i) if multiple identical elements are intended.</li><li>Filter by child locator: page.locator(&quot;.card&quot;).filter({ hasText: &quot;Plan Pro&quot; }).getByRole(&quot;button&quot;).</li></ul>\n      <pre class=\"p-3 rounded-lg bg-neutral-900 text-[#81FF89] font-mono text-[11px] overflow-x-auto my-2\"><code>// Fixed: Unique role-based locator\nawait page.getByRole(&#039;button&#039;, { name: &#039;Submit Payment&#039; }).click();</code></pre>\n    </div>\n    \n</div>\n\n<h2 id=\"8-enterprise-best-practices\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">8. Enterprise Best Practices</h2>\n<ul class=\"list-disc pl-6 space-y-2 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\"><strong>Use User-Facing Locators (Role &amp; Label) (Industry Standard):</strong> Prioritize getByRole(), getByLabel(), and getByText() over brittle CSS selectors or deep XPaths.</li>\n  <li class=\"leading-relaxed\"><strong>Trace on First Retry in CI (Maintainability):</strong> Configure trace: &quot;on-first-retry&quot; in playwright.config.ts to keep passing CI runs fast while debugging failed tests.</li>\n</ul>\n\n<h2 id=\"9-key-takeaways-summary\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">9. Key Takeaways &amp; Summary</h2>\n\n<ul class=\"list-disc pl-6 space-y-1.5 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\">Playwright communicates over persistent WebSockets directly to browser engines.</li>\n  <li class=\"leading-relaxed\">BrowserContexts enable fast, state-isolated tests in parallel.</li>\n  <li class=\"leading-relaxed\">Auto-waiting and Web-First assertions eliminate static waits entirely.</li>\n</ul>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><strong>Next Steps:</strong> Proceed to Module 2 to set up your project structure and configure playwright.config.ts.</p>\n\n<h2 id=\"10-top-interview-questions-answers\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">10. Top Interview Questions &amp; Answers</h2>\n\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><strong>Q1 (Intermediate): What is the 5-point Actionability Check performed before Playwright clicks an element?</strong></p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark: pl-4 border-l-2 border-emerald-500/40\">Before dispatching a click, Playwright ensures: 1) Attached to DOM, 2) Visible in viewport, 3) Stable (not animating or transitioning), 4) Enabled (not disabled), 5) Receives pointer events (not obscured by an overlay, modal, or toast).</p>\n\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><strong>Q2 (Architect-Level): How does Playwright BrowserContext achieve 10x faster test isolation than Selenium new browser sessions?</strong></p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark: pl-4 border-l-2 border-emerald-500/40\">Selenium launches a complete native OS browser process for every test (or requires extensive cookie-clearing logic). Playwright boots a single browser process and spawns lightweight BrowserContexts using isolated in-memory storage, cache, and cookie jars (equivalent to an incognito window), spinning up in under 10 milliseconds.</p>\n\n</div>",
+              "contentHtml": "\n      <h2>Playwright Modern Trace Viewer v2026</h2>\n      <p>The revised Playwright architecture now supports live DOM snapshots and network timeline scrubbing with zero flaky retries.</p>\n    ",
               "blockData": {
                 "standardData": {
                   "overview": {
@@ -3571,7 +3571,7 @@
               "status": "published",
               "publishedAt": "2026-11-23T00:00:00.000Z",
               "createdAt": "2026-11-23T00:00:00.000Z",
-              "updatedAt": "2026-11-23T00:00:00.000Z"
+              "updatedAt": "2026-11-26T04:44:50.037Z"
             },
             {
               "id": "les-playwright-mastery-1-2-what-is-playwright",
@@ -72773,7 +72773,7 @@
       "sortOrder": 7,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-24T00:00:00.000Z",
+      "updatedAt": "2026-11-26T04:44:49.653Z",
       "modules": [
         {
           "id": "mod-cicd-1-git",
@@ -72784,7 +72784,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-24T00:00:00.000Z",
+          "updatedAt": "2026-11-26T04:44:49.653Z",
           "lessons": [
             {
               "id": "les-git-1-1-what-is-git",
@@ -78809,6 +78809,269 @@
               "publishedAt": "2026-11-23T00:00:00.000Z",
               "createdAt": "2026-11-23T00:00:00.000Z",
               "updatedAt": "2026-11-23T00:00:00.000Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795667551596",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "\n      <h2>Kubernetes Container Testing for SDETs</h2>\n      <p>Testcontainers allow spinning up ephemeral PostgreSQL and Redis instances inside test runner pods.</p>\n    ",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795667551596",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:32:31.596Z",
+              "updatedAt": "2026-11-26T04:32:31.596Z"
+            },
+            {
+              "title": "Ephemeral Lesson To Be Deleted",
+              "slug": "temp-delete-1795667553157",
+              "contentHtml": "<p>Delete me soon.</p>",
+              "status": "published",
+              "id": "les-temp-delete-1795667553157",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:32:33.157Z",
+              "updatedAt": "2026-11-26T04:32:33.157Z"
+            },
+            {
+              "title": "Reconciliation Repair Test Lesson",
+              "slug": "recon-test-1795667553496",
+              "contentHtml": "<p>Reconciliation must find and index this.</p>",
+              "status": "published",
+              "id": "les-recon-test-1795667553496",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:32:33.496Z",
+              "updatedAt": "2026-11-26T04:32:33.496Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795667587628",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "\n      <h2>Kubernetes Container Testing for SDETs</h2>\n      <p>Testcontainers allow spinning up ephemeral PostgreSQL and Redis instances inside test runner pods.</p>\n    ",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795667587628",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:33:07.628Z",
+              "updatedAt": "2026-11-26T04:33:07.628Z"
+            },
+            {
+              "title": "Ephemeral Lesson To Be Deleted",
+              "slug": "temp-delete-1795667588182",
+              "contentHtml": "<p>Delete me soon.</p>",
+              "status": "published",
+              "id": "les-temp-delete-1795667588182",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:33:08.182Z",
+              "updatedAt": "2026-11-26T04:33:08.182Z"
+            },
+            {
+              "title": "Reconciliation Repair Test Lesson",
+              "slug": "recon-test-1795667588340",
+              "contentHtml": "<p>Reconciliation must find and index this.</p>",
+              "status": "published",
+              "id": "les-recon-test-1795667588340",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:33:08.340Z",
+              "updatedAt": "2026-11-26T04:33:08.340Z"
+            },
+            {
+              "title": "Ephemeral Lesson To Be Deleted",
+              "slug": "temp-delete-1795667685123",
+              "contentHtml": "<p>Delete me soon.</p>",
+              "status": "published",
+              "id": "les-temp-delete-1795667685123",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:34:45.123Z",
+              "updatedAt": "2026-11-26T04:34:45.123Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795667702777",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "\n      <h2>Kubernetes Container Testing for SDETs</h2>\n      <p>Testcontainers allow spinning up ephemeral PostgreSQL and Redis instances inside test runner pods.</p>\n    ",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795667702777",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:35:02.777Z",
+              "updatedAt": "2026-11-26T04:35:02.777Z"
+            },
+            {
+              "title": "Ephemeral Lesson To Be Deleted",
+              "slug": "temp-delete-1795667703372",
+              "contentHtml": "<p>Delete me soon.</p>",
+              "status": "published",
+              "id": "les-temp-delete-1795667703372",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:35:03.372Z",
+              "updatedAt": "2026-11-26T04:35:03.372Z"
+            },
+            {
+              "title": "Reconciliation Repair Test Lesson",
+              "slug": "recon-test-1795667703520",
+              "contentHtml": "<p>Reconciliation must find and index this.</p>",
+              "status": "published",
+              "id": "les-recon-test-1795667703520",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:35:03.520Z",
+              "updatedAt": "2026-11-26T04:35:03.520Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795667740239",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "<h2>Kubernetes Container Testing</h2><p>Testcontainers</p>",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795667740239",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:35:40.240Z",
+              "updatedAt": "2026-11-26T04:35:40.240Z"
+            },
+            {
+              "title": "Ephemeral Lesson To Be Deleted",
+              "slug": "temp-delete-1795667740686",
+              "contentHtml": "<p>Delete me soon.</p>",
+              "status": "published",
+              "id": "les-temp-delete-1795667740686",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:35:40.686Z",
+              "updatedAt": "2026-11-26T04:35:40.686Z"
+            },
+            {
+              "title": "Ephemeral Lesson To Be Deleted",
+              "slug": "temp-delete-1795667778937",
+              "contentHtml": "<p>Delete me soon.</p>",
+              "status": "published",
+              "id": "les-temp-delete-1795667778937",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:36:18.937Z",
+              "updatedAt": "2026-11-26T04:36:18.937Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795667853404",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "\n      <h2>Kubernetes Container Testing for SDETs</h2>\n      <p>Testcontainers allow spinning up ephemeral PostgreSQL and Redis instances inside test runner pods.</p>\n    ",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795667853404",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:37:33.405Z",
+              "updatedAt": "2026-11-26T04:37:33.405Z"
+            },
+            {
+              "title": "Reconciliation Repair Test Lesson",
+              "slug": "recon-test-1795667855388",
+              "contentHtml": "<p>Reconciliation must find and index this.</p>",
+              "status": "published",
+              "id": "les-recon-test-1795667855388",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:37:35.388Z",
+              "updatedAt": "2026-11-26T04:37:35.388Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795668095310",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "\n      <h2>Kubernetes Container Testing for SDETs</h2>\n      <p>Testcontainers allow spinning up ephemeral PostgreSQL and Redis instances inside test runner pods.</p>\n    ",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795668095310",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:41:35.310Z",
+              "updatedAt": "2026-11-26T04:41:35.310Z"
+            },
+            {
+              "title": "Reconciliation Repair Test Lesson",
+              "slug": "recon-test-1795668096269",
+              "contentHtml": "<p>Reconciliation must find and index this.</p>",
+              "status": "published",
+              "id": "les-recon-test-1795668096269",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:41:36.269Z",
+              "updatedAt": "2026-11-26T04:41:36.269Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795668240498",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "\n      <h2>Kubernetes Container Testing for SDETs</h2>\n      <p>Testcontainers allow spinning up ephemeral PostgreSQL and Redis instances inside test runner pods.</p>\n    ",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795668240498",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:44:00.498Z",
+              "updatedAt": "2026-11-26T04:44:00.498Z"
+            },
+            {
+              "title": "Reconciliation Repair Test Lesson",
+              "slug": "recon-test-1795668248227",
+              "contentHtml": "<p>Reconciliation must find and index this.</p>",
+              "status": "published",
+              "id": "les-recon-test-1795668248227",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:44:08.227Z",
+              "updatedAt": "2026-11-26T04:44:08.227Z"
+            },
+            {
+              "title": "Containerized Testing with Testcontainers",
+              "slug": "testcontainers-qa-1795668287600",
+              "summary": "Ephemeral test container isolation.",
+              "contentHtml": "\n      <h2>Kubernetes Container Testing for SDETs</h2>\n      <p>Testcontainers allow spinning up ephemeral PostgreSQL and Redis instances inside test runner pods.</p>\n    ",
+              "wordCount": 120,
+              "estimatedReadTime": 2,
+              "sortOrder": 99,
+              "status": "published",
+              "id": "les-testcontainers-qa-1795668287600",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:44:47.600Z",
+              "updatedAt": "2026-11-26T04:44:47.600Z"
+            },
+            {
+              "title": "Reconciliation Repair Test Lesson",
+              "slug": "recon-test-1795668289653",
+              "contentHtml": "<p>Reconciliation must find and index this.</p>",
+              "status": "published",
+              "id": "les-recon-test-1795668289653",
+              "courseId": "course-cicd-concepts",
+              "moduleId": "mod-cicd-1-git",
+              "createdAt": "2026-11-26T04:44:49.653Z",
+              "updatedAt": "2026-11-26T04:44:49.653Z"
             }
           ]
         },

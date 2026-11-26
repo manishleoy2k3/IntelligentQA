@@ -1,3 +1,7 @@
+process.env.NODE_ENV = 'test';
+process.env.ALLOW_MOCK_EMBEDDINGS = 'true';
+process.env.ALLOW_LOCAL_STORAGE_FALLBACK = 'true';
+
 const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
@@ -43,10 +47,16 @@ test('2. CRUD for Courses, Modules, and Lessons', async (t) => {
     assert.ok(categories.length >= 11, `Expected at least 11 categories, got ${categories.length}`);
 
     const allCourses = academyStore.getCourses({ includeDrafts: true });
-    assert.ok(allCourses.length >= 9, `Expected at least 9 total courses, got ${allCourses.length}`);
+    assert.ok(
+      allCourses.length >= 9,
+      `Expected at least 9 total courses, got ${allCourses.length}`
+    );
 
     const publishedCourses = academyStore.getCourses();
-    assert.ok(publishedCourses.length >= 8, `Expected at least 8 published courses, got ${publishedCourses.length}`);
+    assert.ok(
+      publishedCourses.length >= 8,
+      `Expected at least 8 published courses, got ${publishedCourses.length}`
+    );
   });
 
   await t.test('retrieves modules and lessons for a specific course', () => {
@@ -64,7 +74,10 @@ test('2. CRUD for Courses, Modules, and Lessons', async (t) => {
     const res = academyStore.getLesson('playwright-architecture-browser-contexts');
     assert.ok(res, 'Lesson result must exist');
     assert.ok(res.lesson, 'res.lesson must exist');
-    assert.ok(res.lesson.contentHtml && res.lesson.contentHtml.length > 50, 'contentHtml must be populated');
+    assert.ok(
+      res.lesson.contentHtml && res.lesson.contentHtml.length > 50,
+      'contentHtml must be populated'
+    );
   });
 });
 
@@ -130,9 +143,15 @@ test('7. Verification of All Exactly 800 Questions and Schema Compliance', async
       assert.ok(q.topic && q.topic.trim().length > 0, `${q.id} missing topic`);
       assert.ok(q.category && q.category.trim().length > 0, `${q.id} missing category`);
       assert.ok(q.difficulty && q.difficulty.trim().length > 0, `${q.id} missing difficulty`);
-      assert.ok(q.answerSummary && q.answerSummary.trim().length > 0, `${q.id} missing answerSummary`);
+      assert.ok(
+        q.answerSummary && q.answerSummary.trim().length > 0,
+        `${q.id} missing answerSummary`
+      );
       assert.ok(q.bestPractice && q.bestPractice.trim().length > 0, `${q.id} missing bestPractice`);
-      assert.ok(q.pitfallToAvoid && q.pitfallToAvoid.trim().length > 0, `${q.id} missing pitfallToAvoid`);
+      assert.ok(
+        q.pitfallToAvoid && q.pitfallToAvoid.trim().length > 0,
+        `${q.id} missing pitfallToAvoid`
+      );
 
       const parsed = InterviewQuestionSchema.safeParse({
         id: q.id,
@@ -152,7 +171,11 @@ test('7. Verification of All Exactly 800 Questions and Schema Compliance', async
         status: 'published',
       });
 
-      assert.strictEqual(parsed.success, true, `Zod validation failed for ${q.id}: ${JSON.stringify(parsed.error?.format())}`);
+      assert.strictEqual(
+        parsed.success,
+        true,
+        `Zod validation failed for ${q.id}: ${JSON.stringify(parsed.error?.format())}`
+      );
     });
     assert.strictEqual(ids.size, 800);
   });

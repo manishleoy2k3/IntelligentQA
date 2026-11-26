@@ -11,3 +11,4 @@ __pycache__
 public
 package-lock.json
 src/lib/curriculum-data-store.json
+src/lib/curriculum-rag-store.json

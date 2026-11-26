@@ -79,7 +79,12 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       {
         sheetName: 'TestMatrix',
         rowNumber: 2,
-        cells: ['TC_201', 'Verify password reset link sends email', 'Click forgot password', 'Email received with valid reset token'],
+        cells: [
+          'TC_201',
+          'Verify password reset link sends email',
+          'Click forgot password',
+          'Email received with valid reset token',
+        ],
       },
     ];
 
@@ -97,10 +102,18 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
   it('TEST 3: Requirements uploaded as .xls + test cases uploaded as .xls', () => {
     // Legacy tabular text/csv lines fallback inside .xls
     const reqRows = [
-      { sheetName: 'Sheet1', rowNumber: 1, cells: ['REQ_301', 'Admin user can delete inactive accounts'] },
+      {
+        sheetName: 'Sheet1',
+        rowNumber: 1,
+        cells: ['REQ_301', 'Admin user can delete inactive accounts'],
+      },
     ];
     const tcRows = [
-      { sheetName: 'Sheet1', rowNumber: 1, cells: ['TC_301', 'Verify admin account deletion with confirmation prompt'] },
+      {
+        sheetName: 'Sheet1',
+        rowNumber: 1,
+        cells: ['TC_301', 'Verify admin account deletion with confirmation prompt'],
+      },
     ];
 
     const reqs = extractRequirementsFromExcelRows(reqRows, 'Legacy.xls');
@@ -125,11 +138,19 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
 
   it('TEST 5: Requirements uploaded as .json + test cases uploaded as .json', () => {
     const jsonReq = JSON.stringify([
-      { requirementId: 'REQ_501', description: 'Search products by SKU or title', priority: 'Medium' },
+      {
+        requirementId: 'REQ_501',
+        description: 'Search products by SKU or title',
+        priority: 'Medium',
+      },
     ]);
     const jsonTc = JSON.stringify({
       testCases: [
-        { testCaseId: 'TC_501', description: 'Search product by valid SKU', expectedResult: 'Matching item returned' },
+        {
+          testCaseId: 'TC_501',
+          description: 'Search product by valid SKU',
+          expectedResult: 'Matching item returned',
+        },
       ],
     });
 
@@ -157,7 +178,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
   });
 
   it('TEST 7: Requirements supplied as a file + test cases supplied as text', async () => {
-    const mdReq = '| ID | Requirement |\n|---|---|\n| REQ_701 | System must auto-logout after 15m inactivity |';
+    const mdReq =
+      '| ID | Requirement |\n|---|---|\n| REQ_701 | System must auto-logout after 15m inactivity |';
     const reqs = parseMarkdownToRequirements(mdReq, 'req.md');
 
     const tcText = 'TC_701: Verify session termination after 15 minutes of zero user input';
@@ -170,8 +192,16 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
 
   it('TEST 8: Multiple worksheets in Excel files (preserves sheet names and rows)', () => {
     const multiSheetRows = [
-      { sheetName: 'CoreBilling', rowNumber: 2, cells: ['REQ_801', 'Generate monthly invoice PDF'] },
-      { sheetName: 'Subscriptions', rowNumber: 2, cells: ['REQ_802', 'Upgrade from Basic to Enterprise tier'] },
+      {
+        sheetName: 'CoreBilling',
+        rowNumber: 2,
+        cells: ['REQ_801', 'Generate monthly invoice PDF'],
+      },
+      {
+        sheetName: 'Subscriptions',
+        rowNumber: 2,
+        cells: ['REQ_802', 'Upgrade from Basic to Enterprise tier'],
+      },
     ];
 
     const reqs = extractRequirementsFromExcelRows(multiSheetRows, 'AllRequirements.xlsx');
@@ -186,7 +216,10 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       'utf8'
     );
     assert.ok(code.includes("['xls', 'xlsx', 'md', 'json']"), 'Enforces supported file extensions');
-    assert.ok(code.includes('Unsupported file'), 'Shows validation error message for unsupported files');
+    assert.ok(
+      code.includes('Unsupported file'),
+      'Shows validation error message for unsupported files'
+    );
   });
 
   it('TEST 10: Corrupted or malformed input files handling', () => {
@@ -197,14 +230,24 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
   });
 
   it('TEST 11: Missing requirements input validation', () => {
-    const result = analyzeCoverageGaps([], [{ testCaseId: 'TC_1', isGeneratedId: false, testCaseDescription: 'Test' }]);
+    const result = analyzeCoverageGaps(
+      [],
+      [{ testCaseId: 'TC_1', isGeneratedId: false, testCaseDescription: 'Test' }]
+    );
     assert.strictEqual(result.summary.totalRequirements, 0);
     assert.strictEqual(result.summary.coveragePercentage, 0);
-    assert.strictEqual(result.orphanTestCases.length, 1, 'Without requirements, all test cases are orphans');
+    assert.strictEqual(
+      result.orphanTestCases.length,
+      1,
+      'Without requirements, all test cases are orphans'
+    );
   });
 
   it('TEST 12: Missing test cases input validation', () => {
-    const result = analyzeCoverageGaps([{ requirementId: 'REQ_1', isGeneratedId: false, requirementDescription: 'Req' }], []);
+    const result = analyzeCoverageGaps(
+      [{ requirementId: 'REQ_1', isGeneratedId: false, requirementDescription: 'Req' }],
+      []
+    );
     assert.strictEqual(result.summary.totalTestCases, 0);
     assert.strictEqual(result.summary.coveragePercentage, 0);
   });
@@ -216,17 +259,25 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
     ];
     const tcs = [{ testCaseId: 'TC_1', isGeneratedId: false, testCaseDescription: 'Some test' }];
     const res = analyzeCoverageGaps(reqs, tcs);
-    assert.ok(res.summary.potentialDuplicateRequirementsCount >= 1, 'Should track duplicate requirements');
+    assert.ok(
+      res.summary.potentialDuplicateRequirementsCount >= 1,
+      'Should track duplicate requirements'
+    );
   });
 
   it('TEST 14: Duplicate test case IDs detected and counted', () => {
-    const reqs = [{ requirementId: 'REQ_1', isGeneratedId: false, requirementDescription: 'Single req' }];
+    const reqs = [
+      { requirementId: 'REQ_1', isGeneratedId: false, requirementDescription: 'Single req' },
+    ];
     const tcs = [
       { testCaseId: 'TC_99', isGeneratedId: false, testCaseDescription: 'Duplicate test desc' },
       { testCaseId: 'TC_99', isGeneratedId: false, testCaseDescription: 'Duplicate test desc' },
     ];
     const res = analyzeCoverageGaps(reqs, tcs);
-    assert.ok(res.summary.potentialDuplicateTestCasesCount >= 1, 'Should track duplicate test cases');
+    assert.ok(
+      res.summary.potentialDuplicateTestCasesCount >= 1,
+      'Should track duplicate test cases'
+    );
   });
 
   it('TEST 15: Requirements without IDs assign generated analysis IDs', () => {
@@ -254,7 +305,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       {
         requirementId: 'REQ_AUTH',
         isGeneratedId: false,
-        requirementDescription: 'User login with credentials and account lockout after failed attempts',
+        requirementDescription:
+          'User login with credentials and account lockout after failed attempts',
       },
     ];
     const tcs = [
@@ -286,7 +338,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       {
         requirementId: 'REQ_INPUT',
         isGeneratedId: false,
-        requirementDescription: 'System shall validate input email address format and reject invalid emails',
+        requirementDescription:
+          'System shall validate input email address format and reject invalid emails',
       },
     ];
     const tcs = [
@@ -300,10 +353,16 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
     ];
 
     const res = analyzeCoverageGaps(reqs, tcs);
-    assert.strictEqual(res.summary.weakCount, 1, 'Should classify as Weak because negative rejection is missing');
+    assert.strictEqual(
+      res.summary.weakCount,
+      1,
+      'Should classify as Weak because negative rejection is missing'
+    );
     assert.strictEqual(res.requirementCoverage[0].coverageLevel, 'Weak');
     assert.ok(
-      res.requirementCoverage[0].improvementRecommendations.some((r) => r.toLowerCase().includes('negative')),
+      res.requirementCoverage[0].improvementRecommendations.some((r) =>
+        r.toLowerCase().includes('negative')
+      ),
       'Should recommend negative test case'
     );
   });
@@ -361,7 +420,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       {
         requirementId: 'REQ_CHECKOUT',
         isGeneratedId: false,
-        requirementDescription: 'E-commerce shopping cart checkout with tax and shipping calculations',
+        requirementDescription:
+          'E-commerce shopping cart checkout with tax and shipping calculations',
       },
     ];
     const tcs = [
@@ -387,14 +447,23 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
 
   it('TEST 22: One test case maps to multiple requirements', () => {
     const reqs = [
-      { requirementId: 'REQ_A', isGeneratedId: false, requirementDescription: 'User account security login' },
-      { requirementId: 'REQ_B', isGeneratedId: false, requirementDescription: 'Audit logging for user account events' },
+      {
+        requirementId: 'REQ_A',
+        isGeneratedId: false,
+        requirementDescription: 'User account security login',
+      },
+      {
+        requirementId: 'REQ_B',
+        isGeneratedId: false,
+        requirementDescription: 'Audit logging for user account events',
+      },
     ];
     const tcs = [
       {
         testCaseId: 'TC_COMBO',
         isGeneratedId: false,
-        testCaseDescription: 'Verify user account security login generates audit logging record for REQ_A and REQ_B',
+        testCaseDescription:
+          'Verify user account security login generates audit logging record for REQ_A and REQ_B',
         testSteps: 'Login to account',
         expectedResults: 'User logged in and audit log entry recorded',
       },
@@ -434,7 +503,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       {
         requirementId: 'REQ_COUPON',
         isGeneratedId: false,
-        requirementDescription: 'Apply promotional coupon code and reject invalid or expired coupon codes',
+        requirementDescription:
+          'Apply promotional coupon code and reject invalid or expired coupon codes',
       },
     ];
     const tcs = [
@@ -457,7 +527,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       {
         requirementId: 'REQ_TRANSFER',
         isGeneratedId: false,
-        requirementDescription: 'Transfer amount must be between minimum $10 and maximum limit $10,000 threshold',
+        requirementDescription:
+          'Transfer amount must be between minimum $10 and maximum limit $10,000 threshold',
       },
     ];
     const tcs = [
@@ -480,7 +551,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
       {
         requirementId: 'REQ_FAST',
         isGeneratedId: false,
-        requirementDescription: 'The user search interface should respond quickly and be user-friendly',
+        requirementDescription:
+          'The user search interface should respond quickly and be user-friendly',
       },
     ];
     const tcs = [
@@ -497,7 +569,9 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
     assert.ok(res.requirementCoverage[0].isAmbiguous);
     assert.ok(res.summary.clarificationNeededCount >= 1);
     assert.ok(
-      res.requirementCoverage[0].improvementRecommendations.some((r) => r.includes('Clarification Need'))
+      res.requirementCoverage[0].improvementRecommendations.some((r) =>
+        r.includes('Clarification Need')
+      )
     );
   });
 
@@ -578,8 +652,16 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
 
   it('TEST 30: Pie chart values match actual requirement counts', () => {
     const reqs = [
-      { requirementId: 'R1', isGeneratedId: false, requirementDescription: 'User login verification' },
-      { requirementId: 'R2', isGeneratedId: false, requirementDescription: 'Third party gateway sync' },
+      {
+        requirementId: 'R1',
+        isGeneratedId: false,
+        requirementDescription: 'User login verification',
+      },
+      {
+        requirementId: 'R2',
+        isGeneratedId: false,
+        requirementDescription: 'Third party gateway sync',
+      },
     ];
     const tcs = [
       {
@@ -641,10 +723,18 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
 
   it('TEST 36: Downloaded workbook contains all 5 required worksheets and valid binary OOXML', () => {
     const reqs = [
-      { requirementId: 'REQ_TEST', isGeneratedId: false, requirementDescription: 'Test Requirement' },
+      {
+        requirementId: 'REQ_TEST',
+        isGeneratedId: false,
+        requirementDescription: 'Test Requirement',
+      },
     ];
     const tcs = [
-      { testCaseId: 'TC_TEST', isGeneratedId: false, testCaseDescription: 'Test Case Description for REQ_TEST' },
+      {
+        testCaseId: 'TC_TEST',
+        isGeneratedId: false,
+        testCaseDescription: 'Test Case Description for REQ_TEST',
+      },
     ];
 
     const analysis = analyzeCoverageGaps(reqs, tcs);
@@ -658,7 +748,10 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
     const raw = decoder.decode(excelBuffer);
 
     assert.ok(raw.includes('Executive Summary'), 'Contains Sheet 1 Executive Summary');
-    assert.ok(raw.includes('Detailed Coverage Report'), 'Contains Sheet 2 Detailed Coverage Report');
+    assert.ok(
+      raw.includes('Detailed Coverage Report'),
+      'Contains Sheet 2 Detailed Coverage Report'
+    );
     assert.ok(raw.includes('Test Case Traceability'), 'Contains Sheet 3 Test Case Traceability');
     assert.ok(raw.includes('Orphan Test Cases'), 'Contains Sheet 4 Orphan Test Cases');
     assert.ok(raw.includes('Scenario Gap Analysis'), 'Contains Sheet 5 Scenario Gap Analysis');
@@ -703,7 +796,8 @@ describe('AGENT 07 — Test Coverage Gap Analysis Engine Verification Suite', ()
     );
     assert.ok(sidebarCode.includes('/interview-griller'), 'Agent 06 Interview Griller is intact');
     assert.ok(
-      sidebarCode.includes('Test Coverage Gap Analysis') || sidebarCode.includes('Coverage Gap Analyzer'),
+      sidebarCode.includes('Test Coverage Gap Analysis') ||
+        sidebarCode.includes('Coverage Gap Analyzer'),
       'Agent 07 is added'
     );
   });

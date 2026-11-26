@@ -14,6 +14,7 @@ import {
   X,
   GraduationCap,
   PanelLeftClose,
+  Database,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -69,6 +70,13 @@ export default function AdminSidebar({
       href: '/admin?section=interviews',
       icon: HelpCircle,
       color: 'text-amber-400',
+    },
+    {
+      id: 'knowledge',
+      name: 'RAG Knowledge Engine',
+      href: '/admin?section=knowledge',
+      icon: Database,
+      color: 'text-purple-400',
     },
     {
       id: 'team',

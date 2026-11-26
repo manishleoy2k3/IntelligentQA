@@ -176,7 +176,9 @@ test('Requirement 5: Target: playwright-ts is strictly hidden on Requirement and
     'Target display is conditioned only on code and audit tabs'
   );
   assert.ok(
-    !workspaceFile.includes('Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD'),
+    !workspaceFile.includes(
+      'Output: <strong className="text-cyan-600 dark:text-cyan-400 font-semibold">Gherkin BDD'
+    ),
     'Output: Gherkin BDD is removed as requested'
   );
   assert.ok(

@@ -39,8 +39,10 @@ import {
   Copy,
   Clock,
   GraduationCap,
+  Database,
 } from 'lucide-react';
 import AcademyAdminConsole from '@/components/admin/academy/academy-admin-console';
+import AdminRAGDashboard from '@/components/admin/rag/admin-rag-dashboard';
 import { QADatabase } from '@/lib/qa-db';
 import { Track, Lesson, ModerationItem, UserProfile, InterviewQuestionItem } from '@/types/qa';
 import {
@@ -67,7 +69,8 @@ import {
 import { getLessonDoc, LessonDoc } from '@/lib/qa-learning-docs';
 import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
 
-type AdminSection = 'overview' | 'academy' | 'labs' | 'agents' | 'interviews' | 'team';
+type AdminSection =
+  'overview' | 'academy' | 'labs' | 'agents' | 'interviews' | 'team' | 'knowledge';
 
 function AdminDashboardContent() {
   const router = useRouter();
@@ -78,7 +81,8 @@ function AdminDashboardContent() {
     rawSection === 'labs' ||
     rawSection === 'agents' ||
     rawSection === 'interviews' ||
-    rawSection === 'team'
+    rawSection === 'team' ||
+    rawSection === 'knowledge'
       ? rawSection
       : 'overview';
 
@@ -885,6 +889,7 @@ function AdminDashboardContent() {
               count: interviewQuestions.length,
             },
             { id: 'team', label: 'Admin Team & RBAC', icon: Users, count: adminEmails.length },
+            { id: 'knowledge', label: 'RAG Knowledge Engine', icon: Database },
           ].map((tab) => {
             const Icon = tab.icon;
             const isTabActive = activeSection === tab.id;
@@ -1685,6 +1690,15 @@ function AdminDashboardContent() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* VIEW 7: RAG KNOWLEDGE ENGINE & FRESHNESS MONITOR                   */}
+        {/* =================================================================== */}
+        {activeSection === 'knowledge' && (
+          <div className="space-y-6 animate-in fade-in duration-150">
+            <AdminRAGDashboard />
           </div>
         )}
 

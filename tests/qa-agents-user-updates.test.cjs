@@ -79,10 +79,7 @@ test('Requirement 4: Output: QA Test Matrix is removed', () => {
     'utf8'
   );
 
-  assert.ok(
-    !workspaceFile.includes('Output:'),
-    'Output indicator label is completely removed'
-  );
+  assert.ok(!workspaceFile.includes('Output:'), 'Output indicator label is completely removed');
   assert.ok(
     !workspaceFile.includes('QA Test Matrix</strong>'),
     'Output: QA Test Matrix badge is removed'
@@ -150,7 +147,7 @@ test('Requirement 8: Dedicated COPY dropdown with As Markdown(.md) and As JSON(.
 
   // COPY dropdown button exists
   assert.ok(
-    workspaceFile.includes('<span>{copied ? \'COPIED!\' : \'COPY\'}</span>'),
+    workspaceFile.includes("<span>{copied ? 'COPIED!' : 'COPY'}</span>"),
     'COPY button exists in workspace'
   );
   assert.ok(workspaceFile.includes('showCopyDropdown'), 'Has showCopyDropdown state');
@@ -179,7 +176,10 @@ test('Requirement 9: Cancel option left to Generate button on All QA Agents', ()
 
   // Cancel button for QA Generation agents
   assert.ok(workspaceFile.includes('handleCancel'), 'Has handleCancel handler');
-  assert.ok(workspaceFile.includes('abortControllerRef'), 'Has abortControllerRef for cancelling requests');
+  assert.ok(
+    workspaceFile.includes('abortControllerRef'),
+    'Has abortControllerRef for cancelling requests'
+  );
   assert.ok(
     workspaceFile.includes('title="Cancel generation or clear input"'),
     'Has Cancel button for QA Generation agents'

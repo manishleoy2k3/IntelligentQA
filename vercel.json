@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/rag-sync",
+      "schedule": "0 * * * *"
+    }
+  ],
+  "functions": {
+    "src/app/api/cron/rag-sync/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/admin/rag/reconcile/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/admin/rag/index/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

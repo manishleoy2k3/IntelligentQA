@@ -28,6 +28,7 @@ import AuthGuard from '@/components/auth/auth-guard';
 import { parseRequirementsFile } from '@/lib/file-parser';
 import { generateExcelWorkbookXml } from '@/lib/excel-export';
 import FormattedInterviewAnswer from '@/components/ui/formatted-interview-answer';
+import InterviewPracticePanel from '@/components/interview/interview-practice-panel';
 
 export default function InterviewQuestionsPage() {
   const [questions, setQuestions] = useState<InterviewQuestionItem[]>([]);
@@ -38,6 +39,7 @@ export default function InterviewQuestionsPage() {
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
   const [showOnlyBookmarks, setShowOnlyBookmarks] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'learn' | 'practice'>('learn');
 
   // Pagination & Display Limit for fast 60fps rendering of 500+ items
   const [displayLimit, setDisplayLimit] = useState(24);
@@ -433,6 +435,31 @@ export default function InterviewQuestionsPage() {
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Mode Switcher: Learn Mode vs Practice Mode */}
+            <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => setViewMode('learn')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                  viewMode === 'learn'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                Learn Mode
+              </button>
+              <button
+                onClick={() => setViewMode('practice')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
+                  viewMode === 'practice'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Sparkles className="w-3 h-3 text-purple-300" />
+                <span>Practice Mode (AI)</span>
+              </button>
+            </div>
+
             {/* Semantic anchor for test suite compatibility */}
             <span className="hidden sr-only">
               <button onClick={() => setShowImportModal(true)}>
@@ -455,306 +482,317 @@ export default function InterviewQuestionsPage() {
           </div>
         </div>
 
-        {/* Filter & Search Toolbar */}
-        <div className="flex flex-col gap-3.5 bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex flex-col md:flex-row items-center gap-3">
-            <div className="relative flex-1 w-full">
-              <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search 800+ questions by keyword, topic, or error name (e.g. StaleElement, Flakiness, Sharding, Architect)..."
-                className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm sm:text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+        {viewMode === 'practice' ? (
+          <InterviewPracticePanel
+            questions={filteredQuestions}
+            onExitPractice={() => setViewMode('learn')}
+          />
+        ) : (
+          <>
+            {/* Filter & Search Toolbar */}
+            <div className="flex flex-col gap-3.5 bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex flex-col md:flex-row items-center gap-3">
+                <div className="relative flex-1 w-full">
+                  <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search 800+ questions by keyword, topic, or error name (e.g. StaleElement, Flakiness, Sharding, Architect)..."
+                    className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm sm:text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                {/* Tech Selector */}
+                <select
+                  value={selectedTech}
+                  onChange={(e) => setSelectedTech(e.target.value)}
+                  className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
+                >
+                  <option value="All">All Tech Stacks (800+ Questions)</option>
+                  <option value="Playwright">Playwright &amp; TypeScript</option>
+                  <option value="Selenium">Selenium &amp; Java</option>
+                  <option value="API Testing">API Testing &amp; REST Assured</option>
+                  <option value="Manual QA">Manual QA &amp; Methodologies</option>
+                  <option value="Appium">Mobile &amp; Appium</option>
+                  <option value="CI/CD">CI/CD &amp; Docker</option>
+                  <option value="Reporting">Reporting &amp; Observability</option>
+                  <option value="DSA for SDET">DSA for SDET</option>
+                  <option value="AI & LLM">AI &amp; LLM in QA</option>
+                  <option value="Framework Design">Framework Design</option>
+                </select>
+
+                {/* Experience Level Selector */}
+                <select
+                  value={selectedExpLevel}
+                  onChange={(e) => setSelectedExpLevel(e.target.value)}
+                  className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
+                >
+                  <option value="All">All Experience Levels</option>
+                  <option value="Junior">Junior QA / SDET (0-2 Yrs)</option>
+                  <option value="Mid">Mid SDET (2-5 Yrs)</option>
+                  <option value="Senior">Senior SDET (5-8 Yrs)</option>
+                  <option value="Architect">Test Architect (8+ Yrs)</option>
+                </select>
+
+                {/* Difficulty Selector */}
+                <select
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value)}
+                  className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
+                >
+                  <option value="All">All Modes (Easy → Med → Hard)</option>
+                  <option value="Easy">Easy Mode</option>
+                  <option value="Medium">Medium Mode</option>
+                  <option value="Hard">Hard Mode</option>
+                  <option value="Architect">Test Architect Mode</option>
+                </select>
+              </div>
+
+              {/* Progressive Difficulty Switcher Tabs / Pills */}
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex-wrap">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1">
+                  <Filter className="w-3.5 h-3.5" />
+                  <span>Difficulty Mode:</span>
+                </span>
+                <button
+                  onClick={() => setSelectedDifficulty('All')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedDifficulty === 'All'
+                      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <span>All Modes ({levelMatchedQuestions.length})</span>
+                </button>
+                <button
+                  onClick={() => setSelectedDifficulty('Easy')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedDifficulty === 'Easy'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <span>Easy ({countEasy})</span>
+                </button>
+                <button
+                  onClick={() => setSelectedDifficulty('Medium')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedDifficulty === 'Medium'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
+                  <span>Medium ({countMedium})</span>
+                </button>
+                <button
+                  onClick={() => setSelectedDifficulty('Hard')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedDifficulty === 'Hard'
+                      ? 'bg-rose-600 text-white shadow-xs'
+                      : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-200 dark:border-rose-800'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                  <span>Hard ({countHard})</span>
+                </button>
+                {countArchitect > 0 && (
+                  <button
+                    onClick={() => setSelectedDifficulty('Architect')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      selectedDifficulty === 'Architect'
+                        ? 'bg-purple-600 text-white shadow-xs'
+                        : 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800'
+                    }`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                    <span>Architect ({countArchitect})</span>
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* Tech Selector */}
-            <select
-              value={selectedTech}
-              onChange={(e) => setSelectedTech(e.target.value)}
-              className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
-            >
-              <option value="All">All Tech Stacks (800+ Questions)</option>
-              <option value="Playwright">Playwright &amp; TypeScript</option>
-              <option value="Selenium">Selenium &amp; Java</option>
-              <option value="API Testing">API Testing &amp; REST Assured</option>
-              <option value="Manual QA">Manual QA &amp; Methodologies</option>
-              <option value="Appium">Mobile &amp; Appium</option>
-              <option value="CI/CD">CI/CD &amp; Docker</option>
-              <option value="Reporting">Reporting &amp; Observability</option>
-              <option value="DSA for SDET">DSA for SDET</option>
-              <option value="AI & LLM">AI &amp; LLM in QA</option>
-              <option value="Framework Design">Framework Design</option>
-            </select>
-
-            {/* Experience Level Selector */}
-            <select
-              value={selectedExpLevel}
-              onChange={(e) => setSelectedExpLevel(e.target.value)}
-              className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
-            >
-              <option value="All">All Experience Levels</option>
-              <option value="Junior">Junior QA / SDET (0-2 Yrs)</option>
-              <option value="Mid">Mid SDET (2-5 Yrs)</option>
-              <option value="Senior">Senior SDET (5-8 Yrs)</option>
-              <option value="Architect">Test Architect (8+ Yrs)</option>
-            </select>
-
-            {/* Difficulty Selector */}
-            <select
-              value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="w-full md:w-auto px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-200 cursor-pointer"
-            >
-              <option value="All">All Modes (Easy → Med → Hard)</option>
-              <option value="Easy">Easy Mode</option>
-              <option value="Medium">Medium Mode</option>
-              <option value="Hard">Hard Mode</option>
-              <option value="Architect">Test Architect Mode</option>
-            </select>
-          </div>
-
-          {/* Progressive Difficulty Switcher Tabs / Pills */}
-          <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex-wrap">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" />
-              <span>Difficulty Mode:</span>
-            </span>
-            <button
-              onClick={() => setSelectedDifficulty('All')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                selectedDifficulty === 'All'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-              }`}
-            >
-              <span>All Modes ({levelMatchedQuestions.length})</span>
-            </button>
-            <button
-              onClick={() => setSelectedDifficulty('Easy')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                selectedDifficulty === 'Easy'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-              <span>Easy ({countEasy})</span>
-            </button>
-            <button
-              onClick={() => setSelectedDifficulty('Medium')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                selectedDifficulty === 'Medium'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
-              <span>Medium ({countMedium})</span>
-            </button>
-            <button
-              onClick={() => setSelectedDifficulty('Hard')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                selectedDifficulty === 'Hard'
-                  ? 'bg-rose-600 text-white shadow-xs'
-                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-200 dark:border-rose-800'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-              <span>Hard ({countHard})</span>
-            </button>
-            {countArchitect > 0 && (
-              <button
-                onClick={() => setSelectedDifficulty('Architect')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  selectedDifficulty === 'Architect'
-                    ? 'bg-purple-600 text-white shadow-xs'
-                    : 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800'
-                }`}
-              >
-                <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-                <span>Architect ({countArchitect})</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Results Count & Active Filter Pills */}
-        <div className="flex items-center justify-between text-xs text-slate-500 px-1 flex-wrap gap-2">
-          <div className="flex items-center gap-2">
-            <span>
-              Showing <strong>{displayedQuestions.length}</strong> of{' '}
-              <strong>{filteredQuestions.length}</strong> matching questions (Total Bank:{' '}
-              <strong>{questions.length}</strong>)
-            </span>
-            {(selectedTech !== 'All' ||
-              selectedExpLevel !== 'All' ||
-              selectedDifficulty !== 'All' ||
-              searchTerm ||
-              showOnlyBookmarks) && (
-              <button
-                onClick={() => {
-                  setSelectedTech('All');
-                  setSelectedExpLevel('All');
-                  setSelectedDifficulty('All');
-                  setSearchTerm('');
-                  setShowOnlyBookmarks(false);
-                }}
-                className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold ml-2 cursor-pointer"
-              >
-                Clear all filters
-              </button>
-            )}
-          </div>
-          {selectedExpLevel === 'Architect' && (
-            <span className="text-purple-600 dark:text-purple-400 font-semibold bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
-              ● High-Level Test Architecture Focus
-            </span>
-          )}
-        </div>
-
-        {/* Questions Grid */}
-        <div className="flex flex-col space-y-6">
-          {displayedQuestions.map((item) => {
-            const isBookmarked = bookmarkedIds.includes(item.id);
-            return (
-              <div
-                key={item.id}
-                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-sm flex flex-col justify-between space-y-5 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
-              >
-                <div className="space-y-3.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                        {item.technology}
-                      </span>
-                      {item.experienceLevel && (
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                          {item.experienceLevel === '0-2 Years'
-                            ? 'Junior (0-2 Yrs)'
-                            : item.experienceLevel === '3-5 Years'
-                              ? 'Mid SDET (2-5 Yrs)'
-                              : item.experienceLevel === '6-9 Years'
-                                ? 'Senior SDET (5-8 Yrs)'
-                                : 'Architect (8+ Yrs)'}
-                        </span>
-                      )}
-                      <span
-                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                          item.difficulty === 'Architect'
-                            ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800 font-bold'
-                            : item.difficulty === 'Hard' || item.difficulty === 'Senior'
-                              ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-medium'
-                              : item.difficulty === 'Medium' || item.difficulty === 'Mid'
-                                ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-medium'
-                                : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-medium'
-                        }`}
-                      >
-                        {item.difficulty === 'Architect'
-                          ? 'Test Architect'
-                          : `${item.difficulty} Mode`}
-                      </span>
-                      {item.topic && (
-                        <span className="text-[11px] text-slate-400 truncate max-w-[150px] hidden sm:inline">
-                          {item.topic}
-                        </span>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => handleToggleBookmark(item.id)}
-                      className="p-1.5 text-slate-400 hover:text-amber-500 rounded-lg transition-colors cursor-pointer"
-                      title={isBookmarked ? 'Remove Bookmark' : 'Bookmark Question'}
-                    >
-                      {isBookmarked ? (
-                        <BookmarkCheck className="w-5 h-5 text-amber-500 fill-current" />
-                      ) : (
-                        <Bookmark className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-
-                  <h3 className="font-bold text-slate-900 dark:text-white text-lg sm:text-xl leading-snug">
-                    {item.question}
-                  </h3>
-
-                  <div className="text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-                    <FormattedInterviewAnswer text={item.answerSummary} />
-                  </div>
-
-                  {item.codeSnippet && (
-                    <div className="relative p-4 bg-slate-950 text-emerald-300 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-                      <button
-                        onClick={() => handleCopyCode(item.id, item.codeSnippet!)}
-                        className="absolute right-2.5 top-2.5 p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                        title="Copy Snippet"
-                      >
-                        {copiedId === item.id ? (
-                          <Check className="w-4 h-4 text-emerald-400" />
-                        ) : (
-                          <Copy className="w-4 h-4" />
-                        )}
-                      </button>
-                      <pre className="whitespace-pre-wrap leading-relaxed">{item.codeSnippet}</pre>
-                    </div>
-                  )}
-                </div>
-
-                {/* Best Practice & Pitfall Pills */}
-                <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800 space-y-2 text-sm">
-                  <div className="flex items-start gap-2 text-emerald-700 dark:text-emerald-400">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>
-                      <strong>Best Practice:</strong> {item.bestPractice}
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2 text-rose-700 dark:text-rose-400">
-                    <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>
-                      <strong>Pitfall to Avoid:</strong> {item.pitfallToAvoid}
-                    </span>
-                  </div>
-                </div>
+            {/* Results Count & Active Filter Pills */}
+            <div className="flex items-center justify-between text-xs text-slate-500 px-1 flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <span>
+                  Showing <strong>{displayedQuestions.length}</strong> of{' '}
+                  <strong>{filteredQuestions.length}</strong> matching questions (Total Bank:{' '}
+                  <strong>{questions.length}</strong>)
+                </span>
+                {(selectedTech !== 'All' ||
+                  selectedExpLevel !== 'All' ||
+                  selectedDifficulty !== 'All' ||
+                  searchTerm ||
+                  showOnlyBookmarks) && (
+                  <button
+                    onClick={() => {
+                      setSelectedTech('All');
+                      setSelectedExpLevel('All');
+                      setSelectedDifficulty('All');
+                      setSearchTerm('');
+                      setShowOnlyBookmarks(false);
+                    }}
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold ml-2 cursor-pointer"
+                  >
+                    Clear all filters
+                  </button>
+                )}
               </div>
-            );
-          })}
-        </div>
+              {selectedExpLevel === 'Architect' && (
+                <span className="text-purple-600 dark:text-purple-400 font-semibold bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
+                  ● High-Level Test Architecture Focus
+                </span>
+              )}
+            </div>
 
-        {/* Load More Button */}
-        {filteredQuestions.length > displayLimit && (
-          <div className="text-center pt-4 pb-8">
-            <button
-              onClick={() => setDisplayLimit((prev) => prev + 24)}
-              className="py-3 px-8 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-indigo-500 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow cursor-pointer"
-            >
-              Load More Questions ({filteredQuestions.length - displayLimit} remaining)
-            </button>
-          </div>
-        )}
+            {/* Questions Grid */}
+            <div className="flex flex-col space-y-6">
+              {displayedQuestions.map((item) => {
+                const isBookmarked = bookmarkedIds.includes(item.id);
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-sm flex flex-col justify-between space-y-5 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+                  >
+                    <div className="space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                            {item.technology}
+                          </span>
+                          {item.experienceLevel && (
+                            <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                              {item.experienceLevel === '0-2 Years'
+                                ? 'Junior (0-2 Yrs)'
+                                : item.experienceLevel === '3-5 Years'
+                                  ? 'Mid SDET (2-5 Yrs)'
+                                  : item.experienceLevel === '6-9 Years'
+                                    ? 'Senior SDET (5-8 Yrs)'
+                                    : 'Architect (8+ Yrs)'}
+                            </span>
+                          )}
+                          <span
+                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
+                              item.difficulty === 'Architect'
+                                ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800 font-bold'
+                                : item.difficulty === 'Hard' || item.difficulty === 'Senior'
+                                  ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-medium'
+                                  : item.difficulty === 'Medium' || item.difficulty === 'Mid'
+                                    ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-medium'
+                                    : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-medium'
+                            }`}
+                          >
+                            {item.difficulty === 'Architect'
+                              ? 'Test Architect'
+                              : `${item.difficulty} Mode`}
+                          </span>
+                          {item.topic && (
+                            <span className="text-[11px] text-slate-400 truncate max-w-[150px] hidden sm:inline">
+                              {item.topic}
+                            </span>
+                          )}
+                        </div>
 
-        {filteredQuestions.length === 0 && (
-          <div className="text-center py-16 text-slate-500 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
-            <HelpCircle className="w-10 h-10 mx-auto text-slate-400" />
-            <p className="font-semibold text-slate-700 dark:text-slate-300">
-              No questions matched your filter combination.
-            </p>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">
-              Try selecting &quot;All Tech Stacks&quot; or clearing the search keyword. You can also
-              import custom questions directly from your own Excel spreadsheet below.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedTech('All');
-                setSelectedDifficulty('All');
-                setSearchTerm('');
-                setShowOnlyBookmarks(false);
-              }}
-              className="py-2 px-4 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors"
-            >
-              Reset Filters
-            </button>
-          </div>
+                        <button
+                          onClick={() => handleToggleBookmark(item.id)}
+                          className="p-1.5 text-slate-400 hover:text-amber-500 rounded-lg transition-colors cursor-pointer"
+                          title={isBookmarked ? 'Remove Bookmark' : 'Bookmark Question'}
+                        >
+                          {isBookmarked ? (
+                            <BookmarkCheck className="w-5 h-5 text-amber-500 fill-current" />
+                          ) : (
+                            <Bookmark className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+
+                      <h3 className="font-bold text-slate-900 dark:text-white text-lg sm:text-xl leading-snug">
+                        {item.question}
+                      </h3>
+
+                      <div className="text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+                        <FormattedInterviewAnswer text={item.answerSummary} />
+                      </div>
+
+                      {item.codeSnippet && (
+                        <div className="relative p-4 bg-slate-950 text-emerald-300 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
+                          <button
+                            onClick={() => handleCopyCode(item.id, item.codeSnippet!)}
+                            className="absolute right-2.5 top-2.5 p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                            title="Copy Snippet"
+                          >
+                            {copiedId === item.id ? (
+                              <Check className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
+                          <pre className="whitespace-pre-wrap leading-relaxed">
+                            {item.codeSnippet}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Best Practice & Pitfall Pills */}
+                    <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800 space-y-2 text-sm">
+                      <div className="flex items-start gap-2 text-emerald-700 dark:text-emerald-400">
+                        <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span>
+                          <strong>Best Practice:</strong> {item.bestPractice}
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-2 text-rose-700 dark:text-rose-400">
+                        <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span>
+                          <strong>Pitfall to Avoid:</strong> {item.pitfallToAvoid}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Load More Button */}
+            {filteredQuestions.length > displayLimit && (
+              <div className="text-center pt-4 pb-8">
+                <button
+                  onClick={() => setDisplayLimit((prev) => prev + 24)}
+                  className="py-3 px-8 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-indigo-500 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow cursor-pointer"
+                >
+                  Load More Questions ({filteredQuestions.length - displayLimit} remaining)
+                </button>
+              </div>
+            )}
+
+            {filteredQuestions.length === 0 && (
+              <div className="text-center py-16 text-slate-500 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                <HelpCircle className="w-10 h-10 mx-auto text-slate-400" />
+                <p className="font-semibold text-slate-700 dark:text-slate-300">
+                  No questions matched your filter combination.
+                </p>
+                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  Try selecting &quot;All Tech Stacks&quot; or clearing the search keyword. You can
+                  also import custom questions directly from your own Excel spreadsheet below.
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedTech('All');
+                    setSelectedDifficulty('All');
+                    setSearchTerm('');
+                    setShowOnlyBookmarks(false);
+                  }}
+                  className="py-2 px-4 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {/* Import Questions Modal */}

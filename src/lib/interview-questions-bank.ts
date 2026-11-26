@@ -14,6 +14,7 @@ import {
   CICD_REPORTING_QUESTIONS,
   CODING_DSA_QUESTIONS,
 } from './interview-bank';
+import { syncContentChange } from './rag/sync';
 
 export type {
   InterviewQuestionItem,
@@ -401,6 +402,10 @@ export function saveInterviewQuestion(question: InterviewQuestionItem): Intervie
       console.error('Failed to save interview question', e);
     }
   }
+
+  // Trigger RAG Content Synchronization
+  syncContentChange('interview_question', itemToSave.id, 'upsert', 'published');
+
   return itemToSave;
 }
 
@@ -423,6 +428,9 @@ export function deleteInterviewQuestion(id: string): void {
       console.error('Failed to delete interview question', e);
     }
   }
+
+  // Trigger RAG Content Synchronization
+  syncContentChange('interview_question', id, 'delete');
 }
 
 export function getAllInterviewQuestions(): InterviewQuestionItem[] {

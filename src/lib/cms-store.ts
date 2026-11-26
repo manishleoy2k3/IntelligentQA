@@ -16,6 +16,7 @@ const DATA_FILE = path.join(process.cwd(), 'src/lib/curriculum-data-store.json')
 const TMP_DATA_FILE = path.join('/tmp', 'curriculum-data-store.json');
 
 import { calculateReadingTime, generateTableOfContents } from './cms-engine.js';
+import { syncContentChange } from './rag/sync';
 
 export { calculateReadingTime, generateTableOfContents };
 
@@ -892,6 +893,14 @@ class CMSDataStore {
     this.articles.set(id, saved);
     this.saveToDisk();
 
+    // Trigger RAG Content Synchronization
+    syncContentChange(
+      'article',
+      saved.id,
+      saved.status === 'published' ? 'upsert' : 'unpublish',
+      saved.status as any
+    );
+
     this.logAudit({
       id: `log-${Date.now()}`,
       timestamp: now,
@@ -917,6 +926,9 @@ class CMSDataStore {
 
     this.articles.delete(id);
     this.saveToDisk();
+
+    // Trigger RAG Content Synchronization
+    syncContentChange('article', id, 'delete');
 
     this.logAudit({
       id: `log-${Date.now()}`,
