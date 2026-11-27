@@ -96,11 +96,12 @@ export function isMockEmbeddingAllowed(): boolean {
 
 /**
  * Google Gemini Text Embedding Provider:
- * Uses Google Generative Language API model: text-embedding-004 (768 dimensions).
+ * Uses Google Generative Language API model: gemini-embedding-001 (768 dimensions via outputDimensionality).
+ * Note: text-embedding-004 was retired on January 14, 2026 and is no longer used.
  */
 export class GeminiEmbeddingProvider implements IEmbeddingProvider {
   name = 'Gemini';
-  model = 'text-embedding-004';
+  model = 'gemini-embedding-001';
   dimensions = 768;
   version = 'v1';
 

@@ -1,7 +1,13 @@
 import { z } from 'zod';
 
 export type RAGSourceType =
-  'course' | 'module' | 'lesson' | 'article' | 'interview_question' | 'document_source';
+  | 'course'
+  | 'module'
+  | 'lesson'
+  | 'article'
+  | 'interview_question'
+  | 'coding_problem'
+  | 'document_source';
 
 export type RAGPublicationStatus = 'published' | 'draft' | 'archived' | 'deleted';
 
@@ -18,6 +24,11 @@ export interface KnowledgeSource {
   lessonId?: string | null;
   category?: string | null;
   topic?: string | null;
+  technology?: string | null;
+  framework?: string | null;
+  programmingLanguage?: string | null;
+  aliases?: string[];
+  sourceUrl?: string | null;
   publicationStatus: RAGPublicationStatus;
   currentContentHash: string;
   currentVersion: number;
@@ -44,6 +55,10 @@ export interface KnowledgeChunk {
   lessonId?: string | null;
   category?: string | null;
   topic?: string | null;
+  technology?: string | null;
+  framework?: string | null;
+  programmingLanguage?: string | null;
+  sourceUrl?: string | null;
   contentVersion: number;
   contentHash: string;
   chunkIndex: number;
@@ -103,6 +118,9 @@ export interface RetrievalFilter {
   courseId?: string | null;
   category?: string | null;
   topic?: string | null;
+  technology?: string | null;
+  framework?: string | null;
+  programmingLanguage?: string | null;
   sourceType?: RAGSourceType | null;
   minSimilarity?: number;
   topK?: number;
