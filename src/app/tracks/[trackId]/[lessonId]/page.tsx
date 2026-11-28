@@ -1,15 +1,19 @@
 import { notFound, redirect } from 'next/navigation';
-import { getLessonById, QA_TRACKS } from '@/lib/qa-curriculum';
+import {
+  fetchAllCourses,
+  fetchCourseLessons,
+  fetchLessonByIdFromSupabase,
+} from '@/lib/supabase/lessons';
 import CodeEditorWorkspace from '@/components/tracks/code-editor-workspace';
 import { academyStore } from '@/lib/academy-store';
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const courses = await fetchAllCourses();
   const params: { trackId: string; lessonId: string }[] = [];
-  for (const track of QA_TRACKS) {
-    for (const module of track.modules) {
-      for (const lesson of module.lessons) {
-        params.push({ trackId: track.id, lessonId: lesson.id });
-      }
+  for (const course of courses) {
+    const lessons = await fetchCourseLessons(course.id);
+    for (const lesson of lessons) {
+      params.push({ trackId: course.id, lessonId: lesson.id });
     }
   }
   return params;
@@ -26,7 +30,7 @@ export default async function LessonWorkspacePage({
     redirect('/learning/what-is-artificial-intelligence');
   }
 
-  const data = getLessonById(trackId, lessonId);
+  const data = await fetchLessonByIdFromSupabase(trackId, lessonId);
 
   if (!data) {
     const academyResult = academyStore.getLesson(lessonId, { includeDrafts: false });

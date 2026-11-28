@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { cmsStore } from '@/lib/cms-store';
+import { fetchPublishedArticles } from '@/lib/supabase/articles';
 import {
   BookOpen,
   Clock,
@@ -22,9 +22,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogListingPage() {
-  const articles = cmsStore.getArticles({ status: 'published' });
-  const categories = cmsStore.getCategories();
+export default async function BlogListingPage() {
+  const articles = await fetchPublishedArticles();
+  const categories = Array.from(new Set(articles.map((a) => a.category))).map((name) => ({
+    id: name,
+    name,
+  }));
   const heroArticle = articles[0] || null;
   const standardArticles = articles.slice(1);
 

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { cmsStore } from '@/lib/cms-store';
+import { fetchPublishedArticles, fetchArticleBySlug } from '@/lib/supabase/articles';
 import PublicArticleView from '@/components/blog/public-article-view';
 
 interface PageProps {
@@ -8,13 +8,13 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const articles = cmsStore.getArticles({ status: 'published' });
+  const articles = await fetchPublishedArticles();
   return articles.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = cmsStore.getArticleBySlug(slug);
+  const article = await fetchArticleBySlug(slug);
 
   if (!article) {
     return {
@@ -59,17 +59,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
-  const article = cmsStore.getArticleBySlug(slug);
+  const article = await fetchArticleBySlug(slug);
 
   if (!article) {
     notFound();
   }
 
   // Get related articles
-  const allArticles = cmsStore.getArticles({ status: 'published' });
-  const related = allArticles
-    .filter((a) => a.id !== article.id && a.category === article.category)
-    .slice(0, 2);
+  const allArticles = await fetchPublishedArticles(article.category);
+  const related = allArticles.filter((a) => a.id !== article.id).slice(0, 2);
 
   return <PublicArticleView article={article} relatedArticles={related} />;
 }

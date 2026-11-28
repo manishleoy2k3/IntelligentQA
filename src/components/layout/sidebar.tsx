@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { QABrandLogo } from '@/components/ui/qa-brand-logo';
 import { QADatabase } from '@/lib/qa-db';
-import { QA_TRACKS, getLessonHours } from '@/lib/qa-curriculum';
+import { getLessonHours } from '@/lib/supabase/lessons';
 import { ACADEMY_MODULES } from '@/data/learning/academy-curriculum';
 import { Track, Module, Lesson } from '@/types/qa';
 import WhatsAppDailyModal from '@/components/whatsapp/whatsapp-daily-modal';
@@ -311,7 +311,7 @@ export default function Sidebar({
     if (typeof window !== 'undefined') {
       return QADatabase.getTracks();
     }
-    return QA_TRACKS;
+    return [];
   });
 
   useEffect(() => {

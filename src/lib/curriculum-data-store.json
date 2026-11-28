@@ -146,7 +146,7 @@
       "sortOrder": 1,
       "status": "published",
       "createdAt": "2026-11-23T00:00:00.000Z",
-      "updatedAt": "2026-11-27T03:38:17.520Z",
+      "updatedAt": "2026-11-28T04:06:54.605Z",
       "modules": [
         {
           "id": "mod-intro-ai",
@@ -157,7 +157,7 @@
           "sortOrder": 1,
           "status": "published",
           "createdAt": "2026-11-23T00:00:00.000Z",
-          "updatedAt": "2026-11-27T03:38:17.478Z",
+          "updatedAt": "2026-11-28T04:06:54.573Z",
           "lessons": [
             {
               "id": "les-what-is-ai",
@@ -3366,7 +3366,7 @@
               "summary": "Turn 2 fresh updated context: Multi-context browser partitioning.",
               "shortDescription": "Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.",
               "contentType": "html",
-              "contentHtml": "\n      <h2>Playwright Modern Trace Viewer v2026</h2>\n      <p>The revised Playwright architecture now supports live DOM snapshots and network timeline scrubbing with zero flaky retries.</p>\n    ",
+              "contentHtml": "<div class=\"standard-lesson-container\">\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">Playwright is Microsoft open-source end-to-end testing library designed for modern, reactive web apps with auto-waiting, multi-page contexts, and network mocking.</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">It eliminates test flakiness by design through built-in actionability checks, isolated browser contexts, and bidirectional WebSocket communication.</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><span style=\"color: #047857;\"><strong>Testing Application: </strong></span>Enterprise web automation, single-page application (React, Angular, Vue) validation, API testing, and visual regression suites.</p>\n\n<h2 id=\"1-learning-objectives\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">1. Learning Objectives</h2>\n<ul class=\"list-disc pl-6 space-y-1.5 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\">Master the core architecture: Browser -&gt; BrowserContext -&gt; Page.</li>\n  <li class=\"leading-relaxed\">Understand how Playwright auto-waiting performs 5-point actionability checks.</li>\n  <li class=\"leading-relaxed\">Implement multi-role, locator-first queries recommended by modern testing standards.</li>\n  <li class=\"leading-relaxed\">Leverage Playwright Trace Viewer to debug failures with zero guesswork.</li>\n</ul>\n\n<h2 id=\"2-detailed-concept-explanation\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">2. Detailed Concept Explanation</h2>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">Unlike Selenium HTTP request-response polling, Playwright establishes a persistent &lt;strong&gt;bidirectional WebSocket connection&lt;/strong&gt; with the browser engine (Chromium, WebKit, Firefox).</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">This direct communication enables instantaneous event listening (network requests, console logs, DOM mutations) and built-in auto-waiting: before clicking an element, Playwright automatically ensures it is attached, visible, stable, enabled, and receiving pointer events.</p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><span style=\"color: #047857;\"><strong>Core Principle: </strong></span>SDETs test multi-user scenarios (e.g. buyer and seller interacting simultaneously) in a single test script by launching two lightweight BrowserContexts in parallel.</p>\n\n<div class=\"overflow-x-auto my-6 rounded-xl border border-slate-200 dark:border-neutral-800\">\n  <table class=\"w-full text-left border-collapse text-xs bg-slate-50/50 dark:bg-neutral-950/60\">\n    <thead>\n      <tr class=\"border-b border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-neutral-900\">\n        <th class=\"px-4 py-3 text-left font-bold text-slate-900 dark:\">Terminology</th>\n        <th class=\"px-4 py-3 text-left font-bold text-slate-900 dark:\">Definition</th>\n      </tr>\n    </thead>\n    <tbody class=\"divide-y divide-slate-200 dark:divide-neutral-800\">\n      <tr><td class=\"px-4 py-3 font-semibold text-slate-900 dark: whitespace-nowrap\">BrowserContext</td><td class=\"px-4 py-3 text-slate-800 dark: leading-relaxed\">An isolated incognito-like session with independent cookies, cache, and localStorage that boots in milliseconds.</td></tr>\n      <tr><td class=\"px-4 py-3 font-semibold text-slate-900 dark: whitespace-nowrap\">Actionability Checks</td><td class=\"px-4 py-3 text-slate-800 dark: leading-relaxed\">Automatic verification that an element is visible, stable, enabled, and interactable before dispatching actions.</td></tr>\n      <tr><td class=\"px-4 py-3 font-semibold text-slate-900 dark: whitespace-nowrap\">Trace Viewer</td><td class=\"px-4 py-3 text-slate-800 dark: leading-relaxed\">A deep GUI inspector capturing DOM snapshots, action timelines, network watermarks, and console logs per test.</td></tr>\n    </tbody>\n  </table>\n</div>\n\n<h2 id=\"3-architecture-and-execution-mechanics\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">3. Architecture &amp; Execution Mechanics</h2>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\">Commands send JSON-RPC messages over a persistent WebSocket; the browser engine returns instantaneous promises upon DOM actionability.</p>\n\n<ol class=\"list-decimal pl-6 space-y-2 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\"><strong>Context Creation:</strong> Browser boots once; each test receives a brand new BrowserContext in &lt;10ms.</li>\n  <li class=\"leading-relaxed\"><strong>Actionability Verification:</strong> Playwright verifies element is attached, visible, stable (no animation), enabled, and un-obscured.</li>\n  <li class=\"leading-relaxed\"><strong>Atomic Execution:</strong> Action dispatches natively into browser event loop.</li>\n  <li class=\"leading-relaxed\"><strong>Automatic Trace Recording:</strong> Snapshots captured before and after each action for instant post-mortem analysis.</li>\n</ol>\n\n<h2 id=\"5-production-implementation-code\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">5. Production Implementation Code</h2>\n\n<p class=\"text-xs font-mono font-bold text-slate-500 dark: mt-4 mb-2\">e2e-enterprise.spec.ts (typescript)</p>\n<div class=\"my-4 rounded-xl border border-slate-200 dark:border-neutral-800 bg-[#0d1117] overflow-hidden text-xs font-mono\">\n  <pre class=\"p-4 text-[#81FF89] overflow-x-auto leading-relaxed\"><code class=\"language-typescript\">import { test, expect } from &#039;@playwright/test&#039;;\n\ntest.describe(&#039;Enterprise Playwright Order Flow&#039;, () =&gt; {\n  test(&#039;completes checkout with network mocking and state verification&#039;, async ({ page }) =&gt; {\n    // 1. Mock external payment gateway\n    await page.route(&#039;**/api/v1/payments&#039;, async (route) =&gt; {\n      await route.fulfill({\n        status: 200,\n        contentType: &#039;application/json&#039;,\n        body: JSON.stringify({ status: &#039;APPROVED&#039;, transactionId: &#039;TXN-9988-OK&#039; }),\n      });\n    });\n\n    // 2. Navigate and leverage locator-first queries\n    await page.goto(&#039;/catalog&#039;);\n    await page.getByRole(&#039;button&#039;, { name: &#039;Add to Cart&#039; }).first().click();\n    \n    // 3. Auto-waiting handles modal opening without arbitrary sleeps\n    await page.getByRole(&#039;link&#039;, { name: &#039;Cart&#039; }).click();\n    await page.getByRole(&#039;button&#039;, { name: &#039;Confirm Purchase&#039; }).click();\n\n    // 4. Web-first assertion auto-retries until condition succeeds\n    await expect(page.getByTestId(&#039;confirmation-banner&#039;)).toHaveText(/Order #.*Placed Successfully/);\n  });\n});</code></pre>\n</div>\n<p class=\"text-xs text-slate-600 dark: my-2 leading-relaxed\">Features network route interception, getByRole locators, auto-waiting actions, and web-first regex assertions.</p>\n\n<h2 id=\"6-real-world-qa-use-cases\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">6. Real-World QA Use Cases</h2>\n<ul class=\"list-disc pl-6 space-y-2 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\"><strong>Parallel Matrix CI Pipeline:</strong> Running 300 tests across Chromium, Firefox, and WebKit on 8 parallel workers in under 3 minutes. — <em>GitHub Actions matrix workflow with sharding (--shard=1/4) and automated Allure + Trace Viewer artifact publishing.</em></li>\n</ul>\n\n<h2 id=\"7-common-pitfalls-and-mitigation-strategies\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">7. Common Pitfalls and Mitigation Strategies</h2>\n<div class=\"space-y-4 my-4\">\n  \n    <div class=\"p-4 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/20 dark:bg-red-950/20 text-xs space-y-2\">\n      <p class=\"font-bold font-mono text-red-600 dark:text-red-400\">⚠️ Error: Error: strict mode violation: locator(&quot;button&quot;) resolved to 3 elements</p>\n      <p class=\"text-slate-900 dark:\"><strong>Root Cause:</strong> Locator query matched multiple elements on page; Playwright enforces strictness to prevent accidental interaction.</p>\n      <ul class=\"list-disc pl-5 space-y-1 text-slate-800 dark:\"><li>Narrow locator using role, accessible name, or text filter: page.getByRole(&quot;button&quot;, { name: &quot;Submit&quot; }).</li><li>Use .first(), .last(), or .nth(i) if multiple identical elements are intended.</li><li>Filter by child locator: page.locator(&quot;.card&quot;).filter({ hasText: &quot;Plan Pro&quot; }).getByRole(&quot;button&quot;).</li></ul>\n      <pre class=\"p-3 rounded-lg bg-neutral-900 text-[#81FF89] font-mono text-[11px] overflow-x-auto my-2\"><code>// Fixed: Unique role-based locator\nawait page.getByRole(&#039;button&#039;, { name: &#039;Submit Payment&#039; }).click();</code></pre>\n    </div>\n    \n</div>\n\n<h2 id=\"8-enterprise-best-practices\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">8. Enterprise Best Practices</h2>\n<ul class=\"list-disc pl-6 space-y-2 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\"><strong>Use User-Facing Locators (Role &amp; Label) (Industry Standard):</strong> Prioritize getByRole(), getByLabel(), and getByText() over brittle CSS selectors or deep XPaths.</li>\n  <li class=\"leading-relaxed\"><strong>Trace on First Retry in CI (Maintainability):</strong> Configure trace: &quot;on-first-retry&quot; in playwright.config.ts to keep passing CI runs fast while debugging failed tests.</li>\n</ul>\n\n<h2 id=\"9-key-takeaways-summary\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">9. Key Takeaways &amp; Summary</h2>\n\n<ul class=\"list-disc pl-6 space-y-1.5 my-3 text-slate-900 dark:\">\n  <li class=\"leading-relaxed\">Playwright communicates over persistent WebSockets directly to browser engines.</li>\n  <li class=\"leading-relaxed\">BrowserContexts enable fast, state-isolated tests in parallel.</li>\n  <li class=\"leading-relaxed\">Auto-waiting and Web-First assertions eliminate static waits entirely.</li>\n</ul>\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><strong>Next Steps:</strong> Proceed to Module 2 to set up your project structure and configure playwright.config.ts.</p>\n\n<h2 id=\"10-top-interview-questions-answers\" class=\"text-xl font-bold text-slate-900 dark: mt-8 mb-3 tracking-tight\">10. Top Interview Questions &amp; Answers</h2>\n\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><strong>Q1 (Intermediate): What is the 5-point Actionability Check performed before Playwright clicks an element?</strong></p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark: pl-4 border-l-2 border-emerald-500/40\">Before dispatching a click, Playwright ensures: 1) Attached to DOM, 2) Visible in viewport, 3) Stable (not animating or transitioning), 4) Enabled (not disabled), 5) Receives pointer events (not obscured by an overlay, modal, or toast).</p>\n\n<p class=\"my-3 leading-relaxed text-slate-900 dark:\"><strong>Q2 (Architect-Level): How does Playwright BrowserContext achieve 10x faster test isolation than Selenium new browser sessions?</strong></p>\n<p class=\"my-3 leading-relaxed text-slate-900 dark: pl-4 border-l-2 border-emerald-500/40\">Selenium launches a complete native OS browser process for every test (or requires extensive cookie-clearing logic). Playwright boots a single browser process and spawns lightweight BrowserContexts using isolated in-memory storage, cache, and cookie jars (equivalent to an incognito window), spinning up in under 10 milliseconds.</p>\n\n</div>",
               "blockData": {
                 "standardData": {
                   "overview": {
@@ -94350,6 +94350,49 @@
       "id": "course-test-backend-course-1795750681037",
       "createdAt": "2026-11-27T03:38:01.037Z",
       "updatedAt": "2026-11-27T03:38:02.471Z"
+    },
+    {
+      "categoryId": "cat-ai-for-qa",
+      "title": "Fidelity Assessment Track",
+      "slug": "fidelity-course-1795838797419",
+      "description": "Document import testing course",
+      "icon": "FileText",
+      "level": "All Levels",
+      "estimatedHours": 4,
+      "sortOrder": 99,
+      "status": "draft",
+      "modules": [
+        {
+          "title": "Document Fidelity Module",
+          "slug": "fidelity-module-1795838797681",
+          "description": "Testing document engine",
+          "sortOrder": 1,
+          "status": "draft",
+          "id": "mod-fidelity-module-1795838797681",
+          "courseId": "course-fidelity-course-1795838797419",
+          "lessons": [
+            {
+              "title": "Automated Document Ingestion Test",
+              "slug": "fidelity-lesson-1795838798050",
+              "summary": "Testing full upload, extraction, and rendering",
+              "shortDescription": "Testing full upload, extraction, and rendering",
+              "contentType": "docx",
+              "sortOrder": 1,
+              "status": "draft",
+              "id": "les-fidelity-lesson-1795838798050",
+              "courseId": "course-fidelity-course-1795838797419",
+              "moduleId": "mod-fidelity-module-1795838797681",
+              "createdAt": "2026-11-28T04:06:38.050Z",
+              "updatedAt": "2026-11-28T04:06:38.050Z"
+            }
+          ],
+          "createdAt": "2026-11-28T04:06:37.681Z",
+          "updatedAt": "2026-11-28T04:06:38.050Z"
+        }
+      ],
+      "id": "course-fidelity-course-1795838797419",
+      "createdAt": "2026-11-28T04:06:37.419Z",
+      "updatedAt": "2026-11-28T04:06:38.050Z"
     }
   ],
   "academyDocSources": [
@@ -96017,6 +96060,24 @@
       "originalFilename": "image2.png",
       "displayOrder": 2,
       "createdAt": "2026-11-25T19:49:09.741Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-1-mwzw1w40",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image1.png",
+      "originalFilename": "image1.png",
+      "displayOrder": 1,
+      "createdAt": "2026-11-28T04:06:37.008Z"
+    },
+    {
+      "id": "asset-les-fidelity-engine-test-img-2-mwzw1wb6",
+      "lessonId": "les-fidelity-engine-test",
+      "assetType": "image",
+      "filePath": "/uploads/learning/images/les-fidelity-engine-test/les-fidelity-engine-test_image2.png",
+      "originalFilename": "image2.png",
+      "displayOrder": 2,
+      "createdAt": "2026-11-28T04:06:37.266Z"
     }
   ],
   "academyUserProgress": [
@@ -101155,6 +101216,94 @@
       "completionStatus": "in_progress",
       "lastAccessedAt": "2026-11-27T03:39:29.159Z",
       "completedAt": null
+    },
+    {
+      "id": "prog-user-alpha-1795838822791-les-what-is-ai",
+      "userId": "user-alpha-1795838822791",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-28T04:07:02.791Z",
+      "completedAt": "2026-11-28T04:07:02.791Z"
+    },
+    {
+      "id": "prog-perf-user-1795839420921-0-les-what-is-ai",
+      "userId": "perf-user-1795839420921-0",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-28T04:17:00.921Z",
+      "completedAt": "2026-11-28T04:17:00.921Z"
+    },
+    {
+      "id": "prog-perf-user-1795839420921-1-les-what-is-ai",
+      "userId": "perf-user-1795839420921-1",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-28T04:17:11.038Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795839420921-2-les-what-is-ai",
+      "userId": "perf-user-1795839420921-2",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-28T04:17:11.284Z",
+      "completedAt": "2026-11-28T04:17:11.284Z"
+    },
+    {
+      "id": "prog-perf-user-1795839420921-3-les-what-is-ai",
+      "userId": "perf-user-1795839420921-3",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-28T04:17:11.930Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795839420921-4-les-what-is-ai",
+      "userId": "perf-user-1795839420921-4",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-28T04:17:12.338Z",
+      "completedAt": "2026-11-28T04:17:12.338Z"
+    },
+    {
+      "id": "prog-perf-user-1795839420921-5-les-what-is-ai",
+      "userId": "perf-user-1795839420921-5",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-28T04:17:12.627Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795839420921-6-les-what-is-ai",
+      "userId": "perf-user-1795839420921-6",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-28T04:17:12.786Z",
+      "completedAt": "2026-11-28T04:17:12.786Z"
+    },
+    {
+      "id": "prog-perf-user-1795839420921-7-les-what-is-ai",
+      "userId": "perf-user-1795839420921-7",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-28T04:17:12.874Z",
+      "completedAt": null
+    },
+    {
+      "id": "prog-perf-user-1795839420921-8-les-what-is-ai",
+      "userId": "perf-user-1795839420921-8",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "completed",
+      "lastAccessedAt": "2026-11-28T04:17:12.962Z",
+      "completedAt": "2026-11-28T04:17:12.962Z"
+    },
+    {
+      "id": "prog-perf-user-1795839420921-9-les-what-is-ai",
+      "userId": "perf-user-1795839420921-9",
+      "lessonId": "les-what-is-ai",
+      "completionStatus": "in_progress",
+      "lastAccessedAt": "2026-11-28T04:17:13.080Z",
+      "completedAt": null
     }
   ],
   "academyBookmarks": [
@@ -101192,5 +101341,699 @@
       "createdAt": "2026-11-25T08:30:00.802Z"
     }
   ],
-  "academyEnrolledCourses": []
+  "academyEnrolledCourses": [],
+  "articles": [
+    {
+      "id": "art-selenium-java-001",
+      "title": "Selenium with Java Tutorial: The Ultimate Guide for Beginners & SDETs",
+      "subtitle": "A complete, hands-on masterclass on automating web applications using Selenium WebDriver with Java. Learn architecture, setup, locators, dynamic synchronization, Page Object Model, and enterprise best practices.",
+      "slug": "selenium-with-java-tutorial",
+      "shortDescription": "Comprehensive guide on Selenium with Java. Master WebDriver architecture, Maven project configuration, XPath locators, explicit waits, and Page Object Model for scalable test automation.",
+      "featuredImage": "/images/selenium-architecture.svg",
+      "featuredImageCaption": "Figure 1: Selenium WebDriver 4 Architecture — W3C Protocol & Browser Drivers Flow",
+      "category": "UI Automation",
+      "tags": [
+        "Selenium",
+        "Java",
+        "WebDriver",
+        "TestNG",
+        "Automation",
+        "SDET"
+      ],
+      "status": "published",
+      "publishedDate": "2026-11-15T09:00:00.000Z",
+      "updatedDate": "2026-11-20T14:30:00.000Z",
+      "readingTimeMinutes": 14,
+      "viewCount": 1420,
+      "createdBy": {
+        "id": "usr-admin-001",
+        "name": "Course Administrator",
+        "avatarUrl": "/images/avatar-admin.png",
+        "role": "Principal SDET & Architect",
+        "bio": "Over 12 years of enterprise test automation and distributed test infrastructure experience."
+      },
+      "seoTitle": "Selenium with Java Tutorial: Complete Guide for QA & SDETs | IntelligentQA",
+      "seoDescription": "Learn Selenium with Java from scratch. Step-by-step tutorial covering WebDriver architecture, Maven setup, locators, explicit waits, Page Object Model, and test automation best practices.",
+      "canonicalUrl": "https://intelligentqa.io/blog/selenium-with-java-tutorial",
+      "content": {
+        "time": 1795838806088,
+        "version": "2.28.0",
+        "blocks": [
+          {
+            "id": "blk-intro-1",
+            "type": "paragraph",
+            "data": {
+              "text": "In the fast-evolving landscape of modern software engineering, automated testing has transformed from an optional luxury into a mission-critical release gatekeeper. Among web automation frameworks, <strong>Selenium WebDriver paired with Java</strong> remains the undisputed industry titan, powering enterprise continuous delivery pipelines across Fortune 500 organizations."
+            }
+          },
+          {
+            "id": "blk-callout-1",
+            "type": "callout",
+            "data": {
+              "type": "info",
+              "title": "Why Selenium with Java is Essential for SDET Careers",
+              "message": "Over 70% of enterprise test automation roles explicitly list Java and Selenium as core prerequisites. Java’s strict type safety, robust multithreading, and extensive ecosystem (Maven, Gradle, TestNG, JUnit 5, Allure) make it the optimal language for scalable test architectures."
+            }
+          },
+          {
+            "id": "blk-h2-1",
+            "type": "header",
+            "data": {
+              "text": "What is Selenium WebDriver?",
+              "level": 2,
+              "anchor": "what-is-selenium-webdriver"
+            }
+          },
+          {
+            "id": "blk-p-2",
+            "type": "paragraph",
+            "data": {
+              "text": "Selenium is an open-source suite of automated web testing tools that allows engineers to script browser interactions across all major browser engines, including Google Chrome, Mozilla Firefox, Apple Safari, and Microsoft Edge. Unlike Selenium IDE (a browser record-and-playback extension), <strong>Selenium WebDriver</strong> provides a unified programmatic API that drives browser instances directly using native browser automation drivers."
+            }
+          },
+          {
+            "id": "blk-h2-2",
+            "type": "header",
+            "data": {
+              "text": "Selenium Architecture: Under the Hood",
+              "level": 2,
+              "anchor": "selenium-architecture-under-the-hood"
+            }
+          },
+          {
+            "id": "blk-p-3",
+            "type": "paragraph",
+            "data": {
+              "text": "To write bulletproof tests and diagnose flaky executions, an SDET must understand how command requests travel from Java code to the browser engine. The architecture consists of four distinct architectural tiers:"
+            }
+          },
+          {
+            "id": "blk-step-1",
+            "type": "stepByStep",
+            "data": {
+              "title": "4-Tier Selenium WebDriver Architecture Flow",
+              "steps": [
+                {
+                  "stepNumber": 1,
+                  "title": "Selenium Client Library (Java Language Bindings)",
+                  "badge": "Tier 1 • Client",
+                  "summary": "Java code compiled with Selenium Client dependencies.",
+                  "explanation": "Your Java tests use classes like WebDriver, WebElement, and By. When an action such as driver.findElement() is invoked, the client library serializes the method call into a standardized JSON payload."
+                },
+                {
+                  "stepNumber": 2,
+                  "title": "W3C WebDriver Standard Protocol",
+                  "badge": "Tier 2 • Protocol",
+                  "summary": "Direct RESTful JSON over HTTP communication conforming to W3C standards.",
+                  "explanation": "In Selenium 4, the legacy JSON Wire Protocol was replaced by the official W3C WebDriver specification. Both client and browser drivers speak the identical dialect, eliminating encoding translation overhead."
+                },
+                {
+                  "stepNumber": 3,
+                  "title": "Native Browser Drivers (e.g. ChromeDriver, GeckoDriver)",
+                  "badge": "Tier 3 • Drivers",
+                  "summary": "Lightweight standalone HTTP servers maintained by browser vendors.",
+                  "explanation": "ChromeDriver receives the HTTP request from Tier 1, validates the request, and executes the instructions directly against the Chrome browser rendering engine via Chrome DevTools Protocol (CDP) or native C++ hooks."
+                },
+                {
+                  "stepNumber": 4,
+                  "title": "Target Browser (Chromium, Firefox, Safari)",
+                  "badge": "Tier 4 • Browser",
+                  "summary": "The live browser rendering DOM elements and executing application JavaScript.",
+                  "explanation": "The browser performs the requested action (click, sendKeys, navigate) and returns the HTTP status code and response payload back up the chain to your Java assertions."
+                }
+              ]
+            }
+          },
+          {
+            "id": "blk-img-arch-1",
+            "type": "image",
+            "data": {
+              "file": {
+                "url": "/images/selenium-architecture.svg"
+              },
+              "caption": "Figure 1.1: 4-Tier Selenium WebDriver 4 Architecture & W3C Standard Protocol Flow",
+              "alt": "Selenium 4 Architecture Diagram",
+              "alignment": "center",
+              "size": "large"
+            }
+          },
+          {
+            "id": "blk-h2-3",
+            "type": "header",
+            "data": {
+              "text": "Selenium 3 vs Selenium 4: Key Differences",
+              "level": 2,
+              "anchor": "selenium-3-vs-selenium-4-key-differences"
+            }
+          },
+          {
+            "id": "blk-comp-1",
+            "type": "comparisonTable",
+            "data": {
+              "title": "Selenium 3 vs Selenium 4 Architectural Comparison",
+              "columns": [
+                "Feature / Capability",
+                "Selenium 3 (Legacy)",
+                "Selenium 4 (Modern W3C Standard)"
+              ],
+              "rows": [
+                {
+                  "feature": "Communication Protocol",
+                  "values": [
+                    "JSON Wire Protocol (requires translation encoding)",
+                    "Native W3C Standard (direct protocol compliance)"
+                  ]
+                },
+                {
+                  "feature": "Chrome DevTools Protocol (CDP)",
+                  "values": [
+                    "Not supported natively without 3rd party wrappers",
+                    "Full native support for Network capture, Console logs, Geolocation spoofing"
+                  ]
+                },
+                {
+                  "feature": "Relative / Friendly Locators",
+                  "values": [
+                    "Not available; requires complex XPath axes",
+                    "Built-in: withTagName().above(), below(), toLeftOf(), toRightOf(), near()"
+                  ]
+                },
+                {
+                  "feature": "Driver Binary Management",
+                  "values": [
+                    "Manual System.setProperty() with chromedriver.exe",
+                    "Automated Selenium Manager (zero binary downloads required)"
+                  ]
+                },
+                {
+                  "feature": "Window & Tab Management",
+                  "values": [
+                    "Requires driver.switchTo().window(handle) loops",
+                    "Clean native API: driver.switchTo().newWindow(WindowType.TAB)"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "blk-h2-4",
+            "type": "header",
+            "data": {
+              "text": "Setting Up a Selenium Java Project with Maven",
+              "level": 2,
+              "anchor": "setting-up-a-selenium-java-project-with-maven"
+            }
+          },
+          {
+            "id": "blk-p-4",
+            "type": "paragraph",
+            "data": {
+              "text": "To construct an enterprise-grade test automation suite, start by generating a clean Apache Maven project. Below is the production-ready <code>pom.xml</code> declaring the latest Selenium 4 and TestNG dependencies:"
+            }
+          },
+          {
+            "id": "blk-code-1",
+            "type": "code",
+            "data": {
+              "language": "xml",
+              "caption": "pom.xml - Enterprise Maven Dependencies for Selenium 4 and TestNG",
+              "code": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 \n         http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n    <modelVersion>4.0.0</modelVersion>\n\n    <groupId>io.intelligentqa</groupId>\n    <artifactId>selenium-java-framework</artifactId>\n    <version>1.0.0</version>\n\n    <properties>\n        <maven.compiler.source>17</maven.compiler.source>\n        <maven.compiler.target>17</maven.compiler.target>\n        <selenium.version>4.26.0</selenium.version>\n        <testng.version>7.10.2</testng.version>\n    </properties>\n\n    <dependencies>\n        <!-- Selenium Java Client Engine -->\n        <dependency>\n            <groupId>org.seleniumhq.selenium</groupId>\n            <artifactId>selenium-java</artifactId>\n            <version>${selenium.version}</version>\n        </dependency>\n\n        <!-- TestNG Assertion & Execution Runner -->\n        <dependency>\n            <groupId>org.testng</groupId>\n            <artifactId>testng</artifactId>\n            <version>${testng.version}</version>\n            <scope>test</scope>\n        </dependency>\n    </dependencies>\n</project>"
+            }
+          },
+          {
+            "id": "blk-terminal-1",
+            "type": "terminal",
+            "data": {
+              "prompt": "$",
+              "caption": "Compiling Maven dependencies and running test execution",
+              "code": "mvn clean compile test -DsuiteXmlFile=testng.xml"
+            }
+          },
+          {
+            "id": "blk-h2-5",
+            "type": "header",
+            "data": {
+              "text": "Writing Your First Selenium Java Test",
+              "level": 2,
+              "anchor": "writing-your-first-selenium-java-test"
+            }
+          },
+          {
+            "id": "blk-p-5",
+            "type": "paragraph",
+            "data": {
+              "text": "Notice how modern Selenium 4 automatically handles driver binary resolution via <strong>Selenium Manager</strong>. You do not need to manually download or set properties for <code>chromedriver.exe</code>."
+            }
+          },
+          {
+            "id": "blk-code-2",
+            "type": "code",
+            "data": {
+              "language": "java",
+              "caption": "FirstSeleniumTest.java - Clean WebDriver Launch & Assertion",
+              "code": "package io.intelligentqa.tests;\n\nimport org.openqa.selenium.By;\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.WebElement;\nimport org.openqa.selenium.chrome.ChromeDriver;\nimport org.openqa.selenium.chrome.ChromeOptions;\nimport org.testng.Assert;\nimport org.testng.annotations.AfterMethod;\nimport org.testng.annotations.BeforeMethod;\nimport org.testng.annotations.Test;\n\npublic class FirstSeleniumTest {\n    private WebDriver driver;\n\n    @BeforeMethod\n    public void setUp() {\n        ChromeOptions options = new ChromeOptions();\n        options.addArguments(\"--start-maximized\");\n        options.addArguments(\"--disable-notifications\");\n        \n        // Selenium Manager automatically resolves and initializes ChromeDriver\n        driver = new ChromeDriver(options);\n    }\n\n    @Test\n    public void testHomepageTitleAndNavigation() {\n        driver.get(\"https://intelligentqa.io\");\n\n        // Verify page title\n        String pageTitle = driver.getTitle();\n        Assert.assertTrue(pageTitle.contains(\"IntelligentQA\"), \"Title did not match expected brand name!\");\n\n        // Locate CTA button by user-facing text and click\n        WebElement coursesLink = driver.findElement(By.linkText(\"Courses\"));\n        coursesLink.click();\n\n        // Verify current URL navigated\n        Assert.assertTrue(driver.getCurrentUrl().contains(\"/tracks\"), \"Failed to navigate to courses catalog!\");\n    }\n\n    @AfterMethod(alwaysRun = true)\n    public void tearDown() {\n        if (driver != null) {\n            driver.quit(); // Releases OS processes and active sessions\n        }\n    }\n}"
+            }
+          },
+          {
+            "id": "blk-callout-2",
+            "type": "callout",
+            "data": {
+              "type": "warning",
+              "title": "Crucial Practice: driver.quit() vs driver.close()",
+              "message": "Always invoke driver.quit() in your @AfterMethod teardown block. driver.close() merely shuts the currently active tab or window, leaving headless zombie ChromeDriver processes hanging in your OS memory. driver.quit() terminates all windows and gracefully kills the driver process."
+            }
+          },
+          {
+            "id": "blk-h2-6",
+            "type": "header",
+            "data": {
+              "text": "Mastering Element Locators",
+              "level": 2,
+              "anchor": "mastering-element-locators"
+            }
+          },
+          {
+            "id": "blk-p-6",
+            "type": "paragraph",
+            "data": {
+              "text": "The longevity of an automation test suite hinges on the resilience of its locators. Flaky tests occur when locators break upon minor CSS refactoring. Here is the priority hierarchy for locator selection:"
+            }
+          },
+          {
+            "id": "blk-tbl-1",
+            "type": "table",
+            "data": {
+              "withHeadings": true,
+              "content": [
+                [
+                  "Locator Strategy",
+                  "Syntax Example",
+                  "Stability Rating",
+                  "SDET Recommendation"
+                ],
+                [
+                  "ID (Unique identifier)",
+                  "By.id(\"login-submit\")",
+                  "⭐⭐⭐⭐⭐ High",
+                  "Best choice if IDs are static and immutable."
+                ],
+                [
+                  "Data Test Attributes",
+                  "By.cssSelector(\"[data-testid='user-email']\")"
+                ],
+                [
+                  "Accessibility Name",
+                  "By.name(\"searchQuery\")",
+                  "⭐⭐⭐⭐ Good",
+                  "Preferred for standard form input fields."
+                ],
+                [
+                  "Dynamic XPath with Axes",
+                  "By.xpath(\"//tr[td[text()='Selenium']]//button\")",
+                  "⭐⭐⭐⭐ Strong",
+                  "Essential for complex data tables."
+                ],
+                [
+                  "Full / Absolute XPath",
+                  "By.xpath(\"/html/body/div[2]/div/span[1]\")",
+                  "❌ Unstable",
+                  "Strictly anti-pattern. Breaks on any DOM layout change."
+                ]
+              ]
+            }
+          },
+          {
+            "id": "blk-img-locator-1",
+            "type": "image",
+            "data": {
+              "file": {
+                "url": "/images/locators-dom-inspector.svg"
+              },
+              "caption": "Figure 1.2: Chrome DevTools DOM Elements & Priority Locator Strategies",
+              "alt": "DOM Elements Inspector and Locator Strategies",
+              "alignment": "center",
+              "size": "large"
+            }
+          },
+          {
+            "id": "blk-h2-7",
+            "type": "header",
+            "data": {
+              "text": "Handling Dynamic Synchronization: Explicit Waits",
+              "level": 2,
+              "anchor": "handling-dynamic-synchronization-explicit-waits"
+            }
+          },
+          {
+            "id": "blk-p-7",
+            "type": "paragraph",
+            "data": {
+              "text": "Modern web applications make asynchronous AJAX requests and render DOM components dynamically. Never use <code>Thread.sleep()</code> because it halts thread execution unconditionally, inflating pipeline duration."
+            }
+          },
+          {
+            "id": "blk-code-3",
+            "type": "code",
+            "data": {
+              "language": "java",
+              "caption": "WebDriverWait & ExpectedConditions Production Pattern",
+              "code": "import java.time.Duration;\nimport org.openqa.selenium.By;\nimport org.openqa.selenium.WebDriver;\nimport org.openqa.selenium.WebElement;\nimport org.openqa.selenium.support.ui.ExpectedConditions;\nimport org.openqa.selenium.support.ui.WebDriverWait;\n\npublic class DynamicSynchronizationHelper {\n    public static WebElement waitForElementClickable(WebDriver driver, By locator, int timeoutSeconds) {\n        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));\n        // Polls the DOM every 500ms and returns the WebElement as soon as it is clickable\n        return wait.until(ExpectedConditions.elementToBeClickable(locator));\n    }\n\n    public static boolean waitForUrlToContain(WebDriver driver, String fraction, int timeoutSeconds) {\n        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));\n        return wait.until(ExpectedConditions.urlContains(fraction));\n    }\n}"
+            }
+          },
+          {
+            "id": "blk-h2-report-1",
+            "type": "header",
+            "data": {
+              "text": "Automated Test Execution Reporting & Metrics",
+              "level": 2,
+              "anchor": "automated-test-execution-reporting-and-metrics"
+            }
+          },
+          {
+            "id": "blk-p-report-1",
+            "type": "paragraph",
+            "data": {
+              "text": "A test suite is only as effective as the visibility and feedback it provides to the engineering organization. Integrated reporting frameworks such as <strong>TestNG and Allure Reports</strong> generate clear visual dashboards highlighting execution status, pass/fail trends, error stack traces, and embedded failure screenshots:"
+            }
+          },
+          {
+            "id": "blk-img-report-1",
+            "type": "image",
+            "data": {
+              "file": {
+                "url": "/images/test-execution-report.svg"
+              },
+              "caption": "Figure 1.3: Real-Time TestNG & Allure Test Execution Dashboard with Parallel Thread Metrics",
+              "alt": "Test Execution Metrics Dashboard Screenshot",
+              "alignment": "center",
+              "size": "large"
+            }
+          },
+          {
+            "id": "blk-h2-8",
+            "type": "header",
+            "data": {
+              "text": "Frequently Asked Questions (FAQ)",
+              "level": 2,
+              "anchor": "frequently-asked-questions-faq"
+            }
+          },
+          {
+            "id": "blk-faq-1",
+            "type": "faq",
+            "data": {
+              "title": "Selenium with Java Masterclass FAQs",
+              "items": [
+                {
+                  "question": "Is Selenium still relevant in 2026 with the rise of Playwright and Cypress?",
+                  "answer": "Absolutely. While Playwright is popular for modern greenfield web applications, Selenium remains the cornerstone of enterprise banking, healthcare, and insurance organizations that require multi-browser legacy support, extensive grid clustering (Selenium Grid / Moon / Selenoid), and deep integration with existing Java ecosystems."
+                },
+                {
+                  "question": "Do I still need WebDriverManager (by Boni Garcia) in Selenium 4?",
+                  "answer": "No. Selenium 4 introduces built-in Selenium Manager, which natively downloads and manages browser driver binaries in the background without third-party dependencies or manual configuration."
+                },
+                {
+                  "question": "What is the recommended Java version for modern Selenium test suites?",
+                  "answer": "Java 17 LTS or Java 21 LTS is highly recommended. Modern Selenium 4 client libraries take advantage of Java 17 features including records, switch expressions, and enhanced garbage collection."
+                },
+                {
+                  "question": "How do I run tests concurrently without session collision?",
+                  "answer": "Use TestNG with parallel=\"methods\" or parallel=\"tests\" and wrap your WebDriver instance inside a ThreadLocal<WebDriver> container to ensure thread isolation per test."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "UI Automation",
+      "slug": "ui-automation",
+      "description": "Web automation frameworks including Selenium, Playwright, and Cypress",
+      "color": "#10B981",
+      "count": 12
+    },
+    {
+      "id": "cat-2",
+      "name": "API Testing",
+      "slug": "api-testing",
+      "description": "REST Assured, Postman, GraphQL, and microservice validation",
+      "color": "#0EA5E9",
+      "count": 8
+    },
+    {
+      "id": "cat-3",
+      "name": "SDET Architecture",
+      "slug": "sdet-architecture",
+      "description": "Framework design patterns, Page Object Model, and test infrastructure",
+      "color": "#8B5CF6",
+      "count": 9
+    },
+    {
+      "id": "cat-4",
+      "name": "CI/CD & DevOps",
+      "slug": "cicd-devops",
+      "description": "GitHub Actions, Jenkins, Docker, and Selenium Grid clustering",
+      "color": "#F59E0B",
+      "count": 6
+    },
+    {
+      "id": "cat-5",
+      "name": "Performance & Security",
+      "slug": "performance-security",
+      "description": "k6, JMeter, load testing, and OWASP testing fundamentals",
+      "color": "#EC4899",
+      "count": 4
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag-1",
+      "name": "Selenium",
+      "slug": "selenium",
+      "count": 14
+    },
+    {
+      "id": "tag-2",
+      "name": "Java",
+      "slug": "java",
+      "count": 18
+    },
+    {
+      "id": "tag-3",
+      "name": "Playwright",
+      "slug": "playwright",
+      "count": 10
+    },
+    {
+      "id": "tag-4",
+      "name": "TypeScript",
+      "slug": "typescript",
+      "count": 11
+    },
+    {
+      "id": "tag-5",
+      "name": "WebDriver",
+      "slug": "webdriver",
+      "count": 12
+    },
+    {
+      "id": "tag-6",
+      "name": "TestNG",
+      "slug": "testng",
+      "count": 8
+    },
+    {
+      "id": "tag-7",
+      "name": "Page Object Model",
+      "slug": "page-object-model",
+      "count": 9
+    },
+    {
+      "id": "tag-8",
+      "name": "Locators",
+      "slug": "locators",
+      "count": 7
+    },
+    {
+      "id": "tag-9",
+      "name": "Synchronization",
+      "slug": "synchronization",
+      "count": 5
+    },
+    {
+      "id": "tag-10",
+      "name": "SDET",
+      "slug": "sdet",
+      "count": 20
+    }
+  ],
+  "media": [
+    {
+      "id": "med-arch-1",
+      "filename": "selenium-architecture.svg",
+      "originalName": "selenium-architecture.svg",
+      "url": "/images/selenium-architecture.svg",
+      "mimeType": "image/svg+xml",
+      "size": 9800,
+      "dimensions": {
+        "width": 1200,
+        "height": 640
+      },
+      "alt": "Selenium WebDriver 4 Architecture Diagram & Flow",
+      "caption": "Figure 1: Selenium WebDriver 4 Architecture Diagram",
+      "category": "Architecture",
+      "uploadedAt": "2026-11-15T09:00:00.000Z",
+      "uploadedBy": "Course Administrator"
+    },
+    {
+      "id": "med-loc-1",
+      "filename": "locators-dom-inspector.svg",
+      "originalName": "locators-dom-inspector.svg",
+      "url": "/images/locators-dom-inspector.svg",
+      "mimeType": "image/svg+xml",
+      "size": 7500,
+      "dimensions": {
+        "width": 1000,
+        "height": 500
+      },
+      "alt": "DOM Elements Inspector and Locator Strategies",
+      "caption": "Figure 2: Chrome DevTools DOM Elements & Priority Locators",
+      "category": "Screenshots",
+      "uploadedAt": "2026-11-16T10:00:00.000Z",
+      "uploadedBy": "Course Administrator"
+    },
+    {
+      "id": "med-rep-1",
+      "filename": "test-execution-report.svg",
+      "originalName": "test-execution-report.svg",
+      "url": "/images/test-execution-report.svg",
+      "mimeType": "image/svg+xml",
+      "size": 8200,
+      "dimensions": {
+        "width": 1000,
+        "height": 500
+      },
+      "alt": "Test Execution Metrics Dashboard Screenshot",
+      "caption": "Figure 3: Real-Time TestNG Execution Dashboard",
+      "category": "Reports",
+      "uploadedAt": "2026-11-17T11:00:00.000Z",
+      "uploadedBy": "Course Administrator"
+    },
+    {
+      "id": "med-hero-1",
+      "filename": "hero-preview.png",
+      "originalName": "selenium-webdriver-hero.png",
+      "url": "/images/hero-preview.png",
+      "mimeType": "image/png",
+      "size": 245000,
+      "dimensions": {
+        "width": 1200,
+        "height": 630
+      },
+      "alt": "Selenium WebDriver Architecture Diagram and Test Execution",
+      "caption": "Selenium WebDriver Architecture Diagram",
+      "category": "Architecture",
+      "uploadedAt": "2026-11-15T09:00:00.000Z",
+      "uploadedBy": "Course Administrator"
+    },
+    {
+      "id": "med-info-1795838828410",
+      "filename": "infographic_1795838823967_izxa9.png",
+      "originalName": "What is an LLM?.png",
+      "url": "/uploads/infographic_1795838823967_izxa9.png",
+      "mimeType": "image/png",
+      "size": 78472,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is an LLM?",
+      "caption": "Figure: Technical Infographic — What is an LLM?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-28T04:07:08.427Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795838848926",
+      "filename": "infographic_1795838847540_tluao.png",
+      "originalName": "What is Tokenization?.png",
+      "url": "/uploads/infographic_1795838847540_tluao.png",
+      "mimeType": "image/png",
+      "size": 40971,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: What is Tokenization?",
+      "caption": "Figure: Technical Infographic — What is Tokenization?",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-28T04:07:28.926Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    },
+    {
+      "id": "med-info-1795839432825",
+      "filename": "infographic_1795839432809_y9qx7.png",
+      "originalName": "RAG Pipeline Architecture.png",
+      "url": "/uploads/infographic_1795839432809_y9qx7.png",
+      "mimeType": "image/png",
+      "size": 31261,
+      "dimensions": {
+        "width": 1360,
+        "height": 765
+      },
+      "alt": "Educational Technical Infographic: RAG Pipeline Architecture",
+      "caption": "Figure: Technical Infographic — RAG Pipeline Architecture",
+      "category": "Infographics",
+      "uploadedAt": "2026-11-28T04:17:12.825Z",
+      "uploadedBy": "IntelligentQA Educational Infographic Engine"
+    }
+  ],
+  "cmsAuditLogs": [
+    {
+      "id": "log-1795838834298",
+      "timestamp": "2026-11-28T04:07:14.298Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795838828410",
+      "entityTitle": "infographic_1795838823967_izxa9.png",
+      "details": "Uploaded media infographic_1795838823967_izxa9.png (image/png)"
+    },
+    {
+      "id": "log-1795839420635",
+      "timestamp": "2026-11-28T04:17:00.635Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795838848926",
+      "entityTitle": "infographic_1795838847540_tluao.png",
+      "details": "Uploaded media infographic_1795838847540_tluao.png (image/png)"
+    },
+    {
+      "id": "log-1795839432954",
+      "timestamp": "2026-11-28T04:17:12.954Z",
+      "user": {
+        "id": "admin",
+        "name": "Admin",
+        "email": "admin@intelligentqa.io"
+      },
+      "action": "upload_media",
+      "entityType": "media",
+      "entityId": "med-info-1795839432825",
+      "entityTitle": "infographic_1795839432809_y9qx7.png",
+      "details": "Uploaded media infographic_1795839432809_y9qx7.png (image/png)"
+    }
+  ]
 }

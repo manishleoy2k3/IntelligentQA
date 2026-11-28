@@ -25,7 +25,6 @@ import {
 } from 'lucide-react';
 import { QADatabase, DEMO_USER, getInitials } from '@/lib/qa-db';
 import { UserProfile, UserProgress, QAGeneratedArtifact, InterviewSession } from '@/types/qa';
-import { QA_TRACKS } from '@/lib/qa-curriculum';
 import AuthGuard from '@/components/auth/auth-guard';
 import ProfileModal from '@/components/profile/profile-modal';
 import LearningDashboard from '@/components/learning/learning-dashboard';

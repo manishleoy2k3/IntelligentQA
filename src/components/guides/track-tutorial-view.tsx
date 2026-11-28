@@ -1,7 +1,44 @@
 'use client';
 
 import React, { useState } from 'react';
-import { TrackTutorial, TutorialStep, MockScreenshot } from '@/lib/track-tutorials';
+export interface MockScreenshot {
+  windowTitle: string;
+  caption: string;
+  type: 'ide' | 'terminal' | 'browser' | 'postman-vs-code';
+  fileTree?: string[];
+  activeFile?: string;
+  codeOrOutput: string;
+}
+
+export interface TutorialStep {
+  stepNumber: number;
+  title: string;
+  badge?: string;
+  summary: string;
+  description: string;
+  mockScreenshot?: MockScreenshot;
+  codeSnippet?: {
+    language: string;
+    code: string;
+    caption: string;
+  };
+  keyTakeaways: string[];
+}
+
+export interface TrackTutorial {
+  trackId: string;
+  title: string;
+  subtitle: string;
+  sourceAttribution?: string;
+  sourceUrl?: string;
+  overview: string;
+  architectureDiagram: {
+    title: string;
+    layers: { layer: string; name: string; description: string; color: string }[];
+    flowSummary: string;
+  };
+  steps: TutorialStep[];
+}
 import CourseVisualDiagram from '@/components/ui/course-visual-diagram';
 import {
   BookOpen,

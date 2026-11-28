@@ -20,8 +20,7 @@ import {
   Plus,
   RefreshCw,
 } from 'lucide-react';
-import { getCuratedInterviewQuestions } from '@/lib/qa-knowledge-base';
-import { getAllInterviewQuestions } from '@/lib/interview-questions-bank';
+import { fetchAllInterviewQuestions } from '@/lib/supabase/interview-questions';
 import { InterviewQuestionItem } from '@/types/qa';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
 import AuthGuard from '@/components/auth/auth-guard';
@@ -51,8 +50,8 @@ export default function InterviewQuestionsPage() {
   const [importError, setImportError] = useState('');
 
   useEffect(() => {
-    const loadQuestions = () => {
-      const all = getAllInterviewQuestions();
+    const loadQuestions = async () => {
+      const all = await fetchAllInterviewQuestions();
       setQuestions(all);
     };
     loadQuestions();

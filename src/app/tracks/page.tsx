@@ -14,15 +14,17 @@ import {
   Clock,
   BookOpen,
 } from 'lucide-react';
-import { QA_TRACKS } from '@/lib/qa-curriculum';
+import { fetchTracksFromSupabase } from '@/lib/supabase/lessons';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
-import { UserProgress } from '@/types/qa';
+import { Track, UserProgress } from '@/types/qa';
 
 export default function TracksDirectoryPage() {
   const router = useRouter();
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
+  const [tracks, setTracks] = useState<Track[]>([]);
 
   useEffect(() => {
+    fetchTracksFromSupabase().then(setTracks);
     // If a user navigates to /tracks directly, redirect to /dashboard
     router.replace('/dashboard');
   }, [router]);
@@ -126,7 +128,7 @@ export default function TracksDirectoryPage() {
 
       {/* Tracks Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {QA_TRACKS.map((track) => {
+        {tracks.map((track) => {
           const progressPercent = getProgressPercentage(track.id, track.totalLessons);
           const firstLesson = track.modules[0]?.lessons[0];
           const firstLessonHref = firstLesson

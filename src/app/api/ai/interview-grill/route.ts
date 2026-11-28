@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateGeminiKeySyntax, sanitizeGeminiKey } from '@/lib/gemini-validator';
-import {
-  getQuestionsByLevelAndDifficulty,
-  mapYearsToExperienceTier,
-  INTERVIEW_KNOWLEDGE_BASE,
-  InterviewQuestionItem,
-} from '@/lib/interview-questions-bank';
+import { mapYearsToExperienceTier } from '@/lib/supabase/interview-questions';
+import type { InterviewQuestionItem } from '@/types/qa';
 import { QAInterviewAgent } from '@/lib/qa-interview-agent';
 import { QAInterviewResearcher } from '@/lib/qa-interview-researcher';
 

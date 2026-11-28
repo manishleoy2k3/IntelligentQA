@@ -39,7 +39,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { QADatabase, DEMO_USER } from '@/lib/qa-db';
-import { getQuestionsByLevelAndDifficulty } from '@/lib/interview-questions-bank';
+import { fetchQuestionsByLevelAndDifficulty } from '@/lib/supabase/interview-questions';
 import GeminiKeyModal from '@/components/auth/gemini-key-modal';
 
 export interface SkillOption {
@@ -752,13 +752,10 @@ export default function InterviewGriller() {
         setQuestionNumber(data.questionNumber || 1);
         setTotalQuestions(data.totalQuestions || 5);
       } else {
-        const localQuestions = getQuestionsByLevelAndDifficulty({
+        const localQuestions = await fetchQuestionsByLevelAndDifficulty({
           difficulty,
-          experienceYears,
-          experienceTier,
-          count: 5,
-          track: selectedTrack,
-          skills: activeSkills,
+          experienceYears: typeof experienceYears === 'number' ? experienceYears : undefined,
+          limit: 5,
         });
 
         loadedQuestions = localQuestions.map((q, idx) => ({

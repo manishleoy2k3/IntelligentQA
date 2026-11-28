@@ -1,5 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
-import { getTrackById, QA_TRACKS } from '@/lib/qa-curriculum';
+import { fetchAllCourses, fetchTrackByIdFromSupabase } from '@/lib/supabase/lessons';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { BookOpen, CheckCircle, Clock, Layers, ArrowRight } from 'lucide-react';
@@ -11,12 +11,13 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return QA_TRACKS.map((t) => ({ courseId: t.id }));
+  const courses = await fetchAllCourses();
+  return courses.map((c) => ({ courseId: c.id }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { courseId } = await params;
-  const track = getTrackById(courseId);
+  const track = await fetchTrackByIdFromSupabase(courseId);
   if (!track) {
     const academyCourse = academyStore.getCourse(courseId);
     if (academyCourse) {
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PublicCoursePage({ params }: PageProps) {
   const { courseId } = await params;
-  const track = getTrackById(courseId);
+  const track = await fetchTrackByIdFromSupabase(courseId);
 
   if (!track) {
     const academyCourse = academyStore.getCourse(courseId);

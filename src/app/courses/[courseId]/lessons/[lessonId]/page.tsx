@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getLessonById } from '@/lib/qa-curriculum';
+import { fetchLessonByIdOrSlug } from '@/lib/supabase/lessons';
 import { notFound } from 'next/navigation';
 import { academyStore } from '@/lib/academy-store';
 
@@ -24,7 +24,7 @@ export default async function CourseLessonRedirectPage({
     redirect(`/learning/${academyRes.lesson.slug}`);
   }
 
-  const data = getLessonById(courseId, lessonId);
+  const data = await fetchLessonByIdOrSlug(courseId, lessonId);
 
   if (!data) {
     notFound();

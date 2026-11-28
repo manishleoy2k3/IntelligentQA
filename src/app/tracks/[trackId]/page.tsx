@@ -1,11 +1,12 @@
 import { notFound, redirect } from 'next/navigation';
-import { getTrackById, QA_TRACKS } from '@/lib/qa-curriculum';
+import { fetchAllCourses, fetchTrackByIdFromSupabase } from '@/lib/supabase/lessons';
 import TrackOverviewClient from '@/components/tracks/track-overview-client';
 import AcademyShell from '@/components/learning/academy-shell';
 import { academyStore } from '@/lib/academy-store';
 
-export function generateStaticParams() {
-  return QA_TRACKS.map((t) => ({ trackId: t.id }));
+export async function generateStaticParams() {
+  const courses = await fetchAllCourses();
+  return courses.map((c) => ({ trackId: c.id }));
 }
 
 export default async function TrackOverviewPage({
@@ -14,7 +15,7 @@ export default async function TrackOverviewPage({
   params: Promise<{ trackId: string }>;
 }) {
   const { trackId } = await params;
-  const track = getTrackById(trackId);
+  const track = await fetchTrackByIdFromSupabase(trackId);
 
   if (!track) {
     const course = academyStore.getCourse(trackId, { includeDrafts: false });

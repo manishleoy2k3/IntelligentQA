@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchQAKnowledge } from '@/lib/qa-knowledge-base';
+import { searchQAKnowledgeFromSupabase } from '@/lib/supabase/interview-questions';
 
 const WHATSAPP_VERIFY_TOKEN =
   process.env.WHATSAPP_VERIFY_TOKEN || 'intelligentqa_whatsapp_token_2026';
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       console.log(`[WhatsApp Bot] Inbound from ${from}: "${text}"`);
 
       // Search knowledge base for SDET query or response
-      const results = searchQAKnowledge(text);
+      const results = await searchQAKnowledgeFromSupabase(text);
       const answer =
         results.length > 0
           ? `*IntelligentQA Daily SDET Coach*\n\n${results[0].shortAnswer}\n\n💡 _Pro Tip:_ ${results[0].interviewTips}`

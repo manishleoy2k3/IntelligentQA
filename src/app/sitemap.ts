@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
-import { cmsStore } from '@/lib/cms-store';
-import { QA_TRACKS } from '@/lib/qa-curriculum';
+import { fetchPublishedArticles } from '@/lib/supabase/articles';
+import { fetchAllCourses } from '@/lib/supabase/lessons';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://intelligentqa.io';
 
   // Static core routes
@@ -34,7 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // Dynamic published articles
-  const articles = cmsStore.getArticles({ status: 'published' });
+  const articles = await fetchPublishedArticles();
   const articleRoutes: MetadataRoute.Sitemap = articles.map((art) => ({
     url: `${baseUrl}/blog/${art.slug}`,
     lastModified: new Date(art.updatedDate || art.publishedDate || Date.now()),
@@ -43,9 +43,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Dynamic course tracks
-  const courseRoutes: MetadataRoute.Sitemap = QA_TRACKS.map((track) => ({
-    url: `${baseUrl}/courses/${track.id}`,
-    lastModified: new Date(),
+  const courses = await fetchAllCourses();
+  const courseRoutes: MetadataRoute.Sitemap = courses.map((course) => ({
+    url: `${baseUrl}/courses/${course.id}`,
+    lastModified: new Date(course.updated_at || Date.now()),
     changeFrequency: 'monthly',
     priority: 0.75,
   }));

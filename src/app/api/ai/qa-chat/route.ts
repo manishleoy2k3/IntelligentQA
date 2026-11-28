@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateGeminiKeySyntax, sanitizeGeminiKey } from '@/lib/gemini-validator';
 import {
-  searchQAKnowledge,
   formatCrispChatAnswer,
   synthesizeDynamicAnswer,
   diagnoseCodeError,
 } from '@/lib/qa-knowledge-base';
+import { searchQAKnowledgeFromSupabase } from '@/lib/supabase/interview-questions';
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -225,7 +225,7 @@ Never fabricate statistics, benchmark numbers, tool capabilities, framework APIs
     }
 
     // 3. Deterministic Local Knowledge Engine Response (Zero-Cost, Zero-Latency Fallback)
-    let localMatches = searchQAKnowledge(query);
+    let localMatches = await searchQAKnowledgeFromSupabase(query);
     let bestMatch = localMatches.length > 0 ? localMatches[0] : null;
 
     // Contextual continuation for follow-up questions in local engine
@@ -235,7 +235,7 @@ Never fabricate statistics, benchmark numbers, tool capabilities, framework APIs
         .find((h) => h.role === 'user' && h.content?.trim());
       if (lastUserTurn) {
         const contextualQuery = `${lastUserTurn.content.trim()} ${query}`;
-        const contextualMatches = searchQAKnowledge(contextualQuery);
+        const contextualMatches = await searchQAKnowledgeFromSupabase(contextualQuery);
         if (contextualMatches.length > 0) {
           bestMatch = contextualMatches[0];
         }
